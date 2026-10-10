@@ -38,6 +38,8 @@ READ_ONLY_PROGRAMS = {
     "sort": {"-o", "--output", "--compress-program"},
     "tree": {"-o"},
     "fd": {"-x", "-X", "--exec", "--exec-batch"},
+    "ps": set(), "cd": set(),
+    "file": {"-C", "--compile"},
     "find": {"-delete", "-exec", "-execdir", "-ok", "-okdir", "-fprint",
              "-fprint0", "-fprintf", "-fls"},
 }
@@ -48,8 +50,13 @@ GIT_GLOBAL_OK = {"--no-pager", "-P"}
 GIT_READ_ONLY = {
     "log", "show", "diff", "status", "blame", "ls-files", "ls-tree",
     "rev-parse", "grep", "describe", "shortlog", "cat-file", "reflog",
-    "branch", "tag", "remote", "config",
+    "branch", "tag", "remote", "config", "rev-list", "show-ref",
+    "for-each-ref", "ls-remote", "merge-base", "name-rev", "diff-tree",
+    "count-objects", "whatchanged", "cherry", "verify-commit", "stash",
 }
+# Options of git branch/tag whose separate value is not a branch or tag name.
+GIT_VALUE_OPTIONS = {"--contains", "--no-contains", "--merged", "--no-merged",
+                     "--points-at", "--sort", "--format", "--column"}
 # Options that make any git subcommand write a file or run another program.
 GIT_ALWAYS_UNSAFE = {"--output", "-O", "--open-files-in-pager", "--ext-diff",
                      "--textconv", "--filters"}
@@ -67,12 +74,19 @@ GIT_UNSAFE_PER_SUB = {
                "--edit", "--rename-section", "--remove-section"},
 }
 
+SED_PRINT = re.compile(r"^(\d+|\$)?(,(\d+|\$))?p$")
+
 SEPARATORS = {";", "&", "&&", "|", "||", "\n", "|&"}
 REDIRECTS = {">", ">>", ">|", "&>", "&>>", ">&", "<", "<<", "<<<", "<>"}
 
 
 class Unsafe(Exception):
     pass
+
+
+class ExpansionError(Unsafe):
+    def __init__(self):
+        Unsafe.__init__(self, "shell expansion ($VAR, $'...', {a,b}) is not allowed; quote literal text with single quotes")
 
 
 def deny(reason):
@@ -94,7 +108,8 @@ def option_hits(arg, forbidden, clusters=True):
     if name in forbidden:
         return True
     if arg.startswith("--"):
-        return any(name == f for f in forbidden if f.startswith("--"))
+        # GNU getopt and git accept any unambiguous prefix (--out for --output).
+        return len(name) >= 3 and any(f.startswith(name) for f in forbidden if f.startswith("--"))
     if not clusters:
         return False
     letters = arg[1:]
@@ -122,6 +137,8 @@ def tokenize(command):
         elif c == '"':
             j, buf = i + 1, []
             while j < n and command[j] != '"':
+                if command[j] == "$":
+                    raise ExpansionError()
                 if command[j] == "\\" and j + 1 < n:
                     j += 1
                 buf.append(command[j]); j += 1
@@ -145,6 +162,10 @@ def tokenize(command):
             if j == i:
                 j = i + 1
             tokens.append((command[i:j], True)); i = j
+        elif c in "${":
+            # Variable, ANSI-C ($'..') and brace expansion can turn a harmless
+            # looking word into a forbidden option, so none is allowed.
+            raise ExpansionError()
         else:
             word.append(c); in_word = True; i += 1
     if in_word:
@@ -195,19 +216,37 @@ def check_git(args):
     if i >= len(args) or args[i] not in GIT_READ_ONLY:
         raise Unsafe("git %s is not a read-only git command" % (args[i] if i < len(args) else ""))
     sub, rest = args[i], args[i + 1:]
+    after_value_option = False
     for a in rest:
         if a == "--":
             break
-        if option_hits(a, GIT_ALWAYS_UNSAFE, clusters=False) or option_hits(a, GIT_UNSAFE_PER_SUB.get(sub, set())):
+        if after_value_option:  # the value of --sort, --contains and similar
+            after_value_option = False
+            continue
+        after_value_option = a in GIT_VALUE_OPTIONS
+        if (option_hits(a, GIT_ALWAYS_UNSAFE, clusters=False) or a.startswith("-O")
+                or option_hits(a, GIT_UNSAFE_PER_SUB.get(sub, set()))):
             raise Unsafe("git %s %s changes the repository or runs a program" % (sub, a))
-    positional = [a for a in rest if not a.startswith("-")]
-    if sub in ("branch", "tag") and positional and not ({"-l", "--list"} & set(rest)):
+    positional, skip = [], False
+    for a in rest:
+        if skip:
+            skip = False
+        elif a in GIT_VALUE_OPTIONS:
+            skip = True
+        elif not a.startswith("-"):
+            positional.append(a)
+    listing = any(a == "--list" or (a.startswith("-") and not a.startswith("--") and "l" in a)
+                  for a in rest)
+    if sub in ("branch", "tag") and positional and not listing:
         raise Unsafe("git %s with a name creates a %s" % (sub, sub))
     if sub == "remote" and positional and positional[0] not in ("show", "get-url"):
         raise Unsafe("git remote %s changes the remotes" % positional[0])
     if sub == "reflog" and positional and positional[0] in ("expire", "delete"):
         raise Unsafe("git reflog %s rewrites the reflog" % positional[0])
-    if sub == "config" and not ({"--get", "--get-all", "--get-regexp", "--list", "-l"} & set(rest)):
+    if sub == "stash" and (not positional or positional[0] not in ("list", "show")):
+        raise Unsafe("only git stash list and git stash show are allowed")
+    if sub == "config" and not ({"--get", "--get-all", "--get-regexp", "--list", "-l"} & set(rest)
+                                or (positional and positional[0] in ("get", "list"))):
         raise Unsafe("git config can only be read (--get, --list)")
 
 
@@ -219,6 +258,15 @@ def check_program(words):
         raise Unsafe("programs must be called by name, not by path")
     if program == "git":
         return check_git(args)
+    if program == "env" and not args:
+        return  # bare env only prints; env CMD would run CMD
+    if program == "sed":
+        # Only sed -n 'N,Mp' style printing; any other script can write or run.
+        files = [a for a in args if a not in ("-n", "--quiet", "--silent")]
+        if len(files) == len(args) or not files or not SED_PRINT.match(files[0]) or any(
+                a.startswith("-") for a in files[1:]):
+            raise Unsafe("sed is only allowed as sed -n 'N,Mp' FILE")
+        return
     if program not in READ_ONLY_PROGRAMS:
         raise Unsafe("%s is not on the read-only command list" % program)
     forbidden = READ_ONLY_PROGRAMS[program]
@@ -228,6 +276,8 @@ def check_program(words):
             break
         if option_hits(a, forbidden, clusters):
             raise Unsafe("%s %s writes files or runs another program" % (program, a))
+    if program == "cd" and len(args) > 1:
+        raise Unsafe("cd takes a single directory")
     if program == "uniq":
         # uniq IN OUT writes OUT; -f, -s and -w take a value.
         positional, skip = [], False
@@ -250,6 +300,8 @@ def check_command(command):
         raise Unsafe("command substitution is not allowed")
     try:
         tokens = tokenize(command)
+    except Unsafe:
+        raise
     except ValueError:
         raise Unsafe("the command could not be parsed")
     for words in split_commands(tokens):
