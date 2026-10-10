@@ -15,7 +15,7 @@ Source, tests and releases: [github.com/mertkayacs/ultramod](https://github.com/
 | notify | Desktop notification when a long turn ends or Claude waits for you |
 | compact | Warns at 70 % context, offers one-key compaction at 85 % with instructions that keep files, failures and open claims |
 | loops | Notices the same command failing three times and tells Claude to stop and rethink |
-| pins | Keeps the lines of `~/.claude/pins.md`, and of the project's `.claude/pins.md` once you approve it, in the system prompt for the whole session |
+| pins | Keeps the lines of `~/.claude/pins.md`, and of the project's `.claude/pins.md` once you approve its exact text for the current session, in the system prompt |
 | tidy | Asks before Claude writes summary files nobody asked for (strict set) |
 
 Sets: `essentials` (default), `strict`, `flow`, `marathon`, `quiet`. Switch with `/ultra set <name>`; the choice is
@@ -23,7 +23,7 @@ remembered per project. `/ultra` opens the control pane.
 
 Ultra Mod makes no network requests, collects nothing, has no dependencies and calls no model itself. It does add some
 text to what Claude reads: the lines of `~/.claude/pins.md`, and of the project's `.claude/pins.md` once you approve it with `/ultra pins approve` (at most 30 lines and 3,000 characters), go into the system
-prompt while the file exists, and a refusal or a loop nudge is a short message in the conversation. Guards fail closed;
+prompt. That project approval applies only to the exact file text in the current session; editing the file requires approval again. A refusal or a loop nudge is a short message in the conversation. Guards fail closed;
 everything else fails open.
 
 ## Install

@@ -1,6 +1,6 @@
 {
   "name": "ultramod",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "The best all-in-one mod pack for Claude Code: a usage limits and context HUD, a guard with undo for rm -rf and git reset --hard, .env and secret protection, and a receipt for every turn.",
   "author": {
     "name": "Mert Kaya",

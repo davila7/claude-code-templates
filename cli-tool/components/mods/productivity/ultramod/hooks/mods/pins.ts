@@ -3,7 +3,7 @@ import type { UltraMod } from '../core/mod'
 
 const TITLE = 'Pinned rules from the user. Follow them in every reply:'
 
-// Cache by mtime so every prompt.compose only stats the files.
+// Cache by mtime for files that are not an approval boundary.
 const cache = new Map<string, { mtimeMs: number; text: string }>()
 
 // The project pin file is repository content: a clone can ship one, so its lines
@@ -19,11 +19,13 @@ export function resetPinsCache(): void {
   announced.clear()
 }
 
-async function loadPins(api: UltraApi, path: string): Promise<string> {
+async function loadPins(api: UltraApi, path: string, fresh = false): Promise<string> {
   try {
     const stat = await api.fs.stat(path)
-    const hit = cache.get(path)
-    if (hit && hit.mtimeMs === stat.mtimeMs) return hit.text
+    if (!fresh) {
+      const hit = cache.get(path)
+      if (hit && hit.mtimeMs === stat.mtimeMs) return hit.text
+    }
     const text = await api.fs.read(path).catch(() => '')
     cache.set(path, { mtimeMs: stat.mtimeMs, text })
     return text
@@ -114,7 +116,7 @@ export const pins: UltraMod = {
       try {
         const files = await pinPaths(api)
         const all: string[] = []
-        const projectText = await loadPins(api, files.project)
+        const projectText = await loadPins(api, files.project, true)
         const projectLines = pinLines(projectText)
         if (projectLines.length > 0) {
           if (approved.get(files.project) === projectText) all.push(...projectLines)
@@ -159,7 +161,7 @@ export const pins: UltraMod = {
     },
     pins: async (api, args) => {
       const files = await pinPaths(api)
-      const projectText = await loadPins(api, files.project)
+      const projectText = await loadPins(api, files.project, true)
       const projectLines = pinLines(projectText)
       if (args.trim() === 'approve') {
         if (projectLines.length === 0) return { text: 'No project pins to approve.' }
