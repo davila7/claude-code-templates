@@ -1,5 +1,5 @@
 /**
- * jev-auto-mode — Claude Mod (EARLY ACCESS)
+ * jev-auto-mode — Claude Mod
  *
  * A permission layer that decides what Claude may do, from a JSON policy:
  * every tool call (Bash, file edits, web, MCP tools, subagents through the
@@ -27,8 +27,7 @@
  *
  * Keys come from the plugin's options (typesafeApiKey / gatewayApiKey),
  * never from the JSON files or this code. With no key the engine's own
- * `$.model.classify` judges. Needs CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1
- * (Claude Code >= 2.1.259).
+ * `$.model.classify` judges. Needs Claude Code >= 2.1.287.
  *
  * Privacy: with a key set and `default: "jev"`, the user's latest request and
  * the judged action's input are sent to the backend the key belongs to.

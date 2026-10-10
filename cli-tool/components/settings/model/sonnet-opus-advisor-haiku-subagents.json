@@ -1,0 +1,9 @@
+{
+  "description": "Sonnet as the main model, Opus as the advisor it consults at decision points, and Haiku for every subagent, including agents whose definition pins another model (remove CLAUDE_CODE_SUBAGENT_MODEL_FORCE to let them keep theirs). Uses aliases, so it follows the latest version of each family. The advisor needs the Anthropic API and stays off when DISABLE_TELEMETRY or CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC is set; the force flag needs Claude Code v2.1.257+.",
+  "model": "sonnet",
+  "advisorModel": "opus",
+  "env": {
+    "CLAUDE_CODE_SUBAGENT_MODEL": "haiku",
+    "CLAUDE_CODE_SUBAGENT_MODEL_FORCE": "1"
+  }
+}

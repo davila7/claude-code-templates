@@ -1,6 +1,6 @@
 /* @jsx h */
 /**
- * session-time-machine — Claude Mod (EARLY ACCESS)
+ * session-time-machine — Claude Mod
  *
  * `/timemachine` opens a pane with the session's timeline: every prompt, tool
  * call and turn end, read from the session's own transcript. Press a point

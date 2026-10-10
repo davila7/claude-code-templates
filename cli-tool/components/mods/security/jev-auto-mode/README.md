@@ -153,10 +153,10 @@ With `--plugin-dir` the key is plain `"jev-auto-mode"`.
 
 ```sh
 npx claude-code-templates@latest --mod security/jev-auto-mode
-CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude
+claude
 ```
 
-Then run `/jev-auto-mode init` and edit `~/.claude/jev-auto-mode.json`. The mod is written to `.claude/skills/jev-auto-mode/` and auto-loads as `jev-auto-mode@skills-dir` **in a trusted project**. For one session: `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/skills/jev-auto-mode`.
+Then run `/jev-auto-mode init` and edit `~/.claude/jev-auto-mode.json`. The mod is written to `.claude/skills/jev-auto-mode/` and auto-loads as `jev-auto-mode@skills-dir` **in a trusted project**. For one session: `claude --plugin-dir .claude/skills/jev-auto-mode`.
 
 Start with `"mode": "audit"` to see what it would block in your own work before you let it block anything.
 
@@ -175,9 +175,9 @@ With a key set and `default: "jev"`, your latest prompt and the judged action's 
 ## Tests
 
 ```sh
-CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude plugin test .claude/skills/jev-auto-mode
+claude plugin test .claude/skills/jev-auto-mode
 ```
 
 The tests cover glob and shell parsing, rule precedence, the project-file trust model, self-protection and the judge's thresholds. Through the engine they also check that tool calls are denied, allowed past the engine prompt or handed to the engine's ask, the headless and audit paths, typed commands and skill prompts.
 
-**Early access.** Mods need Claude Code 2.1.259+ with `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1`; the `$` API may change between releases. Written and tested on 2.1.282 against the 2.1.278 declarations. Typed against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
+**Requirements.** Mods are on by default in Claude Code 2.1.287+. Written and tested on 2.1.282 against the 2.1.278 declarations. Typed against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods

@@ -2,9 +2,9 @@ const chalk = require('chalk');
 const fs = require('fs-extra');
 const path = require('path');
 const os = require('os');
-const { exec } = require('child_process');
+const { execFile } = require('child_process');
 const { promisify } = require('util');
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 const QRCode = require('qrcode');
 
 /**
@@ -228,8 +228,8 @@ class SessionSharing {
       // Upload to x0.at using curl with form data
       // x0.at API: curl -F'file=@yourfile.png' https://x0.at
       // Response: Direct URL in plain text
-      const { stdout, stderr } = await execAsync(
-        `curl -s -F "file=@${tmpFile}" ${this.uploadUrl}`,
+      const { stdout, stderr } = await execFileAsync(
+        'curl', ['-s', '-F', `file=@${tmpFile}`, 'https://x0.at'],
         { maxBuffer: 10 * 1024 * 1024 } // 10MB buffer
       );
 
@@ -304,8 +304,20 @@ class SessionSharing {
    */
   async downloadSession(url) {
     try {
+      // The URL comes from the command line: accept only http(s) and pass it
+      // to curl as an argv entry after `--`, never through a shell.
+      let parsed;
+      try {
+        parsed = new URL(url);
+      } catch (_) {
+        throw new Error(`Invalid session URL: ${url}`);
+      }
+      if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') {
+        throw new Error(`Unsupported session URL protocol: ${parsed.protocol}`);
+      }
+
       // Use curl to download (works with x0.at and other services)
-      const { stdout, stderr } = await execAsync(`curl -L "${url}"`, {
+      const { stdout, stderr } = await execFileAsync('curl', ['-sL', '--', parsed.href], {
         maxBuffer: 50 * 1024 * 1024 // 50MB buffer for large sessions
       });
 
@@ -368,6 +380,10 @@ class SessionSharing {
 
     // Generate conversation filename with original ID
     const conversationId = sessionData.conversation.id;
+    // The id comes from the downloaded file and becomes a filename.
+    if (typeof conversationId !== 'string' || !/^[A-Za-z0-9_-]{1,128}$/.test(conversationId)) {
+      throw new Error('Invalid conversation id in shared session');
+    }
     const conversationFile = path.join(projectDir, `${conversationId}.jsonl`);
 
     // Convert messages back to JSONL format (one JSON object per line)

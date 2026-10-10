@@ -1,5 +1,5 @@
 /**
- * agent-flow — Claude Mod (EARLY ACCESS)
+ * agent-flow — Claude Mod
  *
  * A side pane that draws the session's agents as they run: the main loop and
  * its context window on top, then every subagent as a tree in spawn order.
@@ -15,7 +15,7 @@
  * engine reads are `$.agent.list()` and `$.session.usage()`. The flow is
  * recorded from session start whether the pane is open or not.
  *
- * Needs CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 (Claude Code >= 2.1.259).
+ * Needs Claude Code >= 2.1.287.
  *
  * Options (pluginConfigs["agent-flow@skills-dir"].options):
  *   columns: number      width asked for the docked pane (default 52)

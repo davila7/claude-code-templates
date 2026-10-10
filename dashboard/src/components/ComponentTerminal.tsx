@@ -261,7 +261,6 @@ function buildScript(props: ComponentTerminalProps): Step[] {
     case 'mods':
       install.push(
         { kind: 'out', text: `ƒ  Installing mod: ${path}`, tone: 'blue' },
-        { kind: 'out', text: '⚠️  Early access: mods need CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1', tone: 'yellow' },
         { kind: 'out', text: '📥 Downloading from GitHub (main branch)...', tone: 'gray' },
         { kind: 'work', text: 'Fetching plugin', done: '✓ .claude-plugin/plugin.json', tone: 'green' },
         { kind: 'out', text: '✓ hooks/hooks.json', tone: 'green' },
