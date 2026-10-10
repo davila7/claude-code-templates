@@ -385,11 +385,25 @@ function secretPathInCode(code: string, allow: string[] | undefined): string | n
   return null
 }
 
+const STDOUT_OPS = ['>', '>>', '1>', '1>>', '&>', '&>>']
+
+// Redirect targets that still end up in the Bash output: the standard
+// streams, their /proc and /dev/fd aliases, and a process substitution.
+function landsInOutput(target: string): boolean {
+  return target === '/dev/stdout' || target === '/dev/stderr' || target.startsWith('/dev/fd/')
+    || /^\/proc\/(self|\d+)\/fd\//.test(target) || target.startsWith('>(') || target.startsWith('(')
+}
+
 // Does stdout of this simple command go to the model? False when stdout is
-// redirected to a file (2> alone still prints stdout).
+// redirected to a file (2> alone still prints stdout). A redirect into stderr,
+// a /dev/fd path or a process substitution prints the same text.
 function stdoutRedirected(words: string[]): boolean {
-  for (const w of words) {
-    if (w === '>' || w === '>>' || w === '1>' || w === '1>>' || w === '&>' || w === '&>>') return true
+  for (let i = 0; i < words.length; i++) {
+    if (!STDOUT_OPS.includes(words[i] ?? '')) continue
+    const target = words[i + 1]
+    if (target === undefined || !landsInOutput(target)) return true
+    // A `> >(cmd)` target may arrive as '>' and '(cmd)' words; keep scanning.
+    i++
   }
   return false
 }
@@ -443,7 +457,11 @@ export function bashReadsSecret(cmd: string, allow?: string[]): string | null {
         continue
       }
       if (a === '<' || a === '<<') continue
-      if (a === '>' || a === '>>' || a === '1>' || a === '1>>' || a === '&>') break
+      if (STDOUT_OPS.includes(a)) {
+        // The target is not a read; words after it still are.
+        i++
+        continue
+      }
       // --env-file .env names the file the process loads, not a read.
       if (a === '--env-file' || a === '--env-file-if-exists') {
         i++

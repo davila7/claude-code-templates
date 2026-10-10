@@ -436,7 +436,8 @@ function checkSimple(simple: string, strict: boolean): RiskHit | null {
       return null
     }
     if (cmd === 'stash' && (rest[0] === 'drop' || rest[0] === 'clear')) {
-      return hit('git-stash-drop', 'deletes stashed work', 'git', true)
+      // The snapshot saves the work tree, not the stash entries being dropped.
+      return hit('git-stash-drop', 'deletes stashed work', 'git', false)
     }
     if (cmd === 'filter-branch' || cmd === 'filter-repo') {
       return hit('git-history-rewrite', 'rewrites git history', 'git', false)
