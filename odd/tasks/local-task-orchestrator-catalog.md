@@ -45,7 +45,7 @@ The mod currently exists as an independent plugin repository nested beside the t
 
 - [x] LOC-CAT-01: Added the independent plugin under `cli-tool/components/mods/productivity/local-task-orchestrator/` with manifest, native hook module registration, implementation, mocked tests, package script, and catalog-specific README. No separate registry/catalog metadata was required: the CLI resolves a category/name path and downloads the directory recursively.
 - [x] LOC-CAT-02: Verified the mod and template integration proportionally. Mod-local tests pass 14/14, the noninteractive template dry-run passes, and the template Jest failures reproduce unchanged with the candidate files removed, so they are base-only. Installed Claude CLI 2.1.178 still cannot validate the documented native `hooks/modules` schema; this remains an explicit environment limitation, not a pass.
-- [ ] LOC-CAT-03: Core work unit committed as `63ccfb2` on the tracker branch and independently verified; the adapter work unit is now isolated on `feature/local-task-orchestrator-adapter` and still needs its commit/review evidence before opening PRs.
+- [x] LOC-CAT-03: Core work unit committed as `63ccfb2` on the tracker branch and adapter work unit committed as `a11511a` on `feature/local-task-orchestrator-adapter`; both slices are independently verified and the accumulated candidate completed native review.
 - [ ] LOC-CAT-04: Submit reviewable PR slice(s) targeting `davila7/claude-code-templates` with clear scope, verification outcomes, compatibility caveats, and chain context after push destination/session authorization; do not claim blocked checks passed.
 
 ## Chain plan
@@ -78,10 +78,13 @@ The mod currently exists as an independent plugin repository nested beside the t
 - Read-only GitHub inspection found no existing PR for either `devjaime:feature/local-task-orchestrator` or `devjaime:feature/local-task-orchestrator-adapter`; neither branch has been pushed.
 - Tracker/core slice verification with adapter paths absent: 287 additions across four files; `npm test` passes 7/7, `node --check src/tasks.js` passes, and `git diff --cached --check` passes. Commit `63ccfb2` (`feat(mods): add local task classification core`) is the first chain boundary and rolls back by reverting those four files.
 - Native risk assessment for `9b563c1..63ccfb2`, explicitly excluding the inventoried deferred adapter paths, reports `medium` risk with `review_due: false` and `review_due_reason: under_budget` (287 changed lines). The reviewed boundary remains the branch point until the accumulated slice reaches the native budget.
+- Adapter slice verification against `63ccfb2`: 338 changed lines across the five adapter files plus the task-record update; mod tests pass 14/14, JavaScript syntax passes, manifest and hook-module paths resolve, and `git diff --cached --check` passes. Commit `a11511a` (`feat(mods): expose local task command adapter`) is the second chain boundary.
+- Accumulated native assessment for `9b563c1..a11511a` reports `medium` risk and `review_due_reason: slice_budget_reached` at 623 changed lines. With explicit user consent, reliability review lineage `review-364be2af7aefd6dc` completed `approved`; exact acknowledgement consumed revision `sha256:7d58ff8cbf976d6d0db7d34ebc2e126c05431b511211f9de52bddca182ff3bfa` and burned its authority.
+- Review advisory `R3-001` is informational and non-blocking: the HTTP envelope and decoded model content currently share the 8,000-byte limit, so escape expansion can reject some otherwise valid decoded content. It opened no correction transition and is retained as separate follow-up work rather than changing/re-reviewing this approved candidate.
 
 ## Next step
 
-Create and verify the two local work-unit commits, run native risk assessment for each review boundary, then obtain explicit authorization to push both branches with the `devjaime` session and open the draft tracker plus child PR. Keep the native-runtime limitation and base-only Jest failures visible in each applicable PR.
+Obtain explicit authorization to push both branches to `devjaime/claude-code-templates` with the `devjaime` session and open the draft tracker plus child PR against `davila7/claude-code-templates`. Keep the native-runtime limitation, base-only Jest failures, and informational review advisory visible in the applicable PR descriptions.
 
 ## Relevant files
 
