@@ -31,12 +31,12 @@ export async function runCommand(api: UltraApi, args: string, sets: SetsEngine, 
     await sync()
     return { text: `Overrides reset: ${setLabel(set)}.` }
   }
-  if (command === 'help') return { text: '/ultra [set <name> | sets | reset | doctor | help]\nOther mod commands: undo, allow, pin, pins (when implemented and enabled).' }
+  if (command === 'help') return { text: '/ultra [set <name> | sets | reset | doctor | help]\nOther mod commands: undo, allow, pin, pins, pins approve (when implemented and enabled).' }
   if (command === 'doctor') {
     const set = await sets.current(api)
     const [version, notifier, git] = await Promise.all([api.session.version(), detectNotifier(api), gitState(api)])
     const lines = [
-      'Version 1.0.10',
+      'Version 1.0.11',
       `Claude Code ${version.version}`,
       `Notifier: ${notifier}`,
       `Git: ${git}`,
