@@ -63,6 +63,8 @@ async function settled(result: Promise<unknown>): Promise<void> {
 
 export function createSets(options: PluginOptions = {}) {
   let cache: UltraSet | null = null
+  // The project root the published set was read for.
+  let loadedRoot: string | null = null
   let changes: Promise<unknown> = Promise.resolve()
   // Serialize presses so each toggle reads the previous action's result.
   const mutate = (action: () => Promise<UltraSet>) => {
@@ -70,7 +72,12 @@ export function createSets(options: PluginOptions = {}) {
     changes = settled(result)
     return result
   }
-  const load = async (api: UltraApi) => resolveSet(await api.store.get(projectKey(await api.session.root())), options)
+  const load = async (api: UltraApi) => {
+    const root = await api.session.root()
+    const set = resolveSet(await api.store.get(projectKey(root)), options)
+    loadedRoot = root
+    return set
+  }
   const publish = async (api: UltraApi, set: UltraSet) => {
     await update(api, activeSet, () => set)
     cache = set
@@ -88,7 +95,12 @@ export function createSets(options: PluginOptions = {}) {
   return {
     current,
     ensure: async (api: UltraApi) => {
+      // /cd or a worktree move changes the root: the set saved for the new
+      // project replaces the one read for the old one.
+      const root = await api.session.root()
+      if (loadedRoot !== null && loadedRoot !== root) return publish(api, await load(api))
       const state = await read(api, activeSet)
+      if (state) loadedRoot ??= root
       return state ?? publish(api, await current(api))
     },
     hydrate: async (api: UltraApi) => publish(api, await load(api)),

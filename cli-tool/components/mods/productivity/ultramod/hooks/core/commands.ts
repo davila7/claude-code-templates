@@ -36,7 +36,7 @@ export async function runCommand(api: UltraApi, args: string, sets: SetsEngine, 
     const set = await sets.current(api)
     const [version, notifier, git] = await Promise.all([api.session.version(), detectNotifier(api), gitState(api)])
     const lines = [
-      'Version 1.0.8',
+      'Version 1.0.9',
       `Claude Code ${version.version}`,
       `Notifier: ${notifier}`,
       `Git: ${git}`,
