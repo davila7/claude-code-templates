@@ -1,0 +1,281 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "pattern": "^(?!.*\\.\\.)(?!(?:con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\\.|$))[a-z0-9][a-z0-9._-]{0,63}$",
+      "description": "Defaults to the task file stem when valid. Lowercase letters, digits, '.', '_' and '-'; not '..' anywhere and not a Windows device name (con, prn, aux, nul, com1-9, lpt1-9), with or without an extension."
+    },
+    "repo_root": {
+      "type": "string",
+      "description": "Absolute path. Defaults to the Git top-level of the current working directory."
+    },
+    "base_commit": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{40}$",
+      "description": "Defaults to the resolved checkout HEAD; tracked uncommitted edits are excluded."
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "analyze",
+        "implement",
+        "review",
+        "test"
+      ]
+    },
+    "objective": {
+      "type": "string",
+      "pattern": "\\S",
+      "maxLength": 10000,
+      "description": "Must contain a non-whitespace character."
+    },
+    "context_paths": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/repoPath"
+      },
+      "description": "The few files to read first; same path rules as allowed_changed_paths. Defaults to allowed_changed_paths, which is empty for analyze and review, so name them there."
+    },
+    "forbidden_context": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "\\S"
+      },
+      "default": []
+    },
+    "allowed_changed_paths": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/repoPath"
+      },
+      "description": "Exact repo-relative paths or a trailing /** directory boundary; no other wildcards. Rejected: absolute paths, '..' components, any ':' (drive letter or NTFS stream) and any .git component. Required for every mode: use [] for analyze and review (any entry is rejected); implement needs at least one entry."
+    },
+    "acceptance_criteria": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "\\S"
+      },
+      "minItems": 1,
+      "description": "At least one observable criterion."
+    },
+    "plan_status": {
+      "type": "string",
+      "const": "READY",
+      "description": "Must be READY (the default).",
+      "default": "READY"
+    },
+    "risk": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "default": "medium"
+    },
+    "review_required": {
+      "type": "boolean",
+      "description": "Default true. False makes a completed result IMPLEMENTED instead of REVIEW_PENDING.",
+      "default": true
+    },
+    "locked_decisions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "\\S"
+      }
+    },
+    "stop_conditions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "\\S"
+      }
+    },
+    "model": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[^\\s\u0000-\u001f\u007f-\u009f-][^\\s\u0000-\u001f\u007f-\u009f]{0,127}$",
+      "default": null,
+      "description": "Null, or one model identifier of at most 128 characters: no whitespace, not starting with '-'. The run command's --model overrides it."
+    },
+    "max_turns": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 12,
+      "default": 6,
+      "description": "Budget of focused work steps told to the worker for one segment (1-12); not a Codex turn cap."
+    },
+    "max_total_turns": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Ignored. Accepted so that a task file written for 1.0.0 still loads; the bridge enforces no task-wide turn ceiling."
+    },
+    "max_extensions": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Caps automatic continuation grants when auto_continue is enabled; manual continuation count remains unbounded."
+    },
+    "copy_ignored": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/ignoredPath"
+      },
+      "default": [],
+      "description": "Repo-relative git-ignored files, folders or globs to copy into the worktree before launch, up to 200 MB total. Tracked paths, links and repository escapes are refused; the path rules of allowed_changed_paths apply, wildcards allowed. Only for implement and test tasks; analyze and review must leave it empty."
+    },
+    "auto_continue": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3,
+      "default": 0,
+      "description": "Maximum automatic continuation grants after measurable worktree progress, capped by max_extensions when supplied."
+    },
+    "timeout_seconds": {
+      "type": "integer",
+      "minimum": 5,
+      "maximum": 1800,
+      "default": 900,
+      "description": "Seconds for one worker segment (5-1800)."
+    },
+    "validation_command": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1,
+      "maxItems": 24,
+      "description": "Argument array run by the bridge after the worker finishes. Required (not null) for implement and test; optional for analyze and review."
+    },
+    "validation_timeout_seconds": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1800,
+      "default": 600,
+      "description": "Seconds for the bridge's validation run (1-1800); allow the real runtime plus margin."
+    },
+    "allow_subagents": {
+      "const": false,
+      "default": false
+    },
+    "require_subscription_auth": {
+      "const": true,
+      "default": true
+    },
+    "auto_review": {
+      "type": [
+        "boolean",
+        "null"
+      ],
+      "default": null,
+      "description": "Null follows the user's auto-review setting. False turns Codex auto-review off for this task. True cannot turn it on: while the user setting is off it is ignored with a warning."
+    }
+  },
+  "required": [
+    "mode",
+    "objective",
+    "allowed_changed_paths",
+    "acceptance_criteria"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "mode": {
+            "enum": [
+              "analyze",
+              "review"
+            ]
+          }
+        },
+        "required": [
+          "mode"
+        ]
+      },
+      "then": {
+        "properties": {
+          "allowed_changed_paths": {
+            "maxItems": 0
+          },
+          "copy_ignored": {
+            "maxItems": 0
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "mode": {
+            "const": "implement"
+          }
+        },
+        "required": [
+          "mode"
+        ]
+      },
+      "then": {
+        "properties": {
+          "allowed_changed_paths": {
+            "minItems": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "mode": {
+            "enum": [
+              "implement",
+              "test"
+            ]
+          }
+        },
+        "required": [
+          "mode"
+        ]
+      },
+      "then": {
+        "required": [
+          "validation_command"
+        ],
+        "properties": {
+          "validation_command": {
+            "type": "array"
+          }
+        }
+      }
+    }
+  ],
+  "description": "Task contract, for documentation and editors. The bridge does not read this file: its own validator decides and is stricter about paths and number types than a schema can express.",
+  "$defs": {
+    "ignoredPath": {
+      "type": "string",
+      "pattern": "^(?=.*\\S)(?!\\s*[/\\\\])(?!.*:)(?!(?:.*[/\\\\])?\\.\\.(?:[/\\\\]|$))(?!(?:.*[/\\\\])?(?:\\.[Gg][Ii][Tt]|[Gg][Ii][Tt]~1)[. ]*(?:[/\\\\]|$))",
+      "description": "A repo-relative path: not absolute, no '..', no ':' (drive letter or NTFS stream), no .git component. Wildcards are not restricted here."
+    },
+    "repoPath": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/ignoredPath"
+        },
+        {
+          "pattern": "^(?=[^*?\\[\\]]*(?:/\\*\\*)?\\s*$)",
+          "description": "Only a trailing /** directory boundary is allowed as a wildcard."
+        }
+      ]
+    }
+  }
+}
