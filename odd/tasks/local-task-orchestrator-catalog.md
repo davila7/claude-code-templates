@@ -45,7 +45,7 @@ The mod currently exists as an independent plugin repository nested beside the t
 
 - [x] LOC-CAT-01: Added the independent plugin under `cli-tool/components/mods/productivity/local-task-orchestrator/` with manifest, native hook module registration, implementation, mocked tests, package script, and catalog-specific README. No separate registry/catalog metadata was required: the CLI resolves a category/name path and downloads the directory recursively.
 - [x] LOC-CAT-02: Verified the mod and template integration proportionally. Mod-local tests pass 14/14, the noninteractive template dry-run passes, and the template Jest failures reproduce unchanged with the candidate files removed, so they are base-only. Installed Claude CLI 2.1.178 still cannot validate the documented native `hooks/modules` schema; this remains an explicit environment limitation, not a pass.
-- [ ] LOC-CAT-03: Split the candidate into reviewable work-unit commits using the user-selected `feature-branch-chain`; verify each slice independently and record commit/review evidence before opening PRs.
+- [ ] LOC-CAT-03: Core work unit committed as `63ccfb2` on the tracker branch and independently verified; the adapter work unit is now isolated on `feature/local-task-orchestrator-adapter` and still needs its commit/review evidence before opening PRs.
 - [ ] LOC-CAT-04: Submit reviewable PR slice(s) targeting `davila7/claude-code-templates` with clear scope, verification outcomes, compatibility caveats, and chain context after push destination/session authorization; do not claim blocked checks passed.
 
 ## Chain plan
@@ -76,6 +76,8 @@ The mod currently exists as an independent plugin repository nested beside the t
 - `npm start -- --dry-run --yes --template common` exits 0, detects the project, lists `common/CLAUDE.md -> CLAUDE.md`, and returns before copying. Bare `--dry-run` is interactive and was stopped at language selection.
 - Mod `npm test` remains green (14 passed, 0 failed), and `git diff --check` passes. The installed Claude Code 2.1.178 validator remains incompatible with native modules; no CLI update or runtime-loading claim is made.
 - Read-only GitHub inspection found no existing PR for either `devjaime:feature/local-task-orchestrator` or `devjaime:feature/local-task-orchestrator-adapter`; neither branch has been pushed.
+- Tracker/core slice verification with adapter paths absent: 287 additions across four files; `npm test` passes 7/7, `node --check src/tasks.js` passes, and `git diff --cached --check` passes. Commit `63ccfb2` (`feat(mods): add local task classification core`) is the first chain boundary and rolls back by reverting those four files.
+- Native risk assessment for `9b563c1..63ccfb2`, explicitly excluding the inventoried deferred adapter paths, reports `medium` risk with `review_due: false` and `review_due_reason: under_budget` (287 changed lines). The reviewed boundary remains the branch point until the accumulated slice reaches the native budget.
 
 ## Next step
 
