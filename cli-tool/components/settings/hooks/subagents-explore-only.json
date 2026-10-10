@@ -1,5 +1,5 @@
 {
-  "description": "Turns every subagent into a read-only explorer. A SubagentStart hook injects an instruction into each subagent's context (built-in, custom and plugin agents alike) before its first prompt: investigate with read-only tools, never edit, create or delete files, never run state-changing commands, and report findings back so the main agent makes every change. The main conversation is not affected. This is an instruction, not enforcement: pair it with permission rules or a PreToolUse hook if you need a hard guarantee.",
+  "description": "Turns every subagent into a read-only explorer. A SubagentStart hook injects an instruction into each subagent's context (built-in, custom and plugin agents alike) before its first prompt: investigate with read-only tools, never edit, create or delete files, never run state-changing commands, and report findings back so the main agent makes every change. The main conversation is not affected. This is an instruction, not enforcement: install the security/subagent-read-only-guard hook alongside it to block writes from subagents.",
   "hooks": {
     "SubagentStart": [
       {

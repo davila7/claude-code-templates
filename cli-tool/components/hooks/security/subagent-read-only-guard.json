@@ -1,0 +1,23 @@
+{
+  "description": "Enforces read-only subagents. A PreToolUse hook denies Edit, Write, MultiEdit, NotebookEdit and PowerShell, and any Bash or Monitor command that is not read-only, when the call comes from a subagent (detected by the agent_id field Claude Code adds only inside subagents). Read-only shell commands such as ls, cat, grep, find, git log, git diff and git status still work, and anything the guard cannot classify is denied. The main conversation is never affected. Pairs with the hooks/subagents-explore-only setting, which tells subagents up front that they are exploration-only.",
+  "supportingFiles": [
+    {
+      "source": "subagent-read-only-guard.py",
+      "destination": ".claude/hooks/subagent-read-only-guard.py",
+      "executable": true
+    }
+  ],
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit|NotebookEdit|PowerShell|Bash|Monitor",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/hooks/subagent-read-only-guard.py"
+          }
+        ]
+      }
+    ]
+  }
+}
