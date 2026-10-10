@@ -17612,6 +17612,27 @@
       }
     },
     {
+      "name": "subagents-explore-only",
+      "path": "hooks/subagents-explore-only.json",
+      "category": "hooks",
+      "type": "setting",
+      "description": "Turns every subagent into a read-only explorer. A SubagentStart hook injects an instruction into each subagent's context (built-in, custom and plugin agents alike) before its first prompt: investigate with read-only tools, never edit, create or delete files, never run state-changing commands, and report findings back so the main agent makes every change. The main conversation is not affected. This is an instruction, not enforcement: install the security/subagent-read-only-guard hook alongside it to block writes from subagents.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      }
+    },
+    {
       "name": "disable-risky-servers",
       "path": "mcp/disable-risky-servers.json",
       "category": "mcp",
@@ -19956,6 +19977,27 @@
       "license": "",
       "keywords": [],
       "downloads": 201,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      }
+    },
+    {
+      "name": "subagent-read-only-guard",
+      "path": "security/subagent-read-only-guard.json",
+      "category": "security",
+      "type": "hook",
+      "description": "Enforces read-only subagents. A PreToolUse hook denies Edit, Write, MultiEdit, NotebookEdit and PowerShell, and any Bash or Monitor command that is not read-only, when the call comes from a subagent (detected by the agent_id field Claude Code adds only inside subagents; tested on Claude Code 2.1.296). Shell commands pass only when every command is a bare program from a short read-only allowlist (ls, cat, grep, rg, find, jq, sort, sed -n 'N,Mp', cd, git log/diff/status/show/blame/branch/tag and similar) without the options that make it write or run other programs, including abbreviated long options. Redirection to files, command substitution, shell expansion ($VAR, {a,b}), subshells, env-var prefixes, git -c and anything the guard cannot classify are denied, including its own errors. The main conversation is never affected. Not covered: MCP tools, and git diff/blame running diff or textconv drivers already configured in the repo. Reading secrets (.env, printenv) is still allowed, so pair it with env-file-protection. Pairs with the hooks/subagents-explore-only setting, which tells subagents up front that they are exploration-only.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
       "security": {
         "validated": false,
         "valid": null,
