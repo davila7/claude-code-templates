@@ -74,9 +74,7 @@ export function createSets(options: PluginOptions = {}) {
   }
   const load = async (api: UltraApi) => {
     const root = await api.session.root()
-    const set = resolveSet(await api.store.get(projectKey(root)), options)
-    loadedRoot = root
-    return set
+    return { root, set: resolveSet(await api.store.get(projectKey(root)), options) }
   }
   const publish = async (api: UltraApi, set: UltraSet) => {
     await update(api, activeSet, () => set)
@@ -85,8 +83,14 @@ export function createSets(options: PluginOptions = {}) {
   }
   const current = async (api: UltraApi) => {
     const state = await read(api, activeSet)
-    cache = state ?? cache ?? await load(api)
+    cache = state ?? cache ?? (await load(api)).set
     return cache
+  }
+  const hydrate = async (api: UltraApi) => {
+    const { root, set } = await load(api)
+    const published = await publish(api, set)
+    loadedRoot = root
+    return published
   }
   const save = async (api: UltraApi, set: UltraSet) => {
     await api.store.set(projectKey(await api.session.root()), { set: set.name, overrides: set.overrides })
@@ -96,14 +100,20 @@ export function createSets(options: PluginOptions = {}) {
     current,
     ensure: async (api: UltraApi) => {
       // /cd or a worktree move changes the root: the set saved for the new
-      // project replaces the one read for the old one.
+      // project replaces the one read for the old one. The root counts as
+      // loaded only once its set is published, so a failed write is retried.
       const root = await api.session.root()
-      if (loadedRoot !== null && loadedRoot !== root) return publish(api, await load(api))
+      if (loadedRoot !== null && loadedRoot !== root) return hydrate(api)
       const state = await read(api, activeSet)
-      if (state) loadedRoot ??= root
-      return state ?? publish(api, await current(api))
+      if (state) {
+        loadedRoot ??= root
+        return state
+      }
+      const set = await publish(api, await current(api))
+      loadedRoot ??= root
+      return set
     },
-    hydrate: async (api: UltraApi) => publish(api, await load(api)),
+    hydrate,
     enabled: async (api: UltraApi, id: ModId) => (await current(api)).mods[id].enabled,
     switch: (api: UltraApi, name: UltraSetName) => mutate(() => save(api, resolveSet({ set: name }, options))),
     toggle: (api: UltraApi, id: ModId) => mutate(async () => {
