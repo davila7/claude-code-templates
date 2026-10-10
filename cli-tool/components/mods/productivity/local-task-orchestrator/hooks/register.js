@@ -70,7 +70,6 @@ export function register(on, options) {
         const abort = () => controller.abort();
         let timer;
         try {
-          if (typeof $.clock?.after !== 'function') throw new LocalTaskError('INFERENCE_UNAVAILABLE', 'Timer API is unavailable.');
           timer = $.clock.after(INFERENCE_TIMEOUT_MS, abort);
           if (parentSignal?.aborted) abort();
           else parentSignal?.addEventListener('abort', abort, { once: true });

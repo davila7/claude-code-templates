@@ -63,11 +63,11 @@ Output validation proves structure and exact-substring evidence only; it does no
 From this mod directory:
 
 ```sh
-npm test
 claude plugin validate --strict .
+CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude plugin test .
 ```
 
-Mocks cover both operations, request bounds/routing, refusal paths, timeout/cancellation, and safe errors; tests do not contact Ollama or perform inference. For installation validation use:
+Native plugin tests cover both operations, request bounds/routing, refusal paths, timeout/cancellation, and safe errors; tests do not contact Ollama or perform inference. For installation validation use:
 
 ```sh
 claude plugin validate .claude/skills/local-task-orchestrator
