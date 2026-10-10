@@ -1,0 +1,15 @@
+{
+  "description": "Turns every subagent into a read-only explorer. A SubagentStart hook injects an instruction into each subagent's context (built-in, custom and plugin agents alike) before its first prompt: investigate with read-only tools, never edit, create or delete files, never run state-changing commands, and report findings back so the main agent makes every change. The main conversation is not affected. This is an instruction, not enforcement: pair it with permission rules or a PreToolUse hook if you need a hard guarantee.",
+  "hooks": {
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "printf '%s\\n' '{\"hookSpecificOutput\":{\"hookEventName\":\"SubagentStart\",\"additionalContext\":\"You are running as an exploration-only subagent. Your job is to investigate and report, not to change anything. Use only read-only actions: read files, search with Grep and Glob, list directories, inspect git history and diffs, and read web pages with WebFetch or WebSearch. Do not create, edit, move or delete files. Do not run commands that change state, such as package installs, builds that write output, git commit, git push, git checkout, migrations, or requests that write to external services. If the task seems to require a change, do not make it: describe the exact change (file, location and proposed content) in your final report so the main agent can apply it.\"}}'"
+          }
+        ]
+      }
+    ]
+  }
+}
