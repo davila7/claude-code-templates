@@ -6,9 +6,17 @@ const TITLE = 'Pinned rules from the user. Follow them in every reply:'
 // Cache by mtime so every prompt.compose only stats the files.
 const cache = new Map<string, { mtimeMs: number; text: string }>()
 
+// The project pin file is repository content: a clone can ship one, so its lines
+// are data until the user approves that exact text in this session. The user's
+// own file under the home directory needs no approval.
+const approved = new Map<string, string>()
+const announced = new Set<string>()
+
 // Test seam: the cache otherwise lives as long as the session.
 export function resetPinsCache(): void {
   cache.clear()
+  approved.clear()
+  announced.clear()
 }
 
 async function loadPins(api: UltraApi, path: string): Promise<string> {
@@ -87,13 +95,31 @@ function sectionText(lines: string[], truncated: boolean): string {
   return text
 }
 
+// One notice per file content: the pins are not applied, and how to apply them.
+async function announce(api: UltraApi, path: string, text: string, count: number): Promise<void> {
+  const key = `${path}\n${text}`
+  if (announced.has(key)) return
+  announced.add(key)
+  try {
+    api.ui.toast(`Ultra Mod: ${path} has ${count} pinned ${count === 1 ? 'line' : 'lines'} that are not applied. Run /ultra pins to read them and /ultra pins approve to apply them.`)
+  } catch {
+    // A notice that cannot show does not stop the prompt.
+  }
+}
+
 export const pins: UltraMod = {
   id: 'pins',
   compose: {
     run: async api => {
       try {
         const files = await pinPaths(api)
-        const all = pinLines(await loadPins(api, files.project))
+        const all: string[] = []
+        const projectText = await loadPins(api, files.project)
+        const projectLines = pinLines(projectText)
+        if (projectLines.length > 0) {
+          if (approved.get(files.project) === projectText) all.push(...projectLines)
+          else await announce(api, files.project, projectText, projectLines.length)
+        }
         if (files.user !== null) all.push(...pinLines(await loadPins(api, files.user)))
         if (all.length === 0) return null
         const truncated = all.length > 30
@@ -120,14 +146,34 @@ export const pins: UltraMod = {
         return { text: `Could not read ${path}, so nothing was pinned.` }
       }
       const prefix = current === '' || current.endsWith('\n') ? current : `${current}\n`
-      await api.fs.writePins(root, `${prefix}- ${text}\n`)
-      return { text: `Pinned: ${text}` }
+      const written = `${prefix}- ${text}\n`
+      await api.fs.writePins(root, written)
+      // A file the user starts, or one they already approved, stays approved with the line they add.
+      // Lines a repository shipped stay data until the user approves them.
+      if (current.trim() === '' || approved.get(path) === current) {
+        approved.set(path, written)
+        cache.delete(path)
+        return { text: `Pinned: ${text}` }
+      }
+      return { text: `Pinned: ${text}. The file also holds lines you have not approved, so none of its lines apply yet. Run /ultra pins to read them, then /ultra pins approve.` }
     },
-    pins: async api => {
+    pins: async (api, args) => {
       const files = await pinPaths(api)
+      const projectText = await loadPins(api, files.project)
+      const projectLines = pinLines(projectText)
+      if (args.trim() === 'approve') {
+        if (projectLines.length === 0) return { text: 'No project pins to approve.' }
+        approved.set(files.project, projectText)
+        return { text: `Approved ${projectLines.length} project pin${projectLines.length === 1 ? '' : 's'} from ${files.project}. They apply from the next message, until the file changes.` }
+      }
       const sections: string[] = []
-      const projectLines = pinLines(await loadPins(api, files.project))
-      if (projectLines.length > 0) sections.push(`project (${files.project}):\n${projectLines.map(line => `- ${line}`).join('\n')}`)
+      if (projectLines.length > 0) {
+        const applied = approved.get(files.project) === projectText
+        const list = projectLines.map(line => `- ${line}`).join('\n')
+        sections.push(applied
+          ? `project (${files.project}):\n${list}`
+          : `project (${files.project}), not applied:\n${list}\nThese lines come from the repository. Read them, then run /ultra pins approve to apply them.`)
+      }
       if (files.user !== null) {
         const userLines = pinLines(await loadPins(api, files.user))
         if (userLines.length > 0) sections.push(`user (${files.user}):\n${userLines.map(line => `- ${line}`).join('\n')}`)
