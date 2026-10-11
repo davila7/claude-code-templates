@@ -8,7 +8,25 @@ import type { Effect, EffectKind } from './types'
 const DESTROY_WORDS: readonly string[] = ['rmtree', 'removedirs', 'remove_tree', 'os.remove', 'os.replace', 'unlink', 'rmdir', 'rmSync', '.rm(', 'rimraf', 'FileUtils.rm', 'File.delete', 'Deno.remove', 'rename', 'shutil.move', 'truncate', 'system(', 'subprocess', 'child_process', 'execSync', 'exec(', 'spawn', 'popen', 'Deno.Command', 'Deno.run']
 
 /** Words that make recognized file paths in the code a write. */
-const WRITE_WORDS: readonly string[] = ['write_text', 'write_bytes', 'writeFile', 'appendFile', 'createWriteStream', 'mkdir', 'makedirs', 'chmod', 'chown', 'copyfile', 'copytree', 'copyFile', 'cpSync', 'symlink', 'File.write']
+const WRITE_WORDS: readonly string[] = ['write_text', 'write_bytes', 'writeFile', 'appendFile', 'createWriteStream', 'mkdir', 'makedirs', 'chmod', 'chown', 'copyfile', 'copytree', 'copyFile', 'shutil.copy', 'cpSync', 'symlink', 'File.write']
+
+/** Names of calls that read a file without a word in the lists above. */
+const READ_CALL = /(?:open|glob|readFile(?:Sync)?|read_text|read_bytes|readdir(?:Sync)?|readlink|stat|lstat|access|exists|read)$/
+
+/** A Python `shutil` copy, whose `src=` and `dst=` arguments are keywords. In other languages, `src = …` in a call is an assignment. */
+const SHUTIL_COPY = /(?:^|[^.]|shutil\.)(?:copy2?|copyfile|copytree|copymode|copystat)$/
+
+/** One method called on a path object, up to its `(`. */
+const METHOD = /\s*\.\s*([A-Za-z_][A-Za-z0-9_]*)\s*\(/y
+/** The next method called in a chain on a path object, past attributes such as `.parent`, up to its `(`. */
+const LINK = /\s*(?:\.\s*[A-Za-z_][A-Za-z0-9_]*\s*)*?\.\s*([A-Za-z_][A-Za-z0-9_]*)\s*\(/y
+const METHOD_WINDOW = 120
+
+/** Path methods that return the same file, so a file operation after them still acts on the path. */
+const SAME_FILE = new Set(['resolve', 'absolute', 'expanduser'])
+
+/** The end of the path expression after such a method: the end of an argument, a bracket, or a statement. */
+const CHAIN_END = /\s*(?:[)\]},;]|$)/y
 
 const MODE = /^[rwxabt+<>]{1,4}$/
 const PERL_MODE = /^\+?[<>]{1,2}/
@@ -63,6 +81,49 @@ type Access = { kind: EffectKind; glob: boolean; potential?: boolean }
 /** One literal path and the operation that accesses it. */
 type FileLiteral = { literal: Literal; access: Access; definite: boolean }
 
+/** One open call or bracket: the access of its arguments, the index and keyword of its current argument, and its kind. `named` marks a Python `shutil` copy. `twoPaths` marks `cpSync`, whose arguments after its destination, such as its options, name no file. `found` counts the literals found before it opened. `pathOpen` is the access of the path object whose `.open(` this is. `link` marks a method chained on a path object, with the access kind of the arguments of each method in that chain. */
+type CallState = { access?: Access; multiple: boolean; argument: number; keyword: string; open: boolean; constructor: boolean; copy: boolean; named: boolean; twoPaths: boolean; pair: boolean; found: number; pathOpen?: Access; link?: EffectKind }
+
+/** The keyword of the current argument of a Python `shutil` copy, or `''`. */
+function copyKeyword(call: CallState): string {
+  return call.named ? call.keyword : ''
+}
+
+/** The access of the current argument: a copy reads its source, named by `src=` in a Python `shutil` copy or else first, and gives the call's access to the rest, up to the destination of `cpSync`. */
+function argumentAccess(call: CallState): Access | undefined {
+  if (!call.copy || call.access === undefined) return call.access
+  if (call.twoPaths && call.argument > 1) return undefined
+  const keyword = copyKeyword(call)
+  return keyword === 'src' || (keyword !== 'dst' && call.argument === 0) ? { kind: 'read', glob: false } : call.access
+}
+
+/** The method that `pattern` finds at `at`, and the index of its `(`. */
+function nextMethod(code: string, at: number, pattern: RegExp): { name: string; open: number } | undefined {
+  pattern.lastIndex = 0
+  const match = pattern.exec(code.slice(at, at + METHOD_WINDOW))
+  return match === null ? undefined : { name: match[1]!, open: at + pattern.lastIndex - 1 }
+}
+
+/** The first method chained after a path object, past methods that keep the same file, such as `.resolve()`, and the index of its `(`. A file operation, such as `.unlink()`, gives its own access. A method that changes the path, such as `.with_name()`, reads, whatever follows it. So does the last method that keeps the same file when the path goes on after it, as in `.resolve().parent`. */
+function chainedOperation(code: string, at: number): { name: string; open: number } | undefined {
+  const rest = code.slice(at, at + METHOD_WINDOW)
+  let kept: { name: string; open: number } | undefined
+  let k = 0
+  for (;;) {
+    METHOD.lastIndex = k
+    const match = METHOD.exec(rest)
+    if (match === null) break
+    const method = { name: match[1]!, open: at + METHOD.lastIndex - 1 }
+    if (!SAME_FILE.has(method.name)) return method
+    let depth = 1
+    for (k = METHOD.lastIndex; k < rest.length && depth > 0; k += 1) depth += rest.charAt(k) === '(' ? 1 : rest.charAt(k) === ')' ? -1 : 0
+    if (depth > 0) return undefined
+    kept = method
+  }
+  CHAIN_END.lastIndex = k
+  return kept === undefined || CHAIN_END.test(rest) ? undefined : kept
+}
+
 /** True when the literal names a module (`require('…')`, `import('…')`, `from '…'`): code to load, not a file the code changes. */
 function isSpecifier(code: string, literal: Literal): boolean {
   return SPECIFIER.test(code.slice(Math.max(0, literal.start - SPECIFIER_WINDOW), literal.start))
@@ -72,7 +133,12 @@ function isSpecifier(code: string, literal: Literal): boolean {
 function fileLiterals(code: string): FileLiteral[] {
   const strings = literals(code)
   const found: FileLiteral[] = []
-  const calls: { access?: Access; multiple: boolean; argument: number; open: boolean; constructor: boolean; copy: boolean; pair: boolean }[] = []
+  const calls: CallState[] = []
+  // The indices in `found` of the literals that hold each access object, in order.
+  const holders = new Map<Access, number[]>()
+  let pathOpen: { at: number; access: Access } | undefined
+  // The `(` of the next method in a chain on a path object, and the access kind of the arguments of that chain.
+  let chain: { at: number; kind: EffectKind } | undefined
   let next = 0
   let name = ''
   for (let i = 0; i < code.length; i += 1) {
@@ -84,9 +150,13 @@ function fileLiterals(code: string): FileLiteral[] {
         const mode = modeOf(literal)
         if (mode !== undefined && WRITE_MODE.test(mode)) call.access.kind = 'write'
       }
-      const access = bare === undefined ? call?.access : { kind: operationKind(bare), glob: false }
+      if (call?.pathOpen !== undefined && (call.keyword === 'mode' || (call.keyword === '' && call.argument === 0)) && MODE.test(literal.text) && WRITE_MODE.test(literal.text)) call.pathOpen.kind = 'write'
+      const access = bare === undefined ? call && argumentAccess(call) : { kind: operationKind(bare), glob: false }
       if (access !== undefined && (bare !== undefined || call?.multiple || call?.argument === 0)) {
-        found.push({ literal, definite: !access.potential && (bare !== undefined || call?.argument === 0 || call?.pair === true && call.argument < 2 || call?.open === true && /(?:my\s+\$|FH\b)/.test(code.slice(Math.max(0, literal.start - 80), literal.start))), access: call?.copy && call.argument === 0 ? { kind: 'read', glob: false } : access })
+        found.push({ literal, definite: !access.potential && (bare !== undefined || call?.argument === 0 || call?.pair === true && (call.argument < 2 || call.keyword === 'src' || call.keyword === 'dst') || call?.open === true && /(?:my\s+\$|FH\b)/.test(code.slice(Math.max(0, literal.start - 80), literal.start))), access })
+        const held = holders.get(access)
+        if (held === undefined) holders.set(access, [found.length - 1])
+        else held.push(found.length - 1)
       }
       i = literal.end - 1
       next += 1
@@ -97,24 +167,44 @@ function fileLiterals(code: string): FileLiteral[] {
     if (/[A-Za-z0-9_.$]/.test(ch)) name = (name + ch).slice(-80)
     else if (ch === '(' || ch === '[') {
       const parent = calls.at(-1)
-      const inherited = parent !== undefined && (parent.multiple || parent.argument === 0) ? parent.access : undefined
+      const inherited = parent !== undefined && (parent.multiple || parent.argument === 0) ? argumentAccess(parent) : undefined
       const kind = operationKind(name)
-      const operation = /(?:open|Path|glob|readFile(?:Sync)?|read_text|read_bytes|readdir(?:Sync)?|readlink|stat|lstat|access|exists|read)$/.test(name)
+      const operation = READ_CALL.test(name) || /Path$/.test(name)
         || kind !== 'read' && !/(?:write_text|write_bytes)$/.test(name)
-      const constructor = /(?:^|\.)Path$/.test(name)
-      const access = constructor && inherited !== undefined ? inherited : operation ? { kind, glob: /glob$/.test(name), potential: /(?:system|subprocess|child_process|exec|spawn|popen|Deno\.(?:Command|run))/.test(name) } : inherited === undefined || name === '' ? inherited : { ...inherited, potential: true }
-      calls.push({ access, multiple: !operation && inherited !== undefined || /(?:open|copy|move|rename|replace|symlink|subprocess|exec|spawn|system|popen)/i.test(name), argument: 0, open: /open$/.test(name), constructor, copy: /(?:copy|cpSync)/.test(name), pair: /(?:copy|cpSync|move|rename|replace|symlink)/.test(name) })
+      const constructor = /(?:^|[^A-Za-z0-9_$])Path\s*$/.test(code.slice(Math.max(0, i - 16), i))
+      const link = chain?.at === i ? chain.kind : undefined
+      const access = constructor && inherited !== undefined ? inherited : operation ? { kind, glob: /glob$/.test(name), potential: /(?:system|subprocess|child_process|exec|spawn|popen|Deno\.(?:Command|run))/.test(name) } : inherited === undefined || name === '' ? inherited : { ...inherited, kind: link ?? inherited.kind, potential: true }
+      calls.push({ access, multiple: !operation && inherited !== undefined || /(?:open|copy|cpSync|move|rename|replace|symlink|subprocess|exec|spawn|system|popen)/i.test(name), argument: 0, keyword: '', open: /open$/.test(name), constructor, copy: /(?:copy|cpSync)/.test(name), named: SHUTIL_COPY.test(name), twoPaths: /cpSync/.test(name), pair: /(?:copy|cpSync|move|rename|replace|symlink)/.test(name), found: found.length, pathOpen: pathOpen?.at === i ? pathOpen.access : undefined, link })
       name = ''
     } else if (ch === ')' || ch === ']') {
       const call = calls.pop()
-      if (call?.constructor && call.access !== undefined) {
-        const method = /^\s*\.\s*([A-Za-z_][A-Za-z0-9_]*)\s*\(/.exec(code.slice(i + 1, i + 121))?.[1]
-        if (method !== undefined) call.access.kind = operationKind(method)
+      const method = call?.constructor && call.access !== undefined ? chainedOperation(code, i + 1) : undefined
+      if (call?.access !== undefined && method !== undefined) {
+        // The method decides the access of the path, apart from the call around it, which can share the access object.
+        // Each literal leaves the shared object once, so the work stays linear.
+        const own: Access = { kind: operationKind(method.name), glob: call.access.glob }
+        const held = holders.get(call.access) ?? []
+        while (held.length > 0 && held.at(-1)! >= call.found) {
+          const k = held.pop()!
+          found[k] = { ...found[k]!, access: own }
+        }
+        if (method.name === 'open') pathOpen = { at: method.open, access: own }
       }
+      // The arguments of each method chained on the path, such as `'.x'` in `.with_suffix('.x')`, take the kind of the method
+      // right after `Path(…)`, never the access of the call around the path. A file operation in those arguments keeps its own access.
+      const after = call?.link !== undefined ? nextMethod(code, i + 1, LINK) : call?.constructor && call.access !== undefined ? nextMethod(code, i + 1, METHOD) : undefined
+      if (after !== undefined) chain = { at: after.open, kind: call?.link ?? operationKind(after.name) }
       name = ''
     } else if (ch === ',') {
       const call = calls.at(-1)
-      if (call !== undefined) call.argument += 1
+      if (call !== undefined) {
+        call.argument += 1
+        call.keyword = ''
+      }
+      name = ''
+    } else if (ch === '=') {
+      const call = calls.at(-1)
+      if (call !== undefined && code.charAt(i + 1) !== '=' && /^[A-Za-z_][A-Za-z0-9_]*$/.test(name)) call.keyword = name
       name = ''
     } else if (!/\s/.test(ch)) name = ''
   }

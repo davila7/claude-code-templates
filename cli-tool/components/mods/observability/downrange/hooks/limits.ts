@@ -36,6 +36,8 @@ export const TABLE_MAX_ROWS = 15
 export const TABLE_NARROW_COLUMNS = 100
 /** Ended jobs kept in state. */
 export const MAX_FINISHED = 20
+/** Ordering barriers of tasks with no row kept in each of the jobs state's observed and removed lists. The oldest go first. A kept row's barriers stay and do not count. */
+export const MAX_BARRIERS = 2_000
 /** A wakeup this far past due is dropped. */
 export const WAKEUP_STALE_MS = 600_000
 /** A scheduled trigger this close before the due time clears the wakeup. */

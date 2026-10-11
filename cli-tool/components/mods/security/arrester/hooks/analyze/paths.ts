@@ -429,6 +429,11 @@ function namesMatch(names: readonly string[], name: string, glob: boolean, meter
   return uncertain ? 'uncertain' : true
 }
 
+/** A path or a path segment as a case-insensitive comparison reads it. */
+export function foldCase(segment: string): string {
+  return segment.toLowerCase().replace(/\[:upper:\]/g, '[:lower:]')
+}
+
 /** How the effect stands to a protected path or glob, comparing each segment within the work budget. */
 export function relation(reach: Reach, target: string, meter?: Meter, targetGlob?: string, targetOptions?: Effect['globOptions']): Relation | 'uncertain' | undefined {
   if (reach.selection !== undefined) return selectedRelation(reach, target, meter, targetGlob, targetOptions)
@@ -442,10 +447,8 @@ export function relation(reach: Reach, target: string, meter?: Meter, targetGlob
   if (reach.glob !== undefined) left.push(...reach.glob.split('/'))
   if (targetGlob !== undefined) right.push(...targetGlob.split('/'))
   if (nocase) {
-    for (let i = leftPrefix; i < left.length; i += 1) left[i] = left[i]!.toLowerCase().replace(/\[:upper:\]/g, '[:lower:]')
-    for (let i = rightPrefix; i < right.length; i += 1) right[i] = right[i]!.toLowerCase().replace(/\[:upper:\]/g, '[:lower:]')
-    if (reach.globOptions?.nocase) for (let i = leftPrefix; i < right.length; i += 1) right[i] = right[i]!.toLowerCase().replace(/\[:upper:\]/g, '[:lower:]')
-    if (targetOptions?.nocase) for (let i = rightPrefix; i < left.length; i += 1) left[i] = left[i]!.toLowerCase().replace(/\[:upper:\]/g, '[:lower:]')
+    for (let i = 0; i < left.length; i += 1) left[i] = foldCase(left[i]!)
+    for (let i = 0; i < right.length; i += 1) right[i] = foldCase(right[i]!)
   }
   if (meter !== undefined) meter.steps += reach.path.length + target.length + (reach.glob?.length ?? 0) + (targetGlob?.length ?? 0)
   if (left.slice(leftPrefix, -1).includes('**') || right.slice(rightPrefix, -1).includes('**')) return recursiveRelation(left, right, leftPrefix, rightPrefix, reach.recursive, meter, dot, targetDot)

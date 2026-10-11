@@ -20,6 +20,8 @@ export type JobBase = {
   lastEndedAt?: number
   exitCode?: number
   note?: string
+  /** The note the launch result gave, which the job shows again when it runs again after an end. */
+  launchNote?: string
   lastLine?: string
   lastOutputAt?: number
 }
@@ -70,7 +72,7 @@ export type TaskJob = JobBase & { kind: 'task'; taskType: string }
 
 export type Job = ShellJob | MonitorJob | AgentJob | WorkflowJob | TaskJob
 
-/** Rows and observation times survive together, including empty snapshots and removed task IDs. */
+/** Rows and observation times survive together, including empty snapshots and removed task IDs. Each time list keeps every entry of a kept row, and the MAX_BARRIERS newest entries (hooks/limits.ts) of tasks with no row. */
 export type JobsState = {
   items: Job[]
   observed: [id: string, at: number][]

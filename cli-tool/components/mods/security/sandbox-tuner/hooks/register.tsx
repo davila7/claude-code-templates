@@ -9,7 +9,7 @@ import { absolutePath, commandLine, cutText, displayPath, isUnder, pathFolders, 
 import { JOURNAL_PREFIX, WRITER_PREFIX, HIDDEN_PREFIX, aggregateRecords, hasLaterOwner, isUndoUnresolved, isFixedSince, isPressedAgain, isRecord, journalOf, mergeSighting, recordKey, shownRecords } from './records'
 import { addEntry, fileInfo, isApplied, parseSettings, removeEntry, serializeSettings } from './settings-file'
 import type { FileInfo, ParsedSettings } from './settings-file'
-import { keepGated, latestOf, readCall } from './sightings'
+import { keepGated, latestOf, readCall, reportQuote } from './sightings'
 import type { BashCall, BashOutcome, GatedSighting, Sighting } from './sightings'
 import { credentialEntries, denialEntries, denialVerdict, guardedPlaces, guardedWalks, isSkipped, rateRecords, sandboxFacts, verdictOf } from './verdicts'
 import type { Change, Context, Sources, Verdict, Walk } from './verdicts'
@@ -90,7 +90,7 @@ async function gatedSightings($: EngineInterface, gated: readonly GatedSighting[
   try {
     return keepGated(gated, sandboxFacts(await $.settings.read()))
   } catch (error) {
-    await noteFault($, diagnostic('tool.call', tool, `could not read settings to check the sandbox: ${causeOf(error)}. Kept only sandbox reports.`))
+    await noteFault($, diagnostic('tool.call', tool, `could not read settings to check the sandbox: ${causeOf(error)}. Kept only sandbox reports, and none of a call that failed.`))
     return []
   }
 }
@@ -125,7 +125,13 @@ async function recordCall($: EngineInterface, call: BashCall, outcome: BashOutco
   const taskId = outcome.backgroundTaskId
   if (taskId !== undefined && (await read($, backgroundTasks)).includes(taskId)) return
   const { reports, gated, unknownLine, observation } = readCall(call, outcome, await homeOf($), await $.session.cwd())
-  if (unknownLine !== null) await noteFault($, diagnostic('tool.call', tool, `skipped a sandbox report line of an unknown form: ${unknownLine}`))
+  if (unknownLine !== null) {
+    const quote = reportQuote(unknownLine)
+    const cause = quote === null
+      ? `skipped a sandbox report line of an unknown form (${unknownLine.length} characters, not quoted: it does not start like a report line)`
+      : `skipped a sandbox report line of an unknown form: ${quote}`
+    await noteFault($, diagnostic('tool.call', tool, cause))
+  }
   const sightings = gated.length === 0 ? reports : [...reports, ...(await gatedSightings($, gated, tool))]
   if (observation !== undefined) {
     const at = await $.clock.now()
@@ -326,6 +332,8 @@ async function saveJournal($: EngineInterface, change: JournalChange): Promise<P
   try {
     await $.store.set(JOURNAL_PREFIX + entry.id, entry)
     await update($, applied, list => journalOf([...list.filter(item => item.id !== entry.id), entry]))
+    // The band of a fixed block stays hidden, even once the journal keeps the fix no longer.
+    await update($, latest, last => (last !== null && isFixedSince([entry], last) ? null : last))
     return { text: change.success, isError: false, written: change.didWrite ? { file: change.file, entry } : null }
   } catch (error) {
     const cause = change.didWrite
@@ -673,6 +681,8 @@ async function reconcileJournal($: EngineInterface, journal: readonly SandboxTun
     reconciled.push(next)
   }
   await update($, applied, () => journalOf(reconciled))
+  // Every entry, not only the ones that the journal keeps: a fix from another session hides the band too.
+  await update($, latest, last => (last !== null && isFixedSince(reconciled, last) ? null : last))
   return reconciled
 }
 

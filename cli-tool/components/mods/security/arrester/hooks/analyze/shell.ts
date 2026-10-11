@@ -943,11 +943,15 @@ function pathOf(cwd: string | undefined, operand: Operand | undefined): string |
   return value === undefined || value.glob ? undefined : absolute(value.text, cwd)
 }
 
-/** A program whose operands all get one kind of effect. */
+/** A program whose operands all get one kind of effect; `shuf` also writes its output file and reads its random source, and with `-e` its operands are words, not files. */
 function plain(run: Run, kind: EffectKind): void {
   const parsed = parse(run.args, valuesOf(run.program))
   const recursive = isRecursive(run.program, parsed.flags)
-  for (const operand of parsed.operands) addEffect(run, operand, kind, recursive)
+  const isShuf = run.program === 'shuf'
+  if (!isShuf || !hasFlag(parsed.flags, 'e', ['--echo'])) for (const operand of parsed.operands) addEffect(run, operand, kind, recursive)
+  if (!isShuf) return
+  for (const file of [...parsed.given.get('-o') ?? [], ...parsed.given.get('--output') ?? []]) addEffect(run, file, 'write', false)
+  for (const file of parsed.given.get('--random-source') ?? []) addEffect(run, file, 'read', false)
 }
 
 /** A program whose first operand is code or a pattern unless a flag gives it; flag files are read; `sed -i` writes. */

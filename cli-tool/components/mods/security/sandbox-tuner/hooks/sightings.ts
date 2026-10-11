@@ -36,6 +36,8 @@ const MAC_LINE = /^\S+\(\d+\) deny\(\d+\) \S/
 const MAC_FILE = /^\S+\(\d+\) deny\(\d+\) file-/
 const MAC_WRITE = /^\S+\(\d+\) deny\(\d+\) file-write-[a-z-]+\s+(\/.*)$/
 const LINUX_WRITE = /^deny [a-z0-9_]+ (\/.*)$/
+// The start of every report line: `deny ` for a network line and on Linux, `<program>(<pid>) ` on macOS.
+const REPORT_START = /^(?:deny |\S+\(\d+\) )/
 const EXIT_CODE = /^Exit code \d+/
 const PERMISSION_ERROR = /operation not permitted|read-only file system/i
 const SOCKET_WORDS = /\b(?:listen|connect|socket)\b/i
@@ -103,6 +105,14 @@ function reportLines(sources: readonly string[]): string[] {
   return distinct(lines.map(line => line.trim()).filter(line => line !== ''), line => line)
 }
 
+/**
+ * The start of a report line of an unknown form, to name in a diagnostic, or null when the line does not start like a
+ * report line: output can imitate a report, so such a line can be any text, even a secret.
+ */
+export function reportQuote(line: string): string | null {
+  return REPORT_START.test(line) ? line.slice(0, UNKNOWN_LIMIT) : null
+}
+
 function reportSighting(line: string, home: string | undefined, program: string): Sighting | null {
   const network = NETWORK.exec(line)
   if (network !== null) {
@@ -147,7 +157,10 @@ export function readCall(call: BashCall, outcome: BashOutcome, home: string | un
   const ran = !outcome.isError || EXIT_CODE.test(outcome.text)
   const sources = [outcome.text, outcome.stderr].map(source => source.slice(-SCAN_LIMIT))
   const program = programName(call.command)
-  const lines = reportLines(sources)
+  // Claude Code writes the report of a call that succeeded to its error output, apart from the command's output in the
+  // text. A failed call has one text: the command's output, then the report, then any notes that Claude Code adds, such
+  // as a proxy note. So a block anywhere in that text counts, and the command can print one: it is gated below.
+  const lines = reportLines(outcome.isError ? sources : [outcome.stderr.slice(-SCAN_LIMIT)])
   const reports = capPaths(lines.flatMap(line => reportSighting(line, home, program) ?? []))
   const listed = ran
     ? combine(call.allowedDomains.filter(entry => !entry.includes('*')).map(entry => hostSighting(entry.trim(), 'listed', null, '', program)))
@@ -164,9 +177,12 @@ export function readCall(call: BashCall, outcome: BashOutcome, home: string | un
         return path === null ? [] : [pathSighting(path, 'inferred', home, program)]
       }))
     : []
+  // The command of a failed call can print a block in its text: it counts only while the sandbox ran the call.
+  const reportGate: Gate = isUnsandboxed ? 'sandbox-required' : 'sandbox-on'
   return {
-    reports: reports.filter(fits),
+    reports: outcome.isError ? [] : reports.filter(fits),
     gated: [
+      ...(outcome.isError ? reports : []).map((sighting): GatedSighting => ({ gate: reportGate, sighting })),
       ...listed.map((sighting): GatedSighting => ({ gate: 'sandbox-on', sighting })),
       ...inferred.map((sighting): GatedSighting => ({ gate: isUnsandboxed ? 'sandbox-required' : 'sandbox-on', sighting })),
     ].filter(({ sighting }) => fits(sighting)),
@@ -175,7 +191,7 @@ export function readCall(call: BashCall, outcome: BashOutcome, home: string | un
       const operation = /^\S+\(\d+\) deny\(\d+\) (\S+)/.exec(line)?.[1] ?? 'unknown'
       return [{ operation, detail: plainText(line.slice(0, UNKNOWN_LIMIT)) }]
     }).at(-1),
-    unknownLine: lines.find(line => !isKnownLine(line))?.slice(0, UNKNOWN_LIMIT) ?? null,
+    unknownLine: lines.find(line => !isKnownLine(line)) ?? null,
   }
 }
 

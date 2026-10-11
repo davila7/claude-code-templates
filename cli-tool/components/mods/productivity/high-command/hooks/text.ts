@@ -3,6 +3,11 @@ import { LIMITS } from './limits'
 
 const CONTROL = /[\u0000-\u0008\u000B-\u001F\u007F-\u009F]/g
 const FORMAT = /\p{Cf}/gu
+/**
+ * The invisible characters that the suspicious-text check reads past: format characters (category Cf), the
+ * combining grapheme joiner U+034F, and the variation selectors U+FE00 to U+FE0F and U+E0100 to U+E01EF.
+ */
+const INVISIBLE = /[\p{Cf}\u034F\uFE00-\uFE0F\u{E0100}-\u{E01EF}]/gu
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
 /**
@@ -102,9 +107,16 @@ function hasBase64Block(text: string): boolean {
   return false
 }
 
-/** Whether the text matches the suspicious-text list; the mark it gives is for display only. */
+/**
+ * Whether the text matches the suspicious-text list; the mark it gives is for display only. The list is tested on
+ * two forms of the text: each INVISIBLE character read as a space, as between two words, and each one removed,
+ * as inside a word. A match in either form marks the text. A space matches every class that an INVISIBLE
+ * character matches in the list, so the first form keeps each match of the text as it came.
+ */
 export function isSuspicious(text: string): boolean {
-  return SUSPICIOUS.some(pattern => pattern.test(text)) || hasBase64Block(text)
+  return [text.replace(INVISIBLE, ' '), text.replace(INVISIBLE, '')].some(
+    form => SUSPICIOUS.some(pattern => pattern.test(form)) || hasBase64Block(form),
+  )
 }
 
 /**

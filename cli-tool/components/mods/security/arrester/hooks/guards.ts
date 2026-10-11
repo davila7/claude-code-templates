@@ -26,7 +26,7 @@ export function hookPaths(settings: Readonly<Record<string, unknown>>, home: str
     const words = isExec ? [hook.command, ...args] : typeof hook.command === 'string' ? shellWords(hook.command, home, root) : []
     for (const word of words) {
       if (typeof word !== 'string') continue
-      const path = isExec ? word.replaceAll('${CLAUDE_PROJECT_DIR}', root).replaceAll('$CLAUDE_PROJECT_DIR', root) : word
+      const path = isExec ? word.replace(/\$\{CLAUDE_PROJECT_DIR\}|\$CLAUDE_PROJECT_DIR/g, () => root) : word
       if (path?.startsWith('/') === true) paths.push(foldPath(path))
     }
   }

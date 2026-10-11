@@ -2,7 +2,10 @@
 
 /** Program classes. */
 export const LIST = new Set(['ls', 'stat', 'du', 'file', 'test', '[', '[[', 'tree', 'realpath', 'readlink', 'dirname', 'basename', 'pwd', 'which'])
-export const READ = new Set(['cat', 'head', 'tail', 'less', 'more', 'bat', 'wc', 'cut', 'sort', 'uniq', 'cmp', 'diff', 'xxd', 'od', 'hexdump', 'strings', 'base64', 'md5', 'md5sum', 'shasum', 'sha256sum'])
+/** Readers whose words are paths, so a retry skeleton makes them absolute. */
+const PATH_READ = ['cat', 'head', 'tail', 'less', 'more', 'bat', 'wc', 'cut', 'sort', 'uniq', 'cmp', 'diff', 'xxd', 'od', 'hexdump', 'strings', 'base64', 'md5', 'md5sum', 'shasum', 'sha256sum']
+/** Readers: also `tac` and `shuf`, whose `tac -s` separator and `shuf -e` words are data, so `PATHY` leaves them out. */
+export const READ = new Set([...PATH_READ, 'tac', 'shuf'])
 export const CODE_FIRST = new Set(['awk', 'jq', 'yq', 'sed'])
 export const PATTERN_FIRST = new Set(['grep', 'egrep', 'fgrep', 'rg', 'ag', 'ugrep'])
 export const WRITE = new Set(['touch', 'mkdir', 'mkfifo'])
@@ -20,7 +23,7 @@ export const TRIVIAL = new Set(['cd', 'pushd', 'popd', 'export', 'declare', 'loc
 export const KEYWORDS = new Set(['!', 'if', 'then', 'elif', 'else', 'do', 'while', 'until', '{', '}'])
 
 /** Programs whose operands are paths, so a skeleton writes them as absolute paths. */
-export const PATHY = new Set([...LIST, ...READ, ...CODE_FIRST, ...PATTERN_FIRST, ...WRITE, ...MODE_FIRST, ...COPY, ...DESTROY, ...ARCHIVE, 'mv', 'ln', 'tee'])
+export const PATHY = new Set([...LIST, ...PATH_READ, ...CODE_FIRST, ...PATTERN_FIRST, ...WRITE, ...MODE_FIRST, ...COPY, ...DESTROY, ...ARCHIVE, 'mv', 'ln', 'tee'])
 
 /** Programs that always reach below their operands. */
 export const ALWAYS_RECURSIVE = new Set(['du', 'tree', 'rg', 'ag', 'ugrep', 'srm', 'trash', 'trash-put', 'rimraf'])
@@ -110,6 +113,8 @@ const VALUE_FLAGS: ReadonlyMap<string, Values> = new Map<string, Values>([
   ['yq', { '-f': 1, '--from-file': 1, '-o': 1, '-p': 1, '--output-format': 1, '--input-format': 1 }],
   ['head', { '-n': 1, '-c': 1 }],
   ['tail', { '-n': 1, '-c': 1 }],
+  ['tac', { '-s': 1, '--separator': 1 }],
+  ['shuf', { '-n': 1, '-o': 1, '-i': 1, '--head-count': 1, '--output': 1, '--input-range': 1, '--random-source': 1 }],
   ['cut', { '-d': 1, '-f': 1, '-c': 1, '-b': 1 }],
   ['sort', { '-k': 1, '-t': 1, '-o': 1, '-T': 1, '-S': 1, '--output': 1 }],
   ['uniq', { '-f': 1, '-s': 1, '-w': 1 }],

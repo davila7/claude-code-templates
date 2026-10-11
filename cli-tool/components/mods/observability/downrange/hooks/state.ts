@@ -15,7 +15,7 @@ function job(value: unknown): boolean {
   if (!record(value) || typeof value.id !== 'string' || typeof value.title !== 'string' || (typeof value.state !== 'string' || !states.has(value.state)) ||
       !number(value.startedAt) || typeof value.isStartSeen !== 'boolean' ||
       !optionalNumbers(value, ['lastRunningAt', 'omittedAt', 'endedAt', 'lastEndedAt', 'exitCode', 'lastOutputAt']) ||
-      !optionalStrings(value, ['note', 'lastLine'])) return false
+      !optionalStrings(value, ['note', 'launchNote', 'lastLine'])) return false
   switch (value.kind) {
     case 'shell':
       return optionalStrings(value, ['outputFile', 'historyKey', 'ownerAgentId']) &&

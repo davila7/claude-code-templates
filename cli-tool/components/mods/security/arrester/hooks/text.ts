@@ -213,7 +213,7 @@ export function statusText(journal: ArresterJournal, open: readonly ArresterBloc
     ...journal.held.map(held => `  ${ago(now - held.since)}  ${held.blockIds.join(', ')}  ${who(held)}`),
     '',
     `Recent decisions (${recent.length})`,
-    ...recent.map(decision => `  ${ago(now - decision.at)}  ${decision.action.padEnd(12)} ${decision.blockIds.join(', ')}  ${decision.call === undefined ? '' : `${who(decision.call)}   `}${decision.detail}`),
+    ...recent.map(decision => `  ${ago(now - decision.at)}  ${decision.action.padEnd(12)} ${decision.blockIds.join(', ')}  ${decision.call === undefined ? '' : `${who(decision.call)}   `}${line(decision.detail, 600)}`),
     '',
     'Close blocks with /arrester clear [id].',
   ].join('\n')

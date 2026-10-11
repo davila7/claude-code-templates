@@ -103,7 +103,7 @@ In the pane, Tab moves between buttons, Enter presses one, the arrow keys scroll
 | --- | --- | --- | --- |
 | `minimumSightings` | 3 | 1–100 | How many times a host or write folder must recur before Sandbox Tuner offers Allow. Refusals at the network prompt stay in the counts but do not count toward it. |
 
-Set it with `/plugin configure sandbox-tuner@sandbox-tuner`, or in `/config`.
+Set it with `/plugin configure sandbox-tuner@sandbox-tuner`, or in `/config`. A `--mod` install loads the mod as `sandbox-tuner@skills-dir`, so use that key in `~/.claude/settings.json` for that install.
 
 ## How it compares
 
@@ -116,7 +116,7 @@ Set it with `/plugin configure sandbox-tuner@sandbox-tuner`, or in `/config`.
 
 ## Known limits
 
-The folder link check has blind spots, some blocks get no fix, sessions that edit settings at once can clash, and Undo, Hide, counts, saved data, and the settings file have limits.
+The folder link check has blind spots, a failed command can forge a sandbox report, some blocks get no fix, sessions that edit settings at once can clash, and Undo, Hide, counts, saved data, and the settings file have limits.
 
 <details>
 <summary>Read all known limits</summary>
@@ -125,6 +125,7 @@ The folder link check has blind spots, some blocks get no fix, sessions that edi
 - **A large guarded folder makes folder Allow refuse.** Sandbox Tuner walks the protected places and the credentials folders in two walks. Each walk reads at most 1,000 folders and 25,000 entries. A walk that needs to read more, or cannot read a folder, refuses the grant. A large `skills` folder, a credentials folder with many files, or very many installed plugins and VS Code extensions can cause `guarded directory traversal limit exceeded`. If you trust the folder, add it to `sandbox.filesystem.allowWrite` in your user settings file by hand.
 - **Wildcard rules and rules with no known anchor make Sandbox Tuner cautious.** It counts an `Edit(<folder>/**)` allow rule as cover only when the folder has no wildcard. So it can offer Allow for a folder that a wildcard Edit rule already opens. A deny rule with a wildcard, in `permissions.deny` or in `sandbox.filesystem`, withholds Allow for every folder under the folder that holds its first wildcard. For example, `Read(~/**/*.key)` withholds Allow for every folder in your home folder. In command-line or managed settings, a rule path that starts with a single `/`, and a relative `sandbox.filesystem` entry, have no known anchor. Such an Edit allow rule or `allowWrite` entry counts as no cover. Such a deny rule or `denyWrite` or `denyRead` entry withholds Allow for every folder.
 - **Paths from error text can be wrong.** When no sandbox report names a file, Sandbox Tuner takes the path from a permission error such as `Operation not permitted`. Punctuation in the error can cut the path short. A relative path counts from the session working directory, which can differ from the folder where the command ran. The error can also come from a blocked read. So a folder with any such sighting never gets Allow, even when sandbox reports name it too. Its counts and explanation remain.
+- **A failed command can forge a sandbox report.** Claude Code adds the sandbox report of a failed command to the command's output, and can add notes after the report. So Sandbox Tuner reads a `<sandbox_violations>` block anywhere in that output. It cannot tell the real report from a block that the command printed, for example from a file, and it counts such a forged block as a block. A block in the output of a failed command counts only while the sandbox is on, and not when the command ran outside the sandbox at Claude's request. Before you press Allow, check that you expect the host or folder. Also check the command that the band names, or the programs that the pane lists.
 - **Read, Mach lookup, and socket blocks get no fix.** When a sandbox report names such an operation, the band explains it for the current session only. Sandbox Tuner saves no count for it and offers no Allow. For an operation that it does not know, the band says that it cannot classify it.
 - **Later background output goes unseen.** For a background Bash command or a shell Monitor launch, Sandbox Tuner counts the hosts that the launch declared, once, when it starts. It does not read the later output, so blocks there give no sighting.
 - **A tool that ignores the sandbox proxy can still fail for an allowed host.** Covered rows in the band, the pane, and the report suggest checking the tool's proxy settings and supported protocols. Sandbox Tuner offers no command exclusion.

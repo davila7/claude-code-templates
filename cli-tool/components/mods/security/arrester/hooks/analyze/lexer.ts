@@ -67,7 +67,7 @@ function partText(part: Part): string {
   return part.kind === 'process' ? `${part.isOutput ? '>' : '<'}(${part.command})` : '$(( ))'
 }
 
-/** The text of a word with its quotes removed; what a heredoc delimiter and a skeleton's unresolved operand use. */
+/** The text of a word with its quotes removed; what a skeleton's unresolved operand uses. */
 export function wordText(word: Word): string {
   return word.map(partText).join('')
 }
@@ -82,7 +82,9 @@ function pushText(parts: Word, text: string, quoted: boolean): void {
 /** One scan of one command line, or of the command inside a substitution that starts at `start`. */
 class Lexer {
   readonly tokens: Token[] = []
-  private readonly pending: Redirect[] = []
+  private readonly pending: { redirect: Redirect; raw: string }[] = []
+  /** The source spelling of each expansion part, which a heredoc delimiter keeps as written. */
+  private readonly spellings = new Map<Part, string>()
   private readonly src: string
   private readonly nesting: number
   private i: number
@@ -177,8 +179,9 @@ class Lexer {
     const ch = this.src.charAt(this.i)
     const isProcess = (ch === '<' || ch === '>') && this.src.charAt(this.i + 1) === '('
     if (this.i >= this.src.length || (WORD_END.has(ch) && !isProcess)) throw new Unparsed()
+    const start = this.i
     const redirect: Redirect = { op, fd: fd ?? (op.startsWith('<') ? 0 : 1), target: this.word() }
-    if (op === '<<' || op === '<<-') this.pending.push(redirect)
+    if (op === '<<' || op === '<<-') this.pending.push({ redirect, raw: this.src.slice(start, this.i) })
     this.tokens.push({ type: 'redirect', redirect })
   }
 
@@ -189,6 +192,7 @@ class Lexer {
       const ch = this.src.charAt(this.i)
       const isProcess = (ch === '<' || ch === '>') && this.src.charAt(this.i + 1) === '('
       if (WORD_END.has(ch) && !isProcess) break
+      const at = this.i
       if (isProcess) parts.push({ kind: 'process', command: this.inner(this.i + 1), isOutput: ch === '>' })
       else if (ch === "'") pushText(parts, this.single(), true)
       else if (ch === '"') this.double(parts)
@@ -201,8 +205,15 @@ class Lexer {
         pushText(parts, ch, false)
         this.i += 1
       }
+      this.spell(parts, at)
     }
     return parts
+  }
+
+  /** Keeps the source spelling, from `at`, of an expansion part that the last step added. */
+  private spell(parts: Word, at: number): void {
+    const part = parts[parts.length - 1]
+    if (part !== undefined && part.kind !== 'text' && !this.spellings.has(part)) this.spellings.set(part, this.src.slice(at, this.i))
   }
 
   /** The text of a single-quoted string. */
@@ -238,6 +249,7 @@ class Lexer {
         return
       }
       const next = this.src.charAt(this.i + 1)
+      const at = this.i
       if (ch === '\\' && next !== '' && escapable.includes(next)) {
         if (next !== '\n') pushText(parts, next, true)
         this.i += 2
@@ -247,6 +259,7 @@ class Lexer {
         pushText(parts, ch, true)
         this.i += 1
       }
+      this.spell(parts, at)
     }
   }
 
@@ -373,10 +386,10 @@ class Lexer {
     return text
   }
 
-  /** Reads the bodies of the heredocs started on the line that just ended. */
+  /** Reads the bodies of the heredocs started on the line that just ended. The delimiter is the target word with its quotes removed and its expansions as written; quote removal that changes the word means some part of it is quoted. */
   private heredocs(): void {
-    for (const redirect of this.pending.splice(0)) {
-      const delimiter = wordText(redirect.target)
+    for (const { redirect, raw } of this.pending.splice(0)) {
+      const delimiter = redirect.target.map(part => (part.kind === 'text' ? part.text : this.spellings.get(part) ?? partText(part))).join('')
       const lines: string[] = []
       for (;;) {
         if (this.i >= this.src.length) throw new Unparsed()
@@ -387,7 +400,7 @@ class Lexer {
         if (line === delimiter) break
         lines.push(`${line}\n`)
       }
-      redirect.heredoc = { text: lines.join(''), quoted: redirect.target.some(part => part.kind === 'text' && part.quoted) }
+      redirect.heredoc = { text: lines.join(''), quoted: delimiter.replaceAll('\\\n', '') !== raw.replaceAll('\\\n', '') }
     }
   }
 }

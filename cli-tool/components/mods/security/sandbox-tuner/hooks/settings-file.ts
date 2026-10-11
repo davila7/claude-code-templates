@@ -2,7 +2,7 @@
 
 import type { SandboxTunerApplied, SandboxTunerSettingsKey } from '../types'
 import { causeOf } from './diagnostics'
-import { displayPath, normalHost } from './names'
+import { displayPath, normalHost, plainText } from './names'
 import { isCount, isListOf, isPlainObject, isText } from './shapes'
 
 export type FileInfo = { path: string; display: string; backup: string; backupDisplay: string }
@@ -24,9 +24,10 @@ const KEY_PATHS: Readonly<Record<SandboxTunerSettingsKey, KeyPath>> = {
 }
 const HOST_KEYS: ReadonlySet<SandboxTunerSettingsKey> = new Set(['sandbox.network.allowedDomains', 'sandbox.network.deniedDomains'])
 
+/** The paths of a settings file and its backup, each with the text that shows it: CLAUDE_CONFIG_DIR can hold any character. */
 export function fileInfo(path: string, home: string | undefined): FileInfo {
   const backup = `${path.slice(0, path.lastIndexOf('/'))}/backups/settings.json.sandbox-tuner.bak`
-  return { path, display: displayPath(path, home), backup, backupDisplay: displayPath(backup, home) }
+  return { path, display: plainText(displayPath(path, home)), backup, backupDisplay: plainText(displayPath(backup, home)) }
 }
 
 function typeName(value: unknown): string {

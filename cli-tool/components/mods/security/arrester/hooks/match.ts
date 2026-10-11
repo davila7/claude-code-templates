@@ -2,7 +2,7 @@
 // guard, and opaque. Pure: no `$`.
 
 import type { CallAnalysis } from './analyze/call'
-import { relation } from './analyze/paths'
+import { foldCase, relation } from './analyze/paths'
 import type { Meter, Relation } from './analyze/paths'
 import { OPAQUE } from './analyze/shell'
 import type { Effect, EffectKind } from './analyze/types'
@@ -51,15 +51,46 @@ export function findings(open: readonly ArresterBlock[], guards: readonly Arrest
 /** Literal-prefix index of retained targets, including their real spellings. */
 type TargetNode = { children: Map<string, TargetNode>; targets: Set<ArresterTarget> }
 
-/** Selects only targets whose literal prefixes overlap an effect, charging index work to the shared budget. */
+/** Selects only targets whose literal prefixes overlap an effect, charging index work to the shared budget. A case-insensitive glob on either side compares its folders without case, so case-insensitive targets sit in an index of case-folded folders, and a case-insensitive effect looks up the other targets by their folded folders too. */
 function targetCandidates(open: readonly ArresterBlock[], effects: readonly PlacedEffect[], meter: Meter): Map<PlacedEffect, Set<ArresterTarget>> {
+  const retained = open.flatMap(block => (block.source === 'user' ? [] : block.targets))
+  const sensitive = retained.filter(target => target.globOptions?.nocase !== true)
+  const loose = retained.filter(target => target.globOptions?.nocase === true)
+  const insensitive = targetIndex(loose, true, meter)
+  if (insensitive === undefined) return new Map()
+  let exact: TargetNode | undefined
+  let folded: TargetNode | undefined
+  const cache = new Map<string, Set<ArresterTarget>>()
+  const result = new Map<PlacedEffect, Set<ArresterTarget>>()
+  for (const effect of effects) {
+    const nocase = effect.globOptions?.nocase === true
+    const key = `${effect.path}\0${effect.real ?? ''}\0${nocase}`
+    let candidates = cache.get(key)
+    if (candidates === undefined) {
+      const root = nocase ? (folded ??= targetIndex(sensitive, true, meter)) : (exact ??= targetIndex(sensitive, false, meter))
+      if (root === undefined) return new Map()
+      candidates = new Set()
+      for (const path of spellings(effect.path, effect.real)) {
+        meter.steps += path.length
+        gather(root, path, nocase, candidates, meter)
+        if (loose.length > 0) gather(insensitive, path, true, candidates, meter)
+      }
+      cache.set(key, candidates)
+    }
+    result.set(effect, candidates)
+  }
+  return result
+}
+
+/** The index of the targets by the folders of each spelling, case-folded when `fold` is set; undefined past the step budget. */
+function targetIndex(targets: readonly ArresterTarget[], fold: boolean, meter: Meter): TargetNode | undefined {
   const root: TargetNode = { children: new Map(), targets: new Set() }
-  for (const block of open) for (const target of block.source === 'user' ? [] : block.targets) {
+  for (const target of targets) {
     for (const path of spellings(target.path, target.real)) {
       meter.steps += path.length
-      if (meter.steps > MAX_STEPS) return new Map()
+      if (meter.steps > MAX_STEPS) return undefined
       let node = root
-      for (const part of path.split('/').filter(Boolean)) {
+      for (const part of folders(path, fold)) {
         let child = node.children.get(part)
         if (child === undefined) {
           child = { children: new Map(), targets: new Set() }
@@ -70,36 +101,31 @@ function targetCandidates(open: readonly ArresterBlock[], effects: readonly Plac
       node.targets.add(target)
     }
   }
-  const cache = new Map<string, Set<ArresterTarget>>()
-  const result = new Map<PlacedEffect, Set<ArresterTarget>>()
-  for (const effect of effects) {
-    const key = `${effect.path}\0${effect.real ?? ''}`
-    let candidates = cache.get(key)
-    if (candidates === undefined) {
-      candidates = new Set()
-      for (const path of spellings(effect.path, effect.real)) {
-        meter.steps += path.length
-        let node: TargetNode | undefined = root
-        for (const part of path.split('/').filter(Boolean)) {
-          meter.steps += node.targets.size
-          if (meter.steps > MAX_STEPS) break
-          for (const target of node.targets) candidates.add(target)
-          node = node.children.get(part)
-          if (node === undefined) break
-        }
-        const pending = node === undefined ? [] : [node]
-        while (pending.length > 0 && meter.steps <= MAX_STEPS) {
-          const next = pending.pop()!
-          meter.steps += 1 + next.targets.size + next.children.size
-          for (const target of next.targets) candidates.add(target)
-          pending.push(...next.children.values())
-        }
-      }
-      cache.set(key, candidates)
-    }
-    result.set(effect, candidates)
+  return root
+}
+
+/** Adds to `candidates` the indexed targets at or above the path and every target below it. */
+function gather(root: TargetNode, path: string, fold: boolean, candidates: Set<ArresterTarget>, meter: Meter): void {
+  let node: TargetNode | undefined = root
+  for (const part of folders(path, fold)) {
+    meter.steps += node.targets.size
+    if (meter.steps > MAX_STEPS) break
+    for (const target of node.targets) candidates.add(target)
+    node = node.children.get(part)
+    if (node === undefined) break
   }
-  return result
+  const pending = node === undefined ? [] : [node]
+  while (pending.length > 0 && meter.steps <= MAX_STEPS) {
+    const next = pending.pop()!
+    meter.steps += 1 + next.targets.size + next.children.size
+    for (const target of next.targets) candidates.add(target)
+    pending.push(...next.children.values())
+  }
+}
+
+/** The folders of a path, each case-folded as a case-insensitive comparison reads it when `fold` is set. */
+function folders(path: string, fold: boolean): string[] {
+  return (fold ? foldCase(path) : path).split('/').filter(Boolean)
 }
 
 /** The blocks that findings name, in order, each once. */

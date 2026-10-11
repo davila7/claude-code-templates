@@ -6,6 +6,7 @@ import {
   LARGE_FILE_BYTES,
   LARGE_READ_EVERY_MS,
   LINE_MAX,
+  MAX_BARRIERS,
   MAX_FINISHED,
   NOTE_MAX,
   NOTICE_ROWS_MAX,
@@ -86,7 +87,8 @@ function withLaunch(known: Job, launch: Job): Job {
     known = { ...launch, ...details }
     if (known.kind === 'shell' && !isRunning(known)) known.finalReadAskedAt = known.lastEndedAt ?? known.endedAt
   }
-  const identity = { title: launch.title, startedAt: launch.startedAt, isStartSeen: true, omittedAt: undefined, note: known.note ?? launch.note }
+  const identity = { title: launch.title, startedAt: launch.startedAt, isStartSeen: true, omittedAt: undefined, note: known.note ?? launch.note,
+    launchNote: launch.launchNote ?? known.launchNote }
   if (known.kind === 'shell' && launch.kind === 'shell') return { ...known, ...identity, outputFile: launch.outputFile ?? known.outputFile,
     ownerAgentId: launch.ownerAgentId ?? known.ownerAgentId, endsWithAgent: launch.endsWithAgent ?? known.endsWithAgent }
   return known.kind === 'monitor' && launch.kind === 'monitor' ? { ...known, ...identity, deadline: launch.deadline } : { ...known, ...identity }
@@ -113,6 +115,7 @@ export function shellJob(launch: { id: string; command: string; description?: st
     ownerAgentId: launch.ownerAgentId,
     endsWithAgent: launch.endsWithAgent,
     note: launch.note,
+    launchNote: launch.note,
   }
 }
 
@@ -159,6 +162,7 @@ export function agentJob(launch: { id: string; description: string; note?: strin
     inFlight: 0,
     errorStreak: 0,
     note: launch.note,
+    launchNote: launch.note,
   }
 }
 
@@ -317,7 +321,7 @@ export function noticed(jobs: readonly Job[], notice: Notice, now: number): Job[
   return refined.map(job => {
     if (job.kind !== 'shell' || !notice.ids.includes(job.id) || notice.outputFile === undefined || !isOutputFileOf(notice.outputFile, job.id)) return job
     return { ...job, outputFile: notice.outputFile, note: job.note === 'no output file' ? undefined : job.note,
-      finalReadAskedAt: isRunning(job) ? job.finalReadAskedAt : now }
+      launchNote: job.launchNote === 'no output file' ? undefined : job.launchNote, finalReadAskedAt: isRunning(job) ? job.finalReadAskedAt : now }
   })
 }
 
@@ -360,9 +364,14 @@ function discoveredJob(task: SnapshotTask, now: number): Job {
   return job.kind === 'task' ? { ...job, taskType: task.type } : job
 }
 
-/** A job that a snapshot marked gone and a later snapshot lists: it runs again, without its end time, and with the launch note its snapshot note replaced. */
+/**
+ * A job that a snapshot marked gone and a later snapshot lists: it runs again, without its end time, and with the launch
+ * note its snapshot note replaced. A row with no launch note, such as one that an earlier version saved, turns
+ * `ended with its agent` back into `ends with its agent`, and shows no note after another end.
+ */
 function revived(job: Job, now: number): Job {
-  return { ...job, state: 'running', lastRunningAt: now, omittedAt: undefined, endedAt: undefined, note: job.note === AGENT_GONE_NOTE ? ENDS_WITH_AGENT : undefined }
+  return { ...job, state: 'running', lastRunningAt: now, omittedAt: undefined, endedAt: undefined,
+    note: job.launchNote ?? (job.note === AGENT_GONE_NOTE ? ENDS_WITH_AGENT : undefined) }
 }
 
 /** Reconciles running tasks, allowing a grace period before an absence ends a job. */
@@ -415,8 +424,8 @@ function detailOf(value: string, shape: Detail['shape']): string {
 
 /**
  * The list after an agent list read in a tick that began at `now`: its status decides each agent job's state. A resumed
- * agent runs again without its end time and end note, but only when its latest end came before the tick: a later end
- * may postdate the list.
+ * agent runs again without its end time, and its launch note replaces its end note, but only when its latest end came
+ * before the tick: a later end may postdate the list.
  */
 export function agentsSynced(jobs: readonly Job[], agents: readonly AgentInfo[], now: number): Job[] {
   return jobs.map(job => {
@@ -428,7 +437,7 @@ export function agentsSynced(jobs: readonly Job[], agents: readonly AgentInfo[],
     if (state === 'running' && isRunning(job)) return { ...job, activityStatus, omittedAt: undefined, lastRunningAt: Math.max(job.lastRunningAt ?? job.startedAt, now) }
     if (state === job.state || now <= (job.lastRunningAt ?? job.startedAt)) return job
     if (state !== 'running') return endedJob(job, state, now, {})
-    return job.lastEndedAt !== undefined && job.lastEndedAt < now ? { ...job, state, activityStatus, lastRunningAt: now, omittedAt: undefined, endedAt: undefined, note: undefined } : job
+    return job.lastEndedAt !== undefined && job.lastEndedAt < now ? { ...job, state, activityStatus, lastRunningAt: now, omittedAt: undefined, endedAt: undefined, note: job.launchNote } : job
   })
 }
 
@@ -548,10 +557,37 @@ export type JobObservation = {
 }
 
 /**
+ * The barriers: every barrier of a kept row, and the MAX_BARRIERS newest barriers of tasks with no row. A kept row's
+ * barrier does not count toward the cap. Only the count decides. A newer snapshot does not make the barrier of a task
+ * with no row redundant: the session that a /resume returns to can still hold that task's row, and the barrier must
+ * remove it there.
+ */
+function bounded(barriers: Iterable<[string, number]>, kept: ReadonlySet<string>): [string, number][] {
+  const entries = [...barriers]
+  const rowless = entries.filter(([id]) => !kept.has(id))
+  const excess = rowless.length - MAX_BARRIERS
+  if (excess <= 0) return entries
+  const evicted = new Set(rowless.sort(([, a], [, b]) => a - b).slice(0, excess).map(([id]) => id))
+  return entries.filter(([id]) => !evicted.has(id))
+}
+
+/** The state with both time lists bounded against its own rows. */
+function capped(state: JobsState): JobsState {
+  const kept = new Set(state.items.map(job => job.id))
+  return { ...state, observed: bounded(state.observed, kept), removed: bounded(state.removed, kept) }
+}
+
+/**
  * One ordering rule for job inputs. Removal wins ties; other ties use write order.
  * Snapshots also reject older inputs for absent rows. Activity counts settle every call, with their own field ordering.
  */
 export function observedJobs(state: JobsState, input: JobObservation, change: (jobs: Job[]) => Job[]): JobsState {
+  const next = ordered(state, input, change)
+  return next === state ? state : capped(next)
+}
+
+/** observedJobs before the cap. restoredJobs applies the cap once, after the whole carry, so a carried row never counts. */
+function ordered(state: JobsState, input: JobObservation, change: (jobs: Job[]) => Job[]): JobsState {
   if (input.noticeRow !== undefined && state.noticeRows?.includes(input.noticeRow)) return state
   if (input.kind === 'snapshot' && input.at < (state.snapshotAt ?? -Infinity)) return state
   const observed = new Map(state.observed)
@@ -599,25 +635,25 @@ export function observedJobs(state: JobsState, input: JobObservation, change: (j
   }
 }
 
-/** Restores the carry through the same ordering rule, using original observation and removal times. */
+/** Restores the carry through the same ordering rule, using original observation and removal times, then applies the cap once. */
 export function restoredJobs(state: JobsState, carried: JobsState): JobsState {
   let restored = state
   for (const [id, at] of carried.removed) {
-    restored = observedJobs(restored, { at, ids: [id], kind: 'remove' }, () => [])
+    restored = ordered(restored, { at, ids: [id], kind: 'remove' }, () => [])
   }
   const rows = new Map(carried.items.map(job => [job.id, job]))
   for (const [id, at] of carried.observed) {
     const row = rows.get(id)
-    restored = observedJobs(restored, { at, ids: [id], kind: 'restore' }, jobs => row === undefined ? jobs : [row])
+    restored = ordered(restored, { at, ids: [id], kind: 'restore' }, jobs => row === undefined ? jobs : [row])
   }
   const saved = (carried.snapshotAt ?? -Infinity) >= (state.snapshotAt ?? -Infinity) ? carried : state
   if (saved.snapshotAt !== null && saved.snapshotIds !== undefined) {
     const members = new Set(saved.snapshotIds)
     const at = saved.snapshotAt
-    restored = observedJobs(restored, { at, ids: restored.items.filter(job => !members.has(job.id)).map(job => job.id) }, jobs => reconciled(jobs, [], at))
+    restored = ordered(restored, { at, ids: restored.items.filter(job => !members.has(job.id)).map(job => job.id) }, jobs => reconciled(jobs, [], at))
   }
-  return { ...restored, snapshotAt: saved.snapshotAt, snapshotIds: saved.snapshotIds,
-    noticeRows: [...new Set([...(state.noticeRows ?? []), ...(carried.noticeRows ?? [])])].slice(-NOTICE_ROWS_MAX) }
+  return capped({ ...restored, snapshotAt: saved.snapshotAt, snapshotIds: saved.snapshotIds,
+    noticeRows: [...new Set([...(state.noticeRows ?? []), ...(carried.noticeRows ?? [])])].slice(-NOTICE_ROWS_MAX) })
 }
 
 /** Live: a job runs, a wakeup is pending, or a job ended less than RECENT_MS ago. */
