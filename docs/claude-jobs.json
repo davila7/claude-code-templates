@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-10-10T03:14:09.006629+00:00",
-  "totalJobs": 90,
+  "lastUpdated": "2026-10-11T03:12:03.095834+00:00",
+  "totalJobs": 91,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -31,6 +31,27 @@
         "Azure",
         "Claude Code",
         "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "rok-remote-product-design-lead-fuel50-1137474",
+      "company": "Fuel50",
+      "position": "Product Design Lead",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Fuel50 is a workforce transformation platform helping organisations understand workforce capability, build skills and enable internal mobility in an AI-driven world. Our products combine skills intelligence, talent marketplace experiences and responsible AI to help people and organisations take...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-product-design-lead-fuel50-1137474",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-product-design-lead-fuel50-1137474",
+      "postedAt": "2026-10-09T08:00:04+00:00",
+      "tags": [
+        "JavaScript",
+        "Rust",
+        "Claude Code",
+        "Cursor",
+        "Copilot"
       ],
       "companyIcon": ""
     },
