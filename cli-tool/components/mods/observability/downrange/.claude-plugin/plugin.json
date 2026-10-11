@@ -1,0 +1,28 @@
+{
+  "name": "downrange",
+  "version": "1.0.0",
+  "description": "A band, pane, and /downrange table: progress, ETA, and last output for Claude Code background shells and Monitor watches, tool activity for subagents, state for workflows, and the next /loop wakeup.",
+  "author": { "name": "dot-agi" },
+  "license": "MIT",
+  "homepage": "https://github.com/dot-agi/downrange",
+  "repository": "https://github.com/dot-agi/downrange",
+  "supportUrl": "https://github.com/dot-agi/downrange/issues",
+  "documentationUrl": "https://github.com/dot-agi/downrange/blob/main/docs/usage.md",
+  "privacyPolicyUrl": "https://github.com/dot-agi/downrange#privacy",
+  "keywords": ["mod", "claude-code", "background-tasks", "status", "progress", "eta"],
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "band": {
+      "type": "boolean",
+      "title": "Band above the prompt",
+      "description": "Show a one-line status band above the prompt while background work runs.",
+      "default": true
+    },
+    "answerStatusPrompts": {
+      "type": "boolean",
+      "title": "Answer status prompts locally",
+      "description": "When Claude is idle and background work runs, answer an exact status prompt such as \"status?\" with the /downrange table instead of sending it to Claude. Send the same prompt again within 60 seconds to ask Claude.",
+      "default": false
+    }
+  }
+}

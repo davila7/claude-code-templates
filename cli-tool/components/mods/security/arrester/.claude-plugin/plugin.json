@@ -1,0 +1,31 @@
+{
+  "name": "arrester",
+  "version": "1.0.0",
+  "description": "After a hook, deny rule, or auto mode blocks a tool call, Arrester stops later calls that reach the same result another way or read or change your guards. After your No, it stops only exact retries.",
+  "author": { "name": "dot-agi" },
+  "license": "MIT",
+  "homepage": "https://github.com/dot-agi/arrester",
+  "repository": "https://github.com/dot-agi/arrester",
+  "supportUrl": "https://github.com/dot-agi/arrester/issues",
+  "documentationUrl": "https://github.com/dot-agi/arrester/blob/main/docs/usage.md",
+  "privacyPolicyUrl": "https://github.com/dot-agi/arrester#privacy",
+  "keywords": ["mod", "claude-code", "security", "guardrails", "hooks"],
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "response": {
+      "type": "string",
+      "title": "Response to a suspected workaround",
+      "description": "deny refuses the call at once with a reason Claude reads. hold asks you in a dialog and waits for your answer; a claude -p run has no one to ask, so the call is refused.",
+      "options": ["deny", "hold"],
+      "default": "deny"
+    },
+    "block_minutes": {
+      "type": "number",
+      "title": "Minutes a block stays open",
+      "description": "How long Arrester watches after a guard blocks a call, counted from the block or from its last target or retry match. A guard or opaque match alone does not extend it.",
+      "default": 30,
+      "min": 1,
+      "max": 1440
+    }
+  }
+}

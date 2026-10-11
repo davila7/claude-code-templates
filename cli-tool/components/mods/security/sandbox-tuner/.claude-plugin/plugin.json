@@ -1,0 +1,24 @@
+{
+  "name": "sandbox-tuner",
+  "version": "1.0.0",
+  "description": "Explains each Claude Code sandbox block in plain words and turns recurring blocks into reviewed, one-press, undoable edits of your user settings.",
+  "author": { "name": "dot-agi" },
+  "license": "MIT",
+  "homepage": "https://github.com/dot-agi/sandbox-tuner",
+  "repository": "https://github.com/dot-agi/sandbox-tuner",
+  "supportUrl": "https://github.com/dot-agi/sandbox-tuner/issues",
+  "documentationUrl": "https://github.com/dot-agi/sandbox-tuner/blob/main/docs/usage.md",
+  "privacyPolicyUrl": "https://github.com/dot-agi/sandbox-tuner#privacy",
+  "keywords": ["mod", "claude-code", "sandbox", "settings", "security"],
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "minimumSightings": {
+      "type": "number",
+      "title": "Sightings before Allow",
+      "description": "How many times a host or write folder must recur before Sandbox Tuner offers Allow.",
+      "default": 3,
+      "min": 1,
+      "max": 100
+    }
+  }
+}
