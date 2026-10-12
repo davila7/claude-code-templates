@@ -16959,6 +16959,27 @@
       }
     },
     {
+      "name": "looot",
+      "path": "web-data/looot.json",
+      "category": "web-data",
+      "type": "mcp",
+      "description": "Remote MCP server and API: one key for 2,500+ data endpoints (emails, phones, companies, SERP, web). Prepaid balance, no subscription. Sign in with OAuth in the browser or send an Authorization: Bearer key.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      }
+    },
+    {
       "name": "pricewin",
       "path": "web-data/pricewin.json",
       "category": "web-data",
