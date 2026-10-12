@@ -48653,6 +48653,59 @@
       ]
     },
     {
+      "name": "subagent-tuner",
+      "path": "productivity/subagent-tuner",
+      "category": "productivity",
+      "type": "mod",
+      "description": "Picks the model and reasoning effort of every subagent: a recommendation by task kind, a band above the prompt, and a saved default that wins.",
+      "author": "Aleh Kruhlikau",
+      "repo": "https://github.com/Kruhlikau/subagent-tuner",
+      "version": "0.1.4",
+      "license": "MIT",
+      "keywords": [
+        "claude-code",
+        "claude-code-mod",
+        "subagents",
+        "model",
+        "effort"
+      ],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "modules": [
+        "register.tsx"
+      ],
+      "userConfig": {},
+      "references": [
+        ".claude-plugin/plugin.json",
+        "LICENSE",
+        "hooks/auto.test.ts",
+        "hooks/band.test.ts",
+        "hooks/chain.test.ts",
+        "hooks/dialog.ts",
+        "hooks/harness.ts",
+        "hooks/hooks.json",
+        "hooks/pane-view.tsx",
+        "hooks/pane.test.ts",
+        "hooks/persistence.test.ts",
+        "hooks/recommend.test.ts",
+        "hooks/recommend.ts",
+        "hooks/register.tsx",
+        "hooks/stack-band.test.ts",
+        "hooks/stack.test.ts",
+        "hooks/stack.ts",
+        "hooks/state.ts",
+        "hooks/view.tsx",
+        "types/index.d.ts"
+      ]
+    },
+    {
       "name": "webfetch-cache",
       "path": "productivity/webfetch-cache",
       "category": "productivity",
