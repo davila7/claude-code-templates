@@ -1,6 +1,6 @@
 {
   "name": "sandbox-tuner",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Explains each Claude Code sandbox block in plain words and turns recurring blocks into reviewed, one-press, undoable edits of your user settings.",
   "author": { "name": "dot-agi" },
   "license": "MIT",

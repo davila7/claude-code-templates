@@ -55,6 +55,8 @@ export type MonitorJob = JobBase & {
 export type AgentJob = JobBase & {
   kind: 'agent'
   activityStatus?: 'pending' | 'running' | 'waiting' | 'idle'
+  /** Its launch said it runs outside this process, as a remote subagent or a teammate in a terminal pane of its own, so its tool calls do not reach Downrange. */
+  runsElsewhere?: boolean
   toolCount: number
   inFlight: number
   errorStreak: number

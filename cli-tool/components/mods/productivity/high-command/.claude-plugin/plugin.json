@@ -1,6 +1,6 @@
 {
   "name": "high-command",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "See the messages your teammates, named subagents, and other Claude Code sessions send you, grouped by peer with unread counts: a pane, a band above the prompt, and /highcommand.",
   "author": { "name": "dot-agi" },
   "license": "MIT",

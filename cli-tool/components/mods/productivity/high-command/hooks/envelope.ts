@@ -1,4 +1,4 @@
-import type { SessionReceiveOrigin } from 'claude-code'
+import type { AgentInfo, SessionReceiveOrigin } from 'claude-code'
 
 import type { HighCommandEntry, HighCommandTrust } from '../types'
 import { capBody, isSuspicious, peerKey, sanitize, summaryOf } from './text'
@@ -208,6 +208,16 @@ export function agentSenderOf(text: string, origin: SessionReceiveOrigin): strin
     frame.name === 'agent-message' ? [senderOf(frame, protocolOf(frame.body), origin, '')] : []))
   const [name] = names
   return names.size === 1 && name !== UNNAMED ? name : undefined
+}
+
+/**
+ * The mod that started the local agents whose id or name is `sender`, when a mod started every one of them;
+ * undefined when none is listed or the model or the person started one. Claude Code does not pass a mod on with a
+ * subagent's peer prompt, so this can only lower the label of a message from that sender.
+ */
+export function spawnerOf(agents: readonly AgentInfo[], sender: string): string | undefined {
+  const matches = agents.filter(agent => agent.id === sender || peerKey(agent.name ?? '') === sender)
+  return matches.length > 0 && matches.every(agent => agent.spawnedBy !== undefined) ? matches[0]!.spawnedBy : undefined
 }
 
 /**

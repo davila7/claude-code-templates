@@ -194,6 +194,37 @@ export function settingsHeader(file: FileInfo | undefined): string {
   return file === undefined ? NO_SETTINGS_FILE : `Settings file: ${file.display}`
 }
 
+/** `a`, `a and b`, or `a, b, and c`. */
+function series(items: readonly string[]): string {
+  return items.length < 3 ? items.join(' and ') : `${items.slice(0, -1).join(', ')}, and ${items.at(-1)}`
+}
+
+/**
+ * A folder that Allow opened, as a warning of the link check at session start names it: whether a row of the pane can
+ * undo it, and each settings file that holds it with no such row, where only a hand edit removes it.
+ */
+type MetGrant = { grant: string; isInside: boolean; hasUndo: boolean; byHand: readonly string[] }
+
+/**
+ * The warning of the link check at session start: a link or a guarded place meets folders that Allow opened. It names
+ * each of them, because the exposure stays until each one is removed: with Undo where the pane offers it, else by hand.
+ */
+export function grantWarning(path: string, place: string, met: readonly MetGrant[]): string {
+  const isLink = path !== place
+  const subject = isLink ? `${path} leads to ${place}, which` : path
+  const quoted = (items: readonly MetGrant[]) => items.map(item => `"${item.grant}"`)
+  const relations = [[quoted(met.filter(item => item.isInside)), 'lies inside'], [quoted(met.filter(item => !item.isInside)), 'holds']] as const
+  const relation = relations.filter(([grants]) => grants.length > 0).map(([grants, verb]) => `${verb} ${series(grants)}`).join(' and ')
+  const folders = met.length === 1 ? 'a folder' : 'folders'
+  const undo = met.filter(item => item.hasUndo).map(item => `for "${item.grant}"`)
+  const steps = [
+    ...(undo.length > 0 ? [`press Undo ${series(undo)} in /sandbox-tuner`] : []),
+    ...[...new Set(met.flatMap(item => item.byHand))].map(file =>
+      `remove ${series(quoted(met.filter(item => item.byHand.includes(file))))} from sandbox.filesystem.allowWrite in ${file} by hand`),
+  ]
+  return `${subject} ${relation}, ${folders} that your settings open to sandboxed writes. So sandboxed commands can change what ${isLink ? 'the link' : 'it'} names. To close this, ${series(steps)}${isLink ? ', or remove the link' : ''}.`
+}
+
 export function lastProblem(fault: string): string {
   return `Last background problem: ${fault}`
 }

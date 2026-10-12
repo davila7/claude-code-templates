@@ -6,6 +6,7 @@ import type { HookFailure } from 'claude-code'
 
 import type { Call } from './analyze/call'
 import { sortedJson } from './analyze/call'
+import { NESTED_SESSION } from './analyze/shell'
 import type { EffectKind, Ignored } from './analyze/types'
 import { blocksOf, shown } from './match'
 import type { Finding } from './match'
@@ -29,7 +30,7 @@ const MAX_SUMMARY = 120
 const MAX_REASON = 300
 const MAX_QUESTION = 600
 const LABELS: Readonly<Record<ArresterSource, string>> = { hook: 'settings hook', rule: 'deny rule', classifier: 'auto mode classifier', user: 'user rejection' }
-const VERBS: Readonly<Record<EffectKind, string>> = { destroy: 'deletes or discards', write: 'writes', read: 'reads', list: 'lists' }
+const VERBS: Readonly<Record<EffectKind, string>> = { destroy: 'deletes or discards', write: 'writes', read: 'reads', list: 'lists', name: 'names' }
 const REJECTED = "The user doesn't want to proceed with this tool use."
 const HOOK_ERROR = /^PreToolUse:\S+ hook error: \[/
 const HOOK_PREFIX = /^PreToolUse:\S+ hook error: /
@@ -101,9 +102,9 @@ export function phrase(finding: Finding): string {
   if (finding.rule === 'retry') return 'it repeats the blocked command with other flags or argument order'
   if (finding.rule === 'opaque') return `Arrester cannot fully analyze this call (${finding.reason})`
   if (finding.rule === 'guard') {
-    if ('bypass' in finding) return `it runs claude ${finding.bypass}, which can turn off guards`
+    if ('bypass' in finding) return finding.bypass === NESTED_SESSION ? 'it runs a nested claude, which does not inherit the open blocks' : `it runs claude ${finding.bypass}, which can turn off guards`
     if (finding.relation === 'contains') return `it ${VERBS[finding.kind]} ${finding.path}, which contains the guard file ${finding.guard}`
-    return `it ${finding.kind === 'read' || finding.kind === 'list' ? 'reads or lists' : 'changes'} ${finding.path}, a guard file`
+    return `it ${finding.kind === 'name' ? 'names' : finding.kind === 'read' || finding.kind === 'list' ? 'reads or lists' : 'changes'} ${finding.path}, a guard file`
   }
   const where = finding.relation === 'same' ? '' : `, which ${finding.relation === 'inside' ? 'is inside' : 'contains'} ${finding.target}`
   return `it ${VERBS[finding.kind]} ${finding.path}${where} (blocked: ${finding.access})`

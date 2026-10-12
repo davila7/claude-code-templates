@@ -48,20 +48,44 @@ export function trimmed(jobs: readonly Job[]): Job[] {
   return jobs.filter(job => isRunning(job) || kept.has(job.id))
 }
 
+/** Kinds whose task id never runs again after its end; an agent can resume under its id. */
+const FINAL_KINDS: ReadonlySet<Job['kind']> = new Set(['shell', 'monitor', 'workflow'])
+
+/**
+ * Whether a notification states a final end: a known end word other than `blocked`, which a remote task can leave.
+ * A task of type `remote_agent`, such as a remote workflow, keeps the ordering rule of other inputs.
+ */
+function isFinalNotice(notice: Notice): boolean {
+  return notice.taskType !== 'remote_agent' && endStateOf(notice.status) !== undefined && notice.status?.toLowerCase() !== 'blocked'
+}
+
+/** Whether a row takes a final end whatever the mod saw since the end's stamp: a running or `gone` shell, Monitor, or workflow. */
+const takesFinalEnd = (job: Job): boolean => FINAL_KINDS.has(job.kind) && (isRunning(job) || job.state === 'gone')
+
+/** Whether this notification's end applies to the job whatever the mod saw since its stamp. */
+function isFinalEnd(job: Job, notice: Notice): boolean {
+  return takesFinalEnd(job) && isFinalNotice(notice)
+}
+
+/** The ids of a prompt's blocks that state a final end. */
+export function finalIdsOf(notices: readonly Notice[]): string[] {
+  return notices.filter(isFinalNotice).flatMap(notice => notice.ids)
+}
+
 /** Whether an end is at least as recent as the job's latest running observation and end. */
 function canEnd(job: Job, now: number): boolean {
   return now >= Math.max(job.lastRunningAt ?? job.startedAt, job.lastEndedAt ?? job.startedAt)
 }
 
-/** A current end preserves the first end time, advances the latest, replaces snapshot notes, and asks for a final shell read. */
-function endedJob<T extends Job>(job: T, state: JobState, now: number, detail: { exitCode?: number; note?: string }): T {
-  if (!canEnd(job, now)) return job
+/** A current or final end preserves the first end time, advances the latest, replaces snapshot notes, and asks for a final shell read. */
+function endedJob<T extends Job>(job: T, state: JobState, now: number, detail: { exitCode?: number; note?: string }, isFinal = false): T {
+  if (!isFinal && !canEnd(job, now)) return job
   return {
     ...job,
     state,
     omittedAt: undefined,
-    endedAt: job.endedAt ?? now,
-    lastEndedAt: now,
+    endedAt: Math.min(job.endedAt ?? now, now),
+    lastEndedAt: Math.max(job.lastEndedAt ?? now, now),
     exitCode: detail.exitCode ?? job.exitCode,
     note: detail.note ?? (job.note !== undefined && GONE_NOTES.has(job.note) ? undefined : job.note),
     ...(job.kind === 'shell' ? { finalReadAskedAt: now } : {}),
@@ -91,6 +115,7 @@ function withLaunch(known: Job, launch: Job): Job {
     launchNote: launch.launchNote ?? known.launchNote }
   if (known.kind === 'shell' && launch.kind === 'shell') return { ...known, ...identity, outputFile: launch.outputFile ?? known.outputFile,
     ownerAgentId: launch.ownerAgentId ?? known.ownerAgentId, endsWithAgent: launch.endsWithAgent ?? known.endsWithAgent }
+  if (known.kind === 'agent' && launch.kind === 'agent') return { ...known, ...identity, runsElsewhere: launch.runsElsewhere ?? known.runsElsewhere }
   return known.kind === 'monitor' && launch.kind === 'monitor' ? { ...known, ...identity, deadline: launch.deadline } : { ...known, ...identity }
 }
 
@@ -150,7 +175,7 @@ export function monitorJob(launch: { id: string; description: string; timeoutMs:
 }
 
 /** A background or remote subagent. */
-export function agentJob(launch: { id: string; description: string; note?: string }, now: number): AgentJob {
+export function agentJob(launch: { id: string; description: string; note?: string; runsElsewhere?: boolean }, now: number): AgentJob {
   return {
     kind: 'agent',
     id: launch.id,
@@ -158,6 +183,7 @@ export function agentJob(launch: { id: string; description: string; note?: strin
     state: 'running',
     startedAt: now,
     isStartSeen: true,
+    runsElsewhere: launch.runsElsewhere,
     toolCount: 0,
     inFlight: 0,
     errorStreak: 0,
@@ -286,7 +312,7 @@ function ended(jobs: readonly Job[], notice: Notice, state: JobState, now: numbe
     if (known.kind === 'shell' && !known.isStartSeen && kindOf(notice.summary ?? '') === 'monitor') known = asMonitor(known)
     const { words } = summaryParts(notice, known.title)
     const detail = { exitCode: exitCodeOf(words), note: endNoteOf(words) }
-    return withJob(list, endedJob(known, state, now, detail))
+    return withJob(list, endedJob(known, state, now, detail, isFinalEnd(known, notice)))
   }, [...jobs])
 }
 
@@ -337,11 +363,14 @@ export function noticeProblemOf(notice: Notice): { cause: string; once: string }
   return { cause: `unknown notification status "${word}" for task ${id}`, once: `status|${word}` }
 }
 
-/** The runs one block ends cleanly: completed, exit code 0 or none, a shell job still running, seen from launch, with a history key. */
+/**
+ * The runs one block ends cleanly: completed, exit code 0 or none, a shell job still running, seen from launch, with a
+ * history key, and an end no earlier than its start.
+ */
 function cleanRunsOf(jobs: readonly Job[], notice: Notice, now: number): HistoryRun[] {
   if (endStateOf(notice.status) !== 'completed') return []
   return jobs.flatMap(job =>
-    job.kind === 'shell' && isRunning(job) && canEnd(job, now) && job.isStartSeen && job.historyKey !== undefined && notice.ids.includes(job.id) &&
+    job.kind === 'shell' && isRunning(job) && (canEnd(job, now) || isFinalEnd(job, notice)) && now >= job.startedAt && job.isStartSeen && job.historyKey !== undefined && notice.ids.includes(job.id) &&
     (exitCodeOf(summaryParts(notice, job.title).words) ?? 0) === 0
       ? [{ key: job.historyKey, durationMs: now - job.startedAt }]
       : [],
@@ -551,7 +580,9 @@ export function finishedCleared(jobs: readonly Job[]): Job[] {
 export type JobObservation = {
   at: number
   ids?: readonly string[]
-  kind?: 'snapshot' | 'restore' | 'activity' | 'remove'
+  kind?: 'snapshot' | 'restore' | 'activity' | 'remove' | 'notice'
+  /** Ids a notification ends for good; a running or `gone` shell, Monitor, or workflow row takes that end past a newer observation. */
+  finalIds?: readonly string[]
   members?: readonly string[]
   noticeRow?: string
 }
@@ -580,6 +611,7 @@ function capped(state: JobsState): JobsState {
 /**
  * One ordering rule for job inputs. Removal wins ties; other ties use write order.
  * Snapshots also reject older inputs for absent rows. Activity counts settle every call, with their own field ordering.
+ * A final end of a running or `gone` shell, Monitor, or workflow passes newer observations, and a notification never adds back a removed row.
  */
 export function observedJobs(state: JobsState, input: JobObservation, change: (jobs: Job[]) => Job[]): JobsState {
   const next = ordered(state, input, change)
@@ -594,10 +626,17 @@ function ordered(state: JobsState, input: JobObservation, change: (jobs: Job[]) 
   const removed = new Map(state.removed)
   const known = new Set(state.items.map(job => job.id))
   const targets = input.ids === undefined ? undefined : new Set(input.ids)
+  const rows = new Map(state.items.map(job => [job.id, job]))
+  const isFinal = (id: string): boolean => {
+    const row = rows.get(id)
+    return row !== undefined && input.finalIds?.includes(id) === true && takesFinalEnd(row)
+  }
   const accepts = (id: string): boolean =>
     (targets === undefined || targets.has(id)) &&
     input.at > (removed.get(id) ?? -Infinity) &&
-    (input.kind === 'activity' || input.at >= (observed.get(id) ?? -Infinity)) &&
+    // A notification never brings back a task whose row was removed.
+    !(input.kind === 'notice' && !known.has(id) && removed.has(id)) &&
+    (input.kind === 'activity' || isFinal(id) || input.at >= (observed.get(id) ?? -Infinity)) &&
     ((input.kind !== 'restore' && known.has(id)) || input.at >= (state.snapshotAt ?? -Infinity))
   const eligible = state.items.filter(job => accepts(job.id))
   const changed = change(eligible).filter(job => accepts(job.id))

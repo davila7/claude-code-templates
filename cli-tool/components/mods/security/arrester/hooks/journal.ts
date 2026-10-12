@@ -110,11 +110,11 @@ export function nextClose(journal: ArresterJournal, minutes: number): number | u
   return times.length === 0 ? undefined : Math.min(...times)
 }
 
-/** The targets of a blocked call: the first 256 paths its effects touch, each with the strongest access; recursive reads and lists give none. */
+/** The targets of a blocked call: the first 256 paths its effects touch, each with the strongest access; recursive reads and lists, and paths that an MCP call names, give none. */
 export function targetsOf(effects: readonly Effect[]): ArresterTarget[] {
   const targets = new Map<string, ArresterTarget>()
   for (const effect of effects) {
-    if ((effect.kind === 'read' || effect.kind === 'list') && effect.recursive) continue
+    if (effect.kind === 'name' || ((effect.kind === 'read' || effect.kind === 'list') && effect.recursive)) continue
     const access: ArresterAccess = effect.kind === 'list' ? 'read' : effect.kind
     const key = JSON.stringify([effect.path, effect.glob, effect.globOptions?.dot === true, effect.globOptions?.nocase === true, effect.entry === true, selectionKey(effect.selection)])
     const found = targets.get(key)

@@ -101,7 +101,7 @@ function hostEntries(settings: Settings, list: 'allowedDomains' | 'deniedDomains
 }
 
 /** Anchor a settings path without folding `..`: a press follows links before their following segments. */
-function anchorEntry(text: string, source: SourceName, context: Context): string | null {
+export function anchorEntry(text: string, source: SourceName, context: Context): string | null {
   const entry = text.replace(/\/\*\*$/, '')
   if (GLOB.test(entry)) return null
   const isHome = entry === '~' || entry.startsWith('~/')
@@ -295,6 +295,19 @@ export function guardedWalks(paths: readonly string[], { home, configDir }: Pick
   const config = configDir !== undefined && paths.includes(configDir) ? CONFIG_WALKS.map(walk => inside(configDir, walk)) : []
   const extensions = editor !== undefined && paths.includes(editor) ? [inside(editor, EXTENSIONS_WALK)] : []
   return [...walks, ...config, ...extensions]
+}
+
+/**
+ * Each folder that Allow opened that a real place lies inside or holds, and which of the two. As the Allow check does,
+ * it compares in any letter case: a file system that ignores case reads two spellings as one place.
+ */
+export function grantsMet<G extends { place: string }>(place: string, grants: readonly G[]): { grant: G; isInside: boolean }[] {
+  const folded = place.toLowerCase()
+  return grants.flatMap(grant => {
+    const opened = grant.place.toLowerCase()
+    const isInside = isUnder(folded, opened)
+    return isInside || isUnder(opened, folded) ? [{ grant, isInside }] : []
+  })
 }
 
 function isProtected(path: string, context: Context): boolean {

@@ -9,7 +9,7 @@ import { analyzeCall, envelopeCall, inputCall } from './analyze/call'
 import type { Call } from './analyze/call'
 import { basenameOf, dirnameOf, joinPath } from './analyze/paths'
 import { OPAQUE } from './analyze/shell'
-import type { Io, ScriptRead } from './analyze/types'
+import type { Effect, Io, ScriptRead } from './analyze/types'
 import { fixedGuards, hookPaths, SETTINGS_SOURCES } from './guards'
 import { cleared, EMPTY_JOURNAL, isRecorded, nextClose, openBlocks, pruned, renewed, targetsOf, withBlock, withDecision, withHeld, withoutHeld } from './journal'
 import { blocksOf, findings, renewable } from './match'
@@ -37,6 +37,9 @@ type Config = { response: 'deny' | 'hold'; minutes: number }
 
 /** The arguments of a hook on event `N`. */
 type HookArgs<N extends EventName> = Parameters<Hook<N>>
+
+/** Where a path lands, and the kind of what is there when it exists. */
+type Placement = { real?: string; kind?: FsStat['kind'] }
 
 /** A `classic.PreToolUse` dispatch that Arrester passed on: the call as that event carried it, and the deny that settled beneath, if one did. */
 type PassedPreToolUse = { call: Call; deny: string | undefined }
@@ -91,6 +94,7 @@ export const register: Register = (on, options) => {
     } finally {
       const verdict = settledOf(next.trace)
       if (verdict?.decision === 'deny' && verdict.rule !== undefined && e.tool_use_id !== undefined) await recordBlock($, config, 'tool.check', inputCall(e.tool, e.input, e.tool_use_id, e.agentId), 'rule', verdict.reason ?? verdict.rule, verdict.rule, next.signal)
+      else if (verdict?.decision === 'deny' && verdict.rule === undefined && verdict.hook === 'PreToolUse' && e.tool_use_id !== undefined && !passedPreToolUses.has(e.tool_use_id)) await recordBlock($, config, 'tool.check', inputCall(e.tool, e.input, e.tool_use_id, e.agentId), 'hook', verdict.reason ?? 'denied', undefined, next.signal)
     }
   }).catch(($, e, next) => {
     if (next.error.kind === 're-entry') return next(e)
@@ -138,16 +142,20 @@ async function sync(engine: EngineInterface, config: Config, event: string, drop
   }
 }
 
-/** Opens a block for a call that a guard blocked, with its targets and the guard list placed on the file system; every script on disk counts as older than the block. A call opens one block, also when that block was cleared since. */
+/** Opens a block for a call that a guard blocked, with its targets and the guard list placed on the file system; a recursive read whose root is a regular file counts as a read of that file. Every script on disk counts as older than the block, and an older interpreter script is not scanned. A call opens one block, also when that block was cleared since. */
 async function recordBlock(engine: EngineInterface, config: Config, event: string, call: Call, source: ArresterSource, reason: string, rule: string | undefined, signal: AbortSignal): Promise<void> {
   const toolUseId = call.toolUseId
   if (toolUseId === undefined || isRecorded(await read(engine, JOURNAL), toolUseId)) return
   const home = await homeOf(engine, event)
-  const analysis = await analyzeCall(call, { cwd: await engine.session.cwd(), home }, ioOf(engine, event, signal, Number.POSITIVE_INFINITY))
+  const cwd = await engine.session.cwd()
+  const analysis = await analyzeCall(call, { cwd, home }, ioOf(engine, event, signal, Number.POSITIVE_INFINITY, true))
   if (signal.aborted) return
-  const targets = await placeAll(engine, targetsOf(analysis.effects), event, signal)
+  const placed = new Map<string, Placement>()
+  await placeAll(engine, analysis.effects.filter(isSearchRoot), event, signal, placed)
+  const effects = analysis.effects.map(effect => (isSearchRoot(effect) && placed.get(placeKey(effect))?.kind === 'file' ? { ...effect, recursive: false } : effect))
+  const targets = await placeAll(engine, targetsOf(effects), event, signal, placed)
   if (signal.aborted) return
-  const guards = await guardPaths(engine, event, home)
+  const guards = await guardPaths(engine, event, home, cwd)
   const at = await engine.clock.now()
   const turn = await engine.session.turns()
   const draft = { source, agentId: call.agentId, incomplete: analysis.opaque, tool: call.tool, summary: summarize(call), reason: storedReason(reason), ...(rule === undefined ? {} : { rule }), toolUseId, turn, at, exact: analysis.exact, skeleton: analysis.skeleton, flags: analysis.flags, segments: analysis.segments, targets }
@@ -165,14 +173,14 @@ async function recordBlock(engine: EngineInterface, config: Config, event: strin
   await sync(engine, config, event)
 }
 
-/** The guards, placed on the file system: the fixed ones and each regular file that a command hook names. Working folders and paths whose kind is unknown add no guard. A settings source that cannot be read adds none and is logged. */
-async function guardPaths(engine: EngineInterface, event: string, home: string | undefined): Promise<ArresterGuard[]> {
+/** The guards, placed on the file system: the fixed ones and each regular file that a command hook names, a relative name read in the session folder `cwd` and in the project folder. Working folders and paths whose kind is unknown add no guard. A settings source that cannot be read adds none and is logged. */
+async function guardPaths(engine: EngineInterface, event: string, home: string | undefined, cwd: string): Promise<ArresterGuard[]> {
   const root = await engine.session.root()
   const fixed = fixedGuards(home, root, engine.plugin.root)
   const named = new Set<string>()
   for (const source of SETTINGS_SOURCES) {
     try {
-      for (const path of hookPaths(await engine.settings.read({ source }), home, root)) if (!fixed.some(guard => guard.path === path)) named.add(path)
+      for (const path of hookPaths(await engine.settings.read({ source }), home, root, cwd)) if (!fixed.some(guard => guard.path === path)) named.add(path)
     } catch (error) {
       engine.ui.log(couldNotReadSettings(event, source, causeOf(error)), { to: 'debug' })
     }
@@ -182,8 +190,16 @@ async function guardPaths(engine: EngineInterface, event: string, home: string |
   return [...placedFixed, ...placedNamed.filter(found => found.kind === 'file').map(found => withReal({ path: found.path }, found.real))]
 }
 
-/** Where a path lands and what is there: its own real path and kind when it exists, for a removed entry or missing path, its folder's real path plus its name; nothing when neither exists, or when the file system refuses, which is logged to the debug log. */
-async function place(engine: EngineInterface, event: string, path: string, entry = false): Promise<{ real?: string; kind?: FsStat['kind'] }> {
+/** Where a path lands and what is there: its own real path and kind when it exists, also for a removed entry that is no symbolic link, so a case alias lands on the name on disk; for a removed link, a missing path, or an entry the file system refuses, its folder's real path plus its name; nothing when neither exists, or when the file system refuses the folder, which is logged to the debug log. */
+async function place(engine: EngineInterface, event: string, path: string, entry = false): Promise<Placement> {
+  if (entry) {
+    try {
+      const own = await engine.fs.stat(path, { resolve: true })
+      if (!own.isLink && own.realPath !== undefined) return { real: own.realPath, kind: own.kind }
+    } catch {
+      // A missing entry, or one the file system refuses, is placed by its folder below.
+    }
+  }
   try {
     if (!entry && await engine.fs.exists(path)) {
       const stat = await engine.fs.stat(path, { resolve: true })
@@ -215,9 +231,10 @@ async function homeOf(engine: EngineInterface, event: string): Promise<string | 
   return undefined
 }
 
-/** The I/O the analysis may do: read the script a call runs, judged against `since`, and see the dispatch end. */
-function ioOf(engine: EngineInterface, event: string, signal: AbortSignal, since: number): Io {
-  return { readScript: path => readScript(engine, event, path, since), signal }
+/** The I/O the analysis may do: read the script a call runs, judged against `since`, and see the dispatch end; `capture` when it records a block. */
+function ioOf(engine: EngineInterface, event: string, signal: AbortSignal, since: number, capture = false): Io {
+  const io: Io = { readScript: path => readScript(engine, event, path, since), signal }
+  return capture ? { ...io, capture } : io
 }
 
 /** A script for the analysis: `missing`; its text when it is a regular file of at most MAX_SCRIPT bytes; else why it cannot be read, with a debug line for a refused read or a path that is no regular file. `isOld` when the file last changed before `since`. */
@@ -281,7 +298,7 @@ async function observe(engine: EngineInterface, config: Config, call: Call, resu
   if (block !== undefined) await recordBlock(engine, config, 'tool.call', call, block.source, block.reason, undefined, signal)
 }
 
-/** The `tool.call` hook: stops or holds a workaround of an open block; passes every other call on and reads its result. A dispatch abandoned during the check goes no further. */
+/** The `tool.call` hook: stops or holds a workaround of an open block; passes every other call on and reads its result. A path that an MCP call names is marked when it is a folder that exists. A dispatch abandoned during the check goes no further. */
 async function checkCall(engine: EngineInterface, config: Config, input: HookArgs<'tool.call'>[1], forward: HookArgs<'tool.call'>[2]): Promise<EventResult<'tool.call'>> {
   const journal = await read(engine, JOURNAL)
   const now = await engine.clock.now()
@@ -292,9 +309,10 @@ async function checkCall(engine: EngineInterface, config: Config, input: HookArg
     const since = Math.min(...open.map(block => block.at))
     const analysis = await analyzeCall(call, { cwd: await engine.session.cwd(), home: await homeOf(engine, 'tool.call') }, ioOf(engine, 'tool.call', forward.signal, since))
     if (analysis.ignored !== undefined) engine.ui.log(notCounted(analysis.ignored), { to: 'debug' })
-    const placed = await placeAll(engine, analysis.effects, 'tool.call', forward.signal)
+    const placements = new Map<string, Placement>()
+    const placed = (await placeAll(engine, analysis.effects, 'tool.call', forward.signal, placements)).map(effect => (effect.kind === 'name' && placements.get(placeKey(effect))?.kind === 'dir' ? { ...effect, folder: true as const } : effect))
     if (forward.signal.aborted) return abandoned()
-    const found = findings(open, journal.guards, analysis, placed)
+    const found = findings(open, journal.guards, analysis, placed, call.tool)
     const [first] = found
     if (first !== undefined && config.response === 'hold') return hold(engine, config, input, forward, call, found, first, now)
     if (first !== undefined) return stop(engine, config, call, found, first, now)
@@ -328,18 +346,27 @@ function abandoned(): { deny: string } {
   return { deny: uncheckedReason(OPAQUE.interrupted) }
 }
 
-/** Places every distinct path and entry mode with bounded concurrency and a call-local cache. */
-async function placeAll<T extends { path: string; entry?: true }>(engine: EngineInterface, values: readonly T[], event: string, signal: AbortSignal): Promise<(T & { real?: string })[]> {
-  const unique = [...new Map(values.map(value => [`${value.path}\0${value.entry === true}`, value])).entries()]
-  const resolved = new Map<string, string | undefined>()
+/** Places every distinct path and entry mode with bounded concurrency; `placed` holds each placement by `placeKey`, and one that it holds already is not placed again. */
+async function placeAll<T extends { path: string; entry?: true }>(engine: EngineInterface, values: readonly T[], event: string, signal: AbortSignal, placed = new Map<string, Placement>()): Promise<(T & { real?: string })[]> {
+  const unique = [...new Map(values.map(value => [placeKey(value), value])).entries()].filter(([key]) => !placed.has(key))
   let cursor = 0
   await Promise.all(Array.from({ length: Math.min(PLACEMENT_WORKERS, unique.length) }, async () => {
     while (cursor < unique.length && !signal.aborted) {
       const [key, value] = unique[cursor++]!
-      resolved.set(key, (await place(engine, event, value.path, value.entry)).real)
+      placed.set(key, await place(engine, event, value.path, value.entry))
     }
   }))
-  return values.map(value => withReal(value, resolved.get(`${value.path}\0${value.entry === true}`)))
+  return values.map(value => withReal(value, placed.get(placeKey(value))?.real))
+}
+
+/** The key of a path and its entry mode among placements. */
+function placeKey(value: { path: string; entry?: true }): string {
+  return `${value.path}\0${value.entry === true}`
+}
+
+/** A recursive read of a plain path, with no glob and no find selection: a search that names its root. */
+function isSearchRoot(effect: Effect): boolean {
+  return effect.kind === 'read' && effect.recursive && effect.glob === undefined && effect.selection === undefined
 }
 
 /** Refuses a workaround: renews the blocks that a target or retry finding names, records the decision, and answers the reason Claude reads. */

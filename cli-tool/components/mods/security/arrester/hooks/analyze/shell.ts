@@ -3,11 +3,12 @@
 // Pure apart from io.readScript; it never runs anything.
 
 import { scanCode } from './code'
+import type { Dialect } from './code'
 import { heredocWord, lex, UNPARSED, wordText } from './lexer'
 import type { Part, Redirect, Token, Word } from './lexer'
 import { absolute, basenameOf, dirnameOf, expandBraces, globMatch, hasGlob, isRemote, joinPath, looksLikePath, MAX_PATH, PATH_TOO_LONG, selectionKey, selectionNames, selectionPossible, splitGlob } from './paths'
 import type { Meter } from './paths'
-import { ALWAYS_RECURSIVE, ARCHIVE, ATTACHED, CLAUDE_OFF, CODE_FIRST, CODE_FLAGS, COPY, DESTROY, family, GIT_SUB_VALUES, hasFlag, INTERPRETER, isDecoder, isKnown, KEYWORDS, LIST, MODE_FIRST, PASS_THROUGH, PATHY, PATTERN_FIRST, PLUGIN_OFF, READ, RECURSIVE_FLAGS, RUNNERS, SHELLS, TRIVIAL, UNLINKERS, valuesOf, WRAPPERS, WRITE } from './programs'
+import { ALWAYS_RECURSIVE, ARCHIVE, ATTACHED, CLAUDE_OFF, CLAUDE_TOOLS, CODE_FIRST, CODE_FLAGS, COPY, DESTROY, family, GIT_SUB_VALUES, hasFlag, INTERPRETER, isDecoder, isKnown, KEYWORDS, LIST, MCP_RUNS, MODE_FIRST, PASS_THROUGH, PATHY, PATTERN_FIRST, PLUGIN_OFF, READ, RECURSIVE_FLAGS, RUNNERS, RUNUSER, SHELLS, TRIVIAL, UNLINKERS, valuesOf, WRAPPERS, WRITE } from './programs'
 import type { Runner, Values } from './programs'
 import type { Analysis, Context, Effect, EffectKind, Ignored, Io, Segment } from './types'
 
@@ -21,9 +22,13 @@ export const OPAQUE = {
   scriptUnreadable: 'a script cannot be read',
   scriptTooLong: 'a script is too long to read',
   tooDeep: 'code nests deeper than Arrester reads',
+  shellProgram: 'su or runuser names a shell that Arrester cannot read',
   tooMany: 'the call names too many paths to read',
   interrupted: 'the call was interrupted',
 } as const
+
+/** The bypass of a nested `claude` run, which does not inherit the open blocks. */
+export const NESTED_SESSION = 'a nested session'
 
 /** How deep `sh -c`, `eval`, command substitutions, and scripts may nest. */
 const MAX_DEPTH = 3
@@ -46,10 +51,10 @@ const MAX_WORK = 4_000_000
 /** One word value: its text, whether it represents glob matches, and a pattern that preserves quoted wildcard positions. */
 type Value = { selected?: true; text: string; glob: boolean; pattern?: string; globOptions?: Effect['globOptions']; selection?: Effect['selection'] }
 
-/** A word as the walker sees it: its text as typed, and its values (undefined when it does not resolve); `upstream` marks an operand that reaches below its paths, as one that `xargs` or `find -exec` takes from what came before; `process` marks a process substitution, whose generated file name is unknown. */
-type Operand = { raw: string; values: Value[] | undefined; upstream?: true; process?: true }
+/** A word as the walker sees it: its text as typed, and its values (undefined when it does not resolve); `upstream` marks an operand that reaches below its paths, as one that `xargs` or `find -exec` takes from what came before; `process` marks a process substitution, whose generated file name is unknown; `possible` holds, for a word that does not resolve, the values that the default or the alternate of a parameter operator gives it. */
+type Operand = { raw: string; values: Value[] | undefined; upstream?: true; process?: true; possible?: Value[] }
 
-/** The shell state one command line runs in; `reaching` names the variables bound to operands that reach below their paths. The links made and the files written are on disk, so every copy shares them. */
+/** The shell state one command line runs in; `reaching` names the variables bound to operands that reach below their paths; `possible` holds the possible values of a variable that has no known value, from an assignment of a parameter operator's default; `functions` holds the bodies of the functions defined so far and `named` the text of each alias. The links made and the files written are on disk, so every copy shares them. */
 type State = {
   status?: boolean
   terminated?: boolean
@@ -69,10 +74,13 @@ type State = {
   emptyEnv: boolean
   aliases: Map<string, string>
   written: Map<string, string | undefined>
+  functions: Map<string, Simple>
+  named: Map<string, string>
+  possible: Map<string, Value[]>
 }
 
-/** One command with its redirections and optional compound body. */
-type Simple = { words: Word[]; redirects: Redirect[]; body?: Pipeline[]; subshell?: boolean; branches?: { condition?: Pipeline[]; body: Pipeline[] }[]; definition?: true; loop?: { condition?: Pipeline[]; until?: boolean; name?: string; words?: Word[] } }
+/** One command with its redirections and optional compound body; `definition` names the function that the command defines, or is empty for a name that is not plain text, and `exits` marks a function body that names `return` or `exit`. */
+type Simple = { words: Word[]; redirects: Redirect[]; body?: Pipeline[]; subshell?: boolean; branches?: { condition?: Pipeline[]; body: Pipeline[] }[]; definition?: string; exits?: true; loop?: { condition?: Pipeline[]; until?: boolean; name?: string; words?: Word[] } }
 
 /** One pipeline and the operator that follows it. */
 type Pipeline = { commands: Simple[]; negate: boolean; after: string }
@@ -83,11 +91,12 @@ type Redirected = { redirect: Redirect; target: Operand; text?: { text: string; 
 /** A descriptor's open destination, including inherited output streams and closed descriptors. */
 type Destination = Redirected | 'stdout' | 'stderr' | undefined
 
-/** What a command reads on stdin, and what it hands the next stage: nothing, literal text, a file's content, a listing of paths at or below `paths`, decoded text, or anything else. */
-type Stdin = { kind: 'none' } | { kind: 'literal'; text: string; uncertain?: true; positions?: number[] } | { kind: 'script'; path: string } | { kind: 'paths'; paths: Operand[]; separator: string } | { kind: 'decoder' } | { kind: 'other' }
+/** What a command reads on stdin, and what it hands the next stage: nothing, literal text, a file's content, a listing of paths at or below `paths`, decoded text, or anything else, which `closed` marks as a stdin that `<&-` closed. */
+type Stdin = { kind: 'none' } | { kind: 'literal'; text: string; uncertain?: true; positions?: number[] } | { kind: 'script'; path: string } | { kind: 'paths'; paths: Operand[]; separator: string } | { kind: 'decoder' } | { kind: 'other'; closed?: true }
 
 const NONE: Stdin = { kind: 'none' }
 const OTHER: Stdin = { kind: 'other' }
+const CLOSED: Stdin = { kind: 'other', closed: true }
 const DECODER: Stdin = { kind: 'decoder' }
 
 /** A command's flags and the values of its value-taking flags. */
@@ -116,6 +125,8 @@ class Walk {
   values = 0
   /** How much work the analysis has done so far. */
   work = 0
+  /** The aliases whose text is being walked, which do not expand again inside it. */
+  readonly expanding = new Set<string>()
 
   constructor(home: string | undefined, io: Io) {
     this.home = home
@@ -180,7 +191,9 @@ const ESCAPED = /\\(x[0-9a-fA-F]|[0-7])|%b/
 const GIT_GLOBAL_VALUES = new Set(['-C', '-c', '--git-dir', '--work-tree', '--namespace'])
 const MARK = /\uE000([0-9]+)\uE001/g
 const MARKED = /[\uE000\uE001]/
-const IN_PLACE_CLUSTER = /^-[A-Za-z]*i$/
+const IN_PLACE_CLUSTER = /^-[A-Za-z]*[iI]$/
+const CLAUDE_NAME = /^claude(?:-code)?$/i
+const CLAUDE_VERSION = /\/claude\/versions\/[^/]+$/i
 
 /** Analyzes one shell command line. */
 export async function analyzeShell(command: string, ctx: Context, io: Io): Promise<Analysis> {
@@ -191,25 +204,27 @@ export async function analyzeShell(command: string, ctx: Context, io: Io): Promi
 
 /** A fresh shell with its folder and HOME inherited from the environment. */
 function freshState(cwd: string | undefined): State {
-  return { cwd, prev: undefined, stack: [], positional: [], vars: new Map(), reaching: new Set(), exported: new Set(['HOME']), removed: new Set(), emptyEnv: false, aliases: new Map(), written: new Map() }
+  return { cwd, prev: undefined, stack: [], positional: [], vars: new Map(), reaching: new Set(), exported: new Set(['HOME']), removed: new Set(), emptyEnv: false, aliases: new Map(), written: new Map(), functions: new Map(), named: new Map(), possible: new Map() }
 }
 
 /** A copy of the state for a subshell or nested code; the links made and the files written stay shared, as on disk. */
 function fork(walk: Walk, state: State): State {
-  if (!walk.charge(8 * (state.vars.size + state.reaching.size + state.exported.size + state.removed.size + 1))) return freshState(state.cwd)
-  return { ...state, vars: new Map(state.vars), reaching: new Set(state.reaching), exported: new Set(state.exported), removed: new Set(state.removed) }
+  if (!walk.charge(8 * (state.vars.size + state.reaching.size + state.exported.size + state.removed.size + state.functions.size + state.named.size + state.possible.size + 1))) return freshState(state.cwd)
+  return { ...state, vars: new Map(state.vars), reaching: new Set(state.reaching), exported: new Set(state.exported), removed: new Set(state.removed), functions: new Map(state.functions), named: new Map(state.named), possible: new Map(state.possible) }
 }
 
-/** The state of a child process: exported variables and the shared files, in the current folder. */
+/** The state of a child process: exported variables and their possible values, the functions, and the shared files, in the current folder. */
 function sharedFresh(walk: Walk, state: State): State {
-  if (!walk.charge(state.exported.size + state.removed.size + 1)) return freshState(state.cwd)
-  const child = { ...freshState(state.cwd), execdir: state.execdir, aliases: state.aliases, written: state.written, removed: new Set(state.removed), emptyEnv: state.emptyEnv }
+  if (!walk.charge(state.exported.size + state.removed.size + state.functions.size + 1)) return freshState(state.cwd)
+  const child = { ...freshState(state.cwd), execdir: state.execdir, aliases: state.aliases, written: state.written, removed: new Set(state.removed), emptyEnv: state.emptyEnv, functions: new Map(state.functions) }
   child.exported = new Set(state.exported)
   if (!state.exported.has('HOME')) child.removed.add('HOME')
   for (const name of state.exported) {
     const value = state.vars.get(name)
     if (value !== undefined) child.vars.set(name, value)
     if (state.reaching.has(name)) child.reaching.add(name)
+    const possible = state.possible.get(name)
+    if (possible !== undefined) child.possible.set(name, possible)
   }
   return child
 }
@@ -264,6 +279,13 @@ function mergeVariables(walk: Walk, state: State, before: State): void {
   }
   for (const name of before.exported) state.exported.add(name)
   for (const name of state.removed) if (!before.removed.has(name)) state.removed.delete(name)
+  if (!walk.charge(before.functions.size + before.named.size + before.possible.size)) return
+  for (const [name, body] of before.functions) if (!state.functions.has(name)) state.functions.set(name, body)
+  for (const [name, text] of before.named) if (!state.named.has(name)) state.named.set(name, text)
+  for (const [name, values] of before.possible) {
+    const merged = state.vars.has(name) ? [] : alternatives(walk, [...state.possible.get(name) ?? [], ...values])
+    if (merged.length > 0 && merged.length <= MAX_VALUES) state.possible.set(name, merged)
+  }
   if (state.positional !== before.positional) mergePositional(walk, state, before)
   state.globOptions = { dot: before.globOptions?.dot || state.globOptions?.dot, nocase: before.globOptions?.nocase || state.globOptions?.nocase }
   state.noglob = state.noglob && before.noglob
@@ -343,11 +365,13 @@ class Commands {
     const text = this.text()
     if ((text === 'function' && this.tokens[this.at + 1]?.type === 'word') || (text !== '' && this.text(1) === '(' && this.text(2) === ')')) {
       this.at += text === 'function' ? 1 : 0
+      const name = this.text()
       this.at += 1
       if (this.text() === '(') { this.at += 1; this.take(')') }
+      const start = this.at
       const body = this.command(nesting + 1)
       if (body.body === undefined) throw new Error(UNPARSED)
-      return { ...body, definition: true }
+      return { ...body, definition: name, ...(this.tokens.slice(start, this.at).some(namesExit) ? { exits: true as const } : {}) }
     }
     if (text === '(' || text === '{') {
       this.at += 1
@@ -542,9 +566,20 @@ function leadingAssignments(words: readonly Word[]): number {
   return index < 0 ? words.length : index
 }
 
-/** Runs one simple command: assignments, wrappers, the program, and the redirections; returns what it hands the next stage. */
+/** `return` or `exit` as a name of its own anywhere in a text, also inside quotes or a substitution. */
+const EXITS = /(?:^|[^A-Za-z0-9_])(?:return|exit)(?![A-Za-z0-9_])/
+
+/** Whether a token names `return` or `exit` anywhere: in a word, a redirection's target, or a heredoc. */
+function namesExit(token: Token): boolean {
+  if (token.type === 'word') return EXITS.test(wordText(token.word))
+  return token.type === 'redirect' && (EXITS.test(wordText(token.redirect.target)) || EXITS.test(token.redirect.heredoc?.text ?? ''))
+}
+
+/** Runs one simple command: assignments, wrappers, the program, and the redirections; returns what it hands the next stage. A function definition is kept for its calls, unless its body names `return` or `exit`, which forgets the name; a command whose program word names an alias also walks the alias text with the rest of the command. */
 async function runSimple(walk: Walk, command: Simple, state: State, piped: Stdin): Promise<Stdin> {
-  if (command.definition) {
+  if (command.definition !== undefined) {
+    if (command.exits) state.functions.delete(command.definition)
+    else if (command.definition !== '' && walk.charge(1)) state.functions.set(command.definition, { ...command, definition: undefined })
     state.status = true
     return NONE
   }
@@ -554,6 +589,7 @@ async function runSimple(walk: Walk, command: Simple, state: State, piped: Stdin
   while (KEYWORDS.has(wordText(command.words[start] ?? []))) start += 1
   if (start > 0) command = { ...command, words: command.words.slice(start) }
   const leading = leadingAssignments(command.words)
+  await expandAlias(walk, command, leading, state, piped)
   const isDeclaration = ASSIGNERS.has(wordText(command.words[leading] ?? []))
   const words: Operand[] = []
   for (const word of command.words.slice(leading)) {
@@ -604,6 +640,31 @@ async function runSimple(walk: Walk, command: Simple, state: State, piped: Stdin
   return descriptors.get(1) === 'stdout' ? result.output : NONE
 }
 
+/** Walks the text of the alias that a command's program word names, unquoted, with the command's other words and its redirections after it, one level deeper, in a copy of the shell and of its input, so the command still reads as it does without the alias; an alias does not expand again inside its own text. */
+async function expandAlias(walk: Walk, command: Simple, leading: number, state: State, piped: Stdin): Promise<void> {
+  const word = command.words[leading]
+  const name = word?.length === 1 && word[0]?.kind === 'text' && !word[0].quoted ? word[0].text : undefined
+  const text = name === undefined || walk.expanding.has(name) ? undefined : state.named.get(name)
+  if (name === undefined || text === undefined) return
+  if (walk.depth >= MAX_DEPTH) {
+    walk.fail(OPAQUE.tooDeep)
+    return
+  }
+  if (!walk.charge(text.length)) return
+  const lexed = lex(text)
+  if ('error' in lexed) {
+    walk.fail(lexed.error)
+    return
+  }
+  const words = (list: readonly Word[]): Token[] => list.map(part => ({ type: 'word', word: part }))
+  const tokens: Token[] = [...words(command.words.slice(0, leading)), ...lexed.tokens, ...words(command.words.slice(leading + 1)), ...command.redirects.map(redirect => ({ type: 'redirect' as const, redirect }))]
+  walk.expanding.add(name)
+  walk.depth += 1
+  await runTokens(walk, tokens, fork(walk, state), copied(piped))
+  walk.depth -= 1
+  walk.expanding.delete(name)
+}
+
 /** Runs resolved command words, expanding each xargs invocation separately within the nesting and work limits. */
 async function runCommand(walk: Walk, words: readonly Operand[], state: State, stdin: Stdin): Promise<{ program: string; output: Stdin; status?: boolean }> {
   const stripped = stripWrappers(walk, words, state)
@@ -632,6 +693,8 @@ async function runCommand(walk: Walk, words: readonly Operand[], state: State, s
   if (head !== undefined && word === undefined) walk.fail(OPAQUE.variableProgram)
   const run: Run = { walk, state: at, program: word === undefined ? '' : programOf(word, at.cwd), args, stdin }
   let status: boolean | undefined
+  const body = word === undefined ? undefined : at.functions.get(word)
+  if (body !== undefined) await callFunction(walk, body, args, at, stdin)
   if (head !== undefined && word !== undefined) {
     addSegment(run)
     const result = await dispatch(run, head)
@@ -641,10 +704,30 @@ async function runCommand(walk: Walk, words: readonly Operand[], state: State, s
   return { program: run.program, output: produce(run), status }
 }
 
-/** The program a command word names: its base name, or for a path to a program Arrester does not know, the script's absolute path. */
+/** Walks the body of a function that a command calls, one level deeper, in a copy of the caller's shell with the call's arguments as its positional parameters and a copy of its input, so the call still reads as it does without the function. */
+async function callFunction(walk: Walk, body: Simple, args: readonly Operand[], state: State, stdin: Stdin): Promise<void> {
+  if (walk.depth >= MAX_DEPTH) {
+    walk.fail(OPAQUE.tooDeep)
+    return
+  }
+  const scope = fork(walk, state)
+  setPositional(walk, scope, args)
+  walk.depth += 1
+  await runSimple(walk, body, scope, copied(stdin))
+  walk.depth -= 1
+}
+
+/** A copy of a command's input that a walk can read without moving the original's position. */
+function copied(stdin: Stdin): Stdin {
+  return stdin.kind === 'literal' ? { ...stdin } : stdin
+}
+
+/** The program a command word names: its base name, or for a path to a program Arrester does not know, the script's absolute path. `claude` in any letter case, `claude-code`, and a `claude/versions/<version>` path name `claude`. */
 function programOf(word: string, cwd: string | undefined): string {
   const name = basenameOf(word)
-  return word.includes('/') && !isKnown(name) ? (absolute(word, cwd) ?? word) : name
+  const path = word.includes('/') ? (absolute(word, cwd) ?? word) : word
+  if (CLAUDE_NAME.test(name) || CLAUDE_VERSION.test(path)) return 'claude'
+  return word.includes('/') && !isKnown(name) ? path : name
 }
 
 /** Gives a command's operands their effects by the program's class, and walks or scans the code it runs. */
@@ -659,6 +742,8 @@ async function dispatch(run: Run, head: Operand): Promise<boolean | void> {
   }
   else if (program === 'shopt' || program === 'setopt' || program === 'unsetopt') globSettings(run)
   else if (program === 'shift' || program === 'set') return positionalChange(run)
+  else if (program === 'alias') defineAliases(run)
+  else if (program === 'su' || program === 'runuser') return switchUser(run)
   else if (program === 'read') return readVariables(run)
   else if (program === 'printf' && textOf(run.args[0]) === '-v') return printfVariable(run)
   else if (program === 'exit') {
@@ -684,7 +769,7 @@ async function dispatch(run: Run, head: Operand): Promise<boolean | void> {
   else if (program === 'git') git(run)
   else if (program === 'gh') github(run)
   else if (program === 'claude') {
-    run.walk.bypass ??= guardChange(run.walk, run.args)
+    run.walk.bypass ??= guardChange(run.walk, run.args) ?? nestedSession(run.args)
     unknownProgram(run)
   }
   else if (SHELLS.has(program)) return shell(run)
@@ -804,6 +889,17 @@ function printfVariable(run: Run): boolean | undefined {
   return text === undefined ? undefined : true
 }
 
+/** `alias NAME=TEXT`: records the text of each alias; a definition that does not resolve to one text forgets the alias. */
+function defineAliases(run: Run): void {
+  for (const arg of run.args) {
+    const definition = /^([^\s=/$`'"\\]+)=/.exec(soleText(arg) ?? arg.raw)
+    if (definition === null) continue
+    const text = soleText(arg)
+    if (text === undefined) run.state.named.delete(definition[1]!)
+    else run.state.named.set(definition[1]!, text.slice(definition[0].length))
+  }
+}
+
 /** Tracks explicit glob options and noexec in the current shell only. */
 function globSettings(run: Run): void {
   if (run.program === 'shopt' && !run.args.some(arg => ['-s', '-u'].includes(textOf(arg)))) return
@@ -894,6 +990,7 @@ async function runLoop(walk: Walk, command: Simple, state: State, input: Stdin):
       return OTHER
     }
     const name = loop.name!
+    state.possible.delete(name)
     if (words.some(word => word.values === undefined)) state.vars.delete(name)
     else state.vars.set(name, words.flatMap(word => word.values ?? []))
     if (words.some(word => word.upstream)) state.reaching.add(name)
@@ -943,34 +1040,99 @@ function pathOf(cwd: string | undefined, operand: Operand | undefined): string |
   return value === undefined || value.glob ? undefined : absolute(value.text, cwd)
 }
 
-/** A program whose operands all get one kind of effect; `shuf` also writes its output file and reads its random source, and with `-e` its operands are words, not files. */
+/** A program whose operands all get one kind of effect; `base64` also reads its `-i` file, `base64` and `sort` write their `-o` file, other than `-`; `shuf` also writes its output file and reads its random source, and with `-e` its operands are words, not files. */
 function plain(run: Run, kind: EffectKind): void {
   const parsed = parse(run.args, valuesOf(run.program))
   const recursive = isRecursive(run.program, parsed.flags)
   const isShuf = run.program === 'shuf'
   if (!isShuf || !hasFlag(parsed.flags, 'e', ['--echo'])) for (const operand of parsed.operands) addEffect(run, operand, kind, recursive)
+  if (run.program === 'base64' || run.program === 'sort') {
+    const files = (flags: readonly string[]): Operand[] => flags.flatMap(flag => parsed.given.get(flag) ?? []).filter(file => textOf(file) !== '-')
+    if (run.program === 'base64') for (const file of files(['-i', '--input'])) addEffect(run, file, 'read', false)
+    for (const file of files(['-o', '--output'])) addEffect(run, file, 'write', false)
+  }
   if (!isShuf) return
   for (const file of [...parsed.given.get('-o') ?? [], ...parsed.given.get('--output') ?? []]) addEffect(run, file, 'write', false)
   for (const file of parsed.given.get('--random-source') ?? []) addEffect(run, file, 'read', false)
 }
 
-/** A program whose first operand is code or a pattern unless a flag gives it; flag files are read; `sed -i` writes. */
+/** A program whose first operand is code or a pattern unless a flag gives it; flag files are read; `sed -i` and BSD `sed -I`, also in a cluster such as `-Ei`, write. A search with a pattern and no file searches the current folder. */
 function codeOrPatternFirst(run: Run): void {
   const isSed = run.program === 'sed'
   const args = isSed ? run.args.filter((operand, index) => !(textOf(operand) === '' && IN_PLACE_CLUSTER.test(textOf(run.args[index - 1])))) : run.args
   const parsed = parse(args, valuesOf(run.program))
-  const { files, operands } = codeOperands(parsed)
-  const inPlace = isSed && parsed.flags.some(flag => flag.startsWith('-i') || flag.startsWith('--in-place'))
+  const { files, operands, hasCode } = codeOperands(parsed)
+  const inPlace = isSed && (parsed.given.has('-i') || parsed.given.has('-I') || parsed.flags.some(flag => flag.startsWith('-i') || flag.startsWith('--in-place')))
   const recursive = isRecursive(run.program, parsed.flags)
   for (const file of files) addEffect(run, file, 'read', false)
   for (const operand of operands) addEffect(run, operand, inPlace ? 'write' : 'read', recursive)
+  if (PATTERN_FIRST.has(run.program) && hasCode && operands.length === 0) searchHere(run, parsed)
 }
 
-/** The files a program whose first operand is code or a pattern reads through its flags, and its operands after that first one, or all of them when a flag gives the code or the pattern. */
-function codeOperands(parsed: Parsed): { files: Operand[]; operands: Operand[] } {
+/** The files a program whose first operand is code or a pattern reads through its flags, its operands after that first one, or all of them when a flag gives the code or the pattern, and whether it has the code or the pattern. */
+function codeOperands(parsed: Parsed): { files: Operand[]; operands: Operand[]; hasCode: boolean } {
   const files = ['-f', '--file', '--from-file'].flatMap(flag => parsed.given.get(flag) ?? [])
   const isGiven = files.length > 0 || ['-e', '--regexp', '--expression'].some(flag => parsed.given.has(flag))
-  return { files, operands: parsed.operands.slice(isGiven ? 0 : 1) }
+  return { files, operands: parsed.operands.slice(isGiven ? 0 : 1), hasCode: isGiven || parsed.operands.length > 0 }
+}
+
+/** The grep programs that search the current folder only with `-r` or `-R`, also when stdin holds data. */
+const GREPS = new Set(['grep', 'egrep', 'fgrep', 'ugrep'])
+
+/** Flags with which a search program prints something else and searches no file. */
+const NO_SEARCH = ['--files', '--type-list', '--help', '--version']
+
+/** The rg flags that pick the files that a search reads by a glob or a type. */
+const RG_FILTERS = ['-g', '--glob', '--iglob', '-t', '-T', '--type', '--type-not', '--type-add']
+
+/** The long flags of grep and ugrep that pick the files that a search reads by a name, a glob, a type, or an ignore file; grep refuses the ones it does not have. */
+const GREP_FILTERS = ['--include', '--exclude', '--exclude-dir', '--exclude-from', '--include-dir', '--include-from', '--include-fs', '--exclude-fs', '--glob', '--iglob', '--file-extension', '--file-type', '--file-magic', '--ignore-files']
+
+/** The long flags of ag that pick no files; every other long flag, such as `--ignore` or a file type such as `--js`, picks the files that a search reads. */
+const AG_OPTIONS = new Set(['--ackmate', '--affinity', '--no-affinity', '--noaffinity', '--after', '--all-text', '--all-types', '--before', '--break', '--no-break', '--nobreak', '--case-sensitive', '--color', '--no-color', '--nocolor', '--color-line-number', '--color-match', '--color-path', '--color-win-ansi', '--column', '--context', '--count', '--debug', '--depth', '--filename', '--no-filename', '--nofilename', '--files-with-matches', '--files-without-matches', '--fixed-strings', '--follow', '--no-follow', '--nofollow', '--group', '--no-group', '--nogroup', '--heading', '--no-heading', '--noheading', '--help', '--hidden', '--ignore-case', '--invert-match', '--line-numbers', '--list-file-types', '--literal', '--match', '--max-count', '--mmap', '--no-mmap', '--nommap', '--multiline', '--no-multiline', '--nomultiline', '--numbers', '--no-numbers', '--nonumbers', '--pager', '--no-pager', '--nopager', '--no-recurse', '--norecurse', '--null', '--only-matching', '--one-device', '--parallel', '--passthrough', '--passthru', '--print0', '--print-all-files', '--print-long-lines', '--recurse', '--search-binary', '--search-files', '--search-zip', '--silent', '--skip-vcs-ignores', '--smart-case', '--stats', '--stats-only', '--unrestricted', '--version', '--vimgrep', '--width', '--word-regexp', '--workers'])
+
+/** The short flags that pick the files that a search reads, also in a cluster: `-O`, `-t`, `-g`, and `-M` for ugrep, and `-G`, `-g`, and `-p` for ag. */
+const SHORT_FILTERS: ReadonlyMap<string, RegExp> = new Map([['ugrep', /^-[A-Za-z0-9]*[OtgM]/], ['ag', /^-[A-Za-z0-9]*[Ggp]/]])
+
+/** Every entry below the current folder whose path has no hidden name, which rg and ag search by default. */
+const VISIBLE: Operand = { raw: '**/*', values: [{ text: '**/*', glob: true }] }
+
+/** A search with a pattern that names no file: grep, egrep, fgrep, and ugrep with `-r` read the whole current folder. rg and ag read it when their stdin holds no data, all of it when a flag shows hidden names, else only its visible entries. A search with a file filter or a depth limit reads no folder. */
+function searchHere(run: Run, parsed: Parsed): void {
+  if (parsed.flags.some(flag => NO_SEARCH.includes(flag)) || isFiltered(run.program, parsed) || isShallow(run.program, parsed)) return
+  if (GREPS.has(run.program)) {
+    if (hasFlag(parsed.flags, 'rR', ['--recursive', '--dereference-recursive'])) addEffect(run, fixed('.'), 'read', true)
+    return
+  }
+  const { stdin } = run
+  const isEmpty = stdin.kind === 'none' || (stdin.kind === 'script' && stdin.path === '/dev/null') || (stdin.kind === 'other' && stdin.closed === true)
+  if (!isEmpty) return
+  addEffect(run, showsHidden(run.program, parsed) ? fixed('.') : VISIBLE, 'read', true)
+}
+
+/** Whether a search picks the files that it reads: rg by a glob or a type, grep and ugrep by a name, a glob, a type, or an ignore file, and ag by a pattern, an ignore rule, or a file type. */
+function isFiltered(program: string, parsed: Parsed): boolean {
+  if (program === 'rg') return RG_FILTERS.some(flag => parsed.given.has(flag))
+  const short = SHORT_FILTERS.get(program)
+  return parsed.flags.some(flag => (flag.startsWith('--') ? (program === 'ag' ? !AG_OPTIONS.has(flag) : GREP_FILTERS.includes(flag)) : short?.test(flag) === true))
+}
+
+/** A ugrep digit flag that limits the depth, such as `-1`, `-rn2`, or `-3,5`, with no letter before it that takes the rest of the word as a value, such as `-J4`. */
+const UGREP_DEPTH = /^-[A-IL-MO-PR-Ya-z]*[0-9]/
+
+/** Whether a search limits how deep it goes: rg with `-d`, `--max-depth`, or `--maxdepth`, ag with `-n`, `--norecurse`, or a last `--depth` of zero or more, as `-1` sets no limit, and ugrep with `--depth` or a digit flag; grep's digit flags give context lines. */
+function isShallow(program: string, parsed: Parsed): boolean {
+  if (program === 'rg') return parsed.given.has('-d') || parsed.flags.some(flag => flag === '--max-depth' || flag === '--maxdepth')
+  if (program === 'ag') return hasFlag(parsed.flags, 'n', ['--norecurse', '--no-recurse']) || /^[0-9]+$/.test(textOf(parsed.given.get('--depth')?.slice(-1)[0]))
+  return program === 'ugrep' && parsed.flags.some(flag => flag === '--depth' || UGREP_DEPTH.test(flag))
+}
+
+/** Whether rg or ag searches hidden names: `--hidden`, `-.` for rg, and two `-u` for rg, one for ag. */
+function showsHidden(program: string, parsed: Parsed): boolean {
+  const short = parsed.flags.filter(flag => /^-[^-]/.test(flag))
+  const unrestricted = short.reduce((count, flag) => count + [...flag].filter(letter => letter === 'u').length, 0) + parsed.flags.filter(flag => flag === '--unrestricted').length
+  if (parsed.flags.includes('--hidden') || unrestricted >= (program === 'rg' ? 2 : 1)) return true
+  return program === 'rg' && short.some(flag => flag.includes('.'))
 }
 
 /** `chmod`, `chown`, `chgrp`: the first operand is the mode or owner unless `--reference` gives it. */
@@ -993,18 +1155,59 @@ function copyOrMove(run: Run): void {
   if (destination === undefined) return
   const deletes = run.program === 'rsync' && parsed.flags.some(flag => flag.startsWith('--delete'))
   addEffect(run, destination, deletes ? 'destroy' : 'write', recursive)
+  if ((COPY_AS_FILE.has(run.program) && hasFlag(parsed.flags, 'T', ['--no-target-directory'])) || (run.program === 'install' && hasFlag(parsed.flags, 'd', ['--directory'])) || keepsEntries(run.program, parsed)) return
+  const isRsync = run.program === 'rsync'
+  const whole = (run.program === 'cp' && parsed.flags.includes('--parents')) || (isRsync && hasFlag(parsed.flags, 'R', ['--relative']))
+  for (const source of sources) addEffect(run, entryIn(run.walk, destination, source, isRsync, whole), 'write', recursive, false, false)
 }
 
-/** `ln`: the link name is written and its target listed; `ln -s TARGET NAME` makes NAME an alias of TARGET. */
+/** The copy programs whose `-T` makes the destination the file itself, not a folder to copy into; `ln` checks its own. */
+const COPY_AS_FILE = new Set(['cp', 'mv', 'install'])
+
+/** Whether a copy, move, or link into a folder replaces no entry that is there, or changes nothing: `cp` and `mv` with a last `--update=` of `none` or `none-fail`, else with `-n` or `--no-clobber`, and with no `-f` or `-i`; rsync with `-n`, `--dry-run`, or `--ignore-existing`; and `ln` without `-f`, `-i`, `-b`, `-F`, or `-S`. */
+function keepsEntries(program: string, parsed: Parsed): boolean {
+  if (program === 'rsync') return hasFlag(parsed.flags, 'n', ['--dry-run', '--ignore-existing'])
+  if (program === 'ln') return !hasFlag(parsed.flags, 'fibF', ['--force', '--interactive', '--backup']) && !parsed.given.has('-S') && !parsed.given.has('--suffix')
+  if (program !== 'cp' && program !== 'mv') return false
+  const update = parsed.given.get('--update')?.slice(-1)[0]
+  const skips = update === undefined ? hasFlag(parsed.flags, 'n', ['--no-clobber']) : ['none', 'none-fail'].includes(textOf(update))
+  return skips && !hasFlag(parsed.flags, 'fi', ['--force', '--interactive'])
+}
+
+/** The entry that a copy, move, or link of `source` makes when `folder` is a folder: the folder joined with the source's last name, or with its whole path for `cp --parents` and `rsync -R`. A glob last name, a remote word, a dot name, a found entry, and an rsync source with a final slash give none; a glob folder gives a glob entry. A folder or a source that does not resolve takes its possible values, and the entries are then possible ones, charged to the work budget before they are built. */
+function entryIn(walk: Walk, folder: Operand, source: Operand, isRsync: boolean, whole = false): Operand {
+  if (source.upstream === true || source.process === true) return { raw: '', values: [] }
+  const places = folder.values ?? folder.possible ?? []
+  const sources = source.values ?? source.possible ?? []
+  const isPossible = folder.values === undefined || source.values === undefined
+  if (isPossible && !walk.charge(places.length * sources.length)) return { raw: '', values: [] }
+  const values = places.flatMap(place => sources.flatMap(value => {
+    const trimmed = value.text.replace(/\/+$/, '')
+    const name = basenameOf(trimmed)
+    const relative = !whole ? name : isRsync && trimmed.includes('/./') ? trimmed.slice(trimmed.lastIndexOf('/./') + 3) : trimmed.replace(/^\/+/, '')
+    const skip = (value.glob && hasGlob(whole ? relative : name)) || value.selected === true || value.selection !== undefined || place.text === '' || isRemote(place.text) || isRemote(value.text) || ['', '.', '..'].includes(name) || (isRsync && value.text.endsWith('/')) || (place.glob && hasGlob(relative)) || place.selected === true || place.selection !== undefined
+    if (skip) return []
+    const base = (place.pattern ?? place.text).replace(/\/+$/, '')
+    return [{ text: `${place.text.replace(/\/+$/, '')}/${relative}`, glob: place.glob, ...(place.glob && place.pattern !== undefined ? { pattern: `${base}/${relative}` } : {}), ...(place.globOptions === undefined ? {} : { globOptions: place.globOptions }) }]
+  }))
+  return isPossible ? { raw: '', values: undefined, possible: values } : { raw: '', values }
+}
+
+/** `ln`: the link name is written and its target listed; `ln -s TARGET NAME` makes NAME an alias of TARGET. A link into a folder that can replace an entry also writes the entry it makes there, and `ln -f TARGET` alone makes `./<name>`. */
 function link(run: Run): void {
   const parsed = parse(run.args, valuesOf('ln'))
   const directory = parsed.given.get('-t')?.[0] ?? parsed.given.get('--target-directory')?.[0]
   const hasName = directory === undefined && parsed.operands.length > 1
   const targets = hasName ? parsed.operands.slice(0, -1) : parsed.operands
   const name = directory ?? (hasName ? parsed.operands[parsed.operands.length - 1] : undefined)
+  const replaces = !keepsEntries('ln', parsed)
   for (const target of targets) addEffect(run, target, 'list', false)
-  if (name === undefined) return
+  if (name === undefined) {
+    if (targets.length === 1 && replaces) addEffect(run, entryIn(run.walk, fixed('.'), targets[0]!, false), 'write', false, false, false)
+    return
+  }
   addEffect(run, name, 'write', false)
+  if (replaces && !hasFlag(parsed.flags, 'T', ['--no-target-directory'])) for (const target of targets) addEffect(run, entryIn(run.walk, name, target, false), 'write', false, false, false)
   const linkPath = hasName && targets.length === 1 ? pathOf(run.state.cwd, name) : undefined
   const targetText = soleText(targets[0])
   if (linkPath === undefined || targetText === undefined || !hasFlag(parsed.flags, 's', ['--symbolic'])) return
@@ -1052,8 +1255,8 @@ function pathOperands(run: Run, operands: readonly Operand[]): void {
   }
 }
 
-/** One piece of a word's value: its text, whether word splitting applies to it, whether glob characters in it are live, and whether it stands for the names that a glob matched. */
-type Piece = { text: string; split: boolean; live: boolean; matches: boolean; pattern?: string; boundary?: boolean; globOptions?: Effect['globOptions']; selected?: true; selection?: Effect['selection'] }
+/** One piece of a word's value: its text, whether word splitting applies to it, whether glob characters in it are live, and whether it stands for the names that a glob matched; `fields` holds the fields that an unquoted parameter operator's word already split into, and then `text` is them joined by blanks. */
+type Piece = { text: string; split: boolean; live: boolean; matches: boolean; pattern?: string; boundary?: boolean; globOptions?: Effect['globOptions']; selected?: true; selection?: Effect['selection']; fields?: Value[] }
 
 /** Resolves a word the way a command's arguments are: brace expansion, then tilde, variables, and command substitutions, then splitting of unquoted expansions on blanks and globbing; a word can give no operand or several. */
 async function resolveFields(walk: Walk, word: Word, state: State, cache: Substituted): Promise<Operand[]> {
@@ -1068,14 +1271,7 @@ async function resolveFields(walk: Walk, word: Word, state: State, cache: Substi
   const operands: Operand[] = []
   for (const alternative of alternatives) {
     const results = await expand(walk, alternative, state, cache, true)
-    if (results !== undefined && state.shell !== 'zsh' && !state.globstar) for (const fields of results) for (const value of fields) {
-      const pattern = (value.pattern ?? value.text).replace(/(^|\/)\*\*(?=\/)/g, '$1*')
-      if (value.glob && pattern !== value.text) value.pattern = pattern
-    }
-    if (results !== undefined) for (const fields of results) for (const value of fields) {
-      if (state.noglob) value.glob = false
-      else if (value.glob && state.globOptions !== undefined) value.globOptions = { ...value.globOptions, ...state.globOptions }
-    }
+    if (results !== undefined) settle(state, results)
     if (results !== undefined && results.length === 1) for (const field of results[0] as Value[]) operands.push(reaching(alternative, state, { raw, values: [field] }))
     else if (results !== undefined) {
       const width = Math.max(0, ...results.map(fields => fields.length))
@@ -1087,20 +1283,42 @@ async function resolveFields(walk: Walk, word: Word, state: State, cache: Substi
         operands.push(reaching(alternative, state, { raw, values }))
       }
     }
-    else operands.push({ raw, values: undefined })
+    else operands.push({ raw, values: undefined, ...await possibleOf(walk, alternative, state, cache, true) })
   }
   return operands
+}
+
+/** Applies the shell's glob settings to the values of a word: `**` matches one folder outside zsh and `globstar`, `noglob` turns globs off, and the glob options join each glob. */
+function settle(state: State, results: readonly Value[][]): void {
+  if (state.shell !== 'zsh' && !state.globstar) for (const fields of results) for (const value of fields) {
+    const pattern = (value.pattern ?? value.text).replace(/(^|\/)\*\*(?=\/)/g, '$1*')
+    if (value.glob && pattern !== value.text) value.pattern = pattern
+  }
+  for (const fields of results) for (const value of fields) {
+    if (state.noglob) value.glob = false
+    else if (value.glob && state.globOptions !== undefined) value.globOptions = { ...value.globOptions, ...state.globOptions }
+  }
+}
+
+/** The possible values of a word that does not resolve, when a parameter operator or a variable with possible values is in it: the word's values with each such part taking its possible values. */
+async function possibleOf(walk: Walk, word: Word, state: State, cache: Substituted, isFields: boolean): Promise<{ possible?: Value[] }> {
+  if (!word.some(part => part.kind === 'param' || (part.kind === 'var' && state.possible.has(part.name)))) return {}
+  const results = await expand(walk, word, state, cache, isFields, true)
+  if (results === undefined) return {}
+  settle(state, results)
+  return { possible: alternatives(walk, results.flat()) }
 }
 
 /** Resolves a word whole, with no brace expansion, splitting, or globbing, as an assignment, a here-string, and a heredoc are. */
 async function resolveWhole(walk: Walk, word: Word, state: State, cache: Substituted): Promise<Operand> {
   const raw = wordText(word)
-  return reaching(word, state, { raw, values: (await expand(walk, word, state, cache, false))?.flat() })
+  const values = (await expand(walk, word, state, cache, false))?.flat()
+  return reaching(word, state, { raw, values, ...(values === undefined ? await possibleOf(walk, word, state, cache, false) : {}) })
 }
 
 /** The operand, marked as reaching below its paths when a variable in the word does. */
 function reaching(word: Word, state: State, operand: Operand): Operand {
-  return word.some(part => part.kind === 'var' && state.reaching.has(part.name)) ? { ...operand, upstream: true } : operand
+  return word.some(part => (part.kind === 'var' || part.kind === 'param') && state.reaching.has(part.name)) ? { ...operand, upstream: true } : operand
 }
 
 /** The words that brace expansion makes of a word: only unquoted literal text expands, and each other part stands in the expansion as one mark; undefined past MAX_VALUES words. */
@@ -1121,14 +1339,14 @@ function bracesOf(word: Word): Word[] | undefined {
   })
 }
 
-/** The values that each combination of a word's choices gives, as fields or whole. Every command substitution in the word is walked, even when another part leaves it unresolved. The values are counted and their size charged before they are built; undefined when the word does not resolve or passes a limit, which is opaque. */
-async function expand(walk: Walk, word: Word, state: State, cache: Substituted, isFields: boolean): Promise<Value[][] | undefined> {
-  const usesSeparator = word.some(part => part.kind === 'var' && part.name === '*' && part.quoted || isFields && (part.kind === 'sub' || part.kind === 'var' && state.shell !== 'zsh') && !part.quoted)
+/** The values that each combination of a word's choices gives, as fields or whole; with `possible`, a part that does not resolve takes its possible values. Every command substitution in the word is walked, even when another part leaves it unresolved. The values are counted and their size charged before they are built; undefined when the word does not resolve or passes a limit, which is opaque. */
+async function expand(walk: Walk, word: Word, state: State, cache: Substituted, isFields: boolean, possible = false): Promise<Value[][] | undefined> {
+  const usesSeparator = word.some(part => part.kind === 'var' && part.name === '*' && part.quoted || isFields && (part.kind === 'sub' || (part.kind === 'var' || part.kind === 'param') && state.shell !== 'zsh') && !part.quoted)
   const separators = !usesSeparator || state.removed.has('IFS') ? undefined : variable(walk, state, 'IFS')
   const results: Value[][] = []
   let count = 0
   for (const separator of separators ?? [{ text: ' \t\n' }]) {
-    const expanded = await expandWithSeparator(walk, word, state, cache, isFields, separator.text)
+    const expanded = await expandWithSeparator(walk, word, state, cache, isFields, separator.text, possible)
     if (expanded === undefined) return undefined
     count += expanded.reduce((sum, fields) => sum + Math.max(1, fields.length), 0)
     if (count > MAX_VALUES) return failed(walk)
@@ -1137,9 +1355,9 @@ async function expand(walk: Walk, word: Word, state: State, cache: Substituted, 
   return results
 }
 
-/** Expands a word using one field separator for both splitting and positional joining. */
-async function expandWithSeparator(walk: Walk, word: Word, state: State, cache: Substituted, isFields: boolean, ifs: string): Promise<Value[][] | undefined> {
-  const choices = (await piecesOf(walk, word, state, cache, ifs))?.map(options => alternatives(walk, options))
+/** Expands a word using one field separator for both splitting and positional joining; with `splitText`, its unquoted literal text splits too, as the word of an unquoted parameter operator does. */
+async function expandWithSeparator(walk: Walk, word: Word, state: State, cache: Substituted, isFields: boolean, ifs: string, possible = false, splitText = false): Promise<Value[][] | undefined> {
+  const choices = (await piecesOf(walk, word, state, cache, ifs, isFields, possible, splitText))?.map(options => alternatives(walk, options))
   if (choices === undefined || walk.isSpent()) return undefined
   let combos = 1
   for (const options of choices) {
@@ -1166,7 +1384,7 @@ async function expandWithSeparator(walk: Walk, word: Word, state: State, cache: 
   if (isFields) for (const options of choices) {
     let extra = 0
     for (const piece of options) {
-      extra = Math.max(extra, (piece.boundary ? 1 : 0) + (piece.split ? splitFields(piece.text, separators) - 1 : 0))
+      extra = Math.max(extra, (piece.boundary ? 1 : 0) + (piece.split ? splitFields(piece.text, separators) - 1 : 0) + Math.max(0, (piece.fields?.length ?? 1) - 1))
     }
     fieldsPerCombo += extra
   }
@@ -1186,8 +1404,8 @@ async function expandWithSeparator(walk: Walk, word: Word, state: State, cache: 
   return results
 }
 
-/** The choices of each part of a word; undefined when a part does not resolve. */
-async function piecesOf(walk: Walk, word: Word, state: State, cache: Substituted, ifs: string): Promise<Piece[][] | undefined> {
+/** The choices of each part of a word; undefined when a part does not resolve. With `possible`, a variable without a value takes its possible values and a parameter operator on it the values of its word; with `splitText`, unquoted literal text splits. */
+async function piecesOf(walk: Walk, word: Word, state: State, cache: Substituted, ifs: string, isFields: boolean, possible: boolean, splitText: boolean): Promise<Piece[][] | undefined> {
   const choices: Piece[][] = []
   let isResolved = true
   for (const [index, part] of word.entries()) {
@@ -1199,7 +1417,7 @@ async function piecesOf(walk: Walk, word: Word, state: State, cache: Substituted
         texts = (homes ?? [undefined]).map(home => tilde(part.text, home?.text))
       }
       if (texts.some(text => text === undefined)) isResolved = false
-      else choices.push(texts.map(text => ({ text: text!, split: false, live: !part.quoted, matches: false })))
+      else choices.push(texts.map(text => ({ text: text!, split: splitText && !part.quoted, live: !part.quoted, matches: false })))
     } else if (part.kind === 'var') {
       if (part.name === '@' || part.name === '*') {
         if (state.positional === undefined) {
@@ -1217,9 +1435,13 @@ async function piecesOf(walk: Walk, word: Word, state: State, cache: Substituted
         }
         continue
       }
-      const values = variable(walk, state, part.name)
+      const values = variable(walk, state, part.name) ?? (possible ? state.possible.get(part.name) : undefined)
       if (values === undefined) isResolved = false
-      else choices.push(values.map(value => ({ text: value.text, split: !part.quoted && state.shell !== 'zsh', live: !part.quoted && state.shell !== 'zsh', matches: value.glob, pattern: value.pattern, selected: value.selected, selection: value.selection, globOptions: value.globOptions })))
+      else choices.push(valuePieces(values, !part.quoted && state.shell !== 'zsh'))
+    } else if (part.kind === 'param') {
+      const pieces = await parameter(walk, part, state, cache, ifs, isFields, possible)
+      if (pieces === undefined) isResolved = false
+      else choices.push(pieces)
     } else if (part.kind === 'sub') {
       if (!cache.has(part)) cache.set(part, await substitution(walk, part.command, state, NONE))
       const value = cache.get(part)
@@ -1231,6 +1453,83 @@ async function piecesOf(walk: Walk, word: Word, state: State, cache: Substituted
     }
   }
   return isResolved ? choices : undefined
+}
+
+/** The pieces of a variable's values; `split` when the expansion is unquoted outside zsh, so it splits and its glob characters are live. */
+function valuePieces(values: readonly Value[], split: boolean): Piece[] {
+  return values.map(value => ({ text: value.text, split, live: split, matches: value.glob, pattern: value.pattern, selected: value.selected, selection: value.selection, globOptions: value.globOptions }))
+}
+
+/** The parameter operators that give a default, or assign one. */
+const DEFAULTS = new Set(['-', ':-', '=', ':='])
+
+/** The parameter operators that give an alternate. */
+const ALTERNATES = new Set(['+', ':+'])
+
+/** The choices of a parameter operator over a variable's tracked values: `-` gives the word when the variable is unset, and `:-` also when it is empty; `=` and `:=` also assign it; `+` and `:+` give the word in the other cases, else nothing; `#` and `##` remove a literal prefix, `%` and `%%` a literal suffix; `length` gives the length of a value that is no glob or found entry. The word, and the command substitutions in it, run only when the shell can expand it. For a variable without a value, the part does not resolve, and with `possible` it takes the values of its word, beside a default's possible values of the variable. Undefined when the part does not resolve. */
+async function parameter(walk: Walk, part: Extract<Part, { kind: 'param' }>, state: State, cache: Substituted, ifs: string, isFields: boolean, possible: boolean): Promise<Piece[] | undefined> {
+  const { name, op } = part
+  const split = !part.quoted && state.shell !== 'zsh'
+  const values = name === '@' || name === '*' ? undefined : variable(walk, state, name)
+  const set = name === '@' || name === '*' ? undefined : isSet(walk, state, name)
+  if (op === 'length') {
+    if (values === undefined || values.some(value => value.glob || value.selected || value.selection !== undefined) || !walk.charge(values.reduce((sum, value) => sum + value.text.length, 0))) return undefined
+    return values.map(value => ({ text: String([...value.text].length), split: false, live: false, matches: false }))
+  }
+  const colon = op.startsWith(':')
+  const empty = (value: Value): boolean => set === false || (colon && value.text === '')
+  if (!DEFAULTS.has(op) && !ALTERNATES.has(op)) return affix(walk, part, values, state, cache, ifs)
+  const assigns = op.endsWith('=')
+  if (ALTERNATES.has(op)) {
+    const uses = values === undefined || values.some(value => !empty(value))
+    const word = uses ? await wordPieces(walk, part.word, state, cache, ifs, possible, isFields && split) : []
+    if (values === undefined && set !== true && !possible) return undefined
+    if (word === undefined) return undefined
+    return [...values?.some(empty) === true ? [{ text: '', split, live: false, matches: false }] : [], ...word]
+  }
+  if (values === undefined && set === true && !colon) return undefined
+  const kept = (values ?? []).filter(value => !empty(value))
+  const uses = values === undefined || values.some(empty)
+  if (!uses) return valuePieces(kept, split)
+  if (!assigns) {
+    const word = await wordPieces(walk, part.word, state, cache, ifs, possible, isFields && split)
+    if (values === undefined) return possible && word !== undefined ? [...valuePieces(state.possible.get(name) ?? [], split), ...word] : undefined
+    return word === undefined ? undefined : [...valuePieces(kept, split), ...word]
+  }
+  const assigned = (await expandWithSeparator(walk, part.word, state, cache, false, ifs, possible))?.flat()
+  if (!possible && /^[A-Za-z_][A-Za-z0-9_]*$/.test(name)) {
+    const all = values === undefined || assigned === undefined ? undefined : alternatives(walk, [...kept, ...assigned])
+    const known = all !== undefined && all.length > MAX_VALUES ? failed(walk) : all
+    const word = assigned ?? (await expandWithSeparator(walk, part.word, state, cache, false, ifs, true))?.flat()
+    const others = values === undefined ? state.possible.get(name) ?? [] : kept
+    assign(walk, state, { raw: `${name}=`, values: known?.map(value => ({ ...value, text: `${name}=${value.text}` })), ...(known === undefined && word !== undefined ? { possible: alternatives(walk, [...others, ...word]).map(value => ({ ...value, text: `${name}=${value.text}` })) } : {}) })
+  }
+  if (values === undefined) return possible && assigned !== undefined ? valuePieces([...state.possible.get(name) ?? [], ...assigned], split) : undefined
+  return assigned === undefined ? undefined : valuePieces([...kept, ...assigned], split)
+}
+
+/** The choices of `#`, `##`, `%`, or `%%` over a variable's tracked values that are no globs or found entries: the pattern word always runs, and a pattern that resolves to one text with no glob, escape, or group character removes that literal prefix or suffix; undefined otherwise. */
+async function affix(walk: Walk, part: Extract<Part, { kind: 'param' }>, values: readonly Value[] | undefined, state: State, cache: Substituted, ifs: string): Promise<Piece[] | undefined> {
+  const pattern = (await expandWithSeparator(walk, part.word, state, cache, false, ifs))?.flat()
+  const literal = pattern?.length === 1 ? pattern[0]!.text : undefined
+  if (values === undefined || values.some(value => value.glob || value.selected || value.selection !== undefined) || literal === undefined || /[*?[\\(]/.test(literal) || !walk.charge(values.reduce((sum, value) => sum + value.text.length, 0))) return undefined
+  const isPrefix = part.op.startsWith('#')
+  const strip = (text: string): string => (isPrefix ? (text.startsWith(literal) ? text.slice(literal.length) : text) : text.endsWith(literal) ? text.slice(0, text.length - literal.length) : text)
+  return valuePieces(values.map(value => ({ ...value, text: strip(value.text) })), !part.quoted && state.shell !== 'zsh')
+}
+
+/** The pieces of a parameter operator's word: each whole value, or with `split` the fields of each, its quoted text kept whole; undefined when the word does not resolve. */
+async function wordPieces(walk: Walk, word: Word, state: State, cache: Substituted, ifs: string, possible: boolean, split: boolean): Promise<Piece[] | undefined> {
+  const results = await expandWithSeparator(walk, word, state, cache, split, ifs, possible, split)
+  return results?.map(fields => (split ? { text: fields.map(field => field.text).join(' '), fields, split: false, live: false, matches: false } : { text: fields[0]?.text ?? '', split: false, live: false, matches: false }))
+}
+
+/** Whether a variable or a positional parameter is set: a missing positional parameter and a removed variable are unset; undefined when Arrester does not know. */
+function isSet(walk: Walk, state: State, name: string): boolean | undefined {
+  if (/^[0-9]+$/.test(name) && Number(name) > 0 && state.positional !== undefined) return Number(name) <= state.positional.length
+  if (state.vars.has(name)) return true
+  if (state.removed.has(name) || (state.emptyEnv && name === 'HOME')) return false
+  return variable(walk, state, name) === undefined ? undefined : true
 }
 
 /** Counts IFS fields before allocation, optionally emitting their ranges and required empty fields. */
@@ -1260,7 +1559,7 @@ function splitFields(text: string, separators: ReadonlySet<string>, emit?: (star
 
 /** The values one combination of pieces gives: whole, one value; as fields, the words that splitting the unquoted expansions on IFS makes, each a glob when a live glob character is in it. */
 function combine(pieces: readonly Piece[], isFields: boolean, separators: ReadonlySet<string>): Value[] {
-  if (!isFields) return pieces.length === 0 ? [{ text: '', glob: false }] : combine(pieces.map(piece => ({ ...piece, text: (piece.boundary ? ' ' : '') + piece.text, boundary: false, split: false, live: false })), true, separators)
+  if (!isFields) return pieces.length === 0 ? [{ text: '', glob: false }] : combine(pieces.map(piece => ({ ...piece, text: (piece.boundary ? ' ' : '') + piece.text, boundary: false, split: false, live: false, fields: undefined })), true, separators)
   const fields: Value[] = []
   let text = ''
   let glob = false
@@ -1281,17 +1580,19 @@ function combine(pieces: readonly Piece[], isFields: boolean, separators: Readon
   }
   for (const piece of pieces) {
     if (piece.boundary) end()
-    const words: { text: string; keep: boolean }[] = []
-    if (piece.split) splitFields(piece.text, separators, (start, end, keep) => words.push({ text: piece.text.slice(start, end), keep }))
+    const words: { text: string; keep: boolean; value?: Value }[] = []
+    if (piece.fields !== undefined) for (const value of piece.fields) words.push({ text: value.text, keep: true, value })
+    else if (piece.split) splitFields(piece.text, separators, (start, end, keep) => words.push({ text: piece.text.slice(start, end), keep }))
     else words.push({ text: piece.text, keep: true })
     for (const [k, field] of words.entries()) {
       if (k > 0) end()
       const part = field.text
       if (part === '' && !field.keep) continue
       text += part
-      pattern += piece.pattern ?? (piece.live || piece.matches ? part : part.replace(/[*?[]/g, ch => `[${ch}]`))
+      const literal = part.replace(/[*?[]/g, ch => `[${ch}]`)
+      pattern += field.value !== undefined ? (field.value.glob ? field.value.pattern ?? part : literal) : piece.pattern ?? (piece.live || piece.matches ? part : literal)
       hasField = true
-      glob = glob || piece.matches || (piece.live && hasGlob(part))
+      glob = glob || (field.value !== undefined ? field.value.glob : piece.matches || (piece.live && hasGlob(part)))
       selected ??= piece.selected
       selection ??= piece.selection
       globOptions ??= piece.globOptions
@@ -1353,12 +1654,13 @@ async function substitution(walk: Walk, command: string, state: State, input: St
   return output.kind === 'literal' && !output.uncertain ? output.text.replace(/\n+$/, '') : undefined
 }
 
-/** Assigns a scalar value, bounding the alternatives and text of append assignments before building them. */
+/** Assigns a scalar value, bounding the alternatives and text of append assignments before building them; a value that does not resolve keeps the possible values of its word. */
 function assign(walk: Walk, state: State, operand: Operand): boolean {
   const match = ASSIGNMENT.exec(operand.raw)
   if (match === null) return false
   const name = match[1]!
-  let values = mapOperand(operand, text => text.slice(match[0].length)).values
+  const assigned = mapOperand(operand, text => text.slice(match[0].length))
+  let values = assigned.values
   if (match[2] === '+') {
     const previous = variable(walk, state, name)
     if (previous === undefined || values === undefined) {
@@ -1376,6 +1678,9 @@ function assign(walk: Walk, state: State, operand: Operand): boolean {
   state.removed.delete(name)
   if (values === undefined) state.vars.delete(name)
   else state.vars.set(name, values)
+  const possible = values === undefined && match[2] !== '+' ? assigned.possible : undefined
+  if (possible === undefined) state.possible.delete(name)
+  else state.possible.set(name, possible)
   if (operand.upstream === true) state.reaching.add(name)
   else state.reaching.delete(name)
   return true
@@ -1384,6 +1689,7 @@ function assign(walk: Walk, state: State, operand: Operand): boolean {
 /** Removes a variable and its export status, including built-in fallback values. */
 function removeVariable(state: State, name: string): void {
   state.vars.delete(name)
+  state.possible.delete(name)
   state.reaching.delete(name)
   state.exported.delete(name)
   state.removed.add(name)
@@ -1412,7 +1718,10 @@ type Xargs = { noEmpty: boolean; end?: string; replace?: string; insert?: string
 /** An xargs operand with its logical input line, when the input is literal. */
 type InputItem = Operand & { line?: number }
 
-/** Removes wrappers (`sudo`, `env`, `timeout`, `xargs`, …), runners (`uv run`, `npx`, …), and keywords from the front of a command. A wrapper or runner that runs its command through a shell (`watch`, `npx -c`) gives `sh -c` with that command as code. */
+/** The npm options that run `npm exec` in workspace folders, which Arrester does not know. */
+const NPM_WORKSPACES = ['-w', '--workspace', '--workspaces', '--ws', '--include-workspace-root', '--iwr']
+
+/** Removes wrappers (`sudo`, `env`, `timeout`, `xargs`, `runuser -u`, …), runners (`uv run`, `npx`, …), and keywords from the front of a command. A wrapper or runner that runs its command through a shell (`watch`, `npx -c`) gives `sh -c` with that command as code. `npm exec` with a workspace option stays as written. */
 function stripWrappers(walk: Walk, words: readonly Operand[], state: State): Stripped {
   let rest = words
   let i = 0
@@ -1431,7 +1740,8 @@ function stripWrappers(walk: Walk, words: readonly Operand[], state: State): Str
     }
     const name = basenameOf(textOf(head))
     if (name === 'command' && ['-v', '-V'].includes(textOf(rest[i + 1]))) return { state, replaces, args: [], chdir }
-    const wrapper = WRAPPERS.get(name)
+    const user = name === 'runuser' ? optionsOf(walk, rest, i + 1, RUNUSER.values, 0, undefined).given : undefined
+    const wrapper = WRAPPERS.get(name) ?? (user?.has('-u') || user?.has('--user') ? RUNUSER : undefined)
     const runner = wrapper === undefined ? RUNNERS.get(name) : undefined
     if (wrapper === undefined && runner === undefined) return { state, replaces, args: rest.slice(i), chdir }
     if (name === 'env') {
@@ -1440,7 +1750,7 @@ function stripWrappers(walk: Walk, words: readonly Operand[], state: State): Str
     }
     splitEnv = false
     const options = wrapper === undefined ? runnerOptions(walk, rest, i, runner as Runner) : optionsOf(walk, rest, i + 1, wrapper.values, wrapper.operands, name === 'env' ? state : undefined)
-    if (options === undefined) return { state, replaces, args: rest.slice(i), chdir }
+    if (options === undefined || (name === 'npm' && NPM_WORKSPACES.some(flag => options.flags.includes(flag) || options.given.has(flag)))) return { state, replaces, args: rest.slice(i), chdir }
     if (name === 'exec' && inShell && options.end < rest.length) replaces = true
     if (!['exec', 'command', 'builtin'].includes(name)) inShell = false
     const directoryFlags = wrapper?.chdir ?? runner?.chdir ?? []
@@ -1474,6 +1784,7 @@ function optionsOf(walk: Walk, words: readonly Operand[], start: number, values:
     if (text === '--') return { ...options, end: i + 1 }
     if (env !== undefined && (text === '-' || text === '--ignore-environment' || /^-[A-Za-z]*i[A-Za-z]*$/.test(text))) {
       env.vars.clear()
+      env.possible.clear()
       env.reaching.clear()
       env.exported.clear()
       env.emptyEnv = true
@@ -1505,8 +1816,9 @@ function optionsOf(walk: Walk, words: readonly Operand[], start: number, values:
 function runnerOptions(walk: Walk, words: readonly Operand[], at: number, runner: Runner): (Options & { end: number }) | undefined {
   const before = optionsOf(walk, words, at + 1, runner.values, 0, undefined)
   if (runner.subs.length === 0) return before
-  if (!runner.subs.includes(textOf(words[before.end]))) return undefined
-  const after = optionsOf(walk, words, before.end + 1, runner.values, 0, undefined)
+  const sub = runner.subs.map(text => text.split(' ')).find(parts => parts.every((part, k) => textOf(words[before.end + k]) === part))
+  if (sub === undefined) return undefined
+  const after = optionsOf(walk, words, before.end + sub.length, runner.values, 0, undefined)
   const given = new Map(before.given)
   for (const [flag, values] of after.given) given.set(flag, [...(given.get(flag) ?? []), ...values])
   return { flags: [...before.flags, ...after.flags], given, ordered: [...before.ordered, ...after.ordered], end: after.end }
@@ -1847,13 +2159,14 @@ function parse(args: readonly Operand[], values: Values, stopAtOperand = false):
   return parsed
 }
 
-/** The operand with each text mapped by `pick`; a text that `pick` drops resolves to nothing. */
+/** The operand with each text, possible ones too, mapped by `pick`; a text that `pick` drops resolves to nothing. */
 function mapOperand(operand: Operand, pick: (text: string) => string | undefined): Operand {
-  const values = operand.values?.flatMap(value => {
+  const map = (list: readonly Value[] | undefined): Value[] | undefined => list?.flatMap(value => {
     const text = pick(value.text)
     return text === undefined ? [] : [{ ...value, text, ...(value.pattern === undefined ? {} : { pattern: pick(value.pattern) }) }]
   })
-  return { raw: pick(operand.raw) ?? operand.raw, values }
+  const possible = map(operand.possible)
+  return { raw: pick(operand.raw) ?? operand.raw, values: map(operand.values), ...(possible === undefined ? {} : { possible }) }
 }
 
 /** An operand with one known text. */
@@ -1887,10 +2200,11 @@ function isRecursive(program: string, flags: readonly string[]): boolean {
   return ALWAYS_RECURSIVE.has(program) || (recursiveFlags !== undefined && hasFlag(flags, recursiveFlags.letters, recursiveFlags.longs))
 }
 
-/** Adds the effect of one operand; a `destroy` effect whose operand does not resolve makes the analysis opaque. Unlinking removes the final directory entry, so its last segment stays as written. */
-function addEffect(run: Run, operand: Operand, kind: EffectKind, recursive: boolean, definite = true): void {
+/** Adds the effect of one operand; a `destroy` effect whose operand does not resolve makes the analysis opaque, and another effect takes the operand's possible values, if any, and is not remembered. Unlinking removes the final directory entry, so its last segment stays as written. A write is remembered as a file the command wrote unless `remember` is false. */
+function addEffect(run: Run, operand: Operand, kind: EffectKind, recursive: boolean, definite = true, remember = true): void {
   if (operand.values === undefined) {
     if (kind === 'destroy') run.walk.fail(OPAQUE.unresolvedDeletion)
+    else if (operand.possible !== undefined) addEffect(run, { raw: operand.raw, values: operand.possible, upstream: operand.upstream }, kind, recursive, false, false)
     return
   }
   for (const value of operand.values) {
@@ -1926,7 +2240,7 @@ function addEffect(run: Run, operand: Operand, kind: EffectKind, recursive: bool
     const pattern = value.pattern === undefined ? aliased : alias(run.walk, run.state, absolute(value.pattern, run.state.cwd) ?? value.pattern)
     const globbed = value.glob ? splitGlob(pattern) : undefined
     run.walk.add({ path: globbed?.path ?? aliased, glob: globbed?.glob, ...(value.globOptions === undefined ? {} : { globOptions: value.globOptions }), kind, recursive: reaches, ...(isLinkItself && globbed === undefined ? { entry: true as const } : {}), ...(value.selection === undefined ? {} : { selection: { ...value.selection, descend: recursive } }) })
-    if (kind === 'write') run.state.written.set(aliased, undefined)
+    if (kind === 'write' && remember) run.state.written.set(aliased, undefined)
   }
 }
 
@@ -2061,7 +2375,7 @@ function finishRedirects(run: Run, descriptors: ReadonlyMap<number, Destination>
   for (const path of pathTexts(run, stdout.target)) run.state.written.set(path, known ? produced.text : undefined)
 }
 
-/** The stdin a command's own redirections give it, from the last one that applies to descriptor 0: a heredoc's or a here-string's text, a file that `<` reads, or an unreadable stream from a process substitution. */
+/** The stdin a command's own redirections give it, from the last one that applies to descriptor 0: a heredoc's or a here-string's text, a file that `<` reads, an unreadable stream from a process substitution, or a stream that `<&-` closed. */
 function stdinOf(redirects: readonly Redirected[], cwd: string | undefined, piped: Stdin): Stdin | undefined {
   let stdin: Stdin | undefined
   for (const { redirect, target, text } of redirects) {
@@ -2072,7 +2386,7 @@ function stdinOf(redirects: readonly Redirected[], cwd: string | undefined, pipe
       if (source.kind === 'script' && STDIN_PATHS.has(source.path)) stdin ??= piped
       else stdin = source
     }
-    else if (redirect.op === '<&') stdin = OTHER
+    else if (redirect.op === '<&') stdin = textOf(target) === '-' ? CLOSED : OTHER
   }
   return stdin
 }
@@ -2180,6 +2494,8 @@ const CURL_FORMS = ['-F', '--form']
 const WGET_READS = ['--post-file', '--body-file', '-i', '--input-file']
 const WGET_WRITES = ['-O', '--output-document', '-P', '--directory-prefix', '-o', '--output-file']
 const FORM_FILE = /=[@<]([^;]+)/
+/** The file of a `--data-urlencode` value `@file` or `name@file`. */
+const URLENCODED_FILE = /^[^=@]*@(.+)$/
 
 /** `tar`, `zip`, and `unzip`: what creating, extracting, or listing an archive reads and writes. */
 function archive(run: Run): void {
@@ -2218,7 +2534,7 @@ function dd(run: Run): void {
   }
 }
 
-/** `curl` and `wget`: the files they send and the files they save. */
+/** `curl` and `wget`: the files they send and the files they save; `--data-urlencode` sends the file of `@file` and `name@file`, the other data flags of `@file`. */
 function fetch(run: Run): void {
   const parsed = parse(run.args, valuesOf(run.program))
   const given = (flags: readonly string[]): Operand[] => flags.flatMap(flag => parsed.given.get(flag) ?? [])
@@ -2226,7 +2542,7 @@ function fetch(run: Run): void {
   for (const value of given(isCurl ? CURL_READS : WGET_READS)) fetched(run, value, 'read')
   for (const value of given(isCurl ? CURL_WRITES : WGET_WRITES)) fetched(run, value, 'write')
   if (!isCurl) return
-  for (const value of given(CURL_DATA)) fetched(run, mapOperand(value, text => (text.startsWith('@') && text !== '@-' ? text.slice(1) : undefined)), 'read')
+  for (const flag of CURL_DATA) for (const value of parsed.given.get(flag) ?? []) fetched(run, mapOperand(value, text => (flag === '--data-urlencode' ? URLENCODED_FILE.exec(text)?.[1] : text.startsWith('@') && text !== '@-' ? text.slice(1) : undefined)), 'read')
   for (const value of given(CURL_FORMS)) fetched(run, mapOperand(value, text => FORM_FILE.exec(text)?.[1]), 'read')
 }
 
@@ -2447,7 +2763,7 @@ function git(run: Run): void {
   else if (name === 'stash' && (parsed.operands[0] === undefined || ['push', 'save'].includes(textOf(parsed.operands[0])))) destroy(folder)
 }
 
-/** The flag or `plugin` subcommand of a `claude` command line that can turn guards off, from each argument as typed and each value it resolves to; undefined when no alternative has one. Before `plugin` and its subcommand, an argument that can be an option, or the value of the option before it, is skipped. */
+/** The flag or `plugin` (or `plugins`) subcommand of a `claude` command line that can turn guards off, from each argument as typed and each value it resolves to; undefined when no alternative has one. Before `plugin` and its subcommand, an argument that can be an option, or the value of the option before it, is skipped. */
 function guardChange(walk: Walk, args: readonly Operand[]): string | undefined {
   if (!walk.charge(args.reduce((sum, arg) => sum + 1 + (arg.values?.length ?? 0), 0))) return undefined
   const words = args.map(arg => [...new Set([arg.raw, ...(arg.values ?? []).map(value => value.text)])])
@@ -2469,11 +2785,20 @@ function guardChange(walk: Walk, args: readonly Operand[]): string | undefined {
       if (off !== undefined) return `plugin ${off}`
     }
     const skips = texts.some(word => word.startsWith('-')) || (resolved[index - 1]?.some(word => /^-[^=]+$/.test(word) && word !== '--') ?? false)
-    plugin = (plugin && skips) || (open && texts.includes('plugin'))
+    plugin = (plugin && skips) || (open && (texts.includes('plugin') || texts.includes('plugins')))
     open &&= skips
     if (!open && !plugin) return undefined
   }
   return undefined
+}
+
+/** NESTED_SESSION when a `claude` command line runs a nested session, which does not inherit the open blocks: any first word but a version or help flag or a tool subcommand, `mcp serve` and the `mcp add` forms, and a first word or an `mcp` or `plugin` subcommand that does not resolve. */
+function nestedSession(args: readonly Operand[]): string | undefined {
+  const [first, sub] = args
+  const words = first?.values?.map(value => value.text) ?? []
+  if (words.length === 0 || words.some(word => !CLAUDE_TOOLS.has(word))) return NESTED_SESSION
+  if (sub === undefined || !words.some(word => word === 'mcp' || word === 'plugin' || word === 'plugins')) return undefined
+  return sub.values === undefined || (words.includes('mcp') && sub.values.some(value => MCP_RUNS.has(value.text))) ? NESTED_SESSION : undefined
 }
 
 /** How a runner reads a script: as shell text, as interpreter code, or, run directly, by its first line. */
@@ -2505,12 +2830,28 @@ async function runScript(run: Run, operand: Operand, language: Language, args: r
   const read = language === 'direct' ? languageOf(script.text) : language
   if (read === undefined) pathOperands(run, args)
   else if (read === 'shell') await walkScript(run.walk, script, path, scope ?? scriptState(run.walk, run.state, path, args))
-  else if (!script.isOld) {
-    const outer = run.walk.oldScript
-    run.walk.oldScript = undefined
-    scanInto(run, script.text)
-    run.walk.oldScript = outer
+  else {
+    const dialect = dialectOf(language === 'direct' ? runnerOf(script.text) ?? '' : run.program)
+    if (!script.isOld) {
+      const outer = run.walk.oldScript
+      run.walk.oldScript = undefined
+      scanInto(run, script.text, dialect)
+      run.walk.oldScript = outer
+    } else if (run.walk.io.capture !== true) scanOld(run, script.text, path, dialect)
   }
+}
+
+/** Scans an older interpreter script at check time for definite file operations only; code in it that Arrester cannot read does not count, and a script past the remaining work budget is not scanned and is recorded as not counted. */
+function scanOld(run: Run, code: string, path: string, dialect: Dialect | undefined): void {
+  const walk = run.walk
+  if (walk.work + code.length > MAX_WORK) {
+    walk.ignored ??= { path, reason: OPAQUE.tooMany }
+    return
+  }
+  const outer = walk.oldScript
+  walk.oldScript = path
+  scanInto(run, code, dialect, true)
+  walk.oldScript = outer
 }
 
 /** The state a script run as a new process starts from: `$0` its path, and the positional parameters its arguments. */
@@ -2555,13 +2896,26 @@ async function walkScript(walk: Walk, script: Script, path: string, state: State
 
 /** The language of a script run directly, from its first line: `#!` with a shell or an interpreter, also through `env`; undefined for anything else. */
 function languageOf(text: string): 'shell' | 'code' | undefined {
+  const name = runnerOf(text)
+  if (name === undefined) return undefined
+  if (SHELLS.has(name)) return 'shell'
+  return INTERPRETER.test(name) ? 'code' : undefined
+}
+
+/** The name of the program that the `#!` line of a script names, also through `env`; undefined without a `#!` line. */
+function runnerOf(text: string): string | undefined {
   const end = text.indexOf('\n')
   const line = end < 0 ? text : text.slice(0, end)
   if (!line.startsWith('#!')) return undefined
   const [runner = '', ...rest] = line.slice(2).trim().split(/\s+/)
-  const name = basenameOf(basenameOf(runner) === 'env' ? (rest.find(word => !word.startsWith('-') && !word.includes('=')) ?? '') : runner)
-  if (SHELLS.has(name)) return 'shell'
-  return INTERPRETER.test(name) ? 'code' : undefined
+  return basenameOf(basenameOf(runner) === 'env' ? (rest.find(word => !word.startsWith('-') && !word.includes('=')) ?? '') : runner)
+}
+
+/** The comment dialect of code that `program` runs: Python for python, JavaScript for node, bun, and deno, and none for the others. */
+function dialectOf(program: string): Dialect | undefined {
+  const name = family(program)
+  if (name === 'python') return 'python'
+  return name === 'node' || name === 'bun' || name === 'deno' ? 'js' : undefined
 }
 
 /** Sets positional parameters from bounded arguments, retaining variable bindings for conditional joins and path reach. */
@@ -2596,6 +2950,25 @@ function setName(state: State, name: Operand | undefined): void {
   if (name?.values === undefined) return
   state.vars.set('0', name.values)
   if (name.upstream === true) state.reaching.add('0')
+}
+
+/** `su` and `runuser` without `-u`: the code of `-c`, `--command`, or `--session-command` runs in a shell with the words after USER (and a leading `-`) as the shell's arguments, as su passes them; with no such code the shell reads those words alone. The shell is `sh`, or the one that `-s` names; a `-s` that names no shell is opaque. A login form, `-`, `-l`, or `--login`, which su reads also after USER, starts in a home folder that Arrester does not know, so it reads as a program that Arrester does not know. */
+async function switchUser(run: Run): Promise<boolean | void> {
+  const options = parse(run.args, valuesOf(run.program))
+  if (textOf(options.operands[0]) === '-' || hasFlag(options.flags, 'l', ['--login'])) {
+    unknownProgram(run)
+    return
+  }
+  const parsed = parse(run.args, valuesOf(run.program), true)
+  const operands = textOf(parsed.operands[0]) === '-' ? parsed.operands.slice(1) : parsed.operands
+  const named = [...parsed.given.get('-s') ?? [], ...parsed.given.get('--shell') ?? []].at(-1)
+  const program = named === undefined ? 'sh' : basenameOf(soleText(named) ?? '')
+  if (!SHELLS.has(program)) {
+    run.walk.fail(OPAQUE.shellProgram)
+    return
+  }
+  const code = ['-c', '--command', '--session-command'].flatMap(flag => parsed.given.get(flag) ?? []).at(-1)
+  return shell({ ...run, program, args: code === undefined ? operands.slice(1) : [fixed('-c'), code, ...operands.slice(1)] })
 }
 
 /** `sh`, `bash`, and the other shells: `-c` code with `$0` and the positional parameters after it, code from stdin, or a script with its arguments. */
@@ -2652,7 +3025,7 @@ async function stdinCode(run: Run, language: 'shell' | 'code', args: readonly Op
     }
   }
   else if (stdin.kind !== 'literal' || stdin.uncertain) run.walk.fail(OPAQUE.unreadableStdin)
-  else if (language === 'code') scanInto(run, stdin.text)
+  else if (language === 'code') scanInto(run, stdin.text, dialectOf(run.program))
   else {
     const state = scope ?? sharedFresh(run.walk, run.state)
     state.shell = run.program
@@ -2725,15 +3098,15 @@ async function perl(run: Run): Promise<void> {
 function scanOperand(run: Run, operand: Operand | undefined): void {
   const code = soleText(operand)
   if (code === undefined) run.walk.fail(OPAQUE.variableCode)
-  else scanInto(run, code)
+  else scanInto(run, code, dialectOf(run.program))
 }
 
-/** Adds the effects of interpreter code; a file the code changes is no longer known text for a later script run. */
-function scanInto(run: Run, code: string): void {
+/** Adds the effects of interpreter code, its comments read in `dialect`; with `definiteOnly`, only those of definite file operations, at most MAX_EFFECTS. A file the code changes is no longer known text for a later script run. */
+function scanInto(run: Run, code: string, dialect: Dialect | undefined, definiteOnly = false): void {
   if (!run.walk.charge(code.length)) return
-  const scanned = scanCode(code, run.state.cwd)
+  const scanned = scanCode(code, run.state.cwd, { dialect, definiteOnly })
   if (scanned.opaque !== undefined) run.walk.fail(scanned.opaque)
-  for (const effect of scanned.effects) {
+  for (const effect of definiteOnly ? scanned.effects.slice(0, MAX_EFFECTS) : scanned.effects) {
     run.walk.add(effect)
     if (effect.kind !== 'read' && effect.glob === undefined) run.state.written.set(effect.path, undefined)
   }

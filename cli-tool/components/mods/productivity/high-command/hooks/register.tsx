@@ -1,8 +1,8 @@
 import { atom, read, update } from 'claude-code'
-import type { CommandRunResult, EngineInterface, Register, SessionReceiveOrigin, SessionSendResult, TraceEntry } from 'claude-code'
+import type { AgentInfo, CommandRunResult, EngineInterface, Register, SessionReceiveOrigin, SessionSendResult, TraceEntry } from 'claude-code'
 
 import type { HighCommandEntry, HighCommandLane, HighCommandThread } from '../types'
-import { agentSenderOf, isAgentMessage, parseDelivery, UNNAMED, type NewEntry, type PeerReport } from './envelope'
+import { agentSenderOf, isAgentMessage, parseDelivery, spawnerOf, UNNAMED, type NewEntry, type PeerReport } from './envelope'
 import {
   appendEntries,
   coreEvidence,
@@ -202,8 +202,20 @@ async function recordDelivery($: EngineInterface, event: string, text: string, o
     $.ui.log(`${event}: a ${origin.kind} delivery named no sender; it shows as "${UNNAMED}"`, { to: 'debug' })
   }
   if (parsed.entries.length === 0 && parsed.reports.length === 0) return
-  if (parsed.entries.length > 0) await append($, parsed.entries, at, laneId)
+  // In an agent lane, a coordinator delivery is the main conversation's own message to that agent: never unread.
+  const fresh = laneId !== undefined && origin.kind === 'coordinator' ? parsed.entries.map(entry => ({ ...entry, fromMain: true as const })) : parsed.entries
+  if (fresh.length > 0) await append($, fresh, at, laneId)
   if (parsed.reports.length > 0) await saveReports($, parsed.reports, at, laneId)
+}
+
+/** The local agents for a subagent message's sender label; a failure keeps the label and goes to the debug log. */
+async function agentsForLabel($: EngineInterface): Promise<readonly AgentInfo[]> {
+  try {
+    return await $.agent.list()
+  } catch (error) {
+    $.ui.log(`prompt.submit: could not read local agents: ${causeOf(error)}; the message keeps the local sender label`, { to: 'debug' })
+    return []
+  }
 }
 
 /** Records the observed send attempt and its result; an attempt to an agent with no name is left out. */
@@ -356,22 +368,28 @@ export const register: Register = on => {
   // turn. A message from another session passed session.receive first, so only an agent message counts here.
   // A mod beneath can rewrite it without the frame; the text that entered is then filed under the one sender
   // that the frames named, or under `unnamed peer`, and a name that the rewritten text claims does not count.
+  // The prompt's origin does not say whether a mod started the sender, so the local agent list can lower its label;
+  // the list is read before the mods beneath run, while an agent that ends meanwhile is still listed.
   on('prompt.submit', { origin: { kind: 'peer' } }, async ($, e, next) => {
     if (!isAgentMessage(e.text)) return next(e)
     let at: number | undefined
     try { at = await $.clock.now(); await ensureCapture($, at) } catch (error) { diagnose($, `high-command: prompt.submit: could not observe delivery time: ${causeOf(error)}`) }
+    const named = agentSenderOf(e.text, e.origin)
+    const listed = named === undefined ? undefined : agentsForLabel($)
     const entered = await next(e)
     if (entered.drop !== undefined) return entered
     try {
       if (at !== undefined) {
         let sender: string | undefined
         if (!isAgentMessage(entered.text)) {
-          sender = agentSenderOf(e.text, e.origin)
+          sender = named
           const filing = sender === undefined ? `its frames named no single sender, so it is filed under "${UNNAMED}"` : 'it is filed under the sender that the frame named'
           $.ui.log(`prompt.submit: a mod rewrote a subagent message without its <agent-message> frame; ${filing}`, { to: 'debug' })
           sender ??= UNNAMED
         }
-        await recordDelivery($, 'prompt.submit', entered.text, e.origin, at, undefined, sender)
+        const plugin = named === undefined || listed === undefined ? undefined : spawnerOf(await listed, named)
+        const origin = plugin === undefined ? e.origin : { kind: 'peer' as const, plugin }
+        await recordDelivery($, 'prompt.submit', entered.text, origin, at, undefined, sender)
       }
     } catch (error) {
       diagnose($, `high-command: prompt.submit: could not record a delivery (${e.origin.kind}): ${causeOf(error)}`)
@@ -465,8 +483,10 @@ export const register: Register = on => {
       const { list, rows } = await readRoster($, laneId)
       const thread = threadOf(list, rows, laneId === undefined ? await read($, openThread) : (await readLane($, laneId)).openThread)
       const now = await $.clock.now()
+      const all = await read($, lanes)
       return paneTree(ui, { rows, now, thread, laneId, rosterPage: laneId === undefined ? await read($, rosterPage) : (await readLane($, laneId)).rosterPage, lanePage: await read($, lanePage),
-        laneIds: Object.keys(await read($, lanes)), agents: Object.values(await read($, agents)),
+        laneIds: Object.keys(all), agents: Object.values(await read($, agents)),
+        laneUnread: new Map(Object.entries(all).map(([id, lane]) => [id, unreadTotal(rosterOf(lane.entries, {}, lane.readThrough))])),
         capture: await read($, capture), evicted: list.at(-1)?.evictedTotal ?? 0,
       }, paneActions($, laneId))
     } catch (error) {

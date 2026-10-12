@@ -5,7 +5,9 @@ const ANSI = /\x1b\[[0-?]*[ -/]*[@-~]|\x1b\][\s\S]*?(?:\x07|\x1b\\)|\x1b[@-Z\\-_
 const CONTROL = /[\u0000-\u001f\u007f-\u009f\u202a-\u202e\u2066-\u2069]/g
 const PERCENT = /(?<![\d.])(\d{1,3}(?:\.\d+)?)\s?%/g
 const FRACTION = /(?<![\w./:-])(\d{1,7})\s?\/\s?(\d{1,7})(?![\w./-])/g
-const OF = /\b(\d{1,7}) of (\d{1,7})\b/gi
+const OF = /(?<![\w./\\])(\d{1,7}) of (\d{1,7})(?![\w/\\]|\.\w)/gi
+/** A two-digit clock right after a `done/total` match: with done 1 to 12 and total up to 31, the match is a short date, as in `10/11 14:03`. */
+const CLOCK_AFTER = /\s+\d{2}:\d{2}/y
 /** An output file path as the engine names it: absolute, in a `tasks` folder, named `<task id>.output`. Its folders may hold spaces (a temp folder set by CLAUDE_CODE_TMPDIR). */
 const OUTPUT_PATH = /^(?:[A-Za-z]:)?[\\/][^\n]*[\\/]tasks[\\/]([A-Za-z0-9_-]+)\.output$/
 /** The engine's words before the path in a background command's result. */
@@ -50,11 +52,19 @@ function lastPercent(line: string): Found | undefined {
   return found
 }
 
+/** Whether a `done/total` match is a short date followed by a clock. */
+function isDateBeforeClock(line: string, end: number, done: number, total: number): boolean {
+  if (done < 1 || done > 12 || total > 31) return false
+  CLOCK_AFTER.lastIndex = end
+  return CLOCK_AFTER.test(line)
+}
+
 function lastRatio(line: string, pattern: RegExp): Found | undefined {
   let found: Found | undefined
   for (const match of line.matchAll(pattern)) {
     const done = Number(match[1])
     const total = Number(match[2])
+    if (pattern === FRACTION && isDateBeforeClock(line, match.index + match[0].length, done, total)) continue
     if (total >= 1 && done <= total) found = { percent: (done / total) * 100, label: `${done}/${total}` }
   }
   return found

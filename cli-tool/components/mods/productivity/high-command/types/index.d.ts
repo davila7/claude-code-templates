@@ -35,6 +35,8 @@ export type HighCommandEntry = {
   trust?: HighCommandTrust
   /** Inbound entries only: the text matches the suspicious-text list; a display mark. */
   isSuspicious?: true
+  /** Agent lane inbound entries only: the main conversation's own message to that agent, never unread. */
+  fromMain?: true
   /** Cumulative retention loss, carried atomically by the newest recorded entry. */
   evictedTotal?: number
   /** The detailed refusal, bounded separately from its one-line preview. */

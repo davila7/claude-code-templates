@@ -3,7 +3,7 @@
 // skeleton and flags. Pure apart from `io.readScript`, which the shell
 // analysis uses.
 
-import { absolute, expandHome, MAX_PATH, PATH_TOO_LONG } from './paths'
+import { absolute, expandHome, foldPath, MAX_PATH, PATH_TOO_LONG } from './paths'
 import { analyzeShell, MAX_EFFECTS, OPAQUE } from './shell'
 import type { Analysis, Context, Effect, EffectKind, Io } from './types'
 
@@ -29,6 +29,9 @@ const FILE_TOOLS = new Map<string, { field: string; kind: EffectKind; recursive:
   ['Grep', { field: 'path', kind: 'read', recursive: true }],
   ['Glob', { field: 'path', kind: 'list', recursive: true }],
 ])
+
+/** The start of a local `file:` URI, before its path: `file:/`, `file:///`, or `file://localhost/`, in any case. */
+const FILE_URI = /^file:(?:\/\/(?:localhost)?(?=\/)|(?=\/(?!\/)))/i
 
 /** True for a plain object, the shape tool arguments and settings values arrive in. */
 export function isRecord(value: unknown): value is Readonly<Record<string, unknown>> {
@@ -63,11 +66,17 @@ export async function analyzeCall(call: Call, ctx: Context, io: Io): Promise<Cal
   return { ...identity, ...shell, opaque: shell.opaque ?? identity.opaque, segments, skeleton: fingerprint(segments.map(segment => segment.skeleton).sort().join(' ; ')), flags }
 }
 
-/** The effects of a file tool on the paths its input names, opaque past the distinct-effect, input-work, or supported path-length limits. */
+/** The effects of a file tool on the paths its input names, opaque past the distinct-effect, input-work, or supported path-length limits; a Grep or Glob call without a path searches the current folder. An MCP tool names the paths in its input, and a ReadMcpResourceTool call reads the file of a local `file:` URI. */
 function toolEffects(call: Call, ctx: Context): Pick<Analysis, 'effects' | 'opaque'> {
+  if (call.tool.startsWith('mcp__')) return namedPaths(call.input, ctx.home)
+  if (call.tool === 'ReadMcpResourceTool') {
+    const path = typeof call.input.uri === 'string' && FILE_URI.test(call.input.uri.trim()) ? namedPath(call.input.uri, ctx.home) : undefined
+    return { effects: path === undefined ? [] : [{ path, kind: 'read', recursive: false }] }
+  }
   const touch = FILE_TOOLS.get(call.tool)
   if (touch === undefined) return { effects: [] }
-  const value = call.input[touch.field]
+  const given = call.input[touch.field]
+  const value = touch.recursive && (given === undefined || given === '') ? '.' : given
   if (Array.isArray(value) && value.length > 16_384) return { effects: [], opaque: OPAQUE.tooMany }
   const names = Array.isArray(value) ? value.filter((name): name is string => typeof name === 'string') : typeof value === 'string' ? [value] : []
   const effects: Effect[] = []
@@ -86,6 +95,68 @@ function toolEffects(call: Call, ctx: Context): Pick<Analysis, 'effects' | 'opaq
     }
   }
   return { effects }
+}
+
+/** The `name` effects of an MCP tool's input: each string, value or key, that `namedPath` reads as a path, each once, in the order of the input; opaque past the serialization budgets of `sortedJson` or past MAX_EFFECTS paths. */
+function namedPaths(input: unknown, home: string | undefined): Pick<Analysis, 'effects' | 'opaque'> {
+  const effects: Effect[] = []
+  const seen = new Set<string>()
+  const pending: { value: unknown; depth: number }[] = [{ value: input, depth: 0 }]
+  let nodes = 0
+  let remaining = 4_000_000
+  const name = (text: string): string | undefined => {
+    remaining -= text.length
+    if (remaining < 0) return INPUT_LIMIT
+    const path = namedPath(text, home)
+    if (path === undefined || seen.has(path)) return undefined
+    if (effects.length >= MAX_EFFECTS) return OPAQUE.tooMany
+    seen.add(path)
+    effects.push({ path, kind: 'name', recursive: false })
+    return undefined
+  }
+  while (pending.length > 0) {
+    const { value, depth } = pending.pop()!
+    if (++nodes > 16_384 || depth > 64) return { effects, opaque: INPUT_LIMIT }
+    const children: unknown[] = []
+    if (typeof value === 'string') {
+      const opaque = name(value)
+      if (opaque !== undefined) return { effects, opaque }
+    } else if (Array.isArray(value)) {
+      if (value.length + nodes + pending.length > 16_384) return { effects, opaque: INPUT_LIMIT }
+      children.push(...value)
+    } else if (isRecord(value)) {
+      for (const key in value) if (Object.prototype.hasOwnProperty.call(value, key)) {
+        if (children.length + nodes + pending.length >= 16_384) return { effects, opaque: INPUT_LIMIT }
+        const opaque = name(key)
+        if (opaque !== undefined) return { effects, opaque }
+        children.push(value[key])
+      }
+    }
+    for (let i = children.length - 1; i >= 0; i -= 1) pending.push({ value: children[i], depth: depth + 1 })
+  }
+  return { effects }
+}
+
+/** The path that a string names, trimmed: an absolute path, a `~/` path, or a local `file:` URI with its `%` escapes decoded, folded; undefined for anything else, for text over more than one line, and for a path longer than MAX_PATH. */
+function namedPath(text: string, home: string | undefined): string | undefined {
+  const word = text.trim()
+  if (/[\r\n]/.test(word)) return undefined
+  const uri = FILE_URI.exec(word)
+  const path = uri !== null ? unescaped(word.slice(uri[0].length)) : word.startsWith('/') ? word : word.startsWith('~/') ? expandHome(word, home) : undefined
+  if (path === undefined || !path.startsWith('/')) return undefined
+  const folded = foldPath(path)
+  return folded.length > MAX_PATH ? undefined : folded
+}
+
+/** Text with each run of `%` escapes decoded as UTF-8; a run that does not decode stays as written. */
+function unescaped(text: string): string {
+  return text.replace(/(?:%[0-9A-Fa-f]{2})+/g, run => {
+    try {
+      return decodeURIComponent(run)
+    } catch {
+      return run
+    }
+  })
 }
 
 /** `tool:<name>:` and the input as JSON with sorted keys, less the fields that do not change what the call does. */

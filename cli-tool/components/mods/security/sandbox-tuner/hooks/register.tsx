@@ -11,11 +11,11 @@ import { addEntry, fileInfo, isApplied, parseSettings, removeEntry, serializeSet
 import type { FileInfo, ParsedSettings } from './settings-file'
 import { keepGated, latestOf, readCall, reportQuote } from './sightings'
 import type { BashCall, BashOutcome, GatedSighting, Sighting } from './sightings'
-import { credentialEntries, denialEntries, denialVerdict, guardedPlaces, guardedWalks, isSkipped, rateRecords, sandboxFacts, verdictOf } from './verdicts'
+import { anchorEntry, credentialEntries, denialEntries, denialVerdict, grantsMet, guardedPlaces, guardedWalks, isSkipped, rateRecords, sandboxFacts, verdictOf } from './verdicts'
 import type { Change, Context, Sources, Verdict, Walk } from './verdicts'
 import { bandTree, buildBand, buildObservation, buildPane, canUndo, drawable, paneTree, reportText, summaryLine } from './views'
 import {
-  COMMAND_DESCRIPTION, NOTHING_TO_CHANGE, NOTHING_TO_UNDO, absentNotice, addedNotice, displayTarget, hiddenNotice, notAppliedText, notPlaced,
+  COMMAND_DESCRIPTION, NOTHING_TO_CHANGE, NOTHING_TO_UNDO, absentNotice, addedNotice, displayTarget, grantWarning, hiddenNotice, notAppliedText, notPlaced,
   nothingApplied, hostText, refusalText, removedNotice, shownNotice, verdictSentences, verificationRefusalText,
 } from './words'
 
@@ -124,7 +124,9 @@ async function recordCall($: EngineInterface, call: BashCall, outcome: BashOutco
   if (signal.aborted) return
   const taskId = outcome.backgroundTaskId
   if (taskId !== undefined && (await read($, backgroundTasks)).includes(taskId)) return
-  const { reports, gated, unknownLine, observation } = readCall(call, outcome, await homeOf($), await $.session.cwd())
+  const { reports, gated, unknownLine, observation, skipped } = readCall(call, outcome, await homeOf($), await $.session.cwd())
+  // The debug log only: the pane would show a block that the command printed as a problem.
+  if (skipped) logDebug($, diagnostic('tool.call', tool, 'skipped a <sandbox_violations> block that does not end the text of a failed call (not quoted: the command can print one)'))
   if (unknownLine !== null) {
     const quote = reportQuote(unknownLine)
     const cause = quote === null
@@ -408,11 +410,40 @@ async function realPlaces($: EngineInterface, paths: readonly string[], known: M
 const WALK_FOLDERS = 1000
 const WALK_ENTRIES = 25_000
 
+/** A folder that Allow opened: its entry in the settings file, how to remove it, and where it really lies. */
+type Grant = Granted & { place: string }
+/** A link or guarded place, as listed, whose real place lies inside or holds folders that Allow opened: each of them. */
+type Finding = { path: string; place: string; met: { grant: Grant; isInside: boolean }[] }
+/**
+ * What the check at session start gives a walk: the folders that Allow opened, and where the walk keeps what it finds
+ * and the links that it cannot follow, so that a walk that stops keeps both.
+ */
+type Recheck = { grants: Grant[]; found: Finding[]; skipped: string[] }
+
+/** Where a path leads, or null when the check at session start cannot follow it: the check then names it. */
+async function followed($: EngineInterface, path: string, known: Map<string, string>, recheck: Recheck): Promise<string | null> {
+  try {
+    return await realLocation($, path, known)
+  } catch {
+    recheck.skipped.push(path)
+    return null
+  }
+}
+
+/** Keeps a place that meets a folder that Allow opened as a finding. The walk does not enter such a place. */
+function isFinding(recheck: Recheck, path: string, place: string): boolean {
+  const met = grantsMet(place, recheck.grants)
+  if (met.length > 0) recheck.found.push({ path, place, met })
+  return met.length > 0
+}
+
 /**
  * The real places that the links inside guarded places lead to, nested links too: each walk lists its levels, with
- * bounded work and cycle detection. A link counts wherever it is listed, and the walk goes on where it leads.
+ * bounded work and cycle detection. A link counts wherever it is listed, and the walk goes on where it leads. For the
+ * check at session start (`recheck`), a link that meets a folder that Allow opened is a finding, and a link that
+ * cannot be followed is skipped.
  */
-async function linksInside($: EngineInterface, walks: readonly Walk[], known: Map<string, string>): Promise<string[]> {
+async function linksInside($: EngineInterface, walks: readonly Walk[], known: Map<string, string>, recheck?: Recheck): Promise<string[]> {
   const places: string[] = []
   // `at` holds the names from the walked place down to the folder, for its skip entries.
   const pending = walks.map(walk => ({ ...walk, at: [] as readonly string[] }))
@@ -438,7 +469,8 @@ async function linksInside($: EngineInterface, walks: readonly Walk[], known: Ma
       const below = { levels: levels - 1, skip, at: [...at, entry.name] }
       const isEntered = levels > 1 && !isSkipped(skip, below.at)
       if (entry.isLink) {
-        const real = await realLocation($, path, known)
+        const real = recheck === undefined ? await realLocation($, path, known) : await followed($, path, known, recheck)
+        if (real === null || (recheck !== undefined && isFinding(recheck, path, real))) continue
         places.push(real)
         if (isEntered) pending.push({ ...below, path: real })
       } else if (entry.kind === 'dir' && isEntered) pending.push({ ...below, path })
@@ -448,10 +480,13 @@ async function linksInside($: EngineInterface, walks: readonly Walk[], known: Ma
 }
 
 /** The real places of guarded places, with every place that a link inside them leads to. */
-async function realGuards($: EngineInterface, walks: readonly Walk[], known: Map<string, string>): Promise<string[]> {
+async function realGuards($: EngineInterface, walks: readonly Walk[], known: Map<string, string>, recheck?: Recheck): Promise<string[]> {
   const located: Walk[] = []
-  for (const walk of walks) located.push({ ...walk, path: await realLocation($, walk.path, known) })
-  return [...located.map(walk => walk.path), ...(await linksInside($, located, known))]
+  for (const walk of walks) {
+    const path = recheck === undefined ? await realLocation($, walk.path, known) : await followed($, walk.path, known, recheck)
+    if (path !== null && (recheck === undefined || !isFinding(recheck, walk.path, path))) located.push({ ...walk, path })
+  }
+  return [...located.map(walk => walk.path), ...(await linksInside($, located, known, recheck))]
 }
 
 /**
@@ -491,6 +526,127 @@ async function checkRealFolder($: EngineInterface, record: SandboxTunerRecord, c
     return failure(buttonKey, `${leads}${verdictSentences(located, verdict, real).join(' ')} Nothing was written.`)
   } catch (error) {
     return failure(buttonKey, `could not check where ${shown} leads: ${causeOf(error)}. Nothing was written.`)
+  }
+}
+
+// A warning of the check at session start names a link, a folder, and what to do: it stays long enough to read.
+const WARNING_MS = 15_000
+
+/**
+ * A folder entry that Allow added and that a settings file still holds: whether a row of the pane can undo it, and each
+ * settings file that holds it with no such row, where only a hand edit removes it.
+ */
+type Granted = { entry: string; hasUndo: boolean; byHand: string[] }
+
+/**
+ * The entries of the folders that Allow opened that their settings file still holds. The file decides, whatever the
+ * journal says: an unconfirmed addition, an Undo that failed or is unconfirmed, or an entry marked undone that is back.
+ */
+async function grantedEntries($: EngineInterface): Promise<Granted[]> {
+  const journal = await readJournal($)
+  // The rows of the Applied list, as the pane shows them.
+  const listed = new Set(journalOf(journal))
+  const granted = new Map<string, { held: Set<string>; undoable: Set<string> }>()
+  const values = new Map<string, Record<string, unknown> | null>()
+  for (const entry of journal) {
+    if (entry.settingsKey !== 'sandbox.filesystem.allowWrite') continue
+    if (!values.has(entry.file)) {
+      const parsed = parseSettings((await fileText($, entry.file)) ?? '')
+      values.set(entry.file, 'refusal' in parsed ? null : parsed.value)
+    }
+    const value = values.get(entry.file)
+    if (value === undefined || value === null || !('isPresent' in addEntry(value, entry.settingsKey, entry.entry))) continue
+    const files = granted.get(entry.entry) ?? { held: new Set<string>(), undoable: new Set<string>() }
+    granted.set(entry.entry, files)
+    files.held.add(entry.file)
+    // A row with an Undo button whose press does not refuse: Undo refuses an entry that a later change owns.
+    if (listed.has(entry) && canUndo(entry) && !hasLaterOwner(journal, entry)) files.undoable.add(entry.file)
+  }
+  return [...granted].map(([entry, { held, undoable }]) => ({ entry, hasUndo: undoable.size > 0, byHand: [...held].filter(file => !undoable.has(file)) }))
+}
+
+/**
+ * At the start of an interactive session, checks the folders that Allow opened and that their settings file still
+ * holds. It walks the guarded places as a folder Allow does, once for all those folders, and finds where the PATH
+ * folders lie. Each link or guarded place that leads into such a folder, or to a folder that holds one, gives one
+ * toast. It warns and writes nothing. It runs outside the queue, so that its walk never holds back the recording of a
+ * Bash call. It never rejects: the hook drops what it returns. `shown` holds the warnings that the checks before it in
+ * one run of recheckOnce showed: it does not show them again.
+ */
+async function recheckGrants($: EngineInterface, threshold: number, shown: Set<string>): Promise<void> {
+  let entries: Granted[]
+  let context: Context
+  try {
+    entries = await grantedEntries($)
+    if (entries.length === 0) return
+    context = await loadContext($, threshold, 'session.start')
+  } catch (error) {
+    logDebug($, diagnostic('session.start', null, `could not check the folders that Allow opened: ${causeOf(error)}`))
+    return
+  }
+  const known = new Map<string, string>()
+  const recheck: Recheck = { grants: [], found: [], skipped: [] }
+  for (const granted of entries) {
+    const path = anchorEntry(granted.entry, 'user', context)
+    const place = path === null ? null : await followed($, path, known, recheck)
+    if (place !== null) recheck.grants.push({ ...granted, place })
+  }
+  const problems: string[] = []
+  if (recheck.grants.length > 0) {
+    const credentials = [...context.credentialDirs, ...credentialEntries(context).map(entry => entry.path)]
+    for (const walks of [guardedWalks(context.protectedDirs, context), guardedWalks(credentials, { home: undefined, configDir: undefined })]) {
+      // A walk that stops keeps what it found before.
+      await realGuards($, walks, known, recheck).catch((error: unknown) => problems.push(causeOf(error)))
+    }
+    for (const dir of context.pathDirs) {
+      const place = await followed($, dir, known, recheck)
+      if (place !== null) isFinding(recheck, dir, place)
+    }
+  }
+  const display = (path: string) => displayPath(path, context.home)
+  const warned = new Set<string>()
+  for (const { path, place, met } of recheck.found) {
+    if (warned.has(path)) continue
+    warned.add(path)
+    const grants = met.map(({ grant, isInside }) => ({ grant: grant.entry, isInside, hasUndo: grant.hasUndo, byHand: grant.byHand.map(file => fileInfo(file, context.home).display) }))
+    const text = diagnostic('session.start', null, grantWarning(display(path), display(place), grants))
+    if (shown.has(text)) continue
+    shown.add(text)
+    logDebug($, text)
+    $.ui.toast(drawable(hostText(text)), { timeoutMs: WARNING_MS })
+  }
+  if (recheck.skipped.length > 0) problems.unshift(`links that it cannot follow: ${[...new Set(recheck.skipped)].map(display).join(', ')}`)
+  if (problems.length > 0) {
+    await noteFault($, diagnostic('session.start', null, `could not finish the link check of the folders that Allow opened (${problems.join('; ')}). A link that the check did not reach can still lead into one of them.`))
+  }
+}
+
+// One check at a time in each module instance: `claude --resume` raises session.start and classic.SessionStart at once.
+// Each request waits for the check that runs or waits last.
+let lastRecheck: Promise<void> = Promise.resolve()
+// The number of the newest request. A request that a newer one follows before its turn does not run.
+let newestRecheck = 0
+// The warnings that the checks showed since the last time that no check ran or waited.
+let shownWarnings = new Set<string>()
+
+/**
+ * Runs recheckGrants, one check at a time. A request that comes while a check runs waits, the newest only, and its
+ * check runs right after that check ends, with the context that its session has then: a session that /clear,
+ * /resume, or /branch starts during a walk gets a check of its own. A check that waited does not show a warning again
+ * that a check before it showed, so one start warns once. It never rejects.
+ */
+async function recheckOnce($: EngineInterface, threshold: number): Promise<void> {
+  newestRecheck += 1
+  const request = newestRecheck
+  const run = async () => {
+    if (request === newestRecheck) await recheckGrants($, threshold, shownWarnings)
+  }
+  const check = lastRecheck.then(run, run)
+  lastRecheck = check
+  try {
+    await check
+  } finally {
+    if (lastRecheck === check) shownWarnings = new Set()
   }
 }
 
@@ -717,23 +873,30 @@ async function setHidden($: EngineInterface, key: string, isHidden: boolean, but
 
 export const register: Register = (on, options) => {
   const threshold = Number(options.minimumSightings)
+  // Whether a person is at the prompt. Only session.start says so, and the process keeps it across /clear.
+  let isInteractive = false
   // A hot reload runs session.start again: it registers the command again and loads the store again.
   on('session.start', async ($, e, next) => {
     const started = await next(e)
+    isInteractive = e.isInteractive
     try {
       await $.command.register({ name: 'sandbox-tuner', description: COMMAND_DESCRIPTION, immediate: true })
     } catch (error) {
       await noteFault($, diagnostic('session.start', null, `could not register /sandbox-tuner: ${causeOf(error)}`))
     }
     void enqueue(() => loadSaved($, 'session.start', null))
+    // Outside the queue: its walk must not hold back the recording of the first Bash calls.
+    if (e.isInteractive) void recheckOnce($, threshold)
     return started
   }).catch(($, e, next) => {
     hookFailed($, 'session.start', null, next.error)
     return next(e)
   })
 
+  // /clear, /resume, and /branch start a new session in the same process, and session.start does not fire.
   on('classic.SessionStart', { source: ['clear', 'resume', 'fork'] }, async ($, e, next) => {
     await enqueue(() => loadSaved($, 'classic.SessionStart', null))
+    if (isInteractive) void recheckOnce($, threshold)
     return next(e)
   }).catch(($, e, next) => {
     hookFailed($, 'classic.SessionStart', null, next.error)

@@ -1,6 +1,8 @@
 /** One `<task-notification>` block. */
 export type Notice = {
   ids: string[]
+  /** The engine's task type, such as `remote_agent` for a task that runs in a cloud session. */
+  taskType?: string
   outputFile?: string
   status?: string
   summary?: string
@@ -19,7 +21,7 @@ const ID_SHAPE = /^\S{1,128}$/
 const unescaped = (text: string): string => text.replaceAll('&lt;', '<').replaceAll('&gt;', '>').replaceAll('&amp;', '&')
 
 /**
- * One block's content: its header fields (every task id of a valid shape, and the first non-empty status and summary),
+ * One block's content: its header fields (every task id of a valid shape, and the first non-empty value of each other field),
  * then the text of the first `<event>` in its body. The body's other parts (a note, a result, usage, plain text) are
  * not read.
  */
@@ -43,7 +45,7 @@ function noticeOf(block: string): Notice {
   const open = block.indexOf(EVENT_OPEN, end)
   const close = open === -1 ? -1 : block.indexOf(EVENT_CLOSE, open)
   const event = close === -1 ? undefined : unescaped(block.slice(open + EVENT_OPEN.length, close))
-  return { ids, outputFile: first.get('output-file'), status: first.get('status'), summary: first.get('summary'), event }
+  return { ids, taskType: first.get('task-type'), outputFile: first.get('output-file'), status: first.get('status'), summary: first.get('summary'), event }
 }
 
 /**

@@ -8,10 +8,10 @@ import { OPAQUE } from './analyze/shell'
 import type { Effect, EffectKind } from './analyze/types'
 import type { ArresterAccess, ArresterBlock, ArresterGuard, ArresterTarget } from '../types/index'
 
-/** An effect with the real path of its path, when the file system gave one that differs. */
-export type PlacedEffect = Effect & { real?: string }
+/** An effect with the real path of its path, when the file system gave one that differs; `folder` marks a `name` effect on a folder that exists. */
+export type PlacedEffect = Effect & { real?: string; folder?: true }
 
-/** One reason a call matches a block; paths are written for people, a glob as its folder and segment. A guard finding names the guard the effect touched, or the launch flag or plugin command that can turn guards off. */
+/** One reason a call matches a block; paths are written for people, a glob as its folder and segment. A guard finding names the guard the effect touched, the launch flag or plugin command that can turn guards off, or a nested `claude` run. */
 export type Finding =
   | { rule: 'target'; block: ArresterBlock; kind: EffectKind; path: string; relation: Relation; target: string; access: ArresterAccess }
   | { rule: 'retry'; block: ArresterBlock }
@@ -22,13 +22,14 @@ export type Finding =
 /** The most comparison steps one check takes; past them it stops comparing and the call is opaque, so a crafted call cannot hold the check. */
 const MAX_STEPS = 20_000_000
 
-/** Every finding of a call against the open blocks: target findings for each block that is not a user rejection and retry findings for each block, oldest first, then guard and opaque findings against the newest block that is not a user rejection. */
-export function findings(open: readonly ArresterBlock[], guards: readonly ArresterGuard[], call: CallAnalysis, effects: readonly PlacedEffect[]): Finding[] {
+/** Every finding of a call of `tool` against the open blocks: target findings for each block that is not a user rejection and retry findings for each block, oldest first, then guard and opaque findings against the newest block that is not a user rejection. A Grep or Glob call gets no target finding from a block of a `Read(` rule, since Claude Code leaves the files of Read deny rules out of those searches. */
+export function findings(open: readonly ArresterBlock[], guards: readonly ArresterGuard[], call: CallAnalysis, effects: readonly PlacedEffect[], tool = ''): Finding[] {
   const found: Finding[] = []
   const meter: Meter = { steps: 0 }
   const candidates = targetCandidates(open, effects, meter)
+  const isSearchTool = tool === 'Grep' || tool === 'Glob'
   for (const block of open) {
-    for (const effect of block.source === 'user' ? [] : effects) {
+    for (const effect of block.source === 'user' || (isSearchTool && block.rule?.startsWith('Read(') === true) ? [] : effects) {
       if (meter.steps > MAX_STEPS) break
       const hit = targetHit(block, effect, meter, candidates.get(effect))
       if (hit !== undefined) found.push({ rule: 'target', block, kind: effect.kind, path: shown(effect.path, effect.glob), relation: hit.relation, target: shown(hit.target.path, hit.target.glob), access: hit.target.access })
@@ -155,13 +156,14 @@ function targetHit(block: ArresterBlock, effect: PlacedEffect, meter: Meter, can
       meter.uncertain = true
       continue
     }
-    if (found !== undefined && counts(target.access, effect.kind, found)) return { target, relation: found }
+    if (found !== undefined && counts(target.access, effect.kind, found, effect.folder === true)) return { target, relation: found }
   }
   return undefined
 }
 
-/** Whether an effect of `kind` that stands in `found` to a target of `access` gets the result the guard blocked. */
-function counts(access: ArresterAccess, kind: EffectKind, found: Relation): boolean {
+/** Whether an effect of `kind` that stands in `found` to a target of `access` gets the result the guard blocked; a path that an MCP call names counts for a read target, and for another target when it is the same path and no folder that exists. */
+function counts(access: ArresterAccess, kind: EffectKind, found: Relation, folder: boolean): boolean {
+  if (kind === 'name') return access === 'read' || (found === 'same' && !folder)
   if (kind === 'destroy') return true
   if (kind === 'write') return found === 'same' || (access === 'write' && found === 'contains')
   if (kind === 'read') return access === 'read'

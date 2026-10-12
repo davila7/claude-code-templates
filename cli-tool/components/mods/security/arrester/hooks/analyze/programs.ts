@@ -81,18 +81,35 @@ export const WRAPPERS: ReadonlyMap<string, Wrapper> = new Map<string, Wrapper>([
   ['xargs', { values: { '-n': 1, '-P': 1, '-I': 1, '-J': 1, '-L': 1, '-s': 1, '-d': 1, '-E': 1, '--eof': 1, '-a': 1, '-i': ATTACHED, '--arg-file': 1, '--max-args': 1, '--max-lines': 1, '--max-procs': 1, '--delimiter': 1 }, operands: 0, chdir: [] }],
 ])
 
-/** A program that runs the command after it, behind one of its subcommands when it names any: its value-taking flags, the flags that set the folder, the flags whose value is shell code, the flags that run the command through a shell, and whether the command is a package whose program has the package's name. */
+/** The value-taking flags of `su` and of `runuser` without `-u`. */
+const SU_VALUES = { '-c': 1, '--command': 1, '--session-command': 1, '-s': 1, '--shell': 1, '-g': 1, '--group': 1, '-G': 1, '--supp-group': 1, '-w': 1, '--whitelist-environment': 1 }
+
+/** `runuser -u USER`, which runs the command after it directly, as `sudo` does. */
+export const RUNUSER: Wrapper = { values: { ...SU_VALUES, '-u': 1, '--user': 1 }, operands: 0, chdir: [] }
+
+/** A program that runs the command after it, behind one of its subcommands when it names any, each of one or more words split by a blank: its value-taking flags, the flags that set the folder, the flags whose value is shell code, the flags that run the command through a shell, and whether the command is a package whose program has the package's name. */
 export type Runner = { subs: readonly string[]; values: Values; chdir: readonly string[]; code: readonly string[]; shell: readonly string[]; isPackage: boolean }
 
 const PACKAGE_VALUES = { '-p': 1, '--package': 1 }
 
-/** Package and environment runners: `uv run`, `npx`, `pnpm exec`, and the like. */
+/** The value-taking flags of `uv run`, `uv tool run`, and `uvx`. */
+const UV_VALUES = { '--with': 1, '-w': 1, '--with-editable': 1, '--with-requirements': 1, '--python': 1, '-p': 1, '--project': 1, '--directory': 1, '--package': 1, '--extra': 1, '--group': 1, '--env-file': 1, '--index': 1, '--default-index': 1, '--index-url': 1, '--extra-index-url': 1, '--from': 1 }
+
+/** What `pnpm exec`, `pnpm dlx`, and `pnpx` share: their value-taking flags, folder flags, and shell flags. */
+const PNPM = { values: { '-C': 1, '--dir': 1, '--filter': 1, '-F': 1, '--package': 1 }, chdir: ['-C', '--dir'], code: [], shell: ['-c', '--shell-mode'], isPackage: true }
+
+/** Package and environment runners: `uv run`, `uvx`, `npx`, `npm exec`, `pnpm exec`, `pnpm dlx`, and the like. */
 export const RUNNERS: ReadonlyMap<string, Runner> = new Map<string, Runner>([
-  ['uv', { subs: ['run'], values: { '--with': 1, '-w': 1, '--with-editable': 1, '--with-requirements': 1, '--python': 1, '-p': 1, '--project': 1, '--directory': 1, '--package': 1, '--extra': 1, '--group': 1, '--env-file': 1, '--index': 1, '--default-index': 1, '--index-url': 1, '--extra-index-url': 1 }, chdir: ['--directory'], code: [], shell: [], isPackage: false }],
+  ['uv', { subs: ['run', 'tool run'], values: UV_VALUES, chdir: ['--directory'], code: [], shell: [], isPackage: false }],
   ['poetry', { subs: ['run'], values: { '-C': 1, '--directory': 1, '-P': 1, '--project': 1 }, chdir: ['-C', '--directory'], code: [], shell: [], isPackage: false }],
   ['npx', { subs: [], values: { ...PACKAGE_VALUES, '-c': 1, '--call': 1 }, chdir: [], code: ['-c', '--call'], shell: [], isPackage: true }],
   ['bunx', { subs: [], values: PACKAGE_VALUES, chdir: [], code: [], shell: [], isPackage: true }],
-  ['pnpm', { subs: ['exec'], values: { '-C': 1, '--dir': 1, '--filter': 1, '-F': 1, '--package': 1 }, chdir: ['-C', '--dir'], code: [], shell: ['-c', '--shell-mode'], isPackage: true }],
+  ['pnpm', { subs: ['exec', 'dlx'], ...PNPM }],
+  ['uvx', { subs: [], values: UV_VALUES, chdir: ['--directory'], code: [], shell: [], isPackage: true }],
+  ['pipenv', { subs: ['run'], values: {}, chdir: [], code: [], shell: [], isPackage: false }],
+  ['npm', { subs: ['exec'], values: { '--package': 1, '-c': 1, '--call': 1, '-w': 1, '--workspace': 1 }, chdir: [], code: ['-c', '--call'], shell: [], isPackage: true }],
+  ['yarn', { subs: ['dlx'], values: PACKAGE_VALUES, chdir: [], code: [], shell: [], isPackage: true }],
+  ['pnpx', { subs: [], ...PNPM }],
 ])
 
 const GREP_VALUES = { '-e': 1, '-f': 1, '-m': 1, '-A': 1, '-B': 1, '-C': 1, '-d': 1, '-D': 1, '--regexp': 1, '--file': 1, '--max-count': 1, '--after-context': 1, '--before-context': 1, '--context': 1, '--include': 1, '--exclude': 1, '--exclude-dir': 1, '--label': 1 }
@@ -105,9 +122,9 @@ const VALUE_FLAGS: ReadonlyMap<string, Values> = new Map<string, Values>([
   ['egrep', GREP_VALUES],
   ['fgrep', GREP_VALUES],
   ['ugrep', GREP_VALUES],
-  ['rg', { '-e': 1, '-f': 1, '-g': 1, '-t': 1, '-T': 1, '-m': 1, '-A': 1, '-B': 1, '-C': 1, '-j': 1, '-M': 1, '--regexp': 1, '--file': 1, '--glob': 1, '--iglob': 1, '--type': 1, '--type-not': 1, '--type-add': 1, '--max-count': 1, '--max-depth': 1, '--sort': 1, '--sortr': 1 }],
+  ['rg', { '-e': 1, '-f': 1, '-g': 1, '-t': 1, '-T': 1, '-m': 1, '-A': 1, '-B': 1, '-C': 1, '-j': 1, '-M': 1, '-E': 1, '-d': 1, '-r': 1, '--regexp': 1, '--file': 1, '--glob': 1, '--iglob': 1, '--type': 1, '--type-not': 1, '--type-add': 1, '--type-clear': 1, '--max-count': 1, '--max-depth': 1, '--sort': 1, '--sortr': 1, '--pre': 1, '--pre-glob': 1, '--dfa-size-limit': 1, '--encoding': 1, '--engine': 1, '--regex-size-limit': 1, '--threads': 1, '--ignore-file': 1, '--max-filesize': 1, '--after-context': 1, '--before-context': 1, '--context': 1, '--color': 1, '--colors': 1, '--context-separator': 1, '--field-context-separator': 1, '--field-match-separator': 1, '--hostname-bin': 1, '--hyperlink-format': 1, '--max-columns': 1, '--path-separator': 1, '--replace': 1, '--generate': 1 }],
   ['ag', { '-G': 1, '-A': 1, '-B': 1, '-C': 1, '-m': 1, '--ignore': 1, '--depth': 1 }],
-  ['sed', { '-e': 1, '-f': 1, '-l': 1, '-i': ATTACHED, '--expression': 1, '--file': 1 }],
+  ['sed', { '-e': 1, '-f': 1, '-l': 1, '-i': ATTACHED, '-I': ATTACHED, '--expression': 1, '--file': 1 }],
   ['awk', { '-f': 1, '-v': 1, '-F': 1 }],
   ['jq', { '-f': 1, '--from-file': 1, '--arg': 2, '--argjson': 2, '--slurpfile': 2, '--rawfile': 2, '--indent': 1 }],
   ['yq', { '-f': 1, '--from-file': 1, '-o': 1, '-p': 1, '--output-format': 1, '--input-format': 1 }],
@@ -159,6 +176,8 @@ const VALUE_FLAGS: ReadonlyMap<string, Values> = new Map<string, Values>([
   ['ruby', { '-e': 1, '-I': 1, '-r': 1 }],
   ['php', { '-r': 1, '-f': 1, '-d': 1 }],
   ['perl', { '-e': 1, '-E': 1, '-I': 1, '-i': ATTACHED, '-M': ATTACHED, '-m': ATTACHED, '-F': ATTACHED }],
+  ['su', SU_VALUES],
+  ['runuser', SU_VALUES],
 ])
 
 /** The value-taking flags of git's subcommands that Arrester reads. */
@@ -186,8 +205,14 @@ export const CLAUDE_OFF = new Set(['--settings', '--dangerously-skip-permissions
 /** `claude plugin` subcommands that turn a plugin off. */
 export const PLUGIN_OFF = new Set(['disable', 'uninstall'])
 
+/** The first words of a `claude` command line that start no session: version and help flags, and tool subcommands. */
+export const CLAUDE_TOOLS = new Set(['-v', '--version', '-h', '--help', 'mcp', 'plugin', 'plugins', 'doctor', 'update', 'upgrade', 'install', 'auth', 'setup-token'])
+
+/** `claude mcp` subcommands that start a server, or add one whose command runs later. */
+export const MCP_RUNS = new Set(['serve', 'add', 'add-json', 'add-from-claude-desktop'])
+
 const DECODERS = new Set(['uudecode', 'gunzip', 'zcat', 'bzcat', 'xzcat'])
-const HANDLED = new Set(['find', 'git', 'gh', 'curl', 'wget', 'dd', 'eval', 'source', '.', 'openssl', 'gzip', 'claude', ...DECODERS])
+const HANDLED = new Set(['find', 'git', 'gh', 'curl', 'wget', 'dd', 'eval', 'source', '.', 'openssl', 'gzip', 'claude', 'su', 'runuser', ...DECODERS])
 
 /** The value-taking flags of a program; none when the table does not list it. */
 export function valuesOf(program: string): Values {

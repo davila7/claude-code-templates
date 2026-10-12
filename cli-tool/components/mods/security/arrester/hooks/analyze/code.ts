@@ -35,33 +35,100 @@ const SPECIFIER = /(?:\brequire\(|\bimport\(|\bfrom|\bimport)\s*$/
 const SPECIFIER_WINDOW = 16
 const BARE = /^\.{0,2}\/?$/
 
-/** One string literal of the code: its text and source bounds. */
-type Literal = { text: string; start: number; end: number }
+/** What comes before a whole literal argument: `(`, `,`, a keyword and its `=`, or a bare `unlink`, `rmdir`, or `open`. */
+const WHOLE_BEFORE = /(?:[(,]|[A-Za-z_][A-Za-z0-9_]*\s*=|\b(?:unlink|rmdir|open))\s*$/
+/** What comes after a whole literal argument: `)` or `,`. */
+const WHOLE_AFTER = /^\s*[),]/
+const ARGUMENT_WINDOW = 64
+
+/** One string literal of the code: its text and source bounds; `cut` marks a template literal cut at its first `${`. */
+type Literal = { text: string; start: number; end: number; cut?: true }
+
+/** The comment syntax that the scan blanks: Python `#`, or JavaScript `//` and `/* … *\/`. */
+export type Dialect = 'python' | 'js'
+
+/** How to scan: the comment dialect of the code, and whether only definite file operations with a whole literal path count. */
+type ScanOptions = { dialect?: Dialect; definiteOnly?: boolean }
+
+/** The string literal that opens at `i`: `'…'`, `"…"`, tripled quotes, or a template literal, whose text stops at its first `${`. */
+function literalAt(code: string, i: number): Literal {
+  const quote = code.charAt(i)
+  const close = quote !== '`' && code.startsWith(quote.repeat(3), i) ? quote.repeat(3) : quote
+  let j = i + close.length
+  let text = ''
+  let isCut = false
+  while (j < code.length && !code.startsWith(close, j)) {
+    if (quote === '`' && code.startsWith('${', j)) isCut = true
+    const step = code.charAt(j) === '\\' && j + 1 < code.length ? 2 : 1
+    if (!isCut) text += code.charAt(j + step - 1)
+    j += step
+  }
+  return isCut ? { text, start: i, end: j + close.length, cut: true } : { text, start: i, end: j + close.length }
+}
+
+/** True when a string literal opens at `i`. */
+function isQuote(code: string, i: number): boolean {
+  const ch = code.charAt(i)
+  return ch === "'" || ch === '"' || ch === '`'
+}
 
 /** The string literals of the code: `'…'`, `"…"`, tripled quotes, and a template literal up to its first `${`. */
 function literals(code: string): Literal[] {
   const found: Literal[] = []
   let i = 0
   while (i < code.length) {
-    const quote = code.charAt(i)
-    if (quote !== "'" && quote !== '"' && quote !== '`') {
+    if (!isQuote(code, i)) {
       i += 1
       continue
     }
-    const close = quote !== '`' && code.startsWith(quote.repeat(3), i) ? quote.repeat(3) : quote
-    let j = i + close.length
-    let text = ''
-    let isCut = false
-    while (j < code.length && !code.startsWith(close, j)) {
-      if (quote === '`' && code.startsWith('${', j)) isCut = true
-      const step = code.charAt(j) === '\\' && j + 1 < code.length ? 2 : 1
-      if (!isCut) text += code.charAt(j + step - 1)
-      j += step
-    }
-    found.push({ text, start: i, end: j + close.length })
-    i = j + close.length
+    const literal = literalAt(code, i)
+    found.push(literal)
+    i = literal.end
   }
   return found
+}
+
+/** Where the comment of `dialect` that opens at `i`, the start of a line after its indentation, ends; undefined when none opens there. A `/*` opens a comment only when a `*\/` closes it at or before `lastClose`, the start of the last `*\/` in the code. */
+function commentEnd(code: string, i: number, dialect: Dialect, lastClose: number): number | undefined {
+  const ch = code.charAt(i)
+  if (ch !== '#' && ch !== '/') return undefined
+  const line = (): number => {
+    const end = code.indexOf('\n', i)
+    return end < 0 ? code.length : end
+  }
+  if (dialect === 'python') return ch === '#' ? line() : undefined
+  if (code.startsWith('//', i)) return line()
+  if (!code.startsWith('/*', i) || lastClose < i + 2) return undefined
+  return code.indexOf('*/', i + 2) + 2
+}
+
+/** The code with the text of each comment of `dialect` that starts a line, after any indentation, replaced by spaces, every index and line break kept; strings are skipped as `literals` reads them. A comment after code on the same line stays code. */
+function blankComments(code: string, dialect: Dialect): string {
+  const parts: string[] = []
+  const lastClose = code.lastIndexOf('*/')
+  let kept = 0
+  let i = 0
+  let isLineStart = true
+  while (i < code.length) {
+    if (isQuote(code, i)) {
+      i = literalAt(code, i).end
+      isLineStart = false
+      continue
+    }
+    const end = isLineStart ? commentEnd(code, i, dialect, lastClose) : undefined
+    if (end === undefined) {
+      const ch = code.charAt(i)
+      isLineStart = ch === '\n' || (isLineStart && (ch === ' ' || ch === '\t'))
+      i += 1
+      continue
+    }
+    parts.push(code.slice(kept, i), code.slice(i, end).replace(/[^\r\n]/g, ' '))
+    kept = end
+    i = end
+    isLineStart = false
+  }
+  parts.push(code.slice(kept))
+  return parts.join('')
 }
 
 /** The mode a literal gives `open(`: a short mode string, or the prefix of a two-argument Perl open. */
@@ -75,8 +142,13 @@ function operationKind(name: string): EffectKind {
   return WRITE_WORDS.some(word => name.includes(word)) ? 'write' : 'read'
 }
 
-/** Access shared by a file call and its path literals, including a later open mode. */
-type Access = { kind: EffectKind; glob: boolean; potential?: boolean }
+/** True when a call or a method of this name reads, writes, or deletes a file: a name that READ_CALL or one of the word lists names. */
+function isFileOperation(name: string): boolean {
+  return READ_CALL.test(name) || operationKind(name) !== 'read'
+}
+
+/** Access shared by a file call and its path literals, including a later open mode; `bare` marks a path object that no file operation uses, such as a lone `Path(…)` or one that `.with_suffix(` changes. */
+type Access = { kind: EffectKind; glob: boolean; potential?: boolean; bare?: true }
 
 /** One literal path and the operation that accesses it. */
 type FileLiteral = { literal: Literal; access: Access; definite: boolean }
@@ -173,7 +245,8 @@ function fileLiterals(code: string): FileLiteral[] {
         || kind !== 'read' && !/(?:write_text|write_bytes)$/.test(name)
       const constructor = /(?:^|[^A-Za-z0-9_$])Path\s*$/.test(code.slice(Math.max(0, i - 16), i))
       const link = chain?.at === i ? chain.kind : undefined
-      const access = constructor && inherited !== undefined ? inherited : operation ? { kind, glob: /glob$/.test(name), potential: /(?:system|subprocess|child_process|exec|spawn|popen|Deno\.(?:Command|run))/.test(name) } : inherited === undefined || name === '' ? inherited : { ...inherited, kind: link ?? inherited.kind, potential: true }
+      const bare = /Path$/.test(name) && !isFileOperation(name)
+      const access = constructor && inherited !== undefined ? inherited : operation ? { kind, glob: /glob$/.test(name), potential: /(?:system|subprocess|child_process|exec|spawn|popen|Deno\.(?:Command|run))/.test(name), ...(bare ? { bare } : {}) } : inherited === undefined || name === '' ? inherited : { ...inherited, kind: link ?? inherited.kind, potential: true }
       calls.push({ access, multiple: !operation && inherited !== undefined || /(?:open|copy|cpSync|move|rename|replace|symlink|subprocess|exec|spawn|system|popen)/i.test(name), argument: 0, keyword: '', open: /open$/.test(name), constructor, copy: /(?:copy|cpSync)/.test(name), named: SHUTIL_COPY.test(name), twoPaths: /cpSync/.test(name), pair: /(?:copy|cpSync|move|rename|replace|symlink)/.test(name), found: found.length, pathOpen: pathOpen?.at === i ? pathOpen.access : undefined, link })
       name = ''
     } else if (ch === ')' || ch === ']') {
@@ -182,7 +255,7 @@ function fileLiterals(code: string): FileLiteral[] {
       if (call?.access !== undefined && method !== undefined) {
         // The method decides the access of the path, apart from the call around it, which can share the access object.
         // Each literal leaves the shared object once, so the work stays linear.
-        const own: Access = { kind: operationKind(method.name), glob: call.access.glob }
+        const own: Access = { kind: operationKind(method.name), glob: call.access.glob, ...(isFileOperation(method.name) ? {} : { bare: true as const }) }
         const held = holders.get(call.access) ?? []
         while (held.length > 0 && held.at(-1)! >= call.found) {
           const k = held.pop()!
@@ -211,13 +284,21 @@ function fileLiterals(code: string): FileLiteral[] {
   return found
 }
 
-/** The effects of a piece of interpreter code run in `cwd`; module names and the bare `.`, `..`, and `/` name no file. */
-export function scanCode(code: string, cwd: string | undefined): { effects: Effect[]; opaque?: string } {
+/** True when the literal is a whole argument: after `(`, `,`, a keyword `=`, or a bare `unlink`, `rmdir`, or `open`, and before `)` or `,`. */
+function isWholeArgument(code: string, literal: Literal): boolean {
+  const before = code.slice(Math.max(0, literal.start - ARGUMENT_WINDOW), literal.start)
+  return WHOLE_BEFORE.test(before) && WHOLE_AFTER.test(code.slice(literal.end, literal.end + ARGUMENT_WINDOW))
+}
+
+/** The effects of a piece of interpreter code run in `cwd`; module names and the bare `.`, `..`, and `/` name no file. Comments of `dialect` are blanked first. With `definiteOnly`, only a whole literal argument of a definite file operation counts, and no literal of a bare path object, cut at `${`, or that folds to `/` does. */
+export function scanCode(code: string, cwd: string | undefined, options: ScanOptions = {}): { effects: Effect[]; opaque?: string } {
+  const text = options.dialect === undefined ? code : blankComments(code, options.dialect)
   const effects: Effect[] = []
   let opaque: string | undefined
-  for (const { literal, access, definite } of fileLiterals(code)) {
+  for (const { literal, access, definite } of fileLiterals(text)) {
     const { kind } = access
-    if (isSpecifier(code, literal)) continue
+    if (isSpecifier(text, literal)) continue
+    if (options.definiteOnly && (!definite || access.bare || literal.cut || !isWholeArgument(text, literal))) continue
     const operand = literal.text.replace(PERL_MODE, '')
     const resolved = absolute(operand, cwd)
     if (definite && !isRemote(operand) && (resolved?.length ?? operand.length) > MAX_PATH) opaque = PATH_TOO_LONG
@@ -225,7 +306,7 @@ export function scanCode(code: string, cwd: string | undefined): { effects: Effe
       const token = word.replace(PERL_MODE, '')
       if (BARE.test(token) || !looksLikePath(token)) continue
       const path = absolute(token, cwd)
-      if (path === undefined || path.length > MAX_PATH) continue
+      if (path === undefined || path.length > MAX_PATH || (options.definiteOnly && path === '/')) continue
       const globbed = access.glob && hasGlob(path) ? splitGlob(path) : undefined
       effects.push({ path: globbed?.path ?? path, glob: globbed?.glob, kind, recursive: kind === 'destroy' })
     }

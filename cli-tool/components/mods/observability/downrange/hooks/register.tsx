@@ -11,6 +11,7 @@ import {
   activityStarted,
   agentJob,
   agentsSynced,
+  finalIdsOf,
   finishedCleared,
   finishedRuns,
   historyAdded,
@@ -260,7 +261,7 @@ async function applyNotices($: EngineInterface, text: string, noticeRow?: string
   }
   const now = observedAt ?? await $.clock.now()
   let runs: HistoryRun[] = []
-  const changed = await writeJobs($, { at: now, ids: notices.flatMap(notice => notice.ids), noticeRow }, jobs => {
+  const changed = await writeJobs($, { at: now, ids: notices.flatMap(notice => notice.ids), kind: 'notice', finalIds: finalIdsOf(notices), noticeRow }, jobs => {
     runs = finishedRuns(jobs, notices, now)
     return notices.reduce((list, notice) => noticed(list, notice, now), jobs)
   })
@@ -519,12 +520,14 @@ export const register: Register = (on, options) => {
     const result = ran.result
     if (!('status' in result) || (result.status !== 'async_launched' && result.status !== 'remote_launched' && result.status !== 'teammate_spawned')) return ran
     const now = await $.clock.now()
+    // A teammate in a terminal pane of its own runs no loop here: its id is its address in its team.
+    const isOwnPane = result.status === 'teammate_spawned' && (result.agentId ?? result.agent_id) === result.teammate_id
     const job =
       result.status === 'teammate_spawned'
-        ? agentJob({ id: result.agentId ?? result.agent_id, description: e.description }, now)
+        ? agentJob({ id: result.agentId ?? result.agent_id, description: e.description, ...(isOwnPane ? { note: 'own pane', runsElsewhere: true } : {}) }, now)
         : result.status === 'async_launched'
           ? agentJob({ id: result.agentId, description: result.description }, now)
-          : agentJob({ id: result.taskId, description: result.description, note: 'remote' }, now)
+          : agentJob({ id: result.taskId, description: result.description, note: 'remote', runsElsewhere: true }, now)
     await writeJobs($, { at: now, ids: [job.id] }, jobs => launched(jobs, job))
     return ran
   }).catch(($, e, next) => passOn($, 'tool.call{tool=Agent}', e, next))

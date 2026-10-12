@@ -3,7 +3,9 @@
 
 import { isRecord } from './analyze/call'
 import { lex } from './analyze/lexer'
-import { foldPath } from './analyze/paths'
+import type { Word } from './analyze/lexer'
+import { basenameOf, foldPath, joinPath, looksLikePath } from './analyze/paths'
+import { INTERPRETER, KEYWORDS, SHELLS } from './analyze/programs'
 import type { ArresterGuard } from '../types/index'
 
 /** The settings sources whose command hooks name guard files, lowest precedence first. */
@@ -17,43 +19,81 @@ export function fixedGuards(home: string | undefined, root: string, pluginRoot: 
   return home === undefined ? guards : [...guards, { path: foldPath(`${home}/.claude/plugins`), changeOnly: true }]
 }
 
-/** The absolute paths that the command hooks of one settings source name. A hook with `args` runs `command` as one program with each argument as written, so only `$CLAUDE_PROJECT_DIR` is replaced there; a hook without them is a shell command, split into words with its quotes, where `~` and `$HOME` expand too. */
-export function hookPaths(settings: Readonly<Record<string, unknown>>, home: string | undefined, root: string): string[] {
+/** The options after which an interpreter or a shell takes code or a module, not a script file. */
+const CODE_OPTIONS = new Set(['-c', '-e', '-m'])
+
+/** A shell assignment word, such as `MODE=strict`. */
+const ASSIGNMENT = /^[A-Za-z_][A-Za-z0-9_]*\+?=/
+
+/** The paths that the command hooks of one settings source name: each absolute word, and each relative path-like word that is a command's program, the script operand of an interpreter or a shell, or a path under `.claude/`, read in the session folder `cwd` and in the project folder `root`. A hook with `args` runs `command` as one program with each argument as written, so only `$CLAUDE_PROJECT_DIR` is replaced there; a hook without them is a shell command, split into commands and words with its quotes, where `~` and `$HOME` expand too. */
+export function hookPaths(settings: Readonly<Record<string, unknown>>, home: string | undefined, root: string, cwd: string): string[] {
   const paths: string[] = []
   for (const hook of commandHooks(settings.hooks)) {
     const args = hook.args
-    const isExec = Array.isArray(args)
-    const words = isExec ? [hook.command, ...args] : typeof hook.command === 'string' ? shellWords(hook.command, home, root) : []
-    for (const word of words) {
-      if (typeof word !== 'string') continue
-      const path = isExec ? word.replace(/\$\{CLAUDE_PROJECT_DIR\}|\$CLAUDE_PROJECT_DIR/g, () => root) : word
-      if (path?.startsWith('/') === true) paths.push(foldPath(path))
-    }
+    const commands = Array.isArray(args) ? [[hook.command, ...args].map(word => (typeof word === 'string' ? word.replace(/\$\{CLAUDE_PROJECT_DIR\}|\$CLAUDE_PROJECT_DIR/g, () => root) : undefined))] : typeof hook.command === 'string' ? shellCommands(hook.command, home, root) : []
+    for (const words of commands) paths.push(...commandPaths(words, root, cwd))
   }
   return paths
 }
 
-/** Literal shell words with supported variables expanded, respecting quoting; unreadable words name no guard. */
-function shellWords(command: string, home: string | undefined, root: string): string[] {
+/** The paths that one command's words name, its program first: each absolute word, and a relative path-like word that is the program, the script operand, or under `.claude/`, joined to `cwd` and to `root`; an unreadable word is undefined and names none. */
+function commandPaths(words: readonly (string | undefined)[], root: string, cwd: string): string[] {
+  const script = scriptIndex(words)
+  return words.flatMap((word, index) => {
+    if (word === undefined) return []
+    if (word.startsWith('/')) return [foldPath(word)]
+    if (!looksLikePath(word) || (index !== 0 && index !== script && !word.split('/').slice(0, -1).includes('.claude'))) return []
+    return [...new Set([cwd, root])].map(base => joinPath(base, word))
+  })
+}
+
+/** Where the script operand of an interpreter or a shell is: its first path-like word that is no option; -1 for another program, or when `-c`, `-e`, `-m`, or an unreadable word comes first. */
+function scriptIndex(words: readonly (string | undefined)[]): number {
+  const program = words[0] === undefined ? undefined : basenameOf(words[0])
+  if (program === undefined || !(INTERPRETER.test(program) || SHELLS.has(program))) return -1
+  for (const [index, word] of words.entries()) {
+    if (index === 0) continue
+    if (word === undefined || CODE_OPTIONS.has(word)) return -1
+    if (!word.startsWith('-') && looksLikePath(word)) return index
+  }
+  return -1
+}
+
+/** The words of each simple command of a shell command, with supported variables expanded, respecting quoting; leading assignments and keywords are dropped, so the program comes first. An unreadable word is undefined; redirections give no word; a command that does not parse gives none. */
+function shellCommands(command: string, home: string | undefined, root: string): (string | undefined)[][] {
   const lexed = lex(command)
   if ('error' in lexed) return []
-  return lexed.tokens.flatMap(token => {
-    if (token.type !== 'word') return []
-    let text = ''
-    for (const [index, part] of token.word.entries()) {
-      if (part.kind === 'var') {
-        const value = part.name === 'CLAUDE_PROJECT_DIR' ? root : part.name === 'HOME' ? home : undefined
-        if (value === undefined) return []
-        text += value
-      } else if (part.kind === 'text') {
-        if (index === 0 && !part.quoted && /^~(?:\/|$)/.test(part.text)) {
-          if (home === undefined) return []
-          text += home + part.text.slice(1)
-        } else text += part.text
-      } else return []
-    }
-    return [text]
-  })
+  const commands: (string | undefined)[][] = [[]]
+  for (const token of lexed.tokens) {
+    const words = commands[commands.length - 1]!
+    if (token.type === 'op') commands.push([])
+    else if (token.type === 'word' && !(words.length === 0 && isPrefix(token.word))) words.push(literal(token.word, home, root))
+  }
+  return commands
+}
+
+/** True for a word that comes before a command's program: an assignment or a shell keyword. */
+function isPrefix(word: Word): boolean {
+  const [first] = word
+  return first?.kind === 'text' && !first.quoted && (ASSIGNMENT.test(first.text) || (word.length === 1 && KEYWORDS.has(first.text)))
+}
+
+/** A literal shell word with supported variables expanded, respecting quoting; undefined when it cannot be read. */
+function literal(word: Word, home: string | undefined, root: string): string | undefined {
+  let text = ''
+  for (const [index, part] of word.entries()) {
+    if (part.kind === 'var') {
+      const value = part.name === 'CLAUDE_PROJECT_DIR' ? root : part.name === 'HOME' ? home : undefined
+      if (value === undefined) return undefined
+      text += value
+    } else if (part.kind === 'text') {
+      if (index === 0 && !part.quoted && /^~(?:\/|$)/.test(part.text)) {
+        if (home === undefined) return undefined
+        text += home + part.text.slice(1)
+      } else text += part.text
+    } else return undefined
+  }
+  return text
 }
 
 /** The command hooks of a settings `hooks` value: each entry of `type: "command"` in each matcher group of each event. */

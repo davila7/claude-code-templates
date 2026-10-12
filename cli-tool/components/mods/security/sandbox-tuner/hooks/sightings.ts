@@ -18,7 +18,7 @@ export type Sighting = {
 }
 type Gate = 'sandbox-on' | 'sandbox-required'
 export type GatedSighting = { gate: Gate; sighting: Sighting }
-type CallSightings = { reports: Sighting[]; gated: GatedSighting[]; unknownLine: string | null; observation?: { operation: string; detail: string } }
+type CallSightings = { reports: Sighting[]; gated: GatedSighting[]; unknownLine: string | null; observation?: { operation: string; detail: string }; skipped?: true }
 export type SandboxFacts = { isEnabled: boolean; allowsUnsandboxed: boolean }
 export type BashCall = { command: string; isBackground: boolean; isUnsandboxed: boolean; allowedDomains: readonly string[] }
 export type BashOutcome = { backgroundTaskId?: string; isDenied: boolean; isError: boolean; isReadOnly?: boolean; isUnsandboxed?: boolean; text: string; stderr: string }
@@ -31,6 +31,11 @@ const PATH_LIMIT = 3
 const UNKNOWN_LIMIT = 80
 const OPEN_TAG = '<sandbox_violations>'
 const CLOSE_TAG = '</sandbox_violations>'
+// Claude Code 2.1.296 ends the text of a failed call with its report, each tag on a line of its own. Only its proxy
+// note can follow the report.
+const REPORT_OPEN = `\n${OPEN_TAG}\n`
+const REPORT_CLOSE = `\n${CLOSE_TAG}`
+const PROXY_NOTE = '\n\n[agent-proxy] While this command ran, '
 const NETWORK = /^deny network-outbound (\S+) \((.*)\)$/
 const MAC_LINE = /^\S+\(\d+\) deny\(\d+\) \S/
 const MAC_FILE = /^\S+\(\d+\) deny\(\d+\) file-/
@@ -106,6 +111,19 @@ function reportLines(sources: readonly string[]): string[] {
 }
 
 /**
+ * The report at the end of the text of a failed call: its last block, when only space or Claude Code's proxy note
+ * follows it. The command's output comes before the report, so a block there is output, and the call skips it.
+ */
+function tailReport(text: string): { lines: string[]; skipped: boolean } {
+  const open = text.lastIndexOf(REPORT_OPEN)
+  const close = open < 0 ? -1 : text.indexOf(REPORT_CLOSE, open + REPORT_OPEN.length - 1)
+  const rest = text.slice(close + REPORT_CLOSE.length)
+  const isTail = close >= 0 && (rest.trim() === '' || rest.startsWith(PROXY_NOTE))
+  const lines = isTail ? reportLines([text.slice(open, close + REPORT_CLOSE.length)]) : []
+  return { lines, skipped: (isTail ? text.slice(0, open) : text).includes(OPEN_TAG) }
+}
+
+/**
  * The start of a report line of an unknown form, to name in a diagnostic, or null when the line does not start like a
  * report line: output can imitate a report, so such a line can be any text, even a secret.
  */
@@ -158,9 +176,10 @@ export function readCall(call: BashCall, outcome: BashOutcome, home: string | un
   const sources = [outcome.text, outcome.stderr].map(source => source.slice(-SCAN_LIMIT))
   const program = programName(call.command)
   // Claude Code writes the report of a call that succeeded to its error output, apart from the command's output in the
-  // text. A failed call has one text: the command's output, then the report, then any notes that Claude Code adds, such
-  // as a proxy note. So a block anywhere in that text counts, and the command can print one: it is gated below.
-  const lines = reportLines(outcome.isError ? sources : [outcome.stderr.slice(-SCAN_LIMIT)])
+  // text. A failed call has one text: the command's output, then the report, then any proxy note. So only the block at
+  // the end of that text counts, and the command can print one there: it is gated below.
+  const tail = outcome.isError ? tailReport(outcome.text.slice(-SCAN_LIMIT)) : { lines: reportLines([outcome.stderr.slice(-SCAN_LIMIT)]), skipped: false }
+  const { lines } = tail
   const reports = capPaths(lines.flatMap(line => reportSighting(line, home, program) ?? []))
   const listed = ran
     ? combine(call.allowedDomains.filter(entry => !entry.includes('*')).map(entry => hostSighting(entry.trim(), 'listed', null, '', program)))
@@ -177,7 +196,7 @@ export function readCall(call: BashCall, outcome: BashOutcome, home: string | un
         return path === null ? [] : [pathSighting(path, 'inferred', home, program)]
       }))
     : []
-  // The command of a failed call can print a block in its text: it counts only while the sandbox ran the call.
+  // The command of a failed call can print a block at the end of its text: it counts only while the sandbox ran the call.
   const reportGate: Gate = isUnsandboxed ? 'sandbox-required' : 'sandbox-on'
   return {
     reports: outcome.isError ? [] : reports.filter(fits),
@@ -192,6 +211,7 @@ export function readCall(call: BashCall, outcome: BashOutcome, home: string | un
       return [{ operation, detail: plainText(line.slice(0, UNKNOWN_LIMIT)) }]
     }).at(-1),
     unknownLine: lines.find(line => !isKnownLine(line)) ?? null,
+    skipped: tail.skipped || undefined,
   }
 }
 

@@ -27,6 +27,7 @@ function job(value: unknown): boolean {
       return number(value.toolCount) && number(value.inFlight) && number(value.errorStreak) &&
         optionalNumbers(value, ['lastToolStartedAt', 'lastSuccessAt']) &&
         (value.activityStatus === undefined || (typeof value.activityStatus === 'string' && activities.has(value.activityStatus))) &&
+        (value.runsElsewhere === undefined || typeof value.runsElsewhere === 'boolean') &&
         (value.concurrentFailureTimes === undefined || (Array.isArray(value.concurrentFailureTimes) && value.concurrentFailureTimes.every(number)))
     case 'workflow': return true
     case 'task': return typeof value.taskType === 'string'

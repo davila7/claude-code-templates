@@ -2,10 +2,11 @@
 // their file descriptors, and heredoc bodies, in one left-to-right scan with
 // no backtracking regular expression. Pure: no `$`.
 
-/** One piece of a shell word; `quoted` marks an expansion inside double quotes, which is neither split nor globbed. */
+/** One piece of a shell word; `quoted` marks an expansion inside double quotes, which is neither split nor globbed. A `param` part is a parameter operator: `-`, `=`, or `+`, each also with `:`, `#`, `##`, `%`, or `%%` with its word, or `length` for `${#name}`. */
 export type Part =
   | { kind: 'text'; text: string; quoted: boolean }
   | { kind: 'var'; name: string; quoted: boolean }
+  | { kind: 'param'; name: string; op: string; word: Word; quoted: boolean }
   | { kind: 'sub'; command: string; quoted: boolean }
   | { kind: 'process'; command: string; isOutput: boolean }
   | { kind: 'unknown' }
@@ -37,7 +38,10 @@ const CONTROL = ['&&', '||', ';;', '|&', '&', '|', ';', '(', ')']
 const REDIRECTS = ['&>>', '<<<', '<<-', '&>', '>>', '>|', '>&', '<&', '<>', '<<', '>', '<']
 const WORD_END = new Set([' ', '\t', '\n', ';', '&', '|', '(', ')', '<', '>'])
 const NAME = /^[A-Za-z_][A-Za-z0-9_]*/
-const PARAMETER = /^(?:[A-Za-z_][A-Za-z0-9_]*|[0-9]+|[@*#?$!-])$/
+/** A parameter name inside `${…}`, read at a position: a name, digits, or one special character. */
+const BRACED_NAME = /[A-Za-z_][A-Za-z0-9_]*|[0-9]+|[@*#?$!-]/y
+/** The operators of a `${…}` that the analysis resolves, longest first. */
+const OPERATORS = [':-', ':=', ':+', '##', '%%', '-', '=', '+', '#', '%']
 const FD = /^[0-9]+(?=[<>])/
 const SPECIAL = new Set(['@', '*', '#', '?', '$', '!', '-', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'])
 const ESCAPES: Readonly<Record<string, string>> = { n: '\n', t: '\t', '\\': '\\', "'": "'", '"': '"' }
@@ -63,6 +67,7 @@ export function heredocWord(text: string): Word | undefined {
 function partText(part: Part): string {
   if (part.kind === 'text') return part.text
   if (part.kind === 'var') return `$${part.name}`
+  if (part.kind === 'param') return part.op === 'length' ? `\${#${part.name}}` : `\${${part.name}${part.op}${wordText(part.word)}}`
   if (part.kind === 'sub') return `$(${part.command})`
   return part.kind === 'process' ? `${part.isOutput ? '>' : '<'}(${part.command})` : '$(( ))'
 }
@@ -88,6 +93,8 @@ class Lexer {
   private readonly src: string
   private readonly nesting: number
   private i: number
+  /** How deep the `${…}` being read nests in other ones. */
+  private braces = 0
 
   constructor(src: string, start: number, nesting: number) {
     this.src = src
@@ -290,13 +297,64 @@ class Lexer {
     }
   }
 
-  /** `${…}`: the parameter it names when the body is a name and nothing more, else an unknown part, since an operator changes the value. */
+  /** `${…}`, read to the `}` that closes it: the parameter it names when the body is a name and nothing more, a parameter part for `${#name}` and for an operator in OPERATORS with its word, else an unknown part. */
   private braced(quoted: boolean): Part {
-    const end = this.src.indexOf('}', this.i + 2)
-    if (end < 0) throw new Unparsed()
-    const body = this.src.slice(this.i + 2, end)
-    this.i = end + 1
-    return PARAMETER.test(body) ? { kind: 'var', name: body, quoted } : { kind: 'unknown' }
+    if (this.braces >= MAX_NESTING) throw new Unparsed()
+    this.braces += 1
+    this.i += 2
+    const counted = this.src.charAt(this.i) === '#' ? this.parameterName(this.i + 1) : undefined
+    let part: Part
+    if (counted !== undefined && this.src.charAt(this.i + 1 + counted.length) === '}') {
+      this.i += counted.length + 2
+      part = { kind: 'param', name: counted, op: 'length', word: [], quoted }
+    } else {
+      const name = this.parameterName(this.i)
+      const op = name === undefined ? undefined : OPERATORS.find(operator => this.src.startsWith(operator, this.i + name.length))
+      if (name !== undefined && this.src.charAt(this.i + name.length) === '}') {
+        this.i += name.length + 1
+        part = { kind: 'var', name, quoted }
+      } else {
+        this.i += (name?.length ?? 0) + (op?.length ?? 0)
+        const word = this.operand(quoted)
+        part = name === undefined || op === undefined ? { kind: 'unknown' } : { kind: 'param', name, op, word, quoted }
+      }
+    }
+    this.braces -= 1
+    return part
+  }
+
+  /** The parameter name that starts at `at`: a name, digits, or one special character; undefined when none does. */
+  private parameterName(at: number): string | undefined {
+    BRACED_NAME.lastIndex = at
+    return BRACED_NAME.exec(this.src)?.[0]
+  }
+
+  /** The word of a parameter operator, up to the `}` that closes its `${`: quotes, escapes, and expansions as in a word, blanks and operators as text. In double quotes, a `'` is plain text and a `"` opens quoted text whose quotes are removed. */
+  private operand(quoted: boolean): Word {
+    const parts: Word = []
+    for (;;) {
+      if (this.i >= this.src.length) throw new Unparsed()
+      const ch = this.src.charAt(this.i)
+      if (ch === '}') {
+        this.i += 1
+        return parts
+      }
+      const at = this.i
+      const next = this.src.charAt(this.i + 1)
+      if (ch === "'" && !quoted) pushText(parts, this.single(), true)
+      else if (ch === '"') this.double(parts)
+      else if (ch === '\\' && next === '') throw new Unparsed()
+      else if (ch === '\\' && (!quoted || `${IN_DOUBLE_QUOTES}}`.includes(next))) {
+        if (next !== '\n') pushText(parts, next, true)
+        this.i += 2
+      } else if (ch === '$') this.dollar(parts, quoted)
+      else if (ch === '`') parts.push({ kind: 'sub', command: this.backtick(), quoted })
+      else {
+        pushText(parts, ch, quoted)
+        this.i += 1
+      }
+      this.spell(parts, at)
+    }
   }
 
   /** `$'…'` decoded: `\n`, `\t`, `\\`, `\'`, `\"`, `\xHH`, and `\NNN` (octal). */

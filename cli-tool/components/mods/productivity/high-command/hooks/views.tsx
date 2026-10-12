@@ -17,6 +17,8 @@ type PaneModel = {
   rows: RosterRow[]; now: number; thread: Thread | undefined
   evicted?: number; capture?: HighCommandCapture | null
   rosterPage?: number; laneId?: string; laneIds?: string[]; lanePage?: number; agents?: HighCommandAgent[]
+  /** Each agent lane's unread count, by agent id. */
+  laneUnread?: ReadonlyMap<string, number>
 }
 
 /**
@@ -199,9 +201,10 @@ export function paneTree(ui: HighCommandElements, model: PaneModel, actions: Pan
       <Button key="lane:main" label="Main inbox" onPress={() => actions.lane('')} />
       {ids.slice(page * 10, page * 10 + 10).map((id, index) => {
         const agent = agentMap.get(id)
+        const unread = model.laneUnread?.get(id) ?? 0
         // The status goes on its own line under the button: beside a long button, a narrow dock left it a few columns.
         return <Box flexDirection="column">
-          <Button key={`lane:${page * 10 + index}`} label={`${peerLabel(agent?.name ?? id)} (${peerLabel(id)})`} onPress={() => actions.lane(id)} />
+          <Button key={`lane:${page * 10 + index}`} label={`${peerLabel(agent?.name ?? id)} (${peerLabel(id)})${unread > 0 ? ` · ${unread} unread` : ''}`} onPress={() => actions.lane(id)} />
           {agent && <Box paddingLeft={2}>
             <Text>{`${agent.status}; ${agent.source} at ${clockLabel(agent.at, model.now)}${agent.lastEvent ? `; lifecycle observation: ${agent.lastEvent.word} at ${clockLabel(agent.lastEvent.at, model.now)}` : ''}`}</Text>
           </Box>}

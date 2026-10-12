@@ -107,8 +107,21 @@ export function applyReports(peers: Readonly<Peers>, reports: readonly PeerRepor
 }
 
 /**
- * The peer a send goes to: the peer whose newest address report matches `to`, else the
- * name and ID of this session's agent whose id is `to`, else the name `to` gives; undefined when that is no name.
+ * The key a send to a listed agent files under: its name, so the send joins that agent's messages to the main
+ * conversation, or its name and ID when the name is empty after peerKey, another listed agent has that name, or a
+ * peer of that name has an address (another session).
+ */
+function agentRecipient(agent: AgentInfo, agents: readonly AgentInfo[], peers: Readonly<Peers>): string {
+  if (agent.name === undefined) return ''
+  const name = peerKey(agent.name)
+  const isShared = name === '' || own(peers, name)?.address !== undefined ||
+    agents.some(other => other.id !== agent.id && peerKey(other.name ?? '') === name)
+  return isShared ? peerKey(`${agent.name} [${agent.id}]`) : name
+}
+
+/**
+ * The peer a send goes to: the peer whose newest address report matches `to`, else this session's agent whose
+ * id is `to` (agentRecipient), else the name `to` gives; undefined when that is no name.
  * Equal address timestamps use observation order. Known names keep their brackets; an unknown recipient
  * can carry one trailing listing reference.
  */
@@ -123,7 +136,7 @@ export function recipientOf(to: string, peers: Readonly<Peers>, agents: readonly
   }
   if (addressed !== undefined) return addressed.name
   const agent = agents.find(candidate => candidate.id === to)
-  let name = peerKey(agent === undefined ? to : (agent.name === undefined ? '' : `${agent.name} [${agent.id}]`))
+  let name = agent === undefined ? peerKey(to) : agentRecipient(agent, agents, peers)
   const isKnown = Object.hasOwn(peers, name) || entries.some(entry => entry.peer === name) ||
     agents.some(candidate => peerKey(candidate.name ?? '') === name)
   if (agent === undefined && !isKnown) {
@@ -146,9 +159,9 @@ export function outboundEntry(peer: string, text: string, sent: SessionSendResul
   }
 }
 
-/** An inbound entry newer than `mark`. Outbound entries are never new. */
+/** An inbound entry newer than `mark`. Outbound entries and lane copies of the main conversation's sends are never new. */
 export function isNewer(entry: HighCommandEntry, mark: number): boolean {
-  return entry.direction === 'in' && entry.seq > mark
+  return entry.direction === 'in' && entry.fromMain !== true && entry.seq > mark
 }
 
 /** The unread count of all rows. */
@@ -168,10 +181,13 @@ export function rosterOf(entries: readonly HighCommandEntry[], peers: Readonly<P
     if (entry.at > row.last.at || (entry.at === row.last.at && entry.seq > row.last.seq)) row.last = entry
     if (entry.direction === 'in') {
       const isUnread = isNewer(entry, markOf(marks, entry.peer))
-      // A peer's read entries come before its unread ones, so its first unread entry starts the fold.
-      const isFolded = isUnread && row.unread > 0
-      row.trust = isFolded ? LEVELS.find(level => level === row.trust || level === entry.trust) : entry.trust
-      row.isSuspicious = (isFolded && row.isSuspicious) || entry.isSuspicious === true
+      // A peer's read entries come before its unread ones, so its first unread entry starts the fold. A lane copy of
+      // the main conversation's send is never unread and can follow unread entries; it leaves their fold alone.
+      if (isUnread || row.unread === 0) {
+        const isFolded = isUnread && row.unread > 0
+        row.trust = isFolded ? LEVELS.find(level => level === row.trust || level === entry.trust) : entry.trust
+        row.isSuspicious = (isFolded && row.isSuspicious) || entry.isSuspicious === true
+      }
       if (isUnread) row.unread += 1
     }
     rows.set(entry.peer, row)

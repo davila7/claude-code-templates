@@ -1,4 +1,4 @@
-import type { Job, JobState, Wakeup } from '../types'
+import type { AgentJob, Job, JobState, Wakeup } from '../types'
 import { isRunning } from './jobs'
 import {
   BAND_BUTTONS_COLUMNS,
@@ -55,6 +55,9 @@ const endOf = (job: Job): number => job.endedAt ?? job.startedAt
 /** The tool of a subagent's activity summary, `<tool>: <detail>`. */
 const toolOf = (activity: string): string => activity.split(': ', 1)[0] ?? activity
 
+/** Whether none of a subagent's tool calls can reach Downrange: it runs elsewhere, and no call of it ran here. */
+const isUnseenAgent = (job: AgentJob): boolean => job.runsElsewhere === true && job.toolCount === 0
+
 function byAge(jobs: readonly Job[]): { running: Job[]; ended: Job[] } {
   return {
     running: jobs.filter(isRunning).sort((a, b) => a.startedAt - b.startedAt),
@@ -89,7 +92,7 @@ function flagOf(job: Job, now: number): string | undefined {
   if (job.kind === 'agent' && job.activityStatus !== undefined && job.activityStatus !== 'running') return undefined
   if (job.kind === 'agent' && job.errorStreak >= FAILING_STREAK) return `${job.errorStreak} failed calls in a row`
   const quiet = now - (job.lastOutputAt ?? job.startedAt)
-  const canBeQuiet = (job.kind === 'shell' && job.successfulReadAt !== undefined && now - job.successfulReadAt <= LARGE_READ_EVERY_MS + TICK_MS) || (job.kind === 'agent' && job.inFlight === 0)
+  const canBeQuiet = (job.kind === 'shell' && job.successfulReadAt !== undefined && now - job.successfulReadAt <= LARGE_READ_EVERY_MS + TICK_MS) || (job.kind === 'agent' && job.inFlight === 0 && !isUnseenAgent(job))
   return canBeQuiet && quiet >= QUIET_MS ? `quiet ${durationText(quiet)}` : undefined
 }
 
@@ -100,7 +103,10 @@ function progressCell(job: Job): { text?: string; percent?: number } {
     return { text: label.endsWith('%') ? label : `${label} (${Math.round(percent)}%)`, percent }
   }
   if (job.kind === 'monitor' && job.eventCount > 0) return { text: `${job.eventCount} event${job.eventCount === 1 ? '' : 's'}` }
-  if (job.kind === 'agent') return { text: [job.activityStatus === 'running' ? undefined : job.activityStatus, `${job.toolCount} tool${job.toolCount === 1 ? '' : 's'}`].filter(Boolean).join(' · ') }
+  if (job.kind === 'agent') {
+    const text = [job.activityStatus === 'running' ? undefined : job.activityStatus, isUnseenAgent(job) ? undefined : `${job.toolCount} tool${job.toolCount === 1 ? '' : 's'}`].filter(Boolean).join(' · ')
+    return { text: text === '' ? undefined : text }
+  }
   return {}
 }
 
