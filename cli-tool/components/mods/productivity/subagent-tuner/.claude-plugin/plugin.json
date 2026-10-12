@@ -1,0 +1,20 @@
+{
+  "name": "subagent-tuner",
+  "version": "0.1.3",
+  "description": "Picks the model and reasoning effort of every subagent: a recommendation by task kind, a band above the prompt, and a saved default that wins.",
+  "author": {
+    "name": "Aleh Kruhlikau",
+    "url": "https://github.com/Kruhlikau"
+  },
+  "homepage": "https://github.com/Kruhlikau/subagent-tuner",
+  "repository": "https://github.com/Kruhlikau/subagent-tuner",
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "claude-code-mod",
+    "subagents",
+    "model",
+    "effort"
+  ],
+  "types": "./types/index.d.ts"
+}
