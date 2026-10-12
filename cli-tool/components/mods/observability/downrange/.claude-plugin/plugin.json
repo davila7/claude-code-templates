@@ -1,6 +1,6 @@
 {
   "name": "downrange",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A band, pane, and /downrange table: progress, ETA, and last output for Claude Code background shells and Monitor watches, tool activity for subagents, state for workflows, and the next /loop wakeup.",
   "author": { "name": "dot-agi" },
   "license": "MIT",
@@ -22,6 +22,12 @@
       "type": "boolean",
       "title": "Answer status prompts locally",
       "description": "When Claude is idle and background work runs, answer an exact status prompt such as \"status?\" with the /downrange table instead of sending it to Claude. Send the same prompt again within 60 seconds to ask Claude.",
+      "default": false
+    },
+    "genericRatios": {
+      "type": "boolean",
+      "title": "Progress from any ratio",
+      "description": "Also read progress from a ratio in any place in the output, such as \"loss 12/40\" or \"Retry 1 of 3\". Off: only known formats count, such as \"45%\", \"[3/7]\", \"Step 3 of 7\", or a count after a progress bar. On shows progress for more jobs, and more false readings, such as a date in \"Released 10/11\".",
       "default": false
     }
   }

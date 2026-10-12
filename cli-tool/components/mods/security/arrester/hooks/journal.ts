@@ -20,6 +20,8 @@ const MAX_TARGETS = 256
 const MAX_RECORDED = 100
 const MINUTE = 60_000
 const STRENGTH: Readonly<Record<ArresterAccess, number>> = { read: 1, write: 2, destroy: 3 }
+/** A deny reason that names another tool to use, such as `Use rg instead of grep`: the guard objected to the tool, not to the folder. */
+const SUGGESTS_TOOL = /\binstead\b|\bprefer(?:s|red)?\b|\bplease use\b|\buse `?rg\b|\btry `/i
 
 /** When a block closes: `block_minutes` after it opened or after its last caught workaround. */
 function closesAt(block: ArresterBlock, minutes: number): number {
@@ -108,6 +110,11 @@ export function pruned(journal: ArresterJournal, now: number, minutes: number, d
 export function nextClose(journal: ArresterJournal, minutes: number): number | undefined {
   const times = journal.blocks.map(block => closesAt(block, minutes))
   return times.length === 0 ? undefined : Math.min(...times)
+}
+
+/** Whether a blocked full search of a folder may keep the folder as a read target: its deny `reason` names no other tool to use, and no spelling of it is `/` or is or holds one of the `spared` paths, such as the home, session, and project folders and the guard files. */
+export function isTargetFolder(spellings: readonly string[], spared: readonly string[], reason: string): boolean {
+  return !SUGGESTS_TOOL.test(reason) && spellings.every(folder => folder !== '/' && !spared.some(path => path === folder || path.startsWith(`${folder}/`)))
 }
 
 /** The targets of a blocked call: the first 256 paths its effects touch, each with the strongest access; recursive reads and lists, and paths that an MCP call names, give none. */

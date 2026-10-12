@@ -6,8 +6,9 @@ const optionalNumbers = (value: Record<string, unknown>, keys: readonly string[]
 const optionalStrings = (value: Record<string, unknown>, keys: readonly string[]): boolean => keys.every(key => value[key] === undefined || typeof value[key] === 'string')
 const strings = (value: unknown): value is string[] => Array.isArray(value) && value.every(item => typeof item === 'string')
 const times = (value: unknown): boolean => Array.isArray(value) && value.every(item => Array.isArray(item) && item.length === 2 && typeof item[0] === 'string' && number(item[1]))
-const progress = (value: unknown): boolean => value === undefined || (record(value) && number(value.percent) && number(value.at) && typeof value.label === 'string')
-const anchor = (value: unknown): boolean => value === undefined || (record(value) && number(value.percent) && number(value.at))
+const generic = (value: Record<string, unknown>): boolean => value.isGeneric === undefined || typeof value.isGeneric === 'boolean'
+const progress = (value: unknown): boolean => value === undefined || (record(value) && number(value.percent) && number(value.at) && typeof value.label === 'string' && generic(value))
+const anchor = (value: unknown): boolean => value === undefined || (record(value) && number(value.percent) && number(value.at) && generic(value))
 const states = new Set(['running', 'completed', 'failed', 'stopped', 'gone'])
 const activities = new Map([['pending', true], ['running', true], ['waiting', true], ['idle', true]])
 

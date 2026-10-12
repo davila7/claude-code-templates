@@ -5,8 +5,8 @@ import type { ArresterTarget } from '../../types/index'
 /** What a tool call does to one path; `name` is a path that an MCP call names, whose access Arrester cannot know. */
 export type EffectKind = 'list' | 'read' | 'write' | 'destroy' | 'name'
 
-/** One path effect: its glob or find selection, access, reach below the path, and final-entry removal. */
-export type Effect = { path: string; glob?: string; globOptions?: ArresterTarget['globOptions']; kind: EffectKind; recursive: boolean; entry?: true; selection?: ArresterTarget['selection'] }
+/** One path effect: its glob or find selection, access, reach below the path, and final-entry removal; `fullSearch` when grep, egrep, fgrep, ugrep, rg, ag, or a Grep call searches below the path with no file filter, ignore file, size limit, depth limit, or listing flag. */
+export type Effect = { path: string; glob?: string; globOptions?: ArresterTarget['globOptions']; kind: EffectKind; recursive: boolean; entry?: true; selection?: ArresterTarget['selection']; fullSearch?: true }
 
 /** One simple command's retry skeleton and its flags, sorted and each once. */
 export type Segment = { skeleton: string; flags: string[]; preview?: true }

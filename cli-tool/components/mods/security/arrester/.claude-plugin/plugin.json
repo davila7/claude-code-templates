@@ -1,6 +1,6 @@
 {
   "name": "arrester",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "After a hook, deny rule, or auto mode blocks a tool call, Arrester stops later calls that reach the same result another way or read or change your guards. After your No, it stops only exact retries.",
   "author": { "name": "dot-agi" },
   "license": "MIT",

@@ -1,13 +1,13 @@
 // Sandbox Tuner's hooks module: every hook and every $ call.
 
 import { atom, read, update } from 'claude-code'
-import type { EngineInterface, HookFailure, Register, RenderElement, ToolCallResult } from 'claude-code'
+import type { EngineInterface, HookFailure, Register, RenderElement, Timer, ToolCallResult } from 'claude-code'
 
 import type { SandboxTunerAction, SandboxTunerApplied, SandboxTunerLatest, SandboxTunerNotice, SandboxTunerRecord } from '../types'
 import { causeOf, diagnostic } from './diagnostics'
 import { absolutePath, commandLine, cutText, displayPath, isUnder, pathFolders, plainText } from './names'
 import { JOURNAL_PREFIX, WRITER_PREFIX, HIDDEN_PREFIX, aggregateRecords, hasLaterOwner, isUndoUnresolved, isFixedSince, isPressedAgain, isRecord, journalOf, mergeSighting, recordKey, shownRecords } from './records'
-import { addEntry, fileInfo, isApplied, parseSettings, removeEntry, serializeSettings } from './settings-file'
+import { addEntry, fileInfo, isApplied, lockText, parseSettings, readLock, removeEntry, serializeSettings } from './settings-file'
 import type { FileInfo, ParsedSettings } from './settings-file'
 import { keepGated, latestOf, readCall, reportQuote } from './sightings'
 import type { BashCall, BashOutcome, GatedSighting, Sighting } from './sightings'
@@ -270,23 +270,98 @@ function info(text: string): PressResult {
   return { text, isError: false, written: null }
 }
 
-async function readSettingsFile($: EngineInterface, file: FileInfo, buttonKey: string): Promise<{ original: string | null; parsed: ParsedSettings } | PressResult> {
-  let original: string | null
+/** The text of the settings file as one read found it, null when there was no file, and what it holds. */
+type Loaded = { original: string | null; parsed: ParsedSettings }
+
+/** The text of the settings file (`found`), or the result of a press that cannot read it. */
+async function readText($: EngineInterface, file: FileInfo, buttonKey: string): Promise<{ found: string | null } | PressResult> {
   try {
-    original = await fileText($, file.path)
+    return { found: await fileText($, file.path) }
   } catch (error) {
     return failure(buttonKey, `could not read ${file.display}: ${causeOf(error)}. Nothing was written.`)
   }
-  const parsed = parseSettings(original ?? '')
-  return 'refusal' in parsed ? failure(buttonKey, refusalText(parsed, file)) : { original, parsed }
+}
+
+async function readSettingsFile($: EngineInterface, file: FileInfo, buttonKey: string): Promise<Loaded | PressResult> {
+  const read = await readText($, file, buttonKey)
+  if (!('found' in read)) return read
+  const parsed = parseSettings(read.found ?? '')
+  return 'refusal' in parsed ? failure(buttonKey, refusalText(parsed, file)) : { original: read.found, parsed }
+}
+
+// The lock of a settings file, `file.lock` next to it (fileInfo), so that presses in different sessions edit the file in
+// turn. $.fs has no exclusive create and no delete: a press claims the lock file by writing its own token and reading it
+// back, and frees it by writing a free record. Right before its settings write, it checks that it still holds the lock.
+const LOCK_POLL_MS = 100
+// How long a press waits for a lock that another press holds. The press waits in the module queue, so it stays short.
+const LOCK_WAIT_MS = 3_000
+// A lock that no press freed for this long is left over, from a press that stopped: the next press takes it over.
+const LOCK_STALE_MS = 30_000
+
+/** The token of the press that a lock file names, or null when it names none. */
+function holderOf(text: string | null): string | null {
+  const found = readLock(text)
+  return found === null || found === 'free' ? null : found.holder
+}
+
+/**
+ * Takes the lock of the settings file for one press: once it is free, or once it is left over. Returns the press's
+ * token, or the result of a press that cannot take it.
+ */
+async function takeLock($: EngineInterface, file: FileInfo, buttonKey: string): Promise<string | PressResult> {
+  const token = crypto.randomUUID()
+  const started = await $.clock.now()
+  for (;;) {
+    const now = await $.clock.now()
+    try {
+      const found = readLock(await fileText($, file.lock))
+      // A lock file of other text, such as one that a write has not finished, ages from its last change.
+      const since = found === 'free' ? now : found === null ? (await $.fs.stat(file.lock)).mtimeMs : found.since
+      const isLeft = Math.abs(now - since) >= LOCK_STALE_MS
+      if (found === 'free' || isLeft) {
+        await $.fs.write(file.lock, lockText(token, now))
+        // Another press that found the lock free at the same moment can claim it last: then it holds the lock.
+        if (holderOf(await $.fs.read(file.lock)) === token) {
+          if (isLeft) logDebug($, diagnostic('ui.press', buttonKey, `took over the lock on ${file.display} (${file.lockDisplay}), which no press freed within ${LOCK_STALE_MS / 1000} seconds`))
+          return token
+        }
+      }
+    } catch (error) {
+      return failure(buttonKey, `could not take the lock on ${file.display} (${file.lockDisplay}): ${causeOf(error)}. Nothing was written.`)
+    }
+    if (now - started >= LOCK_WAIT_MS) {
+      return failure(buttonKey, `another Sandbox Tuner session holds the lock on ${file.display} (${file.lockDisplay}) and did not free it within ${LOCK_WAIT_MS / 1000} seconds. Nothing was written. Press again.`)
+    }
+    await $.clock.sleep(LOCK_POLL_MS)
+  }
+}
+
+/** Frees the lock that the press holds, and leaves a lock that another press took over. It never rejects. */
+async function freeLock($: EngineInterface, file: FileInfo, token: string, buttonKey: string): Promise<void> {
+  try {
+    if (holderOf(await fileText($, file.lock)) === token) await $.fs.write(file.lock, lockText(null, await $.clock.now()))
+  } catch (error) {
+    logDebug($, diagnostic('ui.press', buttonKey, `could not free the lock on ${file.display} (${file.lockDisplay}): ${causeOf(error)}. Other sessions take it over ${LOCK_STALE_MS / 1000} seconds after this press took it.`))
+  }
+}
+
+/** Null while the press holds the lock of the settings file, else why the press stops. */
+async function lockLoss($: EngineInterface, file: FileInfo, token: string): Promise<string | null> {
+  try {
+    if (holderOf(await fileText($, file.lock)) === token) return null
+    return `another Sandbox Tuner session took over the lock on ${file.display} (${file.lockDisplay}) during this press. Sandbox Tuner left the file as it is. Press again.`
+  } catch (error) {
+    return `could not check the lock on ${file.display} (${file.lockDisplay}): ${causeOf(error)}. Sandbox Tuner left the file as it is. Press again.`
+  }
 }
 
 /**
  * Writes `file.backup`, a copy of the old text, then `file.path`, the user settings file. The path is not fixed text:
  * it is `$CLAUDE_CONFIG_DIR/settings.json`, else `$HOME/.claude/settings.json` (loadContext), or for Undo the file that
- * the change went into. The copy is `backups/settings.json.sandbox-tuner.bak` in the same folder (fileInfo).
+ * the change went into. The copy is `backups/settings.json.sandbox-tuner.bak` in the same folder (fileInfo). The press
+ * holds the lock of the file (`token`).
  */
-async function writeSettings($: EngineInterface, buttonKey: string, file: FileInfo, original: string | null, text: string, entry: SandboxTunerApplied): Promise<PressResult | null> {
+async function writeSettings($: EngineInterface, buttonKey: string, file: FileInfo, original: string | null, text: string, entry: SandboxTunerApplied, token: string): Promise<PressResult | null> {
   const previous = original === null ? 'The file did not exist before.' : `The previous file is saved at ${file.backupDisplay}.`
   if (original !== null) {
     try {
@@ -297,12 +372,16 @@ async function writeSettings($: EngineInterface, buttonKey: string, file: FileIn
   }
   const pending = await saveJournal($, { buttonKey, file, entry, success: '', didWrite: false })
   if (pending.isError) return pending
-  // $.fs has no conditional write: check last that no other session or program saved the file since the press read it.
+  // $.fs has no conditional write: check last that no other session or program saved the file since the press read it,
+  // and that no other press took the lock over.
   const change = await fileText($, file.path).then(
     current => (current === original ? null : 'another program changed it'),
     (error: unknown) => causeOf(error),
   )
-  if (change !== null) {
+  const stop = change === null
+    ? await lockLoss($, file, token)
+    : `could not confirm that ${file.display} is unchanged since Sandbox Tuner read it (${change}). Sandbox Tuner left the file as it is. Press again.`
+  if (stop !== null) {
     // No settings write was attempted, so this addition cannot own an entry in the file.
     if (entry.applyState === 'pending') {
       try {
@@ -312,7 +391,7 @@ async function writeSettings($: EngineInterface, buttonKey: string, file: FileIn
         await noteFault($, diagnostic('ui.press', buttonKey, `could not discard the unwritten addition from the Undo journal: ${causeOf(error)}`))
       }
     }
-    return failure(buttonKey, `could not confirm that ${file.display} is unchanged since Sandbox Tuner read it (${change}). Sandbox Tuner left the file as it is. Press again.`)
+    return failure(buttonKey, stop)
   }
   // Keep Undo even if the write or its read-back fails after changing the file.
   const written = { file, entry }
@@ -494,9 +573,9 @@ async function realGuards($: EngineInterface, walks: readonly Walk[], known: Map
  * protected places and the credentials folders (with the links that their walks find, see guardedWalks), denial
  * paths, and the PATH folders resolved the same way. The verdict reads spellings, and a link can hide behind one; an
  * allow-list on realPath is the robust guard (types: FsStat.realPath). Hard links, links in the places that the walks
- * skip, and later filesystem changes remain outside these checks.
+ * skip, and later filesystem changes remain outside these checks. Returns why the folder stays closed, or null.
  */
-async function checkRealFolder($: EngineInterface, record: SandboxTunerRecord, context: Context, buttonKey: string): Promise<PressResult | null> {
+async function checkRealFolder($: EngineInterface, record: SandboxTunerRecord, context: Context): Promise<string | null> {
   const shown = displayPath(record.target, context.home)
   try {
     const known = new Map<string, string>()
@@ -520,12 +599,12 @@ async function checkRealFolder($: EngineInterface, record: SandboxTunerRecord, c
       // The verdict compares with case, and a file system that ignores case reads two spellings as one place.
       const folded = target.toLowerCase()
       const alias = [...real.pathDirs, ...real.protectedDirs, ...real.credentialDirs].find(dir => isUnder(folded, dir.toLowerCase()) || isUnder(dir.toLowerCase(), folded))
-      return alias === undefined ? null : failure(buttonKey, `${place} and ${displayPath(alias, real.home)} name one place on a file system that ignores letter case. Nothing was written.`)
+      return alias === undefined ? null : `${place} and ${displayPath(alias, real.home)} name one place on a file system that ignores letter case. Nothing was written.`
     }
     const leads = place === shown ? '' : `${shown} leads to ${place}. `
-    return failure(buttonKey, `${leads}${verdictSentences(located, verdict, real).join(' ')} Nothing was written.`)
+    return `${leads}${verdictSentences(located, verdict, real).join(' ')} Nothing was written.`
   } catch (error) {
-    return failure(buttonKey, `could not check where ${shown} leads: ${causeOf(error)}. Nothing was written.`)
+    return `could not check where ${shown} leads: ${causeOf(error)}. Nothing was written.`
   }
 }
 
@@ -565,23 +644,30 @@ async function grantedEntries($: EngineInterface): Promise<Granted[]> {
   return [...granted].map(([entry, { held, undoable }]) => ({ entry, hasUndo: undoable.size > 0, byHand: [...held].filter(file => !undoable.has(file)) }))
 }
 
+/** The event that a check reports with: a check at a session start, or a timed check during the session. */
+type RecheckEvent = 'session.start' | 'clock.every'
 /**
- * At the start of an interactive session, checks the folders that Allow opened and that their settings file still
- * holds. It walks the guarded places as a folder Allow does, once for all those folders, and finds where the PATH
- * folders lie. Each link or guarded place that leads into such a folder, or to a folder that holds one, gives one
- * toast. It warns and writes nothing. It runs outside the queue, so that its walk never holds back the recording of a
- * Bash call. It never rejects: the hook drops what it returns. `shown` holds the warnings that the checks before it in
- * one run of recheckOnce showed: it does not show them again.
+ * The warnings that a check does not show again (`skip`), and where it keeps the warnings that it shows (`shown`) and
+ * every warning that it finds, shown or not (`found`). See recheckOnce.
  */
-async function recheckGrants($: EngineInterface, threshold: number, shown: Set<string>): Promise<void> {
+type Warnings = { skip: readonly ReadonlySet<string>[]; shown: Set<string>; found: Set<string> }
+
+/**
+ * At the start of an interactive session, and on a timer during it, checks the folders that Allow opened and that
+ * their settings file still holds. It walks the guarded places as a folder Allow does, once for all those folders, and
+ * finds where the PATH folders lie. Each link or guarded place that leads into such a folder, or to a folder that holds
+ * one, gives one toast, unless `warnings.skip` holds it. It warns and writes nothing. It runs outside the queue, so that
+ * its walk never holds back the recording of a Bash call. It never rejects: the hook and the timer drop what it returns.
+ */
+async function recheckGrants($: EngineInterface, threshold: number, event: RecheckEvent, warnings: Warnings): Promise<void> {
   let entries: Granted[]
   let context: Context
   try {
     entries = await grantedEntries($)
     if (entries.length === 0) return
-    context = await loadContext($, threshold, 'session.start')
+    context = await loadContext($, threshold, event)
   } catch (error) {
-    logDebug($, diagnostic('session.start', null, `could not check the folders that Allow opened: ${causeOf(error)}`))
+    logDebug($, diagnostic(event, null, `could not check the folders that Allow opened: ${causeOf(error)}`))
     return
   }
   const known = new Map<string, string>()
@@ -609,37 +695,53 @@ async function recheckGrants($: EngineInterface, threshold: number, shown: Set<s
     if (warned.has(path)) continue
     warned.add(path)
     const grants = met.map(({ grant, isInside }) => ({ grant: grant.entry, isInside, hasUndo: grant.hasUndo, byHand: grant.byHand.map(file => fileInfo(file, context.home).display) }))
-    const text = diagnostic('session.start', null, grantWarning(display(path), display(place), grants))
-    if (shown.has(text)) continue
-    shown.add(text)
+    const warning = grantWarning(display(path), display(place), grants)
+    const isWarned = warnings.skip.some(skipped => skipped.has(warning))
+    warnings.found.add(warning)
+    if (isWarned) continue
+    warnings.shown.add(warning)
+    const text = diagnostic(event, null, warning)
     logDebug($, text)
     $.ui.toast(drawable(hostText(text)), { timeoutMs: WARNING_MS })
   }
   if (recheck.skipped.length > 0) problems.unshift(`links that it cannot follow: ${[...new Set(recheck.skipped)].map(display).join(', ')}`)
   if (problems.length > 0) {
-    await noteFault($, diagnostic('session.start', null, `could not finish the link check of the folders that Allow opened (${problems.join('; ')}). A link that the check did not reach can still lead into one of them.`))
+    await noteFault($, diagnostic(event, null, `could not finish the link check of the folders that Allow opened (${problems.join('; ')}). A link that the check did not reach can still lead into one of them.`))
   }
 }
 
-// One check at a time in each module instance: `claude --resume` raises session.start and classic.SessionStart at once.
-// Each request waits for the check that runs or waits last.
+// One check at a time in each module instance: `claude --resume` raises session.start and classic.SessionStart at once,
+// and the timer of the session can fire during a walk. Each request waits for the check that runs or waits last.
 let lastRecheck: Promise<void> = Promise.resolve()
 // The number of the newest request. A request that a newer one follows before its turn does not run.
 let newestRecheck = 0
 // The warnings that the checks showed since the last time that no check ran or waited.
 let shownWarnings = new Set<string>()
+// Whether a session start asked for a check that has not begun yet: the next check to begin is then its check.
+let isStartPending = false
+// The warnings that the checks found since the last check of a session start began, shown or not: a timed check does
+// not show them, because the session was warned about them.
+let startWarnings = new Set<string>()
 
 /**
  * Runs recheckGrants, one check at a time. A request that comes while a check runs waits, the newest only, and its
  * check runs right after that check ends, with the context that its session has then: a session that /clear,
  * /resume, or /branch starts during a walk gets a check of its own. A check that waited does not show a warning again
- * that a check before it showed, so one start warns once. It never rejects.
+ * that a check before it showed, so one start warns once. A timed request (`isStart` false) shows only what the
+ * session was not warned about since its start, and a session start that a timed request follows before its turn still
+ * gets its check. It never rejects.
  */
-async function recheckOnce($: EngineInterface, threshold: number): Promise<void> {
+async function recheckOnce($: EngineInterface, threshold: number, isStart: boolean): Promise<void> {
   newestRecheck += 1
   const request = newestRecheck
+  if (isStart) isStartPending = true
   const run = async () => {
-    if (request === newestRecheck) await recheckGrants($, threshold, shownWarnings)
+    if (request !== newestRecheck) return
+    const isStartCheck = isStartPending
+    isStartPending = false
+    if (isStartCheck) startWarnings = new Set()
+    const skip = isStartCheck ? [shownWarnings] : [shownWarnings, startWarnings]
+    await recheckGrants($, threshold, isStartCheck ? 'session.start' : 'clock.every', { skip, shown: shownWarnings, found: startWarnings })
   }
   const check = lastRecheck.then(run, run)
   lastRecheck = check
@@ -655,40 +757,55 @@ function changeFor(verdict: Verdict, action: SandboxTunerAction): Change | null 
   return 'deny' in verdict ? verdict.deny : null
 }
 
-type SettingsEdit =
-  | { kind: 'add'; record: SandboxTunerRecord; action: SandboxTunerAction; context: Context }
-  | { kind: 'remove'; entry: SandboxTunerApplied }
+type AddEdit = { kind: 'add'; record: SandboxTunerRecord; action: SandboxTunerAction; context: Context }
+type RemoveEdit = { kind: 'remove'; entry: SandboxTunerApplied }
+type SettingsEdit = AddEdit | RemoveEdit
 
-/** Every edit uses one fresh file snapshot for safety checks, the mutation, and the unchanged-file check. */
-async function editSettings($: EngineInterface, buttonKey: string, file: FileInfo, edit: SettingsEdit): Promise<PressResult> {
-  const loaded = await readSettingsFile($, file, buttonKey)
-  if (!('parsed' in loaded)) return loaded
-  let value: Record<string, unknown>
-  let entry: SandboxTunerApplied
-  let success: string
+/** What a press writes over one read of the settings file: the new settings value, its journal entry, and its notice. */
+type Planned = { loaded: Loaded; value: Record<string, unknown>; entry: SandboxTunerApplied; success: string } & ({ edit: AddEdit; change: Change } | { edit: RemoveEdit })
+
+/**
+ * Checks an addition against one read of the settings file: the entry, the verdict with the restrictions that the file
+ * adds, and for a folder where it really lies. A check again after the file changed (`isAgain`) rates the folder with
+ * the new text only: the loaded settings were rated before. Returns the new settings value with the keys that it
+ * creates, `isPresent` when the file holds the entry, or why the addition stops.
+ */
+async function checkAddition($: EngineInterface, edit: AddEdit, change: Change, file: FileInfo, parsed: ParsedSettings, isAgain: boolean): Promise<{ value: Record<string, unknown>; created: string[] } | { isPresent: true } | { cause: string }> {
+  const { record, action, context } = edit
+  const added = addEntry(parsed.value, change.settingsKey, change.entry)
+  if ('refusal' in added) return { cause: refusalText(added, file) }
+  if ('isPresent' in added) return added
+  // Keep loaded restrictions too: the engine may not have applied a removal from the file yet.
+  const snapshot: Context = { ...context, sources: { ...context.sources, user: parsed.value } }
+  const current = verdictOf(record, snapshot)
+  if (changeFor(current, action) === null) return { cause: nothingApplied(verdictSentences(record, current, snapshot)) }
+  if (record.kind === 'path') {
+    for (const checked of isAgain ? [snapshot] : [context, snapshot]) {
+      const problem = await checkRealFolder($, record, checked)
+      if (problem !== null) return { cause: problem }
+    }
+  }
+  return added
+}
+
+/** A time later than `time` and than each change of the same entry of the same file that the journal holds. */
+function laterThanJournal(journal: readonly SandboxTunerApplied[], file: FileInfo, change: Change, time: number): number {
+  return journal.reduce((later, item) => item.file === file.path && item.settingsKey === change.settingsKey && item.entry === change.entry ? Math.max(later, item.appliedAt + 1) : later, time)
+}
+
+/** Plans an edit against the first read of the settings file, or gives the result of a press that stops there. */
+async function planEdit($: EngineInterface, buttonKey: string, file: FileInfo, edit: SettingsEdit, loaded: Loaded): Promise<Planned | PressResult> {
   if (edit.kind === 'add') {
     const { record, action, context } = edit
     const verdict = verdictOf(record, context)
     const change = changeFor(verdict, action)
     if (change === null) return info(nothingApplied(verdictSentences(record, verdict, context)))
-    const added = addEntry(loaded.parsed.value, change.settingsKey, change.entry)
-    if ('refusal' in added) return failure(buttonKey, refusalText(added, file))
+    const added = await checkAddition($, edit, change, file, loaded.parsed, false)
+    if ('cause' in added) return failure(buttonKey, added.cause)
     if ('isPresent' in added) return failure(buttonKey, notAppliedText(change))
-    // Keep loaded restrictions too: the engine may not have applied a removal from the file yet.
-    const snapshot: Context = { ...context, sources: { ...context.sources, user: loaded.parsed.value } }
-    const current = verdictOf(record, snapshot)
-    if (changeFor(current, action) === null) return failure(buttonKey, nothingApplied(verdictSentences(record, current, snapshot)))
-    if (record.kind === 'path') {
-      for (const checked of [context, snapshot]) {
-        const problem = await checkRealFolder($, record, checked, buttonKey)
-        if (problem !== null) return problem
-      }
-    }
-    value = added.value
     const now = await $.clock.now()
-    const journal = await readJournal($)
-    const appliedAt = journal.reduce((time, item) => item.file === file.path && item.settingsKey === change.settingsKey && item.entry === change.entry ? Math.max(time, item.appliedAt + 1) : time, now)
-    entry = {
+    const appliedAt = laterThanJournal(await readJournal($), file, change, now)
+    const entry: SandboxTunerApplied = {
       id: `${now}:${action}:${record.key}:${crypto.randomUUID()}`,
       recordKey: record.key,
       action,
@@ -701,19 +818,108 @@ async function editSettings($: EngineInterface, buttonKey: string, file: FileInf
       undoneAt: null,
       applyState: 'pending',
     }
-    success = addedNotice(change, loaded.original !== null)
-  } else {
-    // Undo may remove an old grant that is no longer eligible. It can only remove its journaled entry.
-    const removed = removeEntry(loaded.parsed.value, edit.entry.settingsKey, edit.entry.entry, edit.entry.created)
-    if ('refusal' in removed) return failure(buttonKey, refusalText(removed, file))
-    entry = { ...edit.entry, applyState: undefined, undoneAt: await $.clock.now(), undoState: 'pending' }
-    if ('isAbsent' in removed) return saveJournal($, { buttonKey, file, entry: { ...entry, undoState: undefined }, success: absentNotice(entry), didWrite: false })
-    value = removed.value
-    success = removedNotice(entry, file)
+    return { edit, change, loaded, value: added.value, entry, success: addedNotice(change, loaded.original !== null) }
   }
-  const problem = await writeSettings($, buttonKey, file, loaded.original, serializeSettings(value, loaded.parsed), entry)
+  // Undo may remove an old grant that is no longer eligible. It can only remove its journaled entry.
+  const removed = removeEntry(loaded.parsed.value, edit.entry.settingsKey, edit.entry.entry, edit.entry.created)
+  if ('refusal' in removed) return failure(buttonKey, refusalText(removed, file))
+  const entry: SandboxTunerApplied = { ...edit.entry, applyState: undefined, undoneAt: await $.clock.now(), undoState: 'pending' }
+  if ('isAbsent' in removed) return saveJournal($, { buttonKey, file, entry: { ...entry, undoState: undefined }, success: absentNotice(entry), didWrite: false })
+  return { edit, loaded, value: removed.value, entry, success: removedNotice(entry, file) }
+}
+
+/**
+ * Checks a planned edit again under the lock, against what another session can have saved while the press waited: for
+ * an Undo the journal (undoable), and for an addition the sightings of its target (targetRecord). When those sightings
+ * changed, it rates the target again with the loaded settings, a folder where it really lies too. Returns the planned
+ * edit, with the fresh record, or the result of the press that the first check gives with what it finds now.
+ */
+async function recheckPlan($: EngineInterface, buttonKey: string, first: Planned): Promise<Planned | PressResult> {
+  if (!('change' in first)) {
+    const entry = undoable(await readJournal($), first.entry.id, buttonKey)
+    return 'id' in entry ? first : entry
+  }
+  const { edit } = first
+  const record = await targetRecord($, edit.record.key, buttonKey)
+  if (!('key' in record)) return record
+  if (JSON.stringify(record) === JSON.stringify(edit.record)) return first
+  const verdict = verdictOf(record, edit.context)
+  if (changeFor(verdict, edit.action) === null) return info(nothingApplied(verdictSentences(record, verdict, edit.context)))
+  if (record.kind === 'path') {
+    const problem = await checkRealFolder($, record, edit.context)
+    if (problem !== null) return failure(buttonKey, problem)
+  }
+  return { ...first, edit: { ...edit, record } }
+}
+
+/**
+ * Fits a planned edit to the text that another session or program saved after the press first read the file, or to
+ * the fresh sightings of its target (recheckPlan): the same entry, added to or removed from what the file holds now.
+ * Refuses, with the file left as it is, when the edit no longer fits. An Undo whose entry is gone is marked as undone,
+ * as when the first read found it gone.
+ */
+async function refitEdit($: EngineInterface, buttonKey: string, file: FileInfo, planned: Planned, text: string | null): Promise<Planned | PressResult> {
+  const conflict = (cause: string) => failure(buttonKey, text === planned.loaded.original ? cause : `another session or program changed ${file.display} after this press read it, and the press no longer fits the new text: ${cause}`)
+  const parsed = parseSettings(text ?? '')
+  if ('refusal' in parsed) return conflict(refusalText(parsed, file))
+  const loaded: Loaded = { original: text, parsed }
+  const { entry } = planned
+  if ('change' in planned) {
+    const added = await checkAddition($, planned.edit, planned.change, file, parsed, true)
+    if ('cause' in added) return conflict(added.cause)
+    if ('isPresent' in added) return failure(buttonKey, `another session or program added "${entry.entry}" to ${entry.settingsKey} in ${file.display} after this press read it. Nothing was written.`)
+    const refitted: SandboxTunerApplied = { ...entry, backup: text === null ? null : file.backup, created: added.created }
+    return { ...planned, loaded, value: added.value, entry: refitted, success: addedNotice(planned.change, text !== null) }
+  }
+  const removed = removeEntry(parsed.value, entry.settingsKey, entry.entry, entry.created)
+  if ('refusal' in removed) return conflict(refusalText(removed, file))
+  if ('isAbsent' in removed) return saveJournal($, { buttonKey, file, entry: { ...entry, undoState: undefined }, success: absentNotice(entry), didWrite: false })
+  return { ...planned, loaded, value: removed.value }
+}
+
+/**
+ * Under the lock (`token`): checks the planned edit again, reads the settings file again, fits the edit to what it
+ * holds now, and writes it. An addition gets a time later than each change of its entry that the journal holds now, as
+ * a press of another session can have saved one while this press waited for the lock.
+ */
+async function writeEdit($: EngineInterface, buttonKey: string, file: FileInfo, first: Planned, token: string): Promise<PressResult> {
+  const checked = await recheckPlan($, buttonKey, first)
+  if (!('value' in checked)) return checked
+  const read = await readText($, file, buttonKey)
+  if (!('found' in read)) return read
+  const planned = read.found === first.loaded.original && checked === first ? first : await refitEdit($, buttonKey, file, checked, read.found)
+  if (!('value' in planned)) return planned
+  const { loaded, value, success } = planned
+  const entry = 'change' in planned ? { ...planned.entry, appliedAt: laterThanJournal(await readJournal($), file, planned.change, planned.entry.appliedAt) } : planned.entry
+  const problem = await writeSettings($, buttonKey, file, loaded.original, serializeSettings(value, loaded.parsed), entry, token)
   if (problem !== null) return problem
   return saveJournal($, { buttonKey, file, entry: { ...entry, applyState: undefined }, success, didWrite: true })
+}
+
+/**
+ * Every edit checks one fresh read of the settings file first. Then it takes the lock of the file, reads it again,
+ * writes the edit to what the file holds now, and frees the lock. The checks of the journal and the sightings run again
+ * under the lock, the checks of the file run again when the text changed between the reads, and the unchanged-file
+ * check right before the write compares with the second read.
+ */
+async function editSettings($: EngineInterface, buttonKey: string, file: FileInfo, edit: SettingsEdit): Promise<PressResult> {
+  const loaded = await readSettingsFile($, file, buttonKey)
+  if (!('parsed' in loaded)) return loaded
+  const planned = await planEdit($, buttonKey, file, edit, loaded)
+  if (!('value' in planned)) return planned
+  const token = await takeLock($, file, buttonKey)
+  if (typeof token !== 'string') return token
+  try {
+    return await writeEdit($, buttonKey, file, planned, token)
+  } finally {
+    await freeLock($, file, token, buttonKey)
+  }
+}
+
+/** The saved record of a target, read again from every writer, or the result of a press that stops. */
+async function targetRecord($: EngineInterface, key: string, buttonKey: string): Promise<SandboxTunerRecord | PressResult> {
+  if (await read($, evidenceIncomplete)) return failure(buttonKey, 'some sightings could not be saved. Durable safety evidence is incomplete. Nothing was written.')
+  return (await readRecords($, key))[0] ?? info(NOTHING_TO_CHANGE)
 }
 
 async function applyFix($: EngineInterface, threshold: number, key: string, action: SandboxTunerAction, buttonKey: string): Promise<PressResult> {
@@ -723,9 +929,8 @@ async function applyFix($: EngineInterface, threshold: number, key: string, acti
   } catch (error) {
     return failure(buttonKey, `could not check the current settings: ${causeOf(error)}. Nothing was written.`)
   }
-  if (await read($, evidenceIncomplete)) return failure(buttonKey, 'some sightings could not be saved. Durable safety evidence is incomplete. Nothing was written.')
-  const record = (await readRecords($, key))[0]
-  if (record === undefined) return info(NOTHING_TO_CHANGE)
+  const record = await targetRecord($, key, buttonKey)
+  if (!('key' in record)) return record
   if (context.file === undefined) return info(nothingApplied(verdictSentences(record, verdictOf(record, context), context)))
   return editSettings($, buttonKey, context.file, { kind: 'add', record, action, context })
 }
@@ -842,11 +1047,16 @@ async function reconcileJournal($: EngineInterface, journal: readonly SandboxTun
   return reconciled
 }
 
-async function undoFix($: EngineInterface, id: string, buttonKey: string): Promise<PressResult> {
-  const journal = await readJournal($)
+/** The journal entry `id` when an Undo can remove it, else the result of the press. */
+function undoable(journal: readonly SandboxTunerApplied[], id: string, buttonKey: string): SandboxTunerApplied | PressResult {
   const entry = journal.find(item => item.id === id)
   if (entry === undefined || (entry.undoneAt !== null && !isUndoUnresolved(entry))) return info(NOTHING_TO_UNDO)
-  if (hasLaterOwner(journal, entry)) return failure(buttonKey, 'a later journal entry owns this setting. Nothing was written. Reopen the pane.')
+  return hasLaterOwner(journal, entry) ? failure(buttonKey, 'a later journal entry owns this setting. Nothing was written. Reopen the pane.') : entry
+}
+
+async function undoFix($: EngineInterface, id: string, buttonKey: string): Promise<PressResult> {
+  const entry = undoable(await readJournal($), id, buttonKey)
+  if (!('id' in entry)) return entry
   const file = fileInfo(entry.file, await homeOf($))
   return editSettings($, buttonKey, file, { kind: 'remove', entry })
 }
@@ -873,8 +1083,12 @@ async function setHidden($: EngineInterface, key: string, isHidden: boolean, but
 
 export const register: Register = (on, options) => {
   const threshold = Number(options.minimumSightings)
+  // How often an interactive session checks the folders that Allow opened again. 0 turns the timed check off.
+  const linkCheckMs = Number(options.linkCheckMinutes) * 60_000
   // Whether a person is at the prompt. Only session.start says so, and the process keeps it across /clear.
   let isInteractive = false
+  // The timer of the timed check: one for the process, across /clear. A hot reload cancels it with the old module.
+  let linkTimer: Timer | null = null
   // A hot reload runs session.start again: it registers the command again and loads the store again.
   on('session.start', async ($, e, next) => {
     const started = await next(e)
@@ -886,7 +1100,9 @@ export const register: Register = (on, options) => {
     }
     void enqueue(() => loadSaved($, 'session.start', null))
     // Outside the queue: its walk must not hold back the recording of the first Bash calls.
-    if (e.isInteractive) void recheckOnce($, threshold)
+    if (e.isInteractive) void recheckOnce($, threshold, true)
+    // A link made during the session: the check at its start cannot see it.
+    if (e.isInteractive && linkTimer === null && linkCheckMs > 0) linkTimer = $.clock.every(linkCheckMs, () => void recheckOnce($, threshold, false))
     return started
   }).catch(($, e, next) => {
     hookFailed($, 'session.start', null, next.error)
@@ -896,7 +1112,7 @@ export const register: Register = (on, options) => {
   // /clear, /resume, and /branch start a new session in the same process, and session.start does not fire.
   on('classic.SessionStart', { source: ['clear', 'resume', 'fork'] }, async ($, e, next) => {
     await enqueue(() => loadSaved($, 'classic.SessionStart', null))
-    if (isInteractive) void recheckOnce($, threshold)
+    if (isInteractive) void recheckOnce($, threshold, true)
     return next(e)
   }).catch(($, e, next) => {
     hookFailed($, 'classic.SessionStart', null, next.error)

@@ -66,7 +66,7 @@ export async function analyzeCall(call: Call, ctx: Context, io: Io): Promise<Cal
   return { ...identity, ...shell, opaque: shell.opaque ?? identity.opaque, segments, skeleton: fingerprint(segments.map(segment => segment.skeleton).sort().join(' ; ')), flags }
 }
 
-/** The effects of a file tool on the paths its input names, opaque past the distinct-effect, input-work, or supported path-length limits; a Grep or Glob call without a path searches the current folder. An MCP tool names the paths in its input, and a ReadMcpResourceTool call reads the file of a local `file:` URI. */
+/** The effects of a file tool on the paths its input names, opaque past the distinct-effect, input-work, or supported path-length limits; a Grep or Glob call without a path searches the current folder, and a Grep call without a `glob` or `type` filter reads its path as a `fullSearch`. An MCP tool names the paths in its input, and a ReadMcpResourceTool call reads the file of a local `file:` URI. */
 function toolEffects(call: Call, ctx: Context): Pick<Analysis, 'effects' | 'opaque'> {
   if (call.tool.startsWith('mcp__')) return namedPaths(call.input, ctx.home)
   if (call.tool === 'ReadMcpResourceTool') {
@@ -79,6 +79,7 @@ function toolEffects(call: Call, ctx: Context): Pick<Analysis, 'effects' | 'opaq
   const value = touch.recursive && (given === undefined || given === '') ? '.' : given
   if (Array.isArray(value) && value.length > 16_384) return { effects: [], opaque: OPAQUE.tooMany }
   const names = Array.isArray(value) ? value.filter((name): name is string => typeof name === 'string') : typeof value === 'string' ? [value] : []
+  const fullSearch = call.tool === 'Grep' && !['glob', 'type'].some(field => call.input[field] !== undefined && call.input[field] !== null && call.input[field] !== '')
   const effects: Effect[] = []
   const seen = new Set<string>()
   let work = 0
@@ -91,7 +92,7 @@ function toolEffects(call: Call, ctx: Context): Pick<Analysis, 'effects' | 'opaq
     if (path !== undefined && !seen.has(path)) {
       if (effects.length >= MAX_EFFECTS) return { effects, opaque: OPAQUE.tooMany }
       seen.add(path)
-      effects.push({ path, kind: touch.kind, recursive: touch.recursive })
+      effects.push({ path, kind: touch.kind, recursive: touch.recursive, ...(fullSearch ? { fullSearch: true as const } : {}) })
     }
   }
   return { effects }

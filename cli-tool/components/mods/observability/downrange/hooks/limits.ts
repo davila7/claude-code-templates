@@ -16,6 +16,8 @@ export const TAIL_BYTES = 16_384
 export const TAIL_TIMEOUT_MS = 2_000
 /** Display lines searched for progress, newest first. */
 export const PROGRESS_LINES = 10
+/** Characters before a ratio that decide whether it is a known progress counter, such as `Step` or `[builder `. */
+export const COUNTER_CONTEXT = 256
 /** The least time between anchor and sample before a rate ETA shows. */
 export const ETA_MIN_SPAN_MS = 10_000
 /** The least percentage-point gain before a rate ETA shows. */

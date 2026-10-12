@@ -4,6 +4,13 @@ export const LIMITS = {
   entries: 200,
   /** Entries kept for one peer; a busy peer drops its own oldest entries first. */
   peerEntries: 50,
+  /** Characters of JSON text that one agent lane's entries keep; past it, that lane drops its own oldest entries first. */
+  laneChars: 500_000,
+  /**
+   * Characters of JSON text that all agent lanes keep together: they are saved as one value, and Claude Code 2.1.296
+   * refuses a value over 4,194,304 characters. Past it, the entries observed first drop; each lane keeps its newest.
+   */
+  lanesChars: 4_000_000,
   /** Peers kept; the ones reported least recently drop first. */
   peers: 100,
   /** Characters of a body kept; the transcript keeps the rest. */

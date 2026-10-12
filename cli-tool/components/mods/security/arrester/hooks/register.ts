@@ -11,7 +11,7 @@ import { basenameOf, dirnameOf, joinPath } from './analyze/paths'
 import { OPAQUE } from './analyze/shell'
 import type { Effect, Io, ScriptRead } from './analyze/types'
 import { fixedGuards, hookPaths, SETTINGS_SOURCES } from './guards'
-import { cleared, EMPTY_JOURNAL, isRecorded, nextClose, openBlocks, pruned, renewed, targetsOf, withBlock, withDecision, withHeld, withoutHeld } from './journal'
+import { cleared, EMPTY_JOURNAL, isRecorded, isTargetFolder, nextClose, openBlocks, pruned, renewed, targetsOf, withBlock, withDecision, withHeld, withoutHeld } from './journal'
 import { blocksOf, findings, renewable } from './match'
 import type { Finding } from './match'
 import { ALLOW_ONCE, ARGUMENT_HINT, blockOfText, causeOf, clearedText, clearRefused, COMMAND_DESCRIPTION, commandFailed, couldNotCheck, couldNotReadScript, couldNotReadSettings, couldNotRecord, couldNotRegister, couldNotResolve, couldNotSave, couldNotSync, decisionLine, evictionNotice, historyText, retryNotice, DENY, denyReason, failureOf, hasVerdict, HEADER, heldReason, holdEnded, holdUnanswered, homeUnset, hostText, incompleteCapture, hookFailedNoBlock, noVerdict, notCounted, phrase, question, statusLine, statusText, storedReason, summarize, uncheckedReason, USAGE, viewOf } from './text'
@@ -148,7 +148,7 @@ async function sync(engine: EngineInterface, config: Config, event: string, drop
   }
 }
 
-/** Opens a block for a call that a guard blocked, with its targets and the guard list placed on the file system; a recursive read whose root is a regular file counts as a read of that file. Every script on disk counts as older than the block, and an older interpreter script is not scanned. A call opens one block, also when that block was cleared since. */
+/** Opens a block for a call that a guard blocked, with its targets and the guard list placed on the file system; a recursive read whose root is a regular file counts as a read of that file, and a `fullSearch` whose root is a folder as a read of the folder, unless `isTargetFolder` spares it or the reason names another tool to use. Another recursive read of a folder, such as a filtered search, `cp -r`, `rsync`, `tar`, or `diff -r`, records no folder. Every script on disk counts as older than the block, and an older interpreter script is not scanned. A call opens one block, also when that block was cleared since. */
 async function recordBlock(engine: EngineInterface, config: Config, event: string, call: Call, source: ArresterSource, reason: string, rule: string | undefined, signal: AbortSignal): Promise<void> {
   const toolUseId = call.toolUseId
   if (toolUseId === undefined || isRecorded(await read(engine, JOURNAL), toolUseId)) return
@@ -157,13 +157,19 @@ async function recordBlock(engine: EngineInterface, config: Config, event: strin
   const analysis = await analyzeCall(call, { cwd, home }, ioOf(engine, event, signal, Number.POSITIVE_INFINITY, true))
   if (signal.aborted) return
   const roots = await placeAll(engine, analysis.effects.filter(isSearchRoot), event, signal)
-  const effects = analysis.effects.map(effect => (isSearchRoot(effect) && roots.get(placeKey(effect))?.kind === 'file' ? { ...effect, recursive: false } : effect))
+  const guards = await guardPaths(engine, event, home, cwd)
+  const isFolderSearch = (effect: Effect): boolean => effect.fullSearch === true && isSearchRoot(effect) && roots.get(placeKey(effect))?.kind === 'dir'
+  const spared = analysis.effects.some(isFolderSearch) ? await sparedPaths(engine, event, signal, [home, cwd, await engine.session.root()], guards) : []
+  const effects = analysis.effects.map(effect => {
+    const found = isSearchRoot(effect) ? roots.get(placeKey(effect)) : undefined
+    const isTarget = found?.kind === 'file' || (found !== undefined && isFolderSearch(effect) && isTargetFolder(found.real === undefined ? [effect.path] : [effect.path, found.real], spared, reason))
+    return isTarget ? { ...effect, recursive: false } : effect
+  })
   const named = targetsOf(effects)
   const unplaced = named.filter(target => !roots.has(placeKey(target)))
   const rest = await placeAll(engine, unplaced, event, signal)
   const targets = withPlacements(named, new Map([...roots, ...rest]))
   if (signal.aborted) return
-  const guards = await guardPaths(engine, event, home, cwd)
   const at = await engine.clock.now()
   const turn = await engine.session.turns()
   const draft = { source, agentId: call.agentId, incomplete: analysis.opaque, tool: call.tool, summary: summarize(call), reason: storedReason(reason), ...(rule === undefined ? {} : { rule }), toolUseId, turn, at, exact: analysis.exact, skeleton: analysis.skeleton, flags: analysis.flags, segments: analysis.segments, targets }
@@ -196,6 +202,13 @@ async function guardPaths(engine: EngineInterface, event: string, home: string |
   const placedFixed = await Promise.all(fixed.map(async guard => withReal(guard, (await place(engine, event, guard.path)).real)))
   const placedNamed = await Promise.all([...named].map(async path => ({ path, ...(await place(engine, event, path)) })))
   return [...placedFixed, ...placedNamed.filter(found => found.kind === 'file').map(found => withReal({ path: found.path }, found.real))]
+}
+
+/** The paths that a folder target may not be or hold: each of `folders`, such as the home, session, and project folders, and each guard, also by its real path. */
+async function sparedPaths(engine: EngineInterface, event: string, signal: AbortSignal, folders: readonly (string | undefined)[], guards: readonly ArresterGuard[]): Promise<string[]> {
+  const values = folders.flatMap(path => (path === undefined ? [] : [{ path }]))
+  const placed = withPlacements(values, await placeAll(engine, values, event, signal))
+  return [...placed, ...guards].flatMap(value => (value.real === undefined ? [value.path] : [value.path, value.real]))
 }
 
 /** Where a path lands and what is there: its own real path and kind when it exists, also for a removed entry that is no symbolic link, so a case alias lands on the name on disk; for a removed link, a missing path, or an entry the file system refuses, its folder's real path plus its name; nothing when neither exists, or when the file system refuses the folder, which is logged to the debug log. */

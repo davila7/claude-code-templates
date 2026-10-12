@@ -1,11 +1,12 @@
-// Parses, edits, and serializes the user settings file, and checks the shape of a journal entry.
+// Parses, edits, and serializes the user settings file, formats and parses the record of its lock file, and checks the
+// shape of a journal entry.
 
 import type { SandboxTunerApplied, SandboxTunerSettingsKey } from '../types'
 import { causeOf } from './diagnostics'
 import { displayPath, normalHost, plainText } from './names'
 import { isCount, isListOf, isPlainObject, isText } from './shapes'
 
-export type FileInfo = { path: string; display: string; backup: string; backupDisplay: string }
+export type FileInfo = { path: string; display: string; backup: string; backupDisplay: string; lock: string; lockDisplay: string }
 export type ParsedSettings = { value: Record<string, unknown>; bom: string; trailingNewline: boolean; isCanonical: boolean }
 export type Refusal =
   | { refusal: 'invalid-json'; message: string }
@@ -24,10 +25,39 @@ const KEY_PATHS: Readonly<Record<SandboxTunerSettingsKey, KeyPath>> = {
 }
 const HOST_KEYS: ReadonlySet<SandboxTunerSettingsKey> = new Set(['sandbox.network.allowedDomains', 'sandbox.network.deniedDomains'])
 
-/** The paths of a settings file and its backup, each with the text that shows it: CLAUDE_CONFIG_DIR can hold any character. */
+/**
+ * The paths of a settings file, its backup, and its lock file, each with the text that shows it: CLAUDE_CONFIG_DIR can
+ * hold any character.
+ */
 export function fileInfo(path: string, home: string | undefined): FileInfo {
   const backup = `${path.slice(0, path.lastIndexOf('/'))}/backups/settings.json.sandbox-tuner.bak`
-  return { path, display: plainText(displayPath(path, home)), backup, backupDisplay: plainText(displayPath(backup, home)) }
+  const lock = `${path}.sandbox-tuner.lock`
+  return { path, display: plainText(displayPath(path, home)), backup, backupDisplay: plainText(displayPath(backup, home)), lock, lockDisplay: plainText(displayPath(lock, home)) }
+}
+
+/** Who holds the lock of a settings file: the token of one press, and when it took the lock. */
+export type LockRecord = { holder: string; since: number }
+
+/** The text of a lock file: held by the press `holder` since `since`, or free since `since` when `holder` is null. */
+export function lockText(holder: string | null, since: number): string {
+  return `${JSON.stringify({ holder, since })}\n`
+}
+
+/**
+ * What a lock file holds: its holder, `free` when the file is missing or free, or null when its text is no lock record,
+ * such as an empty file that a write has not finished.
+ */
+export function readLock(text: string | null): LockRecord | 'free' | null {
+  if (text === null) return 'free'
+  let value: unknown
+  try {
+    value = JSON.parse(text)
+  } catch {
+    return null
+  }
+  if (!isPlainObject(value) || !isCount(value.since)) return null
+  if (value.holder === null) return 'free'
+  return isText(value.holder) && value.holder !== '' ? { holder: value.holder, since: value.since } : null
 }
 
 function typeName(value: unknown): string {

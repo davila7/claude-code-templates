@@ -1,8 +1,13 @@
 export type JobState = 'running' | 'completed' | 'failed' | 'stopped' | 'gone'
 
-export type Progress = { percent: number; label: string; at: number }
+/**
+ * A progress reading; isGeneric is true for a ratio in no known progress format, which counts only with the
+ * `genericRatios` option on, and false for a known format. A reading that an earlier version saved has no mark.
+ */
+export type Progress = { percent: number; label: string; at: number; isGeneric?: boolean }
 
-export type Anchor = { percent: number; at: number }
+/** The start of a rising run of readings; isGeneric is the mark of the reading that started it, absent when an earlier version saved it. */
+export type Anchor = { percent: number; at: number; isGeneric?: boolean }
 
 export type JobBase = {
   id: string
@@ -36,7 +41,7 @@ export type ShellJob = JobBase & {
   /** The size at a failed tail, used for its retry interval without marking that output as read. */
   failedReadBytes?: number
   lastReadAt?: number
-  /** When the latest end asked for one more read of the output; a read that began after it clears it. */
+  /** When the latest end, or a reload of the mod, asked for one more full read of the output; a read that began after it clears it. */
   finalReadAskedAt?: number
   progress?: Progress
   anchor?: Anchor

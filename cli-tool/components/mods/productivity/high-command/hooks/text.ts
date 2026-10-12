@@ -133,6 +133,15 @@ export function count(n: number, noun: string): string {
 }
 
 /**
+ * The unread counts that the band and the status line show, as in `3 unread (retained) · 2 unread in agent lanes`:
+ * the main inbox's count, and the agent lanes' count when it is above zero; '' when both are zero.
+ */
+export function unreadText(main: number, lanes = 0): string {
+  return [main > 0 ? `${main} unread (retained)` : undefined, lanes > 0 ? `${lanes} unread in agent lanes` : undefined]
+    .filter(part => part !== undefined).join(' · ')
+}
+
+/**
  * A full peer identity: one line without control or format characters
  * (bidi controls, zero-width marks). Bracketed text belongs to the name.
  */

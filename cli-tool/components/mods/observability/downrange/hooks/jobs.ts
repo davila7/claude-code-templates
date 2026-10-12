@@ -1,6 +1,6 @@
 import type { AgentInfo, ClassicEventOf } from 'claude-code'
 
-import type { AgentJob, Job, JobsState, JobState, MonitorJob, ShellJob, Wakeup, WorkflowJob } from '../types'
+import type { AgentJob, Job, JobsState, JobState, MonitorJob, Progress, ShellJob, Wakeup, WorkflowJob } from '../types'
 import {
   ACTIVITY_MAX,
   LARGE_FILE_BYTES,
@@ -316,9 +316,9 @@ function ended(jobs: readonly Job[], notice: Notice, state: JobState, now: numbe
   }, [...jobs])
 }
 
-function monitorEvent(jobs: readonly Job[], notice: Notice, event: string, now: number): Job[] {
+function monitorEvent(jobs: readonly Job[], notice: Notice, event: string, now: number, isAnyRatio: boolean): Job[] {
   const lines = displayLinesOf(event)
-  const progress = progressOf(lines.slice(-PROGRESS_LINES), now)
+  const progress = progressOf(lines.slice(-PROGRESS_LINES), now, isAnyRatio)
   const lastLine = lines.at(-1)
   return notice.ids.reduce<Job[]>((list, id) => {
     let known = list.find(job => job.id === id)
@@ -339,11 +339,11 @@ function monitorEvent(jobs: readonly Job[], notice: Notice, event: string, now: 
   }, [...jobs])
 }
 
-/** Applies the status and output in a notification. */
-export function noticed(jobs: readonly Job[], notice: Notice, now: number): Job[] {
+/** Applies the status and output in a notification; isAnyRatio (the `genericRatios` option) lets any ratio in a Monitor event count as progress. */
+export function noticed(jobs: readonly Job[], notice: Notice, now: number, isAnyRatio = false): Job[] {
   const state = endStateOf(notice.status)
   const updated = state === undefined ? [...jobs] : ended(jobs, notice, state, now)
-  const refined = notice.event === undefined ? updated : monitorEvent(updated, notice, notice.event, now)
+  const refined = notice.event === undefined ? updated : monitorEvent(updated, notice, notice.event, now, isAnyRatio)
   return refined.map(job => {
     if (job.kind !== 'shell' || !notice.ids.includes(job.id) || notice.outputFile === undefined || !isOutputFileOf(notice.outputFile, job.id)) return job
     return { ...job, outputFile: notice.outputFile, note: job.note === 'no output file' ? undefined : job.note,
@@ -532,12 +532,43 @@ export function readsDue(jobs: readonly Job[], now: number): (ShellJob & { outpu
 const askedSince = (job: ShellJob, readAt: number): number | undefined =>
   job.finalReadAskedAt !== undefined && job.finalReadAskedAt >= readAt ? job.finalReadAskedAt : undefined
 
-/** The list after a read that began at `now`: size, time, last line, and progress; a read-problem note clears, and a later end keeps its final read. */
-export function tailRead(jobs: readonly Job[], id: string, read: TailRead, now: number): Job[] {
+/** Whether two readings show the same value, both from a known format or both generic. A reading with no mark, which an earlier version saved, matches either. */
+const isSameReading = (a: Progress | undefined, b: Progress | undefined): boolean =>
+  a !== undefined && b !== undefined && a.label === b.label && a.percent === b.percent &&
+  (a.isGeneric === undefined || b.isGeneric === undefined || a.isGeneric === b.isGeneric)
+
+/** Whether a reading or an anchor stays with isAnyRatio off: it is absent, or marked as a known format. One with no mark came from an earlier version, which counted any ratio. */
+const isKnownOrAbsent = (value: { isGeneric?: boolean } | undefined): boolean => value === undefined || value.isGeneric === false
+
+/**
+ * The list after a reload of the mod at `now`, as a change of the `genericRatios` option or an update causes. With
+ * isAnyRatio off, a reading or an anchor that is generic or has no mark drops, and an anchor drops with its reading.
+ * Each running shell with an output file reads it once more in full, so its row follows the current option. A Monitor
+ * cannot read its old events again: its next event follows the option.
+ */
+export function reloaded(jobs: readonly Job[], isAnyRatio: boolean, now: number): Job[] {
+  return jobs.map(job => {
+    if (job.kind !== 'shell' && job.kind !== 'monitor') return job
+    const isGenericDropped = !isAnyRatio && (!isKnownOrAbsent(job.progress) || !isKnownOrAbsent(job.anchor))
+    const isReread = job.kind === 'shell' && isRunning(job) && job.outputFile !== undefined
+    if (!isGenericDropped && !isReread) return job
+    const ratios = isGenericDropped ? { progress: isKnownOrAbsent(job.progress) ? job.progress : undefined, anchor: undefined } : {}
+    return { ...job, ...ratios, ...(isReread ? { finalReadAskedAt: now } : {}) }
+  })
+}
+
+/**
+ * The list after a read that began at `now`: size, time, last line, and progress; a read-problem note clears, and a
+ * later end keeps its final read. isAnyRatio (the `genericRatios` option) lets any ratio count as progress.
+ */
+export function tailRead(jobs: readonly Job[], id: string, read: TailRead, now: number, isAnyRatio = false): Job[] {
   return jobs.map(job => {
     if (job.kind !== 'shell' || job.id !== id) return job
     const lines = /^\[exited with code -?\d+\]$/.test(read.lines.at(-1) ?? '') ? read.lines.slice(0, -1) : read.lines
-    const progress = progressOf(lines.slice(-PROGRESS_LINES), now)
+    const found = progressOf(lines.slice(-PROGRESS_LINES), now, isAnyRatio)
+    // A full read of output that kept its size, as a reload asks for, keeps a reading it finds again, with that reading's time.
+    const isUnchanged = read.bytes === job.outputBytes && job.failedReadBytes === undefined
+    const progress = isUnchanged && isSameReading(found, job.progress) ? undefined : found
     const lastLine = lines.at(-1)
     return {
       ...job,

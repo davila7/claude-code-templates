@@ -4,13 +4,13 @@
   <img src="https://img.shields.io/badge/Claude_Code-2.1.288%2B-D97757" alt="Claude Code 2.1.288+">
   <img src="https://img.shields.io/badge/type-mod-555555" alt="mod">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-555555" alt="License: MIT"></a>
-  <img src="https://img.shields.io/badge/version-1.1.0-555555" alt="Version: 1.1.0">
+  <img src="https://img.shields.io/badge/version-1.1.1-555555" alt="Version: 1.1.1">
 </p>
 
 <p align="center"><strong>One inbox for agent-team teammates, named subagents, and other Claude Code sessions.</strong></p>
-<p align="center"><a href="#why">Why</a> · <a href="#features">Features</a> · <a href="#how-it-works">How it works</a> · <a href="#install">Install</a> · <a href="#commands">Commands</a> · <a href="#how-it-compares">How it compares</a> · <a href="#known-limits">Known limits</a> · <a href="#privacy">Privacy</a></p>
+<p align="center"><a href="#why">Why</a> · <a href="#features">Features</a> · <a href="#how-it-works">How it works</a> · <a href="#install">Install</a> · <a href="#commands">Commands</a> · <a href="#options">Options</a> · <a href="#how-it-compares">How it compares</a> · <a href="#known-limits">Known limits</a> · <a href="#privacy">Privacy</a></p>
 
-> Vendored from [dot-agi/high-command](https://github.com/dot-agi/high-command) (MIT, by dot-agi). Install with `npx claude-code-templates@latest --mod productivity/high-command`, or from the author's marketplace as described below. Report issues upstream.
+> Vendored from [dot-agi/high-command](https://github.com/dot-agi/high-command) (MIT, by dot-agi). Install with `npx claude-code-templates@latest --mod productivity/high-command`, or from the author's marketplace as described below. Installed with `--mod`, it loads as `high-command@skills-dir`: set its options in `/config`, or under `pluginConfigs["high-command@skills-dir"].options` in `~/.claude/settings.json`. Report issues upstream.
 
 ![Terminal with a High Command band: 5 unread from scout, tester, and helper, with Open, Read all, and Hide buttons, and a status line.](https://raw.githubusercontent.com/dot-agi/high-command/main/docs/images/band.svg)
 
@@ -23,7 +23,7 @@ When your session works with other agents, their messages arrive in the transcri
 ## Features
 
 - **One inbox by peer.** Messages from agent-team teammates, from subagents that message your session by name, and from your other Claude Code sessions, grouped by peer with unread counts. Read them in a pane, or print a summary with `/highcommand`.
-- **Band and status line.** While unread messages wait, a row above the prompt shows the count and up to three peers, with **Open**, **Read all**, and **Hide**. **Hide** puts the band away until a newer message arrives and marks nothing read. The status line under the prompt, `high-command: 5 unread (retained)`, is the mod's own line, so another mod's band cannot hide it. It clears at zero.
+- **Band and status line.** While unread messages wait, a row above the prompt shows the count and up to three peers, with **Open**, **Read all**, and **Hide**. **Hide** puts the band away until a newer message arrives and marks nothing read. The status line under the prompt, `high-command: 5 unread (retained)`, is the mod's own line, so another mod's band cannot hide it. It clears at zero. Both count the main inbox. The `agentLanesInBand` [option](#options) adds the unread messages of agent lanes.
 - **Pane with threads.** A roster of the peers you received messages from or tried to message: peers with unread messages first, then the most recent. Each row shows the unread count, the sender label, any `suspicious` mark, the time of the latest message, the peer's last known state, and the start of that message. Open a peer to read its thread, newest first: its messages to you and Claude's sends to it, each send with its reported result. Messages that were unread when you opened the thread, and messages that arrive while it is open, stay marked `new` until you go back to the roster.
 - **Sender labels.** Each message to you gets a label from Claude Code's own record of where it came from. The sender name is a claim. The label says how far Claude Code vouches for it:
   - `verified sender`: a teammate whose message the team harness wrote under that name.
@@ -88,6 +88,36 @@ For one session from a clone:
 claude --plugin-dir ./high-command
 ```
 
+### Agents and scripts
+
+Install from a shell with Claude Code 2.1.292 or later. The second part turns on auto-update. It runs only when the install succeeds and the marketplace entry exists:
+
+```sh
+claude plugin install high-command --marketplace dot-agi/high-command --scope user --json \
+  && f="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/settings.json" \
+  && jq -e --arg name high-command '.extraKnownMarketplaces[$name].source' "$f" > /dev/null \
+  && tmp=$(mktemp "$f.XXXXXX") \
+  && { jq --arg name high-command '.extraKnownMarketplaces[$name].autoUpdate = true' "$f" > "$tmp" && mv "$tmp" "$f" || { rm -f "$tmp"; false; }; }
+```
+
+Claude Code 2.1.288 to 2.1.291 has no `--marketplace` option. Add the marketplace first, then run the auto-update part above, from `f=` on:
+
+```sh
+claude plugin marketplace add dot-agi/high-command --scope user --json \
+  && claude plugin install high-command@high-command --scope user --json
+```
+
+Auto-update runs only in interactive sessions. A headless job updates at its start, before the session that uses the mod:
+
+```sh
+claude plugin update high-command@high-command --json
+```
+
+- New code loads in the next session, or after `/reload-plugins`.
+- Running `install` again does not update. Use `update`.
+- On a host with no SSH key for GitHub, set `CLAUDE_CODE_PLUGIN_PREFER_HTTPS=1` in the environment of every `claude` command and session.
+- The auto-update part replaces `settings.json` with a new file with mode 600. If `settings.json` is a symbolic link, edit its target instead.
+
 ## Commands
 
 | Command | What it does |
@@ -112,6 +142,16 @@ Release Ctrl before you press Tab, because many terminals read Ctrl+Tab as next 
 
 Letter and digit keys work only while the band or the pane has the keyboard. **Open** in the band opens the pane but leaves the keyboard on the band, and focus passes each band button before it reaches the pane. Press Ctrl+X, then Tab, until the pane border shows focus, or click the pane, before you press a digit. Each letter and digit key also has a button you can click. The full guide is [docs/usage.md](https://github.com/dot-agi/high-command/blob/main/docs/usage.md).
 
+## Options
+
+Set options in `/config`, or under `pluginConfigs["high-command@high-command"].options` in `~/.claude/settings.json`. For a `--plugin-dir` load, the key is `high-command@inline`. A `--mod` install loads the mod as `high-command@skills-dir`, so use that key in `~/.claude/settings.json` for that install.
+
+| Option | Default | Effect |
+| --- | --- | --- |
+| `agentLanesInBand` | `false` | Adds the unread count of all agent lanes to the band and the status line, as in `high-command: 3 unread (retained) · 2 unread in agent lanes`. **Read all** in the band then also marks every agent lane read. **Hide** then also ends when a newer message arrives in an agent lane. **Open** still shows the main inbox. |
+
+A change takes effect at once: Claude Code reloads the mod with the new values.
+
 ## How it compares
 
 Claude Code and other mods also show peer messages. Each row says what the tool does and what High Command adds.
@@ -126,28 +166,30 @@ Claude Code and other mods also show peer messages. Each row says what the tool 
 
 ## Known limits
 
-High Command shows only what it saw in the current conversation, within fixed bounds, and a reported send result never proves that a peer read the message.
+### What it catches
+
+- **Messages to you**: from agent-team teammates, named subagents, and your other sessions, by peer, with a sender label.
+- **Claude's sends**: each plain-text SendMessage in your main conversation, with its reported result.
+- **Local agents**: the messages each local agent sends and receives, in a lane of its own.
+
+### What it does not catch
+
+- **Earlier history**: messages from before this session, or from before `/clear`, `/resume`, or `/branch`.
+- **Some sends**: structured sends such as `shutdown_request`, and sends by other mods or by agents that a mod started.
+- **Split-pane traffic**: messages between teammates that run in their own tmux or iTerm2 panes.
+- **Proof of reading**: a queued send does not show that the peer read it, and a peer state can be out of date.
+- **Every steering attempt**: the `suspicious` mark covers a short list of wordings, and other wordings get no mark.
+
+The list below holds the limits you can hit in daily use. [docs/usage.md](https://github.com/dot-agi/high-command/blob/main/docs/usage.md#known-limits) has every limit, also the rare ones: size caps, unusual names and frames, changes by other mods, and display gaps.
 
 <details>
-<summary>Read the full list of known limits</summary>
+<summary>Read the limits you can hit in daily use</summary>
 
-- **Retained history**: the main inbox and each agent lane keep 200 messages in all and 50 per peer. A peer past 50 messages loses its own oldest ones first. Past 200 in all, the oldest messages drop. A notice counts the messages dropped for good, and unread counts cover kept messages only. A thread shows up to 20 messages per page, fewer when they are long. **Older** and **Newer** page through every kept message. Opening a thread marks all of that peer's kept messages read, also those on other pages. The roster shows 50 peers per page. Peer states are kept for the 100 peers reported most recently. A message keeps its first 2,000 characters, and its thread says how many more are in the transcript.
-- **Agent lanes**: messages that local agents send and receive go to a separate lane for each agent. Each lane has its own counts and read marks. The pane shows each lane's unread count on that agent's button, and `/highcommand` lists the counts apart from the main inbox. The band, the status line, and **Hide** cover the main inbox only, so an unread message in an agent lane does not show there. A message between your main conversation and a local agent can show twice, once in the main inbox and once in that agent's lane. The lane copy of a message from your main conversation never counts as unread. High Command does not see messages between teammates that run in their own split panes.
-- **Sends by mod-started agents**: Claude Code reports a send by an agent that a mod started as that mod's send. High Command records no mod's sends, so these sends do not show in that agent's lane or in `/highcommand`. Messages to that agent still show in its lane. Its messages to your main conversation or to another local agent still show in the main inbox or in that agent's lane.
-- **Space for agent lanes**: High Command saves all agent lanes of a conversation as one value. Claude Code 2.1.296 refuses a saved value over 4,194,304 characters of JSON text. About nine full lanes of 2,000-character messages reach that size, so a lane can stop recording before it holds 200 messages. A new agent message then still reaches its recipient unchanged. High Command does not record it and writes `high-command: session.receive: could not record a delivery ...` or `high-command: session.send: could not record a message to ...`. Near that size, a lane button can also fail with a `high-command: ui.press: ...` toast. The main inbox is saved apart and keeps recording. Read the missed messages in that agent's transcript. `/clear`, `/resume`, or `/branch` starts a new capture window, which empties every lane and the main inbox.
+- **Agent lanes**: messages that local agents send and receive go to a separate lane for each agent. Each lane has its own counts and read marks. The pane shows each lane's unread count on that agent's button, and `/highcommand` lists the counts apart from the main inbox. By default, the band, the status line, and **Hide** cover the main inbox only, so an unread message in an agent lane does not show there. The `agentLanesInBand` [option](#options) adds the unread count of all agent lanes to the band and the status line. A message between your main conversation and a local agent can show twice, once in the main inbox and once in that agent's lane. The lane copy of a message from your main conversation never counts as unread. High Command does not see messages between teammates that run in their own split panes.
 - **Local agent status**: the status under each agent button in the pane, and in `/highcommand`, names its source. A `roster snapshot` status comes from Claude Code's local agent list. High Command reads that list when you open the pane or run `/highcommand`, when an agent starts, and when an agent ends a turn. Between reads, the status can be old. When two reads overlap, the older one can bring back an agent that the newer one removed. Open the pane or run `/highcommand` again after agent activity settles. A `lifecycle observation` says how an agent's last turn ended, such as `turn answered` or `turn error`. When the list does not hold an agent that ended a turn, an open pane shows that observation as the agent's status until the next read of the list. It describes a finished turn, so it does not prove that the agent still runs. A teammate in its own split pane can keep its last status after it crashes. `/highcommand` lists up to 100 local agents. The pane pages through all of them, 10 at a time.
 - **Peer states**: a peer's roster row shows only states from teammates' notices and ListAgents results, never the local agent status. A state is the last one reported, with its time, so it does not prove that the peer is in that state now. When two rows of one ListAgents result have the same name, High Command cannot tell whose state is whose. When the result lists its rows as data, High Command takes no state for that name, so a state recorded earlier, such as `offline`, stays on that peer's row. When the result holds only the printed listing, that name gets the state of the last such row that has one.
-- **Peer names**: High Command tells peers apart by name. Two senders with the same name share one roster row. Names that differ only in spacing or in invisible characters count as one name. A name longer than 60 characters shows cut, with a short code that keeps cut names apart. **Identity** in the thread shows the full name. A send that Claude addresses by the ID of a listed local agent files under that agent's name, on one row with the agent's messages to you. These sends count toward that name's 50 kept messages, so many sends can push out an unread message. The send files under `name [ID]`, on a row of its own, when another listed local agent has the same name or a peer of that name has another session's address. A name that holds only spacing and invisible characters files under `[ID]`. High Command reads the local agent list at each send. Claude Code drops an agent from that list when the agent ends or some time later. A send to the ID of an agent that is no longer listed files under that ID alone, on a row of its own, apart from the agent's messages to you.
 - **Send results**: a send shows the recipient and text that High Command observed, and the result reported back to High Command. **Send details** shows what Claude Code itself received, which another mod may have changed, and whether Claude Code queued the message. When a mod answers the send itself, Send details cannot show this. When a mod sends the message more than once, Send details covers only one of those sends. A refused send shows the first 120 characters of the reason, on one line, in its header. **Send details** keeps up to 2,000 characters of the reason, with its line breaks, and says when it was cut. A queued message is not proof that the peer read it.
-- **Sends changed by earlier mods**: a mod that runs before High Command can change a send's recipient and text. High Command then shows the changed recipient and text, and files the send under the changed recipient. It cannot show what Claude first wrote. Check the SendMessage call in the transcript.
 - **Structured sends**: Claude Code passes only plain-text SendMessage messages to High Command. A SendMessage whose message is a `shutdown_request`, `shutdown_response`, or `plan_approval_response` object does not reach it. Neither its attempt nor its result appears in the main inbox, an agent lane, or `/highcommand`. Check the transcript for these sends.
-- **Subagent messages**: Claude Code does not say whether a mod started or wrote a named subagent's message to your main conversation. High Command reads the local agent list when such a message arrives. The message is `unverified sender` when a mod started every listed agent whose name or ID its frame gives. Otherwise it is `local sender`: also when a mod wrote it from an agent that the model started, when its frames name several senders, and when the list cannot be read. Agents that left the list do not count, so a message from a model-started agent that already ended is `unverified sender` while a mod-started agent of the same name is listed. High Command counts such a message only when the prompt that reaches it holds a complete `<agent-message>` frame and no frame of another kind. A mod that runs after High Command can remove that frame. High Command then files the changed text under the one name that the frames gave, or under `unnamed peer` when they gave none or several. A sender name in the changed text, such as a `from` field, does not change this.
-- **Damaged frames**: Claude Code can wrap a peer's message in a frame, such as `<teammate-message>`, whose attributes name the sender. A malformed attribute, a frame with no closing tag, or text beside complete frames makes High Command write an `incomplete frame parsing` line. A complete frame with a malformed attribute keeps the attributes that High Command could read, such as the sender name and summary. The sender label rules still apply to that name. A frame with no closing tag, and text beside complete frames, become a message from the delivery's sender, or from `unnamed peer`, without frame attributes. Check the transcript for the original frame. A delivery that Claude Code could not place is recorded only when it holds a complete frame.
-- **Display order**: the pane and `/highcommand` sort messages by observation time, the time High Command first saw each one, before other mods and Claude Code handled it. That is not always the order in which messages reached Claude. Read marks, **Hide**, which messages drop first, and the label of a peer with nothing unread follow recording sequence, the order in which High Command finished recording messages.
-- **Narrow panes**: a roster row is one line, and a narrow pane cuts its end. The unread count, sender label, and `suspicious` mark come first, so the state and the latest message are cut before them.
-- **Band space**: when other mods draw a lot in the area above the prompt, the band shrinks to the count and **Open**. When even that would pass Claude Code's limits for one drawing, the band does not show. The status line still counts unread messages. The band also gives way while a Claude Code survey shows.
-- **Summary as a list**: when a peer name holds a `|` after an odd number of backslashes, `/highcommand` prints a list instead of a table. A table cell cannot show such a name as written.
-- **Cut-off failure lines**: when High Command cannot record a send, the `high-command: session.send: could not record a message to ...` line names the recipient before the cause. The terminal draws the first 2,000 characters of a line. Remote surfaces and the debug log keep 10,000. A very long recipient can push the cause past that point. The SendMessage result in the transcript still says whether the message was queued.
 - **No earlier history**: High Command starts empty in each new session and conversation. `/clear`, `/resume`, and `/branch` empty it again, so a resumed conversation shows none of its earlier messages. The pane and `/highcommand` say when the capture window began. After these commands, they also say that earlier history was not restored.
 - **Display only**: High Command changes nothing that Claude reads. Its inbox leaves out idle notices with no content, but Claude still reads them, so the inbox saves no model turns or tokens.
 
@@ -195,7 +237,7 @@ High Command has no hook on a permission check, so it never changes a permission
 - **A `high-command:` line in the transcript**: it names the event and the cause of a failure. The transcript shows each distinct line once until the mod loads again, and repeats go to the debug log only. Errors that `/highcommand` prints show every time. Start Claude Code with `--debug` to see every line.
 - **A debug line names high-command after you decline a message**: Claude Code reports the declined delivery under each mod that passed it on. High Command records nothing for that message.
 - **A harmless message is marked `suspicious`**: the patterns are a short fixed list, so a normal message can match. The mark blocks nothing.
-- **The band is gone but the status line still counts messages**: you pressed **Hide**, and the band comes back with the next message. The band also gives way to a Claude Code survey and to large drawings by other mods (see [Known limits](#known-limits)). `/highcommand open` shows the pane, and **Read all** there clears the count.
+- **The band is gone but the status line still counts messages**: you pressed **Hide**, and the band comes back with the next message. The band also gives way to a Claude Code survey and to large drawings by other mods (see [Known limits](https://github.com/dot-agi/high-command/blob/main/docs/usage.md#known-limits)). `/highcommand open` shows the pane, and **Read all** there clears the main inbox count. With the `agentLanesInBand` [option](#options) on, the line also counts agent lanes. To clear them, press each agent's button that shows an unread count, then **Read all** in its lane. **Read all** in the band, when it shows, clears both counts.
 
 </details>
 

@@ -165,9 +165,9 @@ class Walk {
     return false
   }
 
-  /** Keeps an effect; past MAX_EFFECTS the analysis is opaque. */
+  /** Keeps an effect, a `fullSearch` one apart from the same effect without the mark; past MAX_EFFECTS the analysis is opaque. */
   add(effect: Effect): void {
-    const key = JSON.stringify([effect.path, effect.kind, effect.recursive, effect.entry, effect.glob, effect.globOptions?.dot === true, effect.globOptions?.nocase === true, selectionKey(effect.selection)])
+    const key = JSON.stringify([effect.path, effect.kind, effect.recursive, effect.entry, effect.glob, effect.globOptions?.dot === true, effect.globOptions?.nocase === true, selectionKey(effect.selection), ...(effect.fullSearch === true ? [true] : [])])
     if (!this.charge(key.length) || this.effectKeys.has(key)) return
     if (this.effects.length < MAX_EFFECTS) {
       this.effectKeys.add(key)
@@ -1056,7 +1056,7 @@ function plain(run: Run, kind: EffectKind): void {
   for (const file of parsed.given.get('--random-source') ?? []) addEffect(run, file, 'read', false)
 }
 
-/** A program whose first operand is code or a pattern unless a flag gives it; flag files are read; `sed -i` and BSD `sed -I`, also in a cluster such as `-Ei`, write. A search with a pattern and no file searches the current folder. */
+/** A program whose first operand is code or a pattern unless a flag gives it; flag files are read; `sed -i` and BSD `sed -I`, also in a cluster such as `-Ei`, write. A search with a pattern and no file searches the current folder. A recursive search that `isPartialSearch` does not find reads its operands as a `fullSearch`. */
 function codeOrPatternFirst(run: Run): void {
   const isSed = run.program === 'sed'
   const args = isSed ? run.args.filter((operand, index) => !(textOf(operand) === '' && IN_PLACE_CLUSTER.test(textOf(run.args[index - 1])))) : run.args
@@ -1064,8 +1064,9 @@ function codeOrPatternFirst(run: Run): void {
   const { files, operands, hasCode } = codeOperands(parsed)
   const inPlace = isSed && (parsed.given.has('-i') || parsed.given.has('-I') || parsed.flags.some(flag => flag.startsWith('-i') || flag.startsWith('--in-place')))
   const recursive = isRecursive(run.program, parsed.flags)
+  const fullSearch = recursive && PATTERN_FIRST.has(run.program) && !isPartialSearch(run.program, parsed)
   for (const file of files) addEffect(run, file, 'read', false)
-  for (const operand of operands) addEffect(run, operand, inPlace ? 'write' : 'read', recursive)
+  for (const operand of operands) addEffect(run, operand, inPlace ? 'write' : 'read', recursive, true, true, fullSearch)
   if (PATTERN_FIRST.has(run.program) && hasCode && operands.length === 0) searchHere(run, parsed)
 }
 
@@ -1085,6 +1086,9 @@ const NO_SEARCH = ['--files', '--type-list', '--help', '--version']
 /** The rg flags that pick the files that a search reads by a glob or a type. */
 const RG_FILTERS = ['-g', '--glob', '--iglob', '-t', '-T', '--type', '--type-not', '--type-add']
 
+/** The rg flags that leave files out by an ignore file or a size limit: a search with one reads only part of a folder that it names, and still counts as a read of the current folder when it names none. */
+const RG_LIMITS = ['--ignore-file', '--ignore-file-case-insensitive', '--max-filesize']
+
 /** The long flags of grep and ugrep that pick the files that a search reads by a name, a glob, a type, or an ignore file; grep refuses the ones it does not have. */
 const GREP_FILTERS = ['--include', '--exclude', '--exclude-dir', '--exclude-from', '--include-dir', '--include-from', '--include-fs', '--exclude-fs', '--glob', '--iglob', '--file-extension', '--file-type', '--file-magic', '--ignore-files']
 
@@ -1097,17 +1101,28 @@ const SHORT_FILTERS: ReadonlyMap<string, RegExp> = new Map([['ugrep', /^-[A-Za-z
 /** Every entry below the current folder whose path has no hidden name, which rg and ag search by default. */
 const VISIBLE: Operand = { raw: '**/*', values: [{ text: '**/*', glob: true }] }
 
-/** A search with a pattern that names no file: grep, egrep, fgrep, and ugrep with `-r` read the whole current folder. rg and ag read it when their stdin holds no data, all of it when a flag shows hidden names, else only its visible entries. A search with a file filter or a depth limit reads no folder. */
+/** A search with a pattern that names no file: grep, egrep, fgrep, and ugrep with `-r` read the whole current folder. rg and ag read it when their stdin holds no data, all of it when a flag shows hidden names, else only its visible entries. A narrow search reads no folder. The read is a `fullSearch` unless `isPartialSearch` finds the search. */
 function searchHere(run: Run, parsed: Parsed): void {
-  if (parsed.flags.some(flag => NO_SEARCH.includes(flag)) || isFiltered(run.program, parsed) || isShallow(run.program, parsed)) return
+  if (isNarrow(run.program, parsed)) return
+  const fullSearch = !isPartialSearch(run.program, parsed)
   if (GREPS.has(run.program)) {
-    if (hasFlag(parsed.flags, 'rR', ['--recursive', '--dereference-recursive'])) addEffect(run, fixed('.'), 'read', true)
+    if (hasFlag(parsed.flags, 'rR', ['--recursive', '--dereference-recursive'])) addEffect(run, fixed('.'), 'read', true, true, true, fullSearch)
     return
   }
   const { stdin } = run
   const isEmpty = stdin.kind === 'none' || (stdin.kind === 'script' && stdin.path === '/dev/null') || (stdin.kind === 'other' && stdin.closed === true)
   if (!isEmpty) return
-  addEffect(run, showsHidden(run.program, parsed) ? fixed('.') : VISIBLE, 'read', true)
+  addEffect(run, showsHidden(run.program, parsed) ? fixed('.') : VISIBLE, 'read', true, true, true, fullSearch)
+}
+
+/** Whether a search is narrow: a flag makes it print something else, such as `--files`, it has a file filter, or it limits its depth. */
+function isNarrow(program: string, parsed: Parsed): boolean {
+  return parsed.flags.some(flag => NO_SEARCH.includes(flag)) || isFiltered(program, parsed) || isShallow(program, parsed)
+}
+
+/** Whether a search reads only some files below its folders, or none: it is narrow, or it is rg with an ignore file or a size limit. */
+function isPartialSearch(program: string, parsed: Parsed): boolean {
+  return isNarrow(program, parsed) || (program === 'rg' && parsed.flags.some(flag => RG_LIMITS.includes(flag)))
 }
 
 /** Whether a search picks the files that it reads: rg by a glob or a type, grep and ugrep by a name, a glob, a type, or an ignore file, and ag by a pattern, an ignore rule, or a file type. */
@@ -2200,11 +2215,11 @@ function isRecursive(program: string, flags: readonly string[]): boolean {
   return ALWAYS_RECURSIVE.has(program) || (recursiveFlags !== undefined && hasFlag(flags, recursiveFlags.letters, recursiveFlags.longs))
 }
 
-/** Adds the effect of one operand; a `destroy` effect whose operand does not resolve makes the analysis opaque, and another effect takes the operand's possible values, if any, and is not remembered. Unlinking removes the final directory entry, so its last segment stays as written. A write is remembered as a file the command wrote unless `remember` is false. */
-function addEffect(run: Run, operand: Operand, kind: EffectKind, recursive: boolean, definite = true, remember = true): void {
+/** Adds the effect of one operand; a `destroy` effect whose operand does not resolve makes the analysis opaque, and another effect takes the operand's possible values, if any, and is not remembered. Unlinking removes the final directory entry, so its last segment stays as written. A write is remembered as a file the command wrote unless `remember` is false. A `fullSearch` marks the effect `fullSearch`. */
+function addEffect(run: Run, operand: Operand, kind: EffectKind, recursive: boolean, definite = true, remember = true, fullSearch = false): void {
   if (operand.values === undefined) {
     if (kind === 'destroy') run.walk.fail(OPAQUE.unresolvedDeletion)
-    else if (operand.possible !== undefined) addEffect(run, { raw: operand.raw, values: operand.possible, upstream: operand.upstream }, kind, recursive, false, false)
+    else if (operand.possible !== undefined) addEffect(run, { raw: operand.raw, values: operand.possible, upstream: operand.upstream }, kind, recursive, false, false, fullSearch)
     return
   }
   for (const value of operand.values) {
@@ -2239,7 +2254,7 @@ function addEffect(run: Run, operand: Operand, kind: EffectKind, recursive: bool
     const aliased = isLinkItself ? joinPath(alias(run.walk, run.state, dirnameOf(path)), basenameOf(path)) : alias(run.walk, run.state, path)
     const pattern = value.pattern === undefined ? aliased : alias(run.walk, run.state, absolute(value.pattern, run.state.cwd) ?? value.pattern)
     const globbed = value.glob ? splitGlob(pattern) : undefined
-    run.walk.add({ path: globbed?.path ?? aliased, glob: globbed?.glob, ...(value.globOptions === undefined ? {} : { globOptions: value.globOptions }), kind, recursive: reaches, ...(isLinkItself && globbed === undefined ? { entry: true as const } : {}), ...(value.selection === undefined ? {} : { selection: { ...value.selection, descend: recursive } }) })
+    run.walk.add({ path: globbed?.path ?? aliased, glob: globbed?.glob, ...(value.globOptions === undefined ? {} : { globOptions: value.globOptions }), kind, recursive: reaches, ...(isLinkItself && globbed === undefined ? { entry: true as const } : {}), ...(value.selection === undefined ? {} : { selection: { ...value.selection, descend: recursive } }), ...(fullSearch ? { fullSearch: true as const } : {}) })
     if (kind === 'write' && remember) run.state.written.set(aliased, undefined)
   }
 }

@@ -7,12 +7,17 @@ import {
   appendEntries,
   coreEvidence,
   applyReports,
+  fitLanes,
+  hideLanes,
   isNewerView,
   keepsThread,
+  lanesSeen,
+  lanesUnread,
   markOf,
   markRead,
   newestInboundSeq,
   newestSeq,
+  newestUnreadableSeq,
   outboundEntry,
   recipientOf,
   rosterOf,
@@ -22,7 +27,7 @@ import {
 } from './inbox'
 import { parseListing, parseStructuredListing } from './listing'
 import { summaryText } from './summary'
-import { count, sanitize, peerKey, peerLabels } from './text'
+import { count, sanitize, peerKey, peerLabels, unreadText } from './text'
 import { bandTree, compactBandTree, fitsBounds, paneTree, type BandActions, type PaneActions } from './views'
 
 const DESCRIPTION = 'High Command: messages from teammates and other sessions (/highcommand open shows the pane)'
@@ -37,6 +42,7 @@ const MESSAGE_ORIGINS: ReadonlySet<string> = new Set(['peer', 'coordinator', 'pe
 const ENTRIES = { plugin: 'high-command', key: 'entries' } as const
 const READ_THROUGH = { plugin: 'high-command', key: 'readThrough' } as const
 const STATUS_FROM = { plugin: 'high-command', key: 'statusFrom' } as const
+const LANES = { plugin: 'high-command', key: 'lanes' } as const
 
 const entries = atom(ENTRIES, [])
 const peers = atom({ plugin: 'high-command', key: 'peers' } as const, {})
@@ -45,7 +51,8 @@ const openThread = atom({ plugin: 'high-command', key: 'openThread' } as const, 
 const hiddenThrough = atom({ plugin: 'high-command', key: 'hiddenThrough' } as const, 0)
 const inboundThrough = atom({ plugin: 'high-command', key: 'inboundThrough' } as const, 0)
 
-const lanes = atom({ plugin: 'high-command', key: 'lanes' } as const, {})
+const lanes = atom(LANES, {})
+const hiddenLanes = atom({ plugin: 'high-command', key: 'hiddenLanes' } as const, {})
 const selectedLane = atom({ plugin: 'high-command', key: 'selectedLane' } as const, null)
 const lanePage = atom({ plugin: 'high-command', key: 'lanePage' } as const, 0)
 const rosterPage = atom({ plugin: 'high-command', key: 'rosterPage' } as const, 0)
@@ -61,12 +68,18 @@ async function readLane($: EngineInterface, id: string): Promise<HighCommandLane
   return Object.hasOwn(all, id) ? all[id]! : emptyLane()
 }
 
+/** Changes one agent lane; fitLanes keeps all lanes within the space of one saved value. */
 async function changeLane($: EngineInterface, id: string, change: (lane: HighCommandLane) => HighCommandLane): Promise<void> {
   await update($, lanes, known => {
     const next = new Map(Object.entries(known))
     next.set(id, change(next.get(id) ?? emptyLane()))
-    return Object.fromEntries(next)
+    return fitLanes(Object.fromEntries(next), id)
   })
+}
+
+/** Changes every agent lane at once. */
+async function changeLanes($: EngineInterface, change: (lane: HighCommandLane) => HighCommandLane): Promise<void> {
+  await update($, lanes, known => fitLanes(Object.fromEntries(Object.entries(known).map(([id, lane]) => [id, change(lane)]))))
 }
 
 async function changeThread($: EngineInterface, id: string | undefined, change: (thread: HighCommandThread | null) => HighCommandThread | null): Promise<void> {
@@ -117,7 +130,8 @@ function diagnose($: EngineInterface, line: string): void {
 
 /**
  * Pins the unread count as this plugin's status line, which no other mod's band can hide, or clears the
- * line at zero. It runs after every change of the count; a failure is diagnosed under `event`.
+ * line at zero. It runs after every change of the count; a failure is diagnosed under `event`. `withLanes`
+ * (agentLanesInBand) adds the unread count of all agent lanes, and the version of `lanes` to the view.
  *
  * Refreshes overlap, and a dispatch reads state as it stood at its own last write, so a refresh pins its
  * count only for a view newer than the one behind the line (STATUS_FROM, written with ifVersion). The refresh
@@ -127,19 +141,23 @@ function diagnose($: EngineInterface, line: string): void {
  * landed, and the refresh shows that one. `isForced` pins the first view whatever the line shows: a reload
  * may drop the line.
  */
-async function syncStatus($: EngineInterface, event: string, isForced = false): Promise<void> {
+async function syncStatus($: EngineInterface, event: string, isForced = false, withLanes = false): Promise<void> {
   try {
     for (let isFirst = true; ; isFirst = false) {
       const list = await $.state.get(ENTRIES)
       const marks = await $.state.get(READ_THROUGH)
+      const all = withLanes ? await $.state.get(LANES) : undefined
       const pinned = await $.state.get(STATUS_FROM)
-      const view = { entries: list.version, marks: marks.version }
+      const view = { entries: list.version, marks: marks.version, ...(all === undefined ? {} : { lanes: all.version }) }
       if (!isNewerView(view, isForced && isFirst ? undefined : pinned.value)) return
-      let pin = { ...view, unread: unreadTotal(rosterOf(list.value ?? [], {}, marks.value ?? {})) }
+      let pin: { entries: number; marks: number; unread: number; lanes?: number; laneUnread?: number } = {
+        ...view, unread: unreadTotal(rosterOf(list.value ?? [], {}, marks.value ?? {})),
+        ...(all === undefined ? {} : { laneUnread: lanesUnread(all.value ?? {}) }),
+      }
       const written = await $.state.set(STATUS_FROM, pin, { ifVersion: pinned.version })
       if (!written.isSet) continue
       for (let version = written.version; ; ) {
-        $.ui.status(pin.unread === 0 ? undefined : `${pin.unread} unread (retained)`)
+        $.ui.status(unreadText(pin.unread, pin.laneUnread) || undefined)
         if ((await $.state.set(STATUS_FROM, pin, { ifVersion: version })).isSet) return
         const newer = await $.state.get(STATUS_FROM)
         if (newer.value === undefined) return
@@ -165,14 +183,18 @@ async function readRoster($: EngineInterface, laneId?: string): Promise<{ list: 
 /**
  * Appends fresh entries. The open thread closes when this append drops its peer from the window, so the pane
  * shows the roster and stays there when that peer writes again. The check runs inside update, so it judges
- * the thread open now, and keepsThread keeps a thread opened after this append. `inboundThrough` keeps the
- * newest inbound seq after its entry leaves the window, so a Hide that it outdates stays ended.
+ * the thread open now, and keepsThread keeps a thread opened after this append. `inboundThrough`, and a lane's
+ * own `inboundThrough`, keep the newest inbound seq after its entry leaves the window, so a Hide that it outdates
+ * stays ended.
  */
 async function append($: EngineInterface, fresh: readonly NewEntry[], at: number, laneId?: string): Promise<void> {
   if (laneId !== undefined) {
     await changeLane($, laneId, lane => {
       const list = appendEntries(lane.entries, fresh, at)
-      return { ...lane, entries: list, openThread: lane.openThread === null || keepsThread(lane.openThread, lane.entries, list) ? lane.openThread : null }
+      return {
+        ...lane, entries: list, inboundThrough: Math.max(lane.inboundThrough ?? 0, newestUnreadableSeq(list)),
+        openThread: lane.openThread === null || keepsThread(lane.openThread, lane.entries, list) ? lane.openThread : null,
+      }
     })
     return
   }
@@ -271,63 +293,83 @@ function press($: EngineInterface, action: string, work: () => Promise<unknown>)
   return work().then(() => undefined, (error: unknown) => $.ui.toast(`ui.press: ${action}: ${causeOf(error)}`))
 }
 
-/** Marks `peer`, or every peer when none is given, read through its newest inbound entry, and refreshes the status line. */
-async function markPeersRead($: EngineInterface, peer?: string, laneId?: string): Promise<void> {
+/**
+ * Marks `peer`, or every peer when none is given, read through its newest inbound entry, and refreshes the status
+ * line: for an agent lane only when the line counts agent lanes (`withLanes`).
+ */
+async function markPeersRead($: EngineInterface, peer?: string, laneId?: string, withLanes = false): Promise<void> {
   if (laneId !== undefined) {
     await changeLane($, laneId, lane => ({ ...lane, readThrough: markRead(lane.readThrough, lane.entries, peer) }))
+    if (withLanes) await syncStatus($, 'ui.press', false, true)
     return
   }
   const list = await read($, entries)
   await update($, readThrough, marks => markRead(marks, list, peer))
-  await syncStatus($, 'ui.press')
+  await syncStatus($, 'ui.press', false, withLanes)
 }
 
-/** `Read all` in the pane and in the band. */
-function readAll($: EngineInterface): Promise<void> {
-  return press($, 'read all', () => markPeersRead($))
+/** `Read all` in the band; with agentLanesInBand (`withLanes`), it also marks every agent lane read. */
+function readAll($: EngineInterface, withLanes: boolean): Promise<void> {
+  return press($, 'read all', async () => {
+    if (withLanes) await changeLanes($, lane => ({ ...lane, readThrough: markRead(lane.readThrough, lane.entries) }))
+    await markPeersRead($, undefined, undefined, withLanes)
+  })
 }
 
-function paneActions($: EngineInterface, laneId?: string): PaneActions {
+function paneActions($: EngineInterface, withLanes: boolean, laneId?: string): PaneActions {
+  /** Any change of a lane can evict lane messages (fitLanes); with agentLanesInBand, the status line then counts again. */
+  const thenSync = (work: () => Promise<unknown>) => async (): Promise<void> => {
+    await work()
+    if (laneId !== undefined && withLanes) await syncStatus($, 'ui.press', false, true)
+  }
   return {
     openThread: peer => press($, 'open thread', async () => {
       const lane = laneId === undefined ? undefined : await readLane($, laneId)
       const marks = lane?.readThrough ?? await read($, readThrough)
       const from = newestSeq(lane?.entries ?? await read($, entries))
       await changeThread($, laneId, () => ({ peer, since: markOf(marks, peer), from }))
-      await markPeersRead($, peer, laneId)
+      await markPeersRead($, peer, laneId, withLanes)
     }),
-    back: () => press($, 'back', () => changeThread($, laneId, () => null)),
-    markRead: peer => press($, 'mark read', () => markPeersRead($, peer, laneId)),
-    readAll: () => press($, 'read all', () => markPeersRead($, undefined, laneId)),
-    page: page => press($, 'page', () => changeThread($, laneId, open => open === null ? null : { ...open, page })),
-    identity: identityPage => press($, 'identity', () => changeThread($, laneId, open => open === null ? null : { ...open, identityPage })),
-    reason: reasonSeq => press($, 'send details', () => changeThread($, laneId, open => open === null ? null : { ...open, reasonSeq: open.reasonSeq === reasonSeq ? undefined : reasonSeq })),
+    back: () => press($, 'back', thenSync(() => changeThread($, laneId, () => null))),
+    markRead: peer => press($, 'mark read', () => markPeersRead($, peer, laneId, withLanes)),
+    readAll: () => press($, 'read all', () => markPeersRead($, undefined, laneId, withLanes)),
+    page: page => press($, 'page', thenSync(() => changeThread($, laneId, open => open === null ? null : { ...open, page }))),
+    identity: identityPage => press($, 'identity', thenSync(() => changeThread($, laneId, open => open === null ? null : { ...open, identityPage }))),
+    reason: reasonSeq => press($, 'send details', thenSync(() => changeThread($, laneId, open => open === null ? null : { ...open, reasonSeq: open.reasonSeq === reasonSeq ? undefined : reasonSeq }))),
     lane: id => press($, 'select lane', () => update($, selectedLane, () => id)),
-    rosterPage: page => press($, 'peer page', async () => {
+    rosterPage: page => press($, 'peer page', thenSync(async () => {
       if (laneId === undefined) await update($, rosterPage, () => page)
       else await changeLane($, laneId, lane => ({ ...lane, rosterPage: page }))
-    }),
+    })),
     lanePage: page => press($, 'agent page', () => update($, lanePage, () => page)),
   }
 }
 
-function bandActions($: EngineInterface): BandActions {
+/** The band's buttons; with agentLanesInBand (`withLanes`), Read all and Hide also cover agent lanes. */
+function bandActions($: EngineInterface, withLanes: boolean): BandActions {
   return {
     open: () =>
       press($, 'the pane did not open', async () => {
         const problem = await openPane($)
         if (problem !== undefined) $.ui.toast(`ui.press: ${problem}`)
       }),
-    readAll: () => readAll($),
+    readAll: () => readAll($, withLanes),
     hide: () =>
       press($, 'hide', async () => {
         const through = newestSeq(await read($, entries))
+        if (withLanes) {
+          const all = await read($, lanes)
+          await update($, hiddenLanes, hidden => hideLanes(hidden, all))
+        }
         await update($, hiddenThrough, seq => Math.max(seq, through))
       }),
   }
 }
 
-export const register: Register = on => {
+export const register: Register = (on, options) => {
+  /** The `agentLanesInBand` option: the band and the status line add the unread count of all agent lanes. */
+  const withLanes = options.agentLanesInBand === true
+
   on('session.start', async ($, e, next) => {
     try {
       await $.command.register({ name: 'highcommand', description: DESCRIPTION, argumentHint: '[open]', immediate: true })
@@ -335,14 +377,14 @@ export const register: Register = on => {
       diagnose($, `high-command: session.start: could not register /highcommand: ${causeOf(error)}`)
     }
     try { await ensureCapture($, await $.clock.now()) } catch (error) { diagnose($, `high-command: session.start: could not set capture window: ${causeOf(error)}`) }
-    await syncStatus($, 'session.start', true)
+    await syncStatus($, 'session.start', true, withLanes)
     return next(e)
   })
 
   // /clear, /resume, and /branch reset $.state but leave the status line pinned.
   on('classic.SessionStart', { source: ['clear', 'resume', 'fork'] }, async ($, e, next) => {
     try { await ensureCapture($, await $.clock.now(), true) } catch (error) { diagnose($, `high-command: classic.SessionStart: could not set capture window: ${causeOf(error)}`) }
-    await syncStatus($, 'classic.SessionStart')
+    await syncStatus($, 'classic.SessionStart', false, withLanes)
     return next(e)
   })
 
@@ -359,7 +401,7 @@ export const register: Register = on => {
     } catch (error) {
       diagnose($, `high-command: session.receive: could not record a delivery (${e.origin.kind}): ${causeOf(error)}`)
     }
-    if (e.agentId === undefined) await syncStatus($, 'session.receive')
+    if (e.agentId === undefined || withLanes) await syncStatus($, 'session.receive', false, withLanes)
     return queued
   })
 
@@ -394,7 +436,7 @@ export const register: Register = on => {
     } catch (error) {
       diagnose($, `high-command: prompt.submit: could not record a delivery (${e.origin.kind}): ${causeOf(error)}`)
     }
-    await syncStatus($, 'prompt.submit')
+    await syncStatus($, 'prompt.submit', false, withLanes)
     return entered
   })
 
@@ -410,7 +452,7 @@ export const register: Register = on => {
     } catch (error) {
       diagnose($, `high-command: session.send: could not record a message to ${sanitize(e.to)}: ${causeOf(error)}`)
     }
-    if (e.agentId === undefined) await syncStatus($, 'session.send')
+    if (e.agentId === undefined || withLanes) await syncStatus($, 'session.send', false, withLanes)
     return sent
   })
 
@@ -427,6 +469,8 @@ export const register: Register = on => {
     } catch (error) {
       diagnose($, `high-command: tool.call ListAgents: could not record peer states: ${causeOf(error)}`)
     }
+    // Peer states make a lane longer, so fitLanes can evict lane messages.
+    if (e.agentId !== undefined && withLanes) await syncStatus($, 'tool.call ListAgents', false, true)
     return out
   })
 
@@ -488,7 +532,7 @@ export const register: Register = on => {
         laneIds: Object.keys(all), agents: Object.values(await read($, agents)),
         laneUnread: new Map(Object.entries(all).map(([id, lane]) => [id, unreadTotal(rosterOf(lane.entries, {}, lane.readThrough))])),
         capture: await read($, capture), evicted: list.at(-1)?.evictedTotal ?? 0,
-      }, paneActions($, laneId))
+      }, paneActions($, withLanes, laneId))
     } catch (error) {
       const { Text } = ui
       return <Text color="red">{`high-command: ui.render (Pane): ${causeOf(error)}`}</Text>
@@ -500,14 +544,18 @@ export const register: Register = on => {
     const below = await next(e)
     const list = await read($, entries)
     // A Hide holds while the person had seen every inbound entry: those in the window and those recorded before.
-    if ((await read($, hiddenThrough)) >= Math.max(await read($, inboundThrough), newestInboundSeq(list))) return below
+    const isHidden = (await read($, hiddenThrough)) >= Math.max(await read($, inboundThrough), newestInboundSeq(list))
+    // With agentLanesInBand, it holds only while the person had also seen each agent lane's newest unread entry.
+    const all = withLanes ? await read($, lanes) : {}
+    if (isHidden && (!withLanes || lanesSeen(all, await read($, hiddenLanes)))) return below
     const rows = rosterOf(list, {}, await read($, readThrough))
     const waiting = rows.filter(row => row.unread > 0)
-    if (waiting.length === 0) return below
+    const laneUnread = withLanes ? lanesUnread(all) : 0
+    if (waiting.length === 0 && laneUnread === 0) return below
     // Other mods draw `below`; when the band would push it past the engine's bounds, it yields.
-    const band = bandTree($.ui.resolve(e), waiting, bandActions($), below, peerLabels(rows.map(row => row.peer)))
+    const band = bandTree($.ui.resolve(e), waiting, bandActions($, withLanes), below, peerLabels(rows.map(row => row.peer)), laneUnread)
     if (fitsBounds(band)) return band
-    const compact = compactBandTree($.ui.resolve(e), waiting, bandActions($), below)
+    const compact = compactBandTree($.ui.resolve(e), waiting, bandActions($, withLanes), below, laneUnread)
     return fitsBounds(compact) ? compact : below
   })
 }

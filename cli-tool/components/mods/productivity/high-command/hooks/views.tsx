@@ -3,7 +3,7 @@ import type { BoxProps, ButtonProps, ElementConstructor, RenderElement, TextProp
 import type { HighCommandEntry, HighCommandAgent, HighCommandCapture } from '../types'
 import { isNewer, labelOf, unreadTotal, type RosterRow, type Thread } from './inbox'
 import { LIMITS } from './limits'
-import { captureLabel, identityPart, clockLabel, count, peerLabel, peerLabels, stateLabel, trustLabel } from './text'
+import { captureLabel, identityPart, clockLabel, count, peerLabel, peerLabels, stateLabel, trustLabel, unreadText } from './text'
 
 /** The elements High Command draws with; every surface's table has them. */
 type HighCommandElements = {
@@ -217,20 +217,25 @@ export function paneTree(ui: HighCommandElements, model: PaneModel, actions: Pan
   </Box>
 }
 
-/** The band row above what other mods draw there. `waiting` holds only rows with unread entries. */
+/**
+ * The band row above what other mods draw there. `waiting` holds only rows with unread entries; `laneUnread` is the
+ * unread count of all agent lanes, above zero only with agentLanesInBand on.
+ */
 export function bandTree(
   { Box, Text, Button }: HighCommandElements,
   waiting: readonly RosterRow[],
   actions: BandActions,
   below: RenderElement,
   labels: Map<string, string>,
+  laneUnread = 0,
 ): RenderElement {
   const named = waiting.slice(0, LIMITS.bandPeers).map(row => `${labels.get(row.peer)} ${row.unread}`)
   const more = waiting.length > LIMITS.bandPeers ? [`+${waiting.length - LIMITS.bandPeers} more`] : []
+  const peers = [...named, ...more]
   return (
     <Box flexDirection="column">
       <Box flexDirection="row" columnGap={1}>
-        <Text wrap="truncate-end">{`High Command · ${unreadTotal(waiting)} unread (retained) — ${[...named, ...more].join(' · ')}`}</Text>
+        <Text wrap="truncate-end">{`High Command · ${unreadText(unreadTotal(waiting), laneUnread)}${peers.length === 0 ? '' : ` — ${peers.join(' · ')}`}`}</Text>
         <Button key="band:open" label="Open" hotkey="o" onPress={actions.open} />
         <Button key="band:read-all" label="Read all" hotkey="r" onPress={actions.readAll} />
         <Button key="band:hide" label="Hide" hotkey="h" onPress={actions.hide} />
@@ -240,11 +245,11 @@ export function bandTree(
   )
 }
 
-/** Keeps only the count and Open when the full band exceeds the shared budget. */
-export function compactBandTree({ Box, Text, Button }: HighCommandElements, waiting: readonly RosterRow[], actions: BandActions, below: RenderElement): RenderElement {
+/** Keeps only the counts and Open when the full band exceeds the shared budget. */
+export function compactBandTree({ Box, Text, Button }: HighCommandElements, waiting: readonly RosterRow[], actions: BandActions, below: RenderElement, laneUnread = 0): RenderElement {
   return <Box flexDirection="column">
     <Box flexDirection="row">
-      <Text>{`High Command · ${unreadTotal(waiting)} unread (retained)`}</Text>
+      <Text>{`High Command · ${unreadText(unreadTotal(waiting), laneUnread)}`}</Text>
       <Button key="band:open" label="Open" hotkey="o" onPress={actions.open} />
     </Box>
     {below}

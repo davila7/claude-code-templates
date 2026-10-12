@@ -79,6 +79,11 @@ export type HighCommandLane = {
   peers: Record<string, HighCommandPeer>
   readThrough: Record<string, number>
   openThread: HighCommandThread | null
+  /**
+   * The seq of the newest entry recorded that can be unread; it only grows and outlives the entry's eviction.
+   * Absent before the lane's first append.
+   */
+  inboundThrough?: number
 }
 
 export type HighCommandAgent = {
@@ -109,8 +114,15 @@ declare module 'claude-code' {
       hiddenThrough: number
       /** The seq of the newest inbound entry recorded; it only grows and outlives the entry's eviction. */
       inboundThrough: number
-      /** The status line as last pinned: the versions of `entries` and `readThrough` it counts, and its count. */
-      statusFrom: { entries: number; marks: number; unread: number }
+      /**
+       * Per agent lane, the newest seq that a press of Hide had seen while agentLanesInBand is on; a mark only grows.
+       */
+      hiddenLanes: Record<string, number>
+      /**
+       * The status line as last pinned: the versions of `entries` and `readThrough` it counts, and its count. With
+       * agentLanesInBand on, also the version of `lanes` and the unread count of all agent lanes.
+       */
+      statusFrom: { entries: number; marks: number; unread: number; lanes?: number; laneUnread?: number }
     }
   }
 }

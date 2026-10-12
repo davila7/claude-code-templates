@@ -1,6 +1,6 @@
 {
   "name": "sandbox-tuner",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Explains each Claude Code sandbox block in plain words and turns recurring blocks into reviewed, one-press, undoable edits of your user settings.",
   "author": { "name": "dot-agi" },
   "license": "MIT",
@@ -19,6 +19,14 @@
       "default": 3,
       "min": 1,
       "max": 100
+    },
+    "linkCheckMinutes": {
+      "type": "number",
+      "title": "Minutes between link checks",
+      "description": "How often an interactive session checks again for links into the folders that Allow opened. 0 turns the timed check off.",
+      "default": 15,
+      "min": 0,
+      "max": 1440
     }
   }
 }

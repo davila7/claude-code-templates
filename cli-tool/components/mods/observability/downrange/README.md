@@ -4,7 +4,7 @@
   <img src="https://img.shields.io/badge/Claude_Code-2.1.288%2B-D97757" alt="Claude Code 2.1.288+">
   <img src="https://img.shields.io/badge/Claude_Code-mod-555555" alt="Claude Code mod">
   <img src="https://img.shields.io/badge/license-MIT-78997A" alt="License: MIT">
-  <img src="https://img.shields.io/badge/version-1.1.0-555555" alt="Version: 1.1.0">
+  <img src="https://img.shields.io/badge/version-1.1.1-555555" alt="Version: 1.1.1">
 </p>
 
 <p align="center"><strong>Progress and an ETA for background shells and Monitor watches, read from their real output or past runs, with no model request.</strong></p>
@@ -25,7 +25,7 @@ Downrange reads that output on your machine and shows where each job stands.
 
 ## Features
 
-- **Progress from real output.** `45%`, `12/40`, and `Step 3 of 7` lines become a progress label, and a bar in the pane. Shell output and Monitor events both count.
+- **Progress from real output.** `45%`, `[12/40]`, and `Step 3 of 7` lines, and the progress lines of tools such as Docker, cargo, pytest, and git, become a progress label, and a bar in the pane. Shell output and Monitor events both count. A ratio in another place, such as `loss 12/40`, counts only with the `genericRatios` option on.
 - **ETA.** From the progress rate. With no rate yet, from the usual duration of the same command in the same folder, or from a Monitor watch's deadline. In the pane, a usual-duration ETA turns yellow once the run passes 1.5 times its usual duration.
 - **The background tasks of your session.** Shell commands (`run_in_background`, ctrl+b, or a command moved at its timeout), Monitor watches, background and remote subagents, teammates, workflow runs, and the pending dynamic `/loop` wakeup. For background sessions, use agent view (`claude agents`).
 - **Liveness flags.** `quiet 3m 00s` for a shell command or subagent that stayed silent for 2 minutes or more, and `3 failed calls in a row` for a struggling subagent.
@@ -90,6 +90,45 @@ git clone https://github.com/dot-agi/downrange
 claude --plugin-dir ./downrange
 ```
 
+### Agents and scripts
+
+Install from a shell with Claude Code 2.1.292 or later. The second part turns on auto-update. It runs only when the install succeeds and the marketplace entry exists:
+
+```bash
+claude plugin install downrange --marketplace dot-agi/downrange --scope user --json \
+  && f="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/settings.json" \
+  && jq -e --arg name downrange '.extraKnownMarketplaces[$name].source' "$f" > /dev/null \
+  && tmp=$(mktemp "$f.XXXXXX") \
+  && { jq --arg name downrange '.extraKnownMarketplaces[$name].autoUpdate = true' "$f" > "$tmp" && mv "$tmp" "$f" || { rm -f "$tmp"; false; }; }
+```
+
+Claude Code 2.1.288 to 2.1.291 has no `--marketplace` option. Add the marketplace first, then run the auto-update part above:
+
+```bash
+claude plugin marketplace add dot-agi/downrange --scope user --json \
+  && claude plugin install downrange@downrange --scope user --json
+```
+
+Auto-update runs only in interactive sessions. A headless job updates at its start, before the session that uses the mod:
+
+```bash
+claude plugin update downrange@downrange --json
+```
+
+Check the result. The first command prints the installed version. The second prints the latest release:
+
+```bash
+claude plugin list --json | jq -r '.[] | select(.id == "downrange@downrange") | "\(.version) enabled=\(.enabled)"' \
+  && git ls-remote --tags --refs https://github.com/dot-agi/downrange 'downrange--v*' | sed 's/.*--v//' | sort -V | tail -n 1
+```
+
+Notes:
+
+- On a host with no SSH key for GitHub, set `CLAUDE_CODE_PLUGIN_PREFER_HTTPS=1` in the environment of every `claude` command and session.
+- New code loads in the next session, or after `/reload-plugins`. An agent cannot type `/reload-plugins`, so it starts a new session.
+- Running `install` again does not update. Use `update`.
+- The `mv` replaces the settings file, with mode 600. If `settings.json` is a symbolic link, edit its target instead.
+
 ## Commands
 
 | Command or key | What it does |
@@ -111,6 +150,7 @@ Set options in `/config`, or under `pluginConfigs["downrange@downrange"].options
 | --- | --- | --- |
 | `band` | `true` | Shows the band while background work is live |
 | `answerStatusPrompts` | `false` | When Claude is idle and a job runs, answers an exact status prompt (`status?`, `what's the status?`, `give me a status update`) with the table. Send the same prompt again within 60 seconds to ask Claude |
+| `genericRatios` | `false` | Reads progress from a ratio in any place in the output, such as `loss 12/40`. Off, only known formats count, such as a percentage, or a ratio in brackets, at the start of a line, after a step word such as `Step`, or after a progress bar. On shows progress for more jobs, and more false readings, such as a date like `Released 10/11` |
 
 ## Where it runs
 
@@ -139,36 +179,35 @@ Set options in `/config`, or under `pluginConfigs["downrange@downrange"].options
 
 ## Known limits
 
-Only dynamic `/loop` wakeups appear, and other schedules can clear or keep one. Progress and ETAs are guesses from output and past runs, and output silence, failed reads, late inputs, remote agents, closed teammate panes, and session changes can make a row wrong or stale.
+### What it catches
+
+- **Progress.** Percentages, `[3/7]`, `Step 3 of 7`, and the progress lines of Docker, cargo, pytest, git, and similar tools.
+- **Jobs.** Background shells, Monitor watches, subagents, teammates, workflow runs, and the dynamic `/loop` wakeup.
+- **Stalls.** A shell or subagent that stays silent for 2 minutes, and a subagent with 3 failed calls in a row.
+- **ETAs.** From the progress rate, the usual run time of the same command in the same folder, or a Monitor watch's deadline.
+
+### What it does not catch
+
+- **Progress.** Ratios outside known formats, such as `loss 12/40`, unless `genericRatios` is on. Dates such as `[10/11]` can still count.
+- **Jobs.** Fixed-interval loops such as `/loop 10m`, other cron schedules, and jobs after `/background` until the next turn end.
+- **Stalls.** Stuck remote subagents, teammates in their own panes, and waiting agents. They show no `quiet` flag.
+- **ETAs.** Run time in the foreground before ctrl+b or a timeout move. In output silence, a rate ETA runs down to `<1m` and stays there.
+
+The list below holds the limits you can hit in daily use. [docs/usage.md](https://github.com/dot-agi/downrange/blob/main/docs/usage.md#known-limits) has every limit, also the rare ones: clashes with other schedules, size caps, races, failed reads, closed teammate panes, and unusual setups or task descriptions.
 
 <details>
-<summary>Read all known limits</summary>
+<summary>Read the limits you can hit in daily use</summary>
 
 - **Only dynamic `/loop` wakeups.** Only wakeups that `ScheduleWakeup` creates appear. Fixed-interval loops such as `/loop 10m` and other cron schedules do not.
-- **Other schedules and the wakeup.** Downrange cannot tell which schedule fired a scheduled prompt, or which one-shot schedule in a turn-end snapshot is the wakeup. A prompt of a scheduled task, a routine, or a fixed-interval loop that fires from 5 seconds before the wakeup's due time on clears the wakeup, even before the wakeup's own prompt fires. A cancelled wakeup that only a snapshot can clear stays while any other one-shot schedule remains. It then shows until a scheduled prompt fires near its due time, a new `ScheduleWakeup` result replaces it, or it is 10 minutes past due.
-- **Progress read from output.** Progress is a guess from the text. A short date such as `10/11` counts as progress, unless a two-digit clock follows it, as in `10/11 14:03`. `N of M` followed by a space inside a path, such as `Disc 1 of 2 (live)/a.flac`, counts too, and so does another ratio or percentage that is not progress. These change the bar and the rate ETA. Full dates such as `2026/10/11` and `10/11/2026` do not count. Neither does `N of M` joined to a path or a number, such as `/backups/3 of 7/`, `version 1.2 of 7.0`, or `3 of 7.5 GB`. The date rule also drops real progress of 1 to 12 out of at most 31 before a clock, such as `3/15 00:12`.
-- **Only the end of an output.** A direct read of a file up to 4 MiB keeps the last 16,384 characters (UTF-16 code units), which can be up to 48 KiB of non-ASCII text. A tail read above 4 MiB keeps the last 16,384 bytes. Progress and the last line come from that end. Long lines after a progress line can push it out.
+- **Progress read from output.** Progress is a guess from the text. By default, a ratio counts only in a known progress format: in brackets, at the start of a line, after a step word such as `Step` or `Epoch`, after a drawn bar, or in Docker Compose's `[+] Running 3/7`. A ratio in such a place that is not progress still counts. A short date counts, such as `[10/11]` or `10/11 deploy` at the start of a line, unless a two-digit clock follows it, as in `10/11 14:03`. So does `N of M` after a step word and before a space inside a path, such as `Part 1 of 2 (live)/a.flac`, and a percentage that is not progress, such as `CPU 45%`. Real progress in another place, such as `loss 12/40` or `[12:34:56] 3/15 done`, does not count. With the `genericRatios` option on, a ratio counts in any place, so `Released 10/11`, `Disc 1 of 2 (live)/a.flac`, and other ratios that are not progress count too. These change the bar and the rate ETA. In both modes, full dates such as `2026/10/11` and `10/11/2026` do not count. Neither does `N of M` joined to a path or a number, such as `/backups/3 of 7/`, `version 1.2 of 7.0`, or `3 of 7.5 GB`. The date rule also drops real progress of 1 to 12 out of at most 31 before a clock, such as `3/15 00:12`.
 - **ETAs during output silence.** When output stops, the bar keeps its last reading, and the rate ETA keeps counting down from the time of that reading. Once the estimate runs out, the ETA stays at `<1m` while the job runs. This holds after `quiet` shows too, so a row can show `20%`, `<1m`, and `quiet 2m 00s` together. A Monitor whose events stop behaves the same way.
 - **Monitor deadlines and rate ETAs.** A Monitor watch shows its deadline only when it has no progress-based ETA. Once its progress gives a rate ETA, or reaches 100% and shows `finishing`, the deadline no longer shows. A rate ETA can run past the deadline: a 30-minute watch that goes from 1% to 2% in its first minute shows `~1h 38m`, although its deadline is 29 minutes away.
 - **Time in the foreground before a move to the background.** A shell job's clock starts when the Bash call returns its background result. A command that first ran in the foreground, such as one moved at its timeout or with ctrl+b, loses that time. Its age, its `took` time, and the run it adds to the duration history count only the time after the move. For example, a command moved after 2 minutes that ends 1 minute later shows `took 1m 00s` and records 1 minute. Runs of one command in one folder share one history, whatever the launch mode. The next run of that command that starts in the background then shows `~1m usual`, even when it needs 3 minutes, and in the pane it can turn yellow early. A moved run can get a usual-duration ETA that is too long.
-- **Duration history after a snapshot end.** A run adds to the duration history only when its completion notice arrives while its row still runs. When a turn-end snapshot already ended the row as `ended without a report`, the later notice marks it completed but adds no duration.
-- **Simultaneous duration records.** Two sessions recording durations together can lose new runs, because the duration store has no versioned write. One lost write can hold several runs. When it held a command's first runs, that command keeps no history and shows no usual-duration estimate. Runs stored before both writes began remain, with their estimates.
-- **Failed output reads.** While reads of a shell's output fail, its row shows no `quiet` flag and no rate ETA. When a shell job ends, Downrange reads its output one more time. If that read fails, Downrange does not try it again. The job can keep `output unavailable` or `tail failed` and the last line of an earlier read. Only a later ending, or a later notification that names the output file, asks for a new read.
-- **Large outputs on Windows.** Outputs over 4 MiB need `tail` on PATH. Without it, such a job shows `tail failed`. A launch or end note that the job already shows, such as `backgrounded by you`, stays in its place; `claude --debug` still shows `cannot tail the output of task <id>`.
 - **Tasks first seen in a snapshot.** Claude Code's turn-end snapshot can list a Monitor as a shell. A launch result is the result of the Bash or Monitor call that started a task. A Monitor first seen in a snapshot shows as a shell until its launch result, its first event, or its end notification arrives. Only its launch result gives it a deadline. A shell first seen in a snapshot shows no last line, progress, ETA, or `quiet` flag until its launch result or a notification names its output file. Only its launch result brings a usual-duration ETA. A task that started before Downrange loaded, such as one in a session moved to another process, gets no launch result. Claude Code's internal tasks also appear, under their engine labels, and a long-lived one can keep the band visible. Use **Hide** to dismiss the band.
-- **`awaiting confirmation`.** A turn-end snapshot that leaves out a job younger than 10 seconds does not end it. The job keeps running with `awaiting confirmation` until newer input confirms or ends it, such as a later snapshot or a notification. The label does not expire on a timer.
-- **Inputs that reach Downrange late.** Claude Code gives its events no shared sequence number. Downrange stamps each input with the time it receives it, and drops an input older than one it already applied to the same job. Hooks can overlap, so an end notification can land after a newer output read, agent list, or snapshot of its job. A completed, failed, or stopped notification of a shell, Monitor, or workflow still applies then, with its exit code, because such a task never runs again. Downrange drops a late end of an agent or a teammate, a `blocked` end, and the end of a remote task such as a remote workflow, because such a task can run again under its id. That row keeps running until a later agent list ends it, or a snapshot ends it as `ended without a report`, with no exit code or end note. A teammate can leave the agent list as it ends, so its row ends at the next turn-end snapshot. A notification does not add back a job that left the list, such as one you cleared. It still can when it lands during `/clear`, `/resume`, or `/branch`, before Downrange restores what it remembers, or when Downrange forgot the task (see the 2,000 tasks below). The row then comes back as running, with a `≥` age, until a later snapshot ends it.
-- **Launch details that arrive late.** The same rule applies to launch results. A newer notification, Monitor event, snapshot, or output read of a task can land while Downrange still handles its launch result. Downrange then drops what the launch result adds. A Monitor then shows no deadline, and its age starts with `≥`. A shell can lose its usual-duration ETA, or its output file and launch note too, and that run adds nothing to the duration history. A notification that later names the shell's output file still brings back its last line.
 - **Commands that subagents start.** A command with the note `ends with its agent` ends when its subagent answers. It then shows `ended with its agent` and no exit code, unless its own notification arrives later.
 - **Agents that wait.** A subagent that the agent list reports as pending, waiting, or idle shows that word, beside its tool count when it shows one. It shows no `quiet` flag and no failed-calls flag, however long it stays in that state.
 - **Agents that run elsewhere.** Downrange sees the tool calls only of agents that run in this Claude Code process. A remote subagent shows `remote`, and a teammate in a terminal pane of its own shows `own pane`. Their rows show no tool count and no `quiet` flag, so a stuck or dead one looks the same as a busy one. A row whose launch result Downrange missed, or that an earlier version of Downrange saved, still keeps `0 tools` and shows `quiet` from 2 minutes after launch, even while the agent works. Its notification or a snapshot still ends it.
-- **A teammate whose pane closed.** A teammate in a terminal pane of its own writes `running` or `idle` in its team's roster. When that pane closes or dies, the roster keeps the last word. Its notification or a snapshot ends its row, but a later agent list read shows it running again. That read comes at each turn end, and every second while another agent runs. The row can then switch between ended and running, keep the band visible, and show `idle` with no end note. Check the teammate's own pane before you act on the row. Use **Hide** to dismiss the band.
 - **A session moved to another process.** `/background` and a hand-off to the desktop app start a fresh process that resumes the conversation. Downrange starts empty there. Running tasks return at the next turn end, with `≥` ages and no last line. A shell's notification can still name its output file, end it, and show its last line. The `/loop` wakeup returns only with the next `ScheduleWakeup` result.
-- **Changes during `/clear`, `/resume`, or `/branch`.** Downrange carries the jobs and the wakeup as it last wrote them before the old session ended. An update that lands during the change, such as a launch or a notification, can be lost. A later turn-end snapshot then adds a lost running task, with a `≥` age, and ends a task that left its list, as `ended without a report`. Downrange remembers the last 2,000 tasks that left its list, and forgets the oldest first. A task does not count toward the 2,000 while it is back in the list. These commands carry that memory to the next session. A finished job leaves the list through **Clear finished**, through the 20-job limit of **Finished**, or when you leave its session with one of these commands, which carry only running jobs. After `/resume`, a job that the resumed session last showed running can return, if 2,000 other tasks left the list after it, counted across all later sessions. The job shows `ended without a report`, or shows as running until the next turn end.
-- **Another identity for the mod.** Claude Code keeps the duration history per plugin identity, `<plugin>@<marketplace>`. Installed from the `downrange` marketplace, Downrange is `downrange@downrange`. Loaded with `--plugin-dir`, it is `downrange@inline`. A copy under another identity, such as one installed from another marketplace, keeps a separate history, which starts empty. It shows no usual-duration ETA until it records runs of its own. The jobs and the wakeup live in session state under the plugin name `downrange`. A build under another plugin name cannot read them, so it starts with no jobs and no wakeup. A later turn-end snapshot brings running tasks back, with `≥` ages. The `/loop` wakeup returns only with the next `ScheduleWakeup` result.
-- **Quoted failure text in task descriptions.** A failed or stopped task's description can contain quoted text followed by `failed:` or `was stopped:`, such as `Investigate "build" failed: exit code 2`. If Downrange first sees the task at its end, it can mistake description text for the end details. This also happens when an already tracked task's title was shortened or cleaned. The band, pane, and `/downrange` can show an incorrect title or exit code; end notes can hide the actual cause. Check the full task notification in the transcript before acting on those details. Use short task descriptions without quoted failure phrases to avoid this ambiguity.
-
-The usage guide holds the same items under [Known limits](https://github.com/dot-agi/downrange/blob/main/docs/usage.md#known-limits).
 
 </details>
 

@@ -25,6 +25,7 @@ import {
   readFailed,
   readsDue,
   reconciled,
+  reloaded,
   restoredJobs,
   shellJob,
   ownerAnswered,
@@ -82,6 +83,8 @@ let carry: Carry | null = null
  * can still race, because the store has no versioned write; a lost record costs every run it held, a new key's first too.
  */
 let historyWrites: Promise<void> = Promise.resolve()
+/** The `genericRatios` option, which register sets: any ratio in output counts as progress, not only a known format. */
+let isAnyRatio = false
 
 /** A `tail` that could not start, timed out, or exited non-zero. */
 class TailFailure extends Error {
@@ -263,7 +266,7 @@ async function applyNotices($: EngineInterface, text: string, noticeRow?: string
   let runs: HistoryRun[] = []
   const changed = await writeJobs($, { at: now, ids: notices.flatMap(notice => notice.ids), kind: 'notice', finalIds: finalIdsOf(notices), noticeRow }, jobs => {
     runs = finishedRuns(jobs, notices, now)
-    return notices.reduce((list, notice) => noticed(list, notice, now), jobs)
+    return notices.reduce((list, notice) => noticed(list, notice, now, isAnyRatio), jobs)
   })
   if (changed) await recordRuns($, runs, now, event)
 }
@@ -329,7 +332,7 @@ async function readTail($: EngineInterface, job: ShellJob & { outputFile: string
     await writeJobs($, { at: now, ids: [job.id] }, jobs => readFailed(jobs, job.id, isTail ? 'tail failed' : 'output unavailable', now, isTail ? error.bytes : undefined))
     return
   }
-  await writeJobs($, { at: now, ids: [job.id] }, jobs => tailRead(jobs, job.id, found, now))
+  await writeJobs($, { at: now, ids: [job.id] }, jobs => tailRead(jobs, job.id, found, now, isAnyRatio))
 }
 
 /** Applies `$.agent.list()` to agent jobs; a failed list logs once. */
@@ -440,6 +443,7 @@ async function statusAnswer($: EngineInterface, text: string): Promise<string | 
 }
 
 export const register: Register = (on, options) => {
+  isAnyRatio = options.genericRatios === true
   on('session.start', async ($, e, next) => {
     try {
       await $.command.register({
@@ -453,6 +457,9 @@ export const register: Register = (on, options) => {
     }
     const now = await $.clock.now()
     await writeJobs($, null)
+    // After a reload, as a change of genericRatios or an update causes, rows follow the current option; with no row to change, nothing is written.
+    const { items } = await read($, JOBS)
+    if (reloaded(items, isAnyRatio, now).some((job, index) => job !== items[index])) await writeJobs($, { at: now }, jobs => reloaded(jobs, isAnyRatio, now))
     await writeWakeup($, now, pending => pending)
     return next(e)
   }).catch(($, e, next) => passOn($, 'session.start', e, next))

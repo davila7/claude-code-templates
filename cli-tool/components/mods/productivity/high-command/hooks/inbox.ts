@@ -1,6 +1,6 @@
 import type { AgentInfo, SessionSendResult, TraceEntry } from 'claude-code'
 
-import type { HighCommandEntry, HighCommandPeer, HighCommandState, HighCommandThread, HighCommandTrust } from '../types'
+import type { HighCommandEntry, HighCommandLane, HighCommandPeer, HighCommandState, HighCommandThread, HighCommandTrust } from '../types'
 import type { NewEntry, PeerReport } from './envelope'
 import { LIMITS } from './limits'
 import { capBody, lineOf, peerKey, sanitize, summaryOf } from './text'
@@ -195,17 +195,45 @@ export function rosterOf(entries: readonly HighCommandEntry[], peers: Readonly<P
   return [...rows.values()].sort((a, b) => Number(b.unread > 0) - Number(a.unread > 0) || b.last.at - a.last.at || b.last.seq - a.last.seq)
 }
 
-/** The versions of `entries` and `readThrough` that a status line count comes from. */
-type StatusView = { entries: number; marks: number }
+/** The unread count of all agent lanes. */
+export function lanesUnread(lanes: Readonly<Record<string, HighCommandLane>>): number {
+  return Object.values(lanes).reduce((sum, lane) => sum + unreadTotal(rosterOf(lane.entries, {}, lane.readThrough)), 0)
+}
+
+/** Per lane, the newest seq a press of Hide saw in `lanes`. A mark never moves back. */
+export function hideLanes(hidden: Readonly<Record<string, number>>, lanes: Readonly<Record<string, HighCommandLane>>): Record<string, number> {
+  const next = new Map(Object.entries(hidden))
+  for (const [id, lane] of Object.entries(lanes)) next.set(id, Math.max(next.get(id) ?? 0, newestSeq(lane.entries)))
+  return Object.fromEntries(next)
+}
+
+/** The seq of the newest lane entry that can be unread (isNewer), or 0 without one. */
+export function newestUnreadableSeq(list: readonly HighCommandEntry[]): number {
+  return list.findLast(entry => isNewer(entry, 0))?.seq ?? 0
+}
 
 /**
- * Whether a status refresh may pin its count: its view is older in neither value than the
- * view behind the line and newer in one, or the line has no view yet.
+ * Whether a Hide saw every lane's newest entry that can be unread, also one that left its lane since: the lane's
+ * `inboundThrough` keeps its seq, so an eviction cannot bring back a Hide that the entry ended.
+ */
+export function lanesSeen(lanes: Readonly<Record<string, HighCommandLane>>, hidden: Readonly<Record<string, number>>): boolean {
+  return Object.entries(lanes).every(([id, lane]) => Math.max(lane.inboundThrough ?? 0, newestUnreadableSeq(lane.entries)) <= markOf(hidden, id))
+}
+
+/**
+ * The versions of `entries` and `readThrough` that a status line count comes from, and the version of `lanes` when
+ * the line also counts agent lanes.
+ */
+type StatusView = { entries: number; marks: number; lanes?: number }
+
+/**
+ * Whether a status refresh may pin its count: its view is older in no value than the view behind the line and
+ * newer in one, the line has no view yet, or the line counts agent lanes and the refresh does not, or the reverse.
  */
 export function isNewerView(view: StatusView, shown: StatusView | undefined): boolean {
-  if (shown === undefined) return true
-  const isOlder = view.entries < shown.entries || view.marks < shown.marks
-  return !isOlder && (view.entries > shown.entries || view.marks > shown.marks)
+  if (shown === undefined || (view.lanes === undefined) !== (shown.lanes === undefined)) return true
+  const isOlder = view.entries < shown.entries || view.marks < shown.marks || (view.lanes ?? 0) < (shown.lanes ?? 0)
+  return !isOlder && (view.entries > shown.entries || view.marks > shown.marks || (view.lanes ?? 0) > (shown.lanes ?? 0))
 }
 
 /**
@@ -216,6 +244,72 @@ export function isNewerView(view: StatusView, shown: StatusView | undefined): bo
 export function keepsThread(open: HighCommandThread, before: readonly HighCommandEntry[], after: readonly HighCommandEntry[]): boolean {
   const has = (list: readonly HighCommandEntry[]): boolean => list.some(entry => entry.peer === open.peer)
   return open.from >= newestSeq(after) || (has(before) && has(after))
+}
+
+/** The characters of `value` as JSON text: the measure that Claude Code holds a saved value to. */
+function jsonChars(value: unknown): number {
+  return JSON.stringify(value).length
+}
+
+/**
+ * The lane without its `drop` oldest entries, where `drop` is less than its entry count. Its newest entry stays and
+ * counts them as evicted, and the open thread closes as an append that dropped them would close it.
+ */
+function dropOldest(lane: HighCommandLane, drop: number): HighCommandLane {
+  if (drop <= 0) return lane
+  const kept = lane.entries.slice(drop)
+  const last = kept.at(-1)!
+  kept[kept.length - 1] = { ...last, evictedTotal: (last.evictedTotal ?? 0) + drop }
+  const open = lane.openThread
+  return { ...lane, entries: kept, openThread: open === null || keepsThread(open, lane.entries, kept) ? open : null }
+}
+
+/** Drops the lane's oldest entries while its entries pass LIMITS.laneChars; it keeps its newest entry. */
+function capLane(lane: HighCommandLane): HighCommandLane {
+  let size = jsonChars(lane.entries)
+  if (size <= LIMITS.laneChars) return lane
+  let drop = 0
+  while (size > LIMITS.laneChars && drop < lane.entries.length - 1) {
+    size -= jsonChars(lane.entries[drop]) + 1
+    drop += 1
+  }
+  const next = dropOldest(lane, drop)
+  // The evicted count on the newest entry adds a few characters.
+  return drop > 0 && jsonChars(next.entries) > LIMITS.laneChars ? capLane(next) : next
+}
+
+/**
+ * Fits the agent lanes in the space of one saved value. The lane `id`, the one that changed, first drops its own
+ * oldest entries past LIMITS.laneChars. Then, while all lanes pass LIMITS.lanesChars, the entries observed first
+ * drop from every lane. An entry drops only with the older entries of its lane, so it ranks by the latest observation
+ * among them. Each lane keeps its newest entry, so its seq numbers and read marks stay in step.
+ */
+export function fitLanes(lanes: Readonly<Record<string, HighCommandLane>>, id?: string): Record<string, HighCommandLane> {
+  const all = new Map(Object.entries(lanes))
+  const changed = id === undefined ? undefined : all.get(id)
+  if (changed !== undefined) all.set(id!, capLane(changed))
+  let over = jsonChars(Object.fromEntries(all)) - LIMITS.lanesChars
+  while (over > 0) {
+    const ranked: { lane: string; index: number; at: number; size: number }[] = []
+    for (const [name, lane] of all) {
+      let at = -Infinity
+      lane.entries.slice(0, -1).forEach((entry, index) => {
+        at = Math.max(at, entry.at)
+        ranked.push({ lane: name, index, at, size: jsonChars(entry) + 1 })
+      })
+    }
+    if (ranked.length === 0) break
+    ranked.sort((a, b) => a.at - b.at || a.index - b.index || (a.lane < b.lane ? -1 : a.lane > b.lane ? 1 : 0))
+    const drops = new Map<string, number>()
+    for (const { lane, index, size } of ranked) {
+      if (over <= 0) break
+      drops.set(lane, index + 1)
+      over -= size
+    }
+    for (const [name, drop] of drops) all.set(name, dropOldest(all.get(name)!, drop))
+    over = jsonChars(Object.fromEntries(all)) - LIMITS.lanesChars
+  }
+  return Object.fromEntries(all)
 }
 
 /** The thread of the open peer, or undefined when the pane draws the roster. */
