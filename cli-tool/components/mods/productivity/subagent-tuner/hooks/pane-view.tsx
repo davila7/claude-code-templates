@@ -10,8 +10,9 @@ export const INHERIT_VALUE = 'inherit'
 
 /** From this width the Model and Effort selectors share a row. */
 export const SELECTORS_FROM = 52
-/** From this width the three buttons share a row. */
+/** The three buttons share a row from this width, or from the width their labels need, if more. */
 export const BUTTONS_FROM = 50
+const BUTTONS_GAP = 2
 
 export type PaneActions = {
   pick: (id: string, field: Field, value: string) => unknown
@@ -58,16 +59,28 @@ function selector(data: PaneData, field: Field) {
 const runLabel = (entry: Pending): string =>
   entry.model === null && entry.effort === null && entry.isCallSet ? `Run ${INHERITED_TEXT}` : 'Run'
 
+type ButtonKey = 'run' | 'save' | 'cancel'
+
+const buttonSpecs = (entry: Pending): { key: ButtonKey; hotkey: string; label: string }[] => [
+  { key: 'run', hotkey: 'r', label: runLabel(entry) },
+  { key: 'save', hotkey: 'd', label: 'Run and save as default' },
+  { key: 'cancel', hotkey: 'c', label: 'Cancel' },
+]
+
+// The width of the row: each plain Button draws `<hotkey>: <label>`, plus the gaps.
+const buttonsRowWidth = (entry: Pending): number => {
+  const specs = buttonSpecs(entry)
+
+  return specs.reduce((sum, one) => sum + one.hotkey.length + 2 + one.label.length, 0) + BUTTONS_GAP * (specs.length - 1)
+}
+
 function buttons(data: PaneData) {
   const { Button } = data.ui
   const { entry, actions } = data
-  const id = entry.id
 
-  return [
-    <Button key="run" plain hotkey="r" label={runLabel(entry)} autoFocus onPress={() => actions.run(id)} />,
-    <Button key="save" plain hotkey="d" label="Run and save as default" onPress={() => actions.save(id)} />,
-    <Button key="cancel" plain hotkey="c" label="Cancel" onPress={() => actions.cancel(id)} />,
-  ]
+  return buttonSpecs(entry).map(({ key, hotkey, label }) => (
+    <Button key={key} plain hotkey={hotkey} label={label} autoFocus={key === 'run' ? true : undefined} onPress={() => actions[key](entry.id)} />
+  ))
 }
 
 export function paneView(data: PaneData) {
@@ -82,8 +95,8 @@ export function paneView(data: PaneData) {
       ) : (
         <Box flexDirection="column">{selectors}</Box>
       )}
-      {data.columns >= BUTTONS_FROM ? (
-        <Box gap={2}>{buttons(data)}</Box>
+      {data.columns >= Math.max(BUTTONS_FROM, buttonsRowWidth(data.entry)) ? (
+        <Box gap={BUTTONS_GAP}>{buttons(data)}</Box>
       ) : (
         <Box flexDirection="column">{buttons(data)}</Box>
       )}

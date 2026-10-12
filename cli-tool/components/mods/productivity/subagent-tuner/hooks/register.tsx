@@ -462,6 +462,12 @@ const waitArgv = (shell: Shell, sentinel: string): string[] =>
         `$p='${sentinel.replace(/'/g, "''")}'; while (-not (Test-Path -LiteralPath $p)) { Start-Sleep -Milliseconds 200 }; Remove-Item -LiteralPath $p -Force`,
       ]
 
+// Removes the probe file the waits folder was tried with.
+const removeArgv = (shell: Shell, path: string): string[] =>
+  shell === 'sh'
+    ? ['sh', '-c', 'rm -f -- "$1"', 'sh', path]
+    : [...POWERSHELL, `Remove-Item -LiteralPath '${path.replace(/'/g, "''")}' -Force -ErrorAction SilentlyContinue`]
+
 // Found once per load (register resets it): a reload may find another host.
 let waitShell: Promise<Shell | undefined> | undefined
 
@@ -496,7 +502,7 @@ async function finish($: Host, id: string, decision: 'run' | 'save' | 'cancel' |
   try {
     await $.fs.write(session.sentinel, '')
   } catch {
-    $.ui.toast('Subagent tuner: could not release the pane; it applies the suggestion when its wait ends')
+    $.ui.toast('Subagent tuner: could not release the pane; your choice applies when its wait ends')
   }
 }
 
@@ -504,7 +510,8 @@ async function finish($: Host, id: string, decision: 'run' | 'save' | 'cancel' |
 // await on a promise, so the wait is a child process that ends when the
 // sentinel appears. The sentinel lives in the plugin's own folder, named for the
 // call and the moment, so no two waits share one. A wait that ends without a
-// decision (the ten minutes ran out) is no answer.
+// decision (the ten minutes ran out) is no answer; one that ends with a decision
+// recorded (the sentinel could not be written) honours it.
 async function askInPane($: Host, call: AgentCall, signal: AbortSignal, preset: Choice): Promise<Outcome | Unavailable> {
   if (signal.aborted) {
     return { kind: 'unanswered' }
@@ -523,9 +530,27 @@ async function askInPane($: Host, call: AgentCall, signal: AbortSignal, preset: 
 
   const id = paneIdFor(call.tool_use_id)
   const entry = pendingFor(call, id, preset)
+  const sentinel = `${$.plugin.root}/.waits/${id}-${await $.clock.now()}`
+
+  // A folder that takes no write (read-only install, full disk) could never end
+  // the wait: the dialogs answer at once instead of a pane that holds the launch
+  // for ten minutes. The probe is a sibling the wait does not look for.
+  try {
+    await $.fs.write(`${sentinel}.probe`, '')
+  } catch (error) {
+    return { kind: 'unavailable', reason: `waits folder not writable: ${shortReason(error)}` }
+  }
+
+  await $.process.run(removeArgv(shell, `${sentinel}.probe`)).catch(() => undefined)
+
+  // Aborted while the probe ran: nothing is open yet.
+  if (signal.aborted) {
+    return { kind: 'unanswered' }
+  }
+
   const session: Session = {
     choice: { model: entry.model, effort: entry.effort },
-    sentinel: `${$.plugin.root}/.waits/${id}-${await $.clock.now()}`,
+    sentinel,
     title: headerFor(call).slice(0, 40),
   }
   const onAbort = (): void => {
@@ -560,8 +585,11 @@ async function askInPane($: Host, call: AgentCall, signal: AbortSignal, preset: 
     try {
       await $.process.run(waitArgv(shell, session.sentinel), { timeoutMs: PANE_WAIT_MS })
     } catch {
-      // The wait ran out: the person's live selection stands, not the preset.
-      return { kind: 'unanswered', choice: session.choice }
+      // The wait ran out: the person's live selection stands, not the preset. A
+      // decision recorded all the same (the sentinel could not be written) stands too.
+      if (session.decision === undefined || session.decision === 'abort') {
+        return { kind: 'unanswered', choice: session.choice }
+      }
     }
 
     return session.decision === 'run' || session.decision === 'save'

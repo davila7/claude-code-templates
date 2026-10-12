@@ -1,6 +1,6 @@
 {
   "name": "subagent-tuner",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Picks the model and reasoning effort of every subagent: a recommendation by task kind, a band above the prompt, and a saved default that wins.",
   "author": {
     "name": "Aleh Kruhlikau",

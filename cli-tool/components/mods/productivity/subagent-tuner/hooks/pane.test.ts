@@ -542,3 +542,127 @@ test('pane: Run stays plain where the call set nothing and nothing is selected',
   await call
   await ui.unmount()
 })
+
+// The wait cannot end when the sentinel cannot be written (a read-only plugin
+// folder, a full disk), so the decision recorded before the write stands when
+// the ten minutes run out: a Cancel must not start the subagent.
+for (const one of [
+  { press: 'cancel', deny: 'cancelled by user' },
+  { press: 'save', deny: undefined },
+] as const) {
+  test(`pane: ${one.press} pressed while the sentinel cannot be written is still honoured when the wait runs out`, async ($, on) => {
+    const { clock, seen, store, toasts, panes } = engine(on, { pane: { unwritable: 'sentinel' } })
+
+    await start($)
+
+    const call = $.tool.call(REVIEW)
+
+    await clock.settle()
+    expect(panes.opened).toHaveLength(1)
+
+    const ui = await mountPane($, panes.opened[0]!.id, 100)
+
+    await ui.select({ key: 'model', value: 'haiku' })
+    await ui.press({ key: one.press })
+    await clock.advance(PANE_WAIT_MS)
+
+    const outcome = await call
+
+    expect(toasts).toContain('Subagent tuner: could not release the pane; your choice applies when its wait ends')
+
+    if (one.deny === undefined) {
+      expect(seen[0]).toMatchObject({ model: 'haiku', effort: 'high' })
+      expect(store.get('saved')).toEqual({ model: 'haiku', effort: 'high' })
+    } else {
+      expect(outcome).toMatchObject({ deny: one.deny })
+      expect(seen).toEqual([])
+    }
+
+    await ui.unmount()
+    await expectClean($, panes)
+  })
+}
+
+// Better than waiting ten minutes for nothing: a folder that takes no write
+// cannot be answered in a pane, so the dialogs are asked at once.
+test('pane: a waits folder that takes no write falls back to the dialogs, with nothing left behind', async ($, on) => {
+  const { clock, seen, asked, diagnostics, panes } = engine(on, { pane: { unwritable: 'everything' } })
+
+  await start($)
+
+  const call = $.tool.call(REVIEW)
+
+  await clock.settle()
+  await call
+
+  expect(asked).toHaveLength(1)
+  expect(seen).toHaveLength(1)
+  expect(diagnostics).toEqual([expect.stringMatching(/^Subagent tuner: pane unavailable: waits folder not writable/)])
+  expect(panes.opened).toEqual([])
+  expect(panes.waits).toEqual([])
+  await expectClean($, panes)
+})
+
+test('pane: the probe of the waits folder is removed once it has shown a write works', async ($, on) => {
+  const { clock, panes } = engine(on, { pane: {} })
+
+  await start($)
+
+  const call = $.tool.call(REVIEW)
+
+  await clock.settle()
+
+  const ui = await mountPane($, panes.opened[0]!.id, 100)
+
+  expect(panes.probed).toHaveLength(1)
+  expect(panes.probed[0]).toMatch(/\/\.waits\/subagent-tuner-[^/]+-\d+\.probe$/)
+  expect(panes.removed).toEqual(panes.probed)
+  await ui.press({ key: 'cancel' })
+  await call
+  await ui.unmount()
+  await expectClean($, panes)
+})
+
+// With the call's field set and both inherited, Run is the long label: the
+// buttons then need more than BUTTONS_FROM, so the row waits for the width the
+// labels actually take (the needed width is read off the drawn row, not assumed).
+test('pane layout: the long Run label keeps the buttons in a column until they fit one row', async ($, on) => {
+  const { clock, panes } = engine(on, { pane: {} })
+
+  await start($)
+
+  const call = $.tool.call({ ...REVIEW, model: 'opus' })
+
+  await clock.settle()
+
+  const id = panes.opened[0]!.id
+  const wide = await mountPane($, id, 140)
+
+  await wide.select({ key: 'model', value: 'inherit' })
+  await wide.select({ key: 'effort', value: 'inherit' })
+
+  const row = ((await drawn(wide)) as { children: Node[] }).children[2]!
+  const needed = widthOf(row)
+
+  expect(needed).toBeGreaterThan(50)
+  await wide.unmount()
+
+  for (const columns of [50, 60, needed - 1, needed, needed + 1]) {
+    const ui = await mountPane($, id, columns)
+    const buttons = ((await drawn(ui)) as { children: { props?: { flexDirection?: string } }[] }).children[2]!
+
+    expect(buttons.props?.flexDirection === 'column', `column at ${columns}`).toBe(columns < needed)
+
+    for (const one of ((await drawn(ui)) as { children?: Node[] }).children ?? []) {
+      expect(widthOf(one), `row at ${columns}`).toBeLessThanOrEqual(columns)
+    }
+
+    await ui.unmount()
+  }
+
+  const ui = await mountPane($, id, 100)
+
+  await ui.press({ key: 'cancel' })
+  await call
+  await ui.unmount()
+})
