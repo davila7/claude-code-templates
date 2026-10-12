@@ -4,7 +4,7 @@
   <img src="https://img.shields.io/badge/Claude_Code-2.1.288%2B-D97757" alt="Claude Code 2.1.288+">
   <img src="https://img.shields.io/badge/type-mod-555555" alt="mod">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-555555" alt="License: MIT"></a>
-  <img src="https://img.shields.io/badge/version-1.1.0-555555" alt="Version: 1.1.0">
+  <img src="https://img.shields.io/badge/version-1.1.1-555555" alt="Version: 1.1.1">
 </p>
 
 <p align="center"><strong>Arrester remembers your guards' blocks and stops common detours to the same target.</strong></p>
@@ -80,6 +80,43 @@ To try it for one session from a clone:
 git clone https://github.com/dot-agi/arrester
 claude --plugin-dir ./arrester
 ```
+
+### Agents and scripts
+
+Install from a shell with Claude Code 2.1.292 or later. The part after the install turns on auto-update. It runs only when the install succeeds and the marketplace entry exists:
+
+```sh
+claude plugin install arrester --marketplace dot-agi/arrester --scope user --json \
+  && f="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/settings.json" \
+  && jq -e --arg name arrester '.extraKnownMarketplaces[$name].source' "$f" > /dev/null \
+  && tmp=$(mktemp "$f.XXXXXX") \
+  && { jq --arg name arrester '.extraKnownMarketplaces[$name].autoUpdate = true' "$f" > "$tmp" && mv "$tmp" "$f" || { rm -f "$tmp"; false; }; }
+```
+
+Claude Code 2.1.288 to 2.1.291 has no `--marketplace` option. Add the marketplace first, then run the auto-update part above, from `f=`:
+
+```sh
+claude plugin marketplace add dot-agi/arrester --scope user --json \
+  && claude plugin install arrester@arrester --scope user --json
+```
+
+Auto-update runs only in interactive sessions. A headless job updates at its start, before the session that uses the mod:
+
+```sh
+claude plugin update arrester@arrester --json
+```
+
+Check the result. The first command prints the installed version. The second prints the latest release:
+
+```sh
+claude plugin list --json | jq -r '.[] | select(.id == "arrester@arrester") | "\(.version) enabled=\(.enabled)"' \
+  && git ls-remote --tags --refs https://github.com/dot-agi/arrester 'arrester--v*' | sed 's/.*--v//' | sort -V | tail -n 1
+```
+
+- New code loads in the next session, or after `/reload-plugins`.
+- Running `install` again does not update. Use `update`.
+- On a host with no SSH key for GitHub, set `CLAUDE_CODE_PLUGIN_PREFER_HTTPS=1` in the environment of every `claude` command and session.
+- The `mv` replaces the settings file, with mode 600. If `settings.json` is a symbolic link, edit its target instead.
 
 ## Commands
 

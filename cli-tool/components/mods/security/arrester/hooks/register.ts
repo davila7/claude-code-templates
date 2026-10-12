@@ -41,6 +41,12 @@ type HookArgs<N extends EventName> = Parameters<Hook<N>>
 /** Where a path lands, and the kind of what is there when it exists. */
 type Placement = { real?: string; kind?: FsStat['kind'] }
 
+/** A path to place, and whether it names the entry itself. */
+type PlaceValue = { path: string; entry?: true }
+
+/** Placements by `placeKey`. */
+type Placements = Map<string, Placement>
+
 /** A `classic.PreToolUse` dispatch that Arrester passed on: the call as that event carried it, and the deny that settled beneath, if one did. */
 type PassedPreToolUse = { call: Call; deny: string | undefined }
 
@@ -150,10 +156,12 @@ async function recordBlock(engine: EngineInterface, config: Config, event: strin
   const cwd = await engine.session.cwd()
   const analysis = await analyzeCall(call, { cwd, home }, ioOf(engine, event, signal, Number.POSITIVE_INFINITY, true))
   if (signal.aborted) return
-  const placed = new Map<string, Placement>()
-  await placeAll(engine, analysis.effects.filter(isSearchRoot), event, signal, placed)
-  const effects = analysis.effects.map(effect => (isSearchRoot(effect) && placed.get(placeKey(effect))?.kind === 'file' ? { ...effect, recursive: false } : effect))
-  const targets = await placeAll(engine, targetsOf(effects), event, signal, placed)
+  const roots = await placeAll(engine, analysis.effects.filter(isSearchRoot), event, signal)
+  const effects = analysis.effects.map(effect => (isSearchRoot(effect) && roots.get(placeKey(effect))?.kind === 'file' ? { ...effect, recursive: false } : effect))
+  const named = targetsOf(effects)
+  const unplaced = named.filter(target => !roots.has(placeKey(target)))
+  const rest = await placeAll(engine, unplaced, event, signal)
+  const targets = withPlacements(named, new Map([...roots, ...rest]))
   if (signal.aborted) return
   const guards = await guardPaths(engine, event, home, cwd)
   const at = await engine.clock.now()
@@ -309,8 +317,8 @@ async function checkCall(engine: EngineInterface, config: Config, input: HookArg
     const since = Math.min(...open.map(block => block.at))
     const analysis = await analyzeCall(call, { cwd: await engine.session.cwd(), home: await homeOf(engine, 'tool.call') }, ioOf(engine, 'tool.call', forward.signal, since))
     if (analysis.ignored !== undefined) engine.ui.log(notCounted(analysis.ignored), { to: 'debug' })
-    const placements = new Map<string, Placement>()
-    const placed = (await placeAll(engine, analysis.effects, 'tool.call', forward.signal, placements)).map(effect => (effect.kind === 'name' && placements.get(placeKey(effect))?.kind === 'dir' ? { ...effect, folder: true as const } : effect))
+    const placements = await placeAll(engine, analysis.effects, 'tool.call', forward.signal)
+    const placed = withPlacements(analysis.effects, placements).map(effect => (effect.kind === 'name' && placements.get(placeKey(effect))?.kind === 'dir' ? { ...effect, folder: true as const } : effect))
     if (forward.signal.aborted) return abandoned()
     const found = findings(open, journal.guards, analysis, placed, call.tool)
     const [first] = found
@@ -346,21 +354,28 @@ function abandoned(): { deny: string } {
   return { deny: uncheckedReason(OPAQUE.interrupted) }
 }
 
-/** Places every distinct path and entry mode with bounded concurrency; `placed` holds each placement by `placeKey`, and one that it holds already is not placed again. */
-async function placeAll<T extends { path: string; entry?: true }>(engine: EngineInterface, values: readonly T[], event: string, signal: AbortSignal, placed = new Map<string, Placement>()): Promise<(T & { real?: string })[]> {
-  const unique = [...new Map(values.map(value => [placeKey(value), value])).entries()].filter(([key]) => !placed.has(key))
+/** Places every distinct path and entry mode once, with bounded concurrency, and returns each placement by `placeKey`. */
+async function placeAll(engine: EngineInterface, values: readonly PlaceValue[], event: string, signal: AbortSignal): Promise<Placements> {
+  const unique = [...new Map(values.map(value => [placeKey(value), value])).entries()]
+  const placements: Placements = new Map()
   let cursor = 0
   await Promise.all(Array.from({ length: Math.min(PLACEMENT_WORKERS, unique.length) }, async () => {
     while (cursor < unique.length && !signal.aborted) {
       const [key, value] = unique[cursor++]!
-      placed.set(key, await place(engine, event, value.path, value.entry))
+      const placement = await place(engine, event, value.path, value.entry)
+      placements.set(key, placement)
     }
   }))
-  return values.map(value => withReal(value, placed.get(placeKey(value))?.real))
+  return placements
+}
+
+/** The values, each with the real path of its placement when the file system gave one that differs. */
+function withPlacements<T extends PlaceValue>(values: readonly T[], placements: Placements): (T & { real?: string })[] {
+  return values.map(value => withReal(value, placements.get(placeKey(value))?.real))
 }
 
 /** The key of a path and its entry mode among placements. */
-function placeKey(value: { path: string; entry?: true }): string {
+function placeKey(value: PlaceValue): string {
   return `${value.path}\0${value.entry === true}`
 }
 
