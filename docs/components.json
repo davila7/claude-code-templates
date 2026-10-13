@@ -49586,6 +49586,65 @@
         "hooks/hooks.json",
         "hooks/tool-timing-badge.tsx"
       ]
+    },
+    {
+      "name": "turn-inspector",
+      "path": "ui/turn-inspector",
+      "category": "ui",
+      "type": "mod",
+      "description": "A side pane that shows the session turn by turn, like Anthropic's context-window diagram: every model request with its input (system and tools, earlier turns, the new user message or tool results) stacked above its output (thinking, text, tool use), real token totals from the API, and a bar of how full the context window gets. Expand any turn to see its blocks.",
+      "author": "claude-code-templates",
+      "repo": "https://github.com/davila7/claude-code-templates",
+      "version": "0.1.0",
+      "license": "MIT",
+      "keywords": [
+        "mod",
+        "function-hooks",
+        "ui",
+        "context",
+        "tokens",
+        "turns",
+        "sidebar"
+      ],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "modules": [
+        "turn-inspector.tsx"
+      ],
+      "userConfig": {
+        "columns": {
+          "type": "number",
+          "title": "Pane width",
+          "description": "Columns asked for the docked pane in the fullscreen layout (36-120); a width you drag it to wins",
+          "default": 56
+        },
+        "maxTurns": {
+          "type": "number",
+          "title": "Turns kept",
+          "description": "How many model requests the pane keeps, oldest dropped first",
+          "default": 200
+        },
+        "openOnStart": {
+          "type": "boolean",
+          "title": "Open on start",
+          "description": "Open the pane when the session starts; the engine keeps an unasked pane hidden below 144 columns",
+          "default": false
+        }
+      },
+      "references": [
+        ".claude-plugin/plugin.json",
+        "hooks/hooks.json",
+        "hooks/turn-inspector.tsx",
+        "hooks/turns.ts",
+        "tests/turn-inspector.test.tsx"
+      ]
     }
   ],
   "templates": [
