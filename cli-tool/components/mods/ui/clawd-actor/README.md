@@ -110,7 +110,9 @@ nothing is shown when offline or up to date).
 
 Run `/clawd-actor:update`, or just ask Claude to update clawd-actor. Either way Claude refreshes
 this marketplace and updates the plugin with Claude Code's own plugin manager, tells you the
-version it went from and to, and `/reload-plugins` loads it. By hand, the same is:
+version it went from and to and sums up what is new, and `/reload-plugins` loads it. However it
+was updated, the first session on a new version says so in a notice, with the release's headline
+and a link to the release notes. By hand, the same is:
 
 ```sh
 claude plugin marketplace update clawd-actor
@@ -187,7 +189,8 @@ Clawd's face, that a turn opens on the running tool or the spinner word and then
 every other scene whatever tools run, picking up where the last turn stopped, that a scene holds
 for its whole act, that the timer animates Clawd during a turn and lets go after it, that `/clawd`
 plays its reactions between turns and shows Haiku's answer (or a fallback) in a bubble that fits
-any script, and that the update notice shows only when `main` carries a newer version.
+any script, that the update notice shows only when `main` carries a newer version, and that the
+first session after an update says what is new, once.
 
 Block characters and symbols are drawn one cell wide; a terminal font that draws some of them
 wider may shift a frame.

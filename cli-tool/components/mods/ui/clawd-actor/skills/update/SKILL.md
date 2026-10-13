@@ -6,6 +6,7 @@ allowed-tools:
   - Bash(claude plugin list*)
   - Bash(claude plugin marketplace update clawd-actor*)
   - Bash(claude plugin update clawd-actor@clawd-actor*)
+  - WebFetch(domain:api.github.com)
 ---
 
 # Update clawd-actor
@@ -24,5 +25,10 @@ Claude Code's own plugin manager does the update; nothing is downloaded by hand.
    showed a scope other than `user`.
 4. Report in one or two lines: the version before and after, or that it was already the latest.
    After an update, tell the user to run `/reload-plugins` (or restart Claude Code) to load it.
+5. After an update, say what is new: fetch
+   `https://api.github.com/repos/BrianHuang813/clawd-actor/releases?per_page=20` and sum up, in a few
+   short bullets, the releases past the old version up to the new one (their `name` and `body`),
+   ending with https://github.com/BrianHuang813/clawd-actor/releases. If the fetch fails, give just
+   that link.
 
 If a command fails, show its error as is and stop; do not retry with other flags.

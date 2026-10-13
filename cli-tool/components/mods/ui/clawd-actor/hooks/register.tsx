@@ -24,6 +24,8 @@ const REACT_FRAMES = Math.round(6000 / FRAME_MS) // how long a /clawd action pla
 const WAIT_FRAMES = Math.round(15_000 / FRAME_MS) // the most Clawd ponders before a reply
 const UPDATE_CHECK_MS = 2000 // after start-up settles, so the toast is seen
 const LATEST = 'https://raw.githubusercontent.com/BrianHuang813/clawd-actor/main/.claude-plugin/plugin.json'
+const RELEASES = 'https://github.com/BrianHuang813/clawd-actor/releases'
+const RELEASE_API = 'https://api.github.com/repos/BrianHuang813/clawd-actor/releases/tags/v'
 
 /** Whether dotted version `a` is past `b`, part by part (1.10.0 is past 1.9.2). */
 export const isNewer = (a: string, b: string) => {
@@ -32,10 +34,30 @@ export const isNewer = (a: string, b: string) => {
   return i >= 0 && x[i] > (y[i] ?? 0)
 }
 
-/** Once a session: if main carries a newer version than this install, say so and how to update. */
+/** A release's headline, "lighter frames" from "clawd-actor 0.5.1 — lighter frames"; '' when GitHub cannot say. */
+const headline = async ($: Engine, version: string) => {
+  try {
+    const res = await $.http.fetch(RELEASE_API + version)
+    return (res.ok && String(JSON.parse(res.text).name ?? '').split(' — ')[1]) || ''
+  } catch {
+    return ''
+  }
+}
+
+/**
+ * Once a session: the first one after an update says what is new; any other, if main carries a
+ * newer version than this install, says so and how to update.
+ */
 const checkForUpdate = async ($: Engine) => {
   try {
     const mine = JSON.parse(String(await $.fs.read(`${$.plugin.root}/.claude-plugin/plugin.json`))).version
+    const seen = await $.store.get('version') // the version the last session ran
+    if (seen !== mine) await $.store.set('version', mine)
+    if (typeof seen === 'string' && isNewer(mine, seen)) {
+      const what = await headline($, mine)
+      $.ui.toast(`clawd-actor updated to ${mine}${what ? `: ${what}` : ''}. What's new: ${RELEASES}`, { timeoutMs: 15_000 })
+      return
+    }
     const res = await $.http.fetch(LATEST)
     const latest = res.ok ? JSON.parse(res.text).version : undefined
     if (latest && isNewer(latest, mine))
