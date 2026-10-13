@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-10-12T03:19:31.422729+00:00",
-  "totalJobs": 91,
+  "lastUpdated": "2026-10-13T03:19:59.415274+00:00",
+  "totalJobs": 92,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -8,6 +8,26 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "anth-5443331008",
+      "company": "Anthropic",
+      "position": "Manager, Applied AI Architect",
+      "location": "Tokyo, Japan",
+      "remote": false,
+      "salary": "",
+      "description": "As a leader of Applied AI Solutions Architecture in Japan, you will drive the adoption of frontier AI by enabling the deployment of Anthropic’s products (Claude for Enterprise, Claude Code, and API) across Japanese enterprises and digital-first organizations. You’ll leverage your technical skills...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5443331008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5443331008",
+      "postedAt": "2026-10-12T23:07:58-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
     {
       "id": "hn-50025234",
       "company": "Location: Bangalore, India (IST, UTC+5:30)",
