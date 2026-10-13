@@ -25721,6 +25721,28 @@
       ]
     },
     {
+      "name": "ai-directory-submitter",
+      "path": "business-marketing/ai-directory-submitter",
+      "category": "business-marketing",
+      "type": "skill",
+      "description": "Lists an AI product on free AI directories, launch sites and MCP or agent directories, one at a time, from FalcoScan's checked list of free directories, and keeps a record of each submission. Use when the user wants to list, launch or promote an AI tool, SaaS, MCP server or agent on directories, or asks where to submit their product.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": []
+    },
+    {
       "name": "ai-product",
       "path": "business-marketing/ai-product",
       "category": "business-marketing",
