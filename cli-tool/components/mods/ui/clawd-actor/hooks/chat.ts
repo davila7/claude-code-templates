@@ -15,7 +15,8 @@ export type Ask = { help: true } | { action: string } | { chat: string }
 export const parseClawd = (args: string): Ask => {
   const text = args.trim()
   if (!text) return { help: true }
-  const action = ACTIONS[text.toLowerCase()]
+  const word = text.toLowerCase()
+  const action = Object.hasOwn(ACTIONS, word) ? ACTIONS[word] : undefined // not what every object inherits
   return action ? { action } : { chat: text.slice(0, MAX_ASK) }
 }
 
@@ -24,8 +25,10 @@ export const clean = (text: string) => text.replace(/[\u0000-\u001f\u007f-\u009f
 
 // Characters a terminal draws two columns wide: CJK, Hangul, full-width forms
 const WIDE = /[ᄀ-ᅟ⺀-꓏가-힣豈-﫿︰-﹏＀-｠￠-￦]/
+// and none: combining marks (an accent typed apart, Thai and Hindi vowel marks) sit on the character before
+const ZERO = /[\p{Mn}\p{Me}]/u
 /** Columns the text takes on a terminal. */
-export const cells = (text: string) => [...text].reduce((n, ch) => n + (WIDE.test(ch) ? 2 : 1), 0)
+export const cells = (text: string) => [...text].reduce((n, ch) => n + (ZERO.test(ch) ? 0 : WIDE.test(ch) ? 2 : 1), 0)
 
 /** Words, single wide characters (which may break anywhere) and spaces, in order. */
 const tokens = (text: string) => text.match(new RegExp(`${WIDE.source}|[^\\s${WIDE.source.slice(1, -1)}]+|\\s+`, 'g')) ?? []

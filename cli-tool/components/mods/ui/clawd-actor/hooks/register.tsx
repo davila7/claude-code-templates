@@ -18,6 +18,7 @@ let played = 0 // rotation acts earlier turns got through
 let shown: Shown | undefined // the scene on stage, held for its act
 // What /clawd set going: a scene played over the show, and what Clawd says, for `left` more frames
 let reaction: { scene: string; say?: string; left: number } | undefined
+let asked = 0 // /clawd commands so far: a reply to any but the latest is dropped
 const running: { id: string; tool: string }[] = [] // tools in flight, newest last
 
 const REACT_FRAMES = Math.round(6000 / FRAME_MS) // how long a /clawd action plays
@@ -84,7 +85,7 @@ const status = () => {
 }
 
 /** Asks Haiku for Clawd's answer and puts it in the bubble; Claude's own conversation never sees either side. */
-const reply = async ($: Engine, text: string, now: string) => {
+const reply = async ($: Engine, text: string, now: string, id: number) => {
   let say = 'Hmm, my words got lost on the way. Try again?'
   try {
     const r = await $.model.complete({ model: 'haiku', system: persona(now), prompt: text, maxTokens: 150, timeoutMs: 15_000 })
@@ -92,7 +93,7 @@ const reply = async ($: Engine, text: string, now: string) => {
   } catch {
     // the engine would not send it (a blocked model, say): Clawd still answers, with the line above
   }
-  await react($, 'say', say, holdFrames(say))
+  if (id === asked) await react($, 'say', say, holdFrames(say)) // else a newer /clawd took the stage meanwhile
 }
 
 export const register: Register = on => {
@@ -116,13 +117,14 @@ export const register: Register = on => {
 
   // Answers in Clawd's bubble only: no transcript line, so nothing of it reaches Claude
   on('command.run', { command: 'clawd' }, async ($, e) => {
+    const id = ++asked
     const ask = parseClawd(e.args)
     if ('help' in ask) await react($, 'wave', HELP)
     else if ('action' in ask) await react($, ask.action)
     else {
       await react($, 'ponder', '· · ·', WAIT_FRAMES)
       const now = status()
-      $.clock.after(1, () => reply($, ask.chat, now)) // on a timer: the prompt never waits on the model
+      $.clock.after(1, () => reply($, ask.chat, now, id)) // on a timer: the prompt never waits on the model
     }
     return {}
   })
@@ -159,18 +161,20 @@ export const register: Register = on => {
   })
 
   on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
-    const below = await next(e) // keep whatever other band mods draw here
-    // isWorking is the engine's own word on whether a turn runs
-    if (e.props.hasSurvey || (!e.props.isWorking && !reaction)) return below
+    // isWorking is the engine's own word on whether a turn runs; the stage shows only where it fits
+    if (e.props.hasSurvey || (!e.props.isWorking && !reaction) || e.props.maxRows < H) return next(e)
+
+    const width = Math.min(e.props.bodyColumns, MAX_STAGE)
+    // the bubble needs its two border rows besides the text: left out when the band has no room for one line
+    const room = Math.min(3, e.props.maxRows - H - 2)
+    const said = reaction?.say && room > 0 ? bubble(reaction.say, width, room) : []
+    // keep whatever other band mods draw here, in the rows Clawd leaves them
+    const below = await next({ ...e, props: { ...e.props, maxRows: e.props.maxRows - H - said.length } })
 
     const t = await read($, frame)
     const { Box, Text } = $.ui.resolve(e)
     shown = hold(shown, turnBase, { word, mode, tick: t - turnBase, seed, played, tool: running[running.length - 1]?.tool })
-    const width = Math.min(e.props.bodyColumns, MAX_STAGE)
     const rows = frameRows(word, mode, t, width, reaction?.scene ?? shown.scene)
-    // the bubble needs its two border rows besides the text: left out when the band has no room for one line
-    const room = Math.min(3, e.props.maxRows - H - 2)
-    const said = reaction?.say && room > 0 ? bubble(reaction.say, width, room) : []
 
     return (
       <Box flexDirection="column">
