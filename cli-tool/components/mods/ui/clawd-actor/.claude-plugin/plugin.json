@@ -1,6 +1,6 @@
 {
   "name": "clawd-actor",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "While Claude works, Clawd acts out the spinner's -ing word above the prompt, and the tool that is running",
   "author": { "name": "Brian Huang" },
   "homepage": "https://github.com/BrianHuang813/clawd-actor",
