@@ -130,7 +130,7 @@ export const register: Register = (on, options) => {
       return { text: `turn-inspector: pane not opened: ${err}` }
     }
     isOpen = true
-    if (isOpen) $.ui.invalidate('ui.render')
+    $.ui.invalidate('ui.render')
     const hint = e.presentation.isFullscreen
       ? 'click a turn, or Tab and Enter, to expand it'
       : 'drawn above the prompt; /tui fullscreen docks it beside the transcript'
@@ -406,7 +406,7 @@ export const register: Register = (on, options) => {
 
 /** Desktop and the remote surfaces collapse runs of spaces; keep them. */
 function spacer(surface: RenderSurface): (s: string) => string {
-  return surface === 'terminal' ? s => s : s => s.replace(/ /g, ' ')
+  return surface === 'terminal' ? s => s : s => s.replace(/ /g, '\u00a0')
 }
 
 function safeJson(v: unknown): string {

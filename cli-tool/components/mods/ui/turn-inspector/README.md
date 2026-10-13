@@ -48,7 +48,7 @@ Each turn's input and output totals are the API's own `usage` for that request (
 
 A turn whose input shrank against the one before is marked `compacted before this turn`.
 
-Turns are recorded from the moment the mod loads, whether the pane is open or not, so opening it late still shows every turn so far. Subagents' requests are not listed; [agent-flow](../agent-flow) draws those.
+Turns are recorded from the moment the mod loads, whether the pane is open or not, so opening it late still shows every turn so far. Subagents' requests are not listed; the `agent-flow` mod draws those.
 
 ## Where it draws
 
@@ -94,4 +94,4 @@ claude plugin test .claude/skills/turn-inspector
 
 The tests drive the turn model directly, then raise `turn.start`, `turn.step` (with thinking, tool and text chunks), `tool.call` and `turn.complete` through the engine, and mount the pane on both the terminal and desktop surfaces.
 
-**Requirements.** Mods are on by default in Claude Code 2.1.287+. Written and tested on 2.1.296 against the 2.1.283 declarations in this repo.
+**Requirements.** Mods are on by default in Claude Code 2.1.287+; builds 2.1.259 to 2.1.286 need `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1`. Written and tested on 2.1.296 against the 2.1.283 declarations in this repo.
