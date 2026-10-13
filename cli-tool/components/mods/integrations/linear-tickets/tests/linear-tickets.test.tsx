@@ -128,7 +128,12 @@ describe('charts', () => {
 
 type Call = { url: string; auth?: string; body?: { query: string; variables: Record<string, unknown> } }
 type World = { calls: Call[]; copied: string[]; toasts: string[]; status: number; body: string }
-const world = (): World => ({ calls: [], copied: [], toasts: [], status: 200, body: issuesBody })
+// The pane reads the real clock to pick the current cycle, so its fixture cycle runs around today
+const DAY_MS = 86_400_000
+const liveIssuesBody = issuesBody
+  .split(CYCLE.startsAt).join(new Date(Date.now() - 5 * DAY_MS).toISOString())
+  .split(CYCLE.endsAt).join(new Date(Date.now() + 9 * DAY_MS).toISOString())
+const world = (): World => ({ calls: [], copied: [], toasts: [], status: 200, body: liveIssuesBody })
 
 function fakeEngine(on: On, w: World) {
   on('session.start', async ($, e) => ({ cwd: e.cwd }) as never)
