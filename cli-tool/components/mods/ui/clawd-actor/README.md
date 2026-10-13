@@ -124,7 +124,9 @@ A clone run with `--plugin-dir` updates with `git pull`.
 ## Plays well with other band mods
 
 The stage is drawn in the `AbovePrompt` band. The hook always calls `next(e)` and stacks what the
-mods beneath it draw under the stage, so other band mods keep showing. A band mod that answers
+mods beneath it draw under the stage, so other band mods keep showing. It hands them the band's
+rows less the ones the stage and bubble take, so together they still fit without scrolling, and
+when the band is too short for the stage Clawd stays out. A band mod that answers
 without calling `next(e)` hides everything beneath it — if Clawd never shows up, look for one.
 
 ## How it works
@@ -189,7 +191,8 @@ Clawd's face, that a turn opens on the running tool or the spinner word and then
 every other scene whatever tools run, picking up where the last turn stopped, that a scene holds
 for its whole act, that the timer animates Clawd during a turn and lets go after it, that `/clawd`
 plays its reactions between turns and shows Haiku's answer (or a fallback) in a bubble that fits
-any script, that the update notice shows only when `main` carries a newer version, and that the
+any script (combining marks included), that only the latest `/clawd` gets its answer shown, that
+the mods beneath get the rows Clawd leaves them, that the update notice shows only when `main` carries a newer version, and that the
 first session after an update says what is new, once.
 
 Block characters and symbols are drawn one cell wide; a terminal font that draws some of them
