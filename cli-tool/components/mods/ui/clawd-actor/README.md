@@ -84,8 +84,9 @@ leaves again after it.
 Requires a Claude Code build with function-hook mods (`claude plugin validate` knows `hooks.json`
 `modules`). Developed and tested on Claude Code 2.1.296.
 
-Clawd lives in the terminal UI: it shows in `claude` in any terminal (including an editor's
-terminal), not in the Desktop app or the VS Code chat panel.
+Clawd shows in `claude` in any terminal (including an editor's terminal and the JetBrains plugin)
+and in the Code tab of the Desktop app. The VS Code chat panel, `claude -p` and cloud sessions draw
+no mod interface, so Clawd does not show there.
 
 From this repository as a marketplace:
 
