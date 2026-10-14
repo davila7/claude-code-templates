@@ -138,6 +138,8 @@ export const register: Register = (on, options) => {
   })
 
   on('turn.start', async ($, e, next) => {
+    // a subagent's run starts a turn too (agentId, newer than these declarations)
+    if ('agentId' in e && e.agentId !== undefined) return next(e)
     promptStarted(ledger, e.turnId, e.text)
     return next(e)
   })

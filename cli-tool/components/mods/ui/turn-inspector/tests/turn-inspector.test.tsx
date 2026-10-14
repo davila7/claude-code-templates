@@ -215,3 +215,22 @@ describe('the pane', () => {
     })
   }
 })
+
+const mountPane = ($: Engine) =>
+  $.ui.mount({ plugin: 'turn-inspector', surface: 'terminal', component: 'Pane', requestId: 'turn-inspector', props: PANE_PROPS })
+
+describe('the main loop alone', () => {
+  test('a subagent starting its run adds nothing to the next main request', async ($, on) => {
+    fakeEngine(on)
+    await $.turn.start({ text: 'why does auth log me out?', turnId: 't1' })
+    await step($, 0)
+    // newer engines raise turn.start for each subagent run, with its agentId
+    await $.turn.start({ text: 'Explore the auth module', turnId: 'a1', agentId: 'agent-1' } as never)
+    await $.tool.call({ tool: 'Read', file_path: 'src/auth.ts' } as never)
+    await step($, 1)
+    const ui = await mountPane($)
+    expect(await ui.find({ type: 'Text', text: /Explore the auth module/ })).toBeUndefined()
+    expect(await ui.find({ type: 'Text', text: /User message/ })).toBeUndefined()
+    await ui.unmount()
+  })
+})
