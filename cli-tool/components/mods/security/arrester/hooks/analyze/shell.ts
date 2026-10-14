@@ -79,6 +79,9 @@ type State = {
   possible: Map<string, Value[]>
 }
 
+/** The printing options on a shell's command line, in order: `verbose` prints the code that the shell reads, and `xtrace` the commands that it runs. */
+type Printing = { verbose?: boolean; xtrace?: boolean }
+
 /** One command with its redirections and optional compound body; `definition` names the function that the command defines, or is empty for a name that is not plain text, and `exits` marks a function body that names `return` or `exit`. */
 type Simple = { words: Word[]; redirects: Redirect[]; body?: Pipeline[]; subshell?: boolean; branches?: { condition?: Pipeline[]; body: Pipeline[] }[]; definition?: string; exits?: true; loop?: { condition?: Pipeline[]; until?: boolean; name?: string; words?: Word[] } }
 
@@ -753,7 +756,7 @@ async function dispatch(run: Run, head: Operand): Promise<boolean | void> {
     return run.args.length === 0 ? run.state.status : code === undefined ? undefined : /^[+-]?\d+$/.test(code) && Number(code) % 256 === 0
   }
   else if (TRIVIAL.has(program)) return
-  else if (LIST.has(program)) plain(run, 'list')
+  else if (LIST.has(program)) plain({ ...run, args: unbracketed(run) }, 'list')
   else if (READ.has(program)) plain(run, 'read')
   else if (WRITE.has(program)) plain(run, 'write')
   else if (DESTROY.has(program)) plain(run, 'destroy')
@@ -778,6 +781,12 @@ async function dispatch(run: Run, head: Operand): Promise<boolean | void> {
   else if (program === 'perl') await perl(run)
   else if (INTERPRETER.test(program)) await interpreter(run)
   else unknownProgram(run)
+}
+
+/** The arguments of a command, without the `]` that ends `[` or the `]]` that ends `[[`, which is no path. */
+function unbracketed(run: Run): Operand[] {
+  const closing = run.program === '[' ? ']' : run.program === '[[' ? ']]' : undefined
+  return closing !== undefined && soleText(run.args.at(-1)) === closing ? run.args.slice(0, -1) : run.args
 }
 
 /** Consumes the remaining literal stream for programs that read to its end. */
@@ -900,14 +909,18 @@ function defineAliases(run: Run): void {
   }
 }
 
-/** Tracks explicit glob options and noexec in the current shell only. */
-function globSettings(run: Run): void {
+/** Tracks explicit glob options and noexec in the current shell only, in order, and in `printing`, when it is given, the verbose and xtrace options of a shell's command line; a `set` cluster that holds `o`, such as `-eo`, takes the next word as an option name, unless that word starts with `-` or `+`, as in bash. `set` reads options up to `--`, and except in fish up to `-` or up to its first word that is no option and no option name; in zsh and ksh it also stops at `+`. */
+function globSettings(run: Run, printing?: Printing): void {
   if (run.program === 'shopt' && !run.args.some(arg => ['-s', '-u'].includes(textOf(arg)))) return
   let enabled = run.program !== 'unsetopt'
   let named = false
+  const fish = run.state.shell === 'fish'
   for (const arg of run.args) {
     const text = textOf(arg)
     if (text === '--') break
+    if (run.program === 'set' && !fish && text === '-') break
+    if (run.program === 'set' && text === '+' && (run.state.shell === 'zsh' || run.state.shell === 'ksh')) break
+    if (run.program === 'set' && /^[-+]/.test(text)) named = false
     if (text === '-s' || text === '-u') {
       enabled = text === '-s'
       continue
@@ -920,9 +933,18 @@ function globSettings(run: Run): void {
     if (run.program === 'set' && /^[-+][a-zA-Z]+$/.test(text)) {
       if (text.includes('f')) run.state.noglob = text.startsWith('-')
       if (text.includes('n')) run.state.terminated = text.startsWith('-')
+      if (printing !== undefined && text.includes('v')) printing.verbose = text.startsWith('-')
+      if (printing !== undefined && text.includes('x')) printing.xtrace = text.startsWith('-')
+      if (text.includes('o')) {
+        enabled = text.startsWith('-')
+        named = true
+      }
       continue
     }
-    if (run.program === 'set' && !named) continue
+    if (run.program === 'set' && !named) {
+      if (!fish && !/^[-+]/.test(text)) break
+      continue
+    }
     const name = text.replace(/_/g, '').toLowerCase()
     const options = { ...run.state.globOptions }
     if (name === 'dotglob' || name === 'globdots') options.dot = enabled ? true : undefined
@@ -932,6 +954,7 @@ function globSettings(run: Run): void {
     else if (name === 'noglob') run.state.noglob = enabled
     else if (name === 'glob') run.state.noglob = !enabled
     else if (run.program === 'set' && name === 'noexec') run.state.terminated = enabled
+    else if (printing !== undefined && (name === 'verbose' || name === 'xtrace')) printing[name] = enabled
     run.state.globOptions = options
     named = false
   }
@@ -2142,8 +2165,8 @@ function option(words: readonly Operand[], i: number, values: Values, options: O
   }
   for (let k = 1; k < text.length; k += 1) {
     if (!/[A-Za-z0-9]/.test(text.charAt(k))) break
-    const flag = `-${text.charAt(k)}`
-    const count = values[flag] ?? 0
+    const flag = `${text.charAt(0)}${text.charAt(k)}`
+    const count = values[`-${text.charAt(k)}`] ?? 0
     if (count === 0) continue
     options.flags.push(text.slice(0, k + 1))
     if (k + 1 < text.length || count === ATTACHED) {
@@ -2156,14 +2179,14 @@ function option(words: readonly Operand[], i: number, values: Values, options: O
   return i + 1
 }
 
-/** Splits arguments into flags and operands; value-taking flags keep their values in `given`. With `stopAtOperand`, every word after the first operand is an operand, as a shell or an interpreter reads the words after its code or script. */
-function parse(args: readonly Operand[], values: Values, stopAtOperand = false): Parsed {
+/** Splits arguments into flags and operands; value-taking flags keep their values in `given`. With `stopAtOperand`, every word after the first operand is an operand, as a shell or an interpreter reads the words after its code or script. With `plus`, a word that starts with `+` is a flag too, as a shell reads `+e` or `+o NAME`, and its value is kept under its own sign, such as `+o`; a bare `+` is a flag with no letters, or with `plus` set to `end` an operand, as a bare `-` is. */
+function parse(args: readonly Operand[], values: Values, stopAtOperand = false, plus?: 'flag' | 'end'): Parsed {
   const parsed: Parsed = { flags: [], operands: [], given: new Map(), ordered: [], split: undefined }
   let i = 0
   while (i < args.length) {
     const arg = args[i] as Operand
     const text = textOf(arg)
-    if (parsed.split !== undefined || !text.startsWith('-') || text === '-' || (stopAtOperand && parsed.operands.length > 0)) {
+    if (parsed.split !== undefined || !(text.startsWith('-') || (plus !== undefined && text.startsWith('+'))) || text === '-' || (plus === 'end' && text === '+') || (stopAtOperand && parsed.operands.length > 0)) {
       parsed.operands.push(arg)
       i += 1
     } else if (text === '--') {
@@ -2986,23 +3009,35 @@ async function switchUser(run: Run): Promise<boolean | void> {
   return shell({ ...run, program, args: code === undefined ? operands.slice(1) : [fixed('-c'), code, ...operands.slice(1)] })
 }
 
-/** `sh`, `bash`, and the other shells: `-c` code with `$0` and the positional parameters after it, code from stdin, or a script with its arguments. */
+/** `sh`, `bash`, and the other shells: `-c` code with `$0` and the positional parameters after it, code from stdin, or a script with its arguments. A shell with a verbose or xtrace option on its command line prints its script file, so it also reads that file, and only that file; fish's `-v` prints its version. Every shell but fish reads an option that starts with `+` as the `-` form turned off, in order, and `+c` as `-c`. Bash reads stdin after `+s`, as after `-s`; in dash, zsh, and ksh the last of `-s` and `+s` wins, so after `+s` they run the script; `sh` can be bash or dash, so when the two differ both count. A bare `+` ends the options in zsh and ksh, as a bare `-` does, and bash and dash skip it. */
 async function shell(run: Run): Promise<boolean | void> {
-  const parsed = parse(run.args, valuesOf(run.program), true)
-  if (textOf(parsed.operands[0]) === '-' && parsed.split === undefined && !hasFlag(parsed.flags, 'c') && run.program !== 'fish') parsed.operands.shift()
+  const fish = run.program === 'fish'
+  const parsed = parse(run.args, valuesOf(run.program), true, fish ? undefined : ['zsh', 'ksh'].includes(run.program) ? 'end' : 'flag')
+  const command = hasFlag(parsed.flags.map(flag => flag.replace(/^\+/, '-')), 'c')
+  const signs = parsed.flags.filter(flag => /^[-+][A-Za-z]*s/.test(flag)).map(flag => flag.charAt(0))
+  const asBash = signs.length > 0
+  const asDash = signs.at(-1) === '-'
+  const fromStdin = run.program === 'bash' ? asBash : asDash
+  const both = run.program === 'sh' && asBash && !asDash
+  if (['-', '+'].includes(textOf(parsed.operands[0])) && parsed.split === undefined && !command && !fish) parsed.operands.shift()
   const [first, ...rest] = parsed.operands
-  if (hasFlag(parsed.flags, 'n') || parsed.given.get('-o')?.some(value => textOf(value) === 'noexec')) {
-    if (!hasFlag(parsed.flags, 'c') && first !== undefined) addEffect(run, first, 'read', false)
-    return
-  }
   const state = sharedFresh(run.walk, run.state)
   state.shell = run.program
-  state.noglob = hasFlag(parsed.flags, 'f')
+  const names = parsed.ordered.filter(({ flag }) => flag === '-o' || flag === '+o').map(({ value }) => value)
+  const settings = parsed.flags.flatMap(flag => {
+    const word = fixed(flag === '--verbose' ? '-v' : flag === '--xtrace' ? '-x' : flag)
+    return /^[-+][A-Za-z]*o$/.test(flag) && names.length > 0 ? [word, names.shift() as Operand] : [word]
+  })
+  const printing: Printing = {}
+  globSettings({ ...run, state, program: 'set', args: settings }, printing)
   for (const { flag, value } of parsed.ordered) {
-    if (flag === '-O') globSettings({ ...run, state, program: 'shopt', args: [fixed('-s'), value] })
-    else if (flag === '-o') globSettings({ ...run, state, program: 'set', args: [fixed('-o'), value] })
+    if (flag === '-O' || flag === '+O') globSettings({ ...run, state, program: 'shopt', args: [fixed(flag === '-O' ? '-s' : '-u'), value] })
   }
-  if (hasFlag(parsed.flags, 'c')) {
+  if (state.terminated) {
+    if (!command && first !== undefined) addEffect(run, first, 'read', false)
+    return
+  }
+  if (command) {
     const code = soleText(first)
     if (code === undefined) {
       run.walk.fail(OPAQUE.variableCode)
@@ -3012,11 +3047,13 @@ async function shell(run: Run): Promise<boolean | void> {
     setPositional(run.walk, state, rest.slice(1))
     await nested(run.walk, code, state, run.stdin)
     return state.status
-  } else if (run.program === 'fish' && textOf(first) === '-') return stdinCode(run, 'shell', rest, state)
-  else if (first === undefined || hasFlag(parsed.flags, 's')) return stdinCode(run, 'shell', parsed.operands, state)
+  } else if (fish && textOf(first) === '-') return stdinCode(run, 'shell', rest, state)
+  else if (first === undefined || fromStdin) return stdinCode(run, 'shell', parsed.operands, state)
   else {
+    if (both) await stdinCode(run, 'shell', parsed.operands, fork(run.walk, state))
     setName(state, first)
     setPositional(run.walk, state, rest)
+    if (!fish && (printing.verbose || printing.xtrace)) addEffect(run, first, 'read', false)
     await runScript(run, first, 'shell', rest, state)
   }
 }

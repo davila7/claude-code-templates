@@ -16,8 +16,8 @@ export const ARCHIVE = new Set(['tar', 'zip', 'unzip'])
 export const SHELLS = new Set(['sh', 'bash', 'zsh', 'dash', 'ksh', 'fish'])
 export const INTERPRETER = /^(python[0-9.]*|pypy3?|node|nodejs|tsx|ts-node|bun|deno|ruby|php|perl)$/
 
-/** Programs that add no skeleton; of these only the list class adds effects. */
-export const TRIVIAL = new Set(['cd', 'pushd', 'popd', 'export', 'declare', 'local', 'readonly', 'set', 'unset', 'true', 'false', ':', 'sleep', 'echo', 'printf', 'for', 'case', 'esac', 'done', 'fi', 'in', 'function', 'select', 'return', 'exit', 'shift', 'wait', 'trap', 'alias', 'hash', 'type'])
+/** Programs that add no skeleton; of these only the list class adds effects. `dirname` and `basename` are in both: they only change text, so they touch no path, and their output lists their operands. */
+export const TRIVIAL = new Set(['cd', 'pushd', 'popd', 'export', 'declare', 'local', 'readonly', 'set', 'unset', 'true', 'false', ':', 'sleep', 'echo', 'printf', 'for', 'case', 'esac', 'done', 'fi', 'in', 'function', 'select', 'return', 'exit', 'shift', 'wait', 'trap', 'alias', 'hash', 'type', 'dirname', 'basename'])
 
 /** Shell keywords removed from the front of a command. */
 export const KEYWORDS = new Set(['!', 'if', 'then', 'elif', 'else', 'do', 'while', 'until', '{', '}'])

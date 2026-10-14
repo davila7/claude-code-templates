@@ -4,7 +4,7 @@
   <img src="https://img.shields.io/badge/Claude_Code-2.1.288%2B-D97757" alt="Claude Code 2.1.288+">
   <img src="https://img.shields.io/badge/Claude_Code-mod-555555" alt="Claude Code mod">
   <img src="https://img.shields.io/badge/license-MIT-78997A" alt="License: MIT">
-  <img src="https://img.shields.io/badge/version-1.1.1-555555" alt="Version: 1.1.1">
+  <img src="https://img.shields.io/badge/version-1.1.2-555555" alt="Version: 1.1.2">
 </p>
 
 <p align="center"><strong>Sandbox Tuner turns recurring Claude Code sandbox blocks into reviewed, undoable settings edits across sessions.</strong></p>
@@ -29,7 +29,7 @@ So Sandbox Tuner reads Bash results, and the hosts that background Bash commands
 - **A ranking across sessions.** `/sandbox-tuner` lists hosts and write folders, with ready fixes first. Hide the targets that you do not want to see, except a target that your settings already allow.
 - **A change you review.** Allow shows the exact entry and its effect before you press it. Deny appears for a host that you refused at the network prompt, unless an allowlist lock applies.
 - **Undo and a backup.** Each settings edit gets an Undo record. A backup keeps the settings file as it was before the latest write.
-- **Narrow fixes.** Folder grants go only to eligible cache and temp folders. Sandbox Tuner offers no wildcard hosts and no command exclusions.
+- **Narrow fixes.** Folder grants go only to eligible cache and temp folders. A folder strictly inside `/tmp`, such as `/tmp/build`, can get Allow. A file directly in `/tmp` gets no Allow, because `/tmp` itself is too broad. Sandbox Tuner offers no wildcard hosts and no command exclusions.
 
 ![The Sandbox Tuner pane beside the transcript: example.org is ready with Allow and Hide, example.net waits at 1 of 3 sightings.](https://raw.githubusercontent.com/dot-agi/sandbox-tuner/main/docs/images/pane.svg)
 

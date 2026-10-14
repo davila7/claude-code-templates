@@ -3,7 +3,7 @@
 import type { Settings } from 'claude-code'
 
 import type { SandboxTunerAction, SandboxTunerRecord, SandboxTunerSettingsKey } from '../types'
-import { CLAUDE_PROTECTED, PROTECTED_PLACES, absolutePath, cacheFolder, displayPath, hostMatches, isDnsName, isKeyFile, isProtectedName, isUnder } from './names'
+import { CLAUDE_PROTECTED, PROTECTED_PLACES, absolutePath, cacheFolder, displayPath, folderTarget, hostMatches, isDnsName, isKeyFile, isProtectedName, isTempFolder, isUnder } from './names'
 import { allowCount, sightingTotal } from './records'
 import type { FileInfo } from './settings-file'
 import { isPlainObject, isText } from './shapes'
@@ -19,6 +19,9 @@ export type Context = {
   protectedDirs: readonly string[]
   credentialDirs: readonly string[]
   pathDirs: readonly string[]
+  // Where /tmp lies: as spelled, or where a press found it. Null at the press of a folder outside /tmp, which keeps the
+  // rule of Sandbox Tuner 1.1.1.
+  tmp: string | null
   cwd: string
   root: string
   threshold: number
@@ -382,7 +385,11 @@ function pathVerdict(record: SandboxTunerRecord, context: Context): Verdict {
       .some(entry => isUnder(target, entry.path)),
   )
   if (coveredBy !== undefined) return { status: 'covered', source: coveredBy }
-  if (cacheFolder(sample, context.home) !== target) return noFix('not-a-cache', '')
+  // A folder strictly inside /tmp that holds the denied file is a temp folder: the target that Sandbox Tuner 1.1.1 names.
+  const isTemp = context.tmp !== null && isTempFolder(target, context.home, context.tmp) && folderTarget(sample, context.home) === target
+  if (cacheFolder(sample, context.home) !== target && !isTemp) return noFix('not-a-cache', '')
+  // A temp folder in a system folder in another letter case, which a file system that ignores case treats as the same.
+  if (isTemp && SYSTEM_FOLDERS.some(folder => isUnder(target.toLowerCase(), folder.toLowerCase()))) return noFix('system', '')
   // Guard the entire folder, including credentials elsewhere inside it.
   if (context.protectedDirs.some(dir => isUnder(dir, target))) return noFix('protected', '')
   if ([...context.credentialDirs, ...credentials.map(entry => entry.path)].some(path => isUnder(path, target))) return noFix('credentials', '')

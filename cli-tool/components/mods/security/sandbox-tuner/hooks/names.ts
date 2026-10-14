@@ -23,6 +23,8 @@ const TEMP_ROOTS: readonly (readonly string[])[] = [
   ['', 'private', 'var', 'folders'],
 ]
 const TEMP_MARKERS: ReadonlySet<string> = new Set(['T', 'C'])
+// The temp folder that every app shares. A folder strictly inside it is a temp folder. /tmp itself is too broad.
+export const TMP = '/tmp'
 const COMMAND_LIMIT = 120
 // What the engine refuses in a text: control characters other than tab, newline, and carriage return, a lone
 // surrogate, and its own placeholder character.
@@ -173,10 +175,22 @@ export function folderTarget(path: string, home: string | undefined): string {
   return cacheFolder(path, home) ?? (path.slice(0, path.lastIndexOf('/')) || '/')
 }
 
-/** True for the macOS per-user temp or cache folder, which every app of the person shares. */
+/**
+ * Whether a folder lies strictly inside `tmp`: /tmp as spelled, or where a press found it. It compares spellings, as
+ * cacheLength does, so a spelling with an empty, `.`, or `..` segment names no temp folder. `tmp` holds no temp folder
+ * when it holds HOME or HOME holds it, in any letter case: many file systems ignore case.
+ */
+export function isTempFolder(folder: string, home: string | undefined, tmp = TMP): boolean {
+  if (folder.split('/').slice(1).some(part => part === '' || part === '.' || part === '..')) return false
+  const [foldedHome, foldedTmp] = [home?.toLowerCase(), tmp.toLowerCase()]
+  if (foldedHome !== undefined && (isUnder(foldedHome, foldedTmp) || isUnder(foldedTmp, foldedHome))) return false
+  return folder !== tmp && isUnder(folder, tmp)
+}
+
+/** True for the macOS per-user temp or cache folder, or a folder strictly inside /tmp: every app of the person shares it. */
 export function isSharedFolder(path: string): boolean {
   const parts = path.split('/')
-  return sharedFolderLength(parts) === parts.length
+  return sharedFolderLength(parts) === parts.length || isTempFolder(path, undefined)
 }
 
 /** The text cut to at most `limit` characters, with `…` when cut, never between the two halves of one character. */

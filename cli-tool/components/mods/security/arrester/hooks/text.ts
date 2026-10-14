@@ -53,10 +53,15 @@ export function summarize(call: Call): string {
   return line(text, MAX_SUMMARY)
 }
 
-/** A guard's reason as a block keeps it: one line of at most 300 characters, without the hook error prefix, and without the hook command when the prefix names one. */
-export function storedReason(reason: string): string {
+/** A guard's reason without the hook error prefix, and without the hook command when the prefix names one. */
+export function guardMessage(reason: string): string {
   const hook = blockOfText(reason)
-  return line(hook?.source === 'hook' ? hook.reason : reason.replace(HOOK_PREFIX, ''), MAX_REASON)
+  return hook?.source === 'hook' ? hook.reason : reason.replace(HOOK_PREFIX, '')
+}
+
+/** A guard's reason as a block keeps it: its `guardMessage` on one line of at most 300 characters. */
+export function storedReason(reason: string): string {
+  return line(guardMessage(reason), MAX_REASON)
 }
 
 /** The tool, summary, and subagent of a call, as the journal shows it. */

@@ -5,7 +5,7 @@ import type { EngineInterface, HookFailure, Register, RenderElement, Timer, Tool
 
 import type { SandboxTunerAction, SandboxTunerApplied, SandboxTunerLatest, SandboxTunerNotice, SandboxTunerRecord } from '../types'
 import { causeOf, diagnostic } from './diagnostics'
-import { absolutePath, commandLine, cutText, displayPath, isUnder, pathFolders, plainText } from './names'
+import { TMP, absolutePath, commandLine, cutText, displayPath, isTempFolder, isUnder, pathFolders, plainText } from './names'
 import { JOURNAL_PREFIX, WRITER_PREFIX, HIDDEN_PREFIX, aggregateRecords, hasLaterOwner, isUndoUnresolved, isFixedSince, isPressedAgain, isRecord, journalOf, mergeSighting, recordKey, shownRecords } from './records'
 import { addEntry, fileInfo, isApplied, lockText, parseSettings, readLock, removeEntry, serializeSettings } from './settings-file'
 import type { FileInfo, ParsedSettings } from './settings-file'
@@ -254,6 +254,7 @@ async function loadContext($: EngineInterface, threshold: number, event: string)
     configDir,
     ...guardedPlaces(home, configDir, [cwd, root]),
     pathDirs: pathFolders(await $.env.get('PATH'), cwd),
+    tmp: TMP,
     cwd,
     root,
     threshold,
@@ -571,7 +572,8 @@ async function realGuards($: EngineInterface, walks: readonly Walk[], known: Map
 /**
  * Rates a folder Allow again where the folder really lies, with HOME, the config dir, the working directory, the
  * protected places and the credentials folders (with the links that their walks find, see guardedWalks), denial
- * paths, and the PATH folders resolved the same way. The verdict reads spellings, and a link can hide behind one; an
+ * paths, the PATH folders, and for a folder in /tmp also /tmp, resolved the same way. A folder outside /tmp is rated
+ * with no temp folder, as in Sandbox Tuner 1.1.1. The verdict reads spellings, and a link can hide behind one; an
  * allow-list on realPath is the robust guard (types: FsStat.realPath). Hard links, links in the places that the walks
  * skip, and later filesystem changes remain outside these checks. Returns why the folder stays closed, or null.
  */
@@ -589,19 +591,24 @@ async function checkRealFolder($: EngineInterface, record: SandboxTunerRecord, c
       protectedDirs: await realGuards($, guardedWalks(context.protectedDirs, context), known),
       credentialDirs: await realGuards($, guardedWalks([...context.credentialDirs, ...credentialEntries(context).map(entry => entry.path)], { home: undefined, configDir: undefined }), known),
       pathDirs: await realPlaces($, context.pathDirs, known),
+      tmp: isTempFolder(record.target, context.home) ? await realLocation($, TMP, known) : null,
       cwd: await realLocation($, context.cwd, known),
     }
     // The denied file is rated where the write really lands: it can be a link too.
     const located = { ...record, target, sample: await realLocation($, record.sample, known) }
     const verdict = denialVerdict([record.sample, located.sample], denials) ?? verdictOf(located, real)
     const place = displayPath(target, real.home)
+    const leads = place === shown ? '' : `${shown} leads to ${place}. `
     if (verdict.status === 'ready') {
+      // A folder in /tmp must really lie strictly inside /tmp, also where it is a cache folder.
+      if (real.tmp !== null && !isTempFolder(target, real.home, real.tmp)) {
+        return `${leads}Sandbox Tuner opens a folder in /tmp only when it really lies inside ${displayPath(real.tmp, real.home)}, the real place of /tmp, and your home folder neither holds that place nor lies inside it. Nothing was written.`
+      }
       // The verdict compares with case, and a file system that ignores case reads two spellings as one place.
       const folded = target.toLowerCase()
       const alias = [...real.pathDirs, ...real.protectedDirs, ...real.credentialDirs].find(dir => isUnder(folded, dir.toLowerCase()) || isUnder(dir.toLowerCase(), folded))
       return alias === undefined ? null : `${place} and ${displayPath(alias, real.home)} name one place on a file system that ignores letter case. Nothing was written.`
     }
-    const leads = place === shown ? '' : `${shown} leads to ${place}. `
     return `${leads}${verdictSentences(located, verdict, real).join(' ')} Nothing was written.`
   } catch (error) {
     return `could not check where ${shown} leads: ${causeOf(error)}. Nothing was written.`

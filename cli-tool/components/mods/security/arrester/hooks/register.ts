@@ -11,10 +11,10 @@ import { basenameOf, dirnameOf, joinPath } from './analyze/paths'
 import { OPAQUE } from './analyze/shell'
 import type { Effect, Io, ScriptRead } from './analyze/types'
 import { fixedGuards, hookPaths, SETTINGS_SOURCES } from './guards'
-import { cleared, EMPTY_JOURNAL, isRecorded, isTargetFolder, nextClose, openBlocks, pruned, renewed, targetsOf, withBlock, withDecision, withHeld, withoutHeld } from './journal'
+import { cleared, EMPTY_JOURNAL, isRecorded, isTargetFolder, namedTargets, nextClose, openBlocks, pruned, renewed, targetsOf, withBlock, withDecision, withHeld, withoutHeld } from './journal'
 import { blocksOf, findings, renewable } from './match'
 import type { Finding } from './match'
-import { ALLOW_ONCE, ARGUMENT_HINT, blockOfText, causeOf, clearedText, clearRefused, COMMAND_DESCRIPTION, commandFailed, couldNotCheck, couldNotReadScript, couldNotReadSettings, couldNotRecord, couldNotRegister, couldNotResolve, couldNotSave, couldNotSync, decisionLine, evictionNotice, historyText, retryNotice, DENY, denyReason, failureOf, hasVerdict, HEADER, heldReason, holdEnded, holdUnanswered, homeUnset, hostText, incompleteCapture, hookFailedNoBlock, noVerdict, notCounted, phrase, question, statusLine, statusText, storedReason, summarize, uncheckedReason, USAGE, viewOf } from './text'
+import { ALLOW_ONCE, ARGUMENT_HINT, blockOfText, causeOf, clearedText, clearRefused, COMMAND_DESCRIPTION, commandFailed, couldNotCheck, couldNotReadScript, couldNotReadSettings, couldNotRecord, couldNotRegister, couldNotResolve, couldNotSave, couldNotSync, decisionLine, evictionNotice, historyText, retryNotice, DENY, denyReason, failureOf, guardMessage, hasVerdict, HEADER, heldReason, holdEnded, holdUnanswered, homeUnset, hostText, incompleteCapture, hookFailedNoBlock, noVerdict, notCounted, phrase, question, statusLine, statusText, storedReason, summarize, uncheckedReason, USAGE, viewOf } from './text'
 import type { ArresterAction, ArresterGuard, ArresterJournal, ArresterSource } from '../types/index'
 
 /** The journal, the one `$.state` value. */
@@ -148,7 +148,7 @@ async function sync(engine: EngineInterface, config: Config, event: string, drop
   }
 }
 
-/** Opens a block for a call that a guard blocked, with its targets and the guard list placed on the file system; a recursive read whose root is a regular file counts as a read of that file, and a `fullSearch` whose root is a folder as a read of the folder, unless `isTargetFolder` spares it or the reason names another tool to use. Another recursive read of a folder, such as a filtered search, `cp -r`, `rsync`, `tar`, or `diff -r`, records no folder. Every script on disk counts as older than the block, and an older interpreter script is not scanned. A call opens one block, also when that block was cleared since. */
+/** Opens a block for a call that a guard blocked, with its targets and the guard list placed on the file system; a recursive read whose root is a regular file counts as a read of that file, and a `fullSearch` whose root is a folder as a read of the folder, unless `isTargetFolder` spares it or the reason names another tool to use. Another recursive read of a folder, such as a filtered search, `cp -r`, `rsync`, `tar`, or `diff -r`, records no folder. When the call has two or more targets and the reason of a guard other than the user names some but not all of them, as `namedTargets` reads its `guardMessage`, the block keeps only the named ones. Every script on disk counts as older than the block, and an older interpreter script is not scanned. A call opens one block, also when that block was cleared since. */
 async function recordBlock(engine: EngineInterface, config: Config, event: string, call: Call, source: ArresterSource, reason: string, rule: string | undefined, signal: AbortSignal): Promise<void> {
   const toolUseId = call.toolUseId
   if (toolUseId === undefined || isRecorded(await read(engine, JOURNAL), toolUseId)) return
@@ -165,10 +165,11 @@ async function recordBlock(engine: EngineInterface, config: Config, event: strin
     const isTarget = found?.kind === 'file' || (found !== undefined && isFolderSearch(effect) && isTargetFolder(found.real === undefined ? [effect.path] : [effect.path, found.real], spared, reason))
     return isTarget ? { ...effect, recursive: false } : effect
   })
-  const named = targetsOf(effects)
-  const unplaced = named.filter(target => !roots.has(placeKey(target)))
+  const all = targetsOf(effects)
+  const unplaced = all.filter(target => !roots.has(placeKey(target)))
   const rest = await placeAll(engine, unplaced, event, signal)
-  const targets = withPlacements(named, new Map([...roots, ...rest]))
+  const placed = withPlacements(all, new Map([...roots, ...rest]))
+  const targets = source === 'user' ? placed : namedTargets(placed, guardMessage(reason), typeof call.input.command === 'string' ? call.input.command : undefined, cwd, home)
   if (signal.aborted) return
   const at = await engine.clock.now()
   const turn = await engine.session.turns()

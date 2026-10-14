@@ -1,7 +1,8 @@
 // The journal transforms: pure functions over the one `$.state` value,
 // which `update` applies inside the host's versioned write. Pure: no `$`.
 
-import { selectionKey } from './analyze/paths'
+import { basenameOf, foldCase, foldPath, globMatch, joinPath, relation, selectionKey } from './analyze/paths'
+import type { Meter } from './analyze/paths'
 import type { Effect, Segment } from './analyze/types'
 import type { ArresterAccess, ArresterBlock, ArresterDecision, ArresterGuard, ArresterHeld, ArresterJournal, ArresterTarget } from '../types/index'
 
@@ -22,6 +23,22 @@ const MINUTE = 60_000
 const STRENGTH: Readonly<Record<ArresterAccess, number>> = { read: 1, write: 2, destroy: 3 }
 /** A deny reason that names another tool to use, such as `Use rg instead of grep`: the guard objected to the tool, not to the folder. */
 const SUGGESTS_TOOL = /\binstead\b|\bprefer(?:s|red)?\b|\bplease use\b|\buse `?rg\b|\btry `/i
+/** What a word of a deny reason loses at its two ends: quotes, backticks, and brackets. */
+const WORD_EDGES = new Set([...'\'"`‘’“”()[]{}'])
+/** What one form of a word of a deny reason also loses at its end. */
+const WORD_ENDS = new Set([...'.,;:!?'])
+/** Where a command splits into the words that spell its paths: blanks, quotes, and shell operators. */
+const SPELLING_BREAKS = /[\s'"`;&|()<>=]+/
+/** The programs that change the folder of a shell; a blocked command that names one keeps every target. */
+const FOLDER_CHANGERS = new Set(['cd', 'pushd', 'popd'])
+/** What a command loses before Arrester looks for a program that changes its folder: its quotes, the `$` before a quote, and its backslashes. */
+const QUOTING = /\$?['"]|\\/g
+/** Where a command without its quoting splits into the names of the programs that it can run. */
+const NAME_BREAKS = /[^A-Za-z0-9_.-]+/
+/** The most distinct words of a deny reason that naming reads; a reason with more keeps every target. */
+const MAX_REASON_WORDS = 256
+/** The most glob steps that naming targets takes; past it, the reason keeps every target. */
+const MAX_NAME_STEPS = 1_000_000
 
 /** When a block closes: `block_minutes` after it opened or after its last caught workaround. */
 function closesAt(block: ArresterBlock, minutes: number): number {
@@ -130,4 +147,89 @@ export function targetsOf(effects: readonly Effect[]): ArresterTarget[] {
     } else if (targets.size < MAX_TARGETS) targets.set(key, { path: effect.path, access, ...(effect.globOptions === undefined ? {} : { globOptions: effect.globOptions }), ...(effect.glob === undefined ? {} : { glob: effect.glob }), ...(effect.entry === true ? { entry: true } : {}), ...(effect.selection === undefined ? {} : { selection: effect.selection }) })
   }
   return [...targets.values()]
+}
+
+/** What naming a target reads besides the word: the words of the blocked command, and the shared glob budget. */
+type Naming = { spelled: ReadonlySet<string>; meter: Meter }
+
+/** The targets of a blocked call that its deny `reason` names, when there are two or more and the reason names some but not all of them; else every target. Every target stays when the blocked `command` names `cd`, `pushd`, or `popd`. Each word of the reason, cut at blanks, is read in the two forms of `formsOf`, and names a target when one of its forms does: when the form is the target's absolute path or real path, its spelling in the blocked `command`, its path relative to the session folder `cwd`, or its file name, or one of these for a folder that holds the target; a relative form is read in `cwd` and `~` in `home`. A form with `*` names a target with no glob whose file name or path it matches as a glob; a glob target is named only by its glob text or a folder that holds it. Every target stays when the reason has more than MAX_REASON_WORDS distinct words, when a form holds `**`, when a word with a form that looks like a path names no target in either form, when a glob target can match a form of a word that does not name it, or past the glob budget. */
+export function namedTargets(targets: readonly ArresterTarget[], reason: string, command: string | undefined, cwd: string, home: string | undefined): ArresterTarget[] {
+  if (targets.length < 2 || (command !== undefined && movesFolder(command))) return [...targets]
+  const words = new Map<string, string[]>()
+  for (const word of reason.split(/\s+/)) {
+    const forms = [...new Set(formsOf(word))].filter(form => form !== '')
+    if (forms.length > 0) words.set(forms.join(' '), forms)
+    if (words.size > MAX_REASON_WORDS) return [...targets]
+  }
+  const naming: Naming = { spelled: new Set(command?.split(SPELLING_BREAKS) ?? []), meter: { steps: 0, limit: MAX_NAME_STEPS } }
+  const named = new Set<ArresterTarget>()
+  for (const forms of words.values()) {
+    if (forms.some(form => form.includes('**'))) return [...targets]
+    const read = forms.map(form => ({ form, resolved: form === '~' || form.startsWith('~/') ? (home === undefined ? undefined : foldPath(`${home}${form.slice(1)}`)) : joinPath(cwd, form) }))
+    const hits = new Set(targets.filter(target => read.some(({ form, resolved }) => names(form, resolved, target, naming))))
+    if (hits.size === 0 && forms.some(form => isPathWord(form, naming))) return [...targets]
+    if (targets.some(target => !hits.has(target) && read.some(({ form, resolved }) => globCanMatch(form, resolved, target, naming.meter)))) return [...targets]
+    if (naming.meter.steps > MAX_NAME_STEPS) return [...targets]
+    for (const hit of hits) named.add(hit)
+  }
+  const kept = targets.filter(target => named.has(target))
+  return kept.length > 0 && kept.length < targets.length ? kept : [...targets]
+}
+
+/** Whether a blocked command can change its folder: without its quoting, it names `cd`, `pushd`, or `popd` as a word, in any part. */
+function movesFolder(command: string): boolean {
+  return command.replace(QUOTING, '').split(NAME_BREAKS).some(word => FOLDER_CHANGERS.has(word))
+}
+
+/** Whether a form of a word of a deny reason looks like a path: it holds `/` or `*`, or it is a word of the blocked command. */
+function isPathWord(word: string, naming: Naming): boolean {
+  return word.includes('/') || word.includes('*') || naming.spelled.has(word)
+}
+
+/** The two forms of a word of a deny reason, both without the quotes, backticks, and brackets at its two ends: the first also without the `.`, `,`, `;`, `:`, `!`, and `?` at its end; the second keeps those that come before the last closing quote or bracket of the word, or all of them when the word ends in none, so `` `secret.`, `` gives `secret` and `secret.`. */
+function formsOf(word: string): [string, string] {
+  let start = 0
+  let end = word.length
+  let kept = end
+  while (start < end && WORD_EDGES.has(word.charAt(start))) start += 1
+  while (end > start && (WORD_EDGES.has(word.charAt(end - 1)) || WORD_ENDS.has(word.charAt(end - 1)))) {
+    end -= 1
+    if (WORD_EDGES.has(word.charAt(end))) kept = end
+  }
+  return [word.slice(start, end), word.slice(start, kept)]
+}
+
+/** Whether a form of a word of a deny reason, `resolved` as a path, names a target, or a folder that holds it, by its path or real path: as an absolute path, or a relative one read in the session folder, or `~` read in the home folder; as a file or folder name; as a spelling of the blocked command that the path ends with; or, with `*`, as a glob. A glob target's glob text names it, in the same forms, but no other part of the glob does, and no glob word. */
+function names(word: string, resolved: string | undefined, target: ArresterTarget, naming: Naming): boolean {
+  const paths = target.real === undefined ? [target.path] : [target.path, target.real]
+  const spelling = naming.spelled.has(word) ? word.replace(/^(?:\.\/)+/, '').replace(/\/+$/, '') : ''
+  return paths.some(path => {
+    const place = target.glob === undefined ? path : `${path === '/' ? '' : path}/${target.glob}`
+    if (resolved !== undefined && (place === resolved || path === resolved || path.startsWith(resolved === '/' ? '/' : `${resolved}/`))) return true
+    if (!word.includes('/') && (word === target.glob || path.split('/').includes(word))) return true
+    if (spelling !== '' && !spelling.startsWith('/') && (place.endsWith(`/${spelling}`) || path.endsWith(`/${spelling}`) || path.includes(`/${spelling}/`))) return true
+    return target.glob === undefined && word.includes('*') && globNames(word, resolved, place, naming.meter)
+  })
+}
+
+/** Whether a glob target can match a form of a word of a deny reason as a file: the form `resolved` as a path, or a form without `/` as a file name that the last segment of the glob matches; past the budget, or when the comparison is uncertain, it can. */
+function globCanMatch(word: string, resolved: string | undefined, target: ArresterTarget, meter: Meter): boolean {
+  const glob = target.glob
+  if (glob === undefined) return false
+  if (meter.steps > MAX_NAME_STEPS) return true
+  const paths = target.real === undefined ? [target.path] : [target.path, target.real]
+  if (resolved !== undefined && paths.some(path => relation({ path: resolved, recursive: false }, path, meter, glob, target.globOptions) !== undefined)) return true
+  if (word.includes('/')) return false
+  const last = glob.slice(glob.lastIndexOf('/') + 1)
+  const nocase = target.globOptions?.nocase === true
+  return globMatch(nocase ? foldCase(last) : last, nocase ? foldCase(word) : word, meter, target.globOptions?.dot === true) !== false
+}
+
+/** Whether a word with `*` matches the file name of a place, or the place as a path when it is read as `resolved`, with each name a glob; past the budget it counts as a match. */
+function globNames(word: string, resolved: string | undefined, place: string, meter: Meter): boolean {
+  if (globMatch(word, basenameOf(place), meter, true) !== false) return true
+  if (resolved === undefined) return false
+  const pattern = resolved.split('/')
+  const parts = place.split('/')
+  return pattern.length === parts.length && pattern.every((part, i) => globMatch(part, parts[i] ?? '', meter, true) !== false)
 }
