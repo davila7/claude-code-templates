@@ -1,5 +1,5 @@
 {
-  "description": "prompt-cache-control: turn.step reads each request's cache usage; a one-second clock.every drives the countdown; ui.render draws the AbovePrompt band and the /cache pane",
+  "description": "prompt-cache-control: turn.step reads each request's cache usage; a one-second clock.every drives the countdown; ui.render draws the AbovePrompt band and the /cache pane; the clear cache button opens a message field, and Enter there forks a handoff brief, runs /clear and submits the brief to the fresh conversation",
   "modules": [
     "./prompt-cache-control.tsx"
   ]
