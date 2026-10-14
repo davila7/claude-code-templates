@@ -45,9 +45,11 @@ unrelated conversation or personal data in `queryText`.
 3. Call `poll_search_results` with that `sessionId` and `nights`.
 4. While `status` is neither `completed` nor `failed` and no useful results
    have arrived, poll again a few seconds later. Stop after about 10 polls (one
-   to two minutes) or when the session has expired: present what has arrived,
-   say which sources were still loading, and offer to check again with the same
-   `sessionId` rather than starting a new search.
+   to two minutes): present what has arrived, say which sources were still
+   loading, and offer to check again with the same `sessionId` rather than
+   starting a new search. If a poll says the search has expired, that
+   `sessionId` will return nothing more: present what arrived before it expired
+   and offer a new `search_hotels_live` call for current prices instead.
 5. Present a concise comparison of relevant results. Label the source and
    currency exactly as returned.
 
@@ -137,11 +139,13 @@ instead.
    email address they used.
 
 No money changes hands through PriceWin: sending the request charges nothing,
-and the guest pays the hotel directly on arrival. Never ask how the guest wants
-to pay, and never mention a card, transfer, QR code, payment link or deposit —
-not even one the guest named earlier. If a property requires payment at
-booking time, `request_booking` creates nothing and returns a link to book on
-the PriceWin website instead; relay that link as given.
+and for a request sent this way the guest pays the hotel directly on arrival.
+Never ask how the guest wants to pay, and never mention a card, transfer, QR
+code, payment link or deposit — not even one the guest named earlier. If a
+property requires payment at booking time, `request_booking` creates nothing
+and returns a link to book on the PriceWin website instead; relay that link as
+given, and do not tell the guest they will pay on arrival for that booking —
+its payment terms are whatever the website shows.
 
 ## Cancel a booking
 
