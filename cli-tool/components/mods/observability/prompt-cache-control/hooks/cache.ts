@@ -168,7 +168,7 @@ export function advise(last: Sample | undefined, prev: Sample | undefined, polic
     return {
       kind: 'expired',
       text: big
-        ? `expired: the next message rewrites ${fmtTokens(size)} tokens. /compact first, or /clear if the task is done`
+        ? `expired: /compact first, or /clear if the task is done; the next message rewrites ${fmtTokens(size)} tokens`
         : `expired: only ${fmtTokens(size)} tokens to rebuild, just keep going`,
     }
   }
