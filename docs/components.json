@@ -17423,6 +17423,48 @@
       }
     },
     {
+      "name": "idle-compaction-early",
+      "path": "environment/idle-compaction-early.json",
+      "category": "environment",
+      "type": "setting",
+      "description": "Start idle compaction at 100K tokens instead of 200K (Claude Code 2.1.290+). A terminal conversation left idle for about 54 minutes is compacted before its one-hour prompt cache expires, so the next message does not reprocess it all. 100K is the lowest value Claude Code accepts. Idle compaction only runs when auto-compact is on and the session uses the one-hour prompt cache (the default on a Claude subscription; set ENABLE_PROMPT_CACHING_1H=1 on API billing). Do not combine with idle-compaction-off, which turns the feature off.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      }
+    },
+    {
+      "name": "idle-compaction-off",
+      "path": "environment/idle-compaction-off.json",
+      "category": "environment",
+      "type": "setting",
+      "description": "Turn off idle compaction (Claude Code 2.1.290+). By default, a terminal conversation over 200K tokens (CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS) that sits idle for about 54 minutes is compacted before its one-hour prompt cache expires; this only happens with auto-compact on and the one-hour cache in use. Use this if you would rather pay to reprocess the full conversation on your next message than continue from a summary. Do not combine with idle-compaction-early.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      }
+    },
+    {
       "name": "performance-optimization",
       "path": "environment/performance-optimization.json",
       "category": "environment",
@@ -47904,7 +47946,7 @@
       "path": "observability/prompt-cache-control",
       "category": "observability",
       "type": "mod",
-      "description": "Prompt-cache meter above the Claude Code prompt: how many tokens each request read from, wrote to and sent past the cache, a live countdown to the cache's expiry, and what to do about it (keep going, compact or clear). The TTL follows Claude Code's own rules for your account (1 hour on a Claude subscription, 5 minutes on an API key, cloud provider or usage credits, plus the TTL variables and setting) and corrects itself from request timing. /cache opens a per-turn table.",
+      "description": "Prompt-cache meter above the Claude Code prompt: how many tokens each request read from, wrote to and sent past the cache, a live countdown to the cache's expiry, and what to do about it (keep going, compact or clear). The TTL follows Claude Code's own rules for your account (1 hour on a Claude subscription, 5 minutes on an API key, cloud provider or usage credits, plus the TTL variables and setting) and corrects itself from request timing. When Claude Code will compact an idle conversation by itself, it counts down to that too. /cache opens a per-turn table.",
       "author": "claude-code-templates",
       "repo": "https://github.com/davila7/claude-code-templates",
       "version": "0.1.0",
@@ -47968,6 +48010,12 @@
           "type": "boolean",
           "title": "Toast near expiry",
           "description": "Toasts as the cache lapses: at the warning threshold, then at 10, 3, 2 and 1 seconds, once per cache entry each (only for prompts of 20k tokens or more)",
+          "default": true
+        },
+        "idleCompact": {
+          "type": "boolean",
+          "title": "Idle compaction",
+          "description": "When Claude Code will compact a large conversation by itself before its 1-hour cache lapses (Claude Code 2.1.290+), count down to that moment in the band and say when it happened",
           "default": true
         }
       },
