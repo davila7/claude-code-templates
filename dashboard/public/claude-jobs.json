@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-10-13T03:19:59.415274+00:00",
-  "totalJobs": 92,
+  "lastUpdated": "2026-10-14T03:07:10.920759+00:00",
+  "totalJobs": 93,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -8,6 +8,23 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "rok-remote-graphic-designer-video-editor-bluetuskr-1137507",
+      "company": "BlueTuskr",
+      "position": "Graphic Designer & Video Editor",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Description BlueTuskr is a full-service e-commerce growth agency built exclusively for e-commerce brands. We combine paid media, owned media, creative, and analytics to help our clients scale profitably. Our team is made up of specialists who are deeply invested in their craft — and in the success...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-graphic-designer-video-editor-bluetuskr-1137507",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-graphic-designer-video-editor-bluetuskr-1137507",
+      "postedAt": "2026-10-13T00:00:06+00:00",
+      "tags": [
+        "Rust"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "anth-5443331008",
       "company": "Anthropic",
@@ -27,6 +44,25 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "rok-remote-technical-customer-support-quickmail-1137506",
+      "company": "QuickMail",
+      "position": "Technical Customer Support",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "QuickMail is a cold email and LinkedIn outreach platform for markets you can't afford to burn. Our customers can't easily replace leads that land in spam, which is why deliverability matters more to us than anything else. We have been running since 2014, and we pioneered deliverability technology...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-technical-customer-support-quickmail-1137506",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-technical-customer-support-quickmail-1137506",
+      "postedAt": "2026-10-12T16:20:10+00:00",
+      "tags": [
+        "Rust",
+        "Go",
+        "GraphQL"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "hn-50025234",
@@ -99,7 +135,7 @@
       "id": "anth-5444482008",
       "company": "Anthropic",
       "position": "Manager, Applied AI Architecture, Enterprise Tech",
-      "location": "San Francisco, CA | New York City, NY",
+      "location": "San Francisco, CA",
       "remote": false,
       "salary": "",
       "description": "As the manager of the Solutions Architect team within Applied AI Enterprise Tech at Anthropic, you will drive the adoption of frontier AI in partnership with the rest of the go to market organization. Our Enterprise Tech customers are some of the world's most sophisticated technology companies,...",
@@ -590,16 +626,16 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
-      "id": "rok-remote-ai-agent-engineer-sticker-mule-1137399",
+      "id": "rok-remote-si-agent-engineer-sticker-mule-1137399",
       "company": "Sticker Mule",
-      "position": "AI agent engineer",
+      "position": "SI agent engineer",
       "location": "Remote",
       "remote": true,
       "salary": "",
-      "description": "Sticker Mule is building the most lucrative commerce platform on the Internet by combining software, manufacturing, and AI in one stack. We're hiring an engineer to build, run and manage a team of AI agents to help us innovate faster, improve performance, and better serve customers. Work performed...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-ai-agent-engineer-sticker-mule-1137399",
+      "description": "Sticker Mule is building the most lucrative commerce platform on the Internet by combining software, manufacturing, and super intelligence in one stack. We're hiring an engineer to build, run and manage a team of SI agents to help us innovate faster, improve performance, and better serve customers....",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-si-agent-engineer-sticker-mule-1137399",
       "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-ai-agent-engineer-sticker-mule-1137399",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-si-agent-engineer-sticker-mule-1137399",
       "postedAt": "2026-09-16T12:44:27+00:00",
       "tags": [
         "TypeScript",
@@ -612,16 +648,16 @@
       "companyIcon": ""
     },
     {
-      "id": "wwr-sticker-mule-ai-agent-engineer",
+      "id": "wwr-sticker-mule-si-agent-engineer",
       "company": "Sticker Mule",
-      "position": "AI agent engineer",
+      "position": "SI agent engineer",
       "location": "Remote",
       "remote": true,
       "salary": "$150,000–$250,000",
-      "description": "Headquarters: New York, NY URL: https://www.stickermule.com Sticker Mule is building the most lucrative commerce platform on the Internet by combining software, manufacturing, and AI in one stack. We're hiring an engineer to build, run and manage a team of AI agents to help us innovate faster,...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/sticker-mule-ai-agent-engineer",
+      "description": "Headquarters: New York, NY URL: https://www.stickermule.com Sticker Mule is building the most lucrative commerce platform on the Internet by combining software, manufacturing, and super intelligence in one stack. We're hiring an engineer to build, run and manage a team of SI agents to help us...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/sticker-mule-si-agent-engineer",
       "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/sticker-mule-ai-agent-engineer",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/sticker-mule-si-agent-engineer",
       "postedAt": "2026-09-16T12:24:17+00:00",
       "tags": [
         "TypeScript",
@@ -667,26 +703,6 @@
       "tags": [
         "Rust",
         "Go",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5398438008",
-      "company": "Anthropic",
-      "position": "AI Deployment Specialist, Beneficial Deployments",
-      "location": "San Francisco, CA | New York City, NY",
-      "remote": false,
-      "salary": "",
-      "description": "As a Deployment Manager on the Beneficial Deployments team, you will guide customers from a signed contract into a live, governed, and adopted deployment so that customers achieve tangible impact rather than simply incremental improvement with Claude. You'll guide organizations from contract...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5398438008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5398438008",
-      "postedAt": "2026-09-11T10:35:46-04:00",
-      "tags": [
-        "Rust",
         "AWS",
         "Claude Code",
         "Anthropic"
