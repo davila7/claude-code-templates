@@ -4,6 +4,9 @@ import type { ModelForkResult, On } from 'claude-code'
 import { advise } from '../hooks/cache.ts'
 import type { Sample } from '../hooks/cache.ts'
 import {
+  BRIEF_CUT,
+  BRIEF_END,
+  CLEARED_ELSEWHERE,
   COMPOSE_MIN_ROOM,
   COMPOSE_TEXT_SHORT,
   COMPOSE_WITHOUT_FIELD,
@@ -13,23 +16,32 @@ import {
   FIELD_SUBMIT,
   FORK_PROMPT,
   HANDOFF_ACT_FRAME,
+  HOLD_MS,
   HANDOFF_FRAME,
   PHASE_TEXT,
+  REDIRECTED,
+  RESUME_STARTED,
+  SENT_AWAY,
   briefCost,
+  clearOutcome,
   clearVariant,
-  extractBrief,
   fieldHint,
   followUpText,
   forkFailure,
   handoffBlock,
   handoffMessage,
-  isBriefWhole,
+  heldCommand,
+  isClearSeen,
+  isClearedElsewhere,
+  isElsewhere,
+  isOwnOrigin,
   logParts,
   phaseLine,
   promptSource,
+  readBrief,
   turnBlock,
 } from '../hooks/handoff.ts'
-import type { ForkFailure, HandoffGate } from '../hooks/handoff.ts'
+import type { ClearWatch, ForkFailure, HandoffGate, TargetWatch } from '../hooks/handoff.ts'
 
 const PLUGIN = 'prompt-cache-control'
 const START = { cwd: '/repo', surface: 'terminal', isInteractive: true } as never
@@ -39,6 +51,16 @@ const USAGE = { input_tokens: 845, output_tokens: 1_346, cache_read_input_tokens
 const BRIEF = '## Goal\nShip the clear cache button.\n\n## Next steps\n1. Run the tests.\n\n## Chat-only material\nNone'
 const OTHER_BRIEF = BRIEF.replace('Ship the clear cache button.', 'Fix the band layout.')
 const CUT_BRIEF = '## Goal\nShip it.\n\n## Next steps\n1. Test it.\n\n## Key facts\nThe band'
+const whole = (brief: string) => `${brief}\n\n${BRIEF_END}`
+const REPLY = whole(BRIEF)
+const CUT_NOTE = 'the brief looks cut off (it has no [end of handoff brief] line after its Chat-only material section)'
+const RESUMED = 's70'
+const AWAY = 'clear cache: another conversation was opened during the handoff (for example with /resume), so the brief was not sent'
+const CLEARED_THERE = 'clear cache: another conversation was opened before /clear ran (for example with /resume), so /clear cleared that one instead and the brief was not sent; /resume returns to either conversation'
+const SENT_THERE = 'clear cache: another conversation was opened (for example with /resume) while the brief waited to go in, so the brief may have gone into that conversation: check it there'
+const RESUME_NOTE = 'clear cache: a /resume was started while the brief was written, nothing was cleared'
+const BACK = '; /resume returns to the cleared conversation'
+const SETTINGS_CONTEXT = { additionalContext: ['from a settings hook'] }
 const AS_USER = { kind: 'plugin', name: PLUGIN, asUser: true }
 const MESSAGE = handoffMessage({ brief: BRIEF, sessionId: 's1', contextTokens: '151k' })
 const FULL_FLOW = ['model.fork', 'command.run', 'session.end', 'prompt.submit']
@@ -93,6 +115,15 @@ type World = {
   promptAfterClear: boolean
   submit: 'enters' | 'drops' | 'throws'
   submitWaitMs: number
+  classicStart: boolean
+  clearEndId?: string
+  resume: 'none' | 'instead' | 'after' | 'before'
+  resumeEnd: boolean
+  resumeStart: boolean
+  resumeOnSubmit: boolean
+  resumePicks: boolean
+  clearDelayMs: number
+  startResults: unknown[]
   draft: string
   canFill: boolean
   canCopy: boolean
@@ -112,7 +143,7 @@ const world = (over: Partial<World> = {}): World => ({
   sessionId: 's1',
   isIdDenied: false,
   stepStop: 'end_turn',
-  fork: answered(BRIEF),
+  fork: answered(REPLY),
   forkDelayMs: 0,
   forks: [],
   clear: 'ends',
@@ -122,6 +153,14 @@ const world = (over: Partial<World> = {}): World => ({
   promptAfterClear: false,
   submit: 'enters',
   submitWaitMs: 0,
+  classicStart: true,
+  resume: 'none',
+  resumeEnd: true,
+  resumeStart: true,
+  resumeOnSubmit: false,
+  resumePicks: true,
+  clearDelayMs: 0,
+  startResults: [],
   draft: '',
   canFill: true,
   canCopy: true,
@@ -139,6 +178,7 @@ function fakeEngine($: Engine, on: On, w: World): MockClock {
     return { sessionId: e.sessionId }
   })
   on('session.id', () => (w.isIdDenied ? { deny: 'session id withheld' } : { value: w.sessionId }) as never)
+  on('classic.SessionStart', () => SETTINGS_CONTEXT)
   on('command.register', (_, e) => ({ value: { command: e.name } }))
   on('ui.open', () => ({ value: undefined }) as never)
   on('ui.close', () => ({ value: undefined }))
@@ -186,6 +226,12 @@ function fakeEngine($: Engine, on: On, w: World): MockClock {
   })
   on('command.run', async (_, e) => {
     w.calls.push(['command.run', e.command, e.args])
+    if (e.command === 'resume') {
+      if (w.resumePicks) await resumeElsewhere($, w)
+      return {}
+    }
+    if (w.clearDelayMs > 0) await clock.sleep(w.clearDelayMs)
+    if (w.resume === 'before') await resumeElsewhere($, w)
     if (w.clear === 'throws') throw new Error('clear refused')
     if (w.clear === 'ignored') return { text: 'not now' }
     if (w.turnBeforeClear) {
@@ -193,18 +239,26 @@ function fakeEngine($: Engine, on: On, w: World): MockClock {
       await endTurn($, 't-mid')
     }
     if (w.promptBeforeClear) await $.prompt.submit({ text: 'typed meanwhile' } as never)
-    await $.session.end({ reason: 'clear', sessionId: w.sessionId, resume: { id: w.sessionId } })
+    if (w.resume === 'instead') {
+      await resumeElsewhere($, w)
+      return {}
+    }
+    await $.session.end({ reason: 'clear', sessionId: w.clearEndId ?? w.sessionId, resume: { id: w.sessionId } })
     w.sessionId = `s${Number(w.sessionId.slice(1)) + 1}`
+    if (w.classicStart) w.startResults.push(await $.classic.SessionStart({ source: 'clear', session_id: w.sessionId }))
+    if (w.resume === 'after') await resumeElsewhere($, w)
     if (w.promptAfterClear) await $.prompt.submit({ text: 'typed into the fresh conversation' } as never)
     if (w.clearWaitMs > 0) await clock.sleep(w.clearWaitMs)
     return {}
   })
   on('prompt.submit', async (_, e) => {
     w.calls.push(['prompt.submit', e.text, e.origin])
+    const isOwn = (e.origin as { name?: string } | undefined)?.name === PLUGIN
+    if (w.resumeOnSubmit && isOwn) await resumeElsewhere($, w)
     if (w.submit === 'throws') throw new Error('submit failed')
     if (w.submit === 'drops') return { drop: 'blocked by a policy hook' }
     if (w.submitWaitMs > 0) await clock.sleep(w.submitWaitMs)
-    if ((e.origin as { name?: string } | undefined)?.name === PLUGIN) await $.turn.start({ text: e.text, turnId: 'brief-turn' })
+    if (isOwn) await $.turn.start({ text: e.text, turnId: 'brief-turn' })
     return { text: e.text }
   })
   on('prompt.read', () => ({ value: { text: w.draft, cursor: w.draft.length } }))
@@ -220,6 +274,13 @@ function fakeEngine($: Engine, on: On, w: World): MockClock {
   })
   return clock
 }
+
+async function resumeElsewhere($: Engine, w: World) {
+  if (w.resumeEnd) await $.session.end({ reason: 'resume', sessionId: w.sessionId, resume: { id: w.sessionId } })
+  w.sessionId = RESUMED
+  if (w.resumeStart) w.startResults.push(await $.classic.SessionStart({ source: 'resume', session_id: RESUMED }))
+}
+
 
 async function step($: Engine, turnId = 't1') {
   const stream = $.turn.step({ turnId, index: 0, model: 'claude-sonnet-5-5', messageCount: 3 } as never)
@@ -423,12 +484,45 @@ describe('a brief that fails never clears', () => {
       ['model.fork', FORK_PROMPT],
       ['ui.copy', handoffMessage({ brief: CUT_BRIEF, sessionId: 's1', contextTokens: '151k' })],
     ])
-    expect(w.toasts).toEqual(['clear cache: the brief looks cut off (it has no Chat-only material section), nothing was cleared; the handoff brief is on the clipboard'])
+    expect(w.toasts).toEqual([`clear cache: ${CUT_NOTE}, nothing was cleared; the handoff brief is on the clipboard`])
     await ui.unmount()
   })
 
-  test('text before the Goal heading and a fence around the brief are left out of what is sent', async ($, on) => {
-    const { w } = await ready($, on, { fork: answered(`Sure, here is the brief.\n\n${FENCE}markdown\n${BRIEF}\n${FENCE}`) })
+  const CUT_REPLIES = [
+    { name: 'a reply that stops right after the Chat-only material heading', reply: '## Goal\nShip it.\n\n## Next steps\n1. Test it.\n\n## Chat-only material' },
+    { name: 'a reply that stops halfway through the Chat-only material section', reply: '## Goal\nShip it.\n\n## Next steps\n1. Test it.\n\n## Chat-only material\nThe text the user pasted:\nconst limit =' },
+    { name: 'a reply with every section but no end line', reply: BRIEF },
+  ]
+  for (const surface of SURFACES) {
+    for (const { name, reply } of CUT_REPLIES) {
+      test(`on the ${surface} ${name} clears nothing, since only the end line shows the brief is whole`, async ($, on) => {
+        const { w } = await ready($, on, { fork: answered(reply), ...ON_SURFACE[surface] })
+        const ui = await surfaceBand($, surface)
+        await clearCache(ui)
+        expect(w.calls).toEqual([
+          ['model.fork', FORK_PROMPT],
+          ['ui.copy', handoffMessage({ brief: reply, sessionId: 's1', contextTokens: '151k' })],
+        ])
+        const kept = surface === 'terminal' ? '; the handoff brief is on the clipboard' : ''
+        expect(w.toasts).toEqual([`clear cache: ${CUT_NOTE}, nothing was cleared${kept}`])
+        expect(await ui.find({ key: 'clear-cache' })).toBeDefined()
+        await ui.unmount()
+      })
+    }
+  }
+
+  test('the end line and anything the model wrote after it never reach the fresh conversation', async ($, on) => {
+    const { w } = await ready($, on, { fork: answered(`${REPLY}\n\nI hope this helps.`) })
+    const ui = await band($)
+    await clearCache(ui)
+    expect(w.calls.at(-1)).toEqual(['prompt.submit', MESSAGE, AS_USER])
+    expect(sent(w)).not.toContain(BRIEF_END)
+    expect(sent(w)).not.toContain('I hope this helps.')
+    await ui.unmount()
+  })
+
+  test('text before the Goal heading, a fence around the brief and the end line before the closing fence are left out of what is sent', async ($, on) => {
+    const { w } = await ready($, on, { fork: answered(`Sure, here is the brief.\n\n${FENCE}markdown\n${BRIEF}\n\n${BRIEF_END}\n${FENCE}`) })
     const ui = await band($)
     await clearCache(ui)
     expect(w.calls.at(-1)).toEqual(['prompt.submit', MESSAGE, AS_USER])
@@ -625,8 +719,8 @@ describe('when the handoff may start, and what stops it', () => {
   test('a press after cancel, while the cancelled fork is still out, sends only the new brief', async ($, on) => {
     const { w, clock } = await ready($, on, {
       forks: [
-        { answer: answered(BRIEF), delayMs: 30_000 },
-        { answer: answered(OTHER_BRIEF), delayMs: 30_000 },
+        { answer: answered(REPLY), delayMs: 30_000 },
+        { answer: answered(whole(OTHER_BRIEF)), delayMs: 30_000 },
       ],
     })
     const ui = await band($)
@@ -648,7 +742,7 @@ describe('when the handoff may start, and what stops it', () => {
     const { w, clock } = await ready($, on, {
       forks: [
         { isDenied: true, delayMs: 20_000 },
-        { answer: answered(BRIEF), delayMs: 30_000 },
+        { answer: answered(REPLY), delayMs: 30_000 },
       ],
     })
     const ui = await band($)
@@ -669,7 +763,7 @@ describe('when the handoff may start, and what stops it', () => {
       copyWaitMs: 5_000,
       forks: [
         { answer: answered(CUT_BRIEF), delayMs: 0 },
-        { answer: answered(BRIEF), delayMs: 10_000 },
+        { answer: answered(REPLY), delayMs: 10_000 },
       ],
     })
     const ui = await band($)
@@ -956,6 +1050,354 @@ describe('the brief is kept when a later step fails', () => {
     expect(w.copySurfaces).toEqual(['desktop'])
     await side.unmount()
   })
+})
+
+describe('a conversation opened during the handoff never gets the brief', () => {
+  const RESUMES: { name: string; over: Partial<World> }[] = [
+    { name: 'a /resume that ends the old session and starts another', over: { resume: 'instead' } },
+    { name: 'a /resume seen only as the old session ending for resume', over: { resume: 'instead', resumeStart: false } },
+    { name: 'a /resume seen only as a SessionStart from resume with another id', over: { resume: 'instead', resumeEnd: false } },
+  ]
+  const kept = (surface: Surface, what = 'the handoff brief') => `${what} is ${surface === 'terminal' ? 'on the clipboard' : 'in the transcript'}`
+  const SENT_AFTER_RESUME: { name: string; over: Partial<World> }[] = [
+    { name: 'a /resume seen as a session end and a session start', over: {} },
+    { name: 'a /resume seen only as a new session id', over: { resumeEnd: false, resumeStart: false } },
+    { name: 'a /resume seen only as the session ending for resume, without session ids', over: { resumeStart: false, isIdDenied: true } },
+  ]
+  const DROPS_AFTER_RESUME: { name: string; over: Partial<World> }[] = [
+    { name: 'another hook drops the brief after a /resume', over: { submit: 'drops' } },
+    { name: 'the submit fails after a /resume', over: { submit: 'throws' } },
+    { name: 'another hook drops the brief after a /resume seen only as a new session id', over: { submit: 'drops', resumeEnd: false, resumeStart: false } },
+  ]
+  const EARLY_RESUMES: { name: string; over: Partial<World>; toast: string }[] = [
+    { name: 'a /resume seen as a session end and a session start', over: {}, toast: CLEARED_THERE },
+    { name: 'a /resume seen only as a SessionStart from resume', over: { resumeEnd: false }, toast: CLEARED_THERE },
+    { name: 'a /resume seen only as the session ending for resume', over: { resumeStart: false }, toast: CLEARED_THERE },
+    { name: 'a /resume without session ids, which cannot tell the two conversations apart,', over: { isIdDenied: true }, toast: AWAY },
+  ]
+  const HELD_TYPED: { name: string; command: 'resume' | 'clear'; over: Partial<World> }[] = [
+    { name: 'a /resume typed while /clear runs', command: 'resume', over: { clearDelayMs: 4_000 } },
+    { name: 'a /resume typed while the brief waits to go in', command: 'resume', over: { submitWaitMs: 4_000 } },
+    { name: 'a /clear typed while /clear runs', command: 'clear', over: { clearDelayMs: 4_000 } },
+  ]
+  const notSentHeader = 'prompt-cache-control: clear cache: the handoff brief, which was not sent:'
+  const keptBrief = (w: World) => w.calls.filter(c => c[0] === 'ui.copy').map(c => c[1])
+  const briefFor = (sessionId: string) => handoffMessage({ brief: BRIEF, sessionId, contextTokens: '151k' })
+
+  for (const surface of SURFACES) {
+    for (const { name, over } of RESUMES) {
+      test(`on the ${surface} ${name} while /clear is pending sends nothing and keeps the brief off the prompt box of the conversation now open`, async ($, on) => {
+        const { w } = await ready($, on, { ...over, ...ON_SURFACE[surface] })
+        const ui = await surfaceBand($, surface)
+        await clearCache(ui)
+        expect(events(w)).not.toContain('prompt.submit')
+        expect(events(w)).not.toContain('prompt.fill')
+        expect(w.calls.filter(c => c[0] === 'ui.copy')).toEqual([['ui.copy', MESSAGE]])
+        const note = `${AWAY}; ${kept(surface)}`
+        expect(w.toasts).toEqual([note])
+        if (surface === 'desktop') expect(w.transcript).toEqual(['prompt-cache-control: clear cache: the handoff brief, which was not sent:', MESSAGE, `prompt-cache-control: ${note}`])
+        expect(await ui.find({ key: 'clear-cache' })).toBeDefined()
+        await ui.unmount()
+      })
+    }
+
+    test(`on the ${surface} a /clear and then a /resume before the clear call returns sends nothing, and the toast says /resume returns to the cleared conversation`, async ($, on) => {
+      const { w } = await ready($, on, { resume: 'after', ...ON_SURFACE[surface] })
+      const ui = await surfaceBand($, surface)
+      await clearCache(ui)
+      expect(w.calls).toEqual([
+        ['model.fork', FORK_PROMPT],
+        ['command.run', 'clear', ''],
+        ['session.end', 'clear', 's1'],
+        ['session.end', 'resume', 's2'],
+        ['ui.copy', MESSAGE],
+      ])
+      expect(w.toasts).toEqual([`${AWAY}; ${kept(surface)}${BACK}`])
+      await ui.unmount()
+    })
+
+    test(`on the ${surface} a message rides in the kept brief and is not given back to the prompt box of the conversation now open`, async ($, on) => {
+      const { w, clock } = await ready($, on, { resume: 'after', forkDelayMs: 30_000, ...ON_SURFACE[surface] })
+      const ui = await surfaceBand($, surface)
+      await clearCache(ui, TASK)
+      await clock.advance(30_000)
+      expect(events(w)).not.toContain('prompt.fill')
+      expect(events(w)).not.toContain('prompt.submit')
+      expect(w.calls.filter(c => c[0] === 'ui.copy')).toEqual([['ui.copy', WITH_TASK]])
+      expect(w.toasts).toEqual([`${AWAY}; ${kept(surface, 'the handoff brief with your message')}${BACK}`])
+      if (surface === 'desktop') expect(w.transcript).toContain(WITH_TASK)
+      await ui.unmount()
+    })
+
+    test(`on the ${surface} a session change the mod did not see is caught because the current session is not the one the clear created`, async ($, on) => {
+      const { w } = await ready($, on, { resume: 'after', resumeEnd: false, resumeStart: false, ...ON_SURFACE[surface] })
+      const ui = await surfaceBand($, surface)
+      await clearCache(ui)
+      expect(events(w)).toEqual(['model.fork', 'command.run', 'session.end', 'ui.copy'])
+      expect(w.toasts).toEqual([`${AWAY}; ${kept(surface)}${BACK}`])
+      await ui.unmount()
+    })
+
+    test(`on the ${surface} the clear's own session end and session start, with the current id equal to the one it created, send the brief as before, and the SessionStart result passes on untouched`, async ($, on) => {
+      const { w, clock } = await ready($, on, { forkDelayMs: 30_000, ...ON_SURFACE[surface] })
+      const ui = await surfaceBand($, surface)
+      await clearCache(ui)
+      await clock.advance(30_000)
+      expect(w.calls).toEqual([
+        ['model.fork', FORK_PROMPT],
+        ['command.run', 'clear', ''],
+        ['session.end', 'clear', 's1'],
+        ['prompt.submit', MESSAGE, AS_USER],
+      ])
+      expect(w.startResults).toEqual([SETTINGS_CONTEXT])
+      expect(w.toasts).toEqual([SUCCESS])
+      await ui.unmount()
+    })
+
+    test(`on the ${surface} without the SessionStart event the clear is confirmed the old way, by the new session id, and the brief is sent`, async ($, on) => {
+      const { w } = await ready($, on, { classicStart: false, ...ON_SURFACE[surface] })
+      const ui = await surfaceBand($, surface)
+      await clearCache(ui)
+      expect(events(w)).toEqual(FULL_FLOW)
+      expect(w.startResults).toEqual([])
+      expect(sent(w)).toBe(MESSAGE)
+      expect(w.toasts).toEqual([SUCCESS])
+      await ui.unmount()
+    })
+
+    test(`on the ${surface} without the SessionStart event a /resume after the clear still stops the brief`, async ($, on) => {
+      const { w } = await ready($, on, { classicStart: false, resume: 'after', resumeStart: false, ...ON_SURFACE[surface] })
+      const ui = await surfaceBand($, surface)
+      await clearCache(ui)
+      expect(events(w)).toEqual(['model.fork', 'command.run', 'session.end', 'session.end', 'ui.copy'])
+      expect(w.toasts).toEqual([`${AWAY}; ${kept(surface)}${BACK}`])
+      await ui.unmount()
+    })
+
+    for (const { name, command, over } of HELD_TYPED) {
+      test(`on the ${surface} ${name} is held with a note to run it again, so the brief still reaches the conversation this /clear created`, async ($, on) => {
+        const { w, clock } = await ready($, on, { ...over, ...ON_SURFACE[surface] })
+        const ui = await surfaceBand($, surface)
+        await clearCache(ui)
+        expect(await $.command.run({ command, args: '' })).toEqual({ text: heldCommand(command) })
+        await clock.advance(4_000)
+        expect(w.calls).toEqual([
+          ['model.fork', FORK_PROMPT],
+          ['command.run', 'clear', ''],
+          ['session.end', 'clear', 's1'],
+          ['prompt.submit', MESSAGE, AS_USER],
+        ])
+        expect(w.sessionId).toBe('s2')
+        expect(w.toasts).toEqual([SUCCESS])
+        await ui.unmount()
+      })
+    }
+
+    test(`on the ${surface} a /resume opened while the brief is written and left without a pick clears nothing, since its picker may still be open to switch the conversation under /clear, and the next handoff runs as usual`, async ($, on) => {
+      const { w, clock } = await ready($, on, { forkDelayMs: 30_000, resumePicks: false, ...ON_SURFACE[surface] })
+      const ui = await surfaceBand($, surface)
+      await clearCache(ui)
+      expect(await $.command.run({ command: 'resume', args: '' })).toEqual({})
+      await clock.advance(30_000)
+      expect(w.calls).toEqual([
+        ['model.fork', FORK_PROMPT],
+        ['command.run', 'resume', ''],
+        ['ui.copy', MESSAGE],
+      ])
+      expect(events(w)).not.toContain('prompt.fill')
+      expect(w.toasts).toEqual([surface === 'terminal' ? `${RESUME_NOTE}; the handoff brief is on the clipboard` : RESUME_NOTE])
+      await turn($, 't5')
+      await clearCache(ui)
+      await clock.advance(30_000)
+      expect(events(w).slice(-4)).toEqual(FULL_FLOW)
+      expect(w.toasts.at(-1)).toBe(SUCCESS)
+      await ui.unmount()
+    })
+
+    test(`on the ${surface} a /resume that picks another conversation while the brief is written goes through and stops the handoff, as a session change does`, async ($, on) => {
+      const { w, clock } = await ready($, on, { forkDelayMs: 30_000, ...ON_SURFACE[surface] })
+      const ui = await surfaceBand($, surface)
+      await clearCache(ui)
+      expect(await $.command.run({ command: 'resume', args: '' })).toEqual({})
+      await clock.advance(30_000)
+      expect(w.calls).toEqual([
+        ['model.fork', FORK_PROMPT],
+        ['command.run', 'resume', ''],
+        ['session.end', 'resume', 's1'],
+      ])
+      expect(w.toasts).toEqual(['clear cache: the conversation changed while the brief was being written, nothing was sent'])
+      await ui.unmount()
+    })
+
+    for (const { name, over } of SENT_AFTER_RESUME) {
+      test(`on the ${surface} ${name} that lands while the brief waits to go in is reported: the brief may be in that conversation, a copy is kept where the surface allows, and nothing fills the prompt box`, async ($, on) => {
+        const { w } = await ready($, on, { resumeOnSubmit: true, ...over, ...ON_SURFACE[surface] })
+        const ui = await surfaceBand($, surface)
+        await clearCache(ui)
+        const brief = briefFor(w.isIdDenied ? '' : 's1')
+        expect(w.calls.filter(c => c[0] === 'prompt.submit')).toEqual([['prompt.submit', brief, AS_USER]])
+        expect(events(w)).not.toContain('prompt.fill')
+        expect(keptBrief(w)).toEqual([brief])
+        const copy = surface === 'terminal' ? 'the handoff brief is also on the clipboard; ' : ''
+        expect(w.toasts).toEqual([`${SENT_THERE}; ${copy}/resume returns to the cleared conversation`])
+        await ui.unmount()
+      })
+    }
+
+    for (const { name, over } of DROPS_AFTER_RESUME) {
+      test(`on the ${surface} when ${name}, the kept brief stays off the prompt box of the conversation now open`, async ($, on) => {
+        const { w } = await ready($, on, { resumeOnSubmit: true, ...over, ...ON_SURFACE[surface] })
+        const ui = await surfaceBand($, surface)
+        await clearCache(ui)
+        expect(w.calls.filter(c => c[0] === 'prompt.submit')).toEqual([['prompt.submit', MESSAGE, AS_USER]])
+        expect(events(w)).not.toContain('prompt.fill')
+        expect(keptBrief(w)).toEqual([MESSAGE])
+        const note = `${AWAY}; ${kept(surface)}${BACK}`
+        expect(w.toasts).toEqual([note])
+        if (surface === 'desktop') expect(w.transcript).toEqual([notSentHeader, MESSAGE, `prompt-cache-control: ${note}`])
+        await ui.unmount()
+      })
+    }
+
+    for (const { name, over, toast } of EARLY_RESUMES) {
+      test(`on the ${surface} ${name} that lands before the queued /clear runs, so /clear empties the resumed conversation, sends nothing and says which conversation was cleared`, async ($, on) => {
+        const { w } = await ready($, on, { resume: 'before', ...over, ...ON_SURFACE[surface] })
+        const ui = await surfaceBand($, surface)
+        await clearCache(ui)
+        const brief = briefFor(w.isIdDenied ? '' : 's1')
+        expect(w.calls).toContainEqual(['session.end', 'clear', RESUMED])
+        expect(events(w)).not.toContain('prompt.submit')
+        expect(events(w)).not.toContain('prompt.fill')
+        expect(keptBrief(w)).toEqual([brief])
+        const note = `${toast}; ${kept(surface)}`
+        expect(w.toasts).toEqual([note])
+        if (surface === 'desktop') expect(w.transcript).toEqual([notSentHeader, brief, `prompt-cache-control: ${note}`])
+        await ui.unmount()
+      })
+    }
+  }
+
+  test('without the SessionStart event and without session ids, the clear is confirmed by its own session end', async ($, on) => {
+    const { w } = await ready($, on, { classicStart: false, isIdDenied: true })
+    const ui = await band($)
+    await clearCache(ui)
+    expect(events(w)).toEqual(FULL_FLOW)
+    expect(w.toasts).toEqual([SUCCESS])
+    await ui.unmount()
+  })
+
+  test('without session ids a /resume after the clear still stops the brief', async ($, on) => {
+    const { w } = await ready($, on, { isIdDenied: true, resume: 'after' })
+    const ui = await band($)
+    await clearCache(ui)
+    expect(events(w)).toEqual(['model.fork', 'command.run', 'session.end', 'session.end', 'ui.copy'])
+    expect(w.toasts).toEqual([`${AWAY}; the handoff brief is on the clipboard${BACK}`])
+    await ui.unmount()
+  })
+
+  test('a clear that ends a session other than the one the brief was written in is taken for a clear of another conversation, and the toast says so', async ($, on) => {
+    const { w } = await ready($, on, { clearEndId: 's9' })
+    const ui = await band($)
+    await clearCache(ui)
+    expect(events(w)).toEqual(['model.fork', 'command.run', 'session.end', 'ui.copy'])
+    expect(w.toasts).toEqual([`${CLEARED_THERE}; the handoff brief is on the clipboard`])
+    await ui.unmount()
+  })
+
+  test('outside a handoff a /resume and a /clear pass the switch gate untouched', async ($, on) => {
+    const { w } = await ready($, on, { resumePicks: false })
+    expect(await $.command.run({ command: 'resume', args: '' })).toEqual({})
+    expect(await $.command.run({ command: 'clear', args: '' })).toEqual({})
+    expect(w.calls).toEqual([
+      ['command.run', 'resume', ''],
+      ['command.run', 'clear', ''],
+      ['session.end', 'clear', 's1'],
+    ])
+    expect(w.sessionId).toBe('s2')
+  })
+
+  test('a /resume held for the hold time goes through on the next try, so a handoff that hangs never locks the person out of /resume', async ($, on) => {
+    const { w, clock } = await ready($, on, { clearDelayMs: 60_000 })
+    const ui = await band($)
+    await clearCache(ui)
+    expect(await $.command.run({ command: 'resume', args: '' })).toEqual({ text: heldCommand('resume') })
+    await clock.advance(HOLD_MS - 1)
+    expect(await $.command.run({ command: 'resume', args: '' })).toEqual({ text: heldCommand('resume') })
+    await clock.advance(1)
+    expect(await $.command.run({ command: 'resume', args: '' })).toEqual({})
+    expect(w.calls).toContainEqual(['session.end', 'resume', 's1'])
+    await clock.advance(60_000)
+    expect(events(w)).not.toContain('prompt.submit')
+    expect(events(w)).not.toContain('prompt.fill')
+    expect(w.toasts).toEqual([`${CLEARED_THERE}; the handoff brief is on the clipboard`])
+    await ui.unmount()
+  })
+
+  test('the hold time starts again with each handoff', async ($, on) => {
+    const { w, clock } = await ready($, on, { clearDelayMs: 40_000 })
+    const ui = await band($)
+    await clearCache(ui)
+    expect(await $.command.run({ command: 'clear', args: '' })).toEqual({ text: heldCommand('clear') })
+    await clock.advance(40_000)
+    expect(w.toasts).toEqual([SUCCESS])
+    await endTurn($, 'brief-turn')
+    await turn($, 't5')
+    await clearCache(ui)
+    expect(await $.command.run({ command: 'clear', args: '' })).toEqual({ text: heldCommand('clear') })
+    await clock.advance(40_000)
+    expect(w.toasts).toEqual([SUCCESS, SUCCESS])
+    expect(w.calls.filter(c => c[0] === 'command.run')).toEqual([
+      ['command.run', 'clear', ''],
+      ['command.run', 'clear', ''],
+    ])
+    await ui.unmount()
+  })
+
+  test('a /resume while the message field is open passes the switch gate, and a pick stops the field as a session change does', async ($, on) => {
+    const { w } = await ready($, on)
+    const ui = await band($)
+    await ui.press({ key: 'clear-cache' })
+    expect(await $.command.run({ command: 'resume', args: '' })).toEqual({})
+    expect(w.calls).toEqual([
+      ['command.run', 'resume', ''],
+      ['session.end', 'resume', 's1'],
+    ])
+    expect(w.toasts).toEqual(['clear cache: the conversation changed while the message field was open, nothing was sent'])
+    await ui.unmount()
+  })
+
+  test('a SessionStart outside a handoff passes on untouched and does not stop the next handoff', async ($, on) => {
+    const { w } = await ready($, on)
+    expect(await $.classic.SessionStart({ source: 'startup', session_id: 's1' })).toEqual(SETTINGS_CONTEXT)
+    expect(await $.classic.SessionStart({ source: 'resume', session_id: RESUMED })).toEqual(SETTINGS_CONTEXT)
+    const ui = await band($)
+    await clearCache(ui)
+    expect(events(w)).toEqual(FULL_FLOW)
+    expect(w.toasts).toEqual([SUCCESS])
+    await ui.unmount()
+  })
+
+  const REDIRECTS: { name: string; over: Partial<World>; toast: string }[] = [
+    { name: 'before the /clear runs', over: { resume: 'before' }, toast: `${CLEARED_THERE}; the handoff brief is on the clipboard` },
+    { name: 'during the /clear', over: { resume: 'after' }, toast: `${AWAY}; the handoff brief is on the clipboard${BACK}` },
+    { name: 'while the brief waits to go in', over: { resumeOnSubmit: true, submit: 'drops' }, toast: `${AWAY}; the handoff brief is on the clipboard${BACK}` },
+  ]
+  for (const { name, over, toast } of REDIRECTS) {
+    test(`a redirect does not stick: after a /resume ${name}, the next handoff is sent as usual`, async ($, on) => {
+      const { w } = await ready($, on, over)
+      const ui = await band($)
+      await clearCache(ui)
+      expect(w.toasts).toEqual([toast])
+      Object.assign(w, { resume: 'none', resumeOnSubmit: false, submit: 'enters' })
+      const at = w.sessionId
+      await turn($, 't5')
+      await clearCache(ui)
+      expect(events(w).slice(-4)).toEqual(FULL_FLOW)
+      expect(w.calls.filter(c => c[0] === 'prompt.submit').at(-1)?.[1]).toBe(handoffMessage({ brief: BRIEF, sessionId: at, contextTokens: '151k' }))
+      expect(w.toasts.at(-1)).toBe(SUCCESS)
+      await ui.unmount()
+    })
+  }
 })
 
 describe('the clear cache button in the /cache pane', () => {
@@ -1355,7 +1797,7 @@ describe('composing the message before the handoff', () => {
   })
 
   const NOT_CLEARED = [
-    { name: 'a cut-off brief', over: { fork: answered(CUT_BRIEF) }, brief: CUT_BRIEF, why: 'the brief looks cut off (it has no Chat-only material section)', head: ['model.fork'] },
+    { name: 'a cut-off brief', over: { fork: answered(CUT_BRIEF) }, brief: CUT_BRIEF, why: CUT_NOTE, head: ['model.fork'] },
     { name: 'a /clear that does not run', over: { clear: 'ignored' as const }, brief: BRIEF, why: '/clear did not start a new conversation', head: ['model.fork', 'command.run'] },
   ]
   for (const { name, over, brief, why, head } of NOT_CLEARED) {
@@ -1392,7 +1834,7 @@ describe('composing the message before the handoff', () => {
     await clock.advance(30_000)
     expect(events(w)).toEqual(['model.fork', 'ui.copy', 'prompt.fill', 'ui.copy'])
     expect(givenBack(w, 'desktop')).toBe(true)
-    expect(w.toasts).toEqual(['clear cache: the brief looks cut off (it has no Chat-only material section), nothing was cleared; your message is in the transcript'])
+    expect(w.toasts).toEqual([`clear cache: ${CUT_NOTE}, nothing was cleared; your message is in the transcript`])
     await ui.unmount()
   })
 
@@ -1750,15 +2192,37 @@ describe('handoff texts', () => {
     expect(HANDOFF_FRAME).toBe(PINNED_FRAME)
   })
 
-  test('the fork prompt asks for the headings the brief checks use and keeps its own rules out of the brief', () => {
+  test('the fork prompt asks for the headings the brief checks use, and for the exact end line alone after the Chat-only material section so a cut-off reply can be told from a whole one, and keeps its own rules out of the brief', () => {
     for (const heading of ['## Goal', '## Next steps', '## Chat-only material']) expect(FORK_PROMPT).toContain(heading)
+    expect(BRIEF_END).toBe('[end of handoff brief]')
+    expect(FORK_PROMPT).toContain('End the reply with this exact line, alone, after the Chat-only material section, and write nothing after it: it shows the brief is complete.')
+    expect(FORK_PROMPT).toEndWith(`\n${BRIEF_END}`)
+    expect(FORK_PROMPT.indexOf(BRIEF_END)).toBeGreaterThan(FORK_PROMPT.indexOf('## Chat-only material'))
+    expect(FORK_PROMPT).toContain('starting with the line ## Goal and ending with the end line asked for below')
     expect(FORK_PROMPT).toContain('leave them out of the brief, without mentioning them')
     expect(FORK_PROMPT).toContain('its scratchpad or temporary folders')
     expect(FORK_PROMPT).toContain('a one-off request that is done is not a standing rule')
     expect(HANDOFF_FRAME.split('{{BRIEF}}')).toHaveLength(2)
     const dashes = [String.fromCharCode(0x2013), String.fromCharCode(0x2014)]
-    const shown = [FORK_PROMPT, HANDOFF_FRAME, HANDOFF_ACT_FRAME, FIELD_HINT, FIELD_HINT_SHORT, FIELD_SUBMIT, COMPOSE_TEXT_SHORT, COMPOSE_WITHOUT_FIELD, ...Object.values(PHASE_TEXT)].join('\n')
+    const shown = [FORK_PROMPT, HANDOFF_FRAME, HANDOFF_ACT_FRAME, FIELD_HINT, FIELD_HINT_SHORT, FIELD_SUBMIT, COMPOSE_TEXT_SHORT, COMPOSE_WITHOUT_FIELD, BRIEF_CUT, REDIRECTED, CLEARED_ELSEWHERE, SENT_AWAY, RESUME_STARTED, heldCommand('resume'), heldCommand('clear'), ...Object.values(PHASE_TEXT)].join('\n')
     expect(dashes.some(d => shown.includes(d))).toBe(false)
+  })
+
+  test('the cut-off note names the missing end line, and the redirect notes say another conversation was opened, what became of the brief and which conversation /clear emptied', () => {
+    expect(BRIEF_CUT).toBe(CUT_NOTE)
+    expect(AWAY).toBe(`clear cache: ${REDIRECTED}`)
+    expect(CLEARED_THERE).toBe(`clear cache: ${CLEARED_ELSEWHERE}`)
+    expect(SENT_THERE).toBe(`clear cache: ${SENT_AWAY}`)
+    expect(RESUME_NOTE).toBe(`clear cache: ${RESUME_STARTED}, nothing was cleared`)
+  })
+
+  test('the switch gate holds /resume and /clear, the commands that open another conversation, for up to 30 seconds, lets the mod\'s own commands through, and its note says to run them again once the brief is in', () => {
+    expect(HOLD_MS).toBe(30_000)
+    expect(isOwnOrigin({ kind: 'plugin', name: PLUGIN }, PLUGIN)).toBe(true)
+    expect(isOwnOrigin({ kind: 'plugin', name: 'other-plugin' }, PLUGIN)).toBe(false)
+    expect(isOwnOrigin({ kind: 'composer' }, PLUGIN)).toBe(false)
+    expect(isOwnOrigin(undefined, PLUGIN)).toBe(false)
+    expect(heldCommand('resume')).toBe('clear cache: /resume waits while clear cache clears this conversation and sends the handoff brief; run it again once the brief is in')
   })
 
   test('with no message, or only whitespace, handoffMessage gives the plain frame exactly', () => {
@@ -1843,31 +2307,117 @@ describe('handoff texts', () => {
     expect(handoffMessage({ brief, sessionId: '', contextTokens: '1k' })).toContain('session unknown,')
   })
 
-  test('extractBrief needs Goal and Next steps headings and drops what comes before them', () => {
-    expect(extractBrief(BRIEF)).toBe(BRIEF)
-    expect(extractBrief(`Here it is:\n\n${BRIEF}`)).toBe(BRIEF)
-    expect(extractBrief('### goal\nx\n#### NEXT STEPS\ny')).toBe('### goal\nx\n#### NEXT STEPS\ny')
-    expect(extractBrief('## 1. Goal\nx\n## 5. Next step\ny')).toBe('## 1. Goal\nx\n## 5. Next step\ny')
-    expect(extractBrief('## **Goal**\nx\n## **Next steps**\ny')).toBe('## **Goal**\nx\n## **Next steps**\ny')
-    expect(extractBrief('**Goal**\nx\n**Next steps**\ny')).toBe('**Goal**\nx\n**Next steps**\ny')
-    expect(extractBrief('## Goal\nonly a goal')).toBeUndefined()
-    expect(extractBrief('Goal: ship it.\nNext steps: test it.')).toBeUndefined()
-    expect(extractBrief('')).toBeUndefined()
+  test('readBrief needs Goal and Next steps headings and drops what comes before them', () => {
+    expect(readBrief(BRIEF)?.brief).toBe(BRIEF)
+    expect(readBrief(`Here it is:\n\n${BRIEF}`)?.brief).toBe(BRIEF)
+    expect(readBrief('### goal\nx\n#### NEXT STEPS\ny')?.brief).toBe('### goal\nx\n#### NEXT STEPS\ny')
+    expect(readBrief('## 1. Goal\nx\n## 5. Next step\ny')?.brief).toBe('## 1. Goal\nx\n## 5. Next step\ny')
+    expect(readBrief('## **Goal**\nx\n## **Next steps**\ny')?.brief).toBe('## **Goal**\nx\n## **Next steps**\ny')
+    expect(readBrief('**Goal**\nx\n**Next steps**\ny')?.brief).toBe('**Goal**\nx\n**Next steps**\ny')
+    expect(readBrief('## Goal\nonly a goal')).toBeUndefined()
+    expect(readBrief(`## Goal\nonly a goal\n## Chat-only material\nNone\n${BRIEF_END}`)).toBeUndefined()
+    expect(readBrief('Goal: ship it.\nNext steps: test it.')).toBeUndefined()
+    expect(readBrief('')).toBeUndefined()
   })
 
-  test('extractBrief strips a fence around the whole brief and keeps a code block the brief ends with', () => {
+  test('readBrief strips a fence around the whole brief and keeps a code block the brief ends with', () => {
     const base = '## Goal\nShip it.\n\n## Next steps\n1. Test it.'
     const codeTail = `${base}\n\n## Chat-only material\nThe intended edit:\n${FENCE}ts\nconst limit = 10\n${FENCE}`
-    expect(extractBrief(`${FENCE}markdown\n${base}\n${FENCE}`)).toBe(base)
-    expect(extractBrief(`Here it is:\n${FENCE}\n${base}\n${FENCE}`)).toBe(base)
-    expect(extractBrief(codeTail)).toBe(codeTail)
-    expect(extractBrief(`${FENCE}\`markdown\n${codeTail}\n${FENCE}\``)).toBe(codeTail)
+    expect(readBrief(`${FENCE}markdown\n${base}\n${FENCE}`)?.brief).toBe(base)
+    expect(readBrief(`Here it is:\n${FENCE}\n${base}\n${FENCE}`)?.brief).toBe(base)
+    expect(readBrief(codeTail)?.brief).toBe(codeTail)
+    expect(readBrief(`${FENCE}\`markdown\n${codeTail}\n${FENCE}\``)?.brief).toBe(codeTail)
+    expect(readBrief(whole(codeTail))).toEqual({ brief: codeTail, isWhole: true })
+    expect(readBrief(`${FENCE}\`markdown\n${codeTail}\n${BRIEF_END}\n${FENCE}\``)).toEqual({ brief: codeTail, isWhole: true })
   })
 
-  test('isBriefWhole wants the last section of the template', () => {
-    expect(isBriefWhole(BRIEF)).toBe(true)
-    expect(isBriefWhole('**Goal**\nx\n**Next steps**\ny\n**Chat-only material**\nNone')).toBe(true)
-    expect(isBriefWhole(CUT_BRIEF)).toBe(false)
+  test('readBrief: a reply with the end line after the Chat-only material section is whole, and the end line and whatever follows it are left out of the brief', () => {
+    expect(readBrief(REPLY)).toEqual({ brief: BRIEF, isWhole: true })
+    expect(readBrief(`${REPLY}\n\nLet me know if you need anything else.`)).toEqual({ brief: BRIEF, isWhole: true })
+    expect(readBrief(`${BRIEF}\n  ${BRIEF_END}  \n`)).toEqual({ brief: BRIEF, isWhole: true })
+    expect(readBrief('**Goal**\nx\n**Next steps**\ny\n**Chat-only material**\nNone\n' + BRIEF_END)).toEqual({ brief: '**Goal**\nx\n**Next steps**\ny\n**Chat-only material**\nNone', isWhole: true })
+    expect(readBrief(whole(BRIEF))?.brief).not.toContain(BRIEF_END)
+  })
+
+  test('readBrief: a reply cut off right after the Chat-only material heading is not whole, though the heading is there', () => {
+    const head = '## Goal\nShip it.\n\n## Next steps\n1. Test it.\n\n## Chat-only material'
+    expect(readBrief(head)).toEqual({ brief: head, isWhole: false })
+    expect(readBrief(`${head}\n`)).toEqual({ brief: head, isWhole: false })
+  })
+
+  test('readBrief: a reply cut off halfway through the Chat-only material section is not whole', () => {
+    const half = '## Goal\nShip it.\n\n## Next steps\n1. Test it.\n\n## Chat-only material\nThe text the user pasted:\nconst limit = '
+    expect(readBrief(half)?.isWhole).toBe(false)
+    expect(readBrief(BRIEF)).toEqual({ brief: BRIEF, isWhole: false })
+    expect(readBrief(CUT_BRIEF)?.isWhole).toBe(false)
+  })
+
+  test('readBrief: an end line before the Chat-only material heading does not count, so a reply that stops after that heading is still cut off', () => {
+    const early = `## Goal\nShip it.\n\n## Next steps\n1. Test it.\n${BRIEF_END}\n\n## Chat-only material\nThe text the user`
+    expect(readBrief(early)?.isWhole).toBe(false)
+    expect(readBrief(`## Goal\nShip it.\n${BRIEF_END}\n## Next steps\n1. Test it.`)?.isWhole).toBe(false)
+  })
+
+  test('readBrief: the end line must stand alone, so a line that only mentions it does not count', () => {
+    expect(readBrief(`${BRIEF}\n${BRIEF_END} Done.`)?.isWhole).toBe(false)
+    expect(readBrief(`${BRIEF}\nThat is the ${BRIEF_END}`)?.isWhole).toBe(false)
+  })
+
+  test('readBrief: the last end line counts, so one quoted inside the Chat-only material stays in the brief', () => {
+    const quoted = `## Goal\nShip it.\n\n## Next steps\n1. Test it.\n\n## Chat-only material\nThe user pasted:\n${BRIEF_END}\nand asked what it does.`
+    expect(readBrief(`${quoted}\n\n${BRIEF_END}`)).toEqual({ brief: quoted, isWhole: true })
+  })
+
+  test('readBrief: a fenced reply is whole with its end line just before the closing fence or just after it', () => {
+    expect(readBrief(`${FENCE}markdown\n${BRIEF}\n\n${BRIEF_END}\n${FENCE}`)).toEqual({ brief: BRIEF, isWhole: true })
+    expect(readBrief(`Here it is:\n${FENCE}\n${BRIEF}\n${FENCE}\n${BRIEF_END}`)).toEqual({ brief: BRIEF, isWhole: true })
+    expect(readBrief(`${FENCE}markdown\n${BRIEF}\n${FENCE}`)).toEqual({ brief: BRIEF, isWhole: false })
+    expect(readBrief(`${FENCE}markdown\n${BRIEF}`)).toEqual({ brief: BRIEF, isWhole: false })
+  })
+
+  test('clearOutcome sends only into the conversation this clear created, and refuses on any other session change', () => {
+    const watch = (over: Partial<ClearWatch> = {}): ClearWatch => ({ oldId: 's1', currentId: 's2', sawClear: true, clearedId: 's2', isRedirected: false, ...over })
+    expect(clearOutcome(watch())).toBe('fresh')
+    expect(clearOutcome(watch({ isRedirected: true }))).toBe('redirected')
+    expect(clearOutcome(watch({ currentId: RESUMED }))).toBe('redirected')
+    expect(clearOutcome(watch({ currentId: '' }))).toBe('fresh')
+    expect(clearOutcome(watch({ currentId: '', sawClear: false }))).toBe('redirected')
+    expect(clearOutcome(watch({ oldId: '', currentId: '' }))).toBe('fresh')
+    expect(clearOutcome(watch({ clearedId: undefined }))).toBe('fresh')
+    expect(clearOutcome(watch({ clearedId: undefined, currentId: 's1', sawClear: false }))).toBe('not-cleared')
+    expect(clearOutcome(watch({ clearedId: undefined, isRedirected: true }))).toBe('redirected')
+    expect(clearOutcome(watch({ clearedId: undefined, oldId: '', currentId: '' }))).toBe('fresh')
+    expect(clearOutcome(watch({ clearedId: undefined, oldId: '', currentId: '', sawClear: false }))).toBe('not-cleared')
+  })
+
+  test('isClearedElsewhere tells a /clear that ran in a conversation opened before it from one that ran first', () => {
+    const watch = (over: Partial<ClearWatch> = {}): ClearWatch => ({ oldId: 's1', currentId: 's71', sawClear: false, isRedirected: true, openedIds: [RESUMED], ...over })
+    expect(isClearedElsewhere(watch())).toBe(true)
+    expect(isClearedElsewhere(watch({ currentId: RESUMED }))).toBe(false)
+    expect(isClearedElsewhere(watch({ currentId: 's1' }))).toBe(false)
+    expect(isClearedElsewhere(watch({ currentId: '' }))).toBe(false)
+    expect(isClearedElsewhere(watch({ openedIds: [] }))).toBe(false)
+    expect(isClearedElsewhere(watch({ openedIds: undefined }))).toBe(false)
+    expect(isClearedElsewhere(watch({ isRedirected: false }))).toBe(false)
+    expect(isClearedElsewhere(watch({ openedIds: [], currentId: '', isClearedOther: true }))).toBe(true)
+  })
+
+  test('isElsewhere refuses on a noted session change or a current id that is not one the brief is meant for, and trusts the notes alone when the id is unknown', () => {
+    const watch = (over: Partial<TargetWatch> = {}): TargetWatch => ({ currentId: 's2', expectedIds: ['s2', undefined], isRedirected: false, ...over })
+    expect(isElsewhere(watch())).toBe(false)
+    expect(isElsewhere(watch({ isRedirected: true }))).toBe(true)
+    expect(isElsewhere(watch({ currentId: RESUMED }))).toBe(true)
+    expect(isElsewhere(watch({ currentId: '' }))).toBe(false)
+    expect(isElsewhere(watch({ currentId: '', isRedirected: true }))).toBe(true)
+    expect(isElsewhere(watch({ currentId: RESUMED, expectedIds: ['', undefined] }))).toBe(false)
+    expect(isElsewhere(watch({ expectedIds: ['s2', 's3'] }))).toBe(true)
+  })
+
+  test('isClearSeen says the clear happened once its own session end or session start was seen', () => {
+    const watch = (over: Partial<ClearWatch> = {}): ClearWatch => ({ oldId: 's1', currentId: RESUMED, sawClear: false, isRedirected: true, ...over })
+    expect(isClearSeen(watch())).toBe(false)
+    expect(isClearSeen(watch({ sawClear: true }))).toBe(true)
+    expect(isClearSeen(watch({ clearedId: 's2' }))).toBe(true)
   })
 
   test('forkFailure names each reason', () => {

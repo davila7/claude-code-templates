@@ -58,19 +58,30 @@ import {
 } from './cache.ts'
 import type { Account, Advice, CacheEnv, Sample, Ttl } from './cache.ts'
 import {
+  BRIEF_CUT,
+  CLEARED_ELSEWHERE,
   FIELD_SUBMIT,
   FORK_PROMPT,
+  HOLD_MS,
+  REDIRECTED,
+  RESUME_STARTED,
+  SENT_AWAY,
   briefCost,
+  clearOutcome,
   clearVariant,
-  extractBrief,
   fieldHint,
   forkFailure,
   handoffBlock,
   handoffMessage,
-  isBriefWhole,
+  heldCommand,
+  isClearSeen,
+  isClearedElsewhere,
+  isElsewhere,
+  isOwnOrigin,
   logParts,
   phaseLine,
   promptSource,
+  readBrief,
   turnBlock,
 } from './handoff.ts'
 import type { HandoffPhase, TurnGate } from './handoff.ts'
@@ -110,6 +121,16 @@ let handoffRun = 0
 let isTurnRunning = false
 let isLastTurnCut = false
 let sawClear = false
+let clearFrom = ''
+let clearedSessionId: string | undefined
+let isRedirected = false
+let sawEnd = false
+let sawStart = false
+let sendTo: string | undefined
+let openedIds: string[] = []
+let isClearedOther = false
+let isResumeStarted = false
+let heldSince: number | undefined
 let isBriefStale = false
 let isFreshTaken = false
 let lastStepStop: TurnStepResult['stopReason'] | undefined
@@ -129,7 +150,7 @@ type PendingHandoff = { run: number; brief: string; sessionId: string; contextTo
 
 type Held = { text: string; surface?: RenderSurface }
 
-type Kept = { run: number; text: string; why: string; isCleared: boolean; surface?: RenderSurface; inBox?: string; hasFollowUp: boolean }
+type Kept = { run: number; text: string; why: string; isCleared: boolean; surface?: RenderSurface; inBox?: string; hasFollowUp: boolean; isAway?: boolean }
 
 const PRESS_KEYS = new Set(['clear-cache', 'cancel-handoff', 'close'])
 
@@ -302,6 +323,44 @@ function markClearing() {
   else isBriefStale = true
 }
 
+function watchClear(oldId: string) {
+  clearFrom = oldId
+  sawClear = false
+  clearedSessionId = undefined
+  isRedirected = false
+  sawEnd = false
+  sawStart = false
+  sendTo = undefined
+  openedIds = []
+  isClearedOther = false
+  heldSince = undefined
+  isBriefStale = false
+  isFreshTaken = false
+}
+
+function isWatching(): boolean {
+  return handoff === 'clearing' || handoff === 'sending'
+}
+
+async function isAway($: EngineInterface, expectedIds: readonly (string | undefined)[]): Promise<boolean> {
+  const currentId = await $.session.id().catch(() => '')
+  return isElsewhere({ currentId, expectedIds, isRedirected })
+}
+
+function noteSessionEnd(reason: string, sessionId: string) {
+  if (handoff === 'clearing' && reason === 'clear' && clearFrom !== '' && sessionId !== '' && sessionId !== clearFrom) isClearedOther = true
+  if (!sawEnd && reason === 'clear' && (clearFrom === '' || sessionId === clearFrom)) sawClear = true
+  else isRedirected = true
+  sawEnd = true
+}
+
+function noteSessionStart(source: string, sessionId: string) {
+  if (!sawStart && source === 'clear') clearedSessionId = sessionId === '' ? undefined : sessionId
+  else isRedirected = true
+  if (source !== 'clear' && sessionId !== '') openedIds.push(sessionId)
+  sawStart = true
+}
+
 async function textToBox($: EngineInterface, text: string): Promise<boolean> {
   const draft = await $.prompt.read().catch(() => ({ text: '', cursor: 0 }))
   const filled = await $.prompt
@@ -318,13 +377,14 @@ async function textToClipboard($: EngineInterface, text: string, surface?: Rende
 async function keepBrief($: EngineInterface, kept: Kept) {
   const { run, text, why, isCleared, surface } = kept
   const what = kept.hasFollowUp ? 'the handoff brief with your message' : 'the handoff brief'
-  const isInBox = isCleared && (await textToBox($, text))
+  const isInBox = isCleared && kept.isAway !== true && (await textToBox($, text))
   const isOnClipboard = !isInBox && (await textToClipboard($, text, surface))
   if (run !== handoffRun) {
     if (isOnClipboard) $.ui.log('prompt-cache-control: clear cache: the handoff brief is on the clipboard')
     return
   }
   if (isInBox) return endHandoff($, `${why}; ${what} is in the prompt box, ${kept.inBox ?? 'press Enter to send it'}`, true)
+  if (kept.isAway === true) return keepAway($, kept, what, isOnClipboard)
   if (!isCleared) {
     const note = isOnClipboard ? `${why}, nothing was cleared; ${what} is on the clipboard` : `${why}, nothing was cleared`
     return reportStop($, note, true, closeHandoff($), !isOnClipboard)
@@ -332,6 +392,20 @@ async function keepBrief($: EngineInterface, kept: Kept) {
   if (isOnClipboard) return endHandoff($, `${why}; ${what} is on the clipboard`, true)
   logWhole($, 'prompt-cache-control: clear cache: the handoff brief, to copy into the prompt box and send:', text, surface)
   endHandoff($, `${why}; ${what} is in the transcript, copy it into the prompt box to send it; /resume returns to the previous conversation`, true)
+}
+
+function keepAway($: EngineInterface, kept: Kept, what: string, isOnClipboard: boolean) {
+  const back = kept.isCleared ? '; /resume returns to the cleared conversation' : ''
+  if (isOnClipboard) return endHandoff($, `${kept.why}; ${what} is on the clipboard${back}`, true)
+  logWhole($, 'prompt-cache-control: clear cache: the handoff brief, which was not sent:', kept.text, kept.surface)
+  endHandoff($, `${kept.why}; ${what} is in the transcript${back}`, true)
+}
+
+async function reportSentAway($: EngineInterface, kept: Omit<Kept, 'why' | 'isCleared'>) {
+  const what = kept.hasFollowUp ? 'the handoff brief with your message' : 'the handoff brief'
+  const isOnClipboard = await textToClipboard($, kept.text, kept.surface)
+  if (kept.run !== handoffRun) return
+  endHandoff($, `${SENT_AWAY}; ${isOnClipboard ? `${what} is also on the clipboard; ` : ''}/resume returns to the cleared conversation`, true)
 }
 
 function composeHandoff(pending: PendingHandoff): string {
@@ -378,6 +452,7 @@ async function handOff($: EngineInterface, surface: RenderSurface | undefined, f
   setHandoff($, 'writing')
   writingSince = Number.POSITIVE_INFINITY
   isCancelArmed = false
+  isResumeStarted = false
   const [since, sessionId] = await Promise.all([$.clock.now().catch(() => 0), $.session.id().catch(() => '')])
   if (run !== handoffRun) return
   writingSince = since
@@ -390,17 +465,16 @@ async function handOff($: EngineInterface, surface: RenderSurface | undefined, f
   }
   if (run !== handoffRun) return
   if (!reply.isAnswered) return stopHandoff($, `${forkFailure(reply)}, nothing was cleared`, true)
-  const brief = extractBrief(reply.text)
-  if (brief === undefined) {
+  const read = readBrief(reply.text)
+  if (read === undefined) {
     $.ui.log(`prompt-cache-control: clear cache: the reply began: ${fit(reply.text.trim().replace(/\s+/g, ' '), 300)}`)
     $.ui.log(`prompt-cache-control: clear cache: the whole rejected reply:\n${reply.text}`, { to: 'debug' })
     return stopHandoff($, 'the reply was not a handoff brief (no ## Goal and ## Next steps headings), nothing was cleared', true)
   }
-  const pending: PendingHandoff = { run, brief, sessionId, contextTokens, usage: reply.usage, surface }
-  if (!isBriefWhole(brief)) {
-    const why = 'the brief looks cut off (it has no Chat-only material section)'
-    return keepBrief($, { run, text: composeHandoff(pending), why, isCleared: false, surface, hasFollowUp: followUpConfirmed !== '' })
-  }
+  const pending: PendingHandoff = { run, brief: read.brief, sessionId, contextTokens, usage: reply.usage, surface }
+  const hasFollowUp = followUpConfirmed !== ''
+  if (!read.isWhole) return keepBrief($, { run, text: composeHandoff(pending), why: BRIEF_CUT, isCleared: false, surface, hasFollowUp })
+  if (isResumeStarted) return keepBrief($, { run, text: composeHandoff(pending), why: RESUME_STARTED, isCleared: false, surface, hasFollowUp })
   await clearAndSend($, pending)
 }
 
@@ -408,28 +482,31 @@ async function clearAndSend($: EngineInterface, pending: PendingHandoff) {
   const { run, sessionId, surface } = pending
   const hasFollowUp = followUpConfirmed !== ''
   const text = composeHandoff(pending)
-  sawClear = false
-  isBriefStale = false
-  isFreshTaken = false
+  watchClear(sessionId)
   setHandoff($, 'clearing')
   const failure = await $.command.run({ command: 'clear' }).then(
     () => undefined,
     (err: unknown) => String(err),
   )
-  const fresh = await $.session.id().catch(() => '')
-  const isCleared = sessionId !== '' && fresh !== '' ? fresh !== sessionId : sawClear
+  const currentId = await $.session.id().catch(() => '')
+  const watch = { oldId: sessionId, currentId, sawClear, clearedId: clearedSessionId, isRedirected, openedIds, isClearedOther }
+  const outcome = clearOutcome(watch)
   const kept = { run, text, surface, hasFollowUp }
-  if (!isCleared) return keepBrief($, { ...kept, why: failure === undefined ? '/clear did not start a new conversation' : `/clear did not run (${failure})`, isCleared: false })
+  if (outcome === 'redirected' && isClearedElsewhere(watch)) return keepBrief($, { ...kept, why: CLEARED_ELSEWHERE, isCleared: false, isAway: true })
+  if (outcome === 'redirected') return keepBrief($, { ...kept, why: REDIRECTED, isCleared: isClearSeen(watch), isAway: true })
+  if (outcome === 'not-cleared') return keepBrief($, { ...kept, why: failure === undefined ? '/clear did not start a new conversation' : `/clear did not run (${failure})`, isCleared: false })
   if (isBriefStale) return keepBrief($, { ...kept, why: 'a turn started while /clear was pending, so the brief may not cover it', isCleared: true, inBox: 'read it before you send it; /resume returns to the previous conversation' })
   if (isFreshTaken) return keepBrief($, { ...kept, why: 'a prompt reached the fresh conversation first', isCleared: true, inBox: 'send it when that turn ends' })
+  sendTo = currentId !== '' ? currentId : clearedSessionId
   setHandoff($, 'sending')
-  try {
-    const submitted = { text, asUser: true as const }
-    const sent = await $.prompt.submit(submitted)
-    if (sent.drop !== undefined) return keepBrief($, { ...kept, why: `the brief was not sent (${sent.drop})`, isCleared: true })
-  } catch (err) {
-    return keepBrief($, { ...kept, why: `the brief was not sent (${String(err)})`, isCleared: true })
-  }
+  const submitted = { text, asUser: true as const }
+  const notSent = await $.prompt.submit(submitted).then(
+    sent => sent.drop,
+    (err: unknown) => String(err),
+  )
+  const isSentAway = await isAway($, [sendTo, clearedSessionId])
+  if (notSent !== undefined) return keepBrief($, { ...kept, why: isSentAway ? REDIRECTED : `the brief was not sent (${notSent})`, isCleared: true, isAway: isSentAway })
+  if (isSentAway) return reportSentAway($, kept)
   endHandoff($, `cleared and handed off${hasFollowUp ? ' with your message' : ''} (the brief: ${briefCost(pending.usage)})`)
 }
 
@@ -568,7 +645,7 @@ export const register: Register = (on, options) => {
   on('session.end', async ($, e, next) => {
     isTurnRunning = false
     isLastTurnCut = false
-    if (handoff === 'clearing' && e.reason === 'clear') sawClear = true
+    if (isWatching()) noteSessionEnd(e.reason, e.sessionId)
     if (isStoppable()) {
       const note = `the conversation changed ${stopping()}, nothing was sent`
       if (e.reason === 'clear' || e.reason === 'resume') await stopHandoff($, note, true)
@@ -589,6 +666,22 @@ export const register: Register = (on, options) => {
     timer = undefined
     return next(e)
   })
+
+  on('classic.SessionStart', async ($, e, next) => {
+    if (isWatching()) noteSessionStart(e.source, e.session_id)
+    return next(e)
+  }).catch(($, e, next) => next(e))
+
+  on('command.run', { command: ['resume', 'clear'] }, async ($, e, next) => {
+    if (isOwnOrigin(e.origin, $.plugin.name)) return next(e)
+    if (isWatching()) {
+      const now = await $.clock.now().catch(() => Number.NaN)
+      heldSince ??= now
+      if (isWatching() && now - heldSince < HOLD_MS) return { text: heldCommand(e.command) }
+    }
+    if (handoff === 'writing' && e.command === 'resume') isResumeStarted = true
+    return next(e)
+  }).catch(($, e, next) => next(e))
 
   on('turn.start', async ($, e, next) => {
     isTurnRunning = true
