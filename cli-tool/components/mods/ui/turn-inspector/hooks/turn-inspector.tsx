@@ -177,22 +177,27 @@ export const register: Register = (on, options) => {
     if (isOpen) $.ui.invalidate('ui.render')
     const names = new Map<number, string>()
     const stream = next(e)
-    for await (const c of stream) {
-      let isNew = false
-      if (c.kind === 'thinking') isNew = chunk(turn, c.index, 'thinking', c.text)
-      else if (c.kind === 'text') isNew = chunk(turn, c.index, 'text', c.text)
-      else if (c.kind === 'tool') {
-        names.set(c.index, c.name)
-        isNew = chunk(turn, c.index, 'tool_use', c.name, c.name)
-      } else if (c.kind === 'input') isNew = chunk(turn, c.index, 'tool_use', c.json, names.get(c.index))
-      if (isNew && isOpen) $.ui.invalidate('ui.render')
-      yield c
+    try {
+      for await (const c of stream) {
+        let isNew = false
+        if (c.kind === 'thinking') isNew = chunk(turn, c.index, 'thinking', c.text)
+        else if (c.kind === 'text') isNew = chunk(turn, c.index, 'text', c.text)
+        else if (c.kind === 'tool') {
+          names.set(c.index, c.name)
+          isNew = chunk(turn, c.index, 'tool_use', c.name, c.name)
+        } else if (c.kind === 'input') isNew = chunk(turn, c.index, 'tool_use', c.json, names.get(c.index))
+        if (isNew && isOpen) $.ui.invalidate('ui.render')
+        yield c
+      }
+      const r = await stream.result
+      stepEnded(ledger, turn, r.usage, r.stopReason)
+      return r
+    } finally {
+      // an interrupt closes the stream before its result: no usage came
+      if (turn.status === 'streaming') stepEnded(ledger, turn, null, null)
+      if (live === turn) live = undefined
+      if (isOpen) $.ui.invalidate('ui.render')
     }
-    const r = await stream.result
-    stepEnded(ledger, turn, r.usage, r.stopReason)
-    if (live === turn) live = undefined
-    if (isOpen) $.ui.invalidate('ui.render')
-    return r
   })
 
   on('turn.complete', async ($, e, next) => {

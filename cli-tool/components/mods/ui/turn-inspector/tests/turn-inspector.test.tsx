@@ -249,4 +249,17 @@ describe('the main loop alone', () => {
     expect(await ui.find({ type: 'Text', text: /compacted/ })).toBeUndefined()
     await ui.unmount()
   })
+
+  test('an interrupted request is not left streaming', async ($, on) => {
+    fakeEngine(on)
+    await $.turn.start({ text: 'why does auth log me out?', turnId: 't1' })
+    // an interrupt closes the stream before its result
+    const s = $.turn.step({ turnId: 't1', index: 0, model: 'claude-opus-5-5', messageCount: 1 })
+    await s.next()
+    await s.return(undefined as never)
+    const ui = await mountPane($)
+    expect((await ui.find({ key: 'turn:1' }))?.text).toContain('no response')
+    expect(await ui.find({ type: 'Text', text: /streaming/ })).toBeUndefined()
+    await ui.unmount()
+  })
 })
