@@ -101,6 +101,18 @@ export const register: Register = (on, options) => {
     return r
   })
 
+  // a /clear ends the conversation, and no session.start follows it
+  on('session.end', async ($, e, next) => {
+    const r = await next(e)
+    if (e.reason !== 'clear') return r
+    ledger = Object.assign(createLedger(), { window: ledger.window, system: ledger.system, isFresh: true })
+    live = undefined
+    expanded.clear()
+    follow = true
+    if (isOpen) $.ui.invalidate('ui.render')
+    return r
+  })
+
   on('command.run', { command: COMMAND }, async ($, e) => {
     const arg = e.args.trim().toLowerCase()
     if (arg === 'stop' || arg === 'close') {

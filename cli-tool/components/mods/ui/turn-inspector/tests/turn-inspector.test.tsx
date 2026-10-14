@@ -161,8 +161,8 @@ const PANE_PROPS = {
   view: {},
 }
 
-async function step($: Engine, index: number) {
-  const s = $.turn.step({ turnId: 't1', index, model: 'claude-opus-5-5', messageCount: 1 + index * 2 })
+async function step($: Engine, index: number, turnId = 't1') {
+  const s = $.turn.step({ turnId, index, model: 'claude-opus-5-5', messageCount: 1 + index * 2 })
   for (;;) {
     const x = await s.next()
     if (x.done) return x.value
@@ -231,6 +231,22 @@ describe('the main loop alone', () => {
     const ui = await mountPane($)
     expect(await ui.find({ type: 'Text', text: /Explore the auth module/ })).toBeUndefined()
     expect(await ui.find({ type: 'Text', text: /User message/ })).toBeUndefined()
+    await ui.unmount()
+  })
+
+  test('a /clear forgets the turns before it', async ($, on) => {
+    fakeEngine(on)
+    on('session.end', async ($, e) => ({ sessionId: e.sessionId }))
+    await $.turn.start({ text: 'why does auth log me out?', turnId: 't1' })
+    await step($, 0)
+    await step($, 1)
+    // a /clear ends the conversation, and no session.start follows it
+    await $.session.end({ reason: 'clear', sessionId: 's1', resume: { id: 's1' } })
+    await $.turn.start({ text: 'start over', turnId: 't2' })
+    await step($, 0, 't2')
+    const ui = await mountPane($)
+    expect(await ui.find({ type: 'Text', text: /why does auth log me out/ })).toBeUndefined()
+    expect(await ui.find({ type: 'Text', text: /compacted/ })).toBeUndefined()
     await ui.unmount()
   })
 })
