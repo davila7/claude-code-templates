@@ -20,7 +20,7 @@ import {
   WAKEUP_STALE_MS,
 } from './limits'
 import type { Notice } from './notices'
-import { anchorOf, clip, displayLinesOf, isOutputFileOf, oneLine, progressOf } from './output'
+import { anchorOf, clip, displayLinesOf, isOutputFileOf, jobLinesOf, oneLine, progressOf } from './output'
 
 /** The launch note of a command that its synchronous subagent ends when it answers. */
 const ENDS_WITH_AGENT = 'ends with its agent'
@@ -99,7 +99,7 @@ function withJob(jobs: readonly Job[], job: Job): Job[] {
 
 /** Refines an inferred shell without carrying shell-only metadata into the Monitor. */
 function asMonitor(job: ShellJob): MonitorJob {
-  const { kind, outputFile, outputBytes, failedReadBytes, lastReadAt, successfulReadAt, finalReadAskedAt, usualMs, historyKey, ownerAgentId, endsWithAgent, ...details } = job
+  const { kind, outputFile, redirectFile, redirectBytes, outputBytes, failedReadBytes, lastReadAt, successfulReadAt, finalReadAskedAt, usualMs, historyKey, ownerAgentId, endsWithAgent, ...details } = job
   return { ...details, kind: 'monitor', eventCount: 0, note: job.note === 'no output file' || READ_NOTES.has(job.note ?? '') ? undefined : job.note }
 }
 
@@ -114,6 +114,7 @@ function withLaunch(known: Job, launch: Job): Job {
   const identity = { title: launch.title, startedAt: launch.startedAt, isStartSeen: true, omittedAt: undefined, note: known.note ?? launch.note,
     launchNote: launch.launchNote ?? known.launchNote }
   if (known.kind === 'shell' && launch.kind === 'shell') return { ...known, ...identity, outputFile: launch.outputFile ?? known.outputFile,
+    redirectFile: launch.redirectFile ?? known.redirectFile,
     ownerAgentId: launch.ownerAgentId ?? known.ownerAgentId, endsWithAgent: launch.endsWithAgent ?? known.endsWithAgent }
   if (known.kind === 'agent' && launch.kind === 'agent') return { ...known, ...identity, runsElsewhere: launch.runsElsewhere ?? known.runsElsewhere }
   return known.kind === 'monitor' && launch.kind === 'monitor' ? { ...known, ...identity, deadline: launch.deadline } : { ...known, ...identity }
@@ -128,7 +129,7 @@ export function launched(jobs: readonly Job[], launch: Job): Job[] {
 }
 
 /** A background shell command, as its launch result describes it. */
-export function shellJob(launch: { id: string; command: string; description?: string; outputFile?: string; note?: string; ownerAgentId?: string; endsWithAgent?: boolean }, now: number): ShellJob {
+export function shellJob(launch: { id: string; command: string; description?: string; outputFile?: string; redirectFile?: string; note?: string; ownerAgentId?: string; endsWithAgent?: boolean }, now: number): ShellJob {
   return {
     kind: 'shell',
     id: launch.id,
@@ -137,6 +138,7 @@ export function shellJob(launch: { id: string; command: string; description?: st
     startedAt: now,
     isStartSeen: true,
     outputFile: launch.outputFile,
+    redirectFile: launch.redirectFile,
     ownerAgentId: launch.ownerAgentId,
     endsWithAgent: launch.endsWithAgent,
     note: launch.note,
@@ -420,7 +422,7 @@ export function reconciled(jobs: readonly Job[], snapshot: readonly SnapshotTask
 }
 
 /** What one read of a job's output found. */
-export type TailRead = { bytes: number; mtimeMs: number; lines: readonly string[] }
+export type TailRead = { bytes: number; mtimeMs: number; lines: readonly string[]; redirectBytes?: number }
 
 /** Notes a successful read clears. */
 const READ_NOTES: ReadonlySet<string> = new Set(['output unavailable', 'tail failed'])
@@ -517,14 +519,17 @@ export function activityEnded(jobs: readonly Job[], agentId: string, isFailure: 
   })
 }
 
-/** Shell jobs whose output the ticker reads now: a pending final read, or a running job not read for READ_EVERY_MS (LARGE_READ_EVERY_MS once its output passed LARGE_FILE_BYTES). */
+/**
+ * Shell jobs whose output the ticker reads now: a pending final read, or a running job not read for READ_EVERY_MS
+ * (LARGE_READ_EVERY_MS once a file it reads, its output or the redirect file the row shows, passed LARGE_FILE_BYTES).
+ */
 export function readsDue(jobs: readonly Job[], now: number): (ShellJob & { outputFile: string })[] {
   return jobs.filter(
     (job): job is ShellJob & { outputFile: string } =>
       job.kind === 'shell' &&
       job.outputFile !== undefined &&
       (job.finalReadAskedAt !== undefined ||
-        (isRunning(job) && now - (job.lastReadAt ?? 0) >= ((job.failedReadBytes ?? job.outputBytes ?? 0) > LARGE_FILE_BYTES ? LARGE_READ_EVERY_MS : READ_EVERY_MS))),
+        (isRunning(job) && now - (job.lastReadAt ?? 0) >= ((job.failedReadBytes ?? Math.max(job.redirectBytes ?? 0, job.outputBytes ?? 0)) > LARGE_FILE_BYTES ? LARGE_READ_EVERY_MS : READ_EVERY_MS))),
   )
 }
 
@@ -559,20 +564,28 @@ export function reloaded(jobs: readonly Job[], isAnyRatio: boolean, now: number)
 
 /**
  * The list after a read that began at `now`: size, time, last line, and progress; a read-problem note clears, and a
- * later end keeps its final read. isAnyRatio (the `genericRatios` option) lets any ratio count as progress.
+ * later end keeps its final read. A read of the redirect file carries that file's size and time. A read of the other
+ * file than the one the row shows replaces the row's last line, progress, and anchor with that file's. isAnyRatio (the
+ * `genericRatios` option) lets any ratio count as progress.
  */
 export function tailRead(jobs: readonly Job[], id: string, read: TailRead, now: number, isAnyRatio = false): Job[] {
-  return jobs.map(job => {
-    if (job.kind !== 'shell' || job.id !== id) return job
-    const lines = /^\[exited with code -?\d+\]$/.test(read.lines.at(-1) ?? '') ? read.lines.slice(0, -1) : read.lines
+  return jobs.map(original => {
+    if (original.kind !== 'shell' || original.id !== id) return original
+    // Only Claude Code's output file ends with its closing line; a redirect file holds only what the job wrote.
+    const lines = read.redirectBytes === undefined ? jobLinesOf(read.lines) : read.lines
     const found = progressOf(lines.slice(-PROGRESS_LINES), now, isAnyRatio)
+    const isRedirect = read.redirectBytes !== undefined
+    const job: ShellJob = isRedirect === (original.redirectBytes !== undefined)
+      ? original
+      : { ...original, redirectBytes: undefined, lastLine: undefined, progress: undefined, anchor: undefined }
     // A full read of output that kept its size, as a reload asks for, keeps a reading it finds again, with that reading's time.
-    const isUnchanged = read.bytes === job.outputBytes && job.failedReadBytes === undefined
+    const isUnchanged = (isRedirect ? read.redirectBytes === job.redirectBytes : read.bytes === job.outputBytes) && job.failedReadBytes === undefined
     const progress = isUnchanged && isSameReading(found, job.progress) ? undefined : found
     const lastLine = lines.at(-1)
     return {
       ...job,
       outputBytes: read.bytes,
+      ...(isRedirect ? { redirectBytes: read.redirectBytes } : {}),
       failedReadBytes: undefined,
       lastOutputAt: read.mtimeMs,
       lastReadAt: now,

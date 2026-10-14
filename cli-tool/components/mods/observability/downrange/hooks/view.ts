@@ -50,6 +50,15 @@ export type PaneModel = { header: string; running: Row[]; ended: Row[] }
 
 const GLYPHS: Readonly<Record<JobState, string>> = { running: '●', completed: '✓', failed: '✗', stopped: '■', gone: '◌' }
 
+/** The words before a redirect file's name in a row's note, as in `output: build.log`. */
+const REDIRECT_NOTE = 'output: '
+
+/** Where a shell row's lines come from when that is its redirect file: `output: <file name>`. */
+function redirectNoteOf(job: Job): string | undefined {
+  if (job.kind !== 'shell' || job.redirectFile === undefined || job.redirectBytes === undefined) return undefined
+  return clip(oneLine(`${REDIRECT_NOTE}${job.redirectFile.split(/[\\/]/).pop() ?? ''}`), NOTE_MAX)
+}
+
 const endOf = (job: Job): number => job.endedAt ?? job.startedAt
 
 /** The tool of a subagent's activity summary, `<tool>: <detail>`. */
@@ -118,6 +127,7 @@ function ageOf(job: Job, now: number): string {
 function rowOf(job: Job, now: number): Row {
   const eta = etaOf(job, now)
   const progress = progressCell(job)
+  const redirect = redirectNoteOf(job)
   return {
     id: job.id,
     glyph: GLYPHS[job.state],
@@ -132,7 +142,7 @@ function rowOf(job: Job, now: number): Row {
     last: job.lastLine,
     tableLast: job.kind === 'agent' && job.lastLine !== undefined ? toolOf(job.lastLine) : job.lastLine,
     flag: flagOf(job, now),
-    note: job.note,
+    note: redirect === undefined || job.note === undefined ? job.note ?? redirect : `${job.note} · ${redirect}`,
   }
 }
 

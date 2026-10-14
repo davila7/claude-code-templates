@@ -19,9 +19,9 @@ function job(value: unknown): boolean {
       !optionalStrings(value, ['note', 'launchNote', 'lastLine'])) return false
   switch (value.kind) {
     case 'shell':
-      return optionalStrings(value, ['outputFile', 'historyKey', 'ownerAgentId']) &&
+      return optionalStrings(value, ['outputFile', 'redirectFile', 'historyKey', 'ownerAgentId']) &&
         (value.endsWithAgent === undefined || typeof value.endsWithAgent === 'boolean') &&
-        optionalNumbers(value, ['outputBytes', 'failedReadBytes', 'lastReadAt', 'successfulReadAt', 'finalReadAskedAt', 'usualMs']) && progress(value.progress) && anchor(value.anchor)
+        optionalNumbers(value, ['outputBytes', 'redirectBytes', 'failedReadBytes', 'lastReadAt', 'successfulReadAt', 'finalReadAskedAt', 'usualMs']) && progress(value.progress) && anchor(value.anchor)
     case 'monitor':
       return number(value.eventCount) && optionalNumbers(value, ['deadline']) && progress(value.progress) && anchor(value.anchor)
     case 'agent':

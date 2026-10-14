@@ -37,6 +37,10 @@ export type ShellJob = JobBase & {
   endsWithAgent?: boolean
   successfulReadAt?: number
   outputFile?: string
+  /** The file that the command's own text sends its output to, absolute. Each read looks at it and at the output file, and the row shows the one that changed last. */
+  redirectFile?: string
+  /** The size of redirectFile at its last successful read. While it is set, the row's lines and progress come from that file. */
+  redirectBytes?: number
   outputBytes?: number
   /** The size at a failed tail, used for its retry interval without marking that output as read. */
   failedReadBytes?: number

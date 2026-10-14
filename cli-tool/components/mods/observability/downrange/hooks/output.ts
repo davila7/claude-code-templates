@@ -24,6 +24,10 @@ const CLOSER_AFTER = /\s*([\])])/y
 const OUTPUT_PATH = /^(?:[A-Za-z]:)?[\\/][^\n]*[\\/]tasks[\\/]([A-Za-z0-9_-]+)\.output$/
 /** The engine's words before the path in a background command's result. */
 const OUTPUT_NOTICE = 'Output is being written to: '
+/** The line the engine adds to a shell's output when the command ends. */
+const EXIT_LINE = /^\[exited with code -?\d+\]$/
+/** That line at the end of an output's text, with the line break the engine writes before it and the one after it. */
+const EXIT_END = /\n?\[exited with code -?\d+\]\n?$/
 /** A carriage return, built from its code so that no string literal holds a control character. */
 const CR = String.fromCharCode(13)
 
@@ -168,6 +172,16 @@ export function outputFileOf(text: string, id: string): string | undefined {
     notice = notice === 0 ? -1 : text.lastIndexOf(OUTPUT_NOTICE, notice - 1)
   }
   return undefined
+}
+
+/** The lines of an output without the engine's closing `[exited with code N]` line: the lines the job wrote. */
+export function jobLinesOf(lines: readonly string[]): readonly string[] {
+  return EXIT_LINE.test(lines.at(-1) ?? '') ? lines.slice(0, -1) : lines
+}
+
+/** The size of an output without the engine's closing line, from its size and the text of its end: the bytes the job wrote. */
+export function jobBytesOf(text: string, size: number): number {
+  return size - (EXIT_END.exec(text)?.[0].length ?? 0)
 }
 
 /** The last TAIL_BYTES of an output, from a line start: a tail, or a read cut short, drops its partial first line; text with no line break stays whole, one line that `\r` redraws. */

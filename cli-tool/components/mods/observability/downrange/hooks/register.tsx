@@ -41,9 +41,10 @@ import {
 import type { HistoryRun, JobObservation, SnapshotTask, TailRead } from './jobs'
 import { CARRY_ATTEMPTS, STATE_WRITE_ATTEMPTS, FS_READ_MAX, REPEAT_WINDOW_MS, TAIL_TIMEOUT_MS, TICK_MS, TICKER_STALE_MS } from './limits'
 import { noticesOf } from './notices'
-import { displayLinesOf, isOutputFileOf, oneLine, outputEndOf, outputFileOf } from './output'
+import { displayLinesOf, isOutputFileOf, jobBytesOf, jobLinesOf, oneLine, outputEndOf, outputFileOf } from './output'
 import { jobsStateOf, wakeupStateOf } from './state'
 import { isStatusPrompt, normalizePrompt } from './prompt'
+import { redirectFileOf, redirectTargetOf } from './redirect'
 import { bandOf, isBandHidden, paneModelOf, tableOf } from './view'
 
 /** The slash command, without its slash; declared here so that `claude plugin validate` resolves the matcher. */
@@ -95,6 +96,13 @@ class TailFailure extends Error {
 
 function messageOf(error: unknown): string {
   return error instanceof Error ? error.message : String(error)
+}
+
+/** A stat, read, or tail of a job's redirect file that failed, with that failure. */
+class RedirectFailure extends Error {
+  constructor(readonly failure: unknown) {
+    super(messageOf(failure))
+  }
 }
 
 /** A hook failure as one phrase: `hook throw: <message>`. */
@@ -236,6 +244,21 @@ async function historyFor($: EngineInterface, command: string): Promise<{ histor
   }
 }
 
+/**
+ * The redirect file of a launch, absolute in the session's folder, or undefined. A subagent's command follows only an
+ * absolute path: a subagent can run in a folder of its own. A failure gives none, logs once, and never stops the launch.
+ */
+async function redirectFor($: EngineInterface, id: string, command: string, agentId: string | undefined): Promise<string | undefined> {
+  try {
+    const target = redirectTargetOf(command)
+    if (target === undefined || (agentId !== undefined && !target.startsWith('/'))) return undefined
+    return redirectFileOf(target, await $.session.cwd())
+  } catch (error) {
+    report($, 'tool.call', `cannot place the redirect file of task ${id}: ${messageOf(error)}`, `redirect|${id}`)
+    return undefined
+  }
+}
+
 /** Appends clean runs to the duration history, one record at a time; a failure costs the record only and logs once. */
 async function recordRuns($: EngineInterface, runs: readonly HistoryRun[], now: number, event: 'prompt.submit' | 'session.append'): Promise<void> {
   if (runs.length === 0) return
@@ -306,16 +329,59 @@ async function tailOf($: EngineInterface, path: string, bytes: number): Promise<
   return ran.stdout
 }
 
-/** What a job's output holds now: no new lines while its size stays, else its end, by `$.fs.read` up to FS_READ_MAX and by `tail` above. */
-async function readOutput($: EngineInterface, job: ShellJob & { outputFile: string }): Promise<TailRead> {
-  const stat = await $.fs.stat(job.outputFile)
-  if (stat.size === job.outputBytes && job.failedReadBytes === undefined && job.finalReadAskedAt === undefined) return { bytes: stat.size, mtimeMs: stat.mtimeMs, lines: [] }
-  const isTail = stat.size > FS_READ_MAX
-  const text = isTail ? await tailOf($, job.outputFile, stat.size) : await $.fs.read(job.outputFile)
-  return { bytes: stat.size, mtimeMs: stat.mtimeMs, lines: displayLinesOf(outputEndOf(text, isTail)) }
+/** A file's end, by `$.fs.read` up to FS_READ_MAX and by `tail` above. */
+async function endOf($: EngineInterface, path: string, size: number): Promise<string> {
+  const isTail = size > FS_READ_MAX
+  return outputEndOf(isTail ? await tailOf($, path, size) : await $.fs.read(path), isTail)
 }
 
-/** Reads one shell job's output and applies it; only a failed stat, read, or tail sets the job's note and logs once per job. */
+/** What a job's output holds now: no new lines while its size stays, else its end. A job with a redirect file also looks at that file (see redirectRead). */
+async function readOutput($: EngineInterface, job: ShellJob & { outputFile: string }): Promise<TailRead> {
+  const stat = await $.fs.stat(job.outputFile)
+  const isAsked = job.failedReadBytes !== undefined || job.finalReadAskedAt !== undefined
+  const text = stat.size === job.outputBytes && !isAsked ? undefined : await endOf($, job.outputFile, stat.size)
+  const output: TailRead = { bytes: stat.size, mtimeMs: stat.mtimeMs, lines: text === undefined ? [] : displayLinesOf(text) }
+  return job.redirectFile === undefined ? output : await redirectRead($, job, job.redirectFile, output, text, isAsked)
+}
+
+/**
+ * The read of a job with a redirect file, after the read of its output (`text` when that read took its end). The row
+ * takes its lines from the file that changed last, by modification time, and from the output file when the two times
+ * are equal. The output file counts only while it holds a job line. Its time is its modification time once the job wrote
+ * to it since the last read, which the engine's closing line alone is not. Until then it keeps the time of the lines that
+ * the row shows from it, and it does not count while the row shows the redirect file. When the redirect file is missing
+ * or not a regular file, the output file shows if it holds a job line. The redirect file is read again when its size or
+ * its modification time changes. A read of it carries its size and time, which tailRead keeps as redirectBytes and
+ * lastOutputAt.
+ */
+async function redirectRead($: EngineInterface, job: ShellJob & { outputFile: string }, redirectFile: string, output: TailRead, text: string | undefined, isAsked: boolean): Promise<TailRead> {
+  const isRedirectShown = job.redirectBytes !== undefined
+  const isWritten = text !== undefined && output.bytes !== job.outputBytes && (job.outputBytes === undefined || jobBytesOf(text, output.bytes) > job.outputBytes)
+  const outputAt = isWritten ? output.mtimeMs : isRedirectShown ? undefined : job.lastOutputAt
+  /** Whether the output file holds a job line: in the lines read now, else in the line that the row shows from it. */
+  const hasJobLine = (lines: readonly string[]): boolean => (text === undefined && !isRedirectShown ? job.lastLine !== undefined : jobLinesOf(lines).length > 0)
+  let redirect: { size: number; mtimeMs: number }
+  try {
+    const stat = await $.fs.stat(redirectFile)
+    if (stat.kind !== 'file') throw new Error('not a regular file')
+    redirect = stat
+  } catch (error) {
+    // A row that shows the redirect file needs the output file's end to show it instead.
+    const lines = text === undefined && isRedirectShown ? displayLinesOf(await endOf($, job.outputFile, output.bytes)) : output.lines
+    if (hasJobLine(lines)) return { ...output, lines }
+    throw new RedirectFailure(error)
+  }
+  if (outputAt !== undefined && outputAt >= redirect.mtimeMs && hasJobLine(output.lines)) return output
+  try {
+    const isSame = isRedirectShown && redirect.size === job.redirectBytes && redirect.mtimeMs === job.lastOutputAt
+    const lines = isSame && !isAsked ? [] : displayLinesOf(await endOf($, redirectFile, redirect.size))
+    return { bytes: output.bytes, mtimeMs: redirect.mtimeMs, lines, redirectBytes: redirect.size }
+  } catch (error) {
+    throw new RedirectFailure(error)
+  }
+}
+
+/** Reads one shell job's output and applies it; only a failed stat, read, or tail sets the job's note and logs once per job and file. */
 async function readTail($: EngineInterface, job: ShellJob & { outputFile: string }, now: number): Promise<void> {
   const path = job.outputFile
   if (!isOutputFileOf(path, job.id)) {
@@ -327,9 +393,12 @@ async function readTail($: EngineInterface, job: ShellJob & { outputFile: string
   try {
     found = await readOutput($, job)
   } catch (error) {
-    const isTail = error instanceof TailFailure
-    report($, 'clock.every', `cannot ${isTail ? 'tail' : 'read'} the output of task ${job.id}: ${messageOf(error)}`, `${isTail ? 'tail' : 'read'}|${job.id}`)
-    await writeJobs($, { at: now, ids: [job.id] }, jobs => readFailed(jobs, job.id, isTail ? 'tail failed' : 'output unavailable', now, isTail ? error.bytes : undefined))
+    const isRedirect = error instanceof RedirectFailure
+    const failure = isRedirect ? error.failure : error
+    const bytes = failure instanceof TailFailure ? failure.bytes : undefined
+    const verb = bytes === undefined ? 'read' : 'tail'
+    report($, 'clock.every', `cannot ${verb} ${isRedirect ? 'the redirect file' : 'the output'} of task ${job.id}: ${messageOf(failure)}`, `${isRedirect ? 'redirect ' : ''}${verb}|${job.id}`)
+    await writeJobs($, { at: now, ids: [job.id] }, jobs => readFailed(jobs, job.id, bytes === undefined ? 'output unavailable' : 'tail failed', now, bytes))
     return
   }
   await writeJobs($, { at: now, ids: [job.id] }, jobs => tailRead(jobs, job.id, found, now, isAnyRatio))
@@ -504,7 +573,8 @@ export const register: Register = (on, options) => {
       report($, 'tool.call', `no output file in the result of task ${id}; its last line is unavailable`, `path|${id}`)
     }
     const note = shellLaunchNote(ran.result, outputFile !== undefined)
-    await writeJobs($, { at: now, ids: [id] }, jobs => launched(jobs, shellJob({ id, command: e.command, description: e.description, outputFile, note, ownerAgentId: e.agentId, endsWithAgent: ran.result.backgroundEndsWithFinalResponse === true }, now)))
+    const redirectFile = await redirectFor($, id, e.command, e.agentId)
+    await writeJobs($, { at: now, ids: [id] }, jobs => launched(jobs, shellJob({ id, command: e.command, description: e.description, outputFile, redirectFile, note, ownerAgentId: e.agentId, endsWithAgent: ran.result.backgroundEndsWithFinalResponse === true }, now)))
     // The history read comes after the launch, so an end or a clear that comes meanwhile is never undone.
     const history = await historyFor($, e.command)
     if (history !== undefined) await writeJobs($, { at: now, ids: [id] }, jobs => historyAdded(jobs, id, history))
