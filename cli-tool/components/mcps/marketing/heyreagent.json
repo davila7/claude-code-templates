@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "heyreagent": {
+      "description": "A hosted MCP server for your own LinkedIn account: read your inbox, send messages and invitations, search people, and work with posts. Sign in with your HeyReagent account; there is no key to paste. An independent service, not made by or affiliated with LinkedIn.",
+      "type": "http",
+      "url": "https://api.heyreagent.com/mcp"
+    }
+  }
+}
