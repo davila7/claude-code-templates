@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-10-14T03:07:10.920759+00:00",
-  "totalJobs": 93,
+  "lastUpdated": "2026-10-15T03:10:10.492165+00:00",
+  "totalJobs": 91,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -548,11 +548,11 @@
     {
       "id": "anth-5428790008",
       "company": "Anthropic",
-      "position": "Sales Enablement Partner, Claude Products",
+      "position": "Sales Enablement Trainer, Claude Products",
       "location": "San Francisco, CA | New York City, NY",
       "remote": false,
       "salary": "",
-      "description": "As the Sales Enablement Partner, Claude Products, you'll teach Anthropic's global field organization how to use our products, both to do their own work better and to position Claude credibly with customers. Anthropic ships quickly, and the surface area of what we build is growing faster than any...",
+      "description": "As the Sales Enablement Trainer, Claude Products, you'll teach Anthropic's global field organization how to use our products, both to do their own work better and to position Claude credibly with customers. Anthropic ships quickly, and the surface area of what we build is growing faster than any...",
       "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5428790008",
       "source": "Anthropic",
       "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5428790008",
@@ -597,26 +597,6 @@
       "source": "Anthropic",
       "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5427479008",
       "postedAt": "2026-09-18T18:50:40-04:00",
-      "tags": [
-        "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5423931008",
-      "company": "Anthropic",
-      "position": "Copywriter, Developer",
-      "location": "San Francisco, CA | New York City, NY",
-      "remote": false,
-      "salary": "",
-      "description": "As a Copywriter, Developer at Anthropic, you will shape how our brand speaks to developers, an audience that is notoriously allergic to being marketed to and quick to spot anything that doesn't ring true. Developers who stay sharp, curious, and direct AI tools with their own judgment are the ones...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5423931008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5423931008",
-      "postedAt": "2026-09-16T15:39:40-04:00",
       "tags": [
         "Rust",
         "AWS",
@@ -1638,30 +1618,6 @@
       "postedAt": "2026-06-09T04:24:59-04:00",
       "tags": [
         "Rust",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "anth-5229345008",
-      "company": "Anthropic",
-      "position": "Staff Software Engineer, Claude Design",
-      "location": "San Francisco, CA | New York City, NY | Seattle, WA",
-      "remote": false,
-      "salary": "",
-      "description": "At Anthropic, we're building AI systems that are safe, beneficial, and transformative. Our mission is to develop AI that benefits humanity, and we believe the most powerful capabilities emerge when we thoughtfully bridge the gap between research breakthroughs and real-world applications. Claude...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5229345008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5229345008",
-      "postedAt": "2026-05-27T20:20:38-04:00",
-      "tags": [
-        "React",
-        "TypeScript",
-        "Python",
-        "Rust",
-        "Node.js",
         "AWS",
         "Claude Code",
         "Anthropic"
