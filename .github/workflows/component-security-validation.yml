@@ -61,7 +61,8 @@ jobs:
           retention-days: 30
 
       - name: Comment PR with Results
-        if: github.event_name == 'pull_request' && always()
+        # Fork PR GITHUB_TOKEN is read-only and cannot post comments.
+        if: github.event_name == 'pull_request' && always() && github.event.pull_request.head.repo.full_name == github.repository
         uses: actions/github-script@v9
         with:
           script: |
