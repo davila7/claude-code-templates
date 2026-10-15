@@ -21,15 +21,16 @@ class ClaudeAPIProxy {
   
   setupMiddleware() {
     this.app.use(express.json());
+    // Local tools only: this API reads conversations and writes into them.
+    // No web page may call it, so there is no CORS, any request a browser
+    // tags with an Origin is refused, and the Host must be loopback so a
+    // DNS-rebinding page cannot reach it either.
     this.app.use((req, res, next) => {
-      res.header('Access-Control-Allow-Origin', '*');
-      res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-      res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-      if (req.method === 'OPTIONS') {
-        res.sendStatus(200);
-      } else {
-        next();
+      const host = (req.headers.host || '').replace(/:\d+$/, '');
+      if (!['localhost', '127.0.0.1', '[::1]'].includes(host) || req.headers.origin) {
+        return res.sendStatus(403);
       }
+      next();
     });
   }
   
@@ -329,7 +330,7 @@ class ClaudeAPIProxy {
   
   start() {
     return new Promise((resolve) => {
-      this.server = this.app.listen(this.port, () => {
+      this.server = this.app.listen(this.port, '127.0.0.1', () => {
         console.log(chalk.green(`🌉 Claude API Proxy running on http://localhost:${this.port}`));
         console.log(chalk.blue(`📡 Ready to intercept and send messages to Claude Code`));
         resolve();

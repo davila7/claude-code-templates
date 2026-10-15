@@ -7,13 +7,17 @@ interface Props {
   title?: string;
   description?: string;
   ogImage?: string;
+  ogImageAlt?: string;
 }
 
 const {
   title = 'Claude Code Templates',
   description = 'Browse and install 1000+ components for Claude Code: AI agents, slash commands, MCP integrations, hooks, settings, and skills. Free, open-source CLI tool.',
-  ogImage = '/logo.png'
+  ogImage = '/logo.png',
+  ogImageAlt,
 } = Astro.props;
+// Generated 1200x630 previews live under /og/; the default logo has no fixed size.
+const ogImageSized = ogImage.startsWith('/og/');
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const ogImageURL = new URL(ogImage, Astro.site).href;
@@ -61,6 +65,9 @@ const schemaData = JSON.stringify({
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={ogImageURL} />
+    {ogImageSized && <meta property="og:image:width" content="1200" />}
+    {ogImageSized && <meta property="og:image:height" content="630" />}
+    {ogImageAlt && <meta property="og:image:alt" content={ogImageAlt} />}
     <meta property="og:site_name" content="Claude Code Templates" />
 
     <!-- Twitter Card -->
@@ -68,6 +75,7 @@ const schemaData = JSON.stringify({
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageURL} />
+    {ogImageAlt && <meta name="twitter:image:alt" content={ogImageAlt} />}
 
     <!-- Structured Data -->
     <script type="application/ld+json" set:html={schemaData} />

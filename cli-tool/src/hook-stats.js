@@ -229,10 +229,10 @@ Please review my automation hook configuration and suggest optimizations for:
 
 Consider my project structure and suggest hooks that would be most beneficial for my development workflow.`;
 
-    const claudeCommand = `claude "${hookSummary}"`;
-    
     try {
-      const child = spawn('sh', ['-c', claudeCommand], {
+      // Pass the summary as an argv entry: it contains hook names and
+      // descriptions read from .claude/settings.json, never parse it with a shell.
+      const child = spawn('claude', [hookSummary], {
         stdio: 'inherit',
         cwd: targetDir
       });

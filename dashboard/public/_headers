@@ -53,3 +53,7 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Strict-Transport-Security: max-age=31536000; includeSubDomains
   Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+# Social preview images (og:image), regenerated on every deploy
+/og/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=3600
