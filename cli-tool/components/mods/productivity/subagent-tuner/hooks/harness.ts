@@ -182,6 +182,15 @@ export function engine(on: On, options: Options = {}) {
     return { result: { ok: true } } as never
   })
 
+  // The engine starts the subagent: records the model the spawn reached it with.
+  const spawned: (string | undefined)[] = []
+
+  on('agent.spawn', (_$, e) => {
+    spawned.push(e.model)
+
+    return { model: e.model ?? 'parent' }
+  })
+
   const touched = new Set<string>()
   const wakers: (() => void)[] = []
   // The engine may hand $.fs a path in the host's own spelling (backslashes on
@@ -297,6 +306,7 @@ export function engine(on: On, options: Options = {}) {
   return {
     clock,
     seen,
+    spawned,
     toasts,
     diagnostics,
     asked,
@@ -469,3 +479,7 @@ export const CLOSER = {
     })
   },
 } as const
+
+/** The engine's `agent.spawn` for a call, as it reaches the hooks: the provider says who supplies the type. */
+export const spawnAgent = ($: Engine, toolUseId: string, subagentType: string, provider = { plugin: 'engine', tier: 'core' }) =>
+  $.agent.spawn({ tool_use_id: toolUseId, prompt: 'p', description: 'Review the diff', subagentType, provider } as never)

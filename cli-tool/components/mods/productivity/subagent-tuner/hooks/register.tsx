@@ -28,6 +28,7 @@ import {
   autoPatch,
   hasOpenField,
   hasOwnDefinition,
+  isJudgedByName,
   presetFor,
   recommend,
   resolveDefault,
@@ -236,6 +237,10 @@ const tuneAgent: AgentHook = async ($, e, next) => {
   const rec = hasOwnDefinition(e.subagent_type, offers) ? INHERIT : recommend(e)
 
   if (mode === 'auto' || !(await canAsk($))) {
+    if (isJudgedByName(e.subagent_type, offers)) {
+      judgedByName.set(e.tool_use_id, e)
+    }
+
     return applyAuto($, e, next, saved, rec)
   }
 
@@ -631,9 +636,14 @@ async function launchAndSave($: Host, next: AgentNext, chosen: Parameters<AgentN
 // before the model can name a type at dispatch. Reset by register, like waitShell.
 const offers = new Map<string, boolean>()
 
+// The calls judged by name alone (their offer had not come) that Auto let through untouched, by
+// tool_use_id: the spawn names who provides the type, which the call could not know.
+const judgedByName = new Map<string, AgentCall>()
+
 export const register: Register = on => {
   waitShell = undefined
   offers.clear()
+  judgedByName.clear()
 
   // Only observes: the offer goes on as it came, whatever the record does.
   on('agent.offer', (_$, e, next) => {
@@ -645,6 +655,29 @@ export const register: Register = on => {
     }
 
     return next(e)
+  }).catch(($, e, next) => next(e))
+
+  // The spawn tells a type the engine provides (a built-in) from a user's: where the offer came after
+  // the call, the recommendation the call went without applies now. The spawn takes a model only.
+  on('agent.spawn', async ($, e, next) => {
+    const call = judgedByName.get(e.tool_use_id)
+
+    judgedByName.delete(e.tool_use_id)
+
+    if (call === undefined || e.provider.plugin !== 'engine' || e.provider.tier !== 'core' || offers.get(e.subagentType) === false) {
+      return next(e)
+    }
+
+    const { saved } = await read($, settings)
+    const { model } = autoPatch(call, saved, recommend(call))
+
+    if (model === undefined || model === e.model) {
+      return next(e)
+    }
+
+    $.ui.toast(`Subagent model -> ${model}`)
+
+    return next({ ...e, model })
   }).catch(($, e, next) => next(e))
 
   on('session.start', async ($, e, next) => {

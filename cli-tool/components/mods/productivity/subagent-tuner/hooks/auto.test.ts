@@ -1,7 +1,7 @@
 // @ts-nocheck: written for the Claude Code 2.1.296 types; this folder has the 2.1.283 declarations.
 import { expect, mock, test } from 'claude-code/testing'
 import type { Engine } from 'claude-code/testing'
-import { BUILD, CUSTOM, REVIEW, SEARCH, UNTOUCHED, engine, mountBand, offerAgent, start } from './harness'
+import { BUILD, CUSTOM, REVIEW, SEARCH, UNTOUCHED, engine, mountBand, offerAgent, spawnAgent, start } from './harness'
 
 test('a call that sets both fields passes untouched and asks nothing', async ($, on) => {
   const { seen, toasts, asked } = engine(on)
@@ -255,4 +255,65 @@ test('a user or project agent is custom even when offered under the engine core 
     { model: undefined, effort: undefined, description: 'Review the diff' },
     { model: undefined, effort: undefined, description: 'Review the diff' },
   ])
+})
+
+// The engine may raise a type's offer only after the call, so the call is judged by name. The spawn
+// still names who provides the type: a type the engine itself provides is recommended for there.
+const LATE = { ...REVIEW, subagent_type: 'late-builtin', tool_use_id: 'u1' } as never
+
+test('auto: a call judged custom by name is recommended for at the spawn when the engine provides the type', async ($, on) => {
+  const { seen, spawned, toasts } = engine(on, { store: { mode: 'auto' } })
+
+  await start($)
+  await $.tool.call(LATE)
+  await spawnAgent($, 'u1', 'late-builtin')
+
+  expect(seen).toEqual([UNTOUCHED('Review the diff')])
+  expect(spawned).toEqual(['opus'])
+  expect(toasts).toEqual(['Subagent model -> opus'])
+})
+
+test('auto: a call judged custom by name stays untouched at the spawn when a user or project provides the type', async ($, on) => {
+  const { spawned, toasts } = engine(on, { store: { mode: 'auto' } })
+
+  await start($)
+  await $.tool.call(LATE)
+  await spawnAgent($, 'u1', 'late-builtin', { plugin: 'project', tier: 'user' })
+
+  expect(spawned).toEqual([undefined])
+  expect(toasts).toEqual([])
+})
+
+test('auto: a spawn of a call the tuner did not judge by name, or judged built-in, is left alone', async ($, on) => {
+  const { spawned, toasts } = engine(on, { store: { mode: 'auto' } })
+
+  await start($)
+  await $.tool.call({ ...SEARCH, tool_use_id: 'u2' } as never)
+  await spawnAgent($, 'u2', 'Explore')
+  await spawnAgent($, 'unknown-call', 'late-builtin')
+
+  expect(spawned).toEqual([undefined, undefined])
+  expect(toasts).toEqual(['Subagent -> haiku/low'])
+})
+
+test('manual: the spawn of a call the person was asked about is left alone', async ($, on) => {
+  const { spawned } = engine(on, { store: { mode: 'manual' }, script: ['inherit'] })
+
+  await start($)
+  await $.tool.call(LATE)
+  await spawnAgent($, 'u1', 'late-builtin')
+
+  expect(spawned).toEqual([undefined])
+})
+
+test('auto: a type the engine announced as a user agent stays untouched at the spawn even under the engine core provider', async ($, on) => {
+  const { spawned, toasts } = engine(on, { store: { mode: 'auto' } })
+
+  await start($)
+  await $.tool.call(LATE)
+  await offerAgent($, 'late-builtin', false, 'userSettings', { plugin: 'engine', tier: 'core' })
+  await spawnAgent($, 'u1', 'late-builtin')
+
+  expect(spawned).toEqual([undefined])
+  expect(toasts).toEqual([])
 })
