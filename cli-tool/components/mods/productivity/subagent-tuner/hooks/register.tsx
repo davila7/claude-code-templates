@@ -23,9 +23,11 @@ import {
 import { INHERIT_VALUE, paneView } from './pane-view'
 import {
   FORK_TYPE,
+  INHERIT,
   describeChoice,
   autoPatch,
   hasOpenField,
+  hasOwnDefinition,
   presetFor,
   recommend,
   resolveDefault,
@@ -230,7 +232,8 @@ const tuneAgent: AgentHook = async ($, e, next) => {
   await ensureHydrated($)
 
   const { mode, saved } = await read($, settings)
-  const rec = recommend(e)
+  // A custom agent's own definition may pin a model and an effort, unseen here.
+  const rec = hasOwnDefinition(e.subagent_type, offers) ? INHERIT : recommend(e)
 
   if (mode === 'auto' || !(await canAsk($))) {
     return applyAuto($, e, next, saved, rec)
@@ -624,8 +627,25 @@ async function launchAndSave($: Host, next: AgentNext, chosen: Parameters<AgentN
   return ran
 }
 
+// What the engine offered, per agent type: true for a built-in. Raised when the listing is built, so
+// before the model can name a type at dispatch. Reset by register, like waitShell.
+const offers = new Map<string, boolean>()
+
 export const register: Register = on => {
   waitShell = undefined
+  offers.clear()
+
+  // Only observes: the offer goes on as it came, whatever the record does.
+  on('agent.offer', (_$, e, next) => {
+    try {
+      // `source` tells a built-in from a user's agent of its name; any doubt counts as custom.
+      offers.set(e.agent, e.source === 'built-in' && e.provider.plugin === 'engine' && e.provider.tier === 'core')
+    } catch {
+      // Unrecorded, the type is judged by its name.
+    }
+
+    return next(e)
+  }).catch(($, e, next) => next(e))
 
   on('session.start', async ($, e, next) => {
     await ensureHydrated($)
