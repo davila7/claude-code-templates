@@ -2,12 +2,15 @@ name: Update JSON Data
 
 on:
   schedule:
-    # Ejecutar todos los días a las 3:00 AM UTC
+    # Every day at 03:00 UTC. The deploy at the end is an atomic Cloudflare
+    # Pages swap, so the hour doesn't risk downtime; it's just a quiet one.
     - cron: '0 3 * * *'
   workflow_dispatch: # Permite ejecutar manualmente desde GitHub UI
 
 permissions:
   contents: write
+  # to start deploy.yml once the refreshed data is pushed
+  actions: write
 
 jobs:
   update-json:
@@ -101,12 +104,55 @@ jobs:
             git diff --cached --stat -- $DATA_PATHS
           fi
 
+      # Generation takes ~8 minutes, and main often moves in that window
+      # (merges, and update-component-content.yml committing the same catalog
+      # files), so a plain push gets rejected and a rebase conflicts on the
+      # single-line JSON blobs. Instead, rebuild the commit on top of the
+      # current main: keep this run's fresh counts and trending data, and
+      # regenerate the catalog content from main with --skip-downloads (which
+      # reads the counts back from docs/components.json; seconds, no Supabase).
       - name: Commit and push changes
         if: steps.check_changes.outputs.changed == 'true'
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git commit -m "chore: Update components and trending data
+          fresh="$RUNNER_TEMP/fresh-data"
+          mkdir -p "$fresh"
+          cp docs/components.json docs/trending-data.json docs/claude-jobs.json "$fresh/"
+
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp "$fresh/components.json" docs/components.json
+            python scripts/generate_components_json.py --skip-downloads
+            cp "$fresh/trending-data.json" docs/trending-data.json
+            cp "$fresh/trending-data.json" dashboard/public/trending-data.json
+            cp "$fresh/claude-jobs.json" docs/claude-jobs.json
+            cp "$fresh/claude-jobs.json" dashboard/public/claude-jobs.json
+
+            git add -A -- $DATA_PATHS
+            if git diff --cached --quiet -- $DATA_PATHS; then
+              echo "main already has this data; nothing to push."
+              exit 0
+            fi
+            git commit -m "chore: Update components and trending data
 
           🤖 Generated with [GitHub Actions](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
-          git push
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            echo "Push rejected (main moved), retrying on the new main ($attempt/5)"
+            sleep $((attempt * 10))
+          done
+          echo "::error::Could not push the refreshed data after 5 attempts"
+          exit 1
+
+      # The push above uses GITHUB_TOKEN, which GitHub never lets trigger
+      # another workflow, so deploy.yml's `push: dashboard/**` does not fire
+      # for it and the new counts would wait for the next unrelated deploy.
+      # Dispatch the deploy explicitly so they reach aitmpl.com today.
+      - name: Deploy the refreshed data
+        if: steps.check_changes.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run deploy.yml --ref main
