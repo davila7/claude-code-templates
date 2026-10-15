@@ -37,13 +37,13 @@ and the rule that would close the route, `--share` for paths relative to the pro
 
 It prints one line per file, the strongest finding first:
 
-| Label       | Meaning                                                | What to tell the user                                                                      |
-| ----------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
-| `ROTATE`    | a value from this file was in an agent's context       | Change that key at the service that issued it. Deleting the conversation does not undo it. |
-| `CHECK`     | the same, for a file named as a template               | Ask whether the values in it are real or placeholders.                                     |
-| `UNKNOWN`   | a call named the file and its outcome was not recorded | Say plainly that the record does not show whether it was read.                             |
-| `REACHED`   | a call opened the file and nothing refused the call    | Say which file; run `--full` if the user wants the task and the command.                   |
-| `IN RESULT` | a search printed it; no call named the file            | This is the route a deny rule on the file name does not catch.                             |
+| Label | Meaning | What to tell the user |
+|---|---|---|
+| `ROTATE` | a value from this file was in an agent's context | Change that key at the service that issued it. Deleting the conversation does not undo it. |
+| `CHECK` | the same, for a file named as a template | Ask whether the values in it are real or placeholders. |
+| `UNKNOWN` | a call named the file and its outcome was not recorded | Say plainly that the record does not show whether it was read. |
+| `REACHED` | a call opened the file and nothing refused the call | Say which file; run `--full` if the user wants the task and the command. |
+| `IN RESULT` | the file's path appeared in what a command printed (a listing, or a recursive search such as `grep -r`); no call named the file | Say the path appeared in a command's output. Do not say whether its contents did: `check --full` and the page show which command it was. A deny rule on the file name does not catch this route; `init --refuse` refuses a recursive search that would read one. |
 
 "Nothing to act on" means no protected file was reached in that range, under the rules the check names in the same
 line. Answer with what the lines say and no more: a file not listed was not reached under those rules, and a file
@@ -90,7 +90,8 @@ look for another way to run it, and do not answer the question. Tell the user it
 
 ## 5. Protecting the project from now on
 
-`npx @agentwhy/cli init` adds rules that refuse the obvious reads of private files, and a one-line notice in the chat
+`agentwhy init` (or `npx @agentwhy/cli init` when it is not installed) adds rules that refuse the obvious reads of
+private files, and a one-line notice in the chat
 when a secret gets into the conversation. By default it writes to `.claude/settings.local.json`, which stays out of
 the repository. Suggest it; do not run it for the user. At a terminal it shows what it will write and asks first,
 which is how the user should see it.
