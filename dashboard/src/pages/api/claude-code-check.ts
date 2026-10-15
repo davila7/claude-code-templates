@@ -168,21 +168,21 @@ async function handleCheck() {
       console.log(`Version saved to database (ID: ${versionId})`);
     }
 
-    for (const change of parsed.changes) {
-      await sql`
-        INSERT INTO claude_code_changes (
-          version_id,
-          change_type,
-          description,
-          category
-        ) VALUES (
-          ${versionId},
-          ${change.type},
-          ${change.description},
-          ${change.category}
-        )
-      `;
-    }
+    // One batched statement instead of one query per change: each Neon HTTP query
+    // is a Workers subrequest, and a long changelog exceeded the per-request
+    // limit before reaching Discord. The delete keeps retries idempotent.
+    await sql.transaction([
+      sql`DELETE FROM claude_code_changes WHERE version_id = ${versionId}`,
+      sql`
+        INSERT INTO claude_code_changes (version_id, change_type, description, category)
+        SELECT ${versionId}, t.change_type, t.description, t.category
+        FROM unnest(
+          ${parsed.changes.map((c) => c.type)}::text[],
+          ${parsed.changes.map((c) => c.description)}::text[],
+          ${parsed.changes.map((c) => c.category)}::text[]
+        ) AS t(change_type, description, category)
+      `,
+    ]);
     console.log(`Saved ${parsed.changes.length} individual changes`);
 
     console.log('Sending Discord notification...');

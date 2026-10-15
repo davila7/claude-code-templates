@@ -1547,7 +1547,7 @@ class ClaudeAnalytics {
       
       if (success) {
         console.log(chalk.green('✅ Console Bridge initialized on port 3334'));
-        console.log(chalk.cyan('🔌 Web interface can connect to ws://localhost:3334 for console interactions'));
+        console.log(chalk.cyan(`🔌 Web interface can connect to ws://localhost:3334/?token=${this.consoleBridge.authToken} for console interactions`));
         
         // Bridge console interactions to main WebSocket
         this.setupConsoleBridgeIntegration();

@@ -1,5 +1,5 @@
 /**
- * jev-skill-suggestion — Claude Mod (EARLY ACCESS)
+ * jev-skill-suggestion — Claude Mod
  *
  * Takes the skill listing out of the context window and has TypeSafe's Jev,
  * a System One decision model, suggest at most one skill per prompt, going
@@ -62,7 +62,7 @@
  * The API key comes from the plugin's options (userConfig "typesafeApiKey"
  * or "gatewayApiKey"). Never hardcode it in this file.
  *
- * Needs CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 and Claude Code >= 2.1.278: the
+ * Needs Claude Code >= 2.1.278: the
  * `prompt.attachment` event is that release's. Typed against Anthropic's
  * declarations: https://github.com/anthropics/claude-code/tree/main/mods
  *

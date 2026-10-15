@@ -1,4 +1,6 @@
-import { expect, test } from 'bun:test'
+import { expect, test } from 'claude-code/testing'
+import { runs } from '../hooks/boards/common.tsx'
+import Doom, { CRITICAL, SHADES, safeRgb, SPRITE, WALL } from '../hooks/boards/doom.tsx'
 import {
   at, blocked, cast, fire, LEVELS, move, newDoom, parseLevel, select, solid, STEP, SWING, tick,
   turn, wrap, type DoomGame,
@@ -29,15 +31,15 @@ test('doom: casting', () => {
   expect(cast(ROOM, 3.5, 3.5, -Math.PI / 2)).toEqual({ dist: 2.5, side: 1, kind: '2' })
   // a corner: the ray is longer than either axis, and the view's cosine brings it back
   const corner = cast(ROOM, 3.5, 3.5, Math.PI / 4)
-  expect(corner.dist).toBeCloseTo(2.5 * Math.SQRT2)
-  expect(corner.dist * Math.cos(Math.PI / 4 - 0)).toBeCloseTo(2.5)
+  expect(Math.abs((corner.dist) - (2.5 * Math.SQRT2)) < 0.005).toBe(true)
+  expect(Math.abs((corner.dist * Math.cos(Math.PI / 4 - 0)) - (2.5)) < 0.005).toBe(true)
   // the wall's own kind comes back, so a view can colour it: doors and the exit are walls too
   expect(cast(['1.2'], 1.5, 0.5, 0).kind).toBe('2')
   expect(cast(['D.X'], 1.5, 0.5, 0).kind).toBe('X')
   expect(cast(['D.X'], 1.5, 0.5, Math.PI).kind).toBe('D')
   // off the map is wall, not an endless ray
-  expect(cast(['...'], 1.5, 0.5, -Math.PI / 2).dist).toBeCloseTo(0.5)
-  expect(wrap(Math.PI * 3)).toBeCloseTo(Math.PI)
+  expect(Math.abs((cast(['...'], 1.5, 0.5, -Math.PI / 2).dist) - (0.5)) < 0.005).toBe(true)
+  expect(Math.abs((wrap(Math.PI * 3)) - (Math.PI)) < 0.005).toBe(true)
 })
 
 test('doom: moving', () => {
@@ -48,12 +50,12 @@ test('doom: moving', () => {
   // walking into a wall keeps you off it, and the free axis still moves: you slide along it
   const into = move({ ...g, px: 5.5 }, 1, 1)
   expect(into.px).toBe(5.5)
-  expect(into.py).toBeCloseTo(4.5)
+  expect(Math.abs((into.py) - (4.5)) < 0.005).toBe(true)
   // a step in the open is a step
-  expect(move(g, 0.5).px).toBeCloseTo(4)
+  expect(Math.abs((move(g, 0.5).px) - (4)) < 0.005).toBe(true)
   // strafe is a right angle to the way you look, and turning changes what forward means
-  expect(move(g, 0, 0.5).py).toBeCloseTo(4)
-  expect(move(turn(g, Math.PI / 2), 0.5).py).toBeCloseTo(4)
+  expect(Math.abs((move(g, 0, 0.5).py) - (4)) < 0.005).toBe(true)
+  expect(Math.abs((move(turn(g, Math.PI / 2), 0.5).py) - (4)) < 0.005).toBe(true)
   // nothing moves once you are dead
   const dead: DoomGame = { ...g, over: true }
   expect(move(dead, 1)).toBe(dead)
@@ -196,7 +198,6 @@ test('doom: every floor is playable', () => {
 
 test('doom: the node budget', async () => {
   // the engine counts the spans in a frame, so a row folds neighbours together until it fits
-  const { runs } = await import('../hooks/boards/common.tsx')
   const stripes = (x: number) => ['▀', `c${x % 4}`, undefined] as const
   expect(runs(8, 0, () => ['▀', 'red', 'blue'])).toEqual([['▀▀▀▀▀▀▀▀', 'red', 'blue']])
   expect(runs(8, 0, stripes)).toHaveLength(8)
@@ -236,7 +237,6 @@ const apart = (a: readonly number[], b: readonly number[], step: number) => {
 const TELLS_APART = 0.28
 
 test('doom: colour-blind mode', async () => {
-  const { CRITICAL, SHADES, safeRgb, SPRITE, WALL } = await import('../hooks/boards/doom.tsx')
   const normal = (name: string) => (name.startsWith('wall:') ? WALL[name.slice(5)] : SPRITE[name as never].rgb)
   const gap = (f: (n: string) => readonly number[]) => ([a, b]: [string, string]) => apart(f(a), f(b), SHADES)
   // every pair that costs something to mix up stays apart for all three kinds of colour blindness
@@ -256,7 +256,6 @@ test('doom: colour-blind mode', async () => {
 test('doom: colour-blind mode marks the door and the exit with a pattern', async () => {
   ;(globalThis as any).h = (tag: string, props: unknown, ...kids: unknown[]) =>
     ({ tag, props: props ?? {}, kids: kids.flat(Infinity).filter(k => k !== null && k !== undefined && k !== false) })
-  const Doom = (await import('../hooks/boards/doom.tsx')).default
   // both a small band and a wide one: the run cap in grid() tightens as the view grows, and a
   // pattern fine enough to be folded away disappears exactly where it is needed most
   const at = (columns: number, rows: number) => ({
@@ -300,7 +299,6 @@ test('doom: colour-blind mode marks the door and the exit with a pattern', async
 test('doom: stops when Claude answers, and says so in the view', async () => {
   ;(globalThis as any).h = (tag: string, props: unknown, ...kids: unknown[]) =>
     ({ tag, props: props ?? {}, kids: kids.flat(Infinity).filter(k => k !== null && k !== undefined && k !== false) })
-  const Doom = (await import('../hooks/boards/doom.tsx')).default
   let frame: (() => void) | undefined
   let press: ((e: { key: string }) => void) | undefined
   const surface: any = {
@@ -483,7 +481,6 @@ test('doom: no floor drops you on top of its own exit', () => {
 const painted = async (game: Partial<DoomGame>, columns = 80, rows = 14, props: { safe?: boolean } = {}) => {
   ;(globalThis as never as { h: unknown }).h = (tag: string, p: unknown, ...kids: unknown[]) =>
     ({ tag, props: p ?? {}, kids: kids.flat(Infinity).filter(k => k !== null && k !== undefined && k !== false) })
-  const Doom = (await import('../hooks/boards/doom.tsx')).default
   const surface: any = {
     columns, rows, elements: { Box: 'Box', Text: 'Text' }, state: undefined,
     setState(next: unknown) { this.state = next },

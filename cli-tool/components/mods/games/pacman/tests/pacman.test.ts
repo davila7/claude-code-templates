@@ -1,4 +1,4 @@
-import { expect, test } from 'bun:test'
+import { expect, test } from 'claude-code/testing'
 import { MAZE, newPacman, step, turn } from '../hooks/games/pacman.ts'
 
 let seed = 42

@@ -1,4 +1,4 @@
-import { expect, test } from 'bun:test'
+import { expect, test } from 'claude-code/testing'
 import { isBetter } from '../hooks/games/best.ts'
 
 test('best scores', () => {

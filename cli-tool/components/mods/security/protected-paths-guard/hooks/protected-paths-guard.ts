@@ -1,12 +1,12 @@
 /**
- * protected-paths-guard — Claude Mod (EARLY ACCESS)
+ * protected-paths-guard — Claude Mod
  *
  * Denies Edit / Write / NotebookEdit calls that target sensitive files
  * (.env, lockfiles, CI workflows, git internals, private keys) unless the path
  * is allowlisted. A `tool.call` hook under an array matcher (any of the named
  * tools); on a match it returns `{ deny }` without calling `next`.
  *
- * Needs CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 (Claude Code >= 2.1.259). Typed
+ * Needs Claude Code >= 2.1.287. Typed
  * against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
  *
  * Options:
@@ -76,5 +76,17 @@ export const register: Register = (on, options) => {
     }
 
     return next(e)
+  }).catch(async ($, e, next) => {
+    // The check had passed and the write ran: hand back its result (replayed, nothing runs twice).
+    if (next.called) {
+      try {
+        return await next(e)
+      } catch {
+        return { deny: `The ${e.tool} on ${e.tool === 'NotebookEdit' ? e.notebook_path : e.file_path} failed.` }
+      }
+    }
+    // A failed check never lets the write through unchecked (fail closed).
+    $.ui.log(`[protected-paths-guard] check failed (${next.error.kind}); denied ${e.tool}`)
+    return { deny: `protected-paths-guard could not check this path (${next.error.kind}), so the ${e.tool} was not run. Ask the user to make the change manually.` }
   })
 }

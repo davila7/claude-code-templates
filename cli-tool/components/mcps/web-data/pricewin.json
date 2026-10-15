@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "pricewin": {
+      "description": "Live hotel and flight prices compared across Booking.com, Agoda, Trip.com and Traveloka, in USD, with links to book at the source. Can send a booking request to a direct-listed partner hotel (no payment; the guest pays at the property). Public endpoint, no API key required.",
+      "type": "http",
+      "url": "https://mcp.price.win/mcp"
+    }
+  }
+}

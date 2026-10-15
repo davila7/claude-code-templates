@@ -1,0 +1,65 @@
+name: Component Validate
+
+# Runs `claude plugin validate` (the official validator) over agents, commands,
+# skills, hooks and MCP components. See scripts/validate_components.py for how
+# the nested catalog layout is adapted to what the validator accepts.
+#
+# - Pull requests: validates only the components the PR touches and blocks on errors.
+# - Weekly / manual: validates the whole catalog and reports; never blocks, because
+#   the catalog still has known errors (see the cleanup plan).
+# Mods are validated by mods-typecheck.yml; settings and loops have no official validator.
+
+on:
+  pull_request:
+    paths:
+      - 'cli-tool/components/agents/**'
+      - 'cli-tool/components/commands/**'
+      - 'cli-tool/components/skills/**'
+      - 'cli-tool/components/hooks/**'
+      - 'cli-tool/components/mcps/**'
+      - 'scripts/validate_components.py'
+      - '.github/workflows/component-validate.yml'
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: claude plugin validate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Validate changed components (PR, blocking)
+        if: github.event_name == 'pull_request'
+        run: |
+          git diff --name-only --diff-filter=d "origin/${{ github.base_ref }}...HEAD" -- cli-tool/components > changed.txt
+          python3 scripts/validate_components.py --changed changed.txt --report component-validation.json
+
+      - name: Validate whole catalog (report only)
+        if: github.event_name != 'pull_request'
+        continue-on-error: true
+        run: python3 scripts/validate_components.py --report component-validation.json
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: component-validation-report
+          path: component-validation.json
+          if-no-files-found: ignore
