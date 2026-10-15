@@ -1,0 +1,4 @@
+{
+  "description": "Turn off idle compaction (Claude Code 2.1.290+). By default, a terminal conversation over 200K tokens (CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS) that sits idle for about 54 minutes is compacted before its one-hour prompt cache expires; this only happens with auto-compact on and the one-hour cache in use. Use this if you would rather pay to reprocess the full conversation on your next message than continue from a summary. Do not combine with idle-compaction-early.",
+  "idleCompaction": false
+}

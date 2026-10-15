@@ -55,9 +55,14 @@ program
   .action(async (options) => {
     try {
       // Only show banner for non-agent-list commands
+      // Component installs print their own one-line header (src/install-ui.js)
+      const isComponentInstall = !options.sandbox && !options.studio &&
+                                 (options.agent || options.command || options.mcp || options.setting ||
+                                  options.hook || options.skill || options.loop || options.mod || options.functionHook);
       const isQuietCommand = options.listAgents || 
                             options.removeAgent || 
-                            options.updateAgent;
+                            options.updateAgent ||
+                            isComponentInstall;
       
       if (!isQuietCommand) {
         showBanner(pkg.version);
