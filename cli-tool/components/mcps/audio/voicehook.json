@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "voicehook": {
+      "description": "Talk with your agents. Remote MCP server for voicehook.ai voice calls in the browser. Your agent can start a call and hand you the link (create_call), or join a call you opened (join). It talks with say, listens with next and keeps a status board up to date (status, activity, show) while it keeps working. No key to paste. About 10 free minutes every day, no login needed.",
+      "type": "http",
+      "url": "https://voicehook.ai/mcp?utm_source=aitmpl&utm_campaign=d10-mcp"
+    }
+  }
+}
