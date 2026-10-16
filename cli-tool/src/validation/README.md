@@ -189,7 +189,7 @@ npm run security-audit:ci
 node src/security-audit.js [options]
 
 # Options:
-#   --ci              Exit with code 1 on errors (for CI/CD)
+#   --ci              Enable strict semantic checks and exit with code 1 on errors
 #   --verbose, -v     Show detailed validation results
 #   --json            Output results as JSON
 #   --output=FILE     Save JSON report to file
@@ -202,10 +202,10 @@ node src/security-audit.js [options]
 npm run security-audit:verbose
 
 # Generate report for review
-npm run security-audit:json > my-report.json
+npm run security-audit:json
 
 # CI/CD pipeline - fail on errors
-npm run security-audit:ci
+npm run security-audit:ci -- --json --output=security-report.json
 ```
 
 ## CI/CD Integration
@@ -218,48 +218,22 @@ The repository includes a GitHub Actions workflow that automatically validates c
 
 **File:** `.github/workflows/component-security-validation.yml`
 
-```yaml
-name: Component Security Validation
+The workflow generates its JSON report in the same strict audit invocation, before returning a failed exit
+status. A separate non-strict audit does not overwrite the CI findings.
 
-on:
-  pull_request:
-    paths:
-      - 'cli-tool/components/**'
-  push:
-    branches:
-      - main
-    paths:
-      - 'cli-tool/components/**'
+Reports are written to the fresh runner temporary directory and uploaded as artifacts. This prevents the
+repository's historical `security-report.json` from being presented as current if setup or the audit fails.
 
-jobs:
-  validate:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
+The audit step allows reporting to continue after a failure; a final step checks its actual outcome and fails
+the job. Report uploads and comments cannot turn a failed audit into a passing check. Existing component
+findings remain failures.
 
-      - name: Install dependencies
-        working-directory: cli-tool
-        run: npm install
-
-      - name: Run security validation
-        working-directory: cli-tool
-        run: npm run security-audit:ci
-
-      - name: Upload security report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: security-report
-          path: cli-tool/security-report.json
-          retention-days: 30
-```
+Fork pull requests retain the report artifact but do not receive an automatic comment, because their Actions
+token cannot post comments. No privileged `pull_request_target` checkout is used.
 
 ### PR Comment Bot
 
-The workflow automatically posts validation results as PR comments:
+The workflow posts validation results as comments on same-repository pull requests:
 
 ```markdown
 ## 🔒 Security Validation Results
