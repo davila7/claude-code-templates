@@ -1,0 +1,6 @@
+{
+  "description": "cache-autocompact: turn.step records each request's cache usage; a five-second clock.every decides when the cache is close to lapsing and calls session.compact (or runs /compact in a headless session); ui.status says what it will do",
+  "modules": [
+    "./register.tsx"
+  ]
+}
