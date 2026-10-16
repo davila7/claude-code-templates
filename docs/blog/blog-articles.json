@@ -1,6 +1,25 @@
 {
   "articles": [
     {
+      "id": "architect-reviewer-agent",
+      "title": "Architect Reviewer Agent for Claude Code: Review System Design Before You Refactor",
+      "description": "Install the Architect Reviewer agent for Claude Code to evaluate system design, service boundaries, and technology choices with a read-only, risk-ranked architecture review.",
+      "url": "architect-reviewer-agent/",
+      "image": "assets/architect-reviewer-agent-cover.png",
+      "category": "Development",
+      "readTime": "5 min read",
+      "tags": [
+        "Claude Code",
+        "Agents",
+        "Architecture",
+        "System Design",
+        "Code Review"
+      ],
+      "difficulty": "basic",
+      "featured": true,
+      "order": 27
+    },
+    {
       "id": "task-move-command",
       "title": "Task Move Command for Claude Code: Automate Your Task Status Workflow",
       "description": "Install the Task Move command for Claude Code to move tasks between status folders (todos, in progress, QA, completed) with validation, bulk operations, and a full audit trail.",
