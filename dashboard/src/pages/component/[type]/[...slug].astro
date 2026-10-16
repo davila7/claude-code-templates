@@ -45,6 +45,13 @@ try {
   error = e.message;
 }
 
+// A missing component is a real 404 (agents and crawlers otherwise treat every
+// slug as an existing page). The "Component not found" view below still renders.
+if (!component && !error) {
+  Astro.response.status = 404;
+  Astro.response.statusText = 'Not Found';
+}
+
 function formatName(name: string): string {
   if (!name) return '';
   return name.replace(/\.(md|json)$/, '').replace(/[-_]/g, ' ')

@@ -1,0 +1,98 @@
+---
+import DashboardLayout from '../layouts/DashboardLayout.astro';
+import TopBar from '../components/TopBar.astro';
+import ProsePage from '../components/ProsePage.astro';
+import SearchModal from '../components/SearchModal.tsx';
+
+export const prerender = true;
+---
+
+<DashboardLayout
+  title="Privacy Policy | Claude Code Templates"
+  description="What data aitmpl.com and the claude-code-templates CLI collect, why, who processes it, and how to opt out."
+>
+  <TopBar />
+  <ProsePage heading="Privacy Policy" updated="October 16, 2026">
+    <p>
+      This page explains what data Claude Code Templates collects through the website at aitmpl.com and the
+      <code>claude-code-templates</code> command-line tool, why, and how to opt out. The project does not sell personal data
+      and does not use it for advertising profiles.
+    </p>
+
+    <h2>Browsing the website</h2>
+    <p>
+      You can browse the catalog without an account. The website does not load third-party analytics or advertising
+      trackers. Like any web server, our hosting provider (Cloudflare) processes your IP address and request details to
+      deliver pages and protect the site from abuse. Your theme and layout preferences are kept in your browser's local
+      storage and never sent to us.
+    </p>
+
+    <h2>CLI usage statistics</h2>
+    <p>
+      When you install a component, the CLI sends a usage event so the site can show download counts and
+      trending components. The event contains the component type, name and category, the CLI version, your Node.js version,
+      operating system and architecture, and whether the installation succeeded. Our server also records the request's IP
+      address and user agent with download events. No file contents, project paths or personal identifiers from your machine are sent.
+    </p>
+    <p>
+      To turn this off, set <code>CCT_NO_TRACKING=true</code> (or <code>CCT_NO_ANALYTICS=true</code>) in your environment.
+      Nothing is sent when <code>CI=true</code>. Crash reporting is a separate, off-by-default feature that only runs if you
+      set <code>CCT_ERROR_REPORTING=true</code>.
+    </p>
+
+    <h2>Accounts and collections</h2>
+    <p>
+      Signing in is optional and handled by Clerk. If you sign in, we store your account identifier and the component
+      collections you create, including whether you made a collection public. Your name and email are held by Clerk.
+    </p>
+
+    <h2>Sending components to a GitHub repository</h2>
+    <p>
+      The "Send to repo" feature asks you to authorize our GitHub OAuth app. The resulting access token is kept in your
+      browser's session storage, used only to create the commit or pull request you asked for, and is not stored on our servers.
+    </p>
+
+    <h2>Newsletter</h2>
+    <p>
+      If you subscribed to the newsletter, your email address is stored with our email provider, Resend, and used only to
+      send it. Every email includes an unsubscribe link.
+    </p>
+
+    <h2>Sponsored placements</h2>
+    <p>
+      If you buy a sponsored placement, payment is handled by Stripe on admin.aitmpl.com. We keep a record of the placement
+      and the Stripe payment reference; we never see or store your card details.
+    </p>
+
+    <h2>Error monitoring</h2>
+    <p>
+      Server errors on the website are reported to Sentry so we can fix them. Reports contain the error and the API route where it happened,
+      not account data.
+    </p>
+
+    <h2>Service providers</h2>
+    <ul>
+      <li>Cloudflare: hosting and content delivery.</li>
+      <li>Supabase and Neon: databases for usage statistics, collections and placements.</li>
+      <li>Clerk: sign-in.</li>
+      <li>GitHub: OAuth for "Send to repo" and the public source repository.</li>
+      <li>Resend: newsletter delivery.</li>
+      <li>Stripe: payments for sponsored placements.</li>
+      <li>Sentry: error monitoring.</li>
+      <li>Google Fonts: web fonts loaded by the site.</li>
+    </ul>
+
+    <h2>Your choices</h2>
+    <p>
+      You can delete your account and collections, ask what data we hold about you, or ask us to delete it, by emailing
+      <a href="mailto:dan.avila7@gmail.com">dan.avila7@gmail.com</a>. We will answer within 30 days.
+    </p>
+
+    <h2>Changes</h2>
+    <p>
+      We will update this page when what we collect changes, and the date above shows the latest version. The page's history
+      is public in the <a href="https://github.com/davila7/claude-code-templates/commits/main/dashboard/src/pages/privacy.astro">GitHub repository</a>.
+    </p>
+  </ProsePage>
+  <SearchModal client:idle />
+</DashboardLayout>

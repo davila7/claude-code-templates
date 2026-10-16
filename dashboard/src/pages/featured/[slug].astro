@@ -10,7 +10,7 @@ const { slug } = Astro.params;
 const item = FEATURED_ITEMS.find((f) => f.url === `/featured/${slug}`);
 
 if (!item) {
-  return Astro.redirect('/');
+  return Astro.rewrite('/404');
 }
 ---
 

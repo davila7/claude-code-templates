@@ -9,7 +9,9 @@
     "build": "node scripts/generate-og-images.mjs && astro build",
     "og": "node scripts/generate-og-images.mjs",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "test": "node --experimental-strip-types --test tests/*.test.ts",
+    "check:agents": "node scripts/check-agent-endpoints.mjs"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^12.6.13",
