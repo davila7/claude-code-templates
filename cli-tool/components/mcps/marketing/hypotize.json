@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "hypotize": {
+      "description": "A hosted MCP server for growth experiments: check what the team already tested, write hypothesis-first ideas, score them with ICE, PIE or RICE and close each test with a measured result and a learning. Sign in with your Hypotize account; there is no key to paste.",
+      "type": "http",
+      "url": "https://api.hypotize.ai/mcp"
+    }
+  }
+}
