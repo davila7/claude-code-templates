@@ -48776,6 +48776,55 @@
       ]
     },
     {
+      "name": "ultra-config",
+      "path": "productivity/ultra-config",
+      "category": "productivity",
+      "type": "mod",
+      "description": "A designed /config: five one-press profiles (Token saver, Fast flow, Max quality, Guarded, Autopilot) that set Claude Code up for one way of working, with a preview of every change and undo, plus the whole settings menu as a categorized form with search. /config rows are written the way the menu writes them; effort, subagent model, env caps and deny rules go to ~/.claude/settings.json after a backup copy.",
+      "author": "claude-code-templates",
+      "repo": "https://github.com/davila7/claude-code-templates",
+      "version": "0.1.0",
+      "license": "MIT",
+      "keywords": [
+        "mod",
+        "function-hooks",
+        "settings",
+        "config",
+        "profiles",
+        "tokens",
+        "permissions",
+        "sidebar"
+      ],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "modules": [
+        "register.tsx"
+      ],
+      "userConfig": {
+        "columns": {
+          "type": "number",
+          "title": "Pane width",
+          "description": "Columns asked for the docked pane in the fullscreen layout (44-100); a width you drag it to wins",
+          "default": 62
+        }
+      },
+      "references": [
+        ".claude-plugin/plugin.json",
+        "hooks/hooks.json",
+        "hooks/profiles.ts",
+        "hooks/register.tsx",
+        "tests/ultra-config.test.tsx",
+        "types/index.d.ts"
+      ]
+    },
+    {
       "name": "webfetch-cache",
       "path": "productivity/webfetch-cache",
       "category": "productivity",
