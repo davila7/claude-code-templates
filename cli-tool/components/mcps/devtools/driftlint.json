@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "driftlint": {
+      "description": "Model Context Protocol (stdio) server for driftlint. Read-only tools (drift_scan, drift_check) that verify CLAUDE.md, AGENTS.md, skills and hooks against the actual repo, so an agent can check a context edit before writing it.",
+      "command": "npx",
+      "args": ["-y", "@alifurkangokce/driftlint-mcp"]
+    }
+  }
+}
