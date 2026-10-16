@@ -266,9 +266,9 @@ export function rankOf(model: string, tiers: Tiers): number | null {
  * options, and only a main-loop rewrite resolves them, here.
  */
 const ALIAS_IDS: Record<string, string> = {
-  haiku: 'claude-haiku-4-5-20251001',
-  sonnet: 'claude-sonnet-5',
-  opus: 'claude-opus-5',
+  haiku: 'claude-haiku-5-5',
+  sonnet: 'claude-sonnet-5-5',
+  opus: 'claude-opus-5-5',
 }
 
 /**
