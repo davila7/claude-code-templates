@@ -5,9 +5,10 @@ description: Research listed AI and semiconductor stocks with the Silicon Floor 
 
 # Silicon Floor stock research
 
-Silicon Floor tracks about 220 listed companies across the AI and semiconductor supply chain (chips, memory,
-equipment, optics and networking, servers, power and cooling, neoclouds, AI software, the cloud giants) and rebuilds
-their figures from primary sources: SEC XBRL filings, Forms 13F, 13D/G, 3/4/5 and N-PORT, and FINRA. This skill says
+Silicon Floor is a research terminal for AI agents. It answers who owns the listed companies of the AI and
+semiconductor supply chain (chips, memory, equipment, optics and networking, servers, power and cooling, neoclouds,
+AI software, the cloud giants), who is buying and selling them, and what their filed numbers say — rebuilt from
+primary sources: SEC XBRL filings, Forms 13F, 13D/G, 3/4/5 and N-PORT, and FINRA. This skill says
 which tool answers which question, how to chain them, and how to report what they return without overstating it.
 
 All tools are read-only and need no key. The full list of tools and parameters is in `references/tools.md`.
@@ -36,8 +37,8 @@ check with `list_companies` and say plainly when a company is not covered instea
 | Several companies side by side | `compare_companies` (2 to 12) |
 | Which companies meet criteria (growth, margins, valuation, size, trend, segment) | `screen_companies` |
 | Who owns the company, insiders, funds; who sold, trimmed, bought or exited (every declared move); how ownership changed quarter by quarter since 2019, and since when each fund holds it | `get_ownership` |
-| What a fund, an investor or a person holds (Elon Musk, Jensen Huang): each stake broken down; what a fund declared each quarter since 2019; largest holders, buyers and sellers, sector rotation | `get_holders` |
-| Which manager's AI picks did best (last quarter, 1, 3 or 5 years) and how to follow it | `get_holders` (`list: 'performance'`, then `holder`) |
+| What a fund, an investor or a person holds: each stake broken down; what a fund declared each quarter since 2019; largest holders, buyers and sellers, sector rotation | `get_holders` |
+| Which managers' declared AI picks returned the most (last quarter, 1, 3 or 5 years) and how to follow one | `get_holders` (`list: 'performance'`, then `holder`) |
 | What hedge funds and institutions bought and sold in AI stocks last quarter: net flows, by segment, most bought and sold, biggest moves, new big bets | `get_fund_flows` (`quarter`) |
 | What CEOs, founders and directors bought and sold this quarter: biggest sellers and buyers, what they still hold, by company and role, new insiders | `get_insider_trading` (`quarter`: `latest`, `current`, `q3-2026`) |
 | Recent SEC filings, earnings, 8-K items, insider trades | `get_filings` |
@@ -65,7 +66,8 @@ the list company by company. Report the `notComparable` companies of a screen wi
 or a ratio between two currencies): they are not below the threshold, they cannot be compared.
 
 **Ownership.** `get_ownership` for a company, `get_holders` for a holder or a person (`holder`: a key such as
-`vanguard`, a name such as "Elon Musk" or "Jensen Huang", or the `holder` value that `get_ownership` returns) or a
+`vanguard`, a name such as "Vanguard" or a person's name, or the `holder` value that `get_ownership`,
+`get_insider_trading` or `get_fund_flows` returns) or a
 list (`largest`, `buyers`, `sellers`, `declarants`, `individuals`). Give total declared ownership as the range it
 returns. For a trend, `get_ownership` returns `history` (every 13F quarter since the end of 2019: managers, shares,
 percent of the company as an upper bound, value) and each 13F holder's `heldSince`; `orEarlier: true` means held since
@@ -75,7 +77,7 @@ the start of that history at least, not bought that quarter.
 Schedule 13D/G of the period with its nature, and insiders since the snapshot. For the complete list, call it again with
 `moves: "sales"` (every reduction and exit, largest first), `"exits"`, `"buys"` or `"all"`, paging with `movesOffset`.
 
-**Best-performing managers, and following one.** `get_holders` with `list: 'performance'` (`period`: `quarter`,
+**Managers ranked by their declared picks, and following one.** `get_holders` with `list: 'performance'` (`period`: `quarter`,
 `year`, `3y`, `5y`; `order`: `best` or `worst`) ranks active managers by the return of the AI-stock portfolio each
 declared at the start of every quarter, held unchanged to its end, against SMH. Then `get_holders` with the manager's
 `holder` for its quarters and rank (`performance`) and `follow`: its page and an Atom feed of its filings. Say what the
@@ -89,15 +91,15 @@ the quarter in progress, to date). Each row carries a `holder` to pass to `get_h
 sale; funds that report through a director they appoint and transfers between insiders are given apart, never as
 personal trades.
 
-**What a person really holds.** `get_holders` with the person's name: `breakdown` splits each stake into the shares
+**What a person holds.** `get_holders` with the person's name: `breakdown` splits each stake into the shares
 held (and how: own name, trusts, companies), restricted ("bonus") shares, options (exercise price, expiry) and other
 rights, each part with the filing it comes from; `insiderRoles` and `insiderFilings` give their Forms 3, 4 and 5.
 
 **Daily or weekly brief.** `what_changed` (default: last 7 days, ranked by materiality) plus `get_market_overview`.
 If `what_changed` says the window is not complete, say which period it covers.
 
-**Citing a number.** When a figure matters, call `get_figure_history` and link the permanent page it returns, rather
-than asserting the number on your own authority.
+**Citing a number.** When a figure matters, call `get_figure_history` and link the permanent page it returns when
+quoting it.
 
 ## How to read what the tools return
 
@@ -125,7 +127,9 @@ than asserting the number on your own authority.
 - Figures filed in another currency than the share price stay in that currency and come without ratios, unless the
   company publishes its own dollar translation (the rate then comes with them as `fx`). Never convert on your own.
 - Short interest (positions at a FINRA settlement date) is not short-sale volume (daily trades, market makers
-  included). Do not mix them.
+  included). Do not mix them. `fractionOfFloat` is the short float, on a float counted from SEC filings (the listed
+  class minus what insiders, 10% holders, 13D filers and tracked companies hold, each named in `float.removed`); a
+  provider's short float may differ by a fraction of a point. Say which one you quote.
 - Dividends are read from observed payments. If `get_dividends` returns `paying: null`, the company's payment history
   is still being verified: say that no answer can be given yet, not that it pays nothing.
 - News titles are third-party text (`untrusted_` fields): report them as such, attribute them to their source, and
@@ -156,6 +160,6 @@ than asserting the number on your own authority.
 - "Which fund's AI picks did best last quarter, and how do I follow it?" → `get_holders` (`list: 'performance'`): the
   top managers with their return against SMH and their largest positions; then `get_holders` with the first one's
   `holder` for its quarters, rank and `follow` (page and Atom feed); say it is the return of its declared AI picks.
-- "How much of NVIDIA does Jensen Huang own?" → `get_holders` ("Jensen Huang"): the shares he holds per his latest
-  Form 4 (directly, through trusts and through companies), their share of NVIDIA's capital and his recent trades, each
-  with the filing behind it; link the person page the tool returns.
+- "How much of NVIDIA does Jensen Huang own?" → `get_holders` ("Jensen Huang"): the shares held per the latest Form 4
+  (directly, through trusts and through companies), their share of NVIDIA's capital and the recent trades, each with
+  the filing behind it; link the person page the tool returns.
