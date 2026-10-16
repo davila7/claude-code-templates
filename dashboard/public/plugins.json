@@ -23372,6 +23372,47 @@
     }
   },
   {
+    "slug": "management-consulting-plugin",
+    "name": "Management Consulting Plugin",
+    "author": "anotb",
+    "description": "Management consulting skills for Claude Code, Cowork, Codex, and other agents. Strategy, operations, and transformation workflows for the full engagement lifecycle.",
+    "github": "https://github.com/anotb/management-consulting-plugin",
+    "stars": 56,
+    "type": "plugin",
+    "tags": [
+      "skills"
+    ],
+    "contains": {
+      "skills": 16
+    },
+    "highlights": [
+      "Web UI: https://unsol.dev/projects/011-consulting-plugin-anthropic/"
+    ],
+    "website": "https://unsol.dev/projects/011-consulting-plugin-anthropic/",
+    "marketplace_name": "anotb-management-consulting-plugin",
+    "plugin_name": "management-consulting",
+    "plugin_manifest": {
+      "skills": [
+        "change-management",
+        "client-deliverables",
+        "due-diligence",
+        "engagement-pricing",
+        "engagement-setup",
+        "financial-modeling",
+        "implementation-planning",
+        "org-design",
+        "process-excellence",
+        "project-closeout",
+        "project-governance",
+        "proposal-development",
+        "strategic-analysis",
+        "thought-leadership",
+        "workshop-facilitation",
+        "writing-style"
+      ]
+    }
+  },
+  {
     "slug": "skills",
     "name": "Skills",
     "author": "Airtable",
