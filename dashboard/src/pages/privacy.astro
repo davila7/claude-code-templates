@@ -21,8 +21,9 @@ export const prerender = true;
 
     <h2>Browsing the website</h2>
     <p>
-      You can browse the catalog without an account. The website does not load third-party analytics or advertising
-      trackers. Like any web server, our hosting provider (Cloudflare) processes your IP address and request details to
+      You can browse the catalog without an account. The catalog pages do not load third-party analytics or advertising
+      trackers. Blog articles under <code>/blog</code> use Google Analytics to count visits, which sets Google cookies in
+      your browser. Like any web server, our hosting provider (Cloudflare) processes your IP address and request details to
       deliver pages and protect the site from abuse. Your theme and layout preferences are kept in your browser's local
       storage and never sent to us.
     </p>
@@ -31,8 +32,10 @@ export const prerender = true;
     <p>
       When you install a component, the CLI sends a usage event so the site can show download counts and
       trending components. The event contains the component type, name and category, the CLI version, your Node.js version,
-      operating system and architecture, and whether the installation succeeded. Our server also records the request's IP
-      address and user agent with download events. No file contents, project paths or personal identifiers from your machine are sent.
+      operating system and architecture, and whether the installation succeeded. When you install into a directory other than
+      the current one, the event includes that directory relative to where you ran the command. When an installation fails,
+      it includes the error message, which can contain local file paths. Our server also records the request's IP address
+      and user agent with download events. The contents of your files are never sent.
     </p>
     <p>
       To turn this off, set <code>CCT_NO_TRACKING=true</code> (or <code>CCT_NO_ANALYTICS=true</code>) in your environment.
@@ -79,7 +82,7 @@ export const prerender = true;
       <li>Resend: newsletter delivery.</li>
       <li>Stripe: payments for sponsored placements.</li>
       <li>Sentry: error monitoring.</li>
-      <li>Google Fonts: web fonts loaded by the site.</li>
+      <li>Google: Google Fonts on every page, Google Analytics on blog articles.</li>
     </ul>
 
     <h2>Your choices</h2>
