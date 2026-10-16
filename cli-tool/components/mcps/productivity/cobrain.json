@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "cobrain": {
+      "description": "Cobrain: hosted Markdown memory shared by Claude Code, claude.ai, ChatGPT, Codex and Cursor. Notes are plain .md files in folders; start_session loads a client's or project's notes and decisions in one call, and writes are version-checked so two AIs can't silently overwrite each other. Share one folder with a teammate and their AI reads it too. Uses OAuth 2.1 (dynamic client registration + sign-in), no API key needed: the MCP client prompts you to sign in on first use. Free plan (1,000 notes, no card) at https://cobrain.space.",
+      "type": "http",
+      "url": "https://cobrain.space/mcp"
+    }
+  }
+}
