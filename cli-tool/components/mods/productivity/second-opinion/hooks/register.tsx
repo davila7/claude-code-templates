@@ -545,7 +545,10 @@ async function ask(
   }
   try {
     const { text, effortSent } = await complete($, target, key, effort, system, prompt, images)
-    return { ...target, effort: effortSent ? `${effort} effort` : 'default effort', text }
+    // A step down shows what the model took, beside what was asked.
+    const isSteppedDown = effortSent !== VENDORS[target.vendor].effort[effort][0]
+    const label = !effortSent ? 'default effort' : isSteppedDown ? `${effort} effort, sent ${effortSent}` : `${effort} effort`
+    return { ...target, effort: label, text }
   } catch (err) {
     return { ...target, effort, error: withoutKey(err, key) }
   }
@@ -602,6 +605,8 @@ async function post($: EngineInterface, req: Request): Promise<HttpResponse> {
     ],
     { stdin: config, timeoutMs: COMPLETION_TIMEOUT_MS },
   )
+  // $.process.run keeps the first 4 MiB; a cut reply would lose its status line.
+  if (run.isStdoutTruncated) throw new Error('Reply over 4 MB, too large to read')
   if (run.exitCode !== 0) throw new Error(run.stderr.trim() || `curl exited ${run.exitCode}`)
   const cut = run.stdout.lastIndexOf('\n')
   const status = Number(run.stdout.slice(cut + 1))
@@ -759,7 +764,10 @@ function transcript(messages: readonly SessionMessage[]): string {
     const block = message ? renderMessage(message) : ''
     if (!block) continue
     if (used + block.length > TRANSCRIPT_CHARS) {
-      blocks.push('[earlier messages omitted]')
+      // The newest message alone over the budget (a pasted diff) is cut to fit
+      // rather than dropped, so the reviewer still sees the latest work.
+      if (!blocks.length) blocks.push(clip(block, TRANSCRIPT_CHARS))
+      if (i > 0) blocks.push('[earlier messages omitted]')
       break
     }
     blocks.push(block)

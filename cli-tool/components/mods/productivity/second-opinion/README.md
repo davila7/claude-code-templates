@@ -1,10 +1,10 @@
 # second-opinion
 
-Vendored from https://github.com/revilo-digital/second-opinion at tag v0.7.1 (MIT). I'm the author.
+Vendored from https://github.com/revilo-digital/second-opinion at tag v0.7.2 (MIT). I'm the author.
 
 A mod that asks other vendors' models (OpenAI, Gemini and xAI Grok) to check Claude's work, then hands their answers back to Claude to weigh. It uses your own API keys.
 
-![The reviewer bar above the prompt and the Reviewer models pane](https://raw.githubusercontent.com/revilo-digital/second-opinion/v0.7.1/docs/screenshot.webp)
+![The reviewer bar above the prompt and the Reviewer models pane](https://raw.githubusercontent.com/revilo-digital/second-opinion/v0.7.2/docs/screenshot.webp)
 
 ## What it does
 
@@ -45,4 +45,4 @@ Replies reach Claude marked as an outside model's text, with an instruction not 
 
 `types/claude-code.d.ts` in this folder is the 2.1.283 declaration file, which has no `weight` on `Text` and no `isDeferred` on a tool spec. `hooks/register.tsx` therefore starts with `// @ts-nocheck`. Upstream typechecks cleanly against the 2.1.299 declarations; regenerate the shared file and the pragma can go.
 
-Tests: `claude plugin test .` runs `tests/ask-model.test.ts`, 18 tests with the vendor APIs faked.
+Tests: `claude plugin test .` runs `tests/ask-model.test.ts`, 21 tests with the vendor APIs faked.

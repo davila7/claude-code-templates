@@ -402,3 +402,49 @@ test('an image file over the size cap is refused', { options: OPTIONS }, async (
   expect(String(ran.result)).toBe("Can't attach /tmp/huge.png: over 10 MB.")
   expect(asked).toBe(0)
 })
+
+test('a newest message over the transcript budget is cut, not dropped', { options: OPTIONS }, async ($, on) => {
+  mock.env(on, {})
+  const big = 'x'.repeat(100_000)
+  on('session.messages', ($, e) => ({
+    value: e.as === 'api' ? [] : [
+      { role: 'user', text: 'earlier', toolUses: [] },
+      { role: 'assistant', text: big, toolUses: [] },
+    ],
+  }))
+  let input = ''
+  onApi(on, e => {
+    input = JSON.parse(e.init?.body ?? '{}').input ?? ''
+    return ok(OPENAI_REPLY('ok'))
+  })
+
+  await $.tool.call({ tool: TOOL, question: 'hi', provider: 'openai', include_conversation: true })
+
+  expect(input).toContain('### Claude\nxxxx')
+  expect(input).toContain('chars cut]')
+  expect(input).toContain('[earlier messages omitted]')
+  expect(input.length).toBeLessThan(85_000)
+})
+
+test('a reply cut at the output cap fails plainly', { options: OPTIONS }, async ($, on) => {
+  mock.env(on, {})
+  on('process.run', () => ({
+    value: { exitCode: 0, stdout: '{"output":[', stderr: '', isStdoutTruncated: true, isStderrTruncated: false },
+  }))
+
+  const ran = await $.tool.call({ tool: TOOL, question: 'hi', provider: 'openai' })
+
+  expect(String(ran.result)).toContain('Failed: Reply over 4 MB, too large to read')
+})
+
+test('an effort the model steps down from shows both levels', { options: OPTIONS }, async ($, on) => {
+  mock.env(on, {})
+  onApi(on, e => {
+    const effort = JSON.parse(e.init?.body ?? '{}').reasoning?.effort
+    return effort === 'xhigh' ? bad(400, { message: "Unsupported value: 'reasoning.effort' does not support 'xhigh'" }) : ok(OPENAI_REPLY('ok'))
+  })
+
+  const ran = await $.tool.call({ tool: TOOL, question: 'hi', provider: 'openai', effort: 'max' })
+
+  expect(String(ran.result)).toContain('## OpenAI (gpt-5.5, max effort, sent high)')
+})

@@ -1,6 +1,6 @@
 {
   "name": "second-opinion",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "description": "QA check Claude's work with OpenAI, Gemini or xAI models: /second-opinion, /reviewer to pick models and effort, and an ask_model tool Claude can call.",
   "author": {
     "name": "revilo-digital",
