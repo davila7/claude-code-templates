@@ -23544,5 +23544,33 @@
         "cohesivity-local"
       ]
     }
+  },
+  {
+    "slug": "bestax-skills",
+    "name": "Bestax Skills",
+    "author": "allxsmith",
+    "description": "The bestax coding-agent plugin, generated from allxsmith/bestax",
+    "github": "https://github.com/allxsmith/bestax-skills",
+    "stars": 1,
+    "type": "plugin",
+    "tags": [
+      "skills",
+      "mcps"
+    ],
+    "contains": {
+      "mcps": 1
+    },
+    "highlights": [
+      "Plugin declares: 1 MCPs",
+      "Web UI: https://bestax.io/docs/guides/llms"
+    ],
+    "website": "https://bestax.io",
+    "marketplace_name": "bestax",
+    "plugin_name": "bestax",
+    "plugin_manifest": {
+      "mcpServers": [
+        "bestax"
+      ]
+    }
   }
 ]
