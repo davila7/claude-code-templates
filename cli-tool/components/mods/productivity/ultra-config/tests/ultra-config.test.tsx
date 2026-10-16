@@ -5,9 +5,7 @@ import type { On } from 'claude-code'
 import {
   PROFILES,
   applySettings,
-  categoryOf,
   matchOf,
-  nextValue,
   planFor,
   restorable,
   revertSettings,
@@ -42,14 +40,10 @@ const ROWS = (): Row[] => [
   row('useAutoModeDuringPlan', 'Use auto mode during plan', 'boolean', true),
   row('checkpoints', 'Rewind code (checkpoints)', 'boolean', true),
   row('verbose', 'Verbose output', 'boolean', false),
-  row('autoContinueAtUsageLimit', 'Continue automatically at usage limit', 'boolean', true),
-  row('askUserQuestionTimeout', 'Question auto-continue timeout', 'choice', 'never', ['never', '60s', '5m', '10m']),
-  row('dialogExpiry', 'Dialog expiry', 'choice', 'default', ['default', '60s', '5m', '10m', 'never']),
   row('turnDuration', 'Show turn duration', 'boolean', true),
   row('progressBar', 'Terminal progress bar', 'boolean', false),
   row('agentPushNotifEnabled', 'Push when Claude decides', 'boolean', false),
   row('inputNeededNotifEnabled', 'Push when actions required', 'boolean', false),
-  row('theme', 'Theme', 'choice', 'dark', ['auto', 'dark', 'light']),
 ]
 
 const saver = PROFILES.find(p => p.id === 'saver')!
@@ -135,15 +129,6 @@ describe('profiles', () => {
     expect(setPath({ a: { b: 1 } }, 'a.b', undefined)).toEqual({})
   })
 
-  test('the form groups rows and cycles values', () => {
-    expect(categoryOf('permissionMode')).toBe('permissions')
-    expect(categoryOf('my-mod.option')).toBe('plugins')
-    expect(categoryOf('somethingNew')).toBe('other')
-    expect(nextValue('boolean', true)).toBe(false)
-    expect(nextValue('choice', 'large', ['small', 'medium', 'large'])).toBe('small')
-    expect(nextValue('text', 'x')).toBeUndefined()
-  })
-
   test('settings.json is found through CLAUDE_CONFIG_DIR, else the home directory', () => {
     expect(userSettingsPath('/cfg/', '/home/me')).toBe('/cfg/settings.json')
     expect(userSettingsPath(undefined, '/home/me')).toBe('/home/me/.claude/settings.json')
@@ -213,7 +198,7 @@ describe('the command', () => {
     const w = world(on)
     await $.session.start({ cwd: '/work', surface: 'terminal', isInteractive: true } as never)
     const out = (await $.command.run(run('apply saver'))) as { text: string }
-    expect(out.text).toMatch(/Token saver applied: \d+ settings changed/)
+    expect(out.text).toMatch(/Token saver activated: \d+ settings changed/)
     expect(w.sets).toContainEqual({ key: 'model', value: 'sonnet' })
     expect(w.sets).toContainEqual({ key: 'outputStyle', value: 'Concise' })
     expect(w.writes[0]).toEqual({ path: '/home/me/.claude/settings.json.ultra-config.bak', text: '{\n  "model": "opus"\n}\n' })
@@ -261,16 +246,16 @@ describe('the command', () => {
     expect(w.sets.length).toBeGreaterThan(0)
   })
 
-  test('a profile name alone previews it in the pane without writing anything', async ($, on) => {
+  test('a profile name alone opens its detail in the pane without writing anything', async ($, on) => {
     const w = world(on)
     await $.session.start({ cwd: '/work', surface: 'terminal', isInteractive: true } as never)
     const out = (await $.command.run(run('guarded'))) as { text: string }
-    expect(out.text).toBe('▣ Guarded: 5 changes previewed in the pane · /ultra-config apply guarded')
+    expect(out.text).toBe('▣ Guarded: 5 changes, shown in the pane · /ultra-config apply guarded')
     expect(w.sets).toEqual([])
     expect(w.writes).toEqual([])
   })
 
-  test('where no pane can be placed, the preview is the command output', async ($, on) => {
+  test('where no pane can be placed, the profile detail is the command output', async ($, on) => {
     const w = world(on, '{}', false)
     await $.session.start({ cwd: '/work', surface: 'terminal', isInteractive: true } as never)
     const out = (await $.command.run(run('guarded'))) as { text: string }
@@ -291,39 +276,23 @@ describe('the command', () => {
 
 describe('the pane', () => {
   for (const surface of ['terminal', 'desktop'] as const) {
-    test(`${surface}: five cards, a preview on press, and Apply writes`, async ($, on) => {
+    test(`${surface}: five profiles, the first open, another opens on press and Activate writes`, async ($, on) => {
       const w = world(on)
       await $.session.start({ cwd: '/work', surface, isInteractive: true } as never)
       await $.command.run(run(''))
       const ui = await $.ui.mount({ plugin: 'ultra-config', surface, component: 'Pane', requestId: 'ultra-config', props: PANE } as never)
       for (const p of PROFILES) expect(await ui.find({ key: `pick:${p.id}` })).toBeDefined()
-      expect(await ui.find({ key: 'apply:flow' })).toBeUndefined()
+      expect(await ui.find({ key: 'activate:saver' })).toBeDefined()
+      expect(await ui.find({ key: 'activate:flow' })).toBeUndefined()
       await ui.press({ key: 'pick:flow' })
       await ui.redraw()
+      expect(await ui.find({ key: 'activate:saver' })).toBeUndefined()
       expect(await ui.find({ type: 'Text', text: /edits\sgo\sthrough\swithout\sa\sprompt/ })).toBeDefined()
-      await ui.press({ key: 'apply:flow' })
+      await ui.press({ key: 'activate:flow' })
       await ui.redraw()
       expect(w.sets).toContainEqual({ key: 'permissionMode', value: 'acceptEdits' })
-      expect(await ui.find({ type: 'Text', text: /Fast flow applied/ })).toBeDefined()
-      await ui.unmount()
-    })
-
-    test(`${surface}: the settings tab toggles a row and cycles a choice`, async ($, on) => {
-      const w = world(on)
-      await $.session.start({ cwd: '/work', surface, isInteractive: true } as never)
-      await $.command.run(run('settings'))
-      const ui = await $.ui.mount({ plugin: 'ultra-config', surface, component: 'Pane', requestId: 'ultra-config', props: PANE } as never)
-      expect(await ui.find({ key: 'set:model' })).toBeDefined()
-      expect(await ui.find({ key: 'extra:effortLevel' })).toBeDefined()
-      await ui.press({ key: 'cat:display' })
-      await ui.redraw()
-      await ui.press({ key: 'set:verbose' })
-      await ui.redraw()
-      expect(w.sets).toEqual([{ key: 'verbose', value: true }])
-      await ui.press({ key: 'cat:model' })
-      await ui.redraw()
-      await ui.press({ key: 'extra:effortLevel' })
-      expect(JSON.parse(w.file!).effortLevel).toBe('low')
+      expect(await ui.find({ type: 'Text', text: /Fast flow activated/ })).toBeDefined()
+      expect(await ui.find({ key: 'activate:flow' })).toBeUndefined()
       await ui.unmount()
     })
   }

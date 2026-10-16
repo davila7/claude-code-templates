@@ -1,24 +1,26 @@
 # ultra-config
 
-A designed `/config`. A side pane with five profiles that set Claude Code up for one way of working in one press, and the whole settings menu as a form grouped by category, with search. Every profile shows exactly what it will change before anything is written, and every applied profile can be undone.
+Five setting profiles in a side pane. Each one sets Claude Code up for one way of working: press a profile to see exactly what it sets, then press **Activate**. Every activation can be undone.
 
 ```
 ⚙ ULTRA  CONFIG          default · default effort · default mode
-1: ◆ Profiles  2: ☰ Settings  3: ↺ History
 ──────────────────────────────────────────────────────────────
-│ ◔  Token saver                        ■■■□□□□□□□  3/11
+▾  ◔  Token saver                      ■■■□□□□□□□  3/11
       Sonnet, low effort, short answers, Haiku subagents
-▌ ▣  Guarded                            ■■■□□□□□□□  2/7
-      You approve each change; no reading secrets; no bypass
 ╭────────────────────────────────────────────────────────────╮
-│ ▣ Guarded · 5 changes                                       │
-│ ● Bypass mode         unset → disable   settings.json       │
-│   bypassPermissions cannot be turned on                     │
-│ ● Deny rules          none → +5 rules   settings.json       │
-│   the Read tool is blocked on .env, secrets/, ~/.ssh, ~/.aws│
-│ ✓ 2 already set: Default permission mode, Rewind code       │
-│ [ Apply 5 changes ] [ Close preview ]                       │
+│ ● Model                   Default (recommended) → sonnet   │
+│   cheaper per token than Opus                              │
+│ ● Effort                  unset → low                      │
+│   less thinking per request                                │
+│ ✓ Auto-compact            on                               │
+│ …                                                          │
+│ [ Activate Token saver ]                                   │
 ╰────────────────────────────────────────────────────────────╯
+▸  »  Fast flow                        ■■■□□□□□□□  3/8
+      Edits auto-accepted, medium effort, fewer interruptions
+▸  ◆  Max quality                      ■■■■■■□□□□  6/9
+▸  ▣  Guarded                          ■■■□□□□□□□  2/7
+▸  ➤  Autopilot                        ■■■■■□□□□□  4/8
 ```
 
 ## Commands
@@ -26,15 +28,14 @@ A designed `/config`. A side pane with five profiles that set Claude Code up for
 | Command | What it does |
 | --- | --- |
 | `/ultra-config` | Opens the pane |
-| `/ultra-config <profile>` | Opens the pane with that profile's preview |
-| `/ultra-config apply <profile>` | Applies a profile and lists what it changed and skipped |
-| `/ultra-config undo` | Reverts the last applied profile (newest first) |
-| `/ultra-config settings` · `history` | Opens the pane on that tab |
+| `/ultra-config <profile>` | Opens the pane on that profile |
+| `/ultra-config apply <profile>` | Activates a profile and lists what it changed and skipped |
+| `/ultra-config undo` | Reverts the last activated profile (newest first) |
 | `/ultra-config close` | Closes the pane |
 
 Profile ids: `saver`, `flow`, `quality`, `guarded`, `autopilot`.
 
-In the pane, `1` `2` `3` switch tabs, `a` applies the open preview, `c` closes it and `u` undoes from History, while the pane has focus (ctrl+x tab, or a click). Click a card, or Tab to it and press Enter, to preview it.
+In the pane everything is a press: a profile's name opens its detail (one is always open, the first to start), and **Activate** applies it (`a` while the pane has focus). There are no tabs or arrow-key menus, so nothing competes with Claude Code's own `←` for the agents view.
 
 ## The profiles
 
@@ -46,20 +47,16 @@ In the pane, `1` `2` `3` switch tabs, `a` applies the open preview, `c` closes i
 | ▣ **Guarded** | Control and safety | Every edit and command asks first, plan mode never acts on its own, `bypassPermissions` disabled, `Read` deny rules for `.env`, `secrets/`, `~/.ssh` and `~/.aws` (they stop the Read tool, not a Bash `cat`), checkpoints on, verbose output, no `ultracode` keyword |
 | ➤ **Autopilot** | Long unattended runs (fewer approval prompts) | Auto permission mode (also during plan), effort `high`, workflows on, recap on, push notifications when Claude decides or needs you, auto-compact on |
 
-Each card shows how much of the profile is already in force (`3/11`), and `✓ active` when all of it is.
+Each profile shows how much of it is already in force (`3/11`), and `✓ active` when all of it is. In the detail, `●` is a change (old value struck through, then the new one and why), `✓` is already set and `⊘` is skipped.
 
 ## Where each change is written
 
 - **`/config` rows** (model, permission mode, output style, auto-compact…) are written with `$.config.set`, exactly as if you changed them in `/config`. Claude Code picks the file: most go to `~/.claude/settings.json` or `~/.claude.json`, and Output style goes to the project's `.claude/settings.local.json`, the same as the menu.
-- **Keys with no `/config` row** (`effortLevel`, `env.CLAUDE_CODE_SUBAGENT_MODEL`, `env.MAX_MCP_OUTPUT_TOKENS`, `permissions.deny`, `permissions.disableBypassPermissionsMode`) are written to `~/.claude/settings.json` (or `$CLAUDE_CONFIG_DIR/settings.json`). They are marked `settings.json` in the preview and `json` in the form. Before each write the file is copied to `settings.json.ultra-config.bak` (only the latest copy is kept; it holds whatever the file held, `env` values included). A file that is not valid JSON is never overwritten: those steps are skipped and the pane says why.
+- **Keys with no `/config` row** (`effortLevel`, `env.CLAUDE_CODE_SUBAGENT_MODEL`, `env.MAX_MCP_OUTPUT_TOKENS`, `permissions.deny`, `permissions.disableBypassPermissionsMode`) are written to `~/.claude/settings.json` (or `$CLAUDE_CONFIG_DIR/settings.json`). Before each write the file is copied to `settings.json.ultra-config.bak` (only the latest copy is kept; it holds whatever the file held, `env` values included). A file that is not valid JSON is never overwritten: those steps are skipped and the pane says why.
 
-Every applied profile is kept (the last 20) in the plugin's store, so `undo` works after a restart and puts back exactly the values it changed. A deny rule you already had stays when you undo. A profile never touches a row your organization locked, a value this Claude Code version does not offer, or a row Claude Code reserves for its own panel (it says so, for example "can only be turned on from the /config panel"); those show as `⊘` in the preview.
+Every activated profile is kept (the last 20) in the plugin's store, so `undo` works after a restart and puts back exactly the values it changed. A deny rule you already had stays when you undo. A profile never touches a row your organization locked, a value this Claude Code version does not offer, or a row Claude Code reserves for its own panel (it says so, for example "can only be turned on from the /config panel"); those show as `⊘` in the detail.
 
 The `/config` rows and `effortLevel` apply right away. The env variables (`CLAUDE_CODE_SUBAGENT_MODEL`, `MAX_MCP_OUTPUT_TOKENS`) are read when Claude Code starts, so count on them from the next session.
-
-## The form
-
-The Settings tab lists every row of `/config`, grouped into Model, Safety, Context, Display, Alerts, Plugins (other plugins' options) and Other, plus Effort and Subagent model. Press a value to change it: a toggle flips, a choice moves to the next option. Type in the search box to filter across all groups. Rows locked by policy show `⊘ locked`. The form follows changes you make in `/config` itself.
 
 ## Where it draws
 

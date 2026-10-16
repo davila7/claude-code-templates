@@ -1,6 +1,6 @@
 /**
- * ultra-config: the profiles, the form's categories and the pure logic that
- * turns a profile into a plan, applies it to a settings object and undoes it.
+ * ultra-config: the profiles and the pure logic that turns a profile into a
+ * plan, applies it to a settings object and undoes it.
  * Nothing here calls `$`, so every rule is unit-tested in tests/.
  *
  * A profile changes two layers:
@@ -127,7 +127,7 @@ export const PROFILES: Profile[] = [
     name: 'Autopilot',
     icon: '➤',
     color: '#ff8f6b',
-    tagline: 'Long unattended runs: auto mode, no blocking dialogs',
+    tagline: 'Long unattended runs: auto mode, recap, push alerts',
     steps: [
       cfg('permissionMode', 'auto', 'the classifier approves safe actions'),
       cfg('useAutoModeDuringPlan', true, 'plans run without stopping'),
@@ -143,94 +143,6 @@ export const PROFILES: Profile[] = [
 
 export const profileById = (id: string): Profile | undefined =>
   PROFILES.find(p => p.id === id.trim().toLowerCase())
-
-// ---------------------------------------------------------------- the form
-
-export type CategoryId = 'model' | 'permissions' | 'context' | 'display' | 'notify' | 'plugins' | 'other'
-export type Category = { id: CategoryId; name: string; icon: string; color: string }
-
-export const CATEGORIES: Category[] = [
-  { id: 'model', name: 'Model', icon: '✦', color: '#b48cff' },
-  { id: 'permissions', name: 'Safety', icon: '▣', color: '#6cb6ff' },
-  { id: 'context', name: 'Context', icon: '◫', color: '#7fd18b' },
-  { id: 'display', name: 'Display', icon: '◐', color: '#f2b84b' },
-  { id: 'notify', name: 'Alerts', icon: '♪', color: '#ff8f6b' },
-  { id: 'plugins', name: 'Plugins', icon: '⧉', color: '#5fd7d7' },
-  { id: 'other', name: 'Other', icon: '⋯', color: '#9a9a9a' },
-]
-
-const KEYS: Record<string, CategoryId> = {
-  model: 'model',
-  fast: 'model',
-  thinking: 'model',
-  switchModelsOnFlag: 'model',
-  outputStyle: 'model',
-  language: 'model',
-  permissionMode: 'permissions',
-  useAutoModeDuringPlan: 'permissions',
-  checkpoints: 'permissions',
-  autoContinueAtUsageLimit: 'permissions',
-  askUserQuestionTimeout: 'permissions',
-  dialogExpiry: 'permissions',
-  worktreeBaseRef: 'permissions',
-  autoCompact: 'context',
-  recap: 'context',
-  promptSuggestionEnabled: 'context',
-  workflows: 'context',
-  workflowKeywordTriggerEnabled: 'context',
-  workflowSizeGuideline: 'context',
-  artifacts: 'context',
-  chrome: 'context',
-  gitignore: 'context',
-  theme: 'display',
-  verbose: 'display',
-  tips: 'display',
-  reduceMotion: 'display',
-  progressBar: 'display',
-  turnDuration: 'display',
-  timeFormat: 'display',
-  autoScroll: 'display',
-  copyOnSelect: 'display',
-  copyFullResponse: 'display',
-  editor: 'display',
-  defaultToAgentsView: 'display',
-  leftArrowOpensAgents: 'display',
-  prStatus: 'display',
-  externalEditorContext: 'display',
-  notifChannel: 'notify',
-  inputNeededNotifEnabled: 'notify',
-  agentPushNotifEnabled: 'notify',
-}
-
-const ORDER = Object.keys(KEYS)
-/** Where a row sits in its category: the order above, then the menu's own. */
-export const order = (key: string): number => {
-  const i = ORDER.indexOf(key)
-  return i === -1 ? ORDER.length : i
-}
-
-export const categoryOf = (key: string): CategoryId => KEYS[key] ?? (key.includes('.') ? 'plugins' : 'other')
-
-/**
- * Settings that have no `/config` row but belong in the form, drawn in the
- * Model category after its rows. `''` in the options means "unset".
- */
-export const EXTRAS: { path: string; label: string; options: string[] }[] = [
-  { path: EFFORT.path, label: EFFORT.label, options: ['', 'low', 'medium', 'high', 'xhigh'] },
-  { path: SUBAGENT.path, label: SUBAGENT.label, options: ['', 'haiku', 'sonnet', 'opus'] },
-]
-
-/** The next value a press on a row's control gives. */
-export function nextValue(kind: ConfigRow['kind'], value: ConfigValue, options?: readonly string[]): ConfigValue | undefined {
-  if (kind === 'boolean') return !(value === true)
-  if (kind === 'choice' && options && options.length > 0) {
-    const i = options.findIndex(o => sameValue(value, o))
-    return options[(i + 1) % options.length]
-  }
-  return undefined
-}
-
-export const cycle = (options: string[], value: string): string => options[(options.indexOf(value) + 1) % options.length]!
 
 // ---------------------------------------------------------------- planning
 
@@ -354,16 +266,6 @@ export type BackupEntry =
   | { layer: 'config'; key: string; label: string; previous: ConfigValue }
   | { layer: 'settings'; path: string; label: string; previous: unknown; had: boolean }
   | { layer: 'list'; path: string; label: string; added: string[] }
-
-export type Backup = {
-  id: string
-  profile: ProfileId
-  name: string
-  at: string
-  entries: BackupEntry[]
-  /** Steps the engine refused, with its reason. */
-  refused: { label: string; reason: string }[]
-}
 
 /** Applies the profile's settings and list steps to the settings object; returns the new object and what to undo. */
 export function applySettings(user: Json, steps: Step[]): { next: Json; entries: BackupEntry[] } {

@@ -1,7 +1,7 @@
 {
   "name": "ultra-config",
-  "version": "0.1.0",
-  "description": "A designed /config: five one-press profiles (Token saver, Fast flow, Max quality, Guarded, Autopilot) that set Claude Code up for one way of working, with a preview of every change and undo, plus the whole settings menu as a categorized form with search. /config rows are written the way the menu writes them; effort, subagent model, env caps and deny rules go to ~/.claude/settings.json after a backup copy.",
+  "version": "0.2.0",
+  "description": "Five setting profiles in a side pane (Token saver, Fast flow, Max quality, Guarded, Autopilot): press one to see exactly what it sets, then Activate; every activation can be undone. /config rows are written the way the menu writes them; effort, subagent model, env caps and deny rules go to ~/.claude/settings.json after a backup copy.",
   "author": {
     "name": "claude-code-templates",
     "url": "https://www.aitmpl.com"

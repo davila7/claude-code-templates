@@ -1,21 +1,21 @@
 /**
  * ultra-config — Claude Mod
  *
- * A designed `/config`: a side pane with five profiles (Token saver, Fast
- * flow, Max quality, Guarded, Autopilot) that set Claude Code up for one way
- * of working in one press, and the whole settings menu as a form grouped by
- * category, with search.
+ * A side pane with five profiles (Token saver, Fast flow, Max quality,
+ * Guarded, Autopilot) that set Claude Code up for one way of working in one
+ * press. Each profile opens to show exactly what it sets, with one button to
+ * activate it.
  *
- *   `/ultra-config` opens it · `/ultra-config <profile>` previews one ·
- *   `/ultra-config apply <profile>` applies it · `/ultra-config undo`
+ *   `/ultra-config` opens it · `/ultra-config <profile>` opens that profile ·
+ *   `/ultra-config apply <profile>` activates it · `/ultra-config undo`
  *   reverts the last one · `/ultra-config close` closes the pane
  *
- * Every change shows as a preview first. `/config` rows are written with
- * `$.config.set`, the way the menu writes them; effort, the subagent model,
- * env caps and deny rules (keys with no `/config` row) are written to
- * ~/.claude/settings.json, after a copy of the file is saved beside it as
- * settings.json.ultra-config.bak. Each applied profile is kept in the
- * plugin's store so `undo` puts back exactly what it changed.
+ * `/config` rows are written with `$.config.set`, the way the menu writes
+ * them; effort, the subagent model, env caps and deny rules (keys with no
+ * `/config` row) are written to ~/.claude/settings.json, after a copy of the
+ * file is saved beside it as settings.json.ultra-config.bak. Each activated
+ * profile is kept in the plugin's store so `undo` puts back exactly what it
+ * changed.
  *
  * Needs Claude Code >= 2.1.290 (Text weight and tabular).
  *
@@ -23,28 +23,21 @@
  *   columns: number   width asked for the docked pane (default 62)
  */
 import { atom, read, update } from 'claude-code'
-import type { ConfigRow, ConfigValue, EngineInterface, Register } from 'claude-code'
+import type { ConfigRow, EngineInterface, Register } from 'claude-code'
 
 import type {
   UltraConfigBackup as Backup,
-  UltraConfigCategory,
   UltraConfigEntry,
   UltraConfigSnapshot as Snapshot,
   UltraConfigUi,
 } from '../types'
 import {
-  CATEGORIES,
-  EXTRAS,
   PROFILES,
   applySettings,
-  categoryOf,
-  order,
-  cycle,
   getPath,
   inSync,
   matchOf,
   nb,
-  nextValue,
   pad,
   paneColumns,
   planFor,
@@ -54,7 +47,7 @@ import {
   show,
   userSettingsPath,
 } from './profiles.ts'
-import type { Json, PlanItem, Profile, Row } from './profiles.ts'
+import type { Json, PlanItem, Profile } from './profiles.ts'
 
 const PANE = 'ultra-config'
 const COMMAND = 'ultra-config'
@@ -69,10 +62,7 @@ const ACCENT = '#d97757'
 type Host = EngineInterface
 
 const ui = atom({ plugin: 'ultra-config', key: 'ui' } as const, {
-  view: 'profiles',
   selected: null,
-  category: 'model',
-  query: '',
   notice: null,
   isBusy: false,
 } satisfies UltraConfigUi)
@@ -265,7 +255,7 @@ const SKIP: Record<'locked' | 'missing' | 'invalid', string> = {
 
 const summary = (b: Backup): string => {
   const n = b.entries.length
-  const head = n === 0 ? `${b.name}: already in place` : `${b.name} applied: ${n} setting${n === 1 ? '' : 's'} changed`
+  const head = n === 0 ? `${b.name}: already in place` : `${b.name} activated: ${n} setting${n === 1 ? '' : 's'} changed`
   return b.refused.length === 0 ? head : `${head}, ${b.refused.length} skipped`
 }
 
@@ -288,7 +278,7 @@ export const register: Register = (on, options) => {
     await $.command
       .register({
         name: COMMAND,
-        description: 'Profiles and a designed settings form (token saver, fast flow, max quality, guarded, autopilot)',
+        description: 'Setting profiles: token saver, fast flow, max quality, guarded, autopilot',
         argumentHint: '[profile | apply <profile> | undo | close]',
       })
       .catch(err => $.ui.log(`ultra-config: /${COMMAND} not registered: ${message(err)}`))
@@ -297,7 +287,7 @@ export const register: Register = (on, options) => {
     return r
   })
 
-  // keep the form in step with changes made in /config itself
+  // keep the cards in step with changes made in /config itself
   on('config.set', async ($, e, next) => {
     const r = await next(e)
     if (r.deny === undefined) await refresh($).catch(() => undefined)
@@ -326,12 +316,11 @@ export const register: Register = (on, options) => {
       return { text: `${text}${skipped}\n/ultra-config undo reverts it` }
     }
     const profile = word === '' ? undefined : profileById(word)
-    if (word !== '' && !profile && !['profiles', 'settings', 'history'].includes(word))
+    if (word !== '' && !profile)
       return { text: `Unknown argument "${word}". Try a profile (${PROFILES.map(p => p.id).join(', ')}), apply, undo or close.` }
     const snap = await refresh($)
     await update($, ui, s => ({
       ...s,
-      view: profile ? 'profiles' : word === 'settings' || word === 'history' ? word : s.view,
       selected: profile ? profile.id : s.selected,
       notice: null,
     }))
@@ -346,12 +335,12 @@ export const register: Register = (on, options) => {
       const plan = planFor(profile, snap.rows, snap.user)
       if (!placed) return { text: planText(profile, plan) }
       const n = plan.filter(p => p.status === 'change').length
-      return { text: `${profile.icon} ${profile.name}: ${n} change${n === 1 ? '' : 's'} previewed in the pane · /ultra-config apply ${profile.id}` }
+      return { text: `${profile.icon} ${profile.name}: ${n} change${n === 1 ? '' : 's'}, shown in the pane · /ultra-config apply ${profile.id}` }
     }
     if (!placed) return { text: PROFILES.map(p => `${p.icon} ${p.id}: ${p.tagline}`).join('\n') }
     return {
       text: e.presentation?.isFullscreen
-        ? 'ultra-config opened · pick a profile to preview it · /ultra-config close'
+        ? 'ultra-config opened · press a profile to see what it sets · /ultra-config close'
         : 'ultra-config drawn above the prompt; /tui fullscreen docks it beside the transcript',
     }
   })
@@ -359,10 +348,8 @@ export const register: Register = (on, options) => {
   on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => {
     const { Box, Text, Button } = $.ui.resolve(e)
     const W = Math.max(40, (e.props.bodyColumns ?? columns) - 1)
-    const H = Math.max(16, e.viewport?.rows ?? 40)
     const state = await read($, ui)
     const snap = await read($, snapshot)
-    const backups = await read($, history)
     const set = (patch: Partial<UltraConfigUi>) => update($, ui, s => ({ ...s, ...patch }))
 
     const effort = getPath(snap.user, 'effortLevel')
@@ -370,363 +357,125 @@ export const register: Register = (on, options) => {
     const mode = snap.rows.find(r => r.key === 'permissionMode')
     const facts = [show(model?.value).replace(/ \(.*\)$/, '').toLowerCase(), `${effort === undefined ? 'default' : show(effort)} effort`, `${show(mode?.value)} mode`]
 
-    const header = (
-      <Box key="head" flexDirection="column" width={W}>
-        <Box flexDirection="row" justifyContent="space-between" width={W}>
-          <Text>
-            <Text backgroundColor={ACCENT} color={INK} weight="bold">{nb(' ⚙ ULTRA ')}</Text>
-            <Text backgroundColor="#3a2a24" color="#f4ece6" weight="bold">{nb(' CONFIG ')}</Text>
-          </Text>
-          <Text dimColor>{nb(facts.join(' · '))}</Text>
-        </Box>
-        <Box flexDirection="row" gap={1} marginTop={1}>
-          {(
-            [
-              ['profiles', '◆ Profiles', '1'],
-              ['settings', '☰ Settings', '2'],
-              ['history', '↺ History', '3'],
-            ] as const
-          ).map(([id, label, key]) => {
-            const active = state.view === id
-            return (
-              <Button key={`tab:${id}`} plain hotkey={key} onPress={() => set({ view: id, notice: null })}>
-                <Text backgroundColor={active ? ACCENT : undefined} color={active ? INK : undefined} dimColor={!active} weight={active ? 'bold' : 'regular'}>
-                  {nb(` ${label}${id === 'history' && backups.length > 0 ? ` ${backups.length}` : ''} `)}
-                </Text>
-              </Button>
-            )
-          })}
-        </Box>
-        <Text color="#3a3a3a">{'─'.repeat(W)}</Text>
-        {state.notice && (
-          <Text color={state.notice.tone}>{state.notice.tone === 'success' ? '✓ ' : '! '}{state.notice.text}</Text>
-        )}
-        {snap.error && <Text color="warning">! {snap.error}: effort, env and deny rules are left alone</Text>}
-      </Box>
-    )
+    // one profile is always open; the first until another is pressed
+    const open = (state.selected ? profileById(state.selected) : undefined) ?? PROFILES[0]!
+    const labelW = Math.min(27, Math.max(14, Math.floor(W * 0.44)))
 
-    // ---------------------------------------------------------------- profiles
-    const profilesView = () => {
-      const selected = state.selected ? profileById(state.selected) : undefined
-      const cards = PROFILES.map(p => {
-        const plan = planFor(p, snap.rows, snap.user)
-        const { same, of } = matchOf(plan)
-        const isActive = of > 0 && same === of
-        const isSel = selected?.id === p.id
-        const meter = 10
-        const lit = of === 0 ? 0 : Math.round((same / of) * meter)
-        return (
-          <Box key={`card:${p.id}`} flexDirection="column" width={W}>
-            <Box flexDirection="row" justifyContent="space-between" width={W}>
-              <Button key={`pick:${p.id}`} plain onPress={() => set({ selected: isSel ? null : p.id, notice: null })}>
-                <Text color={isSel ? p.color : '#3a3a3a'}>{isSel ? '▌' : '│'}</Text>
-                <Text backgroundColor={p.color} color={INK} weight="bold">{nb(` ${p.icon} `)}</Text>
-                <Text color={p.color} weight="bold">{nb(` ${p.name}`)}</Text>
-              </Button>
-              <Text>
-                <Text color={p.color}>{'■'.repeat(lit)}</Text>
-                <Text color="#3a3a3a">{'■'.repeat(meter - lit)}</Text>
-                <Text color={isActive ? 'success' : undefined} dimColor={!isActive} tabular>
-                  {nb(isActive ? '  ✓ active' : ` ${String(same).padStart(2)}/${of}`.padEnd(10))}
-                </Text>
-              </Text>
-            </Box>
-            <Text dimColor wrap="truncate-end">
-              {nb(`${isSel ? ' ' : ' '}     ${p.tagline}`)}
-            </Text>
-          </Box>
-        )
-      })
-
-      if (!selected) {
-        return (
-          <Box key="profiles" flexDirection="column" gap={1} width={W}>
-            {cards}
-            <Text dimColor>Pick a profile to see exactly what it changes before anything is written.</Text>
-          </Box>
-        )
+    const activate = async (p: (typeof PROFILES)[number]) => {
+      if ((await read($, ui)).isBusy) return
+      await set({ isBusy: true })
+      try {
+        const b = await applyProfile($, p)
+        await set({ notice: { text: `${summary(b)} · /ultra-config undo reverts it`, tone: b.refused.length === 0 ? 'success' : 'warning' } })
+        $.ui.toast(`${p.icon} ${summary(b)}`)
+      } catch (err) {
+        await set({ notice: { text: `Not activated: ${message(err)}`, tone: 'error' } })
+      } finally {
+        await set({ isBusy: false })
       }
+    }
 
-      const plan = planFor(selected, snap.rows, snap.user)
-      const changes = plan.filter(p => p.status === 'change')
-      const same = plan.filter(p => p.status === 'same')
-      const skipped = plan.filter(p => p.status !== 'change' && p.status !== 'same')
-      const labelW = Math.min(24, Math.max(14, Math.floor(W * 0.36)))
-      // cards (2 rows + gap each), header, preview chrome and buttons
-      const room = Math.max(3, H - 5 * 3 - 12)
-      const shown = changes.slice(0, room)
-      const preview = (
-        <Box
-          key={`preview:${selected.id}`}
-          flexDirection="column"
-          borderStyle="round"
-          borderColor={selected.color}
-          paddingX={1}
-          width={W}
-        >
-          <Text>
-            <Text color={selected.color} weight="bold">{selected.icon} {selected.name}</Text>
-            <Text dimColor>
-              {nb(` · ${changes.length === 0 ? 'already in place' : `${changes.length} change${changes.length === 1 ? '' : 's'}`}`)}
-            </Text>
-          </Text>
-          {shown.map(p => (
-            <Box key={`chg:${p.id}`} flexDirection="column">
+    const detail = (p: (typeof PROFILES)[number]) => {
+      const plan = planFor(p, snap.rows, snap.user)
+      const changes = plan.filter(x => x.status === 'change').length
+      // every step, so Activate never applies one that was not shown; the pane scrolls
+      const lines = []
+      for (const x of plan) {
+        if (x.status === 'change')
+          lines.push(
+            <Box key={`chg:${x.id}`} flexDirection="column">
               <Text wrap="truncate-end">
-                <Text color={selected.color}>● </Text>
-                <Text>{pad(p.label, labelW)}</Text>
-                <Text dimColor strikethrough>{p.from}</Text>
+                <Text color={p.color}>● </Text>
+                <Text>{pad(x.label, labelW)}</Text>
+                <Text dimColor strikethrough>{x.from}</Text>
                 <Text dimColor>{nb(' → ')}</Text>
-                <Text color={selected.color} weight="bold">{p.to}</Text>
-                {p.layer !== 'config' && <Text color="#7a7a7a">{nb('  settings.json')}</Text>}
+                <Text color={p.color} weight="bold">{x.to}</Text>
               </Text>
-              <Text color="#8a8a8a" wrap="truncate-end">{nb(`  ${p.why}`)}</Text>
-            </Box>
-          ))}
-          {changes.length > shown.length && <Text dimColor>{`  +${changes.length - shown.length} more`}</Text>}
-          {same.length > 0 && (
-            <Text color="success" wrap="truncate-end">
-              ✓ <Text dimColor>{`${same.length} already set: ${same.map(p => p.label).join(', ')}`}</Text>
-            </Text>
-          )}
-          {skipped.map(p => (
-            <Text key={`skip:${p.id}`} color="warning" wrap="truncate-end">
-              ⊘ <Text dimColor>{`${p.label}: ${SKIP[p.status as keyof typeof SKIP]}`}</Text>
-            </Text>
-          ))}
-          <Box flexDirection="row" gap={1} marginTop={1}>
-            {changes.length > 0 && (
+              <Text color="#8a8a8a" wrap="truncate-end">{nb(`  ${x.why}`)}</Text>
+            </Box>,
+          )
+        else if (x.status === 'same')
+          lines.push(
+            <Text key={`same:${x.id}`} wrap="truncate-end">
+              <Text color="success">✓ </Text>
+              <Text dimColor>{pad(x.label, labelW)}{x.to}</Text>
+            </Text>,
+          )
+        else
+          lines.push(
+            <Text key={`skip:${x.id}`} color="warning" wrap="truncate-end">
+              ⊘ <Text dimColor>{`${x.label}: ${SKIP[x.status]}`}</Text>
+            </Text>,
+          )
+      }
+      return (
+        <Box key={`detail:${p.id}`} flexDirection="column" borderStyle="round" borderColor={p.color} paddingX={1} width={W}>
+          {lines}
+          <Box flexDirection="row" marginTop={1}>
+            {changes > 0 ? (
               <Button
-                key={`apply:${selected.id}`}
+                key={`activate:${p.id}`}
                 variant="primary"
                 hotkey="a"
                 autoFocus
-                label={`Apply ${changes.length} change${changes.length === 1 ? '' : 's'}`}
-                onPress={async () => {
-                  if ((await read($, ui)).isBusy) return
-                  await set({ isBusy: true })
-                  try {
-                    const b = await applyProfile($, selected)
-                    await set({ notice: { text: summary(b), tone: b.refused.length === 0 ? 'success' : 'warning' } })
-                    $.ui.toast(`${selected.icon} ${summary(b)} · undo in History`)
-                  } catch (err) {
-                    await set({ notice: { text: `Not applied: ${message(err)}`, tone: 'error' } })
-                  } finally {
-                    await set({ isBusy: false })
-                  }
-                }}
+                label={state.isBusy ? 'Activating…' : `Activate ${p.name}`}
+                onPress={() => activate(p)}
               />
+            ) : (
+              <Text color="success" weight="bold">✓ Active: nothing to change</Text>
             )}
-            <Button key="cancel" hotkey="c" label="Close preview" onPress={() => set({ selected: null })} />
           </Box>
-        </Box>
-      )
-      return (
-        <Box key="profiles" flexDirection="column" gap={1} width={W}>
-          {cards}
-          {preview}
         </Box>
       )
     }
 
-    // ---------------------------------------------------------------- settings form
-    const settingsView = () => {
-      const q = state.query.trim().toLowerCase()
-      const rows = snap.rows
-        .filter(r =>
-          q ? r.label.toLowerCase().includes(q) || r.key.toLowerCase().includes(q) : categoryOf(r.key) === state.category,
-        )
-        .sort((a, b) => order(a.key) - order(b.key))
-      const extras = EXTRAS.filter(x =>
-        q ? x.label.toLowerCase().includes(q) || x.path.toLowerCase().includes(q) : state.category === 'model',
-      )
-      const counts = new Map<string, number>()
-      for (const r of snap.rows) counts.set(categoryOf(r.key), (counts.get(categoryOf(r.key)) ?? 0) + 1)
-      counts.set('model', (counts.get('model') ?? 0) + EXTRAS.length)
-      const valueW = Math.min(22, Math.max(12, Math.floor(W * 0.34)))
-      const labelW = W - valueW - 3
-      const cat = CATEGORIES.find(c => c.id === state.category) ?? CATEGORIES[0]!
-      const tint = q ? ACCENT : cat.color
-
-      const control = (r: Row) => {
-        if (r.isLocked) return <Text color="warning" dimColor>{pad('⊘ locked', valueW)}</Text>
-        const nextV = nextValue(r.kind, r.value, r.options)
-        let face
-        if (r.kind === 'boolean')
-          face = r.value === true ? <Text color="success" weight="bold">{pad('● on', valueW)}</Text> : <Text dimColor>{pad('○ off', valueW)}</Text>
-        else if (r.kind === 'choice') face = <Text color={tint}>{pad(`‹ ${show(r.value)} ›`, valueW)}</Text>
-        else face = <Text dimColor>{pad(show(r.value), valueW)}</Text>
-        if (nextV === undefined) return face
-        return (
-          <Button
-            key={`set:${r.key}`}
-            plain
-            onPress={async () => {
-              const res = await $.config.set({ key: r.key, value: nextV as ConfigValue }).catch(err => ({ deny: message(err) }))
-              if (res.deny !== undefined) await notify($, `${r.label}: ${res.deny}`, 'warning')
-              else await update($, ui, s => ({ ...s, notice: null }))
-              await refresh($)
-            }}
-          >
-            {face}
-          </Button>
-        )
-      }
-
-      const extraControl = (x: (typeof EXTRAS)[number]) => {
-        const current = getPath(snap.user, x.path)
-        const value = typeof current === 'string' ? current : ''
-        const face = <Text color={tint}>{pad(`‹ ${show(value)} ›`, valueW)}</Text>
-        if (snap.error !== null || snap.path === null) return <Text dimColor>{pad(show(value), valueW)}</Text>
-        return (
-          <Button
-            key={`extra:${x.path}`}
-            plain
-            onPress={async () => {
-              const path = snap.path!
-              const { user, text, error } = await readUser($, path)
-              if (error !== null) return notify($, error, 'error')
-              const now = getPath(user, x.path)
-              const to = cycle(x.options, typeof now === 'string' ? now : '')
-              const { next } = applySettings(user, [
-                { layer: 'settings', path: x.path, label: x.label, value: to === '' ? null : to, why: '' },
-              ])
-              await writeUser($, path, text, next, [x.path]).catch(err => notify($, `${x.label}: ${message(err)}`, 'error'))
-              await refresh($)
-            }}
-          >
-            {face}
-          </Button>
-        )
-      }
-
-      const line = (key: string, label: string, ctl: unknown, tag?: string) => (
-        <Box key={`row:${key}`} flexDirection="row" width={W}>
-          <Text wrap="truncate-end">
-            <Text color={tint}>{'▏'}</Text>
-            <Text>{pad(` ${label}`, labelW - (tag ? tag.length + 1 : 0))}</Text>
-            {tag && <Text color="#7a7a7a">{nb(`${tag} `)}</Text>}
-          </Text>
-          {ctl as never}
-        </Box>
-      )
-
-      const chips = (
-        <Box key="chips" flexDirection="row" flexWrap="wrap" columnGap={1} width={W}>
-          {CATEGORIES.filter(c => (counts.get(c.id) ?? 0) > 0).map(c => {
-            const active = !q && c.id === state.category
-            return (
-              <Button key={`cat:${c.id}`} plain onPress={() => set({ category: c.id as UltraConfigCategory, query: '' })}>
-                <Text backgroundColor={active ? c.color : undefined} color={active ? INK : c.color} weight={active ? 'bold' : 'regular'}>
-                  {nb(` ${c.icon} ${c.name} `)}
-                </Text>
-                <Text dimColor>{nb(`${counts.get(c.id)} `)}</Text>
-              </Button>
-            )
-          })}
-        </Box>
-      )
-
-      let search = null
-      if (e.surface !== 'mobile') {
-        const { Input } = $.ui.resolve(e)
-        search = (
-          <Box key="search" width={W}>
-            <Input
-              key="ultra-config:search"
-              placeholder="⌕ Search settings…"
-              value={state.query}
-              submitLabel="search"
-              onInput={value => void set({ query: value })}
-              onSubmit={value => void set({ query: value.trim() })}
-            />
-          </Box>
-        )
-      }
-
-      const list = [
-        ...rows.map(r => line(r.key, r.label, control(r))),
-        ...extras.map(x => line(x.path, x.label, extraControl(x), 'json')),
-      ]
-      const room = Math.max(4, H - 12)
+    const cards = PROFILES.map(p => {
+      const plan = planFor(p, snap.rows, snap.user)
+      const { same, of } = matchOf(plan)
+      const isActive = of > 0 && same === of
+      const isOpen = p.id === open.id
+      const meter = 10
+      const lit = of === 0 ? 0 : Math.round((same / of) * meter)
       return (
-        <Box key="settings" flexDirection="column" gap={1} width={W}>
-          {search}
-          {chips}
-          <Box key="rows" flexDirection="column" width={W}>
-            <Text color={tint} weight="bold">
-              {q ? `⌕ ${list.length} match${list.length === 1 ? '' : 'es'} for "${state.query.trim()}"` : `${cat.icon} ${cat.name}`}
+        <Box key={`card:${p.id}`} flexDirection="column" width={W}>
+          <Box flexDirection="row" justifyContent="space-between" width={W}>
+            <Button key={`pick:${p.id}`} plain onPress={() => set({ selected: p.id, notice: null })}>
+              <Text color={isOpen ? p.color : '#5a5a5a'}>{isOpen ? '▾ ' : '▸ '}</Text>
+              <Text backgroundColor={p.color} color={INK} weight="bold">{nb(` ${p.icon} `)}</Text>
+              <Text color={p.color} weight="bold">{nb(` ${p.name}`)}</Text>
+            </Button>
+            <Text>
+              <Text color={p.color}>{'■'.repeat(lit)}</Text>
+              <Text color="#3a3a3a">{'■'.repeat(meter - lit)}</Text>
+              <Text color={isActive ? 'success' : undefined} dimColor={!isActive} tabular>
+                {nb(isActive ? '  ✓ active' : ` ${String(same).padStart(2)}/${of}`.padEnd(10))}
+              </Text>
             </Text>
-            {list.length === 0 && <Text dimColor>Nothing matches.</Text>}
-            {list.slice(0, room)}
-            {list.length > room && <Text dimColor>{`+${list.length - room} more · search to narrow`}</Text>}
           </Box>
-          <Text dimColor wrap="truncate-end">
-            {nb('Press a value to change it, as /config would. "json" rows live in settings.json.')}
-          </Text>
+          <Text dimColor wrap="truncate-end">{nb(`      ${p.tagline}`)}</Text>
+          {isOpen && detail(p)}
         </Box>
       )
-    }
+    })
 
-    // ---------------------------------------------------------------- history
-    const historyView = () => {
-      if (backups.length === 0)
-        return (
-          <Box key="history" flexDirection="column" width={W}>
-            <Text dimColor>No profile applied yet. Each one you apply is kept here so it can be undone.</Text>
-          </Box>
-        )
-      return (
-        <Box key="history" flexDirection="column" gap={1} width={W}>
-          {backups.slice(0, Math.max(1, Math.floor((H - 10) / 3))).map((b, i) => {
-            const p = profileById(b.profile)
-            const when = b.at.replace('T', ' ').slice(0, 16)
-            return (
-              <Box key={`bk:${b.id}`} flexDirection="column" width={W}>
-                <Box flexDirection="row" justifyContent="space-between" width={W}>
-                  <Text>
-                    <Text backgroundColor={p?.color ?? ACCENT} color={INK} weight="bold">{nb(` ${p?.icon ?? '◆'} `)}</Text>
-                    <Text color={p?.color} weight="bold">{nb(` ${b.name}`)}</Text>
-                    <Text dimColor>{nb(`  ${when} UTC`)}</Text>
-                  </Text>
-                  {i === 0 && (
-                    <Button
-                      key="undo"
-                      hotkey="u"
-                      label="Undo"
-                      onPress={async () => {
-                        const r = await undoLast($)
-                        await set({ notice: r })
-                      }}
-                    />
-                  )}
-                </Box>
-                <Text dimColor wrap="truncate-end">
-                  {nb(`      ${b.entries.length} changed: ${b.entries.map(x => x.label).join(', ') || '—'}`)}
-                </Text>
-                {b.refused.length > 0 && (
-                  <Text color="warning" dimColor wrap="truncate-end">
-                    {nb(`      ⊘ ${b.refused.map(x => x.label).join(', ')}`)}
-                  </Text>
-                )}
-              </Box>
-            )
-          })}
-          <Text dimColor wrap="truncate-end">
-            {nb('Undo goes newest first. Before each write settings.json is copied to settings.json.ultra-config.bak.')}
-          </Text>
-        </Box>
-      )
-    }
-
-    const body = state.view === 'settings' ? settingsView() : state.view === 'history' ? historyView() : profilesView()
     return (
       <Box flexDirection="column" width={W} gap={1}>
-        {header}
-        {body}
-        {state.isBusy && <Text color={ACCENT}>applying…</Text>}
+        <Box key="head" flexDirection="column" width={W}>
+          <Box flexDirection="row" justifyContent="space-between" width={W}>
+            <Text>
+              <Text backgroundColor={ACCENT} color={INK} weight="bold">{nb(' ⚙ ULTRA ')}</Text>
+              <Text backgroundColor="#3a2a24" color="#f4ece6" weight="bold">{nb(' CONFIG ')}</Text>
+            </Text>
+            <Text dimColor>{nb(facts.join(' · '))}</Text>
+          </Box>
+          <Text color="#3a3a3a">{'─'.repeat(W)}</Text>
+          {state.notice && (
+            <Text color={state.notice.tone}>{state.notice.tone === 'success' ? '✓ ' : '! '}{state.notice.text}</Text>
+          )}
+          {snap.error && <Text color="warning">! {snap.error}: effort, env and deny rules are left alone</Text>}
+        </Box>
+        {cards}
       </Box>
     )
   })
 }
-

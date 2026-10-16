@@ -1,5 +1,5 @@
 {
-  "description": "ultra-config: /ultra-config opens a Pane with five settings profiles (preview, apply, undo) and the /config rows as a categorized form; config.set keeps the form in step with /config",
+  "description": "ultra-config: /ultra-config opens a Pane with five settings profiles (detail, activate, undo); config.set keeps the profiles' progress in step with /config",
   "modules": [
     "./register.tsx"
   ]
