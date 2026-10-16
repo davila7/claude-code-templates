@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "hyperconsciousness": {
+      "type": "stdio",
+      "description": "Developer-alpha, MIT-licensed Rust knowledge store with encrypted, append-only records, device sync, and scoped, expiring MCP access. Build hc from source using https://github.com/louis030195/hyperconsciousness, initialize a store, and create a scoped grant. Replace the binary path, store path, and grant ID below before use. Installing this configuration does not install hc or grant access. Hosted models can see plaintext returned by MCP.",
+      "command": "/ABSOLUTE/PATH/TO/hc",
+      "args": [
+        "mcp",
+        "--as",
+        "<GRANT_ID>",
+        "--dir",
+        "/ABSOLUTE/PATH/TO/STORE"
+      ]
+    }
+  }
+}
