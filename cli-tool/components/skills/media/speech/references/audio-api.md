@@ -2,6 +2,7 @@
 
 This page documents the default OpenAI backend. For the optional asynchronous
 Atlas Cloud backend, use `references/atlas-cloud.md` and its dedicated CLI.
+For the optional MuAPI backend, use `references/muapi.md` and its dedicated CLI.
 
 ## Endpoint
 - Create speech: `POST /v1/audio/speech`
@@ -32,3 +33,19 @@ Atlas Cloud backend, use `references/atlas-cloud.md` and its dedicated CLI.
 
 ## Compliance note
 - Provide a clear disclosure that the voice is AI-generated.
+
+## Optional MuAPI backend
+
+- Model: `elevenlabs-tts-turbo-2-5`
+- Endpoint: `POST /api/v1/elevenlabs-tts-turbo-2-5`
+- Required input: `prompt` (up to 40,000 characters)
+- Optional inputs: `voice_id`, `stability` (0 to 1), `similarity_boost` (0 to 1),
+  `speed` (0.7 to 1.2), and `language_code` (`en`, `fr`, `de`, `ja`, `vi`,
+  `hu`, or `no`)
+- Authentication: `x-api-key` from `MUAPI_API_KEY`
+- Result: asynchronous prediction with an `output.audio_url`
+
+Use the MuAPI CLI only after explicit provider selection. See the official
+[MuAPI text-to-speech page](https://muapi.ai/text-to-speech) for the current
+capability and [music and speech documentation](https://muapi.ai/docs/music-and-speech)
+for provider guidance.
