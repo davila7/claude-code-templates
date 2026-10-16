@@ -1,0 +1,6 @@
+{
+  "description": "neon-branch-per-session: session.start creates a Neon branch and sets DATABASE_URL for every process Claude starts; /neon shows, keeps or deletes it; session.end applies onEnd",
+  "modules": [
+    "./neon-branch-per-session.ts"
+  ]
+}

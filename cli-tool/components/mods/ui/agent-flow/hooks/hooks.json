@@ -1,0 +1,6 @@
+{
+  "description": "agent-flow: /agent-flow opens a Pane drawing the main loop and its subagents as a tree; agent.spawn, turn.step, tool.call and turn.complete feed it the context each agent gets, uses and returns",
+  "modules": [
+    "./agent-flow.tsx"
+  ]
+}

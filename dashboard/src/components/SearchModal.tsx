@@ -2,6 +2,9 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { TYPE_CONFIG } from '../lib/icons';
 import TypeIcon from './TypeIcon';
 import { fetchSearchIndex, type SearchIndexEntry } from '../lib/data';
+import { fetchActiveAds, findSponsoredIndex, type ActiveAd } from '../lib/ads';
+
+type SearchResult = SearchIndexEntry & { sponsored?: boolean };
 
 function cleanPath(path: string): string {
   return path?.replace(/\.(md|json)$/, '') ?? '';
@@ -21,6 +24,7 @@ export default function SearchModal() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [data, setData] = useState<SearchIndexEntry[] | null>(null);
+  const [ads, setAds] = useState<ActiveAd[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -35,6 +39,14 @@ export default function SearchModal() {
       .then((entries) => setData(entries))
       .catch(() => {});
   }, [open, data]);
+
+  // Refresh ads on every open (the lib's 5-min cache dedupes network traffic)
+  useEffect(() => {
+    if (!open) return;
+    fetchActiveAds()
+      .then((activeAds) => setAds(activeAds))
+      .catch(() => {});
+  }, [open]);
 
   // Cmd+K listener
   useEffect(() => {
@@ -128,25 +140,55 @@ export default function SearchModal() {
   }, [open]);
 
   // Search results
-  const results = useMemo(() => {
+  const results = useMemo<SearchResult[]>(() => {
     if (!data || !query.trim()) return [];
 
     const q = query.toLowerCase();
 
-    return data
-      .filter(
-        (c) =>
-          c.name.toLowerCase().includes(q) ||
-          c.description?.toLowerCase().includes(q) ||
-          c.category?.toLowerCase().includes(q)
-      )
-      .slice(0, 20);
-  }, [data, query]);
+    const matched = data.filter(
+      (c) =>
+        c.name.toLowerCase().includes(q) ||
+        c.description?.toLowerCase().includes(q) ||
+        c.category?.toLowerCase().includes(q)
+    );
 
-  // Keyboard navigation
+    const top: SearchResult[] = matched.slice(0, 20);
+
+    // Sponsored placement: first matching active ad jumps to position 0.
+    // The ad stays inside `results`, so keyboard navigation and
+    // scroll-into-view keep working untouched.
+    const adIdx = findSponsoredIndex(ads, matched);
+    if (adIdx !== -1) {
+      const sponsored: SearchResult = { ...matched[adIdx], sponsored: true };
+      const inTop = top.findIndex((c) => c.path === sponsored.path && c.type === sponsored.type);
+      if (inTop !== -1) top.splice(inTop, 1);
+      else if (top.length >= 20) top.pop();
+      top.unshift(sponsored);
+    }
+
+    return top;
+  }, [data, ads, query]);
+
+  // Keyboard navigation: reset on new queries; when the same query's results
+  // reorder (ads arriving async), re-anchor to the item that was highlighted
+  // instead of snapping back to the top.
+  const prevResultsRef = useRef<SearchResult[]>([]);
+  const lastQueryRef = useRef(query);
   useEffect(() => {
-    setSelectedIndex(0);
-  }, [query]);
+    const prev = prevResultsRef.current;
+    prevResultsRef.current = results;
+    if (lastQueryRef.current !== query) {
+      lastQueryRef.current = query;
+      setSelectedIndex(0);
+      return;
+    }
+    setSelectedIndex((i) => {
+      const selected = prev[i];
+      if (!selected) return 0;
+      const newIndex = results.findIndex((r) => r.path === selected.path && r.type === selected.type);
+      return newIndex === -1 ? 0 : newIndex;
+    });
+  }, [query, results]);
 
   function handleKeyDown(e: React.KeyboardEvent) {
     if (e.key === 'ArrowDown') {
@@ -246,6 +288,10 @@ export default function SearchModal() {
                 key={component.path ?? `${component.name}-${i}`}
                 onClick={() => navigate(component)}
                 className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors ${
+                  component.sponsored
+                    ? 'border-l-2 border-[var(--color-primary-500)] bg-[var(--color-primary-500)]/5'
+                    : ''
+                } ${
                   i === selectedIndex
                     ? 'bg-[var(--color-primary-500)]/10'
                     : 'hover:bg-[var(--color-surface-2)]'
@@ -256,6 +302,11 @@ export default function SearchModal() {
                   <span className="text-sm text-[var(--color-text-primary)]">{formatName(component.name)}</span>
                   <span className="text-xs text-[var(--color-text-tertiary)] ml-2">{config?.label ?? component.type}</span>
                 </div>
+                {component.sponsored && (
+                  <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded border border-[var(--color-primary-500)]/40 bg-[var(--color-primary-500)]/10 text-[var(--color-primary-500)] shrink-0">
+                    Sponsored
+                  </span>
+                )}
                 {component.category && (
                   <span className="text-[10px] px-1.5 py-0.5 rounded bg-[var(--color-surface-3)] text-[var(--color-text-tertiary)] shrink-0">
                     {component.category}

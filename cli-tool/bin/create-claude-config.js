@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const { program } = require('commander');
+const { program, Option } = require('commander');
 const chalk = require('chalk');
 const { createClaudeConfig } = require('../src/index');
 const { showBanner } = require('../src/tui');
@@ -39,6 +39,8 @@ program
   .option('--hook <hook>', 'install specific hook component (supports comma-separated values)')
   .option('--skill <skill>', 'install specific skill component (supports comma-separated values)')
   .option('--loop <loop>', 'install specific loop component and its referenced components (supports comma-separated values)')
+  .option('--mod <mod>', 'install specific Claude Mod (function-hooks plugin) as a local plugin (supports comma-separated values)')
+  .addOption(new Option('--function-hook <mod>', 'alias of --mod (kept for older docs)').hideHelp())
   .option('--workflow <workflow>', 'install workflow from hash (#hash) OR workflow YAML (base64 encoded) when used with --agent/--command/--mcp')
   .option('--prompt <prompt>', 'execute the provided prompt in Claude Code after installation or in sandbox')
   .option('--create-agent <agent>', 'create a global agent accessible from anywhere (e.g., customer-support)')
@@ -53,9 +55,14 @@ program
   .action(async (options) => {
     try {
       // Only show banner for non-agent-list commands
+      // Component installs print their own one-line header (src/install-ui.js)
+      const isComponentInstall = !options.sandbox && !options.studio &&
+                                 (options.agent || options.command || options.mcp || options.setting ||
+                                  options.hook || options.skill || options.loop || options.mod || options.functionHook);
       const isQuietCommand = options.listAgents || 
                             options.removeAgent || 
-                            options.updateAgent;
+                            options.updateAgent ||
+                            isComponentInstall;
       
       if (!isQuietCommand) {
         showBanner(pkg.version);

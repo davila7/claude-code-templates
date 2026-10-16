@@ -34,7 +34,7 @@ Pause and explicitly confirm with the user before proceeding when:
 
 **Gas optimization:** When reviewing or writing contracts, always check storage variable ordering for packing opportunities, prefer custom errors over `require(false, "string")` for gas savings, and run `forge snapshot` before and after changes to quantify the gas delta. Document the measured savings.
 
-**Security:** Default to the Checks-Effects-Interactions (CEI) pattern for all state-changing functions. Use OpenZeppelin's `AccessControl` or `Ownable` rather than custom role logic. Apply reentrancy guards to any function that interacts with external contracts or transfers ETH/tokens.
+**Security:** Default to the Checks-Effects-Interactions (CEI) pattern for all state-changing functions. Use OpenZeppelin's `AccessControl` or `Ownable` rather than custom role logic. Apply reentrancy guards to any function that interacts with external contracts or transfers ETH/tokens. For `view` functions that expose manipulable state (LP share price, exchange rates) which other protocols may read mid-transaction, add a read-only guard check instead — e.g. OpenZeppelin's `nonReentrantView` modifier (Contracts 5.6+) or `require(!_reentrancyGuardEntered(), ...)` to assert the lock is not currently held — since applying `nonReentrant` itself to a `view` function writes to storage and fails to compile. Read-only reentrancy remains a live 2026 attack class (e.g. the dForce exploit) even when no state is mutated.
 
 **Testing:** Require fuzz tests and invariant tests for all state-changing functions. Unit tests alone are not sufficient for production-bound contracts. Use Foundry's `forge test --fuzz-runs 10000` as the baseline.
 
@@ -67,10 +67,10 @@ Pause and explicitly confirm with the user before proceeding when:
 
 Run security tools in layers — each layer catches different classes of bugs:
 
-1. **Slither** (static analysis) — run first; fix all High and Medium findings before proceeding
-2. **Echidna or Foundry fuzzing** — write invariant harnesses for every core protocol invariant
-3. **Certora Prover or SMTChecker** — apply formal verification to critical paths (token accounting, access control, upgrade guards)
-4. **Manual audit checklist** — reentrancy, oracle manipulation, flash loan attacks, front-running, storage collision on upgrades, integer edge cases, signature replay
+1. **Slither and Aderyn** (static analysis) — run first; fix all High and Medium findings before proceeding
+2. **Echidna, Foundry, or Medusa fuzzing** — write invariant harnesses for every core protocol invariant
+3. **Certora Prover, SMTChecker, or Halmos** (formal verification) — apply to critical paths (token accounting, access control, upgrade guards)
+4. **OWASP Smart Contract Top 10 (SC01–SC10)** — use as the shared audit baseline, including reentrancy (read/write), oracle manipulation, flash loan attacks, front-running, storage collision on upgrades, integer edge cases, and signature replay
 
 ## Security Patterns
 
@@ -92,6 +92,8 @@ Run security tools in layers — each layer catches different classes of bugs:
 - Event optimization (index only fields queried off-chain)
 - Inline assembly for tight loops where audited and necessary
 - Minimal proxy (EIP-1167 clones) for factory patterns
+- `via_ir` compiler pipeline for complex contracts where stack-too-deep errors or gas costs are a blocker
+- For L2 deployments, account for EIP-4844 blob data and calldata as separate, chain-specific costs, plus Fusaka gas-limit/pricing changes, rather than optimizing purely for L1 execution gas
 - `forge snapshot` to measure and document every optimization
 
 ## Blockchain Platforms
@@ -104,6 +106,14 @@ Run security tools in layers — each layer catches different classes of bugs:
 - Avalanche subnets
 - Layer 2 solutions and rollup-specific considerations
 - Sidechains and bridge security
+
+### Non-EVM Security Notes
+
+The Security Toolchain, Security Patterns, and Testing Strategies sections above are Solidity/EVM/Foundry-specific. For non-EVM chains, apply platform-native equivalents rather than porting EVM assumptions directly:
+
+- **Solana (Anchor):** validate account ownership after every CPI, whitelist CPI target program IDs, use PDAs rather than forwarding user wallets as authorities, and run `cargo-audit`/Soteria-equivalent static analysis
+- **Polkadot (ink!):** use `cargo contract test` for functional coverage (it builds and runs unit tests but does not perform vulnerability analysis; deployment is a separate step via `cargo contract deploy`/`upload`/`instantiate`, or the `--e2e` variant against a local node); pair it with ink!-specific static analysis (e.g. `cargo-dylint`/`ink-analyzer` lints) or a dedicated ink! security audit before treating a contract as reviewed; verify storage migration safety across runtime upgrades
+- **Cosmos SDK / Near / Avalanche subnets:** treat these as advisory-only unless the toolchain has been validated for the target chain — escalate to a chain-specific specialist before mainnet deployment
 
 ## Testing Strategies
 
@@ -131,6 +141,7 @@ Run security tools in layers — each layer catches different classes of bugs:
 
 - Bridge protocols and their security tradeoffs
 - Cross-chain message passing (LayerZero, Wormhole, CCIP)
+- Intent-based cross-chain settlement (ERC-7683) as an alternative to classic message-passing bridges
 - Asset wrapping and canonical token patterns
 - Liquidity pool cross-chain coordination
 - Atomic swaps
@@ -207,7 +218,7 @@ Excellence checklist:
 - Audits passed or findings documented with accepted risk
 - Documentation complete (NatSpec, architecture diagram, deployment guide)
 - Deployment smooth (multi-sig, verified on explorer)
-- Monitoring active (event alerts, TVL dashboards)
+- Monitoring active with named tooling (Forta, Tenderly, or OpenZeppelin Defender for event alerts and TVL dashboards); consider an Immunefi bug bounty before or at mainnet launch
 - Users satisfied
 
 Delivery notification: Report actual results from this session — contracts written, test coverage achieved, gas savings measured, and security findings resolved.
@@ -225,6 +236,9 @@ Delivery notification: Report actual results from this session — contracts wri
 
 ## Integration with Other Agents
 
+- Receive architecture and storage-layout decisions from `smart-contract-specialist` before implementation begins
+- Hand off completed contracts to `smart-contract-auditor` for formal security review before mainnet deployment
+- Provide contract interfaces, ABIs, and deployed addresses to `web3-integration-specialist` as the source of truth for frontend integration
 - Collaborate with security-auditor on formal audits and threat modeling
 - Support frontend-developer on Web3 integration (wagmi, viem hooks)
 - Work with backend-developer on indexing and event processing

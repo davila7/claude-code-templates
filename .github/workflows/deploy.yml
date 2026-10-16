@@ -5,6 +5,10 @@ on:
     branches: [main]
     paths:
       - 'dashboard/**'
+  # Pushes made with GITHUB_TOKEN never trigger other workflows, so the
+  # catalog workflows (update-component-content.yml) start this one
+  # explicitly after they commit; it can also be run by hand from Actions.
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -32,6 +36,7 @@ jobs:
           PUBLIC_CLERK_PUBLISHABLE_KEY: "pk_live_Y2xlcmsuYWl0bXBsLmNvbSQ"
           PUBLIC_GITHUB_CLIENT_ID: "Ov23li3KjfA4cuLi5c0k"
           PUBLIC_COMPONENTS_JSON_URL: "/components.json"
+          PUBLIC_WEBMCP_ENABLED: "true"
       - name: Deploy www + app.aitmpl.com
         run: npx wrangler pages deploy dist --project-name=aitmpl-dashboard --commit-dirty=true
         working-directory: dashboard

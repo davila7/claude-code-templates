@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "dimhour": {
+      "description": "Search ~19,000 scored places to eat and drink across 20 cities worldwide, with booking links.",
+      "type": "http",
+      "url": "https://dimhour-mcp.jakeoborn.workers.dev/mcp"
+    }
+  }
+}

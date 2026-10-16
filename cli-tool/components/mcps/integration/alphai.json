@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "alphai": {
+      "description": "Pre-analyzed financial news via REST API and MCP. Per-ticker impact, category, and a 1-10 relevance score on every story, plus SEC Form 4 insider data. Free tier, no card.",
+      "type": "http",
+      "url": "https://mcp.alphai.io/mcp"
+    }
+  }
+}
