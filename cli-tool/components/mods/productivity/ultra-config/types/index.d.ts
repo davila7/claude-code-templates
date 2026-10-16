@@ -35,7 +35,15 @@ export type UltraConfigBackup = {
   at: string
   entries: UltraConfigEntry[]
   refused: { label: string; reason: string }[]
+  /** The effort the profile set, saved per model at the next request. */
+  effort?: 'low' | 'medium' | 'high' | 'xhigh'
 }
+
+/** The main loop's model id and effort, as the last request carried them. */
+export type UltraConfigLive = { model?: string; effort?: string | number }
+
+/** An effort waiting for the next request to name the model it is saved under. */
+export type UltraConfigPending = { value: 'low' | 'medium' | 'high' | 'xhigh'; backupId: string }
 
 export type UltraConfigUi = {
   /** The profile whose detail is open; null means the first. */
@@ -51,6 +59,8 @@ declare module 'claude-code' {
       ui: UltraConfigUi
       snapshot: UltraConfigSnapshot
       history: UltraConfigBackup[]
+      live: UltraConfigLive
+      pending: UltraConfigPending | null
     }
   }
 }

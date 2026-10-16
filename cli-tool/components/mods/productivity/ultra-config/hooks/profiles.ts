@@ -19,7 +19,15 @@ export type ConfigStep = { layer: 'config'; key: string; value: ConfigValue; why
 export type SettingsStep = { layer: 'settings'; path: string; label: string; value: string | null; why: string }
 /** Adds entries to a list (`permissions.deny`), leaving what is there. */
 export type ListStep = { layer: 'list'; path: string; label: string; add: string[]; why: string }
-export type Step = ConfigStep | SettingsStep | ListStep
+export type Effort = 'low' | 'medium' | 'high' | 'xhigh'
+/**
+ * The effort for the model in use. Since Claude Code 2.1.251 effort is saved
+ * per model (`modelSettings[<model id>].effortLevel`): a top-level
+ * `effortLevel` in user settings is ignored by Opus 5.5 and later models. The
+ * model id is only known at the next request, so this step is written then.
+ */
+export type EffortStep = { layer: 'effort'; value: Effort; why: string }
+export type Step = ConfigStep | SettingsStep | ListStep | EffortStep
 
 export type ProfileId = 'saver' | 'flow' | 'quality' | 'guarded' | 'autopilot'
 
@@ -41,7 +49,7 @@ const set = (path: string, label: string, value: string | null, why: string): Se
   why,
 })
 
-export const EFFORT = { path: 'effortLevel', label: 'Effort' } as const
+const effort = (value: Effort, why: string): EffortStep => ({ layer: 'effort', value, why })
 export const SUBAGENT = { path: 'env.CLAUDE_CODE_SUBAGENT_MODEL', label: 'Subagent model' } as const
 
 export const PROFILES: Profile[] = [
@@ -53,7 +61,7 @@ export const PROFILES: Profile[] = [
     tagline: 'Sonnet, low effort, short answers, Haiku subagents',
     steps: [
       cfg('model', 'sonnet', 'cheaper per token than Opus'),
-      set(EFFORT.path, EFFORT.label, 'low', 'less thinking per request'),
+      effort('low', 'less thinking per request'),
       set(SUBAGENT.path, SUBAGENT.label, 'haiku', 'subagents run on the cheapest model'),
       cfg('fast', false, 'fast mode bills at a higher rate'),
       cfg('outputStyle', 'Concise', 'shorter answers, fewer output tokens'),
@@ -73,7 +81,7 @@ export const PROFILES: Profile[] = [
     tagline: 'Edits auto-accepted, medium effort, fewer interruptions',
     steps: [
       cfg('model', 'sonnet', 'faster answers than Opus'),
-      set(EFFORT.path, EFFORT.label, 'medium', 'balanced reasoning time'),
+      effort('medium', 'balanced reasoning time'),
       cfg('permissionMode', 'acceptEdits', 'file edits go through without a prompt'),
       cfg('outputStyle', 'Concise', 'less to read between steps'),
       cfg('promptSuggestionEnabled', true, 'Tab accepts the next likely prompt'),
@@ -90,7 +98,7 @@ export const PROFILES: Profile[] = [
     tagline: 'Most capable model, deepest reasoning, big workflows',
     steps: [
       cfg('model', 'best', 'the most capable model available to you'),
-      set(EFFORT.path, EFFORT.label, 'xhigh', 'the deepest reasoning per request'),
+      effort('xhigh', 'the deepest reasoning per request'),
       set(SUBAGENT.path, SUBAGENT.label, null, 'subagents keep the model they ask for'),
       cfg('outputStyle', 'default', 'full explanations, nothing trimmed'),
       cfg('workflows', true, 'multi-agent workflows available'),
@@ -131,7 +139,7 @@ export const PROFILES: Profile[] = [
     steps: [
       cfg('permissionMode', 'auto', 'the classifier approves safe actions'),
       cfg('useAutoModeDuringPlan', true, 'plans run without stopping'),
-      set(EFFORT.path, EFFORT.label, 'high', 'fewer wrong turns on long runs'),
+      effort('high', 'fewer wrong turns on long runs'),
       cfg('workflows', true, 'parallel agents for big tasks'),
       cfg('recap', true, 'a summary waits for you when you return'),
       cfg('agentPushNotifEnabled', true, 'a push when Claude decides something'),
@@ -209,8 +217,45 @@ const listAt = (obj: Json, path: string): string[] => {
   return Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : []
 }
 
-export function planFor(profile: Profile, rows: readonly Row[], user: Json): PlanItem[] {
+/**
+ * What the engine last sent (the main loop's model id and effort, from
+ * `turn.step`), and an activated effort still waiting for the next request.
+ */
+export type Live = { model?: string; effort?: string | number; pending?: string }
+
+/**
+ * Where a model's saved effort lives in settings.json. Undefined for an id with
+ * a dot (a Bedrock or Vertex id), which a dotted path cannot name.
+ */
+export const effortPath = (model: string): string | undefined =>
+  model.includes('.') || model.length === 0 ? undefined : `modelSettings.${model}.effortLevel`
+
+/** The effort the model in use runs at: its saved level, else what the last request carried. */
+export function currentEffort(user: Json, live: Live): string | undefined {
+  if (live.pending !== undefined) return live.pending
+  const path = live.model ? effortPath(live.model) : undefined
+  const saved = path ? getPath(user, path) : undefined
+  if (typeof saved === 'string') return saved
+  return live.effort === undefined ? undefined : String(live.effort)
+}
+
+export function planFor(profile: Profile, rows: readonly Row[], user: Json, live: Live = {}): PlanItem[] {
+  const modelStep = profile.steps.find((s): s is ConfigStep => s.layer === 'config' && s.key === 'model')
+  const modelRow = rows.find(r => r.key === 'model')
+  const switchesModel = modelStep !== undefined && modelRow !== undefined && !sameValue(modelRow.value, modelStep.value)
   return profile.steps.map(step => {
+    if (step.layer === 'effort') {
+      const current = live.pending ?? (switchesModel ? undefined : currentEffort(user, live))
+      return {
+        id: 'effort',
+        layer: step.layer,
+        label: 'Effort',
+        from: current ?? 'default',
+        to: step.value,
+        why: `${step.why}; saved for the model in use at your next message`,
+        status: current === step.value ? ('same' as const) : ('change' as const),
+      }
+    }
     if (step.layer === 'config') {
       const row = rows.find(r => r.key === step.key)
       const base = { id: `config:${step.key}`, layer: step.layer, why: step.why, to: show(step.value) }
@@ -268,7 +313,7 @@ export type BackupEntry =
   | { layer: 'list'; path: string; label: string; added: string[] }
 
 /** Applies the profile's settings and list steps to the settings object; returns the new object and what to undo. */
-export function applySettings(user: Json, steps: Step[]): { next: Json; entries: BackupEntry[] } {
+export function applySettings(user: Json, steps: readonly (SettingsStep | ListStep)[]): { next: Json; entries: BackupEntry[] } {
   let next = user
   const entries: BackupEntry[] = []
   for (const step of steps) {

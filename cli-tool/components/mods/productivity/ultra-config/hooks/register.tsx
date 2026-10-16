@@ -28,13 +28,16 @@ import type { ConfigRow, EngineInterface, Register } from 'claude-code'
 import type {
   UltraConfigBackup as Backup,
   UltraConfigEntry,
+  UltraConfigLive,
+  UltraConfigPending,
   UltraConfigSnapshot as Snapshot,
   UltraConfigUi,
 } from '../types'
 import {
   PROFILES,
   applySettings,
-  getPath,
+  currentEffort,
+  effortPath,
   inSync,
   matchOf,
   nb,
@@ -47,7 +50,7 @@ import {
   show,
   userSettingsPath,
 } from './profiles.ts'
-import type { Json, PlanItem, Profile } from './profiles.ts'
+import type { Effort, Json, ListStep, Live, PlanItem, Profile, SettingsStep } from './profiles.ts'
 
 const PANE = 'ultra-config'
 const COMMAND = 'ultra-config'
@@ -73,6 +76,11 @@ const snapshot = atom({ plugin: 'ultra-config', key: 'snapshot' } as const, {
   error: null,
 } satisfies Snapshot)
 const history = atom({ plugin: 'ultra-config', key: 'history' } as const, [] as Backup[])
+/** The main loop's model id and effort, as the last request carried them. */
+const live = atom({ plugin: 'ultra-config', key: 'live' } as const, {} as UltraConfigLive)
+/** An activated effort waiting for the next request to learn the model id it is saved under. */
+const pending = atom({ plugin: 'ultra-config', key: 'pending' } as const, null as UltraConfigPending | null)
+const STORE_PENDING = 'pendingEffort'
 
 const message = (err: unknown): string => (err instanceof Error ? err.message : String(err))
 
@@ -152,15 +160,50 @@ async function writeUser($: Host, path: string, before: string | null, next: Jso
 
 const NOT_RELOADED = 'Claude Code did not reload settings.json; restart the session, then apply again'
 
+/** The model and effort in use, with an effort waiting for the next request. */
+async function liveNow($: Host): Promise<Live> {
+  const want = await read($, pending)
+  return { ...(await read($, live)), ...(want ? { pending: want.value } : {}) }
+}
+
+async function setPending($: Host, value: UltraConfigPending | null): Promise<void> {
+  await update($, pending, () => value)
+  await $.store.set(STORE_PENDING, value).catch(err => $.ui.log(`ultra-config: pending effort not saved: ${message(err)}`))
+}
+
+/**
+ * Saves an activated effort under the model id this request names, and adds
+ * that write to the activation's history entry so undo puts it back. Returns
+ * false when it could not be written (the request then still gets the effort).
+ */
+async function saveEffort($: Host, model: string, want: UltraConfigPending): Promise<boolean> {
+  const path = await settingsPath($)
+  const at = effortPath(model)
+  if (path === null || at === undefined) {
+    $.ui.log(`ultra-config: effort not saved for ${model} (no settings.json, or a model id with a dot)`)
+    return false
+  }
+  const { user, text, error } = await readUser($, path)
+  if (error !== null) {
+    $.ui.log(`ultra-config: effort not saved: ${error}`)
+    return false
+  }
+  const { next, entries } = applySettings(user, [{ layer: 'settings', path: at, label: 'Effort', value: want.value, why: '' }])
+  if (entries.length === 0) return true
+  const list = await read($, history)
+  await saveHistory($, list.map(b => (b.id === want.backupId ? { ...b, entries: [...b.entries, ...entries] } : b)))
+  return writeUser($, path, text, next, [at])
+}
+
 async function applyProfile($: Host, profile: Profile): Promise<Backup> {
   const snap = await refresh($)
-  const plan = planFor(profile, snap.rows, snap.user)
+  const plan = planFor(profile, snap.rows, snap.user, await liveNow($))
   const entries: UltraConfigEntry[] = []
   const refused: { label: string; reason: string }[] = []
   let isSynced = true
 
   // settings.json first: the /config writes below then start from it
-  const fileSteps = profile.steps.filter(s => s.layer !== 'config')
+  const fileSteps = profile.steps.filter((s): s is SettingsStep | ListStep => s.layer === 'settings' || s.layer === 'list')
   if (fileSteps.length > 0) {
     const { user, text, error } = await readUser($, snap.path)
     if (error !== null || snap.path === null) {
@@ -198,6 +241,11 @@ async function applyProfile($: Host, profile: Profile): Promise<Backup> {
     else entries.push({ layer: 'config', key: step.key, label: row.label, previous: restorable(row) })
   }
 
+  // effort is saved per model, under the id the next request names
+  const effortStep = profile.steps.find(s => s.layer === 'effort')
+  const effortItem = plan.find(p => p.id === 'effort')
+  const effort: Effort | undefined = effortStep && effortItem?.status === 'change' ? effortStep.value : undefined
+
   const backup: Backup = {
     id: `${Date.now()}`,
     profile: profile.id,
@@ -205,8 +253,10 @@ async function applyProfile($: Host, profile: Profile): Promise<Backup> {
     at: new Date().toISOString(),
     entries,
     refused,
+    ...(effort ? { effort } : {}),
   }
-  if (entries.length > 0) await saveHistory($, [backup, ...(await read($, history))].slice(0, KEEP))
+  if (entries.length > 0 || effort) await saveHistory($, [backup, ...(await read($, history))].slice(0, KEEP))
+  if (effort) await setPending($, { value: effort, backupId: backup.id })
   await refresh($)
   return backup
 }
@@ -214,6 +264,8 @@ async function applyProfile($: Host, profile: Profile): Promise<Backup> {
 async function undoLast($: Host): Promise<{ text: string; tone: 'success' | 'warning' | 'error' }> {
   const [last, ...rest] = await read($, history)
   if (!last) return { text: 'Nothing to undo', tone: 'warning' }
+  // an effort not yet saved for any model is simply dropped
+  if ((await read($, pending))?.backupId === last.id) await setPending($, null)
   const failed: string[] = []
   let isSynced = true
   // settings.json first, as when applying
@@ -243,7 +295,7 @@ async function undoLast($: Host): Promise<{ text: string; tone: 'success' | 'war
   await refresh($)
   if (fileFailed) return { text: `Not undone: ${failed.join(', ')}. Fix it and run /ultra-config undo again`, tone: 'error' }
   return failed.length === 0
-    ? { text: `Undid ${last.name}: ${last.entries.length} settings restored`, tone: 'success' }
+    ? { text: `Undid ${last.name}: ${last.entries.length} setting${last.entries.length === 1 ? '' : 's'} restored`, tone: 'success' }
     : { text: `Undid ${last.name}, except ${failed.join(', ')}`, tone: 'warning' }
 }
 
@@ -254,9 +306,10 @@ const SKIP: Record<'locked' | 'missing' | 'invalid', string> = {
 }
 
 const summary = (b: Backup): string => {
-  const n = b.entries.length
+  const n = b.entries.length + (b.effort ? 1 : 0)
   const head = n === 0 ? `${b.name}: already in place` : `${b.name} activated: ${n} setting${n === 1 ? '' : 's'} changed`
-  return b.refused.length === 0 ? head : `${head}, ${b.refused.length} skipped`
+  const tail = b.effort ? ` (effort ${b.effort} from your next message)` : ''
+  return b.refused.length === 0 ? `${head}${tail}` : `${head}${tail}, ${b.refused.length} skipped`
 }
 
 function planText(profile: Profile, plan: PlanItem[]): string {
@@ -284,7 +337,28 @@ export const register: Register = (on, options) => {
       .catch(err => $.ui.log(`ultra-config: /${COMMAND} not registered: ${message(err)}`))
     const stored = await $.store.get(STORE_HISTORY).catch(() => undefined)
     if (Array.isArray(stored)) await update($, history, () => stored as Backup[])
+    const want = await $.store.get(STORE_PENDING).catch(() => undefined)
+    if (want && typeof want === 'object') await update($, pending, () => want as UltraConfigPending)
     return r
+  })
+
+  // The main loop's requests: learn the model id and effort in use, and save
+  // an activated effort under that id (and send it with this request).
+  on('turn.step', async function* ($, e, next) {
+    if (e.agentId) return yield* next(e)
+    const want = await read($, pending)
+    if (!want) {
+      await update($, live, () => ({ model: e.model, effort: e.effort }))
+      return yield* next(e)
+    }
+    await setPending($, null)
+    await saveEffort($, e.model, want).catch(err => {
+      $.ui.log(`ultra-config: effort not saved: ${message(err)}`)
+      return false
+    })
+    await update($, live, () => ({ model: e.model, effort: want.value }))
+    await refresh($).catch(() => undefined)
+    return yield* next({ ...e, effort: want.value })
   })
 
   // keep the cards in step with changes made in /config itself
@@ -332,7 +406,7 @@ export const register: Register = (on, options) => {
       $.ui.log(`ultra-config: pane not opened: ${message(err)}`)
     }
     if (profile) {
-      const plan = planFor(profile, snap.rows, snap.user)
+      const plan = planFor(profile, snap.rows, snap.user, await liveNow($))
       if (!placed) return { text: planText(profile, plan) }
       const n = plan.filter(p => p.status === 'change').length
       return { text: `${profile.icon} ${profile.name}: ${n} change${n === 1 ? '' : 's'}, shown in the pane · /ultra-config apply ${profile.id}` }
@@ -350,9 +424,10 @@ export const register: Register = (on, options) => {
     const W = Math.max(40, (e.props.bodyColumns ?? columns) - 1)
     const state = await read($, ui)
     const snap = await read($, snapshot)
+    const now = await liveNow($)
     const set = (patch: Partial<UltraConfigUi>) => update($, ui, s => ({ ...s, ...patch }))
 
-    const effort = getPath(snap.user, 'effortLevel')
+    const effort = currentEffort(snap.user, now)
     const model = snap.rows.find(r => r.key === 'model')
     const mode = snap.rows.find(r => r.key === 'permissionMode')
     const facts = [show(model?.value).replace(/ \(.*\)$/, '').toLowerCase(), `${effort === undefined ? 'default' : show(effort)} effort`, `${show(mode?.value)} mode`]
@@ -376,7 +451,7 @@ export const register: Register = (on, options) => {
     }
 
     const detail = (p: (typeof PROFILES)[number]) => {
-      const plan = planFor(p, snap.rows, snap.user)
+      const plan = planFor(p, snap.rows, snap.user, now)
       const changes = plan.filter(x => x.status === 'change').length
       // every step, so Activate never applies one that was not shown; the pane scrolls
       const lines = []
@@ -430,7 +505,7 @@ export const register: Register = (on, options) => {
     }
 
     const cards = PROFILES.map(p => {
-      const plan = planFor(p, snap.rows, snap.user)
+      const plan = planFor(p, snap.rows, snap.user, now)
       const { same, of } = matchOf(plan)
       const isActive = of > 0 && same === of
       const isOpen = p.id === open.id

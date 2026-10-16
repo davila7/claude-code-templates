@@ -10,7 +10,7 @@ Five setting profiles in a side pane. Each one sets Claude Code up for one way o
 ╭────────────────────────────────────────────────────────────╮
 │ ● Model                   Default (recommended) → sonnet   │
 │   cheaper per token than Opus                              │
-│ ● Effort                  unset → low                      │
+│ ● Effort                  medium → low                     │
 │   less thinking per request                                │
 │ ✓ Auto-compact            on                               │
 │ …                                                          │
@@ -52,11 +52,12 @@ Each profile shows how much of it is already in force (`3/11`), and `✓ active`
 ## Where each change is written
 
 - **`/config` rows** (model, permission mode, output style, auto-compact…) are written with `$.config.set`, exactly as if you changed them in `/config`. Claude Code picks the file: most go to `~/.claude/settings.json` or `~/.claude.json`, and Output style goes to the project's `.claude/settings.local.json`, the same as the menu.
-- **Keys with no `/config` row** (`effortLevel`, `env.CLAUDE_CODE_SUBAGENT_MODEL`, `env.MAX_MCP_OUTPUT_TOKENS`, `permissions.deny`, `permissions.disableBypassPermissionsMode`) are written to `~/.claude/settings.json` (or `$CLAUDE_CONFIG_DIR/settings.json`). Before each write the file is copied to `settings.json.ultra-config.bak` (only the latest copy is kept; it holds whatever the file held, `env` values included). A file that is not valid JSON is never overwritten: those steps are skipped and the pane says why.
+- **Effort** is saved per model, the way `/effort` saves it: `modelSettings["<model id>"].effortLevel` in `~/.claude/settings.json`, for the model your next message runs on (the mod learns its id from that request and sends the request at the new effort too). Since Claude Code 2.1.251 a top-level `effortLevel` in user settings is ignored by Opus 5.5 and later models, so the mod never writes it. A model id with a dot (Bedrock, Vertex) can't be saved this way; then the effort applies to that one request only.
+- **Keys with no `/config` row** (`env.CLAUDE_CODE_SUBAGENT_MODEL`, `env.MAX_MCP_OUTPUT_TOKENS`, `permissions.deny`, `permissions.disableBypassPermissionsMode`) are written to `~/.claude/settings.json` (or `$CLAUDE_CONFIG_DIR/settings.json`). Before each write the file is copied to `settings.json.ultra-config.bak` (only the latest copy is kept; it holds whatever the file held, `env` values included). A file that is not valid JSON is never overwritten: those steps are skipped and the pane says why.
 
 Every activated profile is kept (the last 20) in the plugin's store, so `undo` works after a restart and puts back exactly the values it changed. A deny rule you already had stays when you undo. A profile never touches a row your organization locked, a value this Claude Code version does not offer, or a row Claude Code reserves for its own panel (it says so, for example "can only be turned on from the /config panel"); those show as `⊘` in the detail.
 
-The `/config` rows and `effortLevel` apply right away. The env variables (`CLAUDE_CODE_SUBAGENT_MODEL`, `MAX_MCP_OUTPUT_TOKENS`) are read when Claude Code starts, so count on them from the next session.
+The `/config` rows apply right away and the effort from your next message. The env variables (`CLAUDE_CODE_SUBAGENT_MODEL`, `MAX_MCP_OUTPUT_TOKENS`) are read when Claude Code starts, so count on them from the next session.
 
 ## Where it draws
 
