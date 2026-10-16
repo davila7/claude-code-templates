@@ -31,28 +31,28 @@
 ---
 
 <p align="center">
-  <a href="https://get.brightdata.com/lcqorc6nzp9w" target="_blank">
-    <img src="https://avatars.githubusercontent.com/u/213028976?s=200&v=4" alt="Bright Data" width="90" />
+  <a href="https://www.swiftproxy.net/" target="_blank">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="docs/sponsors/swiftproxy-dark.png" />
+      <source media="(prefers-color-scheme: light)" srcset="docs/sponsors/swiftproxy-light.png" />
+      <img src="docs/sponsors/swiftproxy-light.png" alt="Swiftproxy" width="300" />
+    </picture>
   </a>
 </p>
 
-<h3 align="center">Sponsored by <a href="https://get.brightdata.com/lcqorc6nzp9w">Bright Data</a></h3>
+<h3 align="center">Sponsored by <a href="https://www.swiftproxy.net/">Swiftproxy</a></h3>
 
 <p align="center">
-  <b>Bright Data proudly supports this project.</b><br />
-  Connect Claude Code to live web data — try their <a href="https://get.brightdata.com/lcqorc6nzp9w">Skills and MCPs</a> for web search, scraping, and structured data feeds.
+  <b>Swiftproxy proudly supports this project.</b><br />
+  Connect your AI-powered workflows to reliable residential proxies for web data collection, browser automation, and AI-driven research.<br />
+  90M+ residential IPs across 220+ locations, rotating and static residential proxies, with HTTP(S) and SOCKS5 support.
 </p>
 
 <p align="center">
-  <a href="https://get.brightdata.com/lcqorc6nzp9w">
-    <img src="https://img.shields.io/badge/Try%20Bright%20Data-Free-2563eb?style=for-the-badge" alt="Try Bright Data Free" />
+  <a href="https://www.swiftproxy.net/">
+    <img src="https://img.shields.io/badge/Get%2010%25%20off-code%20PROXY90-2563eb?style=for-the-badge" alt="Get 10% off with code PROXY90" />
   </a>
 </p>
-
-```bash
-# Install the Bright Data Skills + MCP for Claude Code
-npx claude-code-templates@latest --skill web-data/search,web-data/scrape,web-data/data-feeds,web-data/bright-data-mcp,web-data/bright-data-best-practices,development/brightdata-local-search --mcp web-data/brightdata --yes
-```
 
 ---
 
