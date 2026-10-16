@@ -1,6 +1,26 @@
 {
   "articles": [
     {
+      "id": "discord-detailed-notifications-hook",
+      "title": "Discord Detailed Notifications Hook for Claude Code: Session Alerts with Duration & Memory",
+      "description": "Install the Discord Detailed Notifications hook for Claude Code to post rich session-start and session-end embeds to Discord, including project name, duration, and memory usage.",
+      "url": "discord-detailed-notifications-hook/",
+      "image": "assets/discord-detailed-notifications-hook-cover.png",
+      "category": "Automation",
+      "publishDate": "2026-09-22",
+      "readTime": "6 min read",
+      "tags": [
+        "Claude Code",
+        "Hooks",
+        "Discord",
+        "Notifications",
+        "Automation"
+      ],
+      "difficulty": "intermediate",
+      "featured": true,
+      "order": 27
+    },
+    {
       "id": "task-move-command",
       "title": "Task Move Command for Claude Code: Automate Your Task Status Workflow",
       "description": "Install the Task Move command for Claude Code to move tasks between status folders (todos, in progress, QA, completed) with validation, bulk operations, and a full audit trail.",
@@ -531,11 +551,11 @@
     }
   ],
   "metadata": {
-    "lastUpdated": "2026-09-20",
-    "totalArticles": 28,
+    "lastUpdated": "2026-09-22",
+    "totalArticles": 29,
     "difficultyLevels": {
       "basic": 13,
-      "intermediate": 10,
+      "intermediate": 11,
       "advanced": 5
     }
   }
