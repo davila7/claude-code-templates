@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-10-15T03:10:10.492165+00:00",
-  "totalJobs": 91,
+  "lastUpdated": "2026-10-16T03:14:55.786078+00:00",
+  "totalJobs": 92,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -8,6 +8,70 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "anth-5454673008",
+      "company": "Anthropic",
+      "position": "Applied AI Engineer, Startups (Physical AI)",
+      "location": "San Francisco, CA",
+      "remote": false,
+      "salary": "",
+      "description": "As an Applied AI Engineer on the Startups team at Anthropic, you will be a trusted technical advisor to the top AI-native startups building in the physical world, across robotics, semiconductors, aerospace, manufacturing, and civil infrastructure, as they grow from early product to scale. Some of...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5454673008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5454673008",
+      "postedAt": "2026-10-15T18:50:02-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5453550008",
+      "company": "Anthropic",
+      "position": "Technical Program Manager, SOX Compliance",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "Anthropic is growing fast, and our SOX program needs to keep up. Many of the controls that matter for financial reporting run on engineering systems: who can access production and financial systems, how code changes are reviewed and deployed, and how usage is metered and billed. We’re hiring a...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5453550008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5453550008",
+      "postedAt": "2026-10-15T17:30:30-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "hn-50104234",
+      "company": "Treat Health",
+      "position": "Software Engineer",
+      "location": "Helsinki, Finland (Remote)",
+      "remote": true,
+      "salary": "",
+      "description": "Treat Health is building healthcare where the right care takes minutes, not days. You describe your concern in your own words, our smart intake asks the follow-up questions a doctor would ask, and a licensed doctor reviews the whole picture and decides on the care. Prescriptions and records go...",
+      "applyUrl": "https://news.ycombinator.com/item?id=50104234",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=50104234",
+      "postedAt": "2026-10-15T14:30:58+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "Rust",
+        "Go",
+        "GCP",
+        "Swift",
+        "Kotlin",
+        "Tailwind"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "rok-remote-graphic-designer-video-editor-bluetuskr-1137507",
       "company": "BlueTuskr",
@@ -606,28 +670,6 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
-      "id": "rok-remote-si-agent-engineer-sticker-mule-1137399",
-      "company": "Sticker Mule",
-      "position": "SI agent engineer",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Sticker Mule is building the most lucrative commerce platform on the Internet by combining software, manufacturing, and super intelligence in one stack. We're hiring an engineer to build, run and manage a team of SI agents to help us innovate faster, improve performance, and better serve customers....",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-si-agent-engineer-sticker-mule-1137399",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-si-agent-engineer-sticker-mule-1137399",
-      "postedAt": "2026-09-16T12:44:27+00:00",
-      "tags": [
-        "TypeScript",
-        "JavaScript",
-        "Go",
-        "PostgreSQL",
-        "GCP",
-        "GraphQL"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "wwr-sticker-mule-si-agent-engineer",
       "company": "Sticker Mule",
       "position": "SI agent engineer",
@@ -644,27 +686,6 @@
         "PostgreSQL",
         "GCP",
         "GraphQL"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "wwr-acculynx-senior-software-engineer",
-      "company": "AccuLynx",
-      "position": "Senior Software Engineer",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Headquarters: Beloit, WI URL: http://acculynx.com Senior Software Engineer AccuLynx is a fast-growing SaaS provider of business management software for roofing contractors. With more than 10 years in the business and impressive year-over-year revenue growth, we have quickly established ourselves as...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/acculynx-senior-software-engineer",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/acculynx-senior-software-engineer",
-      "postedAt": "2026-09-15T14:12:47+00:00",
-      "tags": [
-        "Go",
-        "Claude Code",
-        "Copilot",
-        "Vue.js",
-        "Redis"
       ],
       "companyIcon": ""
     },
