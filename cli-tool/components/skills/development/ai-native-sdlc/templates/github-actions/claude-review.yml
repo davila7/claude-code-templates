@@ -1,0 +1,56 @@
+# Headless policy review on every PR (AI-native SDLC, Stage 5).
+# Runs the passes defined in .sdlc/REVIEW.md via Anthropic's official
+# claude-code-action and posts findings as PR comments. It surfaces; it never
+# approves and never merges — branch protection + human review own the merge.
+#
+# COST DISCLOSURE: this workflow calls the Claude API on every PR update,
+# billed to the ANTHROPIC_API_KEY you provide. Installing this file is the
+# explicit operator approval for that spend; remove the workflow (or restrict
+# its triggers) to stop it.
+#
+# Setup:
+#   1. Install the Claude GitHub App on this repository
+#      (https://github.com/apps/claude) - claude-code-action exchanges its
+#      GitHub token through the app and fails at startup without it.
+#      Alternatively, pass your own token via the action's `github_token`
+#      input (needs pull-requests: write).
+#   2. Add ANTHROPIC_API_KEY to the repo's Actions secrets.
+#   3. Commit this file to .github/workflows/claude-review.yml
+#   4. (Recommended) Make "test-gate" a required status check and require
+#      one human review on the default branch.
+
+name: Claude policy review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: read
+  id-token: write
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run policy passes
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            Review this pull request's diff against the review policy in
+            .sdlc/REVIEW.md (if that file is missing, run bugs and security
+            passes only). Be adversarial: try to refute the diff, not confirm
+            it. Report only findings with a concrete failure scenario — no
+            style nits. Post the findings as a single PR comment titled
+            "Claude policy review"; if there are none, comment "No findings."
+            Do not approve, request changes, or merge — surface findings only.
+          claude_args: |
+            --allowedTools "Read,Grep,Glob,Bash(git diff:*),Bash(git log:*),Bash(gh pr comment:*)"
