@@ -23514,6 +23514,26 @@
     ]
   },
   {
+    "slug": "secret-handoff",
+    "name": "Secret Handoff",
+    "author": "rays23",
+    "description": "macOS only. Move secrets from the clipboard into Doppler without Claude Code ever seeing the value. A guard hook blocks commands that would read secrets into the context.",
+    "github": "https://github.com/rays23/secret-handoff",
+    "stars": 0,
+    "type": "plugin",
+    "tags": [
+      "commands",
+      "hooks"
+    ],
+    "contains": {
+      "commands": 3,
+      "hooks": 1
+    },
+    "highlights": [],
+    "marketplace_name": "secret-handoff",
+    "plugin_name": "secret-handoff"
+  },
+  {
     "slug": "cohesivity-plugin",
     "name": "Cohesivity Plugin",
     "author": "cohesivity-org",
