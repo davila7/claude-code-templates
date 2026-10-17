@@ -110,7 +110,9 @@ return one.
 4. While `status` is neither `completed` nor `failed` and no useful results
    have arrived, poll again a few seconds later, for at most about 10 polls.
    Then present what has arrived and offer to check again with the same
-   `sessionId`. A flight session expires 15 minutes after the search starts.
+   `sessionId`. A flight session expires 15 minutes after the search starts;
+   once a poll says it has expired, offer a new `search_flights_live` call
+   instead.
 5. Present relevant options with source, carrier, times, stops, cabin, currency,
    and fare exactly as returned.
 
@@ -129,9 +131,16 @@ instead.
 1. Call `request_booking` with the `propertyId`, `roomTypeId`, dates and the
    guest's name, phone number and email. Ask for whichever of those three is
    missing; they go to the hotel, which needs them to honour the reservation.
+   Several rooms of the same room type are one request: set `roomCount` and
+   call the tool once, with `totalAmount` covering all of them. Calling it once
+   per room sends the hotel unrelated requests.
 2. Relay the tool's reply as written. The two facts it leads with — that no
    room is held and that nothing has been charged — are the ones the guest
-   acts on.
+   acts on. If the reply says rooms were added to the guest's earlier request,
+   the confirmation code is the earlier one and the amount is the total for
+   all its rooms: do not present it as a second booking or add the amounts.
+   If it says no request was created, relay the reason and do not describe a
+   booking.
 3. Keep the `confirmationCode` it returns; `check_booking_status` reads the
    request's state back with it. Also keep the room's `propertyId`,
    `ratePlanId` and check-in date: the cancellation policy needs them and no
@@ -139,13 +148,9 @@ instead.
    email address they used.
 
 No money changes hands through PriceWin: sending the request charges nothing,
-and for a request sent this way the guest pays the hotel directly on arrival.
-Never ask how the guest wants to pay, and never mention a card, transfer, QR
-code, payment link or deposit — not even one the guest named earlier. If a
-property requires payment at booking time, `request_booking` creates nothing
-and returns a link to book on the PriceWin website instead; relay that link as
-given, and do not tell the guest they will pay on arrival for that booking —
-its payment terms are whatever the website shows.
+and the guest pays the hotel directly on arrival. Never ask how the guest wants
+to pay, and never mention a card, transfer, QR code, payment link or deposit —
+not even one the guest named earlier.
 
 ## Cancel a booking
 
