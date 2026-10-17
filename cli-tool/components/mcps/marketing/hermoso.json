@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "hermoso": {
+      "description": "Hermoso: marketing on autopilot. Research the ads and posts competitors are running, make on-brand image and video ads, schedule posts to Instagram, TikTok, YouTube, X, LinkedIn and more, and build paid campaigns on Meta, Google, TikTok and other ad platforms (created paused). Hosted server, OAuth 2.1 sign-in; posting, scheduling and campaign management are free, AI generation uses credits (free credits to start at hermoso.ai).",
+      "type": "http",
+      "url": "https://app.hermoso.ai/mcp"
+    }
+  }
+}
