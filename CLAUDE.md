@@ -208,6 +208,21 @@ Two GitHub Actions drive it, both via the batch orchestrator
 - **`.github/workflows/skill-security-scan-all.yml`** (weekly + manual) — scans
   all skills, reports to the run summary and SARIF, and **never blocks**.
 
+**Catalog traffic light (every component type).** `generate_components_json.py`
+also runs SkillSpector on every component through `scripts/skillspector_catalog.py`
+and stores a `skillspector` object (score, severity, recommendation, top 5
+findings, version, file hash) on each entry of `components.json`. The dashboard
+shows it as the "NVIDIA SkillSpector Scanner" badge on cards and component pages
+(`SkillSpectorBadge.tsx`, detail on hover). It is display-only: never use it for
+ordering, search or ranking. Results are cached in the previous
+`docs/components.json` by file hash + SkillSpector version, so a run only scans
+new or changed components; bumping the pinned tag in `update-component-content.yml`
+/ `update-json-data.yml` rescans everything (~1 h). Without the `skillspector`
+CLI on PATH the previous results are kept. Agents, commands, hooks, MCPs and
+settings are wrapped in a temporary SKILL.md (SkillSpector requires one), which
+is why JSON components with a script get an "MCP Least Privilege / no tool scope"
+finding. Flags: `--skip-skillspector`, `--skillspector-only TYPE/PATH ...`.
+
 SkillSpector requires Python 3.12+ and is installed from NVIDIA's `main`
 branch (`pip install git+https://github.com/NVIDIA/skillspector.git@main`); it
 is not published to PyPI. Risk bands: 0-20 LOW, 21-50 MEDIUM, 51-80 HIGH,

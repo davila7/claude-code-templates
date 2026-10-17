@@ -8,6 +8,7 @@ from collections import defaultdict
 from dotenv import load_dotenv
 from pathlib import Path
 from generate_trending_data import fetch_with_retry
+from skillspector_catalog import attach_skillspector
 
 # Load environment variables
 load_dotenv()
@@ -405,7 +406,7 @@ def scan_directory_recursively(directory_path, relative_to_path=None):
     
     return files_list
 
-def generate_components_json(skip_downloads=False):
+def generate_components_json(skip_downloads=False, skip_skillspector=False, skillspector_only=None):
     """
     Scans the cli-tool/components and cli-tool/templates directories and generates a components.json file
     for the static website, including the content of each file and download statistics.
@@ -898,6 +899,11 @@ def generate_components_json(skip_downloads=False):
     dashboard_public_dir = 'dashboard/public'
     dashboard_content_dir = os.path.join(dashboard_public_dir, 'component-content')
 
+    # SkillSpector risk signal (display-only, never used for ordering).
+    # Rescans only components whose files changed since the last catalog.
+    if not skip_skillspector:
+        attach_skillspector(components_data, output_path, only=skillspector_only)
+
     # Component types that carry a 'content' field
     content_bearing_types = ['agents', 'commands', 'mcps', 'settings', 'hooks', 'sandbox', 'skills', 'loops', 'mods']
 
@@ -959,7 +965,11 @@ def generate_components_json(skip_downloads=False):
     STRIP_KEYS = {'content', 'security', 'files'}
 
     def strip_for_dashboard(component):
-        return {key: val for key, val in component.items() if key not in STRIP_KEYS}
+        out = {key: val for key, val in component.items() if key not in STRIP_KEYS}
+        if out.get('skillspector'):
+            # The cache key only matters to the generator.
+            out['skillspector'] = {k: v for k, v in out['skillspector'].items() if k != 'hash'}
+        return out
 
     # Build the dashboard index (content + security stripped from components).
     dashboard_index_data = {}
@@ -1061,5 +1071,13 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Generate docs/components.json and the dashboard/public artifacts')
     parser.add_argument('--skip-downloads', action='store_true',
                         help='do not query Supabase; keep the download counts already in docs/components.json (seconds instead of minutes)')
+    parser.add_argument('--skip-skillspector', action='store_true',
+                        help='do not run SkillSpector; keep the results already in docs/components.json')
+    parser.add_argument('--skillspector-only', nargs='+', metavar='TYPE/PATH',
+                        help='scan only these components (e.g. agents/security/x.md skills/security/y); the rest keep their previous result')
     args = parser.parse_args()
-    generate_components_json(skip_downloads=args.skip_downloads)
+    generate_components_json(
+        skip_downloads=args.skip_downloads,
+        skip_skillspector=args.skip_skillspector,
+        skillspector_only=set(args.skillspector_only) if args.skillspector_only else None,
+    )
