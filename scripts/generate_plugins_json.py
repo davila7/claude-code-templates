@@ -66,6 +66,7 @@ REPOS = [
     ("cohesivity-org/cohesivity-plugin", "https://cohesivity.ai"),
     ("iOSDevSK/html2wp-cc-plugin", "https://html2wp.dev/"),
     ("curviate/curviate-plugin", "https://curviate.com/"),
+    ("target1m/traderspy-mcp", "https://traderspy.app/mcp"),
 ]
 
 DESCRIPTION_OVERRIDES = {
