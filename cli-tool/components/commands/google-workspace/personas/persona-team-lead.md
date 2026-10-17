@@ -1,6 +1,6 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [task-description]
+argument-hint: "[task-description]"
 description: Lead a team — run standups, coordinate tasks, and communicate.
 ---
 

@@ -1,6 +1,6 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [task-parameters]
+argument-hint: "[task-parameters]"
 description: Find Google Tasks that are past due and need attention.
 ---
 

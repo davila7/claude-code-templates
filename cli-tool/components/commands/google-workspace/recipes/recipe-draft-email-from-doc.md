@@ -1,6 +1,6 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [task-parameters]
+argument-hint: "[task-parameters]"
 description: Read content from a Google Doc and use it as the body of a Gmail message.
 ---
 

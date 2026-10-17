@@ -1,6 +1,6 @@
 ---
 allowed-tools: Read, Write, Edit, Bash
-argument-hint: [project-name] | --minimal | --epic-name | --owner
+argument-hint: "[project-name] | --minimal | --epic-name | --owner"
 description: Initialize Product as Code (PAC) project structure with templates and configuration
 ---
 

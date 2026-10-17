@@ -117,7 +117,7 @@ Claude loads references and examples as needed based on task.
 ```markdown
 ---
 description: Brief description
-argument-hint: [arg1] [arg2]
+argument-hint: "[arg1] [arg2]"
 allowed-tools: Read, Bash(git:*)
 ---
 
@@ -172,7 +172,7 @@ Review this code for quality and potential bugs.
 ```markdown
 ---
 description: Deploy to environment
-argument-hint: [environment] [version]
+argument-hint: "[environment] [version]"
 ---
 
 Deploy to $1 environment using version $2
@@ -183,7 +183,7 @@ Deploy to $1 environment using version $2
 ```markdown
 ---
 description: Document file
-argument-hint: [file-path]
+argument-hint: "[file-path]"
 ---
 
 Generate documentation for @$1

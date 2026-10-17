@@ -1,6 +1,6 @@
 ---
 allowed-tools: Read, Bash, Grep
-argument-hint: [scope] | --security | --licenses | --updates | --all
+argument-hint: "[scope] | --security | --licenses | --updates | --all"
 description: Audit dependencies for security vulnerabilities, license compliance, and update recommendations
 ---
 

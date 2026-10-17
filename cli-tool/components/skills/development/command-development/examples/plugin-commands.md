@@ -26,7 +26,7 @@ Practical examples of commands designed for Claude Code plugins, demonstrating p
 ```markdown
 ---
 description: Analyze code quality using plugin tools
-argument-hint: [file-path]
+argument-hint: "[file-path]"
 allowed-tools: Bash(node:*), Read
 ---
 
@@ -57,7 +57,7 @@ Review the analysis output and provide:
 ```markdown
 ---
 description: Complete code audit using plugin suite
-argument-hint: [directory]
+argument-hint: "[directory]"
 allowed-tools: Bash(*)
 model: sonnet
 ---
@@ -97,7 +97,7 @@ Analyze all results and create comprehensive report including:
 ```markdown
 ---
 description: Generate API documentation from template
-argument-hint: [api-file]
+argument-hint: "[api-file]"
 ---
 
 Template structure: @${CLAUDE_PLUGIN_ROOT}/templates/api-documentation.md
@@ -134,7 +134,7 @@ Format output as markdown suitable for README or docs site.
 ```markdown
 ---
 description: Execute complete release workflow
-argument-hint: [version]
+argument-hint: "[version]"
 allowed-tools: Bash(*), Read
 ---
 
@@ -177,7 +177,7 @@ Review all step outputs and report:
 ```markdown
 ---
 description: Deploy application to environment
-argument-hint: [environment]
+argument-hint: "[environment]"
 allowed-tools: Read, Bash(*)
 ---
 
@@ -218,7 +218,7 @@ Report deployment status and any issues encountered.
 ```markdown
 ---
 description: Deep code review using plugin agent
-argument-hint: [file-or-directory]
+argument-hint: "[file-or-directory]"
 ---
 
 Initiate comprehensive code review of @$1 using the code-reviewer agent.
@@ -255,7 +255,7 @@ Note: This uses the Task tool to launch the plugin's code-reviewer agent for tho
 ```markdown
 ---
 description: Document API following plugin standards
-argument-hint: [api-file]
+argument-hint: "[api-file]"
 ---
 
 API source code: @$1
@@ -295,7 +295,7 @@ Generate production-ready API documentation.
 ```markdown
 ---
 description: Comprehensive review using all plugin components
-argument-hint: [file-path]
+argument-hint: "[file-path]"
 allowed-tools: Bash(node:*), Read
 ---
 
@@ -352,7 +352,7 @@ Include specific file locations and suggested changes for each item.
 ```markdown
 ---
 description: Build for specific environment with validation
-argument-hint: [environment]
+argument-hint: "[environment]"
 allowed-tools: Bash(*)
 ---
 
@@ -397,7 +397,7 @@ If validations fail:
 ```markdown
 ---
 description: Run environment-appropriate checks
-argument-hint: [environment]
+argument-hint: "[environment]"
 allowed-tools: Bash(*), Read
 ---
 

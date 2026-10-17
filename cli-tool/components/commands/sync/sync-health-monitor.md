@@ -1,6 +1,6 @@
 ---
 allowed-tools: Read, Write, Edit, Bash
-argument-hint: [scope] | --github | --linear | --webhooks | --performance | --report
+argument-hint: "[scope] | --github | --linear | --webhooks | --performance | --report"
 description: Monitor and diagnose GitHub-Linear sync health with performance analytics and automated troubleshooting
 ---
 

@@ -1,6 +1,6 @@
 ---
 allowed-tools: Read, Write, Edit, Bash
-argument-hint: [platform] | --github-actions | --gitlab-ci | --azure-pipelines | --jenkins
+argument-hint: "[platform] | --github-actions | --gitlab-ci | --azure-pipelines | --jenkins"
 description: Setup comprehensive CI/CD pipeline with automated testing, deployment, and monitoring
 ---
 

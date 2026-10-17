@@ -1,6 +1,6 @@
 ---
 allowed-tools: Read, Write, Edit, Glob
-argument-hint: [capture-type] | --project-learnings | --implementation-corrections | --structure-insights | --workflow-improvements
+argument-hint: "[capture-type] | --project-learnings | --implementation-corrections | --structure-insights | --workflow-improvements"
 description: Capture and document session learnings with automatic knowledge integration and memory updates
 ---
 

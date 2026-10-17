@@ -1,6 +1,6 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [resource] [method] [flags]
+argument-hint: "[resource] [method] [flags]"
 description: Google Drive: Upload a file with automatic metadata.
 ---
 

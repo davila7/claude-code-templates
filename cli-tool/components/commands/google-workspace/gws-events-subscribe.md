@@ -1,6 +1,6 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [resource] [method] [flags]
+argument-hint: "[resource] [method] [flags]"
 description: Google Workspace Events: Subscribe to Workspace events and stream them as NDJSON.
 ---
 

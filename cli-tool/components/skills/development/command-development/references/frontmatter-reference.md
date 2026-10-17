@@ -11,7 +11,7 @@ YAML frontmatter is optional metadata at the start of command files:
 description: Brief description
 allowed-tools: Read, Write
 model: sonnet
-argument-hint: [arg1] [arg2]
+argument-hint: "[arg1] [arg2]"
 ---
 
 Command prompt content here...
@@ -203,29 +203,29 @@ model: opus
 
 **Format:**
 ```yaml
-argument-hint: [arg1] [arg2] [optional-arg]
+argument-hint: "[arg1] [arg2] [optional-arg]"
 ```
 
 **Examples:**
 
 **Single argument:**
 ```yaml
-argument-hint: [pr-number]
+argument-hint: "[pr-number]"
 ```
 
 **Multiple required arguments:**
 ```yaml
-argument-hint: [environment] [version]
+argument-hint: "[environment] [version]"
 ```
 
 **Optional arguments:**
 ```yaml
-argument-hint: [file-path] [options]
+argument-hint: "[file-path] [options]"
 ```
 
 **Descriptive names:**
 ```yaml
-argument-hint: [source-branch] [target-branch] [commit-message]
+argument-hint: "[source-branch] [target-branch] [commit-message]"
 ```
 
 **Best practices:**
@@ -241,7 +241,7 @@ argument-hint: [source-branch] [target-branch] [commit-message]
 ```yaml
 ---
 description: Fix issue by number
-argument-hint: [issue-number]
+argument-hint: "[issue-number]"
 ---
 
 Fix issue #$1...
@@ -251,7 +251,7 @@ Fix issue #$1...
 ```yaml
 ---
 description: Deploy to environment
-argument-hint: [app-name] [environment] [version]
+argument-hint: "[app-name] [environment] [version]"
 ---
 
 Deploy $1 to $2 using version $3...
@@ -261,7 +261,7 @@ Deploy $1 to $2 using version $3...
 ```yaml
 ---
 description: Run tests with options
-argument-hint: [test-pattern] [options]
+argument-hint: "[test-pattern] [options]"
 ---
 
 Run tests matching $1 with options: $2
@@ -368,7 +368,7 @@ All common fields:
 ```markdown
 ---
 description: Deploy application to environment
-argument-hint: [app-name] [environment] [version]
+argument-hint: "[app-name] [environment] [version]"
 allowed-tools: Bash(kubectl:*), Bash(helm:*), Read
 model: sonnet
 ---
@@ -390,7 +390,7 @@ Restricted invocation:
 ```markdown
 ---
 description: Approve production deployment
-argument-hint: [deployment-id]
+argument-hint: "[deployment-id]"
 disable-model-invocation: true
 allowed-tools: Bash(gh:*)
 ---

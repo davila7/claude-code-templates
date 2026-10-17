@@ -1,6 +1,6 @@
 ---
 allowed-tools: Read, Write, Edit, Bash, Glob
-argument-hint: [project-type] [framework] | --react | --vue | --api | --cli
+argument-hint: "[project-type] [framework] | --react | --vue | --api | --cli"
 description: Initialize new project with essential structure, configuration, and development environment setup
 ---
 
