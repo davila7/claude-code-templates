@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "qa-runbook": {
+      "description": "Shared QA runbook for user acceptance testing. Read the test plan, record pass/fail per platform, list the issues testers raised and the checks that are failing, and mark issues resolved after a fix. Remote Streamable HTTP server; get your token from Connect your AI on qarunbook.com (free).",
+      "type": "http",
+      "url": "https://qarunbook.com/api/mcp",
+      "headers": {
+        "Authorization": "Bearer <YOUR_QARUNBOOK_TOKEN>"
+      }
+    }
+  }
+}
