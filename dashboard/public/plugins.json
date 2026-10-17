@@ -23352,35 +23352,25 @@
     "slug": "firecrawl-claude-plugin",
     "name": "Firecrawl Claude Plugin",
     "author": "firecrawl",
-    "description": "Firecrawl plugin for Claude Code - web scraping and crawling",
+    "description": "Search the web, developer sources, and scientific papers with Firecrawl.",
     "github": "https://github.com/firecrawl/firecrawl-claude-plugin",
-    "stars": 234,
+    "stars": 244,
     "type": "plugin",
     "tags": [
       "skills"
     ],
     "contains": {
-      "skills": 13
+      "skills": 3
     },
     "highlights": [
-      "Plugin declares: 13 skills"
+      "Plugin declares: 3 skills"
     ],
     "website": "https://www.firecrawl.dev/integrations/claude-code?utm_source=claude-code-templates&utm_medium=integration",
     "marketplace_name": "firecrawl",
     "plugin_name": "firecrawl",
     "plugin_manifest": {
       "skills": [
-        "./skills/firecrawl-agent",
-        "./skills/firecrawl-alexandria",
         "./skills/firecrawl",
-        "./skills/firecrawl-crawl",
-        "./skills/firecrawl-download",
-        "./skills/firecrawl-interact",
-        "./skills/firecrawl-map",
-        "./skills/firecrawl-monitor",
-        "./skills/firecrawl-parse",
-        "./skills/firecrawl-scrape",
-        "./skills/firecrawl-search",
         "./skills/firecrawl-developer-index",
         "./skills/firecrawl-research-index"
       ]
