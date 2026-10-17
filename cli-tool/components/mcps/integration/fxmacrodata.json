@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "fxmacrodata": {
+      "description": "FXMacroData remote MCP: official central-bank and statistics-agency macro data for FX across 22 currencies (policy rates, CPI, GDP, employment, bond yields), release calendars, COT positioning, commodities and FX spot rates. Works without a key for USD releases (last 90 days, 15-minute delay), the USD release calendar, USD press releases and the USD data catalogue, up to 100 requests/day. For other currencies, FX rates and full history, add \"headers\": {\"Authorization\": \"Bearer <YOUR_FXMACRODATA_API_KEY>\"} (keys at https://fxmacrodata.com/subscribe).",
+      "type": "http",
+      "url": "https://mcp.fxmacrodata.com"
+    }
+  }
+}
