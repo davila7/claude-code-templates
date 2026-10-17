@@ -901,8 +901,9 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
 
     # SkillSpector risk signal (display-only, never used for ordering).
     # Rescans only components whose files changed since the last catalog.
-    if not skip_skillspector:
-        attach_skillspector(components_data, output_path, only=skillspector_only)
+    # --skip-skillspector still copies the previous results across.
+    attach_skillspector(components_data, output_path, only=skillspector_only,
+                        scan_enabled=not skip_skillspector)
 
     # Component types that carry a 'content' field
     content_bearing_types = ['agents', 'commands', 'mcps', 'settings', 'hooks', 'sandbox', 'skills', 'loops', 'mods']

@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { SkillSpectorResult } from '../lib/types';
 
@@ -38,20 +38,39 @@ interface Props {
 export default function SkillSpectorBadge({ result, size = 'sm' }: Props) {
   const anchor = useRef<HTMLSpanElement>(null);
   const [open, setOpen] = useState(false);
-  const [pos, setPos] = useState<{ top?: number; bottom?: number; left: number } | null>(null);
+  const [pos, setPos] = useState<{ top?: number; bottom?: number; left: number; width: number } | null>(null);
   const closeTimer = useRef<number | undefined>(undefined);
+  const panel = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
     if (!open || !anchor.current) return;
     const r = anchor.current.getBoundingClientRect();
-    const width = 340;
+    const width = Math.min(340, window.innerWidth - 16);
     const left = Math.max(8, Math.min(r.left, window.innerWidth - width - 8));
     // Open upwards when the detail would not fit below the badge.
     if (window.innerHeight - r.bottom > 480 || r.top < window.innerHeight - r.bottom) {
-      setPos({ top: r.bottom + 6, left });
+      setPos({ top: r.bottom + 6, left, width });
     } else {
-      setPos({ bottom: window.innerHeight - r.top + 6, left });
+      setPos({ bottom: window.innerHeight - r.top + 6, left, width });
     }
+  }, [open]);
+
+  // The detail is fixed-positioned; close it rather than leave it behind
+  // when the page scrolls or resizes under it.
+  useEffect(() => {
+    if (!open) return;
+    const close = () => setOpen(false);
+    const onScroll = (e: Event) => {
+      // Scrolling the findings list inside the detail keeps it open.
+      if (panel.current && e.target instanceof Node && panel.current.contains(e.target)) return;
+      close();
+    };
+    window.addEventListener('scroll', onScroll, { passive: true, capture: true });
+    window.addEventListener('resize', close);
+    return () => {
+      window.removeEventListener('scroll', onScroll, { capture: true });
+      window.removeEventListener('resize', close);
+    };
   }, [open]);
 
   if (!result) return null;
@@ -81,10 +100,12 @@ export default function SkillSpectorBadge({ result, size = 'sm' }: Props) {
         onFocus={show}
         onBlur={hide}
         onClick={(e) => {
-          // Cards navigate on click; the badge only toggles its detail.
+          // Cards navigate on click; the badge only opens its detail (a tap
+          // focuses it first, so toggling here would close it again). Tapping
+          // elsewhere blurs it and closes the detail.
           e.stopPropagation();
           e.preventDefault();
-          setOpen((v) => !v);
+          show();
         }}
         className={`inline-flex items-center gap-1.5 font-mono font-semibold border cursor-help select-none whitespace-nowrap ${
           md ? 'text-xs px-3 py-1.5 rounded-full shadow-sm' : 'text-[10px] px-2 py-0.5 rounded'
@@ -114,12 +135,13 @@ export default function SkillSpectorBadge({ result, size = 'sm' }: Props) {
       {open && pos && typeof document !== 'undefined' &&
         createPortal(
           <div
+            ref={panel}
             role="tooltip"
             onMouseEnter={show}
             onMouseLeave={hide}
             onClick={(e) => e.stopPropagation()}
-            className="fixed z-[1000] w-[340px] rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-1)] shadow-2xl text-left"
-            style={{ top: pos.top, bottom: pos.bottom, left: pos.left }}
+            className="fixed z-[1000] rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-1)] shadow-2xl text-left"
+            style={{ top: pos.top, bottom: pos.bottom, left: pos.left, width: pos.width }}
           >
             <div className="px-4 pt-3 pb-2 border-b border-[var(--color-border)]">
               <div className="flex items-center justify-between gap-3">

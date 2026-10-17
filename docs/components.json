@@ -3809,7 +3809,7 @@
         "findings": [],
         "hash": "0658aec3d539dbb2",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -4732,7 +4732,7 @@
         "findings": [],
         "hash": "9ff2688e7575d164",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -10488,7 +10488,7 @@
         "findings": [],
         "hash": "627d8a977eca70ee",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -12044,7 +12044,7 @@
         "findings": [],
         "hash": "c3bfeb79a33525a7",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -14499,7 +14499,7 @@
             "severity": "HIGH",
             "title": "Credential Access",
             "file": "supply-chain-security.md",
-            "line": 65,
+            "line": 60,
             "count": 2
           },
           {
@@ -14508,13 +14508,13 @@
             "severity": "MEDIUM",
             "title": "Unrestricted Tool Access",
             "file": "supply-chain-security.md",
-            "line": 44,
+            "line": 39,
             "count": 1
           }
         ],
         "hash": "2ee6c4b306673d6f",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -15415,13 +15415,13 @@
             "severity": "HIGH",
             "title": "Credential Access",
             "file": "supply-chain-audit.md",
-            "line": 55,
+            "line": 50,
             "count": 1
           }
         ],
         "hash": "14448754464011a1",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -17363,7 +17363,7 @@
         "findings": [],
         "hash": "7c40dba96eb61712",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -17395,7 +17395,7 @@
         "findings": [],
         "hash": "a3f7bc432113adff",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -17427,7 +17427,7 @@
         "findings": [],
         "hash": "597933c8d2e6c983",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -17459,7 +17459,7 @@
         "findings": [],
         "hash": "8fca515757b1753f",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -17565,7 +17565,7 @@
         "findings": [],
         "hash": "8c67548e89f07557",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -17597,7 +17597,7 @@
         "findings": [],
         "hash": "c4df1956ffd45cc9",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -20038,7 +20038,7 @@
         "findings": [],
         "hash": "1dd40e9a2db48997",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -20070,7 +20070,7 @@
         "findings": [],
         "hash": "99ad9d3d0d2c23ae",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -20198,7 +20198,7 @@
         "findings": [],
         "hash": "65a82509afb952ee",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -20230,7 +20230,7 @@
         "findings": [],
         "hash": "15084c06a81c39a1",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -20262,7 +20262,7 @@
         "findings": [],
         "hash": "d5576abbe11fa762",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -20294,7 +20294,7 @@
         "findings": [],
         "hash": "a6da711749a4347b",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -20326,7 +20326,7 @@
         "findings": [],
         "hash": "cf90b52a1b4bb4a0",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -20358,7 +20358,7 @@
         "findings": [],
         "hash": "7efb86c29d175a57",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -20390,7 +20390,7 @@
         "findings": [],
         "hash": "59d2e8ecb66d81e9",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -20422,7 +20422,7 @@
         "findings": [],
         "hash": "ec25da2d66de56aa",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -20454,7 +20454,7 @@
         "findings": [],
         "hash": "6e7cb41b4e16a798",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -20486,7 +20486,7 @@
         "findings": [],
         "hash": "9e65d226df229d97",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -20614,7 +20614,7 @@
         "findings": [],
         "hash": "2bd49e50bacb7ac4",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -20806,7 +20806,7 @@
         "findings": [],
         "hash": "5ae6c640fa9a12ee",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -22480,7 +22480,7 @@
         "findings": [],
         "hash": "48904c6eaa6555cf",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -22544,7 +22544,7 @@
         "findings": [],
         "hash": "ed3c33d44204a1b8",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -22580,13 +22580,13 @@
             "severity": "MEDIUM",
             "title": "MCP server referenced without pinned version: 'npx sv'.",
             "file": "svelte-migrate.md",
-            "line": 31,
+            "line": 26,
             "count": 2
           }
         ],
         "hash": "29597fbb8f4b89aa",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -22618,7 +22618,7 @@
         "findings": [],
         "hash": "7ebe42d3b94b52ef",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -22654,13 +22654,13 @@
             "severity": "MEDIUM",
             "title": "MCP server referenced without pinned version: 'npx sv'.",
             "file": "svelte-scaffold.md",
-            "line": 17,
+            "line": 12,
             "count": 1
           }
         ],
         "hash": "ffd4dd47b97635e2",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -22696,13 +22696,13 @@
             "severity": "MEDIUM",
             "title": "MCP server referenced without pinned version: 'npx storybook'.",
             "file": "svelte-storybook-migrate.md",
-            "line": 19,
+            "line": 14,
             "count": 1
           }
         ],
         "hash": "8e7c8851d52f52f6",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -22738,13 +22738,13 @@
             "severity": "HIGH",
             "title": "Memory Manipulation",
             "file": "svelte-storybook-mock.md",
-            "line": 93,
+            "line": 88,
             "count": 1
           }
         ],
         "hash": "b5888726bdd22b6f",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -22780,13 +22780,13 @@
             "severity": "MEDIUM",
             "title": "MCP server referenced without pinned version: 'npx storybook'.",
             "file": "svelte-storybook-setup.md",
-            "line": 18,
+            "line": 13,
             "count": 1
           }
         ],
         "hash": "d8b5cccb1f40fcb2",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -22818,7 +22818,7 @@
         "findings": [],
         "hash": "c87b307239f664e4",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -22854,7 +22854,7 @@
             "severity": "HIGH",
             "title": "Credential Access",
             "file": "svelte-storybook-troubleshoot.md",
-            "line": 123,
+            "line": 118,
             "count": 1
           },
           {
@@ -22863,13 +22863,13 @@
             "severity": "MEDIUM",
             "title": "MCP server referenced without pinned version: 'npx storybook'.",
             "file": "svelte-storybook-troubleshoot.md",
-            "line": 157,
+            "line": 152,
             "count": 1
           }
         ],
         "hash": "3af41ba3aa90412d",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -22901,7 +22901,7 @@
         "findings": [],
         "hash": "3b239ba3bbbff362",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -22933,7 +22933,7 @@
         "findings": [],
         "hash": "5df076c0b13896aa",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -22965,7 +22965,7 @@
         "findings": [],
         "hash": "2fa89a883a470f3e",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -22997,7 +22997,7 @@
         "findings": [],
         "hash": "e125a72eea8c2eed",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -23029,7 +23029,7 @@
         "findings": [],
         "hash": "3fe78982e0c310a4",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -24520,7 +24520,7 @@
         "findings": [],
         "hash": "d4c791f0dcaed3a9",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -24552,7 +24552,7 @@
         "findings": [],
         "hash": "719407428b8401f2",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -24584,7 +24584,7 @@
         "findings": [],
         "hash": "4a5541c894bed88f",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -24616,7 +24616,7 @@
         "findings": [],
         "hash": "3b69c9cfb6903c52",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -24648,7 +24648,7 @@
         "findings": [],
         "hash": "fbe2e780d99dec37",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -24722,7 +24722,7 @@
         "findings": [],
         "hash": "640e2f2ae50affb6",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -24786,7 +24786,7 @@
         "findings": [],
         "hash": "0a9c8f48b5a27684",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -24818,7 +24818,7 @@
         "findings": [],
         "hash": "e56c1225489911e6",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -24850,7 +24850,7 @@
         "findings": [],
         "hash": "3c2d6e496ab135bc",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -24882,7 +24882,7 @@
         "findings": [],
         "hash": "92c7101d39f2bb81",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -24914,7 +24914,7 @@
         "findings": [],
         "hash": "761fcdcedf1ab430",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -24946,7 +24946,7 @@
         "findings": [],
         "hash": "c5e5bfc63ff6279f",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -24978,7 +24978,7 @@
         "findings": [],
         "hash": "53b89e0745793d88",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -25010,7 +25010,7 @@
         "findings": [],
         "hash": "7cef7cc6b438f82c",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -25042,7 +25042,7 @@
         "findings": [],
         "hash": "6fbbaea17abf1989",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -25074,7 +25074,7 @@
         "findings": [],
         "hash": "9675a82e446385d8",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -25106,7 +25106,7 @@
         "findings": [],
         "hash": "bd6fc91080ffc4c8",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:30:55Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -34357,7 +34357,7 @@
             "severity": "MEDIUM",
             "title": "MCP server referenced without pinned version: 'npx wrangler'.",
             "file": "IMPLEMENTATION_SUMMARY.md",
-            "line": 212,
+            "line": 207,
             "count": 2
           },
           {
@@ -34366,7 +34366,7 @@
             "severity": "MEDIUM",
             "title": "MCP server referenced without pinned version: 'npx claude-code-templates'.",
             "file": "IMPLEMENTATION_SUMMARY.md",
-            "line": 239,
+            "line": 234,
             "count": 2
           },
           {
@@ -34375,13 +34375,13 @@
             "severity": "MEDIUM",
             "title": "External Transmission",
             "file": "IMPLEMENTATION_SUMMARY.md",
-            "line": 219,
+            "line": 214,
             "count": 1
           }
         ],
         "hash": "f1e463bc406a8dfb",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -34417,7 +34417,7 @@
             "severity": "MEDIUM",
             "title": "MCP server referenced without pinned version: 'npx wrangler'.",
             "file": "QUICKSTART.md",
-            "line": 29,
+            "line": 24,
             "count": 13
           },
           {
@@ -34426,7 +34426,7 @@
             "severity": "MEDIUM",
             "title": "Sudo/Root Execution",
             "file": "QUICKSTART.md",
-            "line": 88,
+            "line": 83,
             "count": 1
           },
           {
@@ -34435,13 +34435,13 @@
             "severity": "MEDIUM",
             "title": "External Transmission",
             "file": "QUICKSTART.md",
-            "line": 48,
+            "line": 43,
             "count": 2
           }
         ],
         "hash": "9a5db876e432956f",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -34477,7 +34477,7 @@
             "severity": "MEDIUM",
             "title": "MCP server referenced without pinned version: 'npx wrangler'.",
             "file": "README.md",
-            "line": 23,
+            "line": 18,
             "count": 9
           },
           {
@@ -34486,13 +34486,13 @@
             "severity": "MEDIUM",
             "title": "External Transmission",
             "file": "README.md",
-            "line": 32,
+            "line": 27,
             "count": 1
           }
         ],
         "hash": "1aa5afdb948c311d",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -34528,7 +34528,7 @@
             "severity": "HIGH",
             "title": "Instruction Override",
             "file": "SANDBOX_DEBUGGING.md",
-            "line": 272,
+            "line": 267,
             "count": 1
           },
           {
@@ -34537,7 +34537,7 @@
             "severity": "MEDIUM",
             "title": "MCP server referenced without pinned version: 'npx wrangler'.",
             "file": "SANDBOX_DEBUGGING.md",
-            "line": 29,
+            "line": 24,
             "count": 37
           },
           {
@@ -34546,7 +34546,7 @@
             "severity": "MEDIUM",
             "title": "MCP server referenced without pinned version: 'npx claude-code-templates'.",
             "file": "SANDBOX_DEBUGGING.md",
-            "line": 141,
+            "line": 136,
             "count": 1
           },
           {
@@ -34555,13 +34555,13 @@
             "severity": "MEDIUM",
             "title": "Sudo/Root Execution",
             "file": "SANDBOX_DEBUGGING.md",
-            "line": 154,
+            "line": 149,
             "count": 1
           }
         ],
         "hash": "e7c9861f1394e000",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -34597,7 +34597,7 @@
             "severity": "MEDIUM",
             "title": "MCP server referenced without pinned version: 'npx claude-code-templates'.",
             "file": "claude-code-sandbox.md",
-            "line": 74,
+            "line": 69,
             "count": 8
           },
           {
@@ -34606,7 +34606,7 @@
             "severity": "MEDIUM",
             "title": "MCP server referenced without pinned version: 'npx wrangler'.",
             "file": "claude-code-sandbox.md",
-            "line": 91,
+            "line": 86,
             "count": 12
           },
           {
@@ -34615,13 +34615,13 @@
             "severity": "MEDIUM",
             "title": "External Transmission",
             "file": "claude-code-sandbox.md",
-            "line": 149,
+            "line": 144,
             "count": 1
           }
         ],
         "hash": "715849b57a91a3b7",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -34740,7 +34740,7 @@
             "severity": "MEDIUM",
             "title": "Docker image referenced without tag or digest: 'docker run --rm'.",
             "file": "README.md",
-            "line": 193,
+            "line": 188,
             "count": 2
           },
           {
@@ -34749,7 +34749,7 @@
             "severity": "MEDIUM",
             "title": "Docker image referenced without tag or digest: 'docker run -it'.",
             "file": "README.md",
-            "line": 282,
+            "line": 277,
             "count": 1
           },
           {
@@ -34758,7 +34758,7 @@
             "severity": "MEDIUM",
             "title": "MCP server referenced without pinned version: 'npx claude-code-templates'.",
             "file": "README.md",
-            "line": 35,
+            "line": 30,
             "count": 9
           },
           {
@@ -34767,13 +34767,13 @@
             "severity": "MEDIUM",
             "title": "Sudo/Root Execution",
             "file": "README.md",
-            "line": 234,
+            "line": 229,
             "count": 2
           }
         ],
         "hash": "53f8b12a1c189728",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -34856,7 +34856,7 @@
         "findings": [],
         "hash": "d1aba85b0c3baa0b",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     },
     {
@@ -34892,7 +34892,7 @@
             "severity": "HIGH",
             "title": "Credential Access",
             "file": "claude-code-sandbox.md",
-            "line": 75,
+            "line": 70,
             "count": 1
           },
           {
@@ -34901,13 +34901,13 @@
             "severity": "MEDIUM",
             "title": "MCP server referenced without pinned version: 'npx claude-code-templates'.",
             "file": "claude-code-sandbox.md",
-            "line": 32,
+            "line": 27,
             "count": 7
           }
         ],
         "hash": "97afb17b273fff48",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-10-17T21:46:22Z"
       }
     }
   ],

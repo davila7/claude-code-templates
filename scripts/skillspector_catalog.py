@@ -100,10 +100,14 @@ def _stub_skill_md(component: dict) -> str:
     return f"---\nname: {component['name']}\ndescription: {json.dumps(desc, ensure_ascii=False)}\n---\n"
 
 
-def stage(component_type: str, component: dict, root: Path, files: list[Path], tmp: Path) -> Path:
-    """Lay the component out as a skill directory SkillSpector accepts."""
+def stage(component_type: str, component: dict, root: Path, files: list[Path], tmp: Path) -> tuple[Path, int]:
+    """Lay the component out as a skill directory SkillSpector accepts.
+
+    Returns the directory and how many lines were prepended to the main
+    Markdown file, so findings can be mapped back to source lines.
+    """
     if component_type == "skills":
-        return root
+        return root, 0
     target = tmp / component["name"]
     target.mkdir(parents=True)
     if component_type == "mods":
@@ -114,32 +118,39 @@ def stage(component_type: str, component: dict, root: Path, files: list[Path], t
         # Stub only: the README is scanned as its own file, copying it into
         # SKILL.md would count every finding in it twice.
         (target / "SKILL.md").write_text(_stub_skill_md(component), encoding="utf-8")
-        return target
+        return target, 0
     main = files[0]
+    offset = 0
     if main.suffix == ".md":
         text = main.read_text(encoding="utf-8")
         if not text.startswith("---"):
-            text = _stub_skill_md(component) + "\n" + text
+            stub = _stub_skill_md(component) + "\n"
+            offset = stub.count("\n")
+            text = stub + text
         (target / "SKILL.md").write_text(text, encoding="utf-8")
     else:
         (target / "SKILL.md").write_text(_stub_skill_md(component), encoding="utf-8")
         for f in files:
             shutil.copyfile(f, target / f.name)
-    return target
+    return target, offset
 
 
-def _finding(issue: dict, staged_main: str | None) -> dict:
+def _finding(issue: dict, staged_main: str | None, offset: int = 0) -> dict:
     loc = issue.get("location") or {}
     file = loc.get("file") or ""
+    line = loc.get("start_line")
     if staged_main and file == "SKILL.md":
         file = staged_main
+        if line and offset:
+            # A line inside the prepended stub has no source line.
+            line = line - offset if line > offset else None
     return {
         "id": issue.get("id") or "",
         "category": issue.get("category") or "",
         "severity": (issue.get("severity") or "LOW").upper(),
         "title": issue.get("pattern") or issue.get("explanation") or "",
         "file": file,
-        "line": loc.get("start_line"),
+        "line": line,
     }
 
 
@@ -148,7 +159,7 @@ SEVERITY_RANK = {"CRITICAL": 0, "HIGH": 1, "MEDIUM": 2, "LOW": 3}
 
 def scan(component_type: str, component: dict, root: Path, files: list[Path]) -> dict:
     with tempfile.TemporaryDirectory(prefix="skillspector-") as tmp:
-        target = stage(component_type, component, root, files, Path(tmp))
+        target, offset = stage(component_type, component, root, files, Path(tmp))
         proc = subprocess.run(
             ["skillspector", "scan", str(target), "--no-llm", "--format", "json"],
             capture_output=True,
@@ -171,7 +182,7 @@ def scan(component_type: str, component: dict, root: Path, files: list[Path]) ->
     # The same rule often fires on many lines; show each (rule, file) once.
     findings: dict = {}
     for issue in issues:
-        f = _finding(issue, staged_main)
+        f = _finding(issue, staged_main, offset)
         key = (f["id"], f["title"], f["file"])
         if key in findings:
             findings[key]["count"] += 1
@@ -208,16 +219,18 @@ def previous_results(catalog_path: str = "docs/components.json") -> dict:
 
 
 def attach_skillspector(components_data: dict, catalog_path: str = "docs/components.json",
-                        only: set[str] | None = None, workers: int | None = None) -> None:
+                        only: set[str] | None = None, workers: int | None = None,
+                        scan_enabled: bool = True) -> None:
     """Set component['skillspector'] on every component, scanning only stale ones.
 
     `only` limits fresh scans to these "type/path" keys (used to try the
     pipeline on a few components) and always rescans them; everything else
-    keeps its cached result.
+    keeps its cached result. With scan_enabled=False nothing is scanned and
+    every component keeps its previous result.
     """
     cache = previous_results(catalog_path)
-    version = skillspector_version()
-    if version is None:
+    version = skillspector_version() if scan_enabled else None
+    if version is None and scan_enabled:
         print("⚠️ skillspector not on PATH: keeping previous SkillSpector results")
 
     todo = []
@@ -239,7 +252,7 @@ def attach_skillspector(components_data: dict, catalog_path: str = "docs/compone
                 if prev:
                     c["skillspector"] = prev
                 continue
-            todo.append((ctype, c, root, files, digest, key))
+            todo.append((ctype, c, root, files, digest, key, prev))
 
     if not todo:
         return
@@ -247,11 +260,15 @@ def attach_skillspector(components_data: dict, catalog_path: str = "docs/compone
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     def run(job):
-        ctype, c, root, files, digest, key = job
+        ctype, c, root, files, digest, key, prev = job
         try:
             result = scan(ctype, c, root, files)
         except Exception as e:  # one broken component never aborts the batch
             print(f"  ⚠️ {key}: {e}")
+            # Keep the previous result (with its old hash, so the next run
+            # retries) rather than dropping the badge.
+            if prev:
+                c["skillspector"] = prev
             return
         result.update({"hash": digest, "version": version, "scannedAt": now})
         c["skillspector"] = result
