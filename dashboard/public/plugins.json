@@ -23349,6 +23349,44 @@
     ]
   },
   {
+    "slug": "firecrawl-claude-plugin",
+    "name": "Firecrawl Claude Plugin",
+    "author": "firecrawl",
+    "description": "Firecrawl plugin for Claude Code - web scraping and crawling",
+    "github": "https://github.com/firecrawl/firecrawl-claude-plugin",
+    "stars": 234,
+    "type": "plugin",
+    "tags": [
+      "skills"
+    ],
+    "contains": {
+      "skills": 13
+    },
+    "highlights": [
+      "Plugin declares: 13 skills"
+    ],
+    "website": "https://www.firecrawl.dev/integrations/claude-code?utm_source=claude-code-templates&utm_medium=integration",
+    "marketplace_name": "firecrawl",
+    "plugin_name": "firecrawl",
+    "plugin_manifest": {
+      "skills": [
+        "./skills/firecrawl-agent",
+        "./skills/firecrawl-alexandria",
+        "./skills/firecrawl",
+        "./skills/firecrawl-crawl",
+        "./skills/firecrawl-download",
+        "./skills/firecrawl-interact",
+        "./skills/firecrawl-map",
+        "./skills/firecrawl-monitor",
+        "./skills/firecrawl-parse",
+        "./skills/firecrawl-scrape",
+        "./skills/firecrawl-search",
+        "./skills/firecrawl-developer-index",
+        "./skills/firecrawl-research-index"
+      ]
+    }
+  },
+  {
     "slug": "pinion-os",
     "name": "Pinion Os",
     "author": "chu2bard",
