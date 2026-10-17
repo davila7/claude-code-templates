@@ -1,3 +1,10 @@
+---
+description: "Analyze and optimize task orchestrations to improve efficiency, reduce bottlenecks, and maximize team productivity."
+allowed-tools: Read, Write, Edit
+argument-hint: "[options]"
+
+---
+
 # Orchestration Optimize Command
 
 Analyze and optimize task orchestrations to improve efficiency, reduce bottlenecks, and maximize team productivity.

@@ -1,3 +1,10 @@
+---
+description: Fix failing Svelte tests.
+allowed-tools: Read, Write, Edit, Bash(npm:*), Bash(pnpm:*), Bash(yarn:*), Bash(npx:*)
+argument-hint: "[failing-test-or-scope]"
+
+---
+
 # /svelte:test-fix
 
 Troubleshoot and fix failing tests in Svelte/SvelteKit projects, including debugging test issues and resolving common testing problems.

@@ -1,3 +1,10 @@
+---
+description: "Run a multi-role code review and post results to GitHub: $ARGUMENTS"
+allowed-tools: Read, Write, Edit, Bash(git:*), Bash(gh:*)
+argument-hint: "<PR-link-or-number>"
+
+---
+
 # PR Review
 
 **PR Link/Number**: $ARGUMENTS

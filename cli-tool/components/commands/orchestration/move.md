@@ -1,3 +1,10 @@
+---
+description: "Move tasks between status folders following the task management protocol."
+allowed-tools: Read, Write, Edit, Bash
+argument-hint: "TASK-ID new-status [reason]"
+
+---
+
 # Task Move Command
 
 Move tasks between status folders following the task management protocol.
