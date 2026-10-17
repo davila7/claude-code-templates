@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "altorank": {
+      "description": "Remote MCP server for AltoRank, open-source SEO content software: site readiness checks for search engines and AI crawlers, keyword research, Google Search Console data and sourced drafts into a person's review queue. No approve or publish tool. Sign in with OAuth in the browser.",
+      "type": "http",
+      "url": "https://app.altorank.co/api/mcp"
+    }
+  }
+}
