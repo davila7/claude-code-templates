@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "aeon": {
+      "description": "Run and manage your Aeon autonomous agent from chat: list and run skills, follow runs and read their output, search the agent's memory, edit its strategy and voice, install skill packs and change settings. Hosted server with OAuth: sign in with GitHub and choose which Aeon agent the client may use. No API key required. Writes commit to your own repo; secrets are never readable over MCP.",
+      "type": "http",
+      "url": "https://www.aeon.fun/connect/mcp"
+    }
+  }
+}
