@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "hypotize": {
+      "description": "A hosted MCP server for Hypotize, a Growth OS for teams: idea backlog, experiment pipeline and learning library. Claude checks what the team already tested, writes hypothesis-first ideas, scores them with ICE, PIE or RICE and closes each test with a measured result and a learning. Sign in with your Hypotize account; there is no key to paste.",
+      "type": "http",
+      "url": "https://api.hypotize.ai/mcp"
+    }
+  }
+}
