@@ -77,7 +77,7 @@ Set them in user or managed settings under `pluginConfigs["ultra-config@skills-d
 npx claude-code-templates@latest --mod productivity/ultra-config
 ```
 
-Needs Claude Code 2.1.290 or later and a trusted project folder (or install it under `~/.claude/skills/`).
+Needs Claude Code 2.1.287 or later and a trusted project folder (or install it under `~/.claude/skills/`).
 
 ## Notes for maintainers
 

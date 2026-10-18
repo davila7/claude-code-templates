@@ -1,6 +1,6 @@
 {
   "name": "ultra-config",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Five setting profiles in a side pane (Token saver, Fast flow, Max quality, Guarded, Autopilot): press one to see exactly what it sets, then Activate; every activation can be undone. /config rows are written the way the menu writes them; effort, subagent model, env caps and deny rules go to ~/.claude/settings.json after a backup copy.",
   "author": {
     "name": "claude-code-templates",

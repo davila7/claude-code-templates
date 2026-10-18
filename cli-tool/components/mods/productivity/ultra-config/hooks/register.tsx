@@ -17,7 +17,8 @@
  * profile is kept in the plugin's store so `undo` puts back exactly what it
  * changed.
  *
- * Needs Claude Code >= 2.1.290 (Text weight and tabular).
+ * Needs Claude Code >= 2.1.287 (mods on by default); every UI prop it uses
+ * is in that version's API, so the Desktop app's bundled engine draws it too.
  *
  * Options (pluginConfigs["ultra-config@skills-dir"].options):
  *   columns: number   width asked for the docked pane (default 62)
@@ -412,11 +413,8 @@ export const register: Register = (on, options) => {
       return { text: `${profile.icon} ${profile.name}: ${n} change${n === 1 ? '' : 's'}, shown in the pane · /ultra-config apply ${profile.id}` }
     }
     if (!placed) return { text: PROFILES.map(p => `${p.icon} ${p.id}: ${p.tagline}`).join('\n') }
-    return {
-      text: e.presentation?.isFullscreen
-        ? 'ultra-config opened · press a profile to see what it sets · /ultra-config close'
-        : 'ultra-config drawn above the prompt; /tui fullscreen docks it beside the transcript',
-    }
+    // a Desktop session reports isFullscreen false too, so the reply names no layout
+    return { text: 'ultra-config opened · press a profile to see what it sets · /ultra-config close' }
   })
 
   on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => {
@@ -462,9 +460,10 @@ export const register: Register = (on, options) => {
               <Text wrap="truncate-end">
                 <Text color={p.color}>● </Text>
                 <Text>{pad(x.label, labelW)}</Text>
-                <Text dimColor strikethrough>{x.from}</Text>
+                {/* drop the menu hint, e.g. "Opus (default)" -> "Opus", so the old -> new row fits a narrow pane */}
+                <Text dimColor strikethrough>{x.from.replace(/ \(.*\)$/, '')}</Text>
                 <Text dimColor>{nb(' → ')}</Text>
-                <Text color={p.color} weight="bold">{x.to}</Text>
+                <Text color={p.color} bold>{x.to}</Text>
               </Text>
               <Text color="#8a8a8a" wrap="truncate-end">{nb(`  ${x.why}`)}</Text>
             </Box>,
@@ -497,7 +496,7 @@ export const register: Register = (on, options) => {
                 onPress={() => activate(p)}
               />
             ) : (
-              <Text color="success" weight="bold">✓ Active: nothing to change</Text>
+              <Text color="success" bold>✓ Active: nothing to change</Text>
             )}
           </Box>
         </Box>
@@ -514,15 +513,19 @@ export const register: Register = (on, options) => {
       return (
         <Box key={`card:${p.id}`} flexDirection="column" width={W}>
           <Box flexDirection="row" justifyContent="space-between" width={W}>
-            <Button key={`pick:${p.id}`} plain onPress={() => set({ selected: p.id, notice: null })}>
-              <Text color={isOpen ? p.color : '#5a5a5a'}>{isOpen ? '▾ ' : '▸ '}</Text>
-              <Text backgroundColor={p.color} color={INK} weight="bold">{nb(` ${p.icon} `)}</Text>
-              <Text color={p.color} weight="bold">{nb(` ${p.name}`)}</Text>
-            </Button>
+            <Box flexDirection="row">
+              <Text>
+                <Text color={isOpen ? p.color : '#5a5a5a'}>{isOpen ? '▾ ' : '▸ '}</Text>
+                <Text backgroundColor={p.color} color={INK} bold>{nb(` ${p.icon} `)}</Text>
+                <Text>{'\u00a0'}</Text>
+              </Text>
+              {/* a label string, not rich children: Claude Code 2.1.287 (and the Desktop build) skips the whole render on those */}
+              <Button key={`pick:${p.id}`} plain dimColor={!isOpen} label={p.name} onPress={() => set({ selected: p.id, notice: null })} />
+            </Box>
             <Text>
               <Text color={p.color}>{'■'.repeat(lit)}</Text>
               <Text color="#3a3a3a">{'■'.repeat(meter - lit)}</Text>
-              <Text color={isActive ? 'success' : undefined} dimColor={!isActive} tabular>
+              <Text color={isActive ? 'success' : undefined} dimColor={!isActive}>
                 {nb(isActive ? '  ✓ active' : ` ${String(same).padStart(2)}/${of}`.padEnd(10))}
               </Text>
             </Text>
@@ -538,8 +541,8 @@ export const register: Register = (on, options) => {
         <Box key="head" flexDirection="column" width={W}>
           <Box flexDirection="row" justifyContent="space-between" width={W}>
             <Text>
-              <Text backgroundColor={ACCENT} color={INK} weight="bold">{nb(' ⚙ ULTRA ')}</Text>
-              <Text backgroundColor="#3a2a24" color="#f4ece6" weight="bold">{nb(' CONFIG ')}</Text>
+              <Text backgroundColor={ACCENT} color={INK} bold>{nb(' ⚙ ULTRA ')}</Text>
+              <Text backgroundColor="#3a2a24" color="#f4ece6" bold>{nb(' CONFIG ')}</Text>
             </Text>
             <Text dimColor>{nb(facts.join(' · '))}</Text>
           </Box>
