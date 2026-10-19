@@ -61,7 +61,11 @@ pxt schema update app.py pxt://org:db -f
 pxt service update app.py pxt://org:db -f
 ```
 
-Provider keys on Cloud: `pxt secret set pxt://org OPENAI_API_KEY=...`, never in `pixeltable.toml`. Cloud handle: `pxt.get_table('pxt://org:db/docs')`. Media goes to the database's managed home bucket unless a column sets `destination=`. Try the app with a dashboard insert plus `pxt schema diff`; read failures with `pxt service logs` / `pxt db logs`.
+Provider calls on a scheduler retry on their own (rate limits, 503s, timeouts, with backoff) and OpenAI-compatible calls reach a proxy through `OPENAI_BASE_URL`: do not wrap those calls in your own retry loop or client ([providers.md](references/providers.md#retries-and-proxies)). Under a coding agent, ask the user to run `pxt login` in their own terminal (it waits up to 10 minutes), and never ask for a secret's value in the chat.
+
+Provider keys on Cloud: `pxt secret set pxt://org OPENAI_API_KEY=...`, never in `pixeltable.toml`. After `pxt secret set` or `pxt secret delete`, run `pxt db restart pxt://org:db` for the database's tables and `pxt service restart pxt://org:db/NAME` for its services; both keep the old pods serving until the new ones are ready. Cloud handle: `pxt.get_table('pxt://org:db/docs')`. Media goes to the database's managed home bucket unless a column sets `destination=`; share a file by link or `/sign` ([Open and share media](https://docs.pixeltable.com/cloud#open-and-share-media)). Try the app with a dashboard insert plus `pxt schema diff`; read failures with `pxt service logs` / `pxt db logs`.
+
+`pxt db update`, `start`, `stop`, `restart`, `retry`, `build-image`, and `delete` wait until Cloud has applied the change. Cloud carries on if the command stops: Ctrl-C or a timed-out tool call stops only the waiting. Pass `--no-wait` and follow with `pxt db status pxt://org:db`. After three hours the command exits 2 with the change still under way. A failed update: `pxt db retry pxt://org:db` or `pxt service retry pxt://org:db/NAME`. An update refused because the database changed after its plan is run again as is. If this Pixeltable is older than the database, the proxy error is `UNSUPPORTED_OPERATION` and says to run `pip install --upgrade pixeltable`. Full flags: [CLI docs](https://docs.pixeltable.com/platform/cli).
 
 ## The application file
 

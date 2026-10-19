@@ -35,6 +35,12 @@ Keys come from the environment or [config](https://docs.pixeltable.com/platform/
 | Replicate | `replicate` | `run` | Json |
 | YOLOX | `yolox` | `yolox`, `yolo_to_coco` | Json detections |
 
+## Retries and proxies
+
+A computed column retries a provider call when that call is on a scheduler. OpenAI, Anthropic, and Gemini report their rate limits and retry up to 10 times. Providers on the request-rate scheduler retry up to 3 times, paced by `rate_limit` in their config section, or a per-model value under `rate_limits` (600 requests a minute when unset). HTTP 429, 503, 408, and 504, connection errors, and timeouts are retried, with a backoff that honors `Retry-After`. Bedrock and the local wrappers (Hugging Face, Whisper, WhisperX, Ollama, llama.cpp, vLLM, YOLOX) are not on those schedulers, so a failed call is stored without that retry. A cell that still fails holds the error: `pxt errors PATH` lists it, and `pxt recompute PATH COLUMN --errors-only -f` runs it again. Do not add a retry loop, `tenacity`, or a second client around a call the scheduler already retries.
+
+To send OpenAI-compatible calls through a proxy such as LiteLLM, set `OPENAI_BASE_URL` (or `base_url` under `[openai]` in `config.toml`); on Cloud, `pxt secret set pxt://org OPENAI_BASE_URL=https://<proxy>/v1`, then restart. Only the OpenAI client reads a base URL from Pixeltable's config.
+
 Not model providers, but in the same namespace: `net.presigned_url` turns a blob-storage URI into a time-limited HTTP URL for serving media, and `vision` carries `eval_detections`, the `mean_ap` UDA, `bboxes_draw` / `overlay_segmentation` and the `bboxes_*` conversion family.
 
 ## Shapes
