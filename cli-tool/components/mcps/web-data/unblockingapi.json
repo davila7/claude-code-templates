@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "unblockingapi": {
+      "description": "UnblockingAPI MCP server: fetch bot-protected and JavaScript-heavy pages through a real browser, or parse them to JSON with published templates (unblock_fetch, find_templates)",
+      "command": "npx",
+      "args": ["-y", "@unblockingapi/mcp"],
+      "env": {
+        "UNBLOCKINGAPI_KEY": "<YOUR_UNBLOCKINGAPI_KEY>"
+      }
+    }
+  }
+}
