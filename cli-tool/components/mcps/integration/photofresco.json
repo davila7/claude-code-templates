@@ -1,0 +1,1 @@
+{"mcpServers":{"photofresco":{"description":"Let AI agents edit images in a PhotoFresco window you approve: layers, masks, previews and export.","command":"npx","args":["-y","--package=https://github.com/photofresco/photofresco-agent/archive/328cfaf3caf6483c5660381f19f2afdb2059a215.tar.gz","photofresco","mcp"]}}}
