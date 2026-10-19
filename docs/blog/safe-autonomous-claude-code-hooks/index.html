@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Safe Autonomous Claude Code: Combine 3 Security Hooks to Guard Commands, .env Files & Secrets</title>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YWW6FV2SGN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-YWW6FV2SGN');
+    </script>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../../static/favicon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="../../static/favicon/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../../static/favicon/favicon-32x32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../../static/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="../../static/favicon/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="../../static/favicon/android-chrome-512x512.png">
+
+    <meta name="description" content="Combine the Dangerous Command Blocker, .env File Protection and Secret Scanner hooks into one guardrail workflow so Claude Code can run autonomously without wiping files, overwriting .env or committing API keys.">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://aitmpl.com/blog/safe-autonomous-claude-code-hooks/">
+    <meta property="og:title" content="Safe Autonomous Claude Code: Combine 3 Security Hooks to Guard Commands, .env Files & Secrets">
+    <meta property="og:description" content="Combine the Dangerous Command Blocker, .env File Protection and Secret Scanner hooks into one guardrail workflow so Claude Code can run autonomously without wiping files, overwriting .env or committing API keys.">
+    <meta property="og:image" content="https://aitmpl.com/blog/assets/safe-autonomous-claude-code-hooks-cover.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="article:author" content="Claude Code Templates">
+    <meta property="article:section" content="Security">
+    <meta property="article:tag" content="Claude Code">
+    <meta property="article:tag" content="Hooks">
+    <meta property="article:tag" content="Security">
+    <meta property="article:tag" content="Workflow">
+    <meta property="article:tag" content="Automation">
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://aitmpl.com/blog/safe-autonomous-claude-code-hooks/">
+    <meta name="twitter:title" content="Safe Autonomous Claude Code: Combine 3 Security Hooks to Guard Commands, .env Files & Secrets">
+    <meta name="twitter:description" content="Combine the Dangerous Command Blocker, .env File Protection and Secret Scanner hooks into one guardrail workflow so Claude Code can run autonomously without wiping files, overwriting .env or committing API keys.">
+    <meta name="twitter:image" content="https://aitmpl.com/blog/assets/safe-autonomous-claude-code-hooks-cover.png">
+
+    <!-- Additional SEO -->
+    <meta name="keywords" content="Claude Code hooks, Claude Code security, dangerous command blocker, secret scanner, env file protection, PreToolUse hook, autonomous Claude Code">
+    <meta name="author" content="Claude Code Templates">
+    <link rel="canonical" href="https://aitmpl.com/blog/safe-autonomous-claude-code-hooks/">
+
+    <link rel="stylesheet" href="../../css/styles.css">
+    <link rel="stylesheet" href="../../css/blog.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Hotjar Tracking Code for https://aitmpl.com -->
+    <script>
+        (function(h,o,t,j,a,r){
+            h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+            h._hjSettings={hjid:6519181,hjsv:6};
+            a=o.getElementsByTagName('head')[0];
+            r=o.createElement('script');r.async=1;
+            r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+            a.appendChild(r);
+        })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+    </script>
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Safe Autonomous Claude Code: Combine 3 Security Hooks to Guard Commands, .env Files & Secrets",
+        "description": "Combine the Dangerous Command Blocker, .env File Protection and Secret Scanner hooks into one guardrail workflow so Claude Code can run autonomously without wiping files, overwriting .env or committing API keys.",
+        "image": "https://aitmpl.com/blog/assets/safe-autonomous-claude-code-hooks-cover.png",
+        "author": {
+            "@type": "Organization",
+            "name": "Claude Code Templates"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Claude Code Templates",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://aitmpl.com/static/img/logo.svg"
+            }
+        },
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https://aitmpl.com/blog/safe-autonomous-claude-code-hooks/"
+        },
+        "keywords": "Claude Code hooks, security, PreToolUse, secret scanner, autonomous coding",
+        "wordCount": "1000",
+        "articleSection": "Claude Code Hooks",
+        "about": [
+            {
+                "@type": "Thing",
+                "name": "Claude Code"
+            },
+            {
+                "@type": "Thing",
+                "name": "Claude Code Hooks"
+            },
+            {
+                "@type": "Thing",
+                "name": "Security Hooks"
+            },
+            {
+                "@type": "SoftwareApplication",
+                "name": "Claude Code",
+                "applicationCategory": "DeveloperApplication"
+            }
+        ]
+    }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="terminal-header">
+                    <div class="ascii-title">
+                        <pre class="ascii-art">
+██████╗ ██╗      ██████╗  ██████╗
+██╔══██╗██║     ██╔═══██╗██╔════╝
+██████╔╝██║     ██║   ██║██║  ███╗
+██╔══██╗██║     ██║   ██║██║   ██║
+██████╔╝███████╗╚██████╔╝╚██████╔╝
+╚═════╝ ╚══════╝ ╚═════╝  ╚═════╝</pre>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <a href="../../index.html" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z"/>
+                        </svg>
+                        Home
+                    </a>
+                    <a href="../index.html" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                        </svg>
+                        Blog
+                    </a>
+                    <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.30 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="terminal">
+        <header class="article-header">
+            <div class="container">
+                <!-- Copy Markdown Button -->
+                <button id="copy-markdown-btn" class="copy-markdown-button" title="Copy post as Markdown">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                    </svg>
+                    Copy as Markdown
+                </button>
+
+                <h1 class="article-title">Safe Autonomous Claude Code: Combine 3 Security Hooks to Guard Commands, .env Files & Secrets</h1>
+                <p class="article-subtitle">A practical workflow that layers three PreToolUse hooks from Claude Code Templates: block catastrophic shell commands, protect .env files, and stop secrets before they reach git.</p>
+                <div class="article-meta-full">
+                    <span class="read-time">5 min read</span>
+                    <div class="article-tags">
+                        <span class="tag">Claude Code</span>
+                        <span class="tag">Hooks</span>
+                        <span class="tag">Security</span>
+                        <span class="tag">Workflow</span>
+                        <span class="tag">Automation</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <article class="article-body">
+            <img src="../assets/safe-autonomous-claude-code-hooks-cover.png" alt="Safe Autonomous Claude Code with security hooks" class="article-cover" loading="lazy">
+
+            <div class="article-content-full">
+                <h2>Why Combine Security Hooks?</h2>
+
+                <p>Letting Claude Code run commands without asking for approval on every step is where the speed is — and where mistakes get expensive. A single bad <code>rm -rf</code>, an overwritten <code>.env</code>, or an API key committed to git can undo hours of work. <strong>Hooks</strong> are deterministic: they run on every tool call, regardless of what the model decides. Stacking three small <code>PreToolUse</code> hooks gives you layered guardrails.</p>
+
+                <div class="mermaid-diagram" style="background: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 2rem; margin: 2rem 0; text-align: center;">
+                    <pre class="mermaid">
+graph LR
+    A[🤖 Claude proposes a tool call] --> B{Bash command?}
+    B -->|yes| C[🛑 Dangerous Command Blocker]
+    C --> D[🔑 Secret Scanner]
+    B -->|Write .env*| E[🔒 .env File Protection]
+    D --> F[✅ Runs]
+    E --> F
+
+    style C fill:#F97316,stroke:#fff,color:#000
+    style D fill:#F97316,stroke:#fff,color:#000
+    style E fill:#F97316,stroke:#fff,color:#000
+                    </pre>
+                </div>
+
+                <h2>The Three Components</h2>
+                <ul>
+                    <li><strong>Dangerous Command Blocker</strong> (<code>security/dangerous-command-blocker</code>) — a <code>PreToolUse</code> hook on <code>Bash</code> backed by a Python script. It blocks catastrophic commands (<code>rm -rf /</code>, <code>dd</code>, <code>mkfs</code>, fork bombs), protects critical paths like <code>.git/</code>, <code>.claude/</code> and <code>node_modules/</code>, and warns on suspicious patterns. Blocking uses exit code 2, so Claude sees the reason and adapts.</li>
+                    <li><strong>.env File Protection</strong> (<code>security/env-file-protection</code>) — a <code>PreToolUse</code> hook on <code>Write</code> that uses the <code>if</code> field (<code>Write(.env*)</code>) so no process is spawned unless the path matches. It returns a <code>deny</code> decision with a clear reason.</li>
+                    <li><strong>Secret Scanner</strong> (<code>security/secret-scanner</code>) — a <code>PreToolUse</code> hook on <code>Bash</code> that inspects git commits for API keys from 30+ providers, tokens, private keys and database credentials, and blocks the commit with a suggestion to use environment variables.</li>
+                </ul>
+
+                <h2>Installation</h2>
+
+                <p>Install all three in one command with the Claude Code Templates CLI:</p>
+
+                <pre><code class="language-bash">npx claude-code-templates@latest \
+  --hook security/dangerous-command-blocker \
+  --hook security/env-file-protection \
+  --hook security/secret-scanner</code></pre>
+
+                <p>The CLI merges each hook's configuration into your project's <code>.claude/settings.json</code> and downloads the supporting scripts into <code>.claude/hooks/</code>:</p>
+
+                <pre><code class="language-bash">your-project/
+├── .claude/
+│   ├── settings.json                      # hooks registered here
+│   └── hooks/
+│       ├── dangerous-command-blocker.py
+│       └── secret-scanner.py
+└── .env                                   # now protected from Write</code></pre>
+
+                <div class="info-box">
+                    <strong>Requirements:</strong> the Python-backed hooks call <code>python3</code>, so make sure it is on your PATH. Run <code>/hooks</code> inside Claude Code to confirm all three are registered.
+                </div>
+
+                <h2>Step-by-Step Workflow</h2>
+
+                <h3>Step 1: Start Claude Code with the guardrails on</h3>
+                <pre><code class="language-bash">cd your-project
+claude</code></pre>
+                <p>Hooks load at session start, so restart Claude Code after installing. Use <code>/hooks</code> to see the three <code>PreToolUse</code> entries.</p>
+
+                <h3>Step 2: Give Claude an autonomous cleanup task</h3>
+                <pre><code class="language-bash">&gt; Clean up the build artifacts and reset the project config, then commit everything.</code></pre>
+
+                <h3>Step 3: Watch each layer step in</h3>
+                <ul>
+                    <li>If Claude reaches for something like <code>rm -rf *</code>, the <strong>Dangerous Command Blocker</strong> exits with code 2 and prints the reason. Claude reads it and retries with a targeted path such as <code>rm -rf dist/</code>.</li>
+                    <li>If Claude tries to rewrite <code>.env</code> while "resetting config", <strong>.env File Protection</strong> denies the <code>Write</code> and tells Claude why.</li>
+                    <li>If a hardcoded key sneaks into a file and Claude runs <code>git commit</code>, the <strong>Secret Scanner</strong> blocks the commit and points to the offending pattern so Claude can move it to an environment variable.</li>
+                </ul>
+
+                <h3>Step 4: Verify with a safe test</h3>
+                <p>Before trusting the setup, ask Claude to run a harmless command that matches a blocked pattern, such as <code>echo test &gt; .env</code> via a Write, and confirm the denial message appears. A guardrail you have not seen fire is a guardrail you cannot rely on.</p>
+
+                <h2>What Each Hook Covers</h2>
+
+                <table>
+                    <thead>
+                        <tr><th>Risk</th><th>Hook</th><th>Tool matched</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Destructive shell commands</td><td>Dangerous Command Blocker</td><td><code>Bash</code></td></tr>
+                        <tr><td>Overwriting secrets files</td><td>.env File Protection</td><td><code>Write</code></td></tr>
+                        <tr><td>Leaking keys into git history</td><td>Secret Scanner</td><td><code>Bash</code> (git commit)</td></tr>
+                    </tbody>
+                </table>
+
+                <div class="warning-box">
+                    <strong>Heads up:</strong> hooks are a safety net, not a sandbox. The <code>.env</code> hook only covers the <code>Write</code> tool, and pattern-based blockers cannot catch every command. Keep real secrets out of the repo, use least-privilege credentials, and pair hooks with Claude Code's permission rules for defense in depth.
+                </div>
+
+                <h2>Official Documentation</h2>
+                <p>Learn how hooks, matchers and exit codes work in the <a href="https://code.claude.com/docs/en/hooks?utm_source=aitmpl&utm_medium=referral&utm_campaign=blog" target="_blank" rel="noopener">Claude Code hooks documentation</a>.</p>
+
+                <!-- Explore Components Banner -->
+                <div class="explore-components-banner">
+                    <h3>Explore 800+ Claude Code Components</h3>
+                    <p>Discover agents, commands, MCPs, settings, hooks, skills and templates to supercharge your Claude Code workflow</p>
+                    <a href="../../index.html">Browse All Components</a>
+                </div>
+
+                <p style="margin-top: 2.5rem; color: #888;">Created by <a href="https://x.com/dani_avila7" target="_blank" rel="noopener">Daniel Ávila</a></p>
+
+            </div>
+
+            <div class="article-nav">
+                <a href="../index.html" class="back-to-blog">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z"/>
+                    </svg>
+                    Back to Blog
+                </a>
+            </div>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <div class="footer-ascii">
+                        <pre class="footer-ascii-art"> █████╗ ██╗████████╗███╗   ███╗██████╗ ██╗
+██╔══██╗██║╚══██╔══╝████╗ ████║██╔══██╗██║
+███████║██║   ██║   ██╔████╔██║██████╔╝██║
+██╔══██║██║   ██║   ██║╚██╔╝██║██╔═══╝ ██║
+██║  ██║██║   ██║   ██║ ╚═╝ ██║██║     ███████╗
+╚═╝  ╚═╝╚═╝   ╚═╝   ╚═╝     ╚═╝╚═╝     ╚══════╝</pre>
+                        <p class="footer-tagline">Supercharge Anthropic's Claude Code</p>
+                    </div>
+                </div>
+
+                <div class="footer-right">
+                    <p class="footer-copyright">&copy; 2026 Claude Code Templates. Open source project.</p>
+                    <div class="footer-links">
+                        <a href="../../trending.html" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M16,6L18.29,8.29L13.41,13.17L9.41,9.17L2,16.59L3.41,18L9.41,12L13.41,16L19.71,9.71L22,12V6H16Z"/>
+                            </svg>
+                            Trending
+                        </a>
+                        <a href="https://docs.aitmpl.com/" target="_blank" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                            </svg>
+                            Documentation
+                        </a>
+                        <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.30 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                            GitHub
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Code Copy Functionality -->
+    <script>
+        // Code Copy Functionality for Blog Articles
+class CodeCopy {
+    constructor() {
+        this.initCodeBlocks();
+        this.setupCopyFunctionality();
+    }
+
+    initCodeBlocks() {
+        // Convert existing pre elements to new code-block structure
+        const preElements = document.querySelectorAll('.article-content-full pre:not(.converted)');
+
+        preElements.forEach(pre => {
+            const code = pre.querySelector('code');
+            if (!code) return;
+
+            // Detect language from class or content
+            const language = this.detectLanguage(code);
+            const isTerminal = language === 'bash' || language === 'terminal';
+
+            // Create new code block structure
+            const codeBlock = document.createElement('div');
+            codeBlock.className = isTerminal ? 'code-block terminal-block' : 'code-block';
+
+            // Create header
+            const header = document.createElement('div');
+            header.className = 'code-header';
+
+            const languageSpan = document.createElement('span');
+            languageSpan.className = 'code-language';
+            languageSpan.textContent = language;
+
+            const copyButton = document.createElement('button');
+            copyButton.className = 'copy-button';
+            copyButton.innerHTML = `
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                </svg>
+                Copy
+            `;
+
+            header.appendChild(languageSpan);
+            header.appendChild(copyButton);
+
+            // Clone and prepare the pre element
+            const newPre = pre.cloneNode(true);
+            newPre.classList.add('converted');
+
+            // Assemble new structure
+            codeBlock.appendChild(header);
+            codeBlock.appendChild(newPre);
+
+            // Replace original pre
+            pre.parentNode.replaceChild(codeBlock, pre);
+        });
+    }
+
+    detectLanguage(codeElement) {
+        // Check for class-based language detection
+        const className = codeElement.className;
+        if (className.includes('language-')) {
+            return className.match(/language-(\w+)/)[1];
+        }
+
+        // Check content patterns
+        const content = codeElement.textContent;
+
+        if (content.includes('npm ') || content.includes('$ ') || content.includes('claude-code ')) {
+            return 'bash';
+        }
+        if (content.includes('import ') && content.includes('from ')) {
+            return 'javascript';
+        }
+        if (content.includes('CREATE TABLE') || content.includes('SELECT ')) {
+            return 'sql';
+        }
+        if (content.includes('{') && content.includes('"')) {
+            return 'json';
+        }
+        if (content.includes('def ') || content.includes('import ')) {
+            return 'python';
+        }
+
+        return 'text';
+    }
+
+    setupCopyFunctionality() {
+        document.addEventListener('click', async (e) => {
+            if (!e.target.closest('.copy-button')) return;
+
+            const button = e.target.closest('.copy-button');
+            const codeBlock = button.closest('.code-block');
+            const pre = codeBlock.querySelector('pre');
+            const code = pre.querySelector('code');
+
+            if (!code) return;
+
+            try {
+                // Get clean text content
+                let textToCopy = code.textContent;
+
+                // Clean up terminal prompts if it's a terminal block
+                if (codeBlock.classList.contains('terminal-block')) {
+                    textToCopy = this.cleanTerminalOutput(textToCopy);
+                }
+
+                await navigator.clipboard.writeText(textToCopy);
+
+                // Update button state
+                const originalContent = button.innerHTML;
+                button.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                    Copied!
+                `;
+                button.classList.add('copied');
+
+                // Reset after 2 seconds
+                setTimeout(() => {
+                    button.innerHTML = originalContent;
+                    button.classList.remove('copied');
+                }, 2000);
+
+            } catch (err) {
+                console.error('Failed to copy code:', err);
+
+                // Fallback: select text
+                const selection = window.getSelection();
+                const range = document.createRange();
+                range.selectNodeContents(code);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+        });
+    }
+
+    cleanTerminalOutput(text) {
+        // Remove common terminal prompts and clean output
+        return text
+            .split('\n')
+            .map(line => {
+                // Remove prompts like "$ ", "❯ ", "claude-code> "
+                line = line.replace(/^[\$❯]\s*/, '').replace(/^claude-code>\s*/, '');
+
+                // Remove output/result comments (lines starting with # ✓)
+                if (line.trim().startsWith('# ✓') ||
+                    line.trim().startsWith('# Start using') ||
+                    line.trim().startsWith('# Your .claude') ||
+                    line.trim().startsWith('# This will') ||
+                    line.includes('Components will be installed') ||
+                    line.includes('directory now contains')) {
+                    return '';
+                }
+
+                return line;
+            })
+            .filter(line => line.trim() !== '') // Remove empty lines
+            .join('\n')
+            .trim();
+    }
+}
+
+// Initialize when DOM is loaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => new CodeCopy());
+} else {
+    new CodeCopy();
+}
+
+// Explore components banner hover effect
+document.addEventListener('DOMContentLoaded', () => {
+    const banner = document.querySelector('.explore-components-banner a');
+    if (banner) {
+        banner.addEventListener('mouseenter', () => {
+            banner.style.background = '#00cc33';
+            banner.style.transform = 'translateY(-2px)';
+        });
+        banner.addEventListener('mouseleave', () => {
+            banner.style.background = '#00ff41';
+            banner.style.transform = 'translateY(0)';
+        });
+    }
+});
+
+// Copy Markdown functionality
+class MarkdownCopier {
+    constructor() {
+        this.setupButton();
+    }
+
+    setupButton() {
+        const button = document.getElementById('copy-markdown-btn');
+        if (!button) return;
+
+        button.addEventListener('click', async () => {
+            const markdown = this.extractMarkdown();
+
+            try {
+                await navigator.clipboard.writeText(markdown);
+
+                // Update button state
+                const originalContent = button.innerHTML;
+                button.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                    ✓
+                `;
+                button.classList.add('copied');
+
+                // Reset after 2 seconds
+                setTimeout(() => {
+                    button.innerHTML = originalContent;
+                    button.classList.remove('copied');
+                }, 2000);
+
+            } catch (err) {
+                console.error('Failed to copy markdown:', err);
+            }
+        });
+    }
+
+    extractMarkdown() {
+        const title = document.querySelector('.article-title')?.textContent || '';
+        const subtitle = document.querySelector('.article-subtitle')?.textContent || '';
+        const date = document.querySelector('time')?.textContent || '';
+        const content = document.querySelector('.article-content-full');
+
+        let markdown = `# ${title}\n\n`;
+
+        if (subtitle) {
+            markdown += `${subtitle}\n\n`;
+        }
+
+        if (date) {
+            markdown += `*${date}*\n\n`;
+        }
+
+        if (!content) return markdown;
+
+        // Process content elements
+        const elements = content.children;
+
+        for (const element of elements) {
+            markdown += this.processElement(element) + '\n\n';
+        }
+
+        return markdown.trim();
+    }
+
+    processElement(element) {
+        const tagName = element.tagName.toLowerCase();
+
+        switch (tagName) {
+            case 'h2':
+                return `## ${element.textContent}`;
+            case 'h3':
+                return `### ${element.textContent}`;
+            case 'h4':
+                return `#### ${element.textContent}`;
+            case 'p':
+                return element.textContent;
+            case 'ul':
+                return this.processList(element, '-');
+            case 'ol':
+                return this.processList(element, '1.');
+            case 'table':
+                return this.processTable(element);
+            case 'pre':
+                return this.processCodeBlock(element);
+            case 'div':
+                if (element.classList.contains('code-block')) {
+                    return this.processCodeBlock(element.querySelector('pre'));
+                }
+                // Skip newsletter CTAs and other divs
+                if (element.classList.contains('newsletter-cta')) {
+                    return '';
+                }
+                return element.textContent || '';
+            case 'img':
+                const alt = element.getAttribute('alt') || '';
+                const src = element.getAttribute('src') || '';
+                return `![${alt}](${src})`;
+            default:
+                return element.textContent || '';
+        }
+    }
+
+    processList(listElement, marker) {
+        const items = listElement.querySelectorAll('li');
+        return Array.from(items)
+            .map(item => `${marker} ${item.textContent}`)
+            .join('\n');
+    }
+
+    processTable(table) {
+        const rows = table.querySelectorAll('tr');
+        if (rows.length === 0) return '';
+
+        let markdown = '';
+
+        // Process header
+        const headerRow = rows[0];
+        const headers = headerRow.querySelectorAll('th, td');
+        const headerText = Array.from(headers).map(h => h.textContent.trim()).join(' | ');
+        markdown += `| ${headerText} |\n`;
+
+        // Add separator
+        const separator = Array.from(headers).map(() => '---').join(' | ');
+        markdown += `| ${separator} |\n`;
+
+        // Process body rows
+        for (let i = 1; i < rows.length; i++) {
+            const row = rows[i];
+            const cells = row.querySelectorAll('td, th');
+            const cellText = Array.from(cells).map(c => c.textContent.trim()).join(' | ');
+            markdown += `| ${cellText} |\n`;
+        }
+
+        return markdown;
+    }
+
+    processCodeBlock(preElement) {
+        if (!preElement) return '';
+
+        const code = preElement.querySelector('code');
+        const codeText = code ? code.textContent : preElement.textContent;
+
+        // Detect language from parent code-block or code element classes
+        const codeBlock = preElement.closest('.code-block');
+        let language = '';
+
+        if (codeBlock) {
+            const languageSpan = codeBlock.querySelector('.code-language');
+            if (languageSpan) {
+                language = languageSpan.textContent.toLowerCase();
+            }
+        } else if (code && code.className.includes('language-')) {
+            language = code.className.match(/language-(\w+)/)?.[1] || '';
+        }
+
+        return `\`\`\`${language}\n${codeText}\n\`\`\``;
+    }
+}
+
+// Initialize markdown copier
+document.addEventListener('DOMContentLoaded', () => {
+    new MarkdownCopier();
+});
+    </script>
+
+    <!-- Mermaid Diagram Support -->
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: 'dark',
+        themeVariables: {
+          primaryColor: '#F97316',
+          primaryTextColor: '#fff',
+          primaryBorderColor: '#F97316',
+          lineColor: '#00ff41',
+          secondaryColor: '#1a1a1a',
+          tertiaryColor: '#2d2d2d'
+        }
+      });
+    </script>
+</body>
+</html>
