@@ -203,6 +203,14 @@ jurisdiction. Check registrations before telling anyone tax is on.
 
 - Stripe MCP server (`https://mcp.stripe.com`, OAuth) gives the agent account
   data and doc search: `npx claude-code-templates@latest --mcp devtools/stripe`.
+- Ask before writes and money movement through the MCP:
+  `npx claude-code-templates@latest --setting permissions/stripe-mcp-confirm-writes`.
+- Forming the company: Stripe Atlas (Delaware C corp or LLC) can be started
+  from the MCP (`atlas_company_formation`) or the CLI
+  (`stripe plugin install tools`, then `stripe tools create_atlas_application`).
+  Atlas validates every value; identity, payment, signatures and submission
+  happen in the Stripe Dashboard. Record the founders' decisions on entity
+  type, equity and vesting; never choose them for the user.
 - Stripe publishes its own maintained agent skills (`npx skills add https://docs.stripe.com`
   or `stripe agent setup`), including `stripe-best-practices` and `upgrade-stripe`.
 

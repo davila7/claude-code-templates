@@ -1,7 +1,7 @@
 {
   "mcpServers": {
     "stripe": {
-      "description": "Official Stripe remote MCP server (mcp.stripe.com): search and call the Stripe API (customers, payments, subscriptions, invoices, refunds) and search Stripe's docs. Requires a Stripe account and uses OAuth: after installing, run /mcp in Claude Code to sign in. Headless clients can send a Stripe agent API key as a Bearer token instead.",
+      "description": "Official Stripe remote MCP server (mcp.stripe.com): search and call the Stripe API (customers, payments, subscriptions, invoices, refunds), search Stripe's docs, and start a Stripe Atlas company formation (Delaware C corp or LLC). Requires a Stripe account and uses OAuth: after installing, run /mcp in Claude Code to sign in. Headless clients can send a Stripe agent API key as a Bearer token instead. Pair with the setting permissions/stripe-mcp-confirm-writes to approve writes and money movement.",
       "type": "http",
       "url": "https://mcp.stripe.com"
     }
