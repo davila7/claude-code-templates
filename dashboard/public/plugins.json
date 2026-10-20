@@ -23544,5 +23544,22 @@
         "cohesivity-local"
       ]
     }
+  },
+  {
+    "slug": "invigilator",
+    "name": "Invigilator",
+    "author": "zhyuka",
+    "description": "Claude Code hooks. Agents named as reviewers can't write files, not even through the shell. A builder can't stop until it runs its QA command after its last edit, and if QA fails it is sent back once, then you're told. A QA run piped into another command or ended with || true doesn't count. No model calls, no dependencies.",
+    "github": "https://github.com/zhyuka/invigilator",
+    "stars": 0,
+    "type": "plugin",
+    "tags": [
+      "skills",
+      "hooks"
+    ],
+    "contains": {},
+    "highlights": [],
+    "marketplace_name": "zhyuka",
+    "plugin_name": "invigilator"
   }
 ]
