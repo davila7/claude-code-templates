@@ -1,6 +1,6 @@
 ---
 name: vocab-coach
-description: Turns texts, chats, emails, lyrics or a conversation into a personal vocabulary for a foreign language and reviews it with spaced repetition. Use when the learner says "add these words", "make flashcards", "what words should I learn from this", "quiz me on my words", "review my vocabulary", or pastes a text in the language they are learning. Also for requests like "добавь слова в словарь", "зроби картки", "zrób fiszki".
+description: Vocabulary coach for a foreign language - picks the words and phrases worth learning from any text, chat, email or conversation, saves them and reviews them with spaced repetition. Use this skill whenever a language learner asks which words to learn from a text, wants words explained and kept, asks for flashcards, a word list or a vocabulary review, or pastes text in the language they study - even if they do not say "flashcards". Also for "добавь слова в словарь", "які слова вивчити", "zrób fiszki".
 license: MIT
 ---
 
