@@ -1,0 +1,1 @@
+{"content": "{\n  \"mcpServers\": {\n    \"ios-simulator\": {\n      \"description\": \"Control iOS Simulator directly from Claude Code. Launch apps, take screenshots, manage device states, and streamline mobile development workflows.\",\n      \"command\": \"npx\",\n      \"args\": [\"-y\", \"ios-simulator-mcp\"]\n    }\n  }\n}"}

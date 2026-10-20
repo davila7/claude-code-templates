@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "nable": {
+      "description": "Local-first FinOps server for cloud and AI spend. Answers cost questions across AWS, Azure, GCP, Kubernetes and 15+ SaaS and AI providers, detects anomalies against a rolling baseline, tracks LLM spend by model, and drafts the Terraform fix as a pull request a human reviews. Runs on your machine: credentials stay in your OS keyring and cost data caches in a local SQLite database. Propose-only, so it never changes your cloud on its own.",
+      "command": "uvx",
+      "args": ["nable"]
+    }
+  }
+}

@@ -1,0 +1,1 @@
+{"content": "{\n  \"mcpServers\": {\n    \"notionApi\": {\n      \"description\": \"Official MCP server for Notion API\",\n      \"command\": \"npx\",\n      \"args\": [\"-y\", \"@notionhq/notion-mcp-server\"],\n      \"env\": {\n        \"NOTION_TOKEN\": \"ntn_****\"\n      }\n    }\n  }\n}"}

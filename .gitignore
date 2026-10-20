@@ -84,3 +84,6 @@ credentials.json
 service-account*.json
 *-credentials.json
 .npmrc.local
+
+# Build artifact: component content written directly to dashboard/public/
+docs/component-content/

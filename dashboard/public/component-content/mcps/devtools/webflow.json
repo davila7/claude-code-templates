@@ -1,0 +1,1 @@
+{"content": "{\n  \"mcpServers\": {\n    \"webflow\": {\n      \"description\":\"Enable AI agents to interact with Webflow APIs.\",\n      \"command\": \"npx mcp-remote https://mcp.webflow.com/sse\"\n    }\n  }\n}"}

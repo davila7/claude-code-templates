@@ -1,10 +1,11 @@
 import type { APIRoute } from 'astro';
 import { createClient } from '@supabase/supabase-js';
 import { corsResponse, jsonResponse } from '../../lib/api/cors';
+import { captureApiError } from '../../lib/api/error-tracking';
 
 function getSupabaseClient() {
-  const supabaseUrl = import.meta.env.SUPABASE_URL;
-  const supabaseServiceKey = import.meta.env.SUPABASE_SERVICE_ROLE_KEY;
+  const supabaseUrl = import.meta.env.SUPABASE_URL || process.env.SUPABASE_URL;
+  const supabaseServiceKey = import.meta.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!supabaseUrl || !supabaseServiceKey) {
     throw new Error('Missing Supabase configuration');
@@ -20,7 +21,7 @@ function validateComponentData(data: { type?: string; name?: string; path?: stri
     return { valid: false, error: 'Component type and name are required' };
   }
 
-  const validTypes = ['agent', 'command', 'setting', 'hook', 'mcp', 'skill', 'template'];
+  const validTypes = ['agent', 'command', 'setting', 'hook', 'mcp', 'skill', 'loop', 'mod', 'template'];
   if (!validTypes.includes(type)) {
     return { valid: false, error: 'Invalid component type' };
   }
@@ -97,6 +98,7 @@ export const POST: APIRoute = async ({ request }) => {
     });
   } catch (error) {
     console.error('Download tracking error:', error);
+    await captureApiError(error, { route: '/api/track-download-supabase' });
     return jsonResponse(
       {
         error: 'Internal server error',

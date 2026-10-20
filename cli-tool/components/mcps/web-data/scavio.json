@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "scavio": {
+      "description": "Real-time structured web data across 32 platforms with one API key: Google search, YouTube, Amazon, Walmart, eBay, Target, TikTok, Instagram, LinkedIn, X, Reddit, Zillow, Indeed, SEC EDGAR and more, plus extract-any-URL to Markdown.",
+      "command": "npx",
+      "args": ["-y", "@scavio/mcp-server"],
+      "env": {
+        "SCAVIO_API_KEY": "<your-scavio-api-key>"
+      }
+    }
+  }
+}

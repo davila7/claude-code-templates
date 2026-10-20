@@ -1,0 +1,1 @@
+{"content": "{\n  \"mcpServers\": {\n    \"DeepGraph Vue MCP\": {\n      \"description\": \"Analyze Vue.js applications including component composition, reactive data flow, and template-script relationships.\",\n      \"command\": \"npx\",\n      \"args\": [\n        \"-y\",\n        \"mcp-code-graph@latest\",\n        \"vuejs/core\"\n      ]\n    }\n  }\n}"}

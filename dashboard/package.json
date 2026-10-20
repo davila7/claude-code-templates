@@ -6,13 +6,16 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro build",
+    "build": "node scripts/generate-og-images.mjs && astro build",
+    "og": "node scripts/generate-og-images.mjs",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "test": "node --experimental-strip-types --test tests/*.test.ts",
+    "check:agents": "node scripts/check-agent-endpoints.mjs"
   },
   "dependencies": {
+    "@astrojs/cloudflare": "^12.6.13",
     "@astrojs/react": "^4.4.2",
-    "@astrojs/vercel": "^9.0.4",
     "@clerk/backend": "^3.0.1",
     "@clerk/clerk-react": "^5.60.1",
     "@neondatabase/serverless": "^1.0.2",
@@ -27,5 +30,10 @@
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "tailwindcss": "^4.1.18"
+  },
+  "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
+    "geist": "^1.7.2",
+    "satori": "^0.47.1"
   }
 }

@@ -8,6 +8,29 @@ export interface Component {
   url?: string;
   downloads?: number;
   references?: string[];
+  skillspector?: SkillSpectorResult;
+}
+
+export interface SkillSpectorFinding {
+  id: string;
+  category: string;
+  severity: string;
+  title: string;
+  file: string;
+  line?: number | null;
+  count: number;
+}
+
+// NVIDIA SkillSpector static scan, written by scripts/skillspector_catalog.py.
+export interface SkillSpectorResult {
+  score: number;
+  severity: string;
+  recommendation: string;
+  issueCount: number;
+  analysis?: string;
+  findings: SkillSpectorFinding[];
+  version?: string;
+  scannedAt?: string;
 }
 
 export interface ComponentsData {
@@ -17,6 +40,8 @@ export interface ComponentsData {
   settings: Component[];
   hooks: Component[];
   skills: Component[];
+  loops: Component[];
+  mods: Component[];
   templates: Component[];
 }
 
@@ -37,6 +62,8 @@ export interface Cart {
   hooks: CartItem[];
   mcps: CartItem[];
   skills: CartItem[];
+  loops: CartItem[];
+  mods: CartItem[];
   templates: CartItem[];
 }
 

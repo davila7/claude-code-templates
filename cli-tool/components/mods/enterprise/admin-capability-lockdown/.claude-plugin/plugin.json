@@ -1,0 +1,41 @@
+{
+  "name": "admin-capability-lockdown",
+  "version": "0.2.0",
+  "description": "Organization control mod: withholds the http and process nouns from $ so no plugin beneath it can reach the network or spawn processes, refuses user-tier plugins by name allowlist or by the $ calls their source declares, and withholds the Bash tool (shellPolicy \"deny\", default) or, in \"guardrail\" mode, denies well-known network clients as a bypassable speed bump. Hooks engine.create, plugin.register and tool.call; seat it in the managed prepend tier.",
+  "author": {
+    "name": "claude-code-templates",
+    "url": "https://www.aitmpl.com"
+  },
+  "repository": "https://github.com/davila7/claude-code-templates",
+  "license": "MIT",
+  "keywords": [
+    "mod",
+    "function-hooks",
+    "enterprise"
+  ],
+  "userConfig": {
+    "allowedPlugins": {
+      "type": "string",
+      "title": "Allowed plugins",
+      "description": "Comma-separated plugin names that may register; empty allows any name",
+      "default": ""
+    },
+    "refuseCalls": {
+      "type": "string",
+      "title": "Refused $ calls",
+      "description": "Comma-separated $ calls (or noun prefixes ending in a dot) a user plugin may not make; default: http. and process.",
+      "default": ""
+    },
+    "shellPolicy": {
+      "type": "string",
+      "title": "Shell policy",
+      "description": "deny withholds the Bash tool; guardrail denies known network clients (bypassable); allow leaves Bash alone",
+      "default": "deny",
+      "options": [
+        "deny",
+        "guardrail",
+        "allow"
+      ]
+    }
+  }
+}

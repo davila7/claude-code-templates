@@ -1,0 +1,1 @@
+{"content": "{\n  \"description\": \"Configure proxy settings for corporate network environments. Allows Claude Code to work behind corporate firewalls and proxy servers while maintaining security compliance with enterprise network policies.\",\n  \"env\": {\n    \"HTTP_PROXY\": \"http://proxy.company.com:8080\",\n    \"HTTPS_PROXY\": \"https://proxy.company.com:8080\"\n  }\n}"}

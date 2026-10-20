@@ -1,5 +1,6 @@
 const inquirer = require('inquirer');
 const chalk = require('chalk');
+const { select, isCancel, cancel } = require('@clack/prompts');
 const fs = require('fs-extra');
 const path = require('path');
 const ora = require('ora');
@@ -19,6 +20,7 @@ const { runPluginDashboard } = require('./plugin-dashboard');
 const { runSkillDashboard } = require('./skill-dashboard');
 const { runTeamsDashboard } = require('./teams-dashboard');
 const { trackingService } = require('./tracking-service');
+const { createInstallUI } = require('./install-ui');
 const { createGlobalAgent, listGlobalAgents, removeGlobalAgent, updateGlobalAgent } = require('./sdk/global-agent-manager');
 const SessionSharing = require('./session-sharing');
 const ConversationAnalyzer = require('./analytics/core/ConversationAnalyzer');
@@ -60,86 +62,54 @@ function replacePythonCommands(config) {
 }
 
 async function showMainMenu() {
-  console.log('');
-  
-  const initialChoice = await inquirer.prompt([{
-    type: 'list',
-    name: 'action',
+  const action = await select({
     message: 'What would you like to do?',
-    choices: [
-      {
-        name: '📊 Analytics Dashboard - Monitor your Claude Code usage and sessions',
-        value: 'analytics',
-        short: 'Analytics Dashboard'
-      },
-      {
-        name: '💬 Chats Mobile - AI-first mobile interface for conversations',
-        value: 'chats',
-        short: 'Chats Mobile'
-      },
-      {
-        name: '🤖 Agents Dashboard - View and analyze Claude conversations with agent tools',
-        value: 'agents',
-        short: 'Agents Dashboard'
-      },
-      {
-        name: '⚙️ Project Setup - Configure Claude Code for your project',
-        value: 'setup',
-        short: 'Project Setup'
-      },
-      {
-        name: '🔍 Health Check - Verify your Claude Code setup and configuration',
-        value: 'health',
-        short: 'Health Check'
-      }
+    options: [
+      { value: 'analytics', label: '📊 Analytics Dashboard', hint: 'Monitor Claude Code usage and sessions' },
+      { value: 'setup',     label: '⚙️  Project Setup',      hint: 'Configure Claude Code for your project' },
+      { value: 'agents',   label: '🤖 Agents Dashboard',    hint: 'View multi-agent collaboration sessions' },
+      { value: 'chats',    label: '💬 Chats Mobile',         hint: 'AI-first mobile interface for conversations' },
+      { value: 'health',   label: '🔍 Health Check',         hint: 'Verify your Claude Code setup' },
     ],
-    default: 'analytics'
-  }]);
-  
-  if (initialChoice.action === 'analytics') {
-    console.log(chalk.blue('📊 Launching Claude Code Analytics Dashboard...'));
+  });
+
+  if (isCancel(action)) {
+    cancel('Cancelled.');
+    process.exit(0);
+  }
+
+  if (action === 'analytics') {
     trackingService.trackAnalyticsDashboard({ page: 'dashboard', source: 'interactive_menu' });
     await runAnalytics({});
     return;
   }
-  
-  if (initialChoice.action === 'chats') {
-    console.log(chalk.blue('💬 Launching Claude Code Mobile Chats...'));
+
+  if (action === 'chats') {
     trackingService.trackAnalyticsDashboard({ page: 'chats-mobile', source: 'interactive_menu' });
     await startChatsMobile({});
     return;
   }
-  
-  if (initialChoice.action === 'agents') {
-    console.log(chalk.blue('🤖 Launching Claude Code Agents Dashboard...'));
+
+  if (action === 'agents') {
     trackingService.trackAnalyticsDashboard({ page: 'agents', source: 'interactive_menu' });
     await runAnalytics({ openTo: 'agents' });
     return;
   }
-  
-  
-  if (initialChoice.action === 'health') {
-    console.log(chalk.blue('🔍 Running Health Check...'));
+
+  if (action === 'health') {
     const healthResult = await runHealthCheck();
-    
-    // Track health check usage
     trackingService.trackHealthCheck({
       setup_recommended: healthResult.runSetup,
       issues_found: healthResult.issues || 0
     });
-    
     if (healthResult.runSetup) {
-      console.log(chalk.blue('⚙️  Starting Project Setup...'));
-      // Continue with setup flow
       return await createClaudeConfig({});
     } else {
-      console.log(chalk.green('👍 Health check completed. Returning to main menu...'));
       return await showMainMenu();
     }
   }
-  
-  // Continue with setup if user chose 'setup'
-  console.log(chalk.blue('⚙️  Setting up Claude Code configuration...'));
+
+  // 'setup'
   return await createClaudeConfig({ setupFromMenu: true });
 }
 
@@ -174,7 +144,7 @@ async function createClaudeConfig(options = {}) {
   }
   
   // Handle multiple components installation (new approach)
-  if (options.agent || options.command || options.mcp || options.setting || options.hook || options.skill) {
+  if (options.agent || options.command || options.mcp || options.setting || options.hook || options.skill || options.loop || options.mod || options.functionHook) {
     // If --workflow is used with components, treat it as YAML
     if (options.workflow) {
       options.yaml = options.workflow;
@@ -532,7 +502,7 @@ async function installIndividualAgent(agentName, targetDir, options) {
       if (response.status === 404) {
         console.log(chalk.red(`❌ Agent "${agentName}" not found`));
         trackingService.trackInstallationOutcome('agent', agentName, 'failure', { errorType: 'not_found', durationMs: Date.now() - startTime, batchId: options.batchId });
-        await showAvailableAgents();
+        if (!options.silent) await showAvailableAgents();
         return;
       }
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -555,6 +525,7 @@ async function installIndividualAgent(agentName, targetDir, options) {
 
     const targetFile = path.join(agentsDir, `${fileName}.md`);
     await fs.writeFile(targetFile, agentContent, 'utf8');
+    options.onWrite?.(targetFile);
 
     if (!options.silent) {
       console.log(chalk.green(`✅ Agent "${agentName}" installed successfully!`));
@@ -625,6 +596,7 @@ async function installIndividualCommand(commandName, targetDir, options) {
     const targetFile = path.join(commandsDir, `${fileName}.md`);
     
     await fs.writeFile(targetFile, commandContent, 'utf8');
+    options.onWrite?.(targetFile);
     
     if (!options.silent) {
       console.log(chalk.green(`✅ Command "${commandName}" installed successfully!`));
@@ -714,6 +686,7 @@ async function installIndividualMCP(mcpName, targetDir, options) {
     
     // Write the merged configuration
     await fs.writeJson(targetMcpFile, mergedConfig, { spaces: 2 });
+    options.onWrite?.(targetMcpFile);
     
     if (!options.silent) {
       console.log(chalk.green(`✅ MCP "${mcpName}" installed successfully!`));
@@ -777,10 +750,16 @@ async function installIndividualSetting(settingName, targetDir, options) {
     // Check if there are additional files to download (e.g., Python scripts)
     const additionalFiles = {};
     
-    // For statusline settings, check if there's a corresponding Python file
-    if (settingName.includes('statusline/')) {
-      const pythonFileName = settingName.split('/')[1] + '.py';
-      const pythonUrl = githubUrl.replace('.json', '.py');
+    // For statusline settings, check if there's a corresponding Python file.
+    // Detect it from the command itself (".claude/scripts/<name>.py") so direct
+    // installs without the "statusline/" prefix also get the companion script.
+    const statusLineCommand = settingConfig?.statusLine?.command;
+    const scriptMatch = typeof statusLineCommand === 'string'
+      ? statusLineCommand.match(/\.claude\/scripts\/([\w.-]+\.py)/)
+      : null;
+    if (settingName.includes('statusline/') || scriptMatch) {
+      const pythonFileName = scriptMatch ? scriptMatch[1] : settingName.split('/').pop() + '.py';
+      const pythonUrl = githubUrl.replace(/[^/]+\.json$/, pythonFileName);
       
       try {
         console.log(chalk.gray(`📥 Downloading Python script: ${pythonFileName}...`));
@@ -966,10 +945,27 @@ async function installIndividualSetting(settingName, targetDir, options) {
         }
       }
       
+      // Statusline scripts are written under <currentTargetDir>/.claude/scripts/.
+      // A relative ".claude/scripts/..." command only resolves from the project
+      // root, so for user/enterprise scope point it at the absolute location.
+      let scopedSettingConfig = settingConfig;
+      if (installLocation !== 'project' && installLocation !== 'local'
+          && typeof settingConfig?.statusLine?.command === 'string'
+          && settingConfig.statusLine.command.includes('.claude/scripts/')) {
+        const scriptsDir = path.join(currentTargetDir, '.claude', 'scripts');
+        scopedSettingConfig = {
+          ...settingConfig,
+          statusLine: {
+            ...settingConfig.statusLine,
+            command: settingConfig.statusLine.command.replace(/\.claude\/scripts\//g, scriptsDir.replace(/\\/g, '/') + '/')
+          }
+        };
+      }
+
       // Deep merge configurations
       const mergedConfig = {
         ...existingConfig,
-        ...settingConfig
+        ...scopedSettingConfig
       };
       
       // Deep merge specific sections (only if no conflicts or user approved overwrite)
@@ -1005,6 +1001,7 @@ async function installIndividualSetting(settingName, targetDir, options) {
       
       // Write the merged configuration
       await fs.writeJson(actualTargetFile, mergedConfig, { spaces: 2 });
+      options.onWrite?.(actualTargetFile);
       
       // Install additional files if any exist
       if (Object.keys(additionalFiles).length > 0) {
@@ -1012,16 +1009,26 @@ async function installIndividualSetting(settingName, targetDir, options) {
         
         for (const [filePath, fileConfig] of Object.entries(additionalFiles)) {
           try {
-            // Resolve tilde (~) to home directory
-            const resolvedFilePath = filePath.startsWith('~') 
-              ? path.join(require('os').homedir(), filePath.slice(1))
-              : path.resolve(currentTargetDir, filePath);
+            // A setting may only add files under the install location's .claude/
+            // directory: no absolute paths, no ~, no `..` out of it.
+            const claudeRoot = path.resolve(currentTargetDir, '.claude');
+            const resolvedFilePath = path.resolve(currentTargetDir, filePath);
+            if (path.isAbsolute(filePath) || filePath.startsWith('~') ||
+                !resolvedFilePath.startsWith(claudeRoot + path.sep)) {
+              console.log(chalk.red(`❌ Skipped file outside .claude/: ${filePath}`));
+              continue;
+            }
+            if (typeof fileConfig?.content !== 'string') {
+              console.log(chalk.red(`❌ Skipped file without text content: ${filePath}`));
+              continue;
+            }
             
             // Ensure directory exists
             await fs.ensureDir(path.dirname(resolvedFilePath));
             
             // Write file content
             await fs.writeFile(resolvedFilePath, fileConfig.content, 'utf8');
+            options.onWrite?.(resolvedFilePath);
             
             // Make file executable if specified
             if (fileConfig.executable) {
@@ -1339,6 +1346,7 @@ async function installIndividualHook(hookName, targetDir, options) {
       
       // Write the merged configuration
       await fs.writeJson(actualTargetFile, mergedConfig, { spaces: 2 });
+      options.onWrite?.(actualTargetFile);
 
       // Install additional files (e.g., Python scripts)
       if (Object.keys(additionalFiles).length > 0) {
@@ -1351,6 +1359,7 @@ async function installIndividualHook(hookName, targetDir, options) {
 
           // Write file
           await fs.writeFile(absolutePath, fileData.content, { mode: fileData.executable ? 0o755 : 0o644 });
+          options.onWrite?.(absolutePath);
 
           if (!options.silent) {
             console.log(chalk.green(`✓ Installed additional file: ${relativePath}`));
@@ -1650,6 +1659,7 @@ async function installIndividualSkill(skillName, targetDir, options) {
       const fullPath = path.join(targetDir, filePath);
       await fs.ensureDir(path.dirname(fullPath));
       await fs.writeFile(fullPath, fileData.content, 'utf8');
+      options.onWrite?.(fullPath);
 
       if (fileData.executable) {
         await fs.chmod(fullPath, '755');
@@ -1684,10 +1694,247 @@ async function installIndividualSkill(skillName, targetDir, options) {
 }
 
 /**
+ * Parse the `components:` frontmatter field of a loop into {type, path} refs.
+ * The field is a flat bracketed list of `type:path` tokens, e.g.
+ *   components: [agent:documentation/docs-architect, skill:git/create-pr]
+ */
+function parseLoopReferencedComponents(loopContent) {
+  const refs = [];
+  if (!loopContent || !loopContent.startsWith('---')) return refs;
+  const fmEnd = loopContent.indexOf('---', 3);
+  if (fmEnd === -1) return refs;
+  const frontmatter = loopContent.slice(3, fmEnd);
+  for (const line of frontmatter.split('\n')) {
+    if (!line.startsWith('components:')) continue;
+    const value = line.slice(line.indexOf(':') + 1).trim().replace(/^\[|\]$/g, '');
+    for (const token of value.split(',')) {
+      const trimmed = token.trim().replace(/^["']|["']$/g, '');
+      if (!trimmed) continue;
+      const sep = trimmed.indexOf(':');
+      if (sep === -1) continue;
+      const type = trimmed.slice(0, sep).trim();
+      const compPath = trimmed.slice(sep + 1).trim().replace(/\.(md|json)$/, '');
+      if (type && compPath) refs.push({ type, path: compPath });
+    }
+    break;
+  }
+  return refs;
+}
+
+/**
+ * Install a loop component (markdown) into .claude/loops/, then auto-install
+ * every component it references (agents, skills, hooks, commands, settings, mcps).
+ */
+/**
+ * Install a Claude Mod as a local Claude Code plugin.
+ *
+ * A mod is a plugin whose behaviour lives in a function-hooks module
+ * (https://github.com/anthropics/claude-code/tree/main/mods). It loads in
+ * Claude Code >= 2.1.287, where mods are on by default.
+ *
+ * The catalog stores each mod as a complete plugin directory, exactly
+ * Anthropic's layout: cli-tool/components/mods/{category}/{name}/ holds
+ * .claude-plugin/plugin.json (name, description, userConfig, ...),
+ * hooks/hooks.json ("modules"), the hooks-modules under hooks/ (any number of
+ * files, relative imports allowed), and optional types/, tests/ and README.md.
+ * We download the whole directory (like a skill) and write it verbatim to
+ * .claude/skills/{name}/, which Claude Code auto-loads as "{name}@skills-dir"
+ * once the workspace is trusted.
+ */
+async function installIndividualMod(modName, targetDir, options = {}) {
+  console.log(chalk.blue(`ƒ  Installing mod: ${modName}`));
+  const startTime = Date.now();
+
+  try {
+    // Only "category/name" in kebab-case: this string becomes both a URL and a directory name.
+    if (!/^[a-z0-9][a-z0-9-]*\/[a-z0-9][a-z0-9-]*$/i.test(modName)) {
+      throw new Error('Invalid mod name. Expected "category/name" (letters, digits and hyphens only), e.g. security/secret-redactor.');
+    }
+    const baseName = modName.split('/').pop();
+    const githubApiUrl = `https://api.github.com/repos/davila7/claude-code-templates/contents/cli-tool/components/mods/${modName}`;
+    console.log(chalk.gray(`📥 Downloading from GitHub (main branch)...`));
+
+    const downloadedFiles = {};
+    let notFound = false;
+
+    // Recursive download of the plugin directory (same approach as skills).
+    async function downloadDirectory(apiUrl, relativePath = '') {
+      const response = await fetch(apiUrl, {
+        headers: { 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'claude-code-templates' }
+      });
+      if (!response.ok) {
+        if (response.status === 404 && !relativePath) { notFound = true; return; }
+        throw new Error(`HTTP ${response.status}: ${response.statusText} (${relativePath || '/'})`);
+      }
+      const contents = await response.json();
+      for (const item of contents) {
+        const itemPath = relativePath ? `${relativePath}/${item.name}` : item.name;
+        // Plugin files only: no path tricks, no hidden dirs other than .claude-plugin.
+        if (item.name.includes('..') || (item.name.startsWith('.') && item.name !== '.claude-plugin')) continue;
+        if (item.type === 'file') {
+          const fileResponse = await fetch(item.download_url);
+          if (!fileResponse.ok) throw new Error(`Could not download ${itemPath} (HTTP ${fileResponse.status})`);
+          downloadedFiles[itemPath] = await fileResponse.text();
+          console.log(chalk.green(`✓ ${itemPath}`));
+        } else if (item.type === 'dir') {
+          await downloadDirectory(item.url, itemPath);
+        }
+      }
+    }
+
+    await downloadDirectory(githubApiUrl);
+    if (notFound) {
+      console.log(chalk.red(`❌ Mod "${modName}" not found`));
+      console.log(chalk.gray('   Browse available mods at https://www.aitmpl.com/mods'));
+      trackingService.trackInstallationOutcome('mod', modName, 'failure', { errorType: 'not_found', durationMs: Date.now() - startTime, batchId: options.batchId });
+      return false;
+    }
+
+    // A mod is a plugin: the manifest and hooks/hooks.json must be there, and
+    // every hooks-module hooks.json names must have come down with it.
+    if (!downloadedFiles['.claude-plugin/plugin.json']) throw new Error('.claude-plugin/plugin.json missing: not a plugin directory');
+    if (!downloadedFiles['hooks/hooks.json']) throw new Error('hooks/hooks.json missing: not a mod');
+    const manifest = JSON.parse(downloadedFiles['.claude-plugin/plugin.json']);
+    const hooksConfig = JSON.parse(downloadedFiles['hooks/hooks.json']);
+    const modules = Array.isArray(hooksConfig.modules) ? hooksConfig.modules : [];
+    if (modules.length === 0) throw new Error('hooks/hooks.json has no "modules" entry');
+    for (const modulePath of modules) {
+      const rel = `hooks/${String(modulePath).replace(/^\.\//, '')}`;
+      if (!downloadedFiles[rel]) throw new Error(`hooks-module ${rel} named by hooks.json was not downloaded`);
+    }
+
+    // Write the plugin verbatim into the project's skills directory.
+    const pluginDir = path.join(targetDir, '.claude', 'skills', baseName);
+    for (const [rel, content] of Object.entries(downloadedFiles)) {
+      const fullPath = path.join(pluginDir, rel);
+      await fs.ensureDir(path.dirname(fullPath));
+      await fs.writeFile(fullPath, content, 'utf8');
+      options.onWrite?.(fullPath);
+    }
+
+    const relPluginDir = path.relative(targetDir, pluginDir);
+    const userConfig = manifest.userConfig && typeof manifest.userConfig === 'object' ? manifest.userConfig : undefined;
+    if (!options.silent) {
+      console.log(chalk.green(`✅ Mod "${modName}" installed successfully!`));
+    }
+    console.log(chalk.cyan(`📁 Installed to: ${relPluginDir}/  (${Object.keys(downloadedFiles).length} files)`));
+    console.log(chalk.gray(`   hooks/hooks.json  ->  { "modules": ${JSON.stringify(modules)} }`));
+    console.log(chalk.blue(`\n🧪 Claude Code loads it as "${manifest.name || baseName}@skills-dir" on the next session (after the workspace trust prompt).`));
+    console.log(chalk.gray('   Mods are on by default in Claude Code >= 2.1.287.'));
+    console.log(chalk.gray(`   Or load it for one session with hot reload: claude --plugin-dir ${relPluginDir}`));
+    console.log(chalk.gray(`   Validate / test it: claude plugin validate ${relPluginDir}  ·  claude plugin test ${relPluginDir}`));
+    if (userConfig) {
+      console.log(chalk.gray(`   Options (${Object.keys(userConfig).join(', ')}): set them in /config, or in ~/.claude/settings.json (user, not project):`));
+      console.log(chalk.gray(`   { "pluginConfigs": { "${manifest.name || baseName}@skills-dir": { "options": { ... } } } }`));
+    }
+    console.log(chalk.gray('   Reference: https://code.claude.com/docs/en/plugins/mods/overview\n'));
+
+    trackingService.trackDownload('mod', modName, {
+      installation_type: 'individual_mod',
+      target_directory: path.relative(process.cwd(), targetDir),
+      source: 'github_main',
+      total_files: Object.keys(downloadedFiles).length
+    });
+    trackingService.trackInstallationOutcome('mod', modName, 'success', { durationMs: Date.now() - startTime, batchId: options.batchId });
+
+    return true;
+  } catch (error) {
+    console.error(chalk.red(`❌ Error installing mod "${modName}":`), error.message);
+    trackingService.trackInstallationOutcome('mod', modName, 'failure', { errorType: 'exception', errorMessage: error.message, durationMs: Date.now() - startTime, batchId: options.batchId });
+    return false;
+  }
+}
+
+async function installIndividualLoop(loopName, targetDir, options = {}) {
+  console.log(chalk.blue(`🔁 Installing loop: ${loopName}`));
+  const startTime = Date.now();
+
+  try {
+    const githubUrl = `https://raw.githubusercontent.com/davila7/claude-code-templates/main/cli-tool/components/loops/${loopName}.md`;
+    console.log(chalk.gray(`📥 Downloading from GitHub (main branch)...`));
+
+    const response = await fetch(githubUrl);
+    if (!response.ok) {
+      if (response.status === 404) {
+        console.log(chalk.red(`❌ Loop "${loopName}" not found`));
+        trackingService.trackInstallationOutcome('loop', loopName, 'failure', { errorType: 'not_found', durationMs: Date.now() - startTime, batchId: options.batchId });
+        return false;
+      }
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const loopContent = await response.text();
+
+    // Write the loop file to .claude/loops/ (flat, like agents)
+    const loopsDir = path.join(targetDir, '.claude', 'loops');
+    await fs.ensureDir(loopsDir);
+    const fileName = loopName.includes('/') ? loopName.split('/').pop() : loopName;
+    const targetFile = path.join(loopsDir, `${fileName}.md`);
+    await fs.writeFile(targetFile, loopContent, 'utf8');
+    options.onWrite?.(targetFile);
+
+    if (!options.silent) {
+      console.log(chalk.green(`✅ Loop "${loopName}" installed successfully!`));
+      console.log(chalk.cyan(`📁 Installed to: ${path.relative(targetDir, targetFile)}`));
+    }
+
+    trackingService.trackDownload('loop', loopName, {
+      installation_type: 'individual_loop',
+      target_directory: path.relative(process.cwd(), targetDir),
+      source: 'github_main'
+    });
+
+    // Auto-install referenced components
+    const refs = parseLoopReferencedComponents(loopContent);
+    if (refs.length > 0) {
+      console.log(chalk.blue(`\n🧩 Installing ${refs.length} referenced component(s) for this loop...`));
+      const refOptions = { ...options, silent: true };
+      for (const ref of refs) {
+        try {
+          switch (ref.type) {
+            case 'agent':
+              await installIndividualAgent(ref.path, targetDir, refOptions);
+              break;
+            case 'command':
+              await installIndividualCommand(ref.path, targetDir, refOptions);
+              break;
+            case 'skill':
+              await installIndividualSkill(ref.path, targetDir, refOptions);
+              break;
+            case 'hook':
+              await installIndividualHook(ref.path, targetDir, refOptions);
+              break;
+            case 'setting':
+              await installIndividualSetting(ref.path, targetDir, refOptions);
+              break;
+            case 'mcp':
+              await installIndividualMCP(ref.path, targetDir, refOptions);
+              break;
+            default:
+              console.log(chalk.yellow(`   ⚠️  Unknown referenced component type: ${ref.type}:${ref.path}`));
+              continue;
+          }
+          console.log(chalk.green(`   ✓ ${ref.type}: ${ref.path}`));
+        } catch (refError) {
+          console.log(chalk.yellow(`   ⚠️  Could not install ${ref.type}:${ref.path} (${refError.message})`));
+        }
+      }
+    }
+
+    trackingService.trackInstallationOutcome('loop', loopName, 'success', { durationMs: Date.now() - startTime, batchId: options.batchId });
+    return true;
+
+  } catch (error) {
+    console.log(chalk.red(`❌ Error installing loop: ${error.message}`));
+    trackingService.trackInstallationOutcome('loop', loopName, 'failure', { errorType: 'network_error', errorMessage: error.message, durationMs: Date.now() - startTime, batchId: options.batchId });
+    return false;
+  }
+}
+
+/**
  * Install multiple components with optional YAML workflow
  */
 async function installMultipleComponents(options, targetDir) {
-  console.log(chalk.blue('🔧 Installing multiple components...'));
   const batchId = Math.random().toString(36).substring(2, 15);
 
   try {
@@ -1697,7 +1944,9 @@ async function installMultipleComponents(options, targetDir) {
       mcps: [],
       settings: [],
       hooks: [],
-      skills: []
+      skills: [],
+      loops: [],
+      mods: []
     };
     
     // Parse comma-separated values for each component type
@@ -1731,117 +1980,71 @@ async function installMultipleComponents(options, targetDir) {
       components.skills = skillsInput.split(',').map(s => s.trim()).filter(s => s);
     }
 
-    const totalComponents = components.agents.length + components.commands.length + components.mcps.length + components.settings.length + components.hooks.length + components.skills.length;
+    if (options.loop) {
+      const loopsInput = Array.isArray(options.loop) ? options.loop.join(',') : options.loop;
+      components.loops = loopsInput.split(',').map(l => l.trim()).filter(l => l);
+    }
+
+    // --mod, plus --function-hook kept as an alias of it
+    const modInputs = [options.mod, options.functionHook].filter(Boolean).flat();
+    if (modInputs.length > 0) {
+      components.mods = modInputs.join(',').split(',').map(m => m.trim()).filter(m => m);
+    }
+
+    const totalComponents = components.agents.length + components.commands.length + components.mcps.length + components.settings.length + components.hooks.length + components.skills.length + components.loops.length + components.mods.length;
     
     if (totalComponents === 0) {
       console.log(chalk.yellow('⚠️  No components specified to install.'));
       return;
     }
     
-    console.log(chalk.cyan(`📦 Installing ${totalComponents} components:`));
-    console.log(chalk.gray(`   Agents: ${components.agents.length}`));
-    console.log(chalk.gray(`   Commands: ${components.commands.length}`));
-    console.log(chalk.gray(`   MCPs: ${components.mcps.length}`));
-    console.log(chalk.gray(`   Settings: ${components.settings.length}`));
-    console.log(chalk.gray(`   Hooks: ${components.hooks.length}`));
-    console.log(chalk.gray(`   Skills: ${components.skills.length}`));
-    
-    // Counter for successfully installed components
-    let successfullyInstalled = 0;
-    
-    // Ask for installation locations once for configuration components (if any exist and not in silent mode)
-    let sharedInstallLocations = ['local']; // default
-    const hasSettingsOrHooks = components.settings.length > 0 || components.hooks.length > 0;
-    
-    if (hasSettingsOrHooks && !options.yes) {
-      console.log(chalk.blue('\n📍 Choose installation locations for configuration components:'));
-      const inquirer = require('inquirer');
-      const { selectedLocations } = await inquirer.prompt([{
-        type: 'checkbox',
-        name: 'selectedLocations',
-        message: 'Where would you like to install the configuration components? (Select one or more)',
-        choices: [
-          {
-            name: '🏠 User settings (~/.claude/settings.json) - Applies to all projects',
-            value: 'user'
-          },
-          {
-            name: '📁 Project settings (.claude/settings.json) - Shared with team',
-            value: 'project'
-          },
-          {
-            name: '⚙️  Local settings (.claude/settings.local.json) - Personal, not committed',
-            value: 'local',
-            checked: true // Default selection
-          },
-          {
-            name: '🏢 Enterprise managed settings - System-wide policy (requires admin)',
-            value: 'enterprise'
-          }
-        ],
-        validate: function(answer) {
-          if (answer.length < 1) {
-            return 'You must choose at least one installation location.';
-          }
-          return true;
-        }
-      }]);
-      
-      sharedInstallLocations = selectedLocations;
-      console.log(chalk.cyan(`📋 Will install configuration components in: ${sharedInstallLocations.join(', ')}`));
-    }
-    
-    // Install agents
-    for (const agent of components.agents) {
-      console.log(chalk.gray(`   Installing agent: ${agent}`));
-      const agentSuccess = await installIndividualAgent(agent, targetDir, { ...options, silent: true, batchId });
-      if (agentSuccess) successfullyInstalled++;
+    const ui = createInstallUI({ version: require('../package.json').version, targetDir });
+    const items = [
+      ...components.agents.map(name => ({ type: 'agent', name })),
+      ...components.commands.map(name => ({ type: 'command', name })),
+      ...components.mcps.map(name => ({ type: 'mcp', name })),
+      ...components.settings.map(name => ({ type: 'setting', name })),
+      ...components.hooks.map(name => ({ type: 'hook', name })),
+      ...components.skills.map(name => ({ type: 'skill', name })),
+      ...components.loops.map(name => ({ type: 'loop', name })),
+      ...components.mods.map(name => ({ type: 'mod', name }))
+    ];
+
+    ui.header();
+    ui.plan(items);
+
+    // Ask for installation locations once for configuration components.
+    // Loops can pull in settings/hooks via their referenced components, so ask when loops are present too.
+    let sharedInstallLocations = ['local'];
+    const hasSettingsOrHooks = components.settings.length > 0 || components.hooks.length > 0 || components.loops.length > 0;
+    if (hasSettingsOrHooks) {
+      sharedInstallLocations = await ui.chooseLocations({ skipPrompt: options.yes });
     }
 
-    // Install commands
-    for (const command of components.commands) {
-      console.log(chalk.gray(`   Installing command: ${command}`));
-      const commandSuccess = await installIndividualCommand(command, targetDir, { ...options, silent: true, batchId });
-      if (commandSuccess) successfullyInstalled++;
-    }
+    const installers = {
+      agent: installIndividualAgent,
+      command: installIndividualCommand,
+      mcp: installIndividualMCP,
+      setting: installIndividualSetting,
+      hook: installIndividualHook,
+      skill: installIndividualSkill,
+      loop: installIndividualLoop,
+      mod: installIndividualMod
+    };
+    const usesLocations = new Set(['setting', 'hook', 'loop']);
 
-    // Install MCPs
-    for (const mcp of components.mcps) {
-      console.log(chalk.gray(`   Installing MCP: ${mcp}`));
-      const mcpSuccess = await installIndividualMCP(mcp, targetDir, { ...options, silent: true, batchId });
-      if (mcpSuccess) successfullyInstalled++;
-    }
-
-    // Install settings (using shared installation locations)
-    for (const setting of components.settings) {
-      console.log(chalk.gray(`   Installing setting: ${setting}`));
-      const settingSuccess = await installIndividualSetting(setting, targetDir, {
+    const results = [];
+    for (const item of items) {
+      const result = await ui.runStep(item, onWrite => installers[item.type](item.name, targetDir, {
         ...options,
         silent: true,
-        sharedInstallLocations: sharedInstallLocations,
-        batchId
-      });
-      if (settingSuccess > 0) successfullyInstalled++;
+        batchId,
+        onWrite,
+        ...(usesLocations.has(item.type) ? { sharedInstallLocations } : {})
+      }));
+      results.push(result);
     }
-    
-    // Install hooks (using shared installation locations)
-    for (const hook of components.hooks) {
-      console.log(chalk.gray(`   Installing hook: ${hook}`));
-      const hookSuccess = await installIndividualHook(hook, targetDir, {
-        ...options,
-        silent: true,
-        sharedInstallLocations: sharedInstallLocations,
-        batchId
-      });
-      if (hookSuccess > 0) successfullyInstalled++;
-    }
-
-    // Install skills
-    for (const skill of components.skills) {
-      console.log(chalk.gray(`   Installing skill: ${skill}`));
-      const skillSuccess = await installIndividualSkill(skill, targetDir, { ...options, silent: true, batchId });
-      if (skillSuccess) successfullyInstalled++;
-    }
+    const successfullyInstalled = results.filter(r => r.ok).length;
 
     // Handle YAML workflow if provided
     if (options.yaml) {
@@ -1872,22 +2075,13 @@ async function installMultipleComponents(options, targetDir) {
       }
     }
     
-    if (successfullyInstalled === totalComponents) {
-      console.log(chalk.green(`\n✅ Successfully installed ${successfullyInstalled} components!`));
-    } else if (successfullyInstalled > 0) {
-      console.log(chalk.yellow(`\n⚠️  Successfully installed ${successfullyInstalled} of ${totalComponents} components.`));
-      console.log(chalk.red(`❌ ${totalComponents - successfullyInstalled} component(s) failed to install.`));
-    } else {
-      console.log(chalk.red(`\n❌ No components were installed successfully.`));
-      return; // Exit early if nothing was installed
-    }
-    console.log(chalk.cyan(`📁 Components installed to: .claude/`));
-    
+    ui.summary(results, items);
+    if (successfullyInstalled === 0) return;
+
     if (options.yaml) {
-      console.log(chalk.cyan(`📄 Workflow file created in: .claude/workflows/`));
-      console.log(chalk.cyan(`🚀 Use the workflow file with Claude Code to execute the complete setup`));
+      ui.note('Workflow file created in .claude/workflows/. Use it with Claude Code to run the complete setup.');
     }
-    
+
     // Note: Individual components are already tracked separately in their installation functions
     
     // Handle prompt execution if provided (but not in sandbox mode)

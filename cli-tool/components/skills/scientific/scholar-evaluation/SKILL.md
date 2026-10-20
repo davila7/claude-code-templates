@@ -1,3 +1,8 @@
+---
+name: scholar-evaluation
+description: "Apply the ScholarEval framework to systematically evaluate scholarly and research work. This skill provides structured evaluation methodology based on peer-reviewed research assessment criteria, enabling comprehensive analysis of academic papers, research proposals, literature reviews, and scholarly writing across multiple quality dimensions."
+---
+
 # Scholar Evaluation
 
 ## Overview

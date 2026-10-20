@@ -1,0 +1,1 @@
+{"content": "{\n  \"mcpServers\": {\n    \"dimhour\": {\n      \"description\": \"Search ~19,000 scored places to eat and drink across 20 cities worldwide, with booking links.\",\n      \"type\": \"http\",\n      \"url\": \"https://dimhour-mcp.jakeoborn.workers.dev/mcp\"\n    }\n  }\n}\n"}

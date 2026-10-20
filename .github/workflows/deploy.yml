@@ -1,10 +1,14 @@
-name: Deploy to Vercel
+name: Deploy to Cloudflare Pages
 
 on:
   push:
     branches: [main]
     paths:
       - 'dashboard/**'
+  # Pushes made with GITHUB_TOKEN never trigger other workflows, so the
+  # catalog workflows (update-component-content.yml) start this one
+  # explicitly after they commit; it can also be run by hand from Actions.
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -18,12 +22,35 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v6
         with:
           node-version: 22
-      - name: Deploy www + app.aitmpl.com
-        run: npx vercel --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Install dependencies
+        run: npm install
+        working-directory: dashboard
+      - name: Unit tests
+        run: npm test
+        working-directory: dashboard
+      - name: Build
+        run: npm run build
+        working-directory: dashboard
         env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_DASHBOARD_PROJECT_ID }}
+          PUBLIC_CLERK_PUBLISHABLE_KEY: "pk_live_Y2xlcmsuYWl0bXBsLmNvbSQ"
+          PUBLIC_GITHUB_CLIENT_ID: "Ov23li3KjfA4cuLi5c0k"
+          PUBLIC_COMPONENTS_JSON_URL: "/components.json"
+          PUBLIC_WEBMCP_ENABLED: "true"
+      - name: Deploy www + app.aitmpl.com
+        run: npx wrangler pages deploy dist --project-name=aitmpl-dashboard --commit-dirty=true
+        working-directory: dashboard
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      # Reports whether the agent-facing surfaces (real 404s, Markdown 404 body,
+      # JSON /api 404, llms.txt, openapi.json) behave on the live site. Does not
+      # fail the deploy: the deploy above already happened.
+      - name: Smoke-check agent endpoints
+        if: success()
+        continue-on-error: true
+        run: sleep 30 && npm run check:agents -- https://www.aitmpl.com
+        working-directory: dashboard

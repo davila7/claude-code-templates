@@ -5,7 +5,7 @@ version: 1.0.0
 author: Orchestra Research
 license: MIT
 tags: [Ray Train, Distributed Training, Orchestration, Ray, Hyperparameter Tuning, Fault Tolerance, Elastic Scaling, Multi-Node, PyTorch, TensorFlow]
-dependencies: [ray[train], torch, transformers]
+dependencies: ["ray[train]", torch, transformers]
 ---
 
 # Ray Train - Distributed Training Orchestration

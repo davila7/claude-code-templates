@@ -1,0 +1,1 @@
+{"content": "{\n  \"description\": \"Custom telemetry configuration with different endpoint.\",\n  \"env\": {\n    \"CLAUDE_CODE_ENABLE_TELEMETRY\": \"0\",\n    \"OTEL_METRICS_EXPORTER\": \"custom\"\n  }\n}"}

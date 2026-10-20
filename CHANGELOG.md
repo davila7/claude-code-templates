@@ -5,6 +5,60 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.30.0] - 2026-10-10
+
+### Changed
+- **Redesigned multi-component install output** (`--agent x --hook y ...`): a
+  step rail with a plan table (per-type icons, what each component writes), a
+  location prompt that shows each settings file, one row per component that
+  turns from a spinner into ✔/✖ with the files written or the failure reason,
+  and a summary with a retry command for failures. Plain lines without a TTY
+  or in CI. The installers' internal logs and the zero-count type list are gone.
+
+### Fixed
+- The banner's right border was misaligned.
+
+## [1.29.7] - 2026-10-09
+
+### Security
+- **Fix command injection in the analytics Console Bridge** (port 3334) —
+  GHSA-4jm9-m3fr-9jpx, reported by @manus-pi. Affected 1.11.0 through
+  1.29.6. Terminal input is spawned with argv and passed through the
+  environment instead of interpolated into `expect`/`osascript` source, the
+  macOS `do script` fallback is removed, and the WebSocket handshake now
+  requires a loopback peer, the local dashboard origin and a per-process token.
+- **Same class, found by the follow-up audit**: `--health-check`,
+  `--command-stats`, `--hook-stats`, `--mcp-stats`, global agent wrappers and
+  `--clone-session` no longer pass text from project files, downloaded
+  components or arguments through a shell. The Claude API proxy (port 3335)
+  binds to loopback and refuses browser and non-loopback requests. A setting
+  component can only write files under `.claude/`.
+
+### Changed
+- Mods: removed the early-access warning and the
+  `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS` instruction; Claude Code 2.1.287+ loads
+  mods by default.
+
+## [1.29.4] - 2026-07-13
+
+### Security
+- **Fix unauthenticated OS command injection / RCE in Claude Code Studio
+  (`--studio`)** — GHSA-79wm-x847-7cvg (CWE-78, CWE-306, CWE-352; CVSS 8.8).
+  Reported by @spartan8806. The studio server
+  (`cli-tool/src/sandbox-server.js`) bound to all interfaces, sent
+  `Access-Control-Allow-Origin: *`, required no auth, and passed request-body
+  fields into `child_process.spawn(..., { shell: true })`. Fixes:
+  - Removed `shell: true` from all task/agent spawns so arguments stay discrete
+    argv entries and shell metacharacters can no longer execute.
+  - Added a strict allowlist (`^[A-Za-z0-9._/-]+$`) for the `agentName`/`agent`
+    fields, rejected before reaching any child process.
+  - Bound the server to loopback (`127.0.0.1`) instead of `0.0.0.0`, removing
+    the LAN attack surface.
+  - Restricted CORS to the local Studio UI origin and rejected cross-origin
+    requests, closing the drive-by CSRF vector.
+  - Resolved `npx`/`claude` via their `.cmd` shims on Windows so removing
+    `shell: true` does not break agent installation on win32.
+
 ## [Unreleased]
 
 ### Added

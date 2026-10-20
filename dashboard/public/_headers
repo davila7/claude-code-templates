@@ -1,0 +1,71 @@
+# Static JSON data — cached 24h at the edge, revalidated on deploy
+/components.json
+  Cache-Control: public, max-age=86400, stale-while-revalidate=3600
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET
+
+# Tiny per-type counts (sidebars, plugins pages) — same 24h cache
+/counts.json
+  Cache-Control: public, max-age=86400, stale-while-revalidate=3600
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET
+
+# Per-type index slices (grid loads only the active type)
+/components/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=3600
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET
+
+# Flat search index for the global (Cmd+K) search
+/search-index.json
+  Cache-Control: public, max-age=86400, stale-while-revalidate=3600
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET
+
+/component-content/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=3600
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET
+
+/plugins.json
+  Cache-Control: public, max-age=86400, stale-while-revalidate=3600
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET
+
+/trending-data.json
+  Cache-Control: public, max-age=3600, stale-while-revalidate=300
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET
+
+/claude-jobs.json
+  Cache-Control: public, max-age=3600, stale-while-revalidate=300
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET
+
+# Machine-readable files for agents (OpenAPI spec, llms.txt)
+/openapi.json
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: public, max-age=86400, stale-while-revalidate=3600
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET
+
+/llms.txt
+  Cache-Control: public, max-age=86400, stale-while-revalidate=3600
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET
+
+# Astro hashed assets — immutable forever (hash changes on content change)
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Security headers — applied to all routes
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+# Social preview images (og:image), regenerated on every deploy
+/og/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=3600

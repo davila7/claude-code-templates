@@ -14,6 +14,8 @@ Requires:
 
 import json
 import os
+import posixpath
+import shutil
 import sys
 import time
 import subprocess
@@ -36,6 +38,7 @@ REPOS = [
     ("EveryInc/compound-engineering-plugin", None),
     ("alirezarezvani/claude-skills", None),
     ("davepoon/buildwithclaude", "https://buildwithclaude.com/"),
+    ("Nyanbalaji28/best-claude-skills", "https://augmentclaude.com/"),
     ("lackeyjb/playwright-skill", None),
     ("nyldn/claude-octopus", None),
     ("jeremylongshore/claude-code-plugins-plus-skills", None),
@@ -58,9 +61,19 @@ REPOS = [
     ("777genius/claude-notifications-go", None),
     ("Piebald-AI/claude-code-lsps", None),
     ("chu2bard/pinion-os", None),
+    ("Airtable/skills", None),
+    ("krasserm/ml-plugins", None),
+    ("cohesivity-org/cohesivity-plugin", "https://cohesivity.ai"),
+    ("iOSDevSK/html2wp-cc-plugin", "https://html2wp.dev/"),
+    ("curviate/curviate-plugin", "https://curviate.com/"),
 ]
 
+DESCRIPTION_OVERRIDES = {
+    "cohesivity-org/cohesivity-plugin": "cohesivity.ai offers free agent native backend services. Anonymous account (no-signup) to get started through MCP or API. Hosting, postgres, email, storage, containers, LLMs, voice and third-party APIs. Includes free tiers and 5 USD/mo in AI and Search credits. topups through x402.",
+}
+
 OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "..", "dashboard", "public", "plugins.json")
+GH_CLI = shutil.which("gh") or "gh"
 
 # --- GitHub API helpers (uses gh CLI) ---
 
@@ -78,7 +91,7 @@ def gh_api(endpoint, retries=3):
             time.sleep(1)
 
         try:
-            cmd = ["/usr/local/bin/gh", "api", endpoint.lstrip("/")]
+            cmd = [GH_CLI, "api", endpoint.lstrip("/")]
             result = subprocess.run(
                 cmd, capture_output=True, text=True, timeout=30, env=_GH_ENV
             )
@@ -112,7 +125,7 @@ def gh_file_content(repo, path):
 
     try:
         result = subprocess.run(
-            ["/usr/local/bin/gh", "api", f"repos/{repo}/contents/{path}", "--jq", ".content"],
+            [GH_CLI, "api", f"repos/{repo}/contents/{path}", "--jq", ".content"],
             capture_output=True, text=True, timeout=30, env=_GH_ENV
         )
         if result.returncode != 0 or not result.stdout.strip():
@@ -148,7 +161,7 @@ def parse_json_safe(text):
             return None
 
 
-def extract_plugin_components(plugin_json):
+def extract_plugin_components(plugin_json, repo=None, dir_path=""):
     """Extract component counts from a plugin.json manifest."""
     if not plugin_json:
         return {}
@@ -173,11 +186,21 @@ def extract_plugin_components(plugin_json):
         elif isinstance(hooks, str):
             counts["hooks"] = 1
     # MCPs
-    mcps = plugin_json.get("mcpServers")
+    mcps_value = plugin_json.get("mcpServers")
+    mcps = (
+        resolve_server_manifest(repo, dir_path, mcps_value, "mcpServers")
+        if repo
+        else mcps_value
+    )
     if isinstance(mcps, dict) and len(mcps) > 0:
         counts["mcps"] = len(mcps)
     # LSPs
-    lsps = plugin_json.get("lspServers")
+    lsps_value = plugin_json.get("lspServers")
+    lsps = (
+        resolve_server_manifest(repo, dir_path, lsps_value, "lspServers")
+        if repo
+        else lsps_value
+    )
     if isinstance(lsps, dict) and len(lsps) > 0:
         counts["lsps"] = len(lsps)
     # Rules
@@ -233,47 +256,114 @@ def get_local_source_path(plugin_entry):
     return None
 
 
-def scan_plugin_dir_components(repo, dir_path):
+def _strip_component_ext(name):
+    for ext in (".md", ".json", ".js", ".ts", ".py"):
+        if name.endswith(ext):
+            return name[: -len(ext)]
+    return name
+
+
+def extract_frontmatter_description(content):
+    """Pull a `description:` value out of a markdown file's YAML frontmatter."""
+    if not content or not content.startswith("---"):
+        return ""
+    end = content.find("---", 3)
+    if end == -1:
+        return ""
+    frontmatter = content[3:end]
+    for line in frontmatter.split("\n"):
+        line = line.strip()
+        if line.startswith("description:"):
+            desc = line.split("description:", 1)[1].strip()
+            if len(desc) >= 2 and desc[0] == desc[-1] and desc[0] in ("'", '"'):
+                desc = desc[1:-1]
+            return desc
+    return ""
+
+
+def resolve_server_manifest(repo, dir_path, manifest_value, manifest_key):
+    """Resolve inline or file-backed MCP/LSP server maps from plugin.json."""
+    if isinstance(manifest_value, dict):
+        return manifest_value
+    if not isinstance(manifest_value, str):
+        return {}
+
+    relative_path = posixpath.normpath(manifest_value.replace("\\", "/"))
+    if (
+        relative_path in ("", ".")
+        or relative_path.startswith("../")
+        or relative_path.startswith("/")
+    ):
+        return {}
+
+    full_path = f"{dir_path.rstrip('/')}/{relative_path}".lstrip("/")
+    raw = gh_file_content(repo, full_path)
+    document = parse_json_safe(raw)
+    if not isinstance(document, dict):
+        return {}
+    servers = document.get(manifest_key)
+    return servers if isinstance(servers, dict) else {}
+
+
+def scan_plugin_dir_components(repo, dir_path, fetch_descriptions=True):
     """Scan a plugin directory for skills/, agents/, commands/, hooks/ subdirs
-    and count the files inside each. Returns component counts dict."""
+    and list the files inside each. Returns (counts, items) where `counts` is
+    a dict of type -> count and `items` is a dict of type -> list of
+    {"name", "description"} dicts, for types where names were resolved."""
     components = {}
+    component_items = {}
     # List the plugin's root directory
     listing = gh_dir_listing(repo, dir_path)
     if not listing:
-        return components
+        return components, component_items
 
     dir_names = {item["name"]: item["type"] for item in listing if isinstance(item, dict)}
     component_dirs = ["skills", "agents", "commands", "hooks"]
 
     for comp_dir in component_dirs:
         if comp_dir in dir_names and dir_names[comp_dir] == "dir":
-            # Count items inside this component directory
+            # List items inside this component directory
             items = gh_dir_listing(repo, f"{dir_path}/{comp_dir}")
             if items:
-                # Count files and dirs (each dir = 1 component, each .md/.json file = 1 component)
-                count = len([
-                    item for item in items
-                    if isinstance(item, dict) and (
-                        item["type"] == "dir" or
-                        item["name"].endswith((".md", ".json", ".js", ".ts", ".py"))
-                    )
-                ])
-                if count > 0:
-                    components[comp_dir] = count
+                entries = []
+                for item in items:
+                    if not isinstance(item, dict):
+                        continue
+                    if item["type"] == "dir":
+                        item_name = item["name"]
+                        description = ""
+                        if fetch_descriptions:
+                            md = gh_file_content(repo, f"{dir_path}/{comp_dir}/{item_name}/SKILL.md")
+                            if not md:
+                                md = gh_file_content(repo, f"{dir_path}/{comp_dir}/{item_name}/{item_name}.md")
+                            description = extract_frontmatter_description(md)
+                        entries.append({"name": item_name, "description": description})
+                    elif item["name"].endswith((".md", ".json", ".js", ".ts", ".py")):
+                        item_name = _strip_component_ext(item["name"])
+                        description = ""
+                        if fetch_descriptions and item["name"].endswith(".md"):
+                            md = gh_file_content(repo, f"{dir_path}/{comp_dir}/{item['name']}")
+                            description = extract_frontmatter_description(md)
+                        entries.append({"name": item_name, "description": description})
+                if entries:
+                    components[comp_dir] = len(entries)
+                    component_items[comp_dir] = entries
 
     # Check for mcpServers in plugin.json
     plugin_json_raw = gh_file_content(repo, f"{dir_path}/.claude-plugin/plugin.json")
     if plugin_json_raw:
         pj = parse_json_safe(plugin_json_raw)
         if pj:
-            mcps = pj.get("mcpServers")
-            if isinstance(mcps, dict) and len(mcps) > 0:
+            mcps = resolve_server_manifest(repo, dir_path, pj.get("mcpServers"), "mcpServers")
+            if mcps:
                 components["mcps"] = len(mcps)
-            lsps = pj.get("lspServers")
-            if isinstance(lsps, dict) and len(lsps) > 0:
+                component_items["mcps"] = [{"name": k, "description": ""} for k in mcps.keys()]
+            lsps = resolve_server_manifest(repo, dir_path, pj.get("lspServers"), "lspServers")
+            if lsps:
                 components["lsps"] = len(lsps)
+                component_items["lsps"] = [{"name": k, "description": ""} for k in lsps.keys()]
 
-    return components
+    return components, component_items
 
 
 def extract_marketplace_plugins_detail(marketplace, repo=None, scan_local=True):
@@ -317,26 +407,56 @@ def extract_marketplace_plugins_detail(marketplace, repo=None, scan_local=True):
 
         # Inline components from marketplace.json
         components = {}
+        component_items = {}
+        can_fetch_local_desc = bool(local_path and repo and scan_local and local_scan_count < max_local_scans)
+        used_local_desc_fetch = False
         for key in ("skills", "agents", "commands"):
             val = p.get(key)
             if isinstance(val, list) and len(val) > 0:
                 components[key] = len(val)
+                entries = []
+                for v in val:
+                    if isinstance(v, str):
+                        base = v.rstrip("/").replace("\\", "/").split("/")[-1]
+                        item_name = _strip_component_ext(base)
+                        description = ""
+                        if can_fetch_local_desc and v.endswith(".md"):
+                            rel = v.lstrip("./")
+                            md = gh_file_content(repo, f"{local_path.lstrip('./')}/{rel}")
+                            description = extract_frontmatter_description(md)
+                            used_local_desc_fetch = True
+                        entries.append({"name": item_name, "description": description})
+                    elif isinstance(v, dict):
+                        n = v.get("name") or v.get("path", "")
+                        if n:
+                            item_name = _strip_component_ext(str(n).rstrip("/").split("/")[-1])
+                            entries.append({"name": item_name, "description": v.get("description", "")})
+                if entries:
+                    component_items[key] = entries
         mcps = p.get("mcpServers")
         if isinstance(mcps, dict) and len(mcps) > 0:
             components["mcps"] = len(mcps)
+            component_items["mcps"] = [{"name": k, "description": ""} for k in mcps.keys()]
         lsps = p.get("lspServers")
         if isinstance(lsps, dict) and len(lsps) > 0:
             components["lsps"] = len(lsps)
+            component_items["lsps"] = [{"name": k, "description": ""} for k in lsps.keys()]
+
+        if used_local_desc_fetch:
+            local_scan_count += 1
 
         # If no inline components and this is a local plugin, scan its directory
         if not components and local_path and repo and scan_local and local_scan_count < max_local_scans:
-            scanned = scan_plugin_dir_components(repo, local_path.lstrip("./"))
-            if scanned:
-                components = scanned
+            scanned_counts, scanned_items = scan_plugin_dir_components(repo, local_path.lstrip("./"))
+            if scanned_counts:
+                components = scanned_counts
+                component_items = scanned_items
                 local_scan_count += 1
 
         if components:
             entry["components"] = components
+        if component_items:
+            entry["components_items"] = component_items
 
         details.append(entry)
     return details
@@ -423,7 +543,9 @@ def process_repo(repo_full, website_override=None):
     marketplace_component_totals = aggregate_marketplace_components(plugins_detail)
 
     # 6. Extract single plugin components
-    single_components = extract_plugin_components(plugin_json) if plugin_json else {}
+    single_components = (
+        extract_plugin_components(plugin_json, repo=repo_full) if plugin_json else {}
+    )
 
     # 7. Build contains
     if repo_type == "marketplace":
@@ -432,6 +554,8 @@ def process_repo(repo_full, website_override=None):
             contains["components"] = marketplace_component_totals
     else:
         contains = single_components if single_components else {}
+        if not contains and plugins_detail:
+            contains = dict(plugins_detail[0].get("components", {}))
 
     # 8. Build tags
     all_components = {**marketplace_component_totals, **single_components}
@@ -465,8 +589,11 @@ def process_repo(repo_full, website_override=None):
     repo_display = repo_info.get("name", name)
     mp_name = marketplace.get("name", "")
     plugin_name = plugin_json.get("name", "") if plugin_json else ""
+    plugin_display = plugin_json.get("displayName", "") if plugin_json else ""
     # Use marketplace/plugin name only if it looks human-readable (has spaces or capitals)
-    if mp_name and (mp_name != mp_name.lower().replace(" ", "-") or " " in mp_name):
+    if plugin_display:
+        display_name = plugin_display
+    elif mp_name and (mp_name != mp_name.lower().replace(" ", "-") or " " in mp_name):
         display_name = mp_name
     elif plugin_name and (plugin_name != plugin_name.lower().replace(" ", "-") or " " in plugin_name):
         display_name = plugin_name
@@ -489,7 +616,7 @@ def process_repo(repo_full, website_override=None):
         "slug": slug,
         "name": display_name,
         "author": repo_owner,
-        "description": description or marketplace.get("description", ""),
+        "description": DESCRIPTION_OVERRIDES.get(repo_full, description or marketplace.get("description", "")),
         "github": f"https://github.com/{repo_full}",
         "stars": stars,
         "type": repo_type,
@@ -500,6 +627,15 @@ def process_repo(repo_full, website_override=None):
 
     if website:
         result["website"] = website
+
+    marketplace_name = marketplace.get("name")
+    if isinstance(marketplace_name, str) and marketplace_name:
+        result["marketplace_name"] = marketplace_name
+
+    if repo_type == "plugin" and len(plugins_detail) == 1:
+        install_name = plugins_detail[0].get("name")
+        if isinstance(install_name, str) and install_name:
+            result["plugin_name"] = install_name
 
     # 14. Add marketplace plugins list (for individual pages)
     if repo_type == "marketplace" and plugins_detail:
@@ -512,12 +648,35 @@ def process_repo(repo_full, website_override=None):
             val = plugin_json.get(key)
             if isinstance(val, list) and val:
                 plugin_detail[key] = val
-        mcps = plugin_json.get("mcpServers")
-        if isinstance(mcps, dict) and mcps:
+        mcps = resolve_server_manifest(
+            repo_full, "", plugin_json.get("mcpServers"), "mcpServers"
+        )
+        if mcps:
             plugin_detail["mcpServers"] = list(mcps.keys())
-        lsps = plugin_json.get("lspServers")
-        if isinstance(lsps, dict) and lsps:
+        lsps = resolve_server_manifest(
+            repo_full, "", plugin_json.get("lspServers"), "lspServers"
+        )
+        if lsps:
             plugin_detail["lspServers"] = list(lsps.keys())
+        if plugin_detail:
+            result["plugin_manifest"] = plugin_detail
+    elif repo_type == "plugin" and len(plugins_detail) == 1:
+        component_items = plugins_detail[0].get("components_items", {})
+        plugin_detail = {}
+        for source_key, output_key in (
+            ("skills", "skills"),
+            ("agents", "agents"),
+            ("commands", "commands"),
+            ("mcps", "mcpServers"),
+            ("lsps", "lspServers"),
+        ):
+            names = [
+                item.get("name")
+                for item in component_items.get(source_key, [])
+                if isinstance(item, dict) and item.get("name")
+            ]
+            if names:
+                plugin_detail[output_key] = names
         if plugin_detail:
             result["plugin_manifest"] = plugin_detail
 
@@ -533,7 +692,7 @@ def main():
     # Check gh CLI is available
     try:
         test = subprocess.run(
-            ["/usr/local/bin/gh", "api", "rate_limit", "--jq", ".rate.remaining"],
+            [GH_CLI, "api", "rate_limit", "--jq", ".rate.remaining"],
             capture_output=True, text=True, timeout=10, env=_GH_ENV
         )
         if test.returncode == 0:

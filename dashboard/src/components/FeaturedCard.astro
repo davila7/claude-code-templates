@@ -10,24 +10,19 @@ const { item } = Astro.props;
 
 <a
   href={item.url}
-  class="group flex items-center gap-3 p-4 bg-[var(--color-card-bg)] rounded-xl hover:bg-[var(--color-card-hover)] transition-all duration-200 hover:scale-[1.02]"
-  style="box-shadow: var(--shadow-card);"
-  onmouseenter="this.style.boxShadow = 'var(--shadow-card-hover)'"
-  onmouseleave="this.style.boxShadow = 'var(--shadow-card)'"
+  class="group flex items-center gap-3 p-4 bg-[var(--color-card-bg)] rounded-md border border-[var(--color-border)] hover:bg-[var(--color-card-hover)] hover:border-[var(--color-accent)] transition-all duration-150"
 >
-  <div class="w-11 h-11 rounded-lg bg-[var(--color-surface-2)] border border-[var(--color-border)] flex items-center justify-center shrink-0 p-2">
-    <img src={item.logo} alt={item.name} class="w-full h-full object-contain rounded-md" loading="lazy" onerror="this.style.display='none'" />
+  <div class="w-11 h-11 rounded-sm bg-[var(--color-surface-2)] border border-[var(--color-border)] flex items-center justify-center shrink-0 p-2">
+    <img src={item.logo} alt={item.name} class="w-full h-full object-contain" loading="lazy" onerror="this.style.display='none'" />
   </div>
   <div class="min-w-0 flex-1">
     <div class="flex items-center gap-2">
-      <span class="text-[14px] font-semibold text-[var(--color-text-primary)]">{item.name}</span>
-      <span class="text-[10px] font-medium px-2 py-0.5 rounded-full border border-[var(--color-border)] text-[var(--color-text-tertiary)] bg-[var(--color-surface-2)]">
+      <span class="font-ui-mono text-[13px] font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-accent)] transition-colors">{item.name}</span>
+      <span class="font-ui-mono text-[10px] font-medium px-2 py-0.5 rounded border border-[var(--color-border)] text-[var(--color-text-tertiary)] bg-[var(--color-surface-2)]">
         {item.tag}
       </span>
     </div>
-    <p class="text-[13px] text-[var(--color-text-secondary)] mt-1 leading-[1.5]">{item.description}</p>
+    <p class="text-[12px] text-[var(--color-text-secondary)] mt-1 leading-[1.5]">{item.description}</p>
   </div>
-  <svg class="w-4 h-4 text-[var(--color-text-tertiary)] opacity-0 group-hover:opacity-100 transition-opacity shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-  </svg>
+  <span class="terminal-prompt text-[12px] opacity-0 group-hover:opacity-100 transition-opacity shrink-0">›</span>
 </a>

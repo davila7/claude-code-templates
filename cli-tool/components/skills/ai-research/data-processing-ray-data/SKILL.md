@@ -5,7 +5,7 @@ version: 1.0.0
 author: Orchestra Research
 license: MIT
 tags: [Data Processing, Ray Data, Distributed Computing, ML Pipelines, Batch Inference, ETL, Scalable, Ray, PyTorch, TensorFlow]
-dependencies: [ray[data], pyarrow, pandas]
+dependencies: ["ray[data]", pyarrow, pandas]
 ---
 
 # Ray Data - Scalable ML Data Processing

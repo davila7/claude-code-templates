@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>XSS - Vulnerable vs Secure Examples</title>
+  <!-- Note: For SECURE example, include DOMPurify library -->
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+</head>
+<body>
+  <h1>XSS Vulnerability Examples</h1>
+  
+  <!-- ===== VULNERABLE: Reflected XSS ===== -->
+  <h2>VULNERABLE: Reflected XSS</h2>
+  <div id="vulnerable-comment"></div>
+  <script>
+    (() => {
+      // Reflected XSS example
+      // For detailed guidance, see: SKILL.md#section-1-owasp-top-10-2021
+      //
+      // This example demonstrates a reflected XSS vulnerability (A03: Injection - XSS was A07 in the 2017 edition).
+      // User input from the 'msg' URL parameter is directly inserted
+      // into the DOM using innerHTML without sanitization, allowing
+      // attackers to execute arbitrary JavaScript.
+      
+      const params = new URLSearchParams(window.location.search);
+      const msg = params.get('vulnerable');
+      
+      if (msg) {
+        // UNSAFE: Direct innerHTML insertion
+        document.getElementById('vulnerable-comment').innerHTML = msg;
+        // Attacker's script executes here!
+      }
+    })();
+  </script>
+  
+  <!-- ===== SECURE: Text Content (No HTML Parsing) ===== -->
+  <h2>SECURE: Using textContent</h2>
+  <div id="safe-comment-1"></div>
+  <script>
+    (() => {
+      const params = new URLSearchParams(window.location.search);
+      const msg = params.get('safe1');
+      
+      if (msg) {
+        // SECURE: Use textContent instead of innerHTML
+        // textContent treats input as plain text, not HTML
+        // No script tags, HTML, or JavaScript can execute
+        document.getElementById('safe-comment-1').textContent = msg;
+      }
+    })();
+  </script>
+  
+  <!-- ===== SECURE: HTML Sanitization ===== -->
+  <h2>SECURE: DOMPurify HTML Sanitization</h2>
+  <div id="safe-comment-2"></div>
+  <script>
+    (() => {
+      const params = new URLSearchParams(window.location.search);
+      const msg = params.get('safe2');
+      
+      if (msg) {
+        // SECURE: Use DOMPurify to sanitize HTML
+        // Removes malicious scripts while preserving safe HTML
+        const cleanHTML = DOMPurify.sanitize(msg);
+        document.getElementById('safe-comment-2').innerHTML = cleanHTML;
+        
+        // Example: 
+        // Input:  <b>Bold</b><img src=x onerror="alert('XSS')">
+        // Output: <b>Bold</b>
+        // (The img tag with onerror is removed)
+      }
+    })();
+  </script>
+  
+  <!-- ===== SECURE: Server-Side Escaping ===== -->
+  <h2>SECURE: Server-Side HTML Escaping</h2>
+  <div id="safe-comment-3"></div>
+  <script>
+    // SECURE: This example assumes server returns HTML-escaped content
+    // Server-side example (Node.js/Express):
+    // function escape_html(text) {
+    //   const map = {
+    //     '&': '&amp;',
+    //     '<': '&lt;',
+    //     '>': '&gt;',
+    //     '"': '&quot;',
+    //     "'": '&#039;'
+    //   };
+    //   return text.replace(/[&<>"']/g, m => map[m]);
+    // }
+    // res.send(`<div>${escape_html(user_input)}</div>`);
+    
+    // If server already escaped data, innerHTML is safe
+    fetch('/api/comment?id=123')
+      .then(res => res.json())
+      .then(data => {
+        // data.comment is already HTML-escaped from server
+        document.getElementById('safe-comment-3').innerHTML = data.comment;
+      });
+  </script>
+  
+  <!-- ===== SECURE: Content Security Policy Header ===== -->
+  <!-- 
+    Server should send CSP header to prevent inline scripts:
+    Content-Security-Policy: default-src 'self'; script-src 'self'
+    
+    This prevents:
+    - Inline <script> tags
+    - Inline event handlers (onerror, onclick, etc.)
+    - eval() execution
+    - External script injection
+  -->
+  
+  <!-- ===== XSS CHEATSHEET ===== -->
+  <h2>XSS Prevention Checklist</h2>
+  <pre>
+✓ Never use innerHTML with user input - use textContent instead
+✓ Use established sanitization libraries (DOMPurify, bleach, etc.)
+✓ HTML-escape on server side before sending to client
+✓ Use Content-Security-Policy headers to block inline scripts
+✓ Validate and whitelist input on both client and server
+✓ Use template engines that auto-escape by default
+✓ Avoid eval(), Function(), setTimeout(string), setInterval(string)
+✓ Set X-Content-Type-Options: nosniff header
+✓ Use HttpOnly and Secure flags on session cookies
+✓ Test with OWASP ZAP or Burp Suite for XSS vulnerabilities
+  </pre>
+  
+</body>
+</html>

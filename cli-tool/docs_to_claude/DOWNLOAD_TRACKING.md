@@ -282,7 +282,7 @@ console.log(JSON.stringify(payload, null, 2))
 
 ## Licencia
 
-MIT License - Ver [LICENSE](LICENSE) para detalles.
+MIT License - Ver [LICENSE](../../LICENSE) para detalles.
 
 ## Contacto
 

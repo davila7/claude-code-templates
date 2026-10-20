@@ -1,13 +1,13 @@
 ---
 name: "speech"
-description: "Use when the user asks for text-to-speech narration or voiceover, accessibility reads, audio prompts, or batch speech generation via the OpenAI Audio API; run the bundled CLI (`scripts/text_to_speech.py`) with built-in voices and require `OPENAI_API_KEY` for live calls. Custom voice creation is out of scope."
+description: "Use when the user asks for text-to-speech narration or voiceover, accessibility reads, audio prompts, or batch speech generation. OpenAI remains the default; Atlas Cloud is an explicit optional backend for asynchronous multilingual speech. Custom voice creation is out of scope."
 author: openai
 ---
 
 
 # Speech Generation Skill
 
-Generate spoken audio for the current project (narration, product demo voiceover, IVR prompts, accessibility reads). Defaults to `gpt-4o-mini-tts-2025-12-15` and built-in voices, and prefers the bundled CLI for deterministic, reproducible runs.
+Generate spoken audio for the current project (narration, product demo voiceover, IVR prompts, accessibility reads). OpenAI remains the default with `gpt-4o-mini-tts-2025-12-15`; Atlas Cloud is available only when the user explicitly selects it. Prefer the bundled CLIs for deterministic, reproducible runs.
 
 ## When to use
 - Generate a single spoken clip from text
@@ -22,7 +22,7 @@ Generate spoken audio for the current project (narration, product demo voiceover
 2. Collect inputs up front: exact text (verbatim), desired voice, delivery style, format, and any constraints.
 3. If batch: write a temporary JSONL under tmp/ (one job per line), run once, then delete the JSONL.
 4. Augment instructions into a short labeled spec without rewriting the input text.
-5. Run the bundled CLI (`scripts/text_to_speech.py`) with sensible defaults (see references/cli.md).
+5. Run `scripts/text_to_speech.py` for the default OpenAI path, or `scripts/atlas_text_to_speech.py` only when Atlas Cloud was selected (see `references/cli.md`).
 6. For important clips, validate: intelligibility, pacing, pronunciation, and adherence to constraints.
 7. Iterate with a single targeted change (voice, speed, or instructions), then re-check.
 8. Save/return final outputs and note the final text + instructions + flags used.
@@ -35,7 +35,7 @@ Generate spoken audio for the current project (narration, product demo voiceover
 ## Dependencies (install if missing)
 Prefer `uv` for dependency management.
 
-Python packages:
+OpenAI backend package:
 ```
 uv pip install openai
 ```
@@ -44,18 +44,22 @@ If `uv` is unavailable:
 python3 -m pip install openai
 ```
 
-## Environment
-- `OPENAI_API_KEY` must be set for live API calls.
+The Atlas Cloud backend uses only the Python standard library.
 
-If the key is missing, give the user these steps:
-1. Create an API key in the OpenAI platform UI: https://platform.openai.com/api-keys
-2. Set `OPENAI_API_KEY` as an environment variable in their system.
+## Environment
+- Default OpenAI calls require `OPENAI_API_KEY`.
+- Optional Atlas Cloud calls require `ATLASCLOUD_API_KEY`.
+
+If the selected provider key is missing, give the user these steps:
+1. Create an API key in that provider's console.
+2. Set `OPENAI_API_KEY` or `ATLASCLOUD_API_KEY` as an environment variable in their system.
 3. Offer to guide them through setting the environment variable for their OS/shell if needed.
-- Never ask the user to paste the full key in chat. Ask them to set it locally and confirm when ready.
+- Keep provider credentials out of chat. Direct the user to set the selected key locally and confirm when ready.
 
 If installation isn't possible in this environment, tell the user which dependency is missing and how to install it locally.
 
 ## Defaults & rules
+- Keep OpenAI as the default provider. Do not switch to Atlas Cloud unless the user requests it.
 - Use `gpt-4o-mini-tts-2025-12-15` unless the user requests another model.
 - Default voice: `cedar`. If the user wants a brighter tone, prefer `marin`.
 - Built-in voices only. Custom voices are out of scope for this skill.
@@ -63,10 +67,12 @@ If installation isn't possible in this environment, tell the user which dependen
 - Input length must be <= 4096 characters per request. Split longer text into chunks.
 - Enforce 50 requests/minute. The CLI caps `--rpm` at 50.
 - Require `OPENAI_API_KEY` before any live API call.
+- For Atlas Cloud, default to `xai/tts-v1`, voice `eve`, language `auto`, and require `ATLASCLOUD_API_KEY`.
+- Atlas generation submits exactly one POST. Only prediction GET requests may retry, and polling must stay finite.
+- Download Atlas outputs without an Authorization header and reject non-HTTPS or private-network targets.
 - Provide a clear disclosure to end users that the voice is AI-generated.
-- Use the OpenAI Python SDK (`openai` package) for all API calls; do not use raw HTTP.
-- Prefer the bundled CLI (`scripts/text_to_speech.py`) over writing new one-off scripts.
-- Never modify `scripts/text_to_speech.py`. If something is missing, ask the user before doing anything else.
+- Use the OpenAI Python SDK (`openai` package) for default OpenAI calls; the dedicated Atlas CLI uses its asynchronous HTTP contract.
+- Prefer the matching bundled CLI over writing new one-off scripts.
 
 ## Instruction augmentation
 Reformat user direction into a short, labeled spec. Only make implicit details explicit; do not invent new requirements.
@@ -129,12 +135,14 @@ Use these modules when the request is for a specific delivery style. They provid
 ## CLI + environment notes
 - CLI commands + examples: `references/cli.md`
 - API parameter quick reference: `references/audio-api.md`
+- Atlas Cloud asynchronous workflow and safeguards: `references/atlas-cloud.md`
 - Instruction patterns + examples: `references/voice-directions.md`
 - If network approvals / sandbox settings are getting in the way: `references/codex-network.md`
 
 ## Reference map
 - **`references/cli.md`**: how to run speech generation/batches via `scripts/text_to_speech.py` (commands, flags, recipes).
 - **`references/audio-api.md`**: API parameters, limits, voice list.
+- **`references/atlas-cloud.md`**: optional Atlas Cloud model, CLI, polling, and download contract.
 - **`references/voice-directions.md`**: instruction patterns and examples.
 - **`references/prompting.md`**: instruction best practices (structure, constraints, iteration patterns).
 - **`references/sample-prompts.md`**: copy/paste instruction recipes (examples only; no extra theory).

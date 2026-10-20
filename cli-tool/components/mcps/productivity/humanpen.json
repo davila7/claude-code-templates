@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "humanpen": {
+      "description": "Document-level AI humanizer — rewrite a whole .docx/.pptx, selected passages, or Turnitin/iThenticate-flagged text in place, keeping formatting, tables, citations and formulas intact.",
+      "command": "npx",
+      "args": ["-y", "humanpen-mcp"],
+      "env": {
+        "HUMANPEN_API_KEY": "<your-api-key>"
+      }
+    }
+  }
+}

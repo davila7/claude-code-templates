@@ -278,7 +278,7 @@ Integration with other agents:
 - Support market-researcher on market analysis
 - Work with competitive-analyst on competitor insights
 - Guide trend-analyst on pattern identification
-- Help search-specialist on information discovery
+- Help multi-source-searcher on information discovery
 - Assist business-analyst on strategic implications
 - Partner with product-manager on product research
 - Coordinate with executives on strategic research

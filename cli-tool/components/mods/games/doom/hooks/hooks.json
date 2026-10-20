@@ -1,0 +1,6 @@
+{
+  "description": "Doom above the prompt: /doom opens it, the board draws on AbovePrompt, turn.complete pauses it, ui.message keeps the best score in $.store",
+  "modules": [
+    "./register.tsx"
+  ]
+}

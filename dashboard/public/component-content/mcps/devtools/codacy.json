@@ -1,0 +1,1 @@
+{"content": "{\n  \"mcpServers\": {\n    \"codacy\": {\n      \"description\":\"MCP Server for the Codacy API, enabling access to repositories, files, quality, coverage, security and more.\",\n      \"command\": \"npx\",\n      \"args\": [\"-y\", \"@codacy/codacy-mcp\"],\n      \"env\": {\n        \"CODACY_ACCOUNT_TOKEN\": \"<YOUR_TOKEN>\"\n      }\n    }\n  }\n}"}

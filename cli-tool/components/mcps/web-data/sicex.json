@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "sicex": {
+      "description": "Sicex MCP — global trade intelligence: search and analyze customs import/export records and maritime shipment data across markets in the Americas, the European Union, and Asia. Tools cover data-source and filter discovery, trade-data search/aggregation, company profiles, and report generation, plus interactive widgets (trade-flow charts, shipment tables, company cards) on hosts that support them. Requires a Sicex account (sicex.com) with an active data subscription. Uses OAuth 2.1 authentication (dynamic client registration + consent screen) — no API key needed, the MCP client will prompt you to sign in on first use.",
+      "type": "http",
+      "url": "https://api.sicex.com/mcp"
+    }
+  }
+}

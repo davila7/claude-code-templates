@@ -1,0 +1,43 @@
+# Cloudflare Worker Configuration
+# Newsletter — Weekly Community Components Email (via Resend Broadcasts)
+
+name = "aitmpl-newsletter"
+main = "index.js"
+compatibility_date = "2024-01-01"
+
+# Cron Trigger — PAUSED 2026-09-20.
+# The weekly send was turned off because the emails were landing as spam; the
+# worker stays deployed so it can be improved and re-enabled later.
+# `crons = []` (rather than deleting this section) is deliberate: an empty list
+# is what actually removes the registered trigger from Cloudflare on deploy.
+# Omitting [triggers] entirely would leave the existing trigger in place.
+#
+# To re-enable: restore crons = ["0 16 * * SUN"], set NEWSLETTER_ENABLED = "true"
+# below, and deploy. The account is on the free plan (5 cron triggers total);
+# this slot was freed by decommissioning claude-docs-monitor in 2026-07.
+# The broadcast goes to the segment in RESEND_SEGMENT_ID, which acts as the
+# safety gate: keep it pointed at a pilot segment until the full-audience
+# segment is ready.
+[triggers]
+crons = []
+
+[vars]
+# Public deploy-time values (not secrets)
+DASHBOARD_URL = "https://www.aitmpl.com"
+# Kill switch for the scheduled send. Anything other than "true" makes the cron
+# handler a no-op, so restoring the trigger alone is not enough to start
+# sending again. Manual POST /trigger is NOT gated by this, so the newsletter
+# can still be tested while paused.
+NEWSLETTER_ENABLED = "false"
+RESEND_FROM_EMAIL = "Daniel Avila <daniel.avila@aitmpl.com>"
+
+# Secrets (set via: wrangler secret put <KEY>)
+# Required:
+# - RESEND_API_KEY: Resend FULL ACCESS API key (broadcasts + segments)
+# - RESEND_SEGMENT_ID: Resend segment the broadcast targets (test or full audience)
+# - NEWSLETTER_REPLY_TO: reply-to address for the newsletter
+# - TRIGGER_SECRET: Secret for manual /trigger and /preview endpoints
+#
+# Optional (error tracking):
+# - SENTRY_DSN: DSN from the "aitmpl-workers" Sentry project. Also configure a
+#   Cron Monitor in Sentry with slug "newsletter-weekly".

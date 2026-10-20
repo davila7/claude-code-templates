@@ -1,0 +1,7 @@
+{
+  "description": "Make Claude Code as concise as possible: sets the Concise output style so responses lead with results and skip preamble, and turns off non-essential chat noise (spinner tips, away recap, verbose output). Ideal for experienced users who want minimal terminal output.",
+  "outputStyle": "Concise",
+  "spinnerTipsEnabled": false,
+  "awaySummaryEnabled": false,
+  "verbose": false
+}

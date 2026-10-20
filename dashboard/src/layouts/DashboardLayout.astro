@@ -7,13 +7,17 @@ interface Props {
   title?: string;
   description?: string;
   ogImage?: string;
+  ogImageAlt?: string;
 }
 
 const {
   title = 'Claude Code Templates',
   description = 'Browse and install 1000+ components for Claude Code: AI agents, slash commands, MCP integrations, hooks, settings, and skills. Free, open-source CLI tool.',
-  ogImage = '/logo.png'
+  ogImage = '/logo.png',
+  ogImageAlt,
 } = Astro.props;
+// Generated 1200x630 previews live under /og/; the default logo has no fixed size.
+const ogImageSized = ogImage.startsWith('/og/');
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const ogImageURL = new URL(ogImage, Astro.site).href;
@@ -39,8 +43,16 @@ const schemaData = JSON.stringify({
         "url": "https://www.aitmpl.com/logo.png"
       },
       "sameAs": [
-        "https://github.com/davila7/claude-code-templates"
-      ]
+        "https://github.com/davila7/claude-code-templates",
+        "https://www.npmjs.com/package/claude-code-templates"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "technical support",
+        "email": "dan.avila7@gmail.com",
+        "url": "https://github.com/davila7/claude-code-templates/issues",
+        "availableLanguage": ["English", "Spanish"]
+      }
     }
   ]
 });
@@ -54,6 +66,7 @@ const schemaData = JSON.stringify({
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL.href} />
+    <link rel="service-desc" type="application/vnd.oai.openapi+json" href="/openapi.json" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
@@ -61,6 +74,9 @@ const schemaData = JSON.stringify({
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={ogImageURL} />
+    {ogImageSized && <meta property="og:image:width" content="1200" />}
+    {ogImageSized && <meta property="og:image:height" content="630" />}
+    {ogImageAlt && <meta property="og:image:alt" content={ogImageAlt} />}
     <meta property="og:site_name" content="Claude Code Templates" />
 
     <!-- Twitter Card -->
@@ -68,16 +84,21 @@ const schemaData = JSON.stringify({
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageURL} />
+    {ogImageAlt && <meta name="twitter:image:alt" content={ogImageAlt} />}
 
     <!-- Structured Data -->
     <script type="application/ld+json" set:html={schemaData} />
 
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+
+    <!-- Preload LCP image (sidebar logo, visible on every page above the fold) -->
+    <link rel="preload" href="/logo.webp" as="image" type="image/webp" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
   </head>
-  <body class="bg-[var(--color-surface-0)] text-[var(--color-text-primary)] antialiased transition-colors duration-200">
+  <body class="bg-[var(--color-surface-0)] text-[var(--color-text-primary)] antialiased transition-colors duration-200 overflow-x-hidden">
     <script is:inline>
       // Initialize theme on page load (prevent flash)
       (function() {
@@ -90,23 +111,39 @@ const schemaData = JSON.stringify({
       })();
     </script>
     <div class="flex h-screen overflow-hidden">
-      <!-- Sidebar -->
+      <!-- Mobile sidebar overlay -->
+      <div
+        id="sidebar-overlay"
+        class="hidden md:hidden fixed inset-0 bg-black/50 z-30"
+      ></div>
+
+      <!-- Sidebar (fixed and out of flow — width/position must not affect
+           the flex layout below, or it pushes main content off-screen) -->
       <aside
         id="sidebar"
-        class="hidden md:flex w-[220px] flex-col border-r border-[var(--color-border)] bg-[var(--color-surface-0)] fixed inset-y-0 left-0 z-40 transition-all duration-300 ease-in-out"
+        class="w-[220px] flex flex-col border-r border-[var(--color-border)] bg-[var(--color-surface-0)] fixed inset-y-0 left-0 z-40 -translate-x-full md:translate-x-0 transition-all duration-300 ease-in-out"
         data-collapsed="false"
+        data-mobile-open="false"
       >
         <Sidebar />
       </aside>
 
       <!-- Main content -->
-      <main id="main-content" class="flex-1 md:ml-[220px] overflow-y-auto bg-[var(--color-surface-0)] transition-all duration-300 ease-in-out">
+      <main id="main-content" class="flex-1 min-w-0 md:ml-[220px] overflow-y-auto bg-[var(--color-surface-0)] transition-all duration-300 ease-in-out">
         <slot />
         <footer class="border-t border-[var(--color-border)] mt-12 py-6 px-6 text-center text-sm text-[var(--color-text-secondary)]">
+          <nav aria-label="Site" class="flex items-center justify-center gap-4 flex-wrap mb-4 text-[12px]">
+            <a href="/about" class="hover:text-[var(--color-text-primary)] transition-colors">About</a>
+            <a href="/privacy" class="hover:text-[var(--color-text-primary)] transition-colors">Privacy</a>
+            <a href="https://docs.aitmpl.com" class="hover:text-[var(--color-text-primary)] transition-colors">Docs</a>
+            <a href="/llms.txt" class="hover:text-[var(--color-text-primary)] transition-colors">llms.txt</a>
+            <a href="/openapi.json" class="hover:text-[var(--color-text-primary)] transition-colors">API</a>
+            <a href="https://github.com/davila7/claude-code-templates" class="hover:text-[var(--color-text-primary)] transition-colors">GitHub</a>
+          </nav>
           <p class="mb-3">Supported by the open source programs of</p>
           <div class="flex items-center justify-center gap-6 flex-wrap">
             <a href="https://vercel.com/open-source-program" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 hover:text-[var(--color-text-primary)] transition-colors">
-              <img src="https://cdn.simpleicons.org/vercel/currentColor" alt="Vercel" class="h-5 w-5" />
+              <img src="https://cdn.simpleicons.org/vercel/ffffff" alt="Vercel" class="h-5 w-5 oss-icon" />
               <span>Vercel</span>
             </a>
             <a href="https://neon.tech/open-source" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 hover:text-[var(--color-text-primary)] transition-colors">
@@ -114,13 +151,20 @@ const schemaData = JSON.stringify({
               <span>Neon</span>
             </a>
             <a href="https://claude.com/contact-sales/claude-for-oss" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 hover:text-[var(--color-text-primary)] transition-colors">
-              <img src="https://cdn.simpleicons.org/anthropic/currentColor" alt="Claude" class="h-5 w-5" />
+              <img src="https://cdn.simpleicons.org/anthropic/ffffff" alt="Claude" class="h-5 w-5 oss-icon" />
               <span>Claude</span>
             </a>
           </div>
         </footer>
       </main>
     </div>
+
+    <script>
+      // WebMCP tools (no-op unless the browser supports document.modelContext
+      // and PUBLIC_WEBMCP_ENABLED=true at build time).
+      import { initWebMCP } from '../lib/webmcp';
+      initWebMCP();
+    </script>
 
     <script>
       // Sidebar collapse functionality
@@ -240,12 +284,66 @@ const schemaData = JSON.stringify({
 
       // Initialize on load
       initSidebarCollapse();
-      
+
       // Re-initialize on navigation (for SPA-like behavior)
       document.addEventListener('astro:page-load', initSidebarCollapse);
+
+      // Mobile sidebar drawer (separate from the desktop collapse above —
+      // on mobile the sidebar is hidden off-screen via -translate-x-full
+      // and slides in as an overlay instead of shrinking to icons).
+      function openMobileSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        if (!sidebar || !overlay) return;
+        sidebar.classList.remove('-translate-x-full');
+        sidebar.dataset.mobileOpen = 'true';
+        overlay.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeMobileSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        if (!sidebar || !overlay) return;
+        sidebar.classList.add('-translate-x-full');
+        sidebar.dataset.mobileOpen = 'false';
+        overlay.classList.add('hidden');
+        document.body.style.overflow = '';
+      }
+
+      // @ts-ignore — called from the inline onclick in TopBar.astro
+      window.toggleSidebar = function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        if (!sidebar) return;
+        if (sidebar.dataset.mobileOpen === 'true') {
+          closeMobileSidebar();
+        } else {
+          openMobileSidebar();
+        }
+      };
+
+      function initMobileSidebar() {
+        const overlay = document.getElementById('sidebar-overlay');
+        overlay?.addEventListener('click', closeMobileSidebar);
+
+        // Close the drawer after navigating to a page (mobile only)
+        document.getElementById('sidebar')?.addEventListener('click', (e) => {
+          const link = (e.target as HTMLElement).closest('a');
+          if (link && window.innerWidth < 768) {
+            closeMobileSidebar();
+          }
+        });
+
+        // Close if resizing up to desktop width while open
+        window.addEventListener('resize', () => {
+          if (window.innerWidth >= 768) closeMobileSidebar();
+        });
+      }
+
+      initMobileSidebar();
     </script>
 
-    <!-- Single Clerk island for auth — shared React instance with all Astro islands -->
-    <ClerkIsland client:load />
+    <!-- Single Clerk island for auth — idle so it doesn't block first paint -->
+    <ClerkIsland client:idle />
   </body>
 </html>

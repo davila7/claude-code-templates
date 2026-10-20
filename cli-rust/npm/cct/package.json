@@ -1,0 +1,40 @@
+{
+  "name": "claude-code-templates",
+  "version": "0.1.0",
+  "description": "Setup Claude Code configurations and install components (Rust core)",
+  "bin": {
+    "cct": "bin/cct.js",
+    "claude-code-templates": "bin/cct.js",
+    "claude-config": "bin/cct.js",
+    "claude-init": "bin/cct.js",
+    "claude-setup": "bin/cct.js",
+    "create-claude-config": "bin/cct.js"
+  },
+  "files": [
+    "bin/cct.js"
+  ],
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/davila7/claude-code-templates.git"
+  },
+  "license": "MIT",
+  "optionalDependencies": {
+    "@davila7/cct-darwin-arm64": "0.1.0",
+    "@davila7/cct-darwin-x64": "0.1.0",
+    "@davila7/cct-linux-x64": "0.1.0",
+    "@davila7/cct-linux-arm64": "0.1.0",
+    "@davila7/cct-win32-x64": "0.1.0"
+  }
+}

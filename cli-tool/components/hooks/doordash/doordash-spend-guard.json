@@ -1,0 +1,16 @@
+{
+  "description": "Enforce the dd-guard spending gate for DoorDash CLI (dd-cli). Denies raw 'dd-cli order checkout-url' and 'dd-cli cart add-items' Bash calls that bypass the dd-guard.sh wrapper (installed by the doordash-spend-guard skill), and denies command-line writes to the policy file limits.json, which must only change through the interactive /doordash-budget command. Deterministic budget enforcement for agent-driven food ordering: a budget in a prompt is advisory, an exit-2 hook is not.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/doordash-spend-guard.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

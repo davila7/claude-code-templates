@@ -1,0 +1,1 @@
+{"content": "{\n  \"description\": \"Override the default Claude model with a custom or alternative model configuration. Useful for testing new model versions or using organization-specific model deployments.\",\n  \"model\": \"claude-sonnet-4-6\",\n  \"env\": {\n    \"ANTHROPIC_SMALL_FAST_MODEL\": \"claude-haiku-4-5-20251001\"\n  }\n}"}

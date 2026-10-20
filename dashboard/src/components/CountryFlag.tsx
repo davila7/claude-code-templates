@@ -144,6 +144,16 @@ const FLAG_DATA: Record<string, (maskId: string) => React.ReactNode> = {
       </g>
     </>
   ),
+  TR: (m) => (
+    <>
+      <mask id={m}><circle cx="256" cy="256" r="256" fill="#fff"/></mask>
+      <g mask={`url(#${m})`}>
+        <path fill="#d80027" d="M0 0h512v512H0z"/>
+        <path fill="#eee" d="M199.2 155.4a100.6 100.6 0 1 0 21.6 198.3 122.8 122.8 0 1 1 0-197 100.3 100.3 0 0 0-21.6-1.3z"/>
+        <path fill="#eee" d="m294.3 202.5 8 34.7 34.8-3.9-27.9 21.8 17.9 29.8-32.2-13.9-13 33 -4.9-35-34.8 4.9 27.9-22.7-17.9-28.8 32.2 12.9z"/>
+      </g>
+    </>
+  ),
   MX: (m) => (
     <>
       <mask id={m}><circle cx="256" cy="256" r="256" fill="#fff"/></mask>

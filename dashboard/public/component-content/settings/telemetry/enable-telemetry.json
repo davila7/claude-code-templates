@@ -1,0 +1,1 @@
+{"content": "{\n  \"description\": \"Enable Claude Code telemetry for usage analytics and improvements.\",\n  \"env\": {\n    \"CLAUDE_CODE_ENABLE_TELEMETRY\": \"1\"\n  }\n}"}

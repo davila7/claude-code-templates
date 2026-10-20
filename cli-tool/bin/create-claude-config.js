@@ -1,45 +1,12 @@
 #!/usr/bin/env node
 
-const { program } = require('commander');
+const { program, Option } = require('commander');
 const chalk = require('chalk');
-const boxen = require('boxen');
 const { createClaudeConfig } = require('../src/index');
+const { showBanner } = require('../src/tui');
+const { captureCliError } = require('../src/error-reporting');
 
 const pkg = require('../package.json');
-
-const title = 'Claude Code Templates';
-const subtitle = 'Your starting point for Claude Code projects';
-
-const colorGradient = ['#EA580C', '#F97316', '#FB923C', '#FDBA74', '#FED7AA', '#FFEBD6'];
-
-function colorizeTitle(text) {
-  const chars = text.split('');
-  const steps = colorGradient.length;
-  return chars
-    .map((char, i) => {
-      const color = colorGradient[i % steps];
-      return chalk.hex(color)(char);
-    })
-    .join('');
-}
-
-function showBanner() {
-  console.clear();
-  console.log(chalk.hex('#F97316')('════════════════════════════════════════════════════════════════'));
-  console.log('\n');
-  console.log('       🔮 ' + colorizeTitle(title));
-  console.log('\n');
-  console.log('       ' + chalk.hex('#FDBA74')(subtitle));
-  console.log('\n');
-  console.log(chalk.hex('#F97316')('════════════════════════════════════════════════════════════════\n'));
-
-  console.log(
-    chalk.hex('#D97706')('🚀 Setup Claude Code for any project language 🚀') +
-    chalk.gray(`\n                             v${pkg.version}\n\n`) +
-    chalk.blue('🌐 Templates: ') + chalk.underline('https://aitmpl.com') + '\n' +
-    chalk.blue('📖 Documentation: ') + chalk.underline('https://docs.aitmpl.com') + '\n'
-  );
-}
 
 program
   .name('create-claude-config')
@@ -71,6 +38,9 @@ program
   .option('--setting <setting>', 'install specific setting component (supports comma-separated values)')
   .option('--hook <hook>', 'install specific hook component (supports comma-separated values)')
   .option('--skill <skill>', 'install specific skill component (supports comma-separated values)')
+  .option('--loop <loop>', 'install specific loop component and its referenced components (supports comma-separated values)')
+  .option('--mod <mod>', 'install specific Claude Mod (function-hooks plugin) as a local plugin (supports comma-separated values)')
+  .addOption(new Option('--function-hook <mod>', 'alias of --mod (kept for older docs)').hideHelp())
   .option('--workflow <workflow>', 'install workflow from hash (#hash) OR workflow YAML (base64 encoded) when used with --agent/--command/--mcp')
   .option('--prompt <prompt>', 'execute the provided prompt in Claude Code after installation or in sandbox')
   .option('--create-agent <agent>', 'create a global agent accessible from anywhere (e.g., customer-support)')
@@ -85,17 +55,23 @@ program
   .action(async (options) => {
     try {
       // Only show banner for non-agent-list commands
+      // Component installs print their own one-line header (src/install-ui.js)
+      const isComponentInstall = !options.sandbox && !options.studio &&
+                                 (options.agent || options.command || options.mcp || options.setting ||
+                                  options.hook || options.skill || options.loop || options.mod || options.functionHook);
       const isQuietCommand = options.listAgents || 
                             options.removeAgent || 
-                            options.updateAgent;
+                            options.updateAgent ||
+                            isComponentInstall;
       
       if (!isQuietCommand) {
-        showBanner();
+        showBanner(pkg.version);
       }
       
       await createClaudeConfig(options);
     } catch (error) {
       console.error(chalk.red('Error:'), error.message);
+      await captureCliError(error, { command: 'createClaudeConfig' });
       process.exit(1);
     }
   });

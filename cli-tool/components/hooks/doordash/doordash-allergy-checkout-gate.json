@@ -1,0 +1,16 @@
+{
+  "description": "Deterministic allergy tripwire for DoorDash CLI (dd-cli) checkouts. Before any 'dd-cli order checkout-url' (direct or via the dd-guard wrapper) it verifies that a fresh vetted-cart dump exists for that cart (written by the doordash-allergy-shield skill after vetting) and independently re-greps the dump against the anaphylaxis-severity allergens in the user's dietary profile plus their hidden-source synonyms (satay->peanut, aioli->egg, ponzu->soy/fish). Blocks with exit 2 when the dump is missing, stale (older than the last cart mutation), or contains a match. Also timestamps cart mutations so staleness is verifiable. A tripwire against agent mistakes, not medical-grade protection.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/doordash-allergy-checkout-gate.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

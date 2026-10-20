@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "livetennisapi": {
+      "description": "Real-time and historical tennis data for LLM agents — live scores, match state (server, break point, retirement/walkover), players, rankings, fixtures, head-to-head and the 1968-2022 results archive across ATP, WTA, Challenger, ITF and juniors. Free tier, no card: https://livetennisapi.com/subscribe/free",
+      "command": "npx",
+      "args": ["-y", "livetennisapi-mcp"],
+      "env": {
+        "LIVETENNISAPI_KEY": "YOUR_LIVE_TENNIS_API_KEY"
+      }
+    }
+  }
+}

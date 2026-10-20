@@ -1,0 +1,1 @@
+{"content": "{\n  \"mcpServers\": {\n    \"5dive\": {\n      \"description\": \"Model Context Protocol (stdio) server for 5dive. Exposes the 5dive agent-fleet CLI (tasks, agents, digest) as MCP tools.\",\n      \"command\": \"npx\",\n      \"args\": [\"-y\", \"@5dive/mcp\"]\n    }\n  }\n}\n"}

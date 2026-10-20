@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { listRepos, createPR, type GitHubRepo, type PRResult } from '../lib/github-api';
-import type { CollectionItem, ComponentsData, Component } from '../lib/types';
-import { COMPONENTS_JSON_URL } from '../lib/constants';
+import type { CollectionItem } from '../lib/types';
+import { fetchComponentContentData } from '../lib/data';
 
 type Step = 'connect' | 'select-repo' | 'creating' | 'done' | 'error';
 
@@ -21,52 +21,74 @@ function cleanPath(path: string): string {
   return path?.replace(/\.(md|json)$/, '') ?? '';
 }
 
-// Map collection items to file paths + content
-function buildFileMap(
-  items: CollectionItem[],
-  componentsData: ComponentsData
-): Record<string, string> {
+// A path inside a plugin directory: relative, forward slashes, no "." / ".." segments, no control chars.
+function isSafeRelativePath(rel: string): boolean {
+  if (!rel || rel.length > 512 || rel.startsWith('/') || rel.includes('\\') || /[\u0000-\u001f]/.test(rel)) return false;
+  return rel.split('/').every((seg) => seg !== '' && seg !== '.' && seg !== '..');
+}
+
+// Map collection items to file paths + content.
+// Content lives in per-component files (/component-content/{type}/{slug}.json),
+// not in the index, so we fetch each item's content on demand.
+async function buildFileMap(
+  items: CollectionItem[]
+): Promise<Record<string, string>> {
   const files: Record<string, string> = {};
 
-  for (const item of items) {
-    const type = pluralType(item.component_type);
-    const components = (componentsData as unknown as Record<string, Component[]>)[type] ?? [];
-    const cleanItemPath = cleanPath(item.component_path);
+  await Promise.all(
+    items.map(async (item) => {
+      // "function-hook" was renamed to "mod" (same slugs), so a collection saved before the rename still sends
+      const componentType = item.component_type === 'function-hook' || item.component_type === 'function-hooks' ? 'mod' : item.component_type;
+      const type = pluralType(componentType);
+      const cleanItemPath = cleanPath(item.component_path);
 
-    const match = components.find((c) => {
-      const cleanCompPath = cleanPath(c.path);
-      return cleanCompPath === cleanItemPath || cleanCompPath === item.component_path;
-    });
+      const contentData = await fetchComponentContentData(componentType, cleanItemPath);
+      const content = contentData.content;
+      if (!content) return;
 
-    if (!match?.content) continue;
+      const name = item.component_name?.replace(/\.(md|json)$/, '') ?? '';
 
-    const name = item.component_name?.replace(/\.(md|json)$/, '') ?? '';
-
-    switch (type) {
-      case 'agents':
-        files[`.claude/agents/${name}.md`] = match.content;
-        break;
-      case 'commands':
-        files[`.claude/commands/${name}.md`] = match.content;
-        break;
-      case 'skills': {
-        // Skills may have multiple files; content is the main SKILL.md
-        const skillPath = cleanItemPath.replace(/^[^/]+\//, '');
-        files[`.claude/skills/${skillPath}/SKILL.md`] = match.content;
-        break;
+      switch (type) {
+        case 'loops':
+          files[`.claude/loops/${name}.md`] = content;
+          break;
+        case 'mods': {
+          // A mod is a complete plugin directory (Anthropic's mods/ layout); the
+          // content file carries every text file of it, written verbatim under
+          // .claude/skills/<name>/ — the same place the CLI installs it.
+          for (const [rel, text] of Object.entries(contentData.files ?? {})) {
+            // only a plain relative path may land in the plugin directory: no traversal, no absolute paths
+            if (!isSafeRelativePath(rel)) throw new Error(`mod ${name}: refusing file path "${rel}"`);
+            files[`.claude/skills/${name}/${rel}`] = text;
+          }
+          files[`.claude/skills/${name}/README.md`] = content;
+          break;
+        }
+        case 'agents':
+          files[`.claude/agents/${name}.md`] = content;
+          break;
+        case 'commands':
+          files[`.claude/commands/${name}.md`] = content;
+          break;
+        case 'skills': {
+          // Skills may have multiple files; content is the main SKILL.md
+          const skillPath = cleanItemPath.replace(/^[^/]+\//, '');
+          files[`.claude/skills/${skillPath}/SKILL.md`] = content;
+          break;
+        }
+        case 'hooks':
+          files[`.claude/hooks/${name}.json`] = content;
+          break;
+        case 'settings':
+          // Settings content is JSON that should be merged into settings.json
+          files[`.claude/settings/${name}.json`] = content;
+          break;
+        case 'mcps':
+          files[`.mcp-components/${name}.json`] = content;
+          break;
       }
-      case 'hooks':
-        files[`.claude/hooks/${name}.json`] = match.content;
-        break;
-      case 'settings':
-        // Settings content is JSON that should be merged into settings.json
-        files[`.claude/settings/${name}.json`] = match.content;
-        break;
-      case 'mcps':
-        files[`.mcp-components/${name}.json`] = match.content;
-        break;
-    }
-  }
+    })
+  );
 
   return files;
 }
@@ -156,12 +178,8 @@ export default function SendToRepoModal({ items, collectionName, onClose }: Prop
     setStep('creating');
 
     try {
-      // Fetch component content
-      const res = await fetch(COMPONENTS_JSON_URL);
-      if (!res.ok) throw new Error('Failed to load components data');
-      const componentsData: ComponentsData = await res.json();
-
-      const files = buildFileMap(items, componentsData);
+      // Fetch per-component content on demand and assemble the PR file map.
+      const files = await buildFileMap(items);
 
       if (Object.keys(files).length === 0) {
         throw new Error('No component content found to include in PR');

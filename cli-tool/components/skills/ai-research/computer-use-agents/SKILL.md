@@ -256,7 +256,7 @@ class AnthropicComputerUse:
 
     def __init__(self):
         self.client = Anthropic()
-        self.model = "claude-sonnet-4-20250514"  # Best for computer use
+        self.model = "claude-sonnet-4-6"  # Best for computer use
         self.screen_size = (1280, 800)
 
     def get_tools(self) -> list:

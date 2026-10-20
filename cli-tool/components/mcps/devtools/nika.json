@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "nika": {
+      "description": "Read-only oracle for Nika AI workflows (.nika.yaml): validate a workflow, get findings explained with fix guidance, browse schema and examples, and see an honest cost estimate — all before a single token is spent. No execution and no mutation over MCP by design. Requires the nika binary (brew install supernovae-st/tap/nika).",
+      "command": "nika",
+      "args": ["mcp"]
+    }
+  }
+}

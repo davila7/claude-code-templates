@@ -1,0 +1,368 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Claude Code Templates catalog API",
+    "version": "1.0.0",
+    "summary": "Read-only catalog of Claude Code components on aitmpl.com.",
+    "description": "Static JSON files that make up the aitmpl.com catalog of Claude Code components (agents, slash commands, skills, hooks, MCP server configurations, settings, loops and mods). Every endpoint is a plain GET with no authentication and CORS enabled; responses are cached at the edge for up to 24 hours. To install a component, run `npx claude-code-templates@latest --{type} {category}/{name}` (for example `--agent development-team/frontend-developer`). Hooks, MCP servers and mods run code locally: read a component's content before installing it.",
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    },
+    "contact": {
+      "name": "Claude Code Templates",
+      "url": "https://github.com/davila7/claude-code-templates/issues"
+    }
+  },
+  "externalDocs": {
+    "description": "Overview for AI agents",
+    "url": "https://www.aitmpl.com/llms.txt"
+  },
+  "servers": [
+    {
+      "url": "https://www.aitmpl.com"
+    }
+  ],
+  "security": [],
+  "tags": [
+    {
+      "name": "catalog",
+      "description": "Component listings and search."
+    },
+    {
+      "name": "stats",
+      "description": "Counts and download statistics."
+    }
+  ],
+  "paths": {
+    "/search-index.json": {
+      "get": {
+        "operationId": "getSearchIndex",
+        "summary": "Search index of every component",
+        "description": "Returns every component in the catalog with its type, name, path, category and description. Filter it client-side to search. The component's install path is `path` without its `.md`/`.json` extension.",
+        "tags": [
+          "catalog"
+        ],
+        "responses": {
+          "200": {
+            "description": "All components.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SearchEntry"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/components/{type}.json": {
+      "get": {
+        "operationId": "listComponentsByType",
+        "summary": "List the components of one type",
+        "description": "Returns the catalog entries of one component type, including download counts. Does not include file contents; use getComponentContent for that.",
+        "tags": [
+          "catalog"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ComponentType"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Components of the requested type.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Component"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/component-content/{type}/{category}/{name}.json": {
+      "get": {
+        "operationId": "getComponentContent",
+        "summary": "Get a component's full content",
+        "description": "Returns the file a component installs (Markdown with frontmatter, or JSON for hooks, MCPs and settings). Mods also include every file of the plugin directory in `files`. `category` and `name` come from the component's `path` without its extension.",
+        "tags": [
+          "catalog"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ComponentType"
+          },
+          {
+            "name": "category",
+            "in": "path",
+            "required": true,
+            "description": "Component category, the first segment of its path (e.g. `development-team`).",
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9._-]+$"
+            }
+          },
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "description": "Component name, the last segment of its path without extension (e.g. `frontend-developer`).",
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9._-]+$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The component's content.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComponentContent"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/counts.json": {
+      "get": {
+        "operationId": "getComponentCounts",
+        "summary": "Number of components per type",
+        "description": "Returns an object mapping each component type to the number of components of that type.",
+        "tags": [
+          "stats"
+        ],
+        "responses": {
+          "200": {
+            "description": "Counts per type.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/trending-data.json": {
+      "get": {
+        "operationId": "getTrendingData",
+        "summary": "Download statistics and trending components",
+        "description": "Returns global download totals, top countries and the most downloaded components over recent periods.",
+        "tags": [
+          "stats"
+        ],
+        "responses": {
+          "200": {
+            "description": "Trending data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrendingData"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "ComponentType": {
+        "name": "type",
+        "in": "path",
+        "required": true,
+        "description": "Component type, plural.",
+        "schema": {
+          "$ref": "#/components/schemas/ComponentType"
+        }
+      }
+    },
+    "schemas": {
+      "ComponentType": {
+        "type": "string",
+        "enum": [
+          "agents",
+          "commands",
+          "skills",
+          "hooks",
+          "mcps",
+          "settings",
+          "loops",
+          "mods",
+          "sandbox"
+        ]
+      },
+      "SearchEntry": {
+        "type": "object",
+        "required": [
+          "type",
+          "name",
+          "path"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Component type, singular (e.g. `agent`)."
+          },
+          "name": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string",
+            "description": "`{category}/{name}` plus file extension."
+          },
+          "category": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "Component": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SearchEntry"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "author": {
+                "type": "string"
+              },
+              "repo": {
+                "type": "string"
+              },
+              "version": {
+                "type": "string"
+              },
+              "license": {
+                "type": "string"
+              },
+              "keywords": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "downloads": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        ]
+      },
+      "ComponentContent": {
+        "type": "object",
+        "required": [
+          "content"
+        ],
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "The component file as installed."
+          },
+          "files": {
+            "type": "object",
+            "description": "Mods only: every text file of the plugin, keyed by relative path.",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "TrendingData": {
+        "type": "object",
+        "properties": {
+          "lastUpdated": {
+            "type": "string"
+          },
+          "globalStats": {
+            "type": "object",
+            "properties": {
+              "totalComponents": {
+                "type": "integer"
+              },
+              "totalDownloads": {
+                "type": "integer"
+              },
+              "monthlyDownloads": {
+                "type": "integer"
+              },
+              "weeklyDownloads": {
+                "type": "integer"
+              },
+              "todayDownloads": {
+                "type": "integer"
+              },
+              "totalCountries": {
+                "type": "integer"
+              }
+            }
+          },
+          "topCountries": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "trending": {
+            "type": "object"
+          },
+          "chartData": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "responses": {
+      "NotFound": {
+        "description": "No such file. The body is the site's HTML 404 page.",
+        "content": {
+          "text/html": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

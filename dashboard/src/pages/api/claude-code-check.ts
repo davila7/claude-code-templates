@@ -2,6 +2,7 @@ import type { APIRoute } from 'astro';
 import { getNeonClient } from '../../lib/api/neon';
 import { corsResponse, jsonResponse } from '../../lib/api/cors';
 import { parseVersionChangelog, formatForDiscord, generateSummary } from '../../lib/api/changelog-parser';
+import { captureApiError } from '../../lib/api/error-tracking';
 
 const NPM_PACKAGE = '@anthropic-ai/claude-code';
 const CHANGELOG_URL = 'https://raw.githubusercontent.com/anthropics/claude-code/main/CHANGELOG.md';
@@ -21,7 +22,7 @@ async function sendToDiscord(
   formatted: ReturnType<typeof formatForDiscord>,
   summary: ReturnType<typeof generateSummary>,
 ) {
-  const webhookUrl = import.meta.env.DISCORD_WEBHOOK_URL_CHANGELOG || import.meta.env.DISCORD_WEBHOOK_URL;
+  const webhookUrl = import.meta.env.DISCORD_WEBHOOK_URL_CHANGELOG || process.env.DISCORD_WEBHOOK_URL_CHANGELOG || import.meta.env.DISCORD_WEBHOOK_URL || process.env.DISCORD_WEBHOOK_URL;
 
   if (!webhookUrl) {
     throw new Error('Discord webhook URL not configured');
@@ -167,21 +168,21 @@ async function handleCheck() {
       console.log(`Version saved to database (ID: ${versionId})`);
     }
 
-    for (const change of parsed.changes) {
-      await sql`
-        INSERT INTO claude_code_changes (
-          version_id,
-          change_type,
-          description,
-          category
-        ) VALUES (
-          ${versionId},
-          ${change.type},
-          ${change.description},
-          ${change.category}
-        )
-      `;
-    }
+    // One batched statement instead of one query per change: each Neon HTTP query
+    // is a Workers subrequest, and a long changelog exceeded the per-request
+    // limit before reaching Discord. The delete keeps retries idempotent.
+    await sql.transaction([
+      sql`DELETE FROM claude_code_changes WHERE version_id = ${versionId}`,
+      sql`
+        INSERT INTO claude_code_changes (version_id, change_type, description, category)
+        SELECT ${versionId}, t.change_type, t.description, t.category
+        FROM unnest(
+          ${parsed.changes.map((c) => c.type)}::text[],
+          ${parsed.changes.map((c) => c.description)}::text[],
+          ${parsed.changes.map((c) => c.category)}::text[]
+        ) AS t(change_type, description, category)
+      `,
+    ]);
     console.log(`Saved ${parsed.changes.length} individual changes`);
 
     console.log('Sending Discord notification...');
@@ -197,7 +198,7 @@ async function handleCheck() {
         response_body
       ) VALUES (
         ${versionId},
-        ${import.meta.env.DISCORD_WEBHOOK_URL_CHANGELOG || import.meta.env.DISCORD_WEBHOOK_URL},
+        ${import.meta.env.DISCORD_WEBHOOK_URL_CHANGELOG || process.env.DISCORD_WEBHOOK_URL_CHANGELOG || import.meta.env.DISCORD_WEBHOOK_URL || process.env.DISCORD_WEBHOOK_URL},
         ${JSON.stringify(discordResult.payload)},
         ${discordResult.status},
         ${'Success'}
@@ -237,6 +238,8 @@ async function handleCheck() {
   } catch (error: unknown) {
     const err = error as Error;
     console.error('Error:', err);
+
+    await captureApiError(err, { route: '/api/claude-code-check' });
 
     try {
       const sql = getNeonClient();

@@ -1,0 +1,1 @@
+{"content": "{\n  \"description\": \"Deny access to sensitive files like environment variables and secrets.\",\n  \"permissions\": {\n    \"deny\": [\n      \"Read(./.env)\",\n      \"Read(./.env.*)\",\n      \"Read(./secrets/**)\",\n      \"Read(./config/credentials.json)\"\n    ]\n  }\n}"}

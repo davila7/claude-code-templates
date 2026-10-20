@@ -9,18 +9,33 @@ This file contains the "command catalog" for the bundled speech generation CLI. 
 
 Real API calls require network access + `OPENAI_API_KEY`. `--dry-run` does not.
 
+OpenAI remains the default workflow. When the user explicitly selects Atlas Cloud,
+use `scripts/atlas_text_to_speech.py`; it has the same three subcommands, requires
+`ATLASCLOUD_API_KEY` for live calls, and needs no third-party Python package.
+
 ## Quick start (works from any repo)
 Set a stable path to the skill CLI (default `CODEX_HOME` is `~/.codex`):
 
 ```
 export CODEX_HOME="${CODEX_HOME:-$HOME/.codex}"
 export TTS_GEN="$CODEX_HOME/skills/speech/scripts/text_to_speech.py"
+export ATLAS_TTS_GEN="$CODEX_HOME/skills/speech/scripts/atlas_text_to_speech.py"
 ```
 
 Dry-run (no API call; no network required; does not require the `openai` package):
 
 ```
 python "$TTS_GEN" speak --input "Test" --dry-run
+```
+
+Atlas Cloud dry-run:
+
+```
+python "$ATLAS_TTS_GEN" speak \
+  --input "Test" \
+  --voice eve \
+  --language auto \
+  --dry-run
 ```
 
 Generate (requires `OPENAI_API_KEY` + network):
@@ -41,9 +56,11 @@ python "$TTS_GEN" speak --input "Hello" --voice cedar --out speech.mp3
 ```
 
 ## Guardrails (important)
-- Use `python "$TTS_GEN" ...` (or equivalent full path) for all TTS work.
+- Use `python "$TTS_GEN" ...` (or equivalent full path) for the default OpenAI workflow.
+- Use `python "$ATLAS_TTS_GEN" ...` only after the user selects Atlas Cloud.
+- Atlas generation POSTs are never retried. Its prediction GET polling is finite.
+- Atlas output downloads never receive the API key and reject private-network URLs.
 - Do **not** create one-off runners (e.g., `gen_audio.py`) unless the user explicitly asks.
-- **Never modify** `scripts/text_to_speech.py`. If something is missing, ask the user before doing anything else.
 
 ## Defaults (unless overridden by flags)
 - Model: `gpt-4o-mini-tts-2025-12-15`
@@ -51,6 +68,9 @@ python "$TTS_GEN" speak --input "Hello" --voice cedar --out speech.mp3
 - Response format: `mp3`
 - Speed: `1.0`
 - Batch rpm cap: `50`
+
+Atlas Cloud defaults are model `xai/tts-v1`, multilingual voice `eve`, language
+`auto`, codec `mp3`, 2-second polling, and at most 120 polls.
 
 ## Input limits
 - Input text must be <= 4096 characters per request.
@@ -96,4 +116,5 @@ Notes:
 
 ## See also
 - API parameter quick reference: `references/audio-api.md`
+- Atlas Cloud workflow: `references/atlas-cloud.md`
 - Instruction patterns and examples: `references/voice-directions.md`

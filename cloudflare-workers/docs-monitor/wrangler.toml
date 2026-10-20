@@ -34,6 +34,12 @@ id = "a1cee9792e9c4d3ba3e728b0e07eed06"
 # wrangler secret put TELEGRAM_CHAT_ID
 # wrangler secret put TRIGGER_SECRET
 
+# Optional (error tracking):
+# - SENTRY_DSN: DSN from the "aitmpl-workers" Sentry project. Also configure a
+#   Cron Monitor in Sentry with slug "docs-monitor" to get alerted if this
+#   check stops running entirely.
+# wrangler secret put SENTRY_DSN
+
 # Optional: Route configuration if you want a custom domain
 # [routes]
 # pattern = "docs-monitor.yourdomain.com/*"

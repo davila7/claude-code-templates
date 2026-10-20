@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "agentplat-docs": {
+      "description": "Read-only AgentPlat documentation MCP for Agent Rooms, Agent Mesh, governed multi-agent runtimes, inference control, trust, and evidence boundaries.",
+      "command": "npx",
+      "args": ["-y", "@agentplat/mcp-docs"]
+    }
+  }
+}

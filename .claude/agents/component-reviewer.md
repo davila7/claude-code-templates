@@ -1,6 +1,6 @@
 ---
 name: component-reviewer
-description: Expert component reviewer for Claude Code Templates. Use PROACTIVELY when adding or modifying components in cli-tool/components/ directory (agents, commands, MCPs, hooks, settings, skills). Validates format, required fields, naming conventions, and security.
+description: Expert component reviewer for Claude Code Templates. Use PROACTIVELY when adding or modifying components in cli-tool/components/ directory (agents, commands, MCPs, hooks, settings, skills, loops). Validates format, required fields, naming conventions, and security.
 tools: Read, Grep, Glob, Bash
 model: sonnet
 ---
@@ -264,6 +264,59 @@ skills/{category}/{skill-name}/
 
 ---
 
+### 7. LOOPS (cli-tool/components/loops/)
+
+**Format**: Markdown (`.md`) with YAML frontmatter
+
+A loop is an autonomous agentic workflow (goal + interval + stop condition) that **references other components** to be installed alongside it.
+
+**Required Fields**:
+- `name`: kebab-case identifier (must match filename)
+- `description`: Clear purpose of the loop
+
+**Recommended Fields**:
+- `category`: Matches the subdirectory (e.g. `engineering`, `evaluation`, `operations`)
+- `interval`: Suggested cadence — a timer (`5m`, `30m`, `24h`), `daily` (for `/schedule` routines), or `on-demand` (for `/goal` loops)
+- `stop-condition`: A verifiable condition that ends the loop
+- `components`: Flat, bracketed list of `type:path` tokens referencing other components
+  - e.g. `components: [agent:documentation/documentation-engineer, command:git-workflow/create-pr, hook:git/conventional-commits]`
+  - Valid `type` values (singular): `agent`, `command`, `skill`, `hook`, `setting`, `mcp`
+  - `path` is `category/name` (no extension), matching the referenced component's location
+- `tags`: Array of keywords
+
+**Content Requirements**:
+- A goal, the suggested schedule, a ready-to-paste `/loop`, `/goal`, or `/schedule` command, iteration steps, an explicit stopping condition / guardrails, and a referenced-components section
+- A budget / anti-spin note is encouraged (loops can run unattended)
+
+**Validation Checklist**:
+- [ ] YAML frontmatter is valid and complete
+- [ ] Name uses kebab-case and matches the filename
+- [ ] Description is clear and specific
+- [ ] `interval` and `stop-condition` are present and sensible
+- [ ] Every `components:` token is `type:path` with a valid singular type
+- [ ] **Every referenced component path resolves to a real file** under `cli-tool/components/{type-plural}/{path}` (agents/commands/loops use `.md`; hooks/settings/mcps use `.json`; skills use `{path}/SKILL.md`)
+- [ ] Destructive loops (branch cleanup, data changes) use a slow interval and explicit guardrails
+- [ ] No hardcoded secrets, no absolute paths
+- [ ] File is in the correct category directory
+
+**Example Structure**:
+```markdown
+---
+name: docs-sweep-loop
+description: Keeps documentation aligned with the codebase and opens a reviewable PR each run.
+category: engineering
+interval: 30m
+stop-condition: All public APIs documented and the docs build passes with no warnings.
+components: [agent:documentation/documentation-engineer, command:git-workflow/create-pr]
+tags: [documentation, automation, loop]
+---
+
+# Docs Sweep Loop
+...
+```
+
+---
+
 ## Security Validation (ALL TYPES)
 
 **CRITICAL: Check for hardcoded secrets**
@@ -399,6 +452,7 @@ The agent should be invoked AUTOMATICALLY for:
 - Any file changes in `cli-tool/components/mcps/`
 - Any file changes in `cli-tool/components/settings/`
 - Any file changes in `cli-tool/components/skills/`
+- Any file changes in `cli-tool/components/loops/`
 
 ---
 

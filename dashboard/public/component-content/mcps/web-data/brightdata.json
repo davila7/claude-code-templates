@@ -1,0 +1,1 @@
+{"content": "{\n  \"mcpServers\": {\n    \"brightdata\": {\n      \"description\": \"Bright Data MCP server providing 60+ tools for web search, scraping, structured data extraction, and browser automation across major platforms\",\n      \"url\": \"https://mcp.brightdata.com/mcp?token=YOUR_BRIGHTDATA_API_TOKEN&pro=1\"\n    }\n  }\n}\n"}
