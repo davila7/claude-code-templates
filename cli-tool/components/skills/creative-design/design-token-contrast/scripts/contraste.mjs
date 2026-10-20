@@ -180,7 +180,7 @@ function sugerir(frente, fondo, minimo) {
   const H = Math.atan2(b, a);
   let mejor = null;
   for (const dir of [-1, 1]) {
-    for (let paso = 1; paso <= 100; paso++) {
+    for (let paso = 1; paso <= 200; paso++) {
       const L2 = L + dir * paso * 0.005;
       if (L2 < 0 || L2 > 1) break;
       let c = C;
