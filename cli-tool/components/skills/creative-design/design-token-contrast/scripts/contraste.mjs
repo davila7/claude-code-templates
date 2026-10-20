@@ -13,7 +13,8 @@
 // Formato de --pares: [{"texto": "--color-texto", "fondo": "--color-fondo", "tipo": "texto"}]
 //   tipo: "texto" (4,5:1), "texto-grande" (3:1, desde 24 px o 18,66 px en negrita), "ui" (3:1,
 //   bordes de campos, íconos, indicador de foco: criterio 1.4.11).
-// Sale con código 1 si algún par falla.
+// Sale con código 1 si algún par falla, y con código 2 si no pudo medir nada o algún par quedó sin
+// medir (un token que no existe o no es un color): un informe incompleto nunca dice «todo cumple».
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -43,19 +44,26 @@ const css = fs.readFileSync(archivo, 'utf8');
 
 // ---------- Lectura de variables por bloque ----------
 // Separamos las variables del tema claro (por defecto) de las de modo oscuro.
+const DECLARACION = /(--[\w-]+)\s*:\s*([^;{}]+)/g;
+// Un selector es de modo oscuro si nombra .dark o [data-theme="dark"] en cualquier posición
+// (.dark, .dark:root, :root.dark, html[data-theme=dark]), salvo dentro de :not(...).
+const esSelectorOscuro = (sel) => /\[data-theme=["']?dark["']?\]|\.dark(?![\w-])/.test(sel.replace(/:not\([^)]*\)/g, ''));
 function leerVariables(texto) {
   const claro = new Map();
   const oscuro = new Map();
-  const sinComentarios = texto.replace(/\/\*[\s\S]*?\*\//g, '');
-  // Bloques de modo oscuro: @media (prefers-color-scheme: dark) { ... } o [data-theme="dark"] / .dark
-  const reOscuro = /@media[^{]*prefers-color-scheme:\s*dark[^{]*\{([\s\S]*?\})\s*\}|(?:\[data-theme=["']?dark["']?\]|\.dark)\s*\{([\s\S]*?)\}/g;
-  let resto = sinComentarios;
-  for (const m of sinComentarios.matchAll(reOscuro)) {
-    const cuerpo = m[1] || m[2] || '';
-    for (const v of cuerpo.matchAll(/(--[\w-]+)\s*:\s*([^;{}]+)/g)) oscuro.set(v[1], v[2].trim());
+  let resto = texto.replace(/\/\*[\s\S]*?\*\//g, '');
+  // 1) @media (prefers-color-scheme: dark) { ... } completo, con todos sus bloques internos.
+  for (const m of resto.matchAll(/@media[^{]*prefers-color-scheme:\s*dark[^{]*\{((?:[^{}]*\{[^{}]*\})*[^{}]*)\}/g)) {
+    for (const v of m[1].matchAll(DECLARACION)) oscuro.set(v[1], v[2].trim());
     resto = resto.replace(m[0], '');
   }
-  for (const v of resto.matchAll(/(--[\w-]+)\s*:\s*([^;{}]+)/g)) claro.set(v[1], v[2].trim());
+  // 2) Bloques cuyo selector es de modo oscuro.
+  for (const m of resto.matchAll(/([^{}]*)\{([^{}]*)\}/g)) {
+    if (!esSelectorOscuro(m[1])) continue;
+    for (const v of m[2].matchAll(DECLARACION)) oscuro.set(v[1], v[2].trim());
+    resto = resto.replace(m[0], '');
+  }
+  for (const v of resto.matchAll(DECLARACION)) claro.set(v[1], v[2].trim());
   return { claro, oscuro };
 }
 
@@ -93,16 +101,26 @@ function hslARgb(h, s, l) {
   return [f(0), f(8), f(4)];
 }
 const num = (t, escala = 1) => (t.trim().endsWith('%') ? parseFloat(t) / 100 : parseFloat(t) / escala);
+// Ángulos de CSS en grados: deg (o sin unidad), rad, grad y turn. «none» vale 0.
+function angulo(t) {
+  const x = parseFloat(t);
+  if (Number.isNaN(x)) return 0;
+  if (/grad$/.test(t)) return x * 0.9;
+  if (/rad$/.test(t)) return x * 180 / Math.PI;
+  if (/turn$/.test(t)) return x * 360;
+  return x;
+}
 
 // Devuelve { r, g, b, a } en 0..1 o null si no se puede interpretar.
 function parsearColor(valor, vars, profundidad = 0) {
   if (!valor || profundidad > 10) return null;
-  let v = valor.trim().toLowerCase();
-  const alias = v.match(/^var\(\s*(--[\w-]+)\s*(?:,\s*(.+))?\)$/);
+  // El nombre dentro de var() distingue mayúsculas, como en el navegador: se busca tal cual.
+  const alias = valor.trim().match(/^var\(\s*(--[\w-]+)\s*(?:,\s*(.+))?\)$/i);
   if (alias) {
     const destino = vars.get(alias[1]);
     return parsearColor(destino ?? alias[2], vars, profundidad + 1);
   }
+  const v = valor.trim().toLowerCase();
   if (v === 'white') return { r: 1, g: 1, b: 1, a: 1 };
   if (v === 'black') return { r: 0, g: 0, b: 0, a: 1 };
   if (v === 'transparent') return { r: 0, g: 0, b: 0, a: 0 };
@@ -121,15 +139,16 @@ function parsearColor(valor, vars, profundidad = 0) {
   m = v.match(/^hsla?\(([^)]+)\)$/);
   if (m) {
     const p = m[1].split(/[\s,/]+/).filter(Boolean);
-    const [r, g, b] = hslARgb(parseFloat(p[0]), num(p[1]), num(p[2]));
+    // Saturación y luminosidad: con % o como número de 0 a 100 (sintaxis moderna).
+    const [r, g, b] = hslARgb(angulo(p[0]), num(p[1], 100), num(p[2], 100));
     return { r, g, b, a: p[3] ? num(p[3]) : 1 };
   }
   m = v.match(/^oklch\(([^)]+)\)$/);
   if (m) {
     const p = m[1].split(/[\s/]+/).filter(Boolean);
     const L = num(p[0]);
-    const C = parseFloat(p[1]);
-    const H = (parseFloat(p[2]) || 0) * Math.PI / 180;
+    const C = p[1].trim().endsWith('%') ? parseFloat(p[1]) / 100 * 0.4 : (parseFloat(p[1]) || 0); // 100% = 0,4
+    const H = angulo(p[2]) * Math.PI / 180;
     const [r, g, b] = oklabARgb(L, C * Math.cos(H), C * Math.sin(H));
     return { r: clamp(r), g: clamp(g), b: clamp(b), a: p[3] ? num(p[3]) : 1, fueraDeGama: [r, g, b].some((x) => x < -0.001 || x > 1.001) };
   }
@@ -157,7 +176,7 @@ function sugerirTodos(frente, fondos, minimo) {
   const H = Math.atan2(b, a);
   let mejor = null;
   for (const dir of [-1, 1]) {
-    for (let paso = 1; paso <= 200; paso++) {
+    for (let paso = 1; ; paso++) { // recorre todo el rango hasta 0 o 1
       const L2 = L + dir * paso * 0.0025;
       if (L2 < 0 || L2 > 1) break;
       let c = C;
@@ -180,7 +199,7 @@ function sugerir(frente, fondo, minimo) {
   const H = Math.atan2(b, a);
   let mejor = null;
   for (const dir of [-1, 1]) {
-    for (let paso = 1; paso <= 200; paso++) {
+    for (let paso = 1; ; paso++) { // recorre todo el rango hasta 0 o 1
       const L2 = L + dir * paso * 0.005;
       if (L2 < 0 || L2 > 1) break;
       let c = C;
@@ -201,16 +220,21 @@ const MINIMOS = { texto: 4.5, 'texto-grande': 3, ui: 3 };
 const esFrente = (n) => /texto|text|foreground|\bfg\b|-fg|contraste?|on-|tinta|ink|titulo|heading|foco|focus|borde-(campo|fuerte|control|input)|border-(input|strong)|icono|icon|enlace|link/.test(n);
 const esFondo = (n) => /fondo|background|\bbg\b|-bg|superficie|surface|base|lienzo|canvas|tarjeta|card|(acento|accent|primario|primary|marca|brand)-(suave|tinte|weak|subtle|light|50|100)/.test(n);
 
+// Un nombre que dice explícitamente que va encima (-foreground, -fg, on-, -texto, -contraste) es
+// frente aunque también nombre un fondo: --color-card-foreground, --color-on-surface.
+const esFrenteExplicito = (n) => /foreground$|-fg$|(^--|-)on-|-(texto|text)$|-contraste?$|-contrast$/.test(n);
+
 function paresPorNombre(colores) {
   const nombres = [...colores.keys()];
-  const frentes = nombres.filter((n) => esFrente(n) && !esFondo(n));
-  const fondos = nombres.filter((n) => esFondo(n));
+  const frentes = nombres.filter((n) => esFrente(n) && (!esFondo(n) || esFrenteExplicito(n)));
+  const fondos = nombres.filter((n) => esFondo(n) && !frentes.includes(n));
   const pares = [];
   for (const f of frentes) {
     const tipo = /foco|focus|borde-|border-|icono|icon/.test(f) ? 'ui' : 'texto';
-    if (/-contraste?$|-on-/.test(f)) {
-      // --color-acento-contraste (o --color-accent-contrast) va sobre --color-acento; --color-on-primary, sobre --color-primary.
-      const candidatos = [f.replace(/-contraste?$/, ''), f.replace('-on-', '-')].filter((n) => colores.has(n) && n !== f);
+    if (/-contraste?$|-on-|-(foreground|fg)$/.test(f)) {
+      // --color-acento-contraste (o --color-accent-contrast) va sobre --color-acento; --color-on-primary,
+      // sobre --color-primary; --color-card-foreground, sobre --color-card.
+      const candidatos = [f.replace(/-contraste?$/, ''), f.replace('-on-', '-'), f.replace(/-(foreground|fg)$/, '')].filter((n) => colores.has(n) && n !== f);
       if (candidatos.length) { pares.push({ texto: f, fondo: candidatos[0], tipo }); continue; }
     }
     for (const b of fondos) pares.push({ texto: f, fondo: b, tipo });
@@ -269,14 +293,16 @@ const { claro, oscuro } = leerVariables(css);
 const resultados = [evaluar(claro, 'tema claro (por defecto)')];
 if (oscuro.size) resultados.push(evaluar(new Map([...claro, ...oscuro]), 'modo oscuro'));
 
-let fallas = 0;
+let fallas = 0, incompletos = 0, medidos = 0;
 console.log(`Archivo: ${archivo}`);
+if (!resultados.some(Boolean)) console.log('\nNo encontré ninguna variable --color-* que pueda leer como color.');
 for (const r of resultados.filter(Boolean)) {
   console.log(`\n== ${r.etiqueta}: ${r.colores} colores leídos ==`);
   if (r.filas.length === 0) console.log('No pude armar pares por nombre. Usa --pares o --todos.');
   const ordenadas = r.filas;
   for (const f of ordenadas) {
-    if (f.error) { console.log(`  ?  ${f.texto} sobre ${f.fondo}: ${f.error}`); continue; }
+    if (f.error) { console.log(`  ?  ${f.texto} sobre ${f.fondo}: ${f.error}`); incompletos++; continue; }
+    medidos++;
     if (op.todos && f.pasa) continue;
     const marca = f.pasa ? 'OK ' : 'NO ';
     console.log(`  ${marca} ${f.ratio.toFixed(2)}:1 (mín. ${f.minimo}) ${f.texto} ${f.frente} sobre ${f.fondo} ${f.fondoHex}${f.nota ? '  [' + f.nota + ']' : ''}`);
@@ -287,7 +313,10 @@ for (const r of resultados.filter(Boolean)) {
   for (const u of r.unicas || []) console.log(`  → Un solo valor para ${u.token} que pasa en sus ${u.fondos} fondos: ${u.sugerencia} (peor caso ${u.peor}:1)`);
   if (r.noLeidos.length) console.log(`  No interpretados: ${r.noLeidos.join(' · ')}`);
 }
-console.log(fallas ? `\n${fallas} pares no llegan al mínimo de WCAG 2.2 AA.` : '\nTodos los pares revisados cumplen WCAG 2.2 AA.');
+if (fallas) console.log(`\n${fallas} pares no llegan al mínimo de WCAG 2.2 AA.`);
+if (incompletos) console.log(`\n${incompletos} pares no se pudieron medir: revisa que esos tokens existan y sean colores.`);
+if (!medidos) console.log('\nNo se midió ningún par: el informe no dice nada sobre tu contraste.');
+else if (!fallas && !incompletos) console.log('\nTodos los pares revisados cumplen WCAG 2.2 AA.');
 console.log('Ojo: esto mide los tokens. Un texto sobre una imagen o un degradado hay que revisarlo en pantalla.');
 if (op.json) fs.writeFileSync(op.json, JSON.stringify(resultados, null, 2));
-process.exit(fallas && !op.todos ? 1 : 0);
+process.exit(fallas && !op.todos ? 1 : (incompletos || !medidos ? 2 : 0));
