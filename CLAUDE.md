@@ -555,9 +555,13 @@ npx astro dev --port 4321   # Dashboard + APIs at http://localhost:4321
 - `dashboard/public/component-content/{type}/{slug}.json` — Full per-component content (incl. markdown body), fetched on demand when a component's detail view or PR flow needs it
 - `dashboard/public/trending-data.json` — Trending/download stats
 
-All of the above are served as static Cloudflare Pages assets with
-`cache-control: public, max-age=86400, stale-while-revalidate=3600` (see
-`dashboard/public/_headers`).
+All of the above are served as static Cloudflare Pages assets. The catalog
+files (`components.json`, `counts.json`, `components/*`, `search-index.json`,
+`component-content/*`) use `max-age=300, stale-while-revalidate=3600`, so a
+deploy reaches browsers within minutes; `trending-data.json` keeps 1 h (see
+`dashboard/public/_headers`). With the old 24 h `max-age` a browser kept a
+stale `components/{type}.json` for a day after a deploy while `counts.json`
+was already new: the sidebar counted a component the grid could not find.
 
 ### Data Flow
 
@@ -642,7 +646,7 @@ Aim for 70%+ test coverage. Test critical paths and error handling.
 
 **Components not updating on website**
 - Run `python scripts/generate_components_json.py` (writes both `docs/components.json` and the split `dashboard/public/` artifacts directly — no manual copy step)
-- Deploy and clear browser cache (artifacts are cached 24h at the edge, see `dashboard/public/_headers`)
+- Deploy, then wait up to 5 min or hard-reload (catalog JSON is browser-cached 5 min, see `dashboard/public/_headers`)
 
 ## Important Notes
 
