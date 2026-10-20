@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "new-term-radar": {
+      "description": "Finds the names of new AI models, products and repositories on X, Hugging Face, GitHub and sitemaps, and builds a keyword table for them: the generic search terms behind each name, sized with Google Ads volume and Google Trends, with prioritize, watch or skip. recent_leads is free; keyword_table and run_radar make paid calls through your AIsa key. Source: https://github.com/zhuyansen/new-term-radar",
+      "command": "uvx",
+      "args": ["--with", "mcp", "new-term-radar", "mcp"],
+      "env": {
+        "AISA_API_KEY": "<your-aisa-api-key>"
+      }
+    }
+  }
+}
