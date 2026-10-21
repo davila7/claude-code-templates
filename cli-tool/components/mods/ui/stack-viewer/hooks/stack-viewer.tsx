@@ -11,9 +11,9 @@
  *
  *   `/stack` opens it (or reads the stack again) · `/stack close` closes it
  *
- * What is loaded comes from the engine (the /context breakdown, the command
- * list, each settings source); where a file sits comes from reading the
- * folders each type installs to. A scope read off files alone is marked `≈`.
+ * What is loaded comes from the engine (the /context breakdown, the agent
+ * listing, the command list, each settings source); where a file sits comes
+ * from reading the folders each type installs to. A scope read off files alone is marked `≈`.
  * It only observes: every hook passes its event on unchanged.
  *
  * Needs Claude Code >= 2.1.287.
@@ -22,8 +22,8 @@
  *   columns: number   width asked for the docked pane (default 84)
  */
 import type { Register, RenderChildren, RenderSurface } from 'claude-code'
-import { KINDS, SCOPE, buildStack, cell, counts, fit, scanFiles } from './stack.ts'
-import type { Facts, Io, Item, Kind, ScopeNode, Section } from './stack.ts'
+import { KINDS, SCOPE, buildStack, cell, counts, fit, readAgentListing, scanFiles } from './stack.ts'
+import type { Facts, Files, Io, Item, Kind, ScopeNode, Section } from './stack.ts'
 
 const PANE = 'stack-viewer'
 const COMMAND = 'stack'
@@ -49,6 +49,11 @@ const toggled = new Set<string>()
 /** MCP server → config scope, as the engine reported it on a call. */
 const mcpSeen: Record<string, string> = {}
 let activeStyle: string | undefined
+/** Agent type → description, from the engine's agent listing (built-ins included). */
+const agentTypes = new Map<string, string>()
+let hasAgentListing = false
+/** What the open pane was built from, to rebuild it when the agent listing arrives. */
+let lastBuild: { files: Files; facts: Facts } | undefined
 
 export const register: Register = (on, options) => {
   const columns = paneColumns(options.columns)
@@ -106,7 +111,7 @@ export const register: Register = (on, options) => {
       })
       const b = usage?.context.breakdown
       const skills = b?.skills
-      sections = buildStack(files, {
+      const facts: Facts = {
         skills: skills?.skillFrontmatter ?? [],
         agents: b?.agents ?? [],
         commands,
@@ -119,7 +124,10 @@ export const register: Register = (on, options) => {
         home: homeDir,
         configDir: configDir ? cfg : undefined,
         cwd,
-      })
+        agentListing: listing(),
+      }
+      lastBuild = { files, facts }
+      sections = buildStack(files, facts)
       header = {
         version: version ? `Claude Code ${version.version}` : '',
         where: cwd.startsWith(homeDir + '/') && homeDir ? `~/${cwd.slice(homeDir.length + 1)}` : cwd,
@@ -149,6 +157,20 @@ export const register: Register = (on, options) => {
   // the output style the engine actually sends, for a style a plugin forces
   on('prompt.compose', async ($, e, next) => {
     if (e.outputStyle) activeStyle = e.outputStyle.name
+    return next(e)
+  })
+
+  // the agent listing is the one place the built-in agent types are named
+  on('prompt.attachment', async ($, e, next) => {
+    if (e.type.startsWith('agent_listing') && !e.agentId) {
+      readAgentListing(e.text, agentTypes)
+      hasAgentListing = true
+      if (lastBuild && isOpen) {
+        lastBuild.facts = { ...lastBuild.facts, agentListing: listing() }
+        sections = buildStack(lastBuild.files, lastBuild.facts)
+        $.ui.invalidate('ui.render')
+      }
+    }
     return next(e)
   })
 
@@ -416,6 +438,10 @@ export const register: Register = (on, options) => {
       </Box>
     )
   })
+}
+
+function listing(): Facts['agentListing'] {
+  return hasAgentListing ? [...agentTypes].map(([name, description]) => ({ name, description })) : undefined
 }
 
 /** The end of a path, cut at the front: `…/scratchpad/demo`. */

@@ -340,6 +340,11 @@ export type Facts = {
   skills: { name: string; source: string; pluginName?: string }[]
   /** Custom agents the Agent tool offers. */
   agents: { agentType: string; source: string }[]
+  /**
+   * Every agent type the Agent tool offers, built-ins included, as the engine's
+   * agent listing names them; undefined until a request has carried one.
+   */
+  agentListing?: { name: string; description: string }[]
   /** Every slash command. */
   commands: { name: string; source: string; plugin?: string; description?: string }[]
   /** MCP tools, by server. */
@@ -529,7 +534,7 @@ function agentsSection(files: Files, f: Facts): Section {
     make('project', '.claude/agents'),
     make('user', '~/.claude/agents'),
     make('plugin', '<plugin>/agents · plugin:agent'),
-    node('builtin', 'ship with Claude Code', [], 'Explore, Plan, general-purpose… (not listed by the mods API)'),
+    builtinAgents(files, f),
   ]
   const other = f.agents.filter(a => !order.includes(scopeOfSource(a.source)) && scopeOfSource(a.source) !== 'builtin')
   if (other.length) scopes.push(node('other', 'reported by the engine', other.map(a => ({ name: a.agentType, status: 'active', detail: a.source }))))
@@ -539,6 +544,40 @@ function agentsSection(files: Files, f: Facts): Section {
     rule: 'Enterprise › CLI flag › Project › User › Plugin on a name clash',
     scopes,
   }
+}
+
+/** Built-in agents: the listed types no agent file, setting or plugin defines. */
+function builtinAgents(files: Files, f: Facts): ScopeNode {
+  if (!f.agentListing) return node('builtin', 'ship with Claude Code', [], 'listed once a message is sent: send one, then refresh')
+  const custom = new Set([...f.agents.map(a => a.agentType), ...files.agents.map(a => a.name)])
+  const items: Item[] = f.agentListing
+    .filter(a => !custom.has(a.name) && !a.name.includes(':'))
+    .map(a => ({ name: a.name, detail: a.description || undefined, status: 'active' }))
+  return node('builtin', 'ship with Claude Code', items)
+}
+
+/**
+ * Folds one agent-listing attachment into `into` (type → description). The
+ * engine sends the full list first, then deltas; a section whose heading says
+ * the types are gone removes them.
+ */
+export function readAgentListing(text: string, into: Map<string, string>): void {
+  let isRemoval = false
+  for (const line of text.split('\n')) {
+    const m = /^- ([^:\s][^:]*?(?::[^:\s]+)?): (.*)$/.exec(line)
+    if (!m) {
+      if (line.trim()) isRemoval = /no longer|removed|unavailable/i.test(line)
+      continue
+    }
+    const name = m[1]!.trim()
+    if (isRemoval) into.delete(name)
+    else into.set(name, firstSentence(m[2]!.replace(/\s*\(Tools: [^)]*\)\s*$/, '')))
+  }
+}
+
+function firstSentence(text: string): string {
+  const m = /^(.+?[.!?])(\s|$)/.exec(text)
+  return (m ? m[1]! : text).trim()
 }
 
 function hooksSection(files: Files, f: Facts): Section {

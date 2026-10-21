@@ -59,6 +59,7 @@ What is **loaded** comes from the engine, so it is what the session really runs:
 
 - skills, custom subagents, MCP tools and memory files from the `/context` breakdown (`$.session.usage({ breakdown })`)
 - slash commands from `$.command.list()`
+- built-in subagents from the agent listing the engine attaches to a request (`prompt.attachment`, `agent_listing_delta`)
 - each settings source as loaded from `$.settings.read({ source })` (hooks, `enabledPlugins`, `outputStyle`, every key)
 - the MCP server's config scope from each MCP tool call (`mcp_server.source`), once the server has been called
 - the output style the engine sends, from `prompt.compose`
@@ -67,7 +68,7 @@ What is **loaded** comes from the engine, so it is what the session really runs:
 
 From MCP config files the mod keeps server **names** only, never their env, headers or arguments. Settings values are shown in one short line: `env` shows variable names, never values, and a settings key whose name looks sensitive (`key`, `token`, `secret`, `auth`, `helper`, `uuid`, `org`…) shows `•••`. Hook commands and URLs are shown with bearer tokens, secret-looking parameters and flags (`token=`, `--api-key=`, `sig=`…) and long opaque strings masked as `•••`. Nothing is written to disk or kept between sessions.
 
-The mods API does not list the built-in subagents (Explore, Plan, general-purpose…), so their scope shows a note instead of items. Nested `.claude/` folders between the working directory and the repository root are not scanned; the engine still reports what loads from them.
+The built-in subagents (Explore, Plan, general-purpose, claude-code-guide…) are read off the engine's agent listing, the reminder that tells the model which agent types it can launch: every type it names that no agent file, setting or plugin defines. The engine sends it with the first message of a session, so until one is sent their scope says so; it fills in on its own when the listing arrives. Nested `.claude/` folders between the working directory and the repository root are not scanned; the engine still reports what loads from them.
 
 ## Controls
 

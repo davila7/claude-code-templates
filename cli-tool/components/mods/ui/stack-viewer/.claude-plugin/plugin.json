@@ -1,6 +1,6 @@
 {
   "name": "stack-viewer",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "A side pane that maps every component your session runs and where it is installed from: skills, subagents, commands, hooks, MCP servers, plugins and mods, settings, memory and output styles. Pick a type in the sidebar to see its scopes as a tree in precedence order (Enterprise, CLI flag, Local, Project, User, Plugin, Built-in) with what each one holds, and which components are active, shadowed by a higher scope, or off.",
   "author": {
     "name": "claude-code-templates",

@@ -1,7 +1,7 @@
 // Run with: claude plugin test ui/stack-viewer
 import { describe, expect, test } from 'claude-code/testing'
 import type { On } from 'claude-code'
-import { buildStack, counts, frontmatterName, mergeSettings, redact, scanFiles, showValue } from '../hooks/stack.ts'
+import { buildStack, counts, frontmatterName, mergeSettings, readAgentListing, redact, scanFiles, showValue } from '../hooks/stack.ts'
 import type { Facts, Files, Io, Section } from '../hooks/stack.ts'
 
 const HOME = '/home/me'
@@ -181,6 +181,31 @@ describe('buildStack', () => {
     expect(item(s, 'user', 'code-reviewer')).toMatchObject({ status: 'shadowed', by: 'project' })
     expect(item(s, 'user', 'researcher')!.status).toBe('active')
     expect(item(s, 'plugin', 'team-tools:code-reviewer')!.status).toBe('active')
+    expect(scopeOf(s, 'builtin').note).toMatch(/send one, then refresh/)
+  })
+
+  test('subagents: built-ins come from the agent listing, minus custom and plugin types', async () => {
+    const types = new Map<string, string>()
+    readAgentListing(
+      [
+        'Available agent types for the Agent tool:',
+        '- claude-code-guide: Use this agent when the user asks about Claude Code. More text. (Tools: Bash, Read)',
+        '- code-reviewer: Reviews code (project) (Tools: All tools)',
+        '- Explore: Read-only search agent. Fast. (Tools: All tools except Edit)',
+        '- Plan: Software architect agent (Tools: All tools)',
+        '- team-tools:code-reviewer: Plugin reviewer (Tools: All tools)',
+        '',
+        'When you launch multiple agents, send them in one message.',
+      ].join('\n'),
+      types,
+    )
+    readAgentListing('The following agent types are no longer available:\n- Plan: gone', types)
+    const listing = [...types].map(([name, description]) => ({ name, description }))
+    const s = section((await stack({ ...FACTS, agentListing: listing })).sections, 'agents')
+    expect(scopeOf(s, 'builtin').items).toEqual([
+      { name: 'claude-code-guide', detail: 'Use this agent when the user asks about Claude Code.', status: 'active' },
+      { name: 'Explore', detail: 'Read-only search agent.', status: 'active' },
+    ])
   })
 
   test('MCP: local beats project beats user; unapproved project servers wait', async () => {
