@@ -5,30 +5,29 @@ A side pane that maps every component your Claude Code session runs and where ea
 ```
 ╭──────────────────────────────────────────────────────────────────────────────╮
 │ ◆ Session stack  Claude Code 2.1.306                                         │
-│ ~/work/app  ● 159 active  ⊘ 7 shadowed  ○ 0 off                              │
+│ ~/work/app   158 active · 7 shadowed · 0 off                                 │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 
- COMPONENTS                 ✦ Skills   22 active · 1 shadowed
-▌✦ 1: Skills         22 ⊘1  Enterprise › User › Project on a name clash · plugin
- ◎ 2: Subagents       4 ⊘1  skills are namespaced, both load
- ❯ 3: Commands       99 ⊘1
- ↯ 4: Hooks           7     ██████████████████████████████████████████████████
- ⇄ 5: MCP servers     3 ⊘2  ■ User 2   ■ Project 2   ■ Plugin 3   ■ Built-in 16
- ◈ 6: Plugins & mods  3
- ⚙ 7: Settings       11 ⊘2  ·  1  Enterprise          —    managed settings dir
- ¶ 8: Memory          2     ▾  2  User                2    ~/.claude/skills
- ✎ 9: Output styles   8     │ ├─ ● deploy
-                            │ └─ ● pdf-tools
- ● active                   ▾  3  Project             2 ⊘1 .claude/skills
- ⊘ shadowed                 │ ├─ ⊘ deploy     shadowed by User
- ○ off                      │ └─ ● release-notes
- ≈ scope read off files     ▾  4  Plugin              3    <plugin>/skills · …
-  1  highest precedence     │ ├─ ● hello-mod:greet
-                            │ ├─ ● team-tools:changelog
-                            │ └─ ● team-tools:pr
-                            ·  5  claude.ai account   —    enabled on claude.ai
-                            ·  6  MCP server          —    skills an MCP server…
-                            ▸  7  Built-in           16    ship with Claude Code
+ COMPONENTS               Skills   21 active · 1 shadowed
+▌1: Skills            21  Enterprise › User › Project on a name clash · plugin
+ 2: Subagents          4  skills are namespaced, both load
+ 3: Commands          99
+ 4: Hooks              7    1  Enterprise            —  managed settings dir
+ 5: MCP servers        3  ▾ 2  User                  2  ~/.claude/skills
+ 6: Plugins & mods     3       deploy
+ 7: Settings          11       pdf-tools
+ 8: Memory             2
+ 9: Output styles      8  ▾ 3  Project               2  .claude/skills
+                               d̶e̶p̶l̶o̶y̶        shadowed by User
+ name  active                  release-notes
+ n̶a̶m̶e̶  shadowed
+ name  off                ▾ 4  Plugin                2  <plugin>/skills · …
+ ≈     read off files          hello-mod:greet
+                               team-tools:changelog
+
+                            5  claude.ai account     —  enabled on claude.ai
+                            6  MCP server            —  skills an MCP server…
+                          ▸ 7  Built-in             16  ship with Claude Code
 
 [ refresh ] [ fold all ] [ close ]
 ```
@@ -37,7 +36,7 @@ Run `/stack` to open it, `/stack refresh` (or running `/stack` again) to read th
 
 ## What it shows
 
-Each type lists every scope it can be installed at, empty ones included, so you can see where a component could live as well as where it does. The badge number is the scope's precedence: `1` wins over `2` when two components share a name.
+Each type lists every scope it can be installed at, empty ones included, so you can see where a component could live as well as where it does. The orange number is the scope's precedence: `1` wins over `2` when two components share a name.
 
 | Type | Scopes, highest first | When names clash |
 | --- | --- | --- |
@@ -51,7 +50,7 @@ Each type lists every scope it can be installed at, empty ones included, so you 
 | ¶ Memory | Enterprise, Project, Local, User, Auto memory | None: every file loads |
 | ✎ Output styles | Enterprise, Project, User, Plugin, Built-in | One style is selected (★), by the highest settings source with `outputStyle` |
 
-A shadowed component is struck through with the scope that wins over it (`shadowed by User`, `overridden by Local`). An `off` component is installed but not loaded: a skill with a broken frontmatter, a hook under `allowManagedHooksOnly`, a plugin disabled in a higher scope, an MCP server that did not connect.
+It draws in Anthropic's palette only: ivory for what loads, warm grays for paths and notes, orange for the selected type, the precedence numbers and anything shadowed. A shadowed component is struck through with the scope that wins over it (`shadowed by User`, `overridden by Local`). An `off` component is installed but not loaded: a skill with a broken frontmatter, a hook under `allowManagedHooksOnly`, a plugin disabled in a higher scope, an MCP server that did not connect.
 
 ## Where the data comes from
 

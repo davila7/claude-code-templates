@@ -31,13 +31,12 @@ const SOURCES = ['user', 'project', 'local', 'flag', 'policy'] as const
 /** Claude Code's fixed managed-settings locations (macOS, Linux/WSL, Windows), not user paths. */
 const MANAGED_DIRS = ['/Library/Application Support/ClaudeCode', '/etc/claude-code', 'C:/Program Files/ClaudeCode']
 
-const RAIL = '#5c6370'
-const INK = '#d7dae0'
-const MUTED = '#7f848e'
-const SHADOW = '#e5c07b'
-const OFF = '#6b717d'
-const SELECT_BG = '#2c313a'
-const BADGE_INK = '#16181d'
+// Anthropic's palette: ivory text, warm grays, one orange accent
+const ORANGE = '#d97757'
+const IVORY = '#faf9f5'
+const GRAY = '#b0aea5'
+const DIM = '#87867f'
+const LINE = '#5e5d59'
 
 let sections: Section[] = []
 let selected: Kind = 'skills'
@@ -203,7 +202,7 @@ export const register: Register = (on, options) => {
     const sp = spacer(e.surface)
     const noop = () => {}
     const isWide = width >= 72
-    const navW = isWide ? 26 : width
+    const navW = isWide ? 24 : width
     const mainW = isWide ? width - navW - 2 : width
     const section = sections.find(s => s.kind === selected) ?? sections[0]
 
@@ -213,17 +212,17 @@ export const register: Register = (on, options) => {
     )
 
     const top = (
-      <Box key="top" flexDirection="column" borderStyle="round" borderColor={RAIL} paddingX={1} marginBottom={1}>
+      <Box key="top" flexDirection="column" borderStyle="round" borderColor={LINE} paddingX={1} marginBottom={1}>
         <Text key="t">
-          <Text color="#d97757" bold>{'◆ '}</Text>
-          <Text bold color={INK}>{'Session stack'}</Text>
-          <Text color={MUTED}>{sp(fit(`  ${header.version}`, Math.max(1, width - 20)))}</Text>
+          <Text color={ORANGE} bold>{'◆ '}</Text>
+          <Text bold color={IVORY}>{'Session stack'}</Text>
+          <Text color={DIM}>{sp(fit(`  ${header.version}`, Math.max(1, width - 20)))}</Text>
         </Text>
         <Text key="s" wrap="truncate-end">
-          <Text color={MUTED}>{sp(`${tail(header.where, Math.max(8, width - 46))}  `)}</Text>
-          <Text color="#98c379">{sp(`● ${totals.active} active  `)}</Text>
-          <Text color={SHADOW}>{sp(`⊘ ${totals.shadowed} shadowed  `)}</Text>
-          <Text color={OFF}>{sp(`○ ${totals.off} off`)}</Text>
+          <Text color={DIM}>{sp(`${tail(header.where, Math.max(8, width - 46))}   `)}</Text>
+          <Text color={IVORY}>{sp(`${totals.active} active`)}</Text>
+          <Text color={totals.shadowed ? ORANGE : DIM}>{sp(` · ${totals.shadowed} shadowed`)}</Text>
+          <Text color={DIM}>{sp(` · ${totals.off} off`)}</Text>
         </Text>
       </Box>
     )
@@ -232,66 +231,54 @@ export const register: Register = (on, options) => {
       return (
         <Box flexDirection="column">
           {top}
-          <Text color="red">{fit(error ?? 'Nothing read yet: run /stack.', width)}</Text>
+          <Text color={ORANGE}>{fit(error ?? 'Nothing read yet: run /stack.', width)}</Text>
         </Box>
       )
     }
 
     const navRow = (i: number) => {
       const k = KINDS[i]!
-      const s = sections.find(x => x.kind === k.kind)!
-      const c = counts(s)
+      const c = counts(sections.find(x => x.kind === k.kind)!)
       const isSel = k.kind === selected
-      const n = `${c.active}`
-      const sh = c.shadowed ? `⊘${c.shadowed}` : ''
-      const labelW = navW - 12 // `1: ` hotkey prefix, icon, bar, counts
+      const labelW = navW - 8 // bar, `1: ` hotkey prefix, count
       return (
         <Box key={`n${k.kind}`} flexDirection="row" width={navW}>
-          <Text key="bar" color={k.color} backgroundColor={isSel ? SELECT_BG : undefined}>
-            {sp(isSel ? '▌' : ' ')}
-          </Text>
-          <Text key="i" color={k.color} backgroundColor={isSel ? SELECT_BG : undefined} bold>
-            {sp(`${k.icon} `)}
-          </Text>
+          <Text key="bar" color={ORANGE}>{sp(isSel ? '▌' : ' ')}</Text>
           <Button key={`nav:${k.kind}`} plain hotkey={`${i + 1}`} dimColor={!isSel} label={sp(cell(k.title, labelW))} onPress={noop} />
-          <Text key="c" color={isSel ? INK : MUTED} backgroundColor={isSel ? SELECT_BG : undefined}>
-            {sp(cell(n, 3, 'right'))}
-          </Text>
-          <Text key="sh" color={SHADOW} backgroundColor={isSel ? SELECT_BG : undefined}>
-            {sp(cell(sh ? ` ${sh}` : '', 3))}
-          </Text>
+          <Text key="c" color={isSel ? IVORY : DIM}>{sp(cell(`${c.active}`, 4, 'right'))}</Text>
         </Box>
       )
     }
 
     const nav = isWide ? (
       <Box key="nav" flexDirection="column" width={navW} flexShrink={0}>
-        <Text key="h" color={MUTED} bold>{sp(cell(' COMPONENTS', navW))}</Text>
+        <Text key="h" color={DIM}>{sp(cell(' COMPONENTS', navW))}</Text>
         {KINDS.map((_, i) => navRow(i))}
         <Box key="legend" flexDirection="column" marginTop={1}>
-          <Text key="l1" color={MUTED}>{sp(' ● active')}</Text>
-          <Text key="l2" color={SHADOW}>{sp(' ⊘ shadowed')}</Text>
-          <Text key="l3" color={OFF}>{sp(' ○ off')}</Text>
-          <Text key="l4" color={MUTED}>{sp(' ≈ scope read off files')}</Text>
-          <Text key="l5">
-            <Text color={BADGE_INK} backgroundColor={MUTED}>{' 1 '}</Text>
-            <Text color={MUTED}>{sp(' highest precedence')}</Text>
+          <Text key="l1">
+            <Text color={IVORY}>{sp(' name  ')}</Text>
+            <Text color={DIM}>{'active'}</Text>
           </Text>
+          <Text key="l2">
+            <Text>{' '}</Text>
+            <Text color={GRAY} strikethrough>{'name'}</Text>
+            <Text color={DIM}>{sp('  shadowed')}</Text>
+          </Text>
+          <Text key="l3">
+            <Text color={LINE}>{sp(' name  ')}</Text>
+            <Text color={DIM}>{'off'}</Text>
+          </Text>
+          <Text key="l4" color={DIM}>{sp(' ≈     read off files')}</Text>
         </Box>
       </Box>
     ) : (
       <Box key="nav" flexDirection="column" marginBottom={1}>
         {chipRows(width).map((row, r) => (
-          <Box key={`cr${r}`} flexDirection="row" columnGap={1}>
+          <Box key={`cr${r}`} flexDirection="row" columnGap={2}>
             {row.map(i => {
               const k = KINDS[i]!
               const c = counts(sections.find(x => x.kind === k.kind)!)
-              return (
-                <Box key={`chip${k.kind}`} flexDirection="row">
-                  <Text key="i" color={k.color} bold>{sp(`${k.icon} `)}</Text>
-                  <Button key={`nav:${k.kind}`} plain hotkey={`${i + 1}`} dimColor={k.kind !== selected} label={sp(`${k.title} ${c.active}`)} onPress={noop} />
-                </Box>
-              )
+              return <Button key={`nav:${k.kind}`} plain hotkey={`${i + 1}`} dimColor={k.kind !== selected} label={sp(`${k.title} ${c.active}`)} onPress={noop} />
             })}
           </Box>
         ))}
@@ -300,48 +287,10 @@ export const register: Register = (on, options) => {
 
     const meta = KINDS.find(k => k.kind === section.kind)!
     const c = counts(section)
+    const INDENT = 5 // marker, rank, space: items sit under the scope label
 
-    /** One bar cell per item, colored by scope, so the mix reads at a glance. */
-    const mixBar = () => {
-      const all = section.scopes.map(s => ({ id: s.id, n: s.items.length })).filter(s => s.n > 0)
-      const total = all.reduce((t, s) => t + s.n, 0)
-      if (!total) return <Text key="mix" color={RAIL}>{'░'.repeat(mainW)}</Text>
-      let used = 0
-      const segs = all.map((s, i) => {
-        const w = i === all.length - 1 ? mainW - used : Math.max(1, Math.round((s.n / total) * mainW))
-        used += w
-        return { ...s, w: Math.max(0, w) }
-      })
-      return (
-        <Text key="mix">
-          {segs.map(s => (
-            <Text key={`m${s.id}`} color={SCOPE[s.id].color}>{'█'.repeat(s.w)}</Text>
-          ))}
-        </Text>
-      )
-    }
-
-    const mixLegend = () => {
-      const parts = section.scopes.filter(s => s.items.length).map(s => ({ id: s.id, text: `${SCOPE[s.id].label} ${s.items.length}` }))
-      if (!parts.length) return <Text key="ml" color={MUTED}>{sp('nothing installed for this type')}</Text>
-      return (
-        <Text key="ml" wrap="wrap">
-          {parts.map(p => (
-            <Text key={`l${p.id}`}>
-              <Text color={SCOPE[p.id].color}>{'■'}</Text>
-              <Text color={MUTED}>{sp(` ${p.text}   `)}</Text>
-            </Text>
-          ))}
-        </Text>
-      )
-    }
-
-    const itemRow = (s: ScopeNode, item: Item, isLast: boolean, n: number, colW: number) => {
-      const color = SCOPE[s.id].color
-      const glyph = item.isSelected ? '★' : item.status === 'active' ? '●' : item.status === 'shadowed' ? '⊘' : '○'
-      const glyphColor = item.isSelected ? '#ffd166' : item.status === 'active' ? color : item.status === 'shadowed' ? SHADOW : OFF
-      const branch = isLast ? '└─ ' : '├─ '
-      const rest = mainW - 8 // `│ ├─ ● `
+    const itemRow = (s: ScopeNode, item: Item, n: number, colW: number) => {
+      const rest = mainW - INDENT - 1
       const note = item.isInferred ? `≈ ${item.note ?? 'scope read off files'}` : item.note
       const tail = [item.detail, note].filter(Boolean).join('  ')
       const nameLen = Array.from(item.name).length
@@ -350,25 +299,21 @@ export const register: Register = (on, options) => {
       // a long built-in list stays one row per item, its descriptions cut
       const isSplit = !!tail && nameLen + tailLen + 1 > rest && s.id !== 'builtin'
       const nameW = !tail || isSplit ? rest : Math.min(Math.max(10, Math.floor(rest * 0.5)), Math.max(10, nameLen, colW))
-      const tailW = isSplit ? rest - 1 : Math.max(0, rest - nameW - 1)
-      const tailColor = item.status === 'shadowed' ? SHADOW : MUTED
+      const tailW = isSplit ? rest - 2 : Math.max(0, rest - nameW - 1)
+      const nameColor = item.isSelected ? ORANGE : item.status === 'active' ? IVORY : item.status === 'shadowed' ? GRAY : LINE
+      const tailColor = item.status === 'shadowed' ? ORANGE : item.status === 'off' ? LINE : DIM
       const tailText = (
-        <Text key="d" color={tailColor} dimColor={item.status !== 'shadowed'} wrap="truncate-end">
+        <Text key="d" color={tailColor} wrap="truncate-end">
           {sp(` ${fit(tail, tailW)}`)}
         </Text>
       )
       const row = (
         <Box key={`i${n}`} flexDirection="row">
-          <Text key="r" color={color} dimColor>{sp(`│ ${branch}`)}</Text>
-          <Text key="g" color={glyphColor}>{`${glyph} `}</Text>
-          <Text
-            key="n"
-            color={item.status === 'active' ? INK : item.status === 'shadowed' ? SHADOW : OFF}
-            strikethrough={item.status === 'shadowed'}
-            bold={item.isSelected}
-          >
-            {sp(cell(item.name, nameW))}
+          <Text key="r">{sp(' '.repeat(INDENT))}</Text>
+          <Text key="n" color={nameColor} strikethrough={item.status === 'shadowed'} bold={item.isSelected}>
+            {sp(fit(item.name, nameW))}
           </Text>
+          <Text key="p">{sp(' '.repeat(Math.max(0, nameW - Math.min(nameLen, nameW))))}</Text>
           {!isSplit && tailW > 2 && tail ? tailText : null}
         </Box>
       )
@@ -377,7 +322,7 @@ export const register: Register = (on, options) => {
         <Box key={`i${n}`} flexDirection="column">
           {row}
           <Box key="t" flexDirection="row">
-            <Text key="r" color={color} dimColor>{sp(isLast ? '│      ' : '│ │    ')}</Text>
+            <Text key="r">{sp(' '.repeat(INDENT + 1))}</Text>
             {tailText}
           </Box>
         </Box>
@@ -385,47 +330,34 @@ export const register: Register = (on, options) => {
     }
 
     const scopeBlock = (s: ScopeNode, rank: number) => {
-      const meta2 = SCOPE[s.id]
       const isOpenScope = isExpanded(section.kind, s)
       const empty = s.items.length === 0
-      const marker = empty ? '·' : isOpenScope ? '▾' : '▸'
-      const num = ` ${rank} `
+      const marker = empty ? ' ' : isOpenScope ? '▾' : '▸'
       const labelW = Math.min(19, Math.max(10, Math.floor(mainW * 0.34)))
-      const countText = empty ? '—' : `${s.items.length}`
-      const whereW = Math.max(0, mainW - labelW - 16)
-      const shadowed = s.items.filter(i => i.status === 'shadowed').length
+      const whereW = Math.max(0, mainW - INDENT - labelW - 6)
       const body: RenderChildren[] = []
       if (isOpenScope && !empty) {
         // names line up in one column per scope, so the details read as a table
         const colW = Math.max(0, ...s.items.map(it => Array.from(it.name).length))
-        s.items.forEach((it, i) => body.push(itemRow(s, it, i === s.items.length - 1, i, colW)))
+        s.items.forEach((it, i) => body.push(itemRow(s, it, i, colW)))
       }
       if (s.note && (isOpenScope || empty)) {
         body.push(
-          <Text key="note">
-            <Text color={RAIL}>{sp('│   ')}</Text>
-            <Text color={MUTED} italic>{sp(fit(s.note, mainW - 4))}</Text>
+          <Text key="note" color={DIM} italic>
+            {sp(' '.repeat(INDENT) + fit(s.note, mainW - INDENT))}
           </Text>,
         )
       }
       return (
-        <Box key={`s${s.id}`} flexDirection="column">
+        <Box key={`s${s.id}`} flexDirection="column" marginBottom={empty ? 0 : 1}>
           <Box key="h" flexDirection="row">
-            <Text key="m" color={empty ? RAIL : meta2.color}>{sp(`${marker} `)}</Text>
-            <Text key="n" color={empty ? MUTED : BADGE_INK} backgroundColor={empty ? SELECT_BG : meta2.color} bold={!empty}>
-              {sp(num)}
-            </Text>
+            <Text key="m" color={DIM}>{sp(`${marker} `)}</Text>
+            <Text key="n" color={empty ? LINE : ORANGE} bold={!empty}>{sp(cell(`${rank}`, 2))}</Text>
             <Text key="g">{' '}</Text>
-            <Button
-              key={`scope:${section.kind}:${s.id}`}
-              plain
-              dimColor={empty}
-              label={sp(cell(meta2.label, labelW))}
-              onPress={noop}
-            />
-            <Text key="c" color={empty ? RAIL : INK} bold={!empty}>{sp(cell(countText, 4, 'right'))}</Text>
-            <Text key="x" color={SHADOW}>{sp(cell(shadowed ? ` ⊘${shadowed}` : '', 4))}</Text>
-            {whereW > 4 ? <Text key="w" color={RAIL}>{sp(fit(s.where, whereW))}</Text> : null}
+            <Button key={`scope:${section.kind}:${s.id}`} plain dimColor={empty} label={sp(cell(SCOPE[s.id].label, labelW))} onPress={noop} />
+            <Text key="c" color={empty ? LINE : IVORY} bold={!empty}>{sp(cell(empty ? '—' : `${s.items.length}`, 4, 'right'))}</Text>
+            <Text key="x">{'  '}</Text>
+            {whereW > 4 ? <Text key="w" color={LINE}>{sp(fit(s.where, whereW))}</Text> : null}
           </Box>
           {body}
         </Box>
@@ -439,15 +371,12 @@ export const register: Register = (on, options) => {
     const main = (
       <Box key="main" flexDirection="column" width={mainW} flexShrink={0}>
         <Text key="title">
-          <Text color={meta.color} bold>{sp(`${meta.icon} ${meta.title}`)}</Text>
-          <Text color={MUTED}>{sp(fit(`   ${summary}`, Math.max(1, mainW - meta.title.length - 2)))}</Text>
+          <Text color={ORANGE} bold>{sp(meta.title)}</Text>
+          <Text color={DIM}>{sp(fit(`   ${summary}`, Math.max(1, mainW - meta.title.length)))}</Text>
         </Text>
-        <Text key="rule" color={MUTED} italic wrap="wrap">{sp(section.rule)}</Text>
-        {section.extra ? <Text key="extra" color="#ffd166" wrap="wrap">{sp(section.extra)}</Text> : null}
-        <Box key="mixbox" flexDirection="column" marginTop={1} marginBottom={1}>
-          {mixBar()}
-          {mixLegend()}
-        </Box>
+        <Text key="rule" color={DIM} italic wrap="wrap">{sp(section.rule)}</Text>
+        {section.extra ? <Text key="extra" color={ORANGE} wrap="wrap">{sp(section.extra)}</Text> : null}
+        <Box key="gap" height={1} />
         {section.scopes.map((s, i) => scopeBlock(s, i + 1))}
       </Box>
     )
@@ -472,7 +401,7 @@ export const register: Register = (on, options) => {
             <Button key="fold" label="fold all" onPress={noop} />
             <Button key="close" label="close" onPress={noop} />
           </Box>
-          <Text key="hint" color={MUTED}>{sp(fit('1-9 or click a type · click a scope to fold it · r reads the stack again', width))}</Text>
+          <Text key="hint" color={DIM}>{sp(fit('1-9 or click a type · click a scope to fold it · r reads the stack again', width))}</Text>
         </Box>
       </Box>
     )
@@ -496,13 +425,13 @@ function chipRows(width: number): number[][] {
   const rows: number[][] = [[]]
   let used = 0
   KINDS.forEach((k, i) => {
-    const w = k.title.length + 6
+    const w = k.title.length + 7
     if (used && used + w > width) {
       rows.push([])
       used = 0
     }
     rows[rows.length - 1]!.push(i)
-    used += w + 1
+    used += w + 2
   })
   return rows
 }

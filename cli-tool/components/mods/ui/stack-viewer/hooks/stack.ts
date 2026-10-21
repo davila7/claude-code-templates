@@ -65,34 +65,34 @@ export type Section = {
   extra?: string
 }
 
-export const SCOPE: Record<ScopeId, { label: string; color: string }> = {
-  managed: { label: 'Enterprise', color: '#e06c75' },
-  flag: { label: 'CLI flag', color: '#56b6c2' },
-  local: { label: 'Local', color: '#e5c07b' },
-  project: { label: 'Project', color: '#98c379' },
-  user: { label: 'User', color: '#61afef' },
-  plugin: { label: 'Plugin', color: '#c678dd' },
-  'skillsdir-project': { label: 'Project skills dir', color: '#7fbf6a' },
-  'skillsdir-user': { label: 'User skills dir', color: '#5a9bd8' },
-  session: { label: 'This session', color: '#d19a66' },
-  claudeai: { label: 'claude.ai', color: '#d97757' },
-  synced: { label: 'claude.ai account', color: '#d97757' },
-  mcp: { label: 'MCP server', color: '#4ec9b0' },
-  automem: { label: 'Auto memory', color: '#a59bff' },
-  builtin: { label: 'Built-in', color: '#8b919c' },
-  other: { label: 'Other', color: '#8b919c' },
+export const SCOPE: Record<ScopeId, { label: string }> = {
+  managed: { label: 'Enterprise' },
+  flag: { label: 'CLI flag' },
+  local: { label: 'Local' },
+  project: { label: 'Project' },
+  user: { label: 'User' },
+  plugin: { label: 'Plugin' },
+  'skillsdir-project': { label: 'Project skills dir' },
+  'skillsdir-user': { label: 'User skills dir' },
+  session: { label: 'This session' },
+  claudeai: { label: 'claude.ai' },
+  synced: { label: 'claude.ai account' },
+  mcp: { label: 'MCP server' },
+  automem: { label: 'Auto memory' },
+  builtin: { label: 'Built-in' },
+  other: { label: 'Other' },
 }
 
-export const KINDS: { kind: Kind; title: string; icon: string; color: string }[] = [
-  { kind: 'skills', title: 'Skills', icon: '✦', color: '#e5a35a' },
-  { kind: 'agents', title: 'Subagents', icon: '◎', color: '#61afef' },
-  { kind: 'commands', title: 'Commands', icon: '❯', color: '#98c379' },
-  { kind: 'hooks', title: 'Hooks', icon: '↯', color: '#e06c75' },
-  { kind: 'mcp', title: 'MCP servers', icon: '⇄', color: '#4ec9b0' },
-  { kind: 'plugins', title: 'Plugins & mods', icon: '◈', color: '#c678dd' },
-  { kind: 'settings', title: 'Settings', icon: '⚙', color: '#d19a66' },
-  { kind: 'memory', title: 'Memory', icon: '¶', color: '#a59bff' },
-  { kind: 'styles', title: 'Output styles', icon: '✎', color: '#56b6c2' },
+export const KINDS: { kind: Kind; title: string }[] = [
+  { kind: 'skills', title: 'Skills' },
+  { kind: 'agents', title: 'Subagents' },
+  { kind: 'commands', title: 'Commands' },
+  { kind: 'hooks', title: 'Hooks' },
+  { kind: 'mcp', title: 'MCP servers' },
+  { kind: 'plugins', title: 'Plugins & mods' },
+  { kind: 'settings', title: 'Settings' },
+  { kind: 'memory', title: 'Memory' },
+  { kind: 'styles', title: 'Output styles' },
 ]
 
 // ---------------------------------------------------------------------------
