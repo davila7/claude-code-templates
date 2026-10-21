@@ -48,6 +48,7 @@ It prints a header (`default_branch`, whether the fetch worked, whether `gh` and
 | `content_already_in_default` | Merging HEAD into the default branch would change nothing (`git merge-tree`). This catches squash and rebase merges, where the commits differ but the content landed. |
 | `pr` | `#N STATE url` from `gh`, `none`, or `unknown` when `gh` is not available. |
 | `processes_inside` | Running processes whose working directory is inside the worktree. |
+| `claude_session_hours_ago` | Hours since a Claude Code session transcript for this exact path (`~/.claude/projects/<slug>/*.jsonl`) was written, or `none`. An idle, paused or archived session has no process but still owns its worktree; removing it breaks resuming that session. Under 7 days the verdict becomes `REVIEW`: ask whether that session is finished. |
 | `index_touched_hours_ago` | Hours since git last wrote this worktree's index: a rough "last used" signal. |
 | `locked`, `prunable` | Lock reason, or why git considers the entry stale (directory gone). |
 | `created_by: claude-code` | The path is under `.claude/worktrees/`. |
@@ -143,3 +144,5 @@ Re-run the inventory without `--fetch` and finish with:
 - `gh` is optional. Without it PR state is `unknown`, and pushed branches that are not in the default branch stay `REVIEW`.
 - The process check uses `lsof` (macOS, most Linux) or `/proc`. It cannot see processes in other containers, VMs or machines that mount the same folder: if the user runs sessions elsewhere (remote control, a VM), ask whether any are active before removing recently touched worktrees.
 - The script works with the bash 3.2 that ships with macOS.
+- The Claude desktop app has its own worktree cleanup for the sessions it creates. If the user also uses it, say so: run one or the other on the same worktrees, and re-run the inventory if the app cleaned up in between.
+- Under an agent's auto mode, running the inventory script may need the user's approval once, because it is a script file rather than a single git command.

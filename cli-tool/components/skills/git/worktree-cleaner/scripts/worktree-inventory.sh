@@ -100,6 +100,11 @@ SELF_PIDS=$(ps -A -o pid= -o ppid= 2>/dev/null | awk -v me="$$" '
   { parent[$1] = $2 }
   END { out = " "; for (p = me; p != "" && p != 0 && !(p in seen); p = parent[p]) { seen[p] = 1; out = out p " " }; print out }')
 [ -z "$SELF_PIDS" ] && SELF_PIDS=" $$ $PPID "
+# The worktrees those ancestors sit in (this agent session, its shell) are "current" too,
+# even when --repo points elsewhere: never offer to remove the tree we are running from.
+SELF_CWDS=$(awk -F'\t' -v self="$SELF_PIDS" 'index(self, " " $1 " ") > 0 {print $3}' "$PROCS_FILE")
+SELF_CWDS="$SELF_CWDS
+$(pwd -P)"
 
 mtime() { stat -c %Y "$1" 2>/dev/null || stat -f %m "$1" 2>/dev/null || echo 0; }
 NOW=$(date +%s)
@@ -121,6 +126,8 @@ report() { # $1 path $2 head $3 branch-ref $4 detached $5 bare $6 locked $7 lock
   [ -d "$path" ] || exists=no
   [ "$path" = "$MAIN_PATH" ] && is_main=yes
   [ -n "$CURRENT_TOP" ] && [ "$cpath" = "$CURRENT_TOP" ] && is_current=yes
+  if [ "$is_current" = no ] && [ "$path" != "$MAIN_PATH" ] && printf '%s\n' "$SELF_CWDS" \
+    | awk -v p="$cpath" '$0 == p || index($0, p "/") == 1 {f = 1} END {exit !f}'; then is_current=yes; fi
 
   echo "worktree: $path"
   echo "branch: ${branch:-"(detached)"}"
@@ -210,7 +217,17 @@ report() { # $1 path $2 head $3 branch-ref $4 detached $5 bare $6 locked $7 lock
     ($3 == p || index($3, p "/") == 1) && index(self, " " $1 " ") == 0 {printf "%s(%s) ", $2, $1}' "$PROCS_FILE")
   last_commit=$(G log -1 --format='%cr' "$head" 2>/dev/null)
   if [ -f "$gitdir/index" ]; then idx_age=$(( (NOW - $(mtime "$gitdir/index")) / 3600 )); else idx_age=0; fi
+  # A Claude Code session that is idle, paused or archived has no process but still owns its
+  # worktree: its transcripts live in ~/.claude/projects/<path with non-alphanumerics as ->/.
+  local session_age="" slug sdir newest
+  for slug in "$(printf '%s' "$cpath" | sed 's/[^A-Za-z0-9]/-/g')" "$(printf '%s' "$path" | sed 's/[^A-Za-z0-9]/-/g')"; do
+    sdir="${HOME:-~}/.claude/projects/$slug"
+    [ -d "$sdir" ] || continue
+    newest=$(ls -t "$sdir"/*.jsonl 2>/dev/null | head -n1)
+    [ -n "$newest" ] && session_age=$(( (NOW - $(mtime "$newest")) / 3600 )) && break
+  done
   echo "processes_inside: ${users:-none}"
+  echo "claude_session_hours_ago: ${session_age:-none}"
   echo "last_commit: $last_commit"
   echo "index_touched_hours_ago: $idx_age"
 
@@ -240,6 +257,7 @@ report() { # $1 path $2 head $3 branch-ref $4 detached $5 bare $6 locked $7 lock
     [ "$idx_age" -lt 2 ] && { verdict=REVIEW; reasons="$reasons; touched in the last 2h"; }
     [ "$submodules" = yes ] && { verdict=REVIEW; reasons="$reasons; has submodules (remove needs --force)"; }
     [ -n "$ignored_kept" ] && { verdict=REVIEW; reasons="$reasons; ignored local files would be deleted"; }
+    [ -n "$session_age" ] && [ "$session_age" -lt 168 ] && { verdict=REVIEW; reasons="$reasons; a Claude Code session used it ${session_age}h ago"; }
   fi
   echo "verdict: $verdict ($reasons)"
   echo
