@@ -212,9 +212,11 @@ Two GitHub Actions drive it, both via the batch orchestrator
 also runs SkillSpector on every component through `scripts/skillspector_catalog.py`
 and stores a `skillspector` object (score, severity, recommendation, top 5
 findings, version, file hash) on each entry of `components.json`. The dashboard
-shows it as the "NVIDIA SkillSpector Scanner" badge on cards and component pages
-(`SkillSpectorBadge.tsx`, detail on hover). It is display-only: never use it for
-ordering, search or ranking. Results are cached in the previous
+shows a neutral "Scanned by NVIDIA SkillSpector" seal on cards and component pages
+(`SkillSpectorBadge.tsx`) and an informative report on the component page
+(`SkillSpectorReport.tsx`, `#security-scan`). Daniel's call (2026-10-21): no
+traffic light, no red, no severity labels or install verdicts. It is
+display-only: never use it for ordering, search or ranking. Results are cached in the previous
 `docs/components.json` by file hash + SkillSpector version, so a run only scans
 new or changed components; bumping the pinned tag in `update-component-content.yml`
 / `update-json-data.yml` rescans everything (~1 h). Without the `skillspector`

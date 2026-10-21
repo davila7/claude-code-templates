@@ -8,6 +8,7 @@ import JsonViewer from '../../../components/JsonViewer.tsx';
 import SkillExplorer from '../../../components/SkillExplorer.tsx';
 import ComponentTerminal from '../../../components/ComponentTerminal.tsx';
 import SkillSpectorBadge from '../../../components/SkillSpectorBadge.tsx';
+import SkillSpectorReport from '../../../components/SkillSpectorReport.tsx';
 import { TYPE_CONFIG, ICONS } from '../../../lib/icons';
 import { fetchComponents, fetchComponentContentData, getInstallCommand } from '../../../lib/data';
 import type { Component } from '../../../lib/types';
@@ -364,7 +365,7 @@ const componentSchema = component
                       </span>
                     )}
                     {component.skillspector && (
-                      <SkillSpectorBadge client:visible result={component.skillspector} size="md" />
+                      <SkillSpectorBadge result={component.skillspector} size="md" href="#security-scan" />
                     )}
                   </div>
                 </div>
@@ -466,6 +467,8 @@ const componentSchema = component
             return { label: card.label, icon: card.icon, value, isChipList };
           })
         )} />
+
+        {component.skillspector && <SkillSpectorReport result={component.skillspector} />}
 
         {/* Referenced components (loops only) */}
         {referencedComponents.length > 0 && (
