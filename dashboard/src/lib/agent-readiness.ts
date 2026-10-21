@@ -85,7 +85,7 @@ Not a fit: general questions about Claude Code itself (use https://code.claude.c
 
 ## How an agent should use it
 
-1. Search the catalog: GET ${SITE}/search-index.json (array of {type, name, path, category, description}).
+1. Search the catalog: GET ${SITE}/api/v1/catalog/{type}.json (one type, e.g. skills) or ${SITE}/api/v1/catalog.json (everything). Each entry has id, name, category, description, downloads, install.command and urls.
 2. Read a component's full file before recommending it: GET ${SITE}/component-content/{type}/{category}/{name}.json, where {category}/{name} is \`path\` without its extension and {type} is plural (agents, commands, skills, ...).
 3. Install it from the project root: \`${CLI_COMMAND} --agent {category}/{name}\` (use the flag for its type, below). Several flags can be combined in one command.
 4. Hooks, MCP servers and mods run code with local permissions: show the user the component's content before installing them.
@@ -96,10 +96,10 @@ ${typeLines}
 
 ## API and machine-readable data
 
-- [OpenAPI 3.1 spec](${SITE}/openapi.json): read-only GET endpoints for the catalog JSON files below. No authentication, CORS enabled.
-- [Search index](${SITE}/search-index.json): every component with type, name, path, category and description.
-- [Components by type](${SITE}/components/agents.json): replace \`agents\` with any plural type.
-- [Counts](${SITE}/counts.json): number of components per type.
+- [Catalog API v1](${SITE}/developers/catalog-api): versioned, documented catalog with a JSON Schema and a stability policy. Use this one in code.
+- [Catalog v1](${SITE}/api/v1/catalog.json): every component; [one type](${SITE}/api/v1/catalog/agents.json): replace \`agents\` with any plural type.
+- [Catalog version](${SITE}/api/v1/version.json): generatedAt, sha256 and counts per type; poll this before downloading the catalog.
+- [OpenAPI 3.1 spec](${SITE}/openapi.json): read-only GET endpoints for the catalog JSON files. No authentication, CORS enabled.
 - [Trending](${SITE}/trending-data.json): download statistics and trending components.
 - [Sitemap](${SITE}/sitemap.xml): every component page.
 

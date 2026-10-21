@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 from pathlib import Path
 from generate_trending_data import fetch_with_retry
 from skillspector_catalog import attach_skillspector
+from catalog_api_v1 import write_catalog_api_v1
 
 # Load environment variables
 load_dotenv()
@@ -1039,6 +1040,12 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
         print(f"Generated {search_path} ({len(search_index)} entries).")
     except Exception as e:
         print(f"Warning: Could not write search-index.json: {e}")
+
+    # Catalog API v1 (dashboard/public/api/v1/): the versioned contract for
+    # external consumers, built from the same index. Unlike the files above it
+    # is not best-effort: an output that fails its schema stops the run.
+    v1 = write_catalog_api_v1(index_data, content_dir=dashboard_content_dir)
+    print(f"Generated catalog API v1 ({v1['count']} components, generatedAt {v1['generatedAt']}).")
 
     # Log summary (uses original components_data which still has content for accurate counts)
     print("\n--- Generation Summary ---")

@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Smoke-checks the machine-readable surfaces of the site against a running
-// deployment: real 404s (HTML, Markdown, JSON), /llms.txt and /openapi.json.
+// deployment: real 404s (HTML, Markdown, JSON), /llms.txt, /openapi.json and
+// the catalog API v1 (/api/v1/: static files, CORS, ETag revalidation).
 // Usage: node scripts/check-agent-endpoints.mjs [baseUrl]   (default https://www.aitmpl.com)
 
 const base = (process.argv[2] || 'https://www.aitmpl.com').replace(/\/$/, '');
@@ -57,6 +58,29 @@ const checks = [
     },
   },
   {
+    name: '/api/v1/version.json is a static v1 document with open CORS (not the /api catch-all)',
+    path: '/api/v1/version.json',
+    expect: (r, body) =>
+      r.status === 200 &&
+      /application\/json/.test(r.headers.get('content-type')) &&
+      r.headers.get('access-control-allow-origin') === '*' &&
+      /^1\./.test(JSON.parse(body).schemaVersion ?? ''),
+  },
+  {
+    name: '/api/v1/catalog/mods.json revalidates: ETag, then 304 on If-None-Match',
+    path: '/api/v1/catalog/mods.json',
+    run: async (url) => {
+      const first = await fetch(url);
+      const body = await first.text();
+      const etag = first.headers.get('etag');
+      if (first.status !== 200 || !etag || !Array.isArray(JSON.parse(body).components)) {
+        return { ok: false, detail: `${first.status} etag=${etag}` };
+      }
+      const second = await fetch(url, { headers: { 'If-None-Match': etag } });
+      return { ok: second.status === 304, detail: `${first.status} then ${second.status} (etag ${etag})` };
+    },
+  },
+  {
     name: '/about and /privacy exist',
     path: '/privacy/',
     expect: (r, body) => r.status === 200 && body.includes('Privacy Policy'),
@@ -68,10 +92,14 @@ for (const c of checks) {
   let ok = false;
   let detail = '';
   try {
-    const r = await fetch(base + c.path, { headers: c.headers, redirect: 'follow' });
-    const body = await r.text();
-    ok = Boolean(c.expect(r, body));
-    detail = `${r.status} ${r.headers.get('content-type') ?? ''}`;
+    if (c.run) {
+      ({ ok, detail } = await c.run(base + c.path));
+    } else {
+      const r = await fetch(base + c.path, { headers: c.headers, redirect: 'follow' });
+      const body = await r.text();
+      ok = Boolean(c.expect(r, body));
+      detail = `${r.status} ${r.headers.get('content-type') ?? ''}`;
+    }
   } catch (e) {
     detail = String(e);
   }

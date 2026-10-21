@@ -125,7 +125,7 @@ Use the component-reviewer agent to review [component-path]
 
 `scripts/generate_components_json.py` writes `docs/components.json` and the
 split `dashboard/public/` artifacts (`components.json`, `counts.json`,
-`search-index.json`, `components/*.json`, `component-content/**`). These files
+`search-index.json`, `components/*.json`, `component-content/**`, `api/v1/**`). These files
 are **generated output, never hand-edited**, and who commits them depends on
 the workflow:
 
@@ -554,6 +554,7 @@ npx astro dev --port 4321   # Dashboard + APIs at http://localhost:4321
 - `dashboard/public/search-index.json` — Flat array for `SearchModal.tsx`
 - `dashboard/public/component-content/{type}/{slug}.json` — Full per-component content (incl. markdown body), fetched on demand when a component's detail view or PR flow needs it
 - `dashboard/public/trending-data.json` — Trending/download stats
+- `dashboard/public/api/v1/` — **Catalog API v1, the public contract** (see below)
 
 All of the above are served as static Cloudflare Pages assets. The catalog
 files (`components.json`, `counts.json`, `components/*`, `search-index.json`,
@@ -563,10 +564,36 @@ deploy reaches browsers within minutes; `trending-data.json` keeps 1 h (see
 stale `components/{type}.json` for a day after a deploy while `counts.json`
 was already new: the sidebar counted a component the grid could not find.
 
+### Catalog API v1 (public contract)
+
+Outside code reads the catalog (known: `profullstack/niche-db` reads
+`docs/components.json` from raw.githubusercontent.com; our own
+`mods/productivity/aitmpl` reads `components/{type}.json`, `counts.json` and
+`trending-data.json` from www.aitmpl.com, and installed copies never update).
+`/api/v1/` is the versioned surface for them: `catalog.json`,
+`catalog/{type}.json`, `version.json` (sha256 for cheap polling) and
+`schema.json`, written by `scripts/catalog_api_v1.py` (called at the end of
+`generate_components_json.py`) from `scripts/catalog_api_v1.schema.json`.
+Docs page `/developers/catalog-api`; audit and design in
+`docs/catalog-api-formalization.md`.
+
+- **Within v1, changes are additive only.** Removing or renaming a field,
+  changing a type, the `id` format or a URL needs `/api/v2/` with v1 kept for 6
+  months. Record every format change in `docs/catalog-api/CHANGELOG.md`.
+- Adding a field: add it to the schema (`$defs.component`, also `required`),
+  bump `SCHEMA_VERSION` minor, add a changelog entry. The writer refuses
+  undeclared fields and validates every run (fatal in CI, where `jsonschema`
+  is installed); `catalog-api-v1.yml` runs the tests on PRs.
+- Never add sponsored/placement data to v1, and never order it by anything but `id`.
+- `generatedAt` only moves when the components changed, so a no-op run stays byte-identical.
+- The legacy files stay the site's own data, but treat their current shape as
+  frozen in practice (installed `/aitmpl` mods read them), and do not delete
+  `docs/components.json` in a legacy-site cleanup: niche-db reads it.
+
 ### Data Flow
 
 1. `scripts/generate_components_json.py` scans `cli-tool/components/`
-2. Generates `docs/components.json` (full, with `content`/`security`) and the split dashboard artifacts (`dashboard/public/components.json`, `counts.json`, `components/{type}.json`, `search-index.json`, `component-content/{type}/{slug}.json`) — these two writes are decoupled, so the dashboard payload stays lean without touching the legacy catalog
+2. Generates `docs/components.json` (full, with `content`/`security`) and the split dashboard artifacts (`dashboard/public/components.json`, `counts.json`, `components/{type}.json`, `search-index.json`, `component-content/{type}/{slug}.json`) — these two writes are decoupled, so the dashboard payload stays lean without touching the legacy catalog — then the Catalog API v1 files under `dashboard/public/api/v1/`
 3. Dashboard islands (`ComponentGrid.tsx`, `SearchModal.tsx`, `Sidebar.astro`, `SendToRepoModal.tsx`) load the split artifacts instead of the full catalog
 4. `scripts/generate_trending_data.py` writes only `docs/trending-data.json`; `update-json-data.yml` copies it to `dashboard/public/trending-data.json`, which is the one `TrendingView.tsx` and the home counters actually fetch
 5. Download tracking via `/api/track-download-supabase`
@@ -580,7 +607,7 @@ was already new: the sidebar counted a component the grid could not find.
 
 ### Legacy Static Site (docs/)
 
-The `docs/` directory contains the old static HTML site (no longer deployed to www). GitHub Pages still builds it from repository settings and publishes it at `davila7.github.io/claude-code-templates`; nothing in production depends on that, and every article canonicalises to `aitmpl.com`. Blog articles in `docs/blog/` are still referenced externally.
+The `docs/` directory contains the old static HTML site (no longer deployed to www). GitHub Pages still builds it from repository settings and publishes it at `davila7.github.io/claude-code-templates`; nothing in production depends on that, and every article canonicalises to `aitmpl.com`. Exception: `docs/components.json` is read by external code from raw.githubusercontent.com (see Catalog API v1), so keep generating it. Blog articles in `docs/blog/` are still referenced externally.
 
 ### Blog Article Creation
 

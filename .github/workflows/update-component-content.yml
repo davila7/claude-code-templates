@@ -40,6 +40,7 @@ jobs:
         dashboard/public/search-index.json
         dashboard/public/components
         dashboard/public/component-content
+        dashboard/public/api/v1
 
     steps:
       - name: Checkout repository
@@ -64,7 +65,7 @@ jobs:
       - name: Install Python dependencies
         run: |
           pip install --upgrade pip
-          pip install requests python-dotenv pyyaml
+          pip install requests python-dotenv pyyaml jsonschema
           # NVIDIA SkillSpector (not on PyPI). The generator only rescans
           # components whose files changed, or every component when the
           # SkillSpector version changes, so bump this tag on purpose.

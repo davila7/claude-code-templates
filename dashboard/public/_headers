@@ -44,6 +44,17 @@
   Access-Control-Allow-Origin: *
   Access-Control-Allow-Methods: GET
 
+# Catalog API v1 — the versioned public contract (/developers/catalog-api).
+# Same 5 min cache as the site's catalog; ETag exposed so browser clients can
+# send If-None-Match themselves. Poll version.json, fetch the catalog on change.
+/api/v1/*
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: public, max-age=300, stale-while-revalidate=3600
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET, HEAD
+  Access-Control-Expose-Headers: ETag
+  X-Catalog-Schema-Version: 1
+
 # Machine-readable files for agents (OpenAPI spec, llms.txt)
 /openapi.json
   Content-Type: application/json; charset=utf-8
