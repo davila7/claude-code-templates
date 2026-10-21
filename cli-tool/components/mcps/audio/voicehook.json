@@ -1,9 +1,9 @@
 {
   "mcpServers": {
     "voicehook": {
-      "description": "Talk with your agents. Remote MCP server for voicehook.ai voice calls in the browser. Your agent can start a call and hand you the link (create_call), or join a call you opened (join). It talks with say, listens with next and keeps a status board up to date (status, activity, show) while it keeps working. No key to paste. About 10 free minutes every day, no login needed.",
+      "description": "Talk with your agents. Voice for your agent fleet: talk to your coding agents from your phone while they keep working. Remote MCP server for voicehook.ai voice calls in the browser. Your agent opens a call room and hands you the link (create_call), or joins a call you opened (join). It speaks with say, listens with next, keeps a status board and activity feed up to date and asks you on a Decision Board (status, activity, show, decide). Agent-native, no key to paste. About 10 free minutes every day without login, then prepaid credit.",
       "type": "http",
-      "url": "https://voicehook.ai/mcp?utm_source=aitmpl&utm_campaign=d10-mcp"
+      "url": "https://voicehook.ai/mcp?utm_source=aitmpl&utm_medium=plugin-directory"
     }
   }
 }
