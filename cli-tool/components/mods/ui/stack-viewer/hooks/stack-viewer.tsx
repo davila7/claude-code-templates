@@ -336,7 +336,7 @@ export const register: Register = (on, options) => {
       )
     }
 
-    const itemRow = (s: ScopeNode, item: Item, isLast: boolean, n: number) => {
+    const itemRow = (s: ScopeNode, item: Item, isLast: boolean, n: number, colW: number) => {
       const color = SCOPE[s.id].color
       const glyph = item.isSelected ? '★' : item.status === 'active' ? '●' : item.status === 'shadowed' ? '⊘' : '○'
       const glyphColor = item.isSelected ? '#ffd166' : item.status === 'active' ? color : item.status === 'shadowed' ? SHADOW : OFF
@@ -347,8 +347,9 @@ export const register: Register = (on, options) => {
       const nameLen = Array.from(item.name).length
       const tailLen = Array.from(tail).length
       // a long name keeps its full width and drops its detail to a line of its own
-      const isSplit = !!tail && nameLen + tailLen + 1 > rest
-      const nameW = !tail || isSplit ? rest : Math.min(Math.max(10, Math.floor(rest * 0.5)), Math.max(10, nameLen))
+      // a long built-in list stays one row per item, its descriptions cut
+      const isSplit = !!tail && nameLen + tailLen + 1 > rest && s.id !== 'builtin'
+      const nameW = !tail || isSplit ? rest : Math.min(Math.max(10, Math.floor(rest * 0.5)), Math.max(10, nameLen, colW))
       const tailW = isSplit ? rest - 1 : Math.max(0, rest - nameW - 1)
       const tailColor = item.status === 'shadowed' ? SHADOW : MUTED
       const tailText = (
@@ -383,26 +384,6 @@ export const register: Register = (on, options) => {
       )
     }
 
-    /** A long, flat list (the built-in commands) drawn as a wrapped paragraph. */
-    const cloud = (s: ScopeNode) => {
-      const lines: string[] = []
-      let line = ''
-      for (const it of s.items) {
-        const word = `/${it.name}`
-        if (line && Array.from(line).length + word.length + 2 > mainW - 4) {
-          lines.push(line)
-          line = word
-        } else line = line ? `${line}  ${word}` : word
-      }
-      if (line) lines.push(line)
-      return lines.map((l, i) => (
-        <Text key={`w${i}`}>
-          <Text color={RAIL}>{sp('│   ')}</Text>
-          <Text color={MUTED}>{sp(l)}</Text>
-        </Text>
-      ))
-    }
-
     const scopeBlock = (s: ScopeNode, rank: number) => {
       const meta2 = SCOPE[s.id]
       const isOpenScope = isExpanded(section.kind, s)
@@ -415,8 +396,9 @@ export const register: Register = (on, options) => {
       const shadowed = s.items.filter(i => i.status === 'shadowed').length
       const body: RenderChildren[] = []
       if (isOpenScope && !empty) {
-        if (s.id === 'builtin' && s.items.length > 12 && section.kind === 'commands') body.push(...cloud(s))
-        else s.items.forEach((it, i) => body.push(itemRow(s, it, i === s.items.length - 1, i)))
+        // names line up in one column per scope, so the details read as a table
+        const colW = Math.max(0, ...s.items.map(it => Array.from(it.name).length))
+        s.items.forEach((it, i) => body.push(itemRow(s, it, i === s.items.length - 1, i, colW)))
       }
       if (s.note && (isOpenScope || empty)) {
         body.push(

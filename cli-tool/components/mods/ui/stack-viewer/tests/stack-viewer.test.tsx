@@ -85,7 +85,7 @@ const FACTS: Facts = {
     { name: 'team-tools:pr', source: 'plugin', plugin: 'team-tools' },
     { name: 'team-tools:changelog', source: 'plugin', plugin: 'team-tools' },
     { name: 'stack', source: 'plugin', plugin: 'stack-viewer' },
-    { name: 'compact', source: 'builtin' },
+    { name: 'compact', source: 'builtin', description: 'Clear history but keep a summary' },
     { name: 'simplify', source: 'builtin' },
   ],
   mcpTools: [
@@ -172,7 +172,7 @@ describe('buildStack', () => {
     expect(item(s, 'project', 'git:commit')!.status).toBe('active')
     expect(item(s, 'user', 'summarize')!.status).toBe('active')
     expect(scopeOf(s, 'plugin').items.map(i => i.name).sort()).toEqual(['stack', 'team-tools:pr'])
-    expect(scopeOf(s, 'builtin').items.map(i => i.name)).toEqual(['compact'])
+    expect(scopeOf(s, 'builtin').items).toEqual([{ name: 'compact', detail: 'Clear history but keep a summary', status: 'active' }])
   })
 
   test('subagents: project beats user; plugin agents stand apart', async () => {

@@ -341,7 +341,7 @@ export type Facts = {
   /** Custom agents the Agent tool offers. */
   agents: { agentType: string; source: string }[]
   /** Every slash command. */
-  commands: { name: string; source: string; plugin?: string }[]
+  commands: { name: string; source: string; plugin?: string; description?: string }[]
   /** MCP tools, by server. */
   mcpTools: { name: string; serverName: string }[]
   /** CLAUDE.md and other memory files in the context. */
@@ -485,7 +485,10 @@ function commandsSection(files: Files, f: Facts): Section {
     .filter(c => c.source === 'plugin' && (pluginCommands.has(c.name) || !listedPlugin.has(c.name)))
     .map<Item>(c => ({ name: c.name, status: 'active', detail: c.plugin && !c.name.startsWith(`${c.plugin}:`) ? c.plugin : undefined }))
   const builtinSkills = new Set(f.skills.filter(s => scopeOfSource(s.source) === 'builtin').map(s => s.name))
-  const builtin = [...new Set(f.commands.filter(c => c.source === 'builtin' && !builtinSkills.has(c.name) && !c.name.startsWith('_')).map(c => c.name))]
+  const builtin = new Map<string, string | undefined>()
+  for (const c of f.commands) {
+    if (c.source === 'builtin' && !builtinSkills.has(c.name) && !c.name.startsWith('_') && !builtin.has(c.name)) builtin.set(c.name, c.description)
+  }
   return {
     kind: 'commands',
     noun: 'active',
@@ -495,7 +498,7 @@ function commandsSection(files: Files, f: Facts): Section {
       fileNode('project', '.claude/commands'),
       node('plugin', '<plugin>/commands · registered by mods', plugin),
       node('mcp', 'MCP prompts', f.commands.filter(c => c.source === 'mcp').map(c => ({ name: c.name, status: 'active' }))),
-      node('builtin', 'ship with Claude Code', builtin.map(name => ({ name, status: 'active' }))),
+      node('builtin', 'ship with Claude Code', [...builtin].map(([name, description]) => ({ name, detail: description || undefined, status: 'active' }))),
     ],
   }
 }
