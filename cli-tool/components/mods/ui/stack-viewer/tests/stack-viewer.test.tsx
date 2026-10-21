@@ -166,6 +166,13 @@ describe('buildStack', () => {
     expect(s.scopes.map(n => n.id).slice(0, 3)).toEqual(['managed', 'user', 'project'])
   })
 
+  test('skills: an empty built-in scope says where the built-in commands are', async () => {
+    const facts = { ...FACTS, skills: FACTS.skills.filter(k => k.source !== 'built-in') }
+    const s = section((await stack(facts)).sections, 'skills')
+    expect(scopeOf(s, 'builtin').items).toEqual([])
+    expect(scopeOf(s, 'builtin').note).toMatch(/Commands › Built-in/)
+  })
+
   test('commands: a skill wins over a command file of the same name', async () => {
     const s = section((await stack()).sections, 'commands')
     expect(item(s, 'project', 'deploy')).toMatchObject({ status: 'shadowed', by: 'user' })

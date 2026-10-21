@@ -452,7 +452,12 @@ function skillsSection(files: Files, f: Facts, isCommand: (scope: FileScope, nam
     node('plugin', '<plugin>/skills · /plugin:skill', byScope('plugin')),
     node('synced', 'enabled on claude.ai', byScope('synced')),
     node('mcp', 'skills an MCP server provides', byScope('mcp')),
-    node('builtin', 'ship with Claude Code', byScope('builtin')),
+    node(
+      'builtin',
+      'ship with Claude Code',
+      byScope('builtin'),
+      byScope('builtin').length ? undefined : 'none offered to the model here · see Commands › Built-in',
+    ),
   ]
   if (other.length) scopes.push(node('other', 'reported by the engine', other.map(s => ({ name: s.name, status: 'active', detail: s.source }))))
   return {
