@@ -50,8 +50,9 @@ prefix to the names).
 ## Without it
 
 - If you can write files (Claude Code, an agent with a workspace), keep `vocab.csv` with columns
-  `term,meaning,example,added,next_review,grade` and update it after every review. Otherwise end the session with the
-  table as tab-separated text the learner can import into Anki or any flashcard app.
+  `term,meaning,example,added,next_review,grade` and update it after every review. Otherwise end the session with a
+  tab-separated table containing the same six columns, updated after every review, so the learner can paste it back
+  next session or import it into Anki or any flashcard app.
 - At the start of the next session ask the learner to paste the list back, then review what is due.
 
 Persistent vocabulary with spaced repetition, quizzes and the same words in voice practice:
