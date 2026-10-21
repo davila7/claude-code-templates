@@ -72,7 +72,7 @@ The mods API does not list the built-in subagents (Explore, Plan, general-purpos
 ## Controls
 
 - Click a type in the sidebar, or focus the pane (ctrl+x tab) and press `1`–`9`.
-- Click a scope (`▸` folded, `▾` open) to open or fold it. A folded scope previews its first names and how many more it holds. Long built-in lists start folded.
+- Click a scope (the filled row, `▸` folded, `▾` open) to open or fold it. A folded scope previews its first names and how many more it holds. Long built-in lists start folded.
 - `r` or `refresh` reads the stack again, after you install something mid-session.
 
 ## Where it draws

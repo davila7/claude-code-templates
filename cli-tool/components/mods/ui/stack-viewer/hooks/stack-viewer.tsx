@@ -37,6 +37,7 @@ const IVORY = '#faf9f5'
 const GRAY = '#b0aea5'
 const DIM = '#87867f'
 const LINE = '#5e5d59'
+const ROW_BG = '#3d3d3a'
 
 let sections: Section[] = []
 let selected: Kind = 'skills'
@@ -333,6 +334,8 @@ export const register: Register = (on, options) => {
       const isOpenScope = isExpanded(section.kind, s)
       const empty = s.items.length === 0
       const marker = empty ? ' ' : isOpenScope ? '▾' : '▸'
+      // a scope with something inside is a filled bar, so it reads as a control
+      const bg = empty ? undefined : ROW_BG
       const labelW = Math.min(19, Math.max(10, Math.floor(mainW * 0.34)))
       const whereW = Math.max(0, mainW - INDENT - labelW - 6)
       const body: RenderChildren[] = []
@@ -358,13 +361,13 @@ export const register: Register = (on, options) => {
       }
       return (
         <Box key={`s${s.id}`} flexDirection="column" marginBottom={empty ? 0 : 1}>
-          <Box key="h" flexDirection="row">
-            <Text key="n" color={empty ? LINE : ORANGE} bold={!empty}>{sp(cell(`${rank}`, 2, 'right'))}</Text>
-            <Text key="g">{' '}</Text>
+          <Box key="h" flexDirection="row" width={mainW} backgroundColor={bg}>
+            <Text key="n" color={empty ? LINE : ORANGE} backgroundColor={bg} bold={!empty}>{sp(cell(`${rank}`, 2, 'right'))}</Text>
+            <Text key="g" backgroundColor={bg}>{' '}</Text>
             <Button key={`scope:${section.kind}:${s.id}`} plain dimColor={empty} label={sp(cell(`${marker} ${SCOPE[s.id].label}`, labelW + 2))} onPress={noop} />
-            <Text key="c" color={empty ? LINE : IVORY} bold={!empty}>{sp(cell(empty ? '—' : `${s.items.length}`, 4, 'right'))}</Text>
-            <Text key="x">{'  '}</Text>
-            {whereW > 4 ? <Text key="w" color={LINE}>{sp(fit(s.where, whereW))}</Text> : null}
+            <Text key="c" color={empty ? LINE : IVORY} backgroundColor={bg} bold={!empty}>{sp(cell(empty ? '—' : `${s.items.length}`, 4, 'right'))}</Text>
+            <Text key="x" backgroundColor={bg}>{'  '}</Text>
+            {whereW > 4 ? <Text key="w" color={empty ? LINE : DIM} backgroundColor={bg}>{sp(cell(s.where, whereW))}</Text> : null}
           </Box>
           {body}
         </Box>
