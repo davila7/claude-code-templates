@@ -12,22 +12,23 @@ A side pane that maps every component your Claude Code session runs and where ea
 ▌1: Skills            21  Enterprise › User › Project on a name clash · plugin
  2: Subagents          4  skills are namespaced, both load
  3: Commands          99
- 4: Hooks              7    1  Enterprise            —  managed settings dir
- 5: MCP servers        3  ▾ 2  User                  2  ~/.claude/skills
+ 4: Hooks              7   1   Enterprise            —  managed settings dir
+ 5: MCP servers        3   2 ▾ User                  2  ~/.claude/skills
  6: Plugins & mods     3       deploy
  7: Settings          11       pdf-tools
  8: Memory             2
- 9: Output styles      8  ▾ 3  Project               2  .claude/skills
+ 9: Output styles      8   3 ▾ Project               2  .claude/skills
                                d̶e̶p̶l̶o̶y̶        shadowed by User
  name  active                  release-notes
  n̶a̶m̶e̶  shadowed
- name  off                ▾ 4  Plugin                2  <plugin>/skills · …
+ name  off                 4 ▾ Plugin                2  <plugin>/skills · …
  ≈     read off files          hello-mod:greet
                                team-tools:changelog
 
-                            5  claude.ai account     —  enabled on claude.ai
-                            6  MCP server            —  skills an MCP server…
-                          ▸ 7  Built-in             16  ship with Claude Code
+                           5   claude.ai account     —  enabled on claude.ai
+                           6   MCP server            —  skills an MCP server…
+                           7 ▸ Built-in            16  ship with Claude Code
+                               batch, claude-api, debug +13  click to open
 
 [ refresh ] [ fold all ] [ close ]
 ```
@@ -71,7 +72,7 @@ The mods API does not list the built-in subagents (Explore, Plan, general-purpos
 ## Controls
 
 - Click a type in the sidebar, or focus the pane (ctrl+x tab) and press `1`–`9`.
-- Click a scope to fold or unfold it. Long built-in lists start folded.
+- Click a scope (`▸` folded, `▾` open) to open or fold it. A folded scope previews its first names and how many more it holds. Long built-in lists start folded.
 - `r` or `refresh` reads the stack again, after you install something mid-session.
 
 ## Where it draws
