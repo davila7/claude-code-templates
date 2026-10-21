@@ -10,7 +10,8 @@ interface Props {
 }
 
 export default function SkillSpectorReport({ result }: Props) {
-  const shown = result.findings.length;
+  // Findings are grouped by (id, title, file); `count` is how many observations each row stands for.
+  const shown = result.findings.reduce((total, f) => total + f.count, 0);
   return (
     <section
       id="security-scan"
@@ -28,6 +29,11 @@ export default function SkillSpectorReport({ result }: Props) {
               {result.version ? ` · v${result.version}` : ''}
               {result.scannedAt ? ` · ${result.scannedAt.slice(0, 10)}` : ''}
             </p>
+            {result.analysis === 'partial' && (
+              <p className="mt-1 text-[12px] text-[var(--color-text-tertiary)]">
+                Partial analysis: some checks could not run on this component.
+              </p>
+            )}
           </div>
         </div>
         <div className="sm:text-right">
@@ -46,7 +52,7 @@ export default function SkillSpectorReport({ result }: Props) {
         naturally show more of them.
       </p>
 
-      {shown > 0 ? (
+      {result.findings.length > 0 ? (
         <ul className="mt-5 divide-y divide-[var(--color-border)] border-t border-[var(--color-border)]">
           {result.findings.map((f, i) => (
             <li key={i} className="flex gap-3 py-3">
