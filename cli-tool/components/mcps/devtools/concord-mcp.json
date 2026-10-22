@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "concord": {
+      "description": "Local-first shared work-state for coding agents: presence, file claims, messaging, handoffs and review packets so multiple agents (Claude Code, Cursor, Codex, etc.) can coordinate on one repo.",
+      "command": "npx",
+      "args": ["-y", "@concord-ai/concord-mcp"]
+    }
+  }
+}
