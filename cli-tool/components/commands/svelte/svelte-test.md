@@ -1,3 +1,10 @@
+---
+description: "Create comprehensive tests for Svelte components and SvelteKit routes, including unit tests, component tests, and E2E tests."
+allowed-tools: Read, Write, Edit, Bash(npm test:*), Bash(npm run test:*)
+argument-hint: "[test-target-or-scope]"
+
+---
+
 # /svelte:test
 
 Create comprehensive tests for Svelte components and SvelteKit routes, including unit tests, component tests, and E2E tests.
