@@ -29,8 +29,8 @@ If no business type was given, ask the user what the business is and who the sit
 ### 2. Download into the project
 
 - Run `curl -s https://8b.com/templates/<slug>.json`. In it, `get.curl` is a list of download lines (index.html, AGENTS.md, LICENSE, CREDITS.md) and `get.agent_prompt` is the editing plan written for that design.
-- Choose the target folder: the current folder when it has no `index.html`; otherwise create a subfolder such as `site/` so an existing entry point is never overwritten.
-- Run each `get.curl` line inside the target folder, then confirm the four files are there.
+- Choose the target folder: use the current folder only when none of `index.html`, `AGENTS.md`, `LICENSE` or `CREDITS.md` already exists there. Otherwise create a new, unused subfolder such as `site/`; never reuse an existing folder or overwrite a file without the user's explicit permission.
+- Before each `get.curl` line, check that its destination does not exist yet; if it does, stop and ask the user. After downloading, confirm the four files are there.
 
 ### 3. Read the rules of this file
 
