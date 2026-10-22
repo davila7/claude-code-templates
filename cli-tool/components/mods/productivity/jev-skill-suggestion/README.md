@@ -106,6 +106,8 @@ Two requests, in the cookbook's shape. Each may come back empty-handed.
 
 Their mean is the gate: under `gateThreshold` (0.30) nothing is suggested, whatever the ranking said. Questions about subject matter would not do this job — *explain what a monad is* and a task that needs a skill are both software.
 
+A `choice` holds at most 255 options: TypeSafe answers more with `400 Too many choices`, and `$.command.list()` counts plugin commands too, so a few installed plugins pass it. A larger catalog is ranked in near-equal parts (311 skills: 156 + 155), sent at once under the same `timeoutMs`, with the three `noul`s asked in the first part only. Each part's probabilities only compare within that part, so the merged ranking takes every part's first before any part's second, and the shortlist opens with each part's best for request 2 to settle. Without the first part's answer there is no gate and nothing is suggested; a later part that fails just leaves its skills unranked.
+
 **Request 2 — read the top three properly.** The same `choice` over the shortlist (`shortlist`, 3), now with each skill's full frontmatter description and the first `excerptChars` (700) of its SKILL.md as the criterion, and one `noul` per candidate — *does this skill do the specific thing the request asks for?* — answered on its own, so all of them can come back low. A shortlist whose best `fits` is under `fitsThreshold` (0.30) is dropped entirely; otherwise the `choice`'s winner is suggested. The two decide different things: the `choice` settles *which*, the `noul`s settle *whether*.
 
 This is where lookalikes separate — on one line the skill that *edits* `.pptx` files reads nearly the same as the one that *authors* them; on 700 characters they do not.
@@ -117,7 +119,7 @@ The skill bodies come from disk, by where Claude Code keeps them: `.claude/skill
 - A skill whose frontmatter says `disable-model-invocation: true` is never suggested, whichever path picked it: the engine leaves it out of the listing and the Skill tool refuses it. Before the first listing has been seen the candidates come from `$.command.list()`, which also names such skills, so their SKILL.md is the check (read for the shortlist and for the winner).
 - The built-in classifier answers one label from the descriptions, with no gate and no second request.
 
-Every failure — a non-2xx response, a timeout past `timeoutMs` on either request, a thrown error, a malformed body — lets the prompt through with no suggestion. The mod never blocks a prompt.
+Every failure — a non-2xx response, a timeout past `timeoutMs` on either request, a thrown error, a malformed body — lets the prompt through with no suggestion. The mod never blocks a prompt. A non-2xx is logged with the start of its body, where the backend gives its reason.
 
 Prompts that are not a task get no suggestion: notifications, peer messages, observer reports, and a prompt that is itself a `/name` (its skill is already named).
 
