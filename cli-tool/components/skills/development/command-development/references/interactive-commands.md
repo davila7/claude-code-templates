@@ -875,7 +875,7 @@ Options:
 **Arguments for known values:**
 ```markdown
 ---
-argument-hint: [project-name]
+argument-hint: "[project-name]"
 allowed-tools: AskUserQuestion, Write
 ---
 

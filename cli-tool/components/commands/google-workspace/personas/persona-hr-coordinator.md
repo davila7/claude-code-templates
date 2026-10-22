@@ -1,6 +1,6 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [task-description]
+argument-hint: "[task-description]"
 description: Handle HR workflows — onboarding, announcements, and employee comms.
 ---
 

@@ -1,6 +1,6 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [task-parameters]
+argument-hint: "[task-parameters]"
 description: Rename multiple Google Drive files matching a pattern to follow a consistent naming convention.
 ---
 
