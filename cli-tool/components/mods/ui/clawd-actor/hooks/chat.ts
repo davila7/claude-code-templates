@@ -4,8 +4,8 @@
 import { FRAME_MS } from './scenes.ts'
 
 /** `/clawd <word>` actions: free and instant, no model call. Each names the scene it plays. */
-export const ACTIONS: Record<string, string> = { pet: 'pet', feed: 'feed', wave: 'wave', hi: 'wave', hello: 'wave', dance: 'disco' }
-export const HELP = 'Try /clawd pet, feed, wave or dance, or just say something to me!'
+export const ACTIONS: Record<string, string> = { pet: 'pet', feed: 'feed', wave: 'wave', hi: 'wave', hello: 'wave', dance: 'disco', shift: 'shift', 閃身步: 'shift' }
+export const HELP = 'Try /clawd pet, feed, wave, dance or shift, or just say something to me!'
 const MAX_ASK = 500 // characters of a message passed on to the model
 const MAX_LINES = 3 // of text in the bubble
 

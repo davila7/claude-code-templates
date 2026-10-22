@@ -8,6 +8,8 @@ test('a lone action word acts, anything else chats, nothing at all asks for help
   expect(parseClawd('pet')).toEqual({ action: 'pet' })
   expect(parseClawd('  DANCE ')).toEqual({ action: 'disco' })
   expect(parseClawd('hi')).toEqual({ action: 'wave' })
+  expect(parseClawd('Shift')).toEqual({ action: 'shift' })
+  expect(parseClawd('閃身步')).toEqual({ action: 'shift' })
   expect(parseClawd('hi there')).toEqual({ chat: 'hi there' })
   expect(parseClawd('   ')).toEqual({ help: true })
   // only the listed words act, not what every object inherits
@@ -62,6 +64,16 @@ test('/clawd pet brings Clawd out between turns with hearts, then it goes', asyn
   expect(await shown(ui)).toBe('below')
 })
 
+test('/clawd shift plays from its first frame: the name is called before the dash, whenever it is asked', async ($, on) => {
+  const { clock, ui } = await start($, on)
+  await $.command.run({ command: 'clawd', args: 'pet' } as any)
+  await clock.advance(1500) // the frame counter moves on meanwhile
+  await $.command.run({ command: 'clawd', args: 'shift' } as any)
+  await ui.redraw(BAND)
+  expect(await shown(ui)).toContain('閃')
+  expect(await shown(ui)).not.toContain('步') // not yet: the name comes a character at a time
+})
+
 test('/clawd with a message asks Haiku as Clawd and shows the answer in a bubble', async ($, on) => {
   const asked: any[] = []
   on('model.complete', ($, e) => (asked.push(e), { value: { isAnswered: true, text: 'Busy watching Claude, but hi!', usage: {} } }))
@@ -106,10 +118,10 @@ test('the mods beneath get the band less the rows Clawd takes', async ($, on) =>
   expect(rows.at(-1)).toBe(10) // Clawd away: all of it
   await $.command.run({ command: 'clawd', args: 'pet' } as any)
   await ui.redraw(BAND)
-  expect(rows.at(-1)).toBe(10 - 4) // the stage
+  expect(rows.at(-1)).toBe(10 - 5) // the stage
   await $.command.run({ command: 'clawd', args: 'hello there' } as any)
   await ui.redraw(BAND)
-  expect(rows.at(-1)).toBe(10 - 4 - 3) // the stage and a one-line bubble
+  expect(rows.at(-1)).toBe(10 - 5 - 3) // the stage and a one-line bubble
   await ui.redraw({ ...BAND, maxRows: 3 })
   expect(await shown(ui)).toBe('below') // no room for the stage: Clawd stays out
   expect(rows.at(-1)).toBe(3)
