@@ -4,15 +4,15 @@
 
 A Claude Code mod: while Claude works, **Clawd** walks onto a little stage above the prompt and
 acts out what is going on — the spinner's `-ing` word (*Sautéing*, *Pondering*, *Herding*…) —
-then puts on a show of 31 scenes, a new one every 15 seconds, with little Clawds along for the ride.
+then puts on a show of 32 scenes, a new one every 15 seconds, with little Clawds along for the ride.
 
-![Clawd watching a baby Clawd hatch, dancing under a disco ball with a little pink Clawd, walking with two little ones in a row, and cooking at a pot that stays put](https://raw.githubusercontent.com/BrianHuang813/clawd-actor/main/assets/demo.gif)
+![Clawd as a detective in a fedora, magnifying glass in hand, pondering under a thought bubble; calling out 閃身步 and flash-stepping across the stage and back; and as a homemaker in a curly perm and apron, cooking at a pot that stays put](https://raw.githubusercontent.com/BrianHuang813/clawd-actor/main/assets/demo.gif)
 
-*Four scenes at the real frame rate, about 15 s in all (a real turn changes scene every 15 s). Every frame is the mod's own output, rendered by `tools/`.*
+*Three scenes at the real frame rate, about 16 s in all (a real turn changes scene every 15 s). Every frame is the mod's own output, rendered by `tools/`.*
 
 ## What it does
 
-- **Acts out the spinner word.** 31 scenes, matched by word stem, so *Flambéing* cooks and
+- **Acts out the spinner word.** 32 scenes, matched by word stem, so *Flambéing* cooks and
   *Dilly-dallying* strolls. A word it does not know falls back to what the turn is doing
   (typing for tool use, talking while responding, thinking otherwise).
 - **Acts out the running tool** when one is already running as a turn opens; it picks the
@@ -32,6 +32,13 @@ then puts on a show of 31 scenes, a new one every 15 seconds, with little Clawds
   its idle hop a beat late, two dance backup, one dances under the disco ball, two walk in a row
   behind it (and lead the way back), two sit by the campfire when the stage is wide enough, and
   one hatches from the egg, stands in its shell and hops out to say hello.
+- **Dresses for the part.** Thinking (and reading or searching files), it is a detective in a
+  fedora with a magnifying glass in hand; kicking, a footballer in a blue number 10 shirt and a
+  headband; levitating, an astronaut in a glass helmet with an oxygen tank; cooking or baking, a
+  homemaker with a big curly perm and a heart-pocket apron. It conjures in a wizard's pointed hat
+  and beard, herds in a cowboy hat and neckerchief, sketches in a beret with a palette, lectures in
+  a mortarboard, spins records under the disco ball in headphones and juggles as a clown with a red
+  nose. The stage keeps its top row for the hats, so they stay on when Clawd hops.
 - **Has a face.** Happy ^ ^ eyes, blinks, glances around, and sways so its far side falls into
   shadow, after the official Clawd animation; on the move it looks where it is going.
 - **Talks back.** `/clawd` pets, feeds or waves at Clawd, or chats with it, even mid-turn (see
@@ -54,13 +61,14 @@ then puts on a show of 31 scenes, a new one every 15 seconds, with little Clawds
 | juggle / honk | Juggling / Honking, Booping |
 | sketch / weather / thunder | Sketching, Doodling / Misting, Billowing / Thundering |
 | dig / flow | Burrowing, Spelunking / Flowing, Undulating |
+| shift | Beaming, Shifting, Dodging — calls out 閃身步 top to bottom, then flashes across the stage leaving fading afterimages |
 | kick / skate / campfire | Kicking, Dribbling / Skating, Gliding / Kindling, Smoldering — no built-in word matches these yet, so they mostly turn up in the rotation |
 
 ## Talk to Clawd
 
 `/clawd` runs at once, even while Claude is working, and never interrupts the turn:
 
-![Mid-turn, while Clawd cooks, typing /clawd how's it going? makes Clawd ponder and answer in a speech bubble; then /clawd pet sets hearts floating up](https://raw.githubusercontent.com/BrianHuang813/clawd-actor/main/assets/chat.gif)
+![Mid-turn, while Clawd cooks, typing /clawd how's it going? makes Clawd ponder and answer in a speech bubble; then /clawd pet sets hearts floating up, and /clawd shift sends Clawd flash-stepping across the stage and back](https://raw.githubusercontent.com/BrianHuang813/clawd-actor/main/assets/chat.gif)
 
 *Clawd's answer here is an example; in a session it comes from Haiku.*
 
@@ -70,6 +78,7 @@ then puts on a show of 31 scenes, a new one every 15 seconds, with little Clawds
 | `/clawd feed` | catches a cookie and munches it |
 | `/clawd wave` (or `hi`, `hello`) | waves back |
 | `/clawd dance` | dances under the disco ball |
+| `/clawd shift` (or `閃身步`) | calls out 閃身步 and flash-steps across the stage, afterimages trailing |
 | `/clawd <anything else>` | answers in a speech bubble |
 
 Actions are free and instant. Anything else is a chat: Clawd ponders for a moment, then answers in
@@ -78,6 +87,30 @@ Haiku (one small `haiku` call per message, on your usage) and shows only in Claw
 not written to the transcript, so Claude's own conversation never sees it. Each message stands
 alone; Clawd does not remember earlier ones. Between turns Clawd steps out for the reaction and
 leaves again after it.
+
+### 閃身步 (shift)
+
+閃身步, the *flash step*, is a martial-arts dodge: a burst of speed that carries the fighter aside
+so fast the eye catches only afterimages. Clawd does it as a proper move, name first:
+
+```
+閃
+身  ▓▓▓▓▓▓▓ ▓▓▓▓▓▓▓  ▐▛███▛▌
+步 ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▝▜█████▙▖
+     ▓▓ ▓▓   ▓▓ ▓▓
+```
+
+1. **Calls the move.** 閃, 身, 步 appear one at a time, top to bottom in a column behind Clawd,
+   the way `< HONK! >` is shouted, while Clawd looks the way it is about to go.
+2. **Takes its stance**, arms up, once the name is complete.
+3. **Flashes across the stage** in three frames, leaving an afterimage at each spot it left.
+4. **Lands sliding** with a squash; the afterimages fade (▓ ▒ ░) and are gone, and Clawd hops
+   with a pleased smile.
+
+Then it calls the move again and flashes back the other way, about three seconds a pass.
+`/clawd shift` or `/clawd 閃身步` plays it at once, from the call; as a scene it comes with the
+spinner word *Beaming*, and in the rotation. It needs a terminal font that draws CJK characters two
+columns wide, as nearly all do.
 
 ## Install
 
@@ -143,7 +176,8 @@ without calling `next(e)` hides everything beneath it — if Clawd never shows u
   turn runs; the band reads it, which subscribes it to redraws. A timer started inside a
   `turn.start` hook does not outlive that dispatch, which is why it lives in `session.start`.
 - Whether to draw at all follows the band's own `isWorking` prop.
-- `hooks/scenes.ts` is pure: a 4-row grid of cells, a scene per name, `sceneAt()` choosing an
+- `hooks/scenes.ts` is pure: a 5-row grid of cells (the top one for hats), a scene per name, a costume per
+  dressed-up scene drawn over Clawd wherever it stands, `sceneAt()` choosing an
   act's scene, `hold()` keeping it for the whole act, and `frameRows()` turning the grid into
   coloured runs.
 - The update notice: `session.start` sets a one-shot timer that, two seconds later, reads the
@@ -152,80 +186,8 @@ without calling `next(e)` hides everything beneath it — if Clawd never shows u
 
 ## Contributing
 
-Bug reports, ideas and new scenes are welcome.
-
-**Found a bug or have an idea?** [Open an issue](https://github.com/BrianHuang813/clawd-actor/issues):
-say what you saw and what you expected, with your Claude Code version and terminal. A screenshot
-helps with anything drawn wrong.
-
-**Want to change something?** Send a pull request:
-
-1. Fork the repository, clone your fork and make a branch for the change.
-2. Run Clawd from your clone. If you have the marketplace version installed, turn it off while you
-   work, as two plugins of the same name cannot load together:
-
-   ```sh
-   claude plugin disable clawd-actor@clawd-actor   # enable it again when you are done
-   claude --plugin-dir .
-   ```
-
-3. Check the change; both must pass:
-
-   ```sh
-   claude plugin validate .
-   claude plugin test .
-   ```
-
-4. If the change shows in one of the GIFs, regenerate it (see below).
-5. Open a pull request against `main`. Say what changes on stage; a GIF or a few frames help.
-   Leave `version` in `.claude-plugin/plugin.json` alone: it is bumped when a release goes out.
-
-**Adding a scene:** write it as a function in `scenes` in `hooks/scenes.ts`, give it spinner-word
-stems in `VERBS`, and add a word that picks it to `PROBE` in `tests/scenes.test.ts`. The tests then
-check it on its own.
-
-### What the tests check
-
-That every scene keeps the stage size at 30, 40 and 60 columns and moves Clawd about only in the
-scenes without set pieces (the rest are checked to stay put), that no prop is ever drawn over
-Clawd's face, that a turn opens on the running tool or the spinner word and then rotates through
-every other scene whatever tools run, picking up where the last turn stopped, that a scene holds
-for its whole act, that the timer animates Clawd during a turn and lets go after it, that `/clawd`
-plays its reactions between turns and shows Haiku's answer (or a fallback) in a bubble that fits
-any script (combining marks included), that only the latest `/clawd` gets its answer shown, that
-the mods beneath get the rows Clawd leaves them, that the update notice shows only when `main` carries a newer version, and that the
-first session after an update says what is new, once.
-
-Block characters and symbols are drawn one cell wide; a terminal font that draws some of them
-wider may shift a frame.
-
-### Regenerating the GIFs
-
-With Node 22+ and Python with Pillow:
-
-```sh
-node tools/frames.ts > frames.json      # the frames, straight from hooks/scenes.ts
-python tools/render.py frames.json assets/demo.gif
-node tools/chat-frames.ts > chat.json   # a mid-turn /clawd chat, with hooks/chat.ts's bubble
-python tools/render.py chat.json assets/chat.gif
-```
-
-`tools/render.py` uses DejaVu Sans Mono and draws block elements as exact rectangles; edit the
-font path at its top for your system.
-
-### Releasing (maintainers)
-
-1. Bump `version` in `.claude-plugin/plugin.json` in the commit that ships the change.
-   `claude plugin update` and the update notice go by that number alone, so code merged without a
-   bump never reaches anyone (a change to docs alone needs none).
-2. Merge or push it to `main`.
-3. Tag the commit and publish its release notes; tags and releases are the changelog, updates do
-   not read them:
-
-   ```sh
-   git tag -a v0.6.0 -m "clawd-actor 0.6.0" && git push origin v0.6.0
-   gh release create v0.6.0 --title "clawd-actor 0.6.0 — …" --notes "…"
-   ```
+Bug reports, ideas and new scenes are welcome: see [CONTRIBUTING.md](https://github.com/BrianHuang813/clawd-actor/blob/main/CONTRIBUTING.md) for how to
+report a bug, run Clawd from a clone, test a change, regenerate the GIFs and send a pull request.
 
 ## Notes
 

@@ -6,6 +6,8 @@ import { ACT_FRAMES, FRAME_MS, frameRows, H, hold, type Mode, type Shown } from 
 
 const MAX_STAGE = 60 // widest the wander roams, however wide the terminal
 const frame = atom({ plugin: 'clawd-actor', key: 'frame' } as const, 0)
+// The turn's show, kept in $.state too: a hot reload (/reload-plugins) loses module variables, not state
+const show = atom({ plugin: 'clawd-actor', key: 'show' } as const, { isTurnRunning: false, turnBase: 0, seed: -1, played: 0 })
 
 // The spinner's word, read while it draws. State cannot be written during a render,
 // so it lives here; the frame timer's redraws pick it up.
@@ -16,8 +18,8 @@ let turnBase = 0 // the frame the turn started on: acts count from it
 let seed = 0 // shuffles the session's rotation of scenes
 let played = 0 // rotation acts earlier turns got through
 let shown: Shown | undefined // the scene on stage, held for its act
-// What /clawd set going: a scene played over the show, and what Clawd says, for `left` more frames
-let reaction: { scene: string; say?: string; left: number } | undefined
+// What /clawd set going: a scene played over the show from frame `from`, and what Clawd says, for `left` more frames
+let reaction: { scene: string; say?: string; left: number; from: number } | undefined
 let asked = 0 // /clawd commands so far: a reply to any but the latest is dropped
 const running: { id: string; tool: string }[] = [] // tools in flight, newest last
 
@@ -68,12 +70,15 @@ const checkForUpdate = async ($: Engine) => {
   }
 }
 
+/** Writes the turn's show through to $.state, for the module a reload brings in. */
+const keep = ($: Engine) => update($, show, () => ({ isTurnRunning, turnBase, seed, played }))
+
 /** Moves the show on a frame, which redraws the band. */
 const tick = ($: Engine) => update($, frame, f => f + 1)
 
-/** Plays `scene` over the show for `frames` frames, Clawd saying `say`; redraws at once, even between turns. */
-const react = ($: Engine, scene: string, say?: string, frames = REACT_FRAMES) => {
-  reaction = { scene, say, left: frames }
+/** Plays `scene` from its start over the show for `frames` frames, Clawd saying `say`; redraws at once, even between turns. */
+const react = async ($: Engine, scene: string, say?: string, frames = REACT_FRAMES) => {
+  reaction = { scene, say, left: frames, from: (await read($, frame)) + 1 }
   return tick($)
 }
 
@@ -101,8 +106,12 @@ export const register: Register = on => {
   // It ticks all session long but only writes, and so redraws, while a turn runs.
   on('session.start', async ($, e, next) => {
     const r = await next(e)
-    seed = Math.floor(await $.clock.now()) % 9973
-    played = 0
+    // a reload mid-turn picks the show up where it was; a new session starts one
+    ;({ isTurnRunning, turnBase, seed, played } = await read($, show))
+    if (seed < 0) {
+      seed = Math.floor(await $.clock.now()) % 9973
+      await keep($)
+    }
     $.clock.after(UPDATE_CHECK_MS, () => checkForUpdate($)) // on a timer: the session never waits on the network
     $.clock.every(FRAME_MS, () => {
       const isReacting = reaction !== undefined
@@ -111,7 +120,7 @@ export const register: Register = on => {
       return isTurnRunning || isReacting ? tick($) : undefined
     })
     // last, so the timers run whatever happens here; immediate: /clawd runs mid-turn instead of waiting
-    await $.command.register({ name: 'clawd', description: 'Pet, feed or wave at Clawd, or say something to it', argumentHint: '[pet|feed|wave|dance|message]', immediate: true })
+    await $.command.register({ name: 'clawd', description: 'Pet, feed or wave at Clawd, or say something to it', argumentHint: '[pet|feed|wave|dance|shift|message]', immediate: true })
     return r
   })
 
@@ -133,6 +142,7 @@ export const register: Register = on => {
     isTurnRunning = true
     turnBase = await read($, frame)
     running.length = 0
+    await keep($)
     return next(e)
   })
 
@@ -148,8 +158,10 @@ export const register: Register = on => {
   })
 
   on('turn.complete', async ($, e, next) => {
+    if (e.agentId) return next(e) // a subagent's turn (a workflow's agents too): the main turn runs on
     isTurnRunning = false
     played += Math.floor(((await read($, frame)) - turnBase) / ACT_FRAMES) // acts after the opener
+    await keep($)
     return next(e)
   })
 
@@ -161,8 +173,15 @@ export const register: Register = on => {
   })
 
   on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
-    // isWorking is the engine's own word on whether a turn runs; the stage shows only where it fits
-    if (e.props.hasSurvey || (!e.props.isWorking && !reaction) || e.props.maxRows < H) return next(e)
+    // read before any early return: the engine tracks the atoms a render reads and redelivers on
+    // their writes — a gated return that reads nothing unregisters the frame dependency, and the
+    // band would never redraw on its own again (the whole-turn blackout)
+    const t = await read($, frame)
+    // isWorking is the engine's own word on whether a turn runs — but not the turn itself: a
+    // command's busy blink (a /reload-plugins, a plugin hot-reload's repaint) turns it on with no
+    // turn started, and the band would flash Clawd for the one frame before the command ends.
+    // isTurnRunning follows the turn; a /clawd reaction plays past both.
+    if (e.props.hasSurvey || ((!e.props.isWorking || !isTurnRunning) && !reaction) || e.props.maxRows < H) return next(e)
 
     const width = Math.min(e.props.bodyColumns, MAX_STAGE)
     // the bubble needs its two border rows besides the text: left out when the band has no room for one line
@@ -171,10 +190,10 @@ export const register: Register = on => {
     // keep whatever other band mods draw here, in the rows Clawd leaves them
     const below = await next({ ...e, props: { ...e.props, maxRows: e.props.maxRows - H - said.length } })
 
-    const t = await read($, frame)
     const { Box, Text } = $.ui.resolve(e)
     shown = hold(shown, turnBase, { word, mode, tick: t - turnBase, seed, played, tool: running[running.length - 1]?.tool })
-    const rows = frameRows(word, mode, t, width, reaction?.scene ?? shown.scene)
+    // a reaction counts its own frames, so a move like shift opens on its first one
+    const rows = reaction ? frameRows(word, mode, Math.max(0, t - reaction.from), width, reaction.scene) : frameRows(word, mode, t, width, shown.scene)
 
     return (
       <Box flexDirection="column">
