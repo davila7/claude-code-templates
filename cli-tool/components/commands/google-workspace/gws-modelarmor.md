@@ -1,7 +1,7 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [resource] [method] [flags]
-description: Google Model Armor: Filter user-generated content for safety.
+argument-hint: "[resource] [method] [flags]"
+description: "Google Model Armor: Filter user-generated content for safety."
 ---
 
 # Google Workspace Modelarmor

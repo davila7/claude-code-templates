@@ -1,6 +1,6 @@
 ---
 allowed-tools: Read, Write, Edit, Bash
-argument-hint: [version-type] | --patch | --minor | --major | --prerelease
+argument-hint: "[version-type] | --patch | --minor | --major | --prerelease"
 description: Prepare and execute project release with version management and changelog updates
 ---
 
