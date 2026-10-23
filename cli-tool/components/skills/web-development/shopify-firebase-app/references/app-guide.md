@@ -1,6 +1,6 @@
 # App guide
 
-<!-- Generated from templates/shared/AGENTS.md by `npm run build:reference`. Do not edit. -->
+_From [Nitrogen](https://github.com/mksd0398/nitrogen), where it is generated from `templates/shared/AGENTS.md`._
 
 A Shopify embedded app on Firebase, scaffolded by [Nitrogen](https://github.com/mksd0398/nitrogen).
 This is for AI coding agents, and anyone else, working in this project.

@@ -1,6 +1,6 @@
 # App Bridge
 
-<!-- Generated from tools/reference/ by `npm run build:reference`. Do not edit. -->
+_From [Nitrogen](https://github.com/mksd0398/nitrogen), where it is generated from `tools/reference/`._
 
 Everything a Nitrogen page can ask of the Shopify admin. `<script src="https://cdn.shopify.com/shopifycloud/app-bridge.js">` in `web/*.html` puts it all on one global object, `shopify`, so there is nothing to import and no `createApp`. It only works inside the Shopify admin. Inside an app, each example runs from its App Bridge page (`web/apis.html`).
 
@@ -327,7 +327,6 @@ A full-screen window showing another page of your app, for an editor that needs 
 
 <s-button commandFor="editor" command="--show">Open</s-button>
 
-<!-- From JavaScript -->
 <script>
   document.getElementById("editor").show();
 </script>
