@@ -1,9 +1,10 @@
 ---
 name: debugging-strategies
 description: "Transform debugging from frustrating guesswork into systematic problem-solving with proven strategies, powerful tools, and methodical approaches."
-risk: safe
-source: community
-date_added: "2026-02-27"
+metadata:
+  risk: safe
+  source: community
+  date_added: "2026-02-27"
 ---
 
 # Debugging Strategies

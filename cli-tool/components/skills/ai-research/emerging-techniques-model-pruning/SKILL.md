@@ -1,11 +1,12 @@
 ---
 name: model-pruning
 description: Reduce LLM size and accelerate inference using pruning techniques like Wanda and SparseGPT. Use when compressing models without retraining, achieving 50% sparsity with minimal accuracy loss, or enabling faster inference on hardware accelerators. Covers unstructured pruning, structured pruning, N:M sparsity, magnitude pruning, and one-shot methods.
-version: 1.0.0
-author: Orchestra Research
 license: MIT
-tags: [Emerging Techniques, Model Pruning, Wanda, SparseGPT, Sparsity, Model Compression, N:M Sparsity, One-Shot Pruning, Structured Pruning, Unstructured Pruning, Fast Inference]
-dependencies: [transformers, torch]
+metadata:
+  version: 1.0.0
+  author: Orchestra Research
+  tags: [Emerging Techniques, Model Pruning, Wanda, SparseGPT, Sparsity, Model Compression, N:M Sparsity, One-Shot Pruning, Structured Pruning, Unstructured Pruning, Fast Inference]
+  dependencies: [transformers, torch]
 ---
 
 # Model Pruning: Compressing LLMs

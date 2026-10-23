@@ -1,11 +1,12 @@
 ---
 name: sparse-autoencoder-training
 description: Provides guidance for training and analyzing Sparse Autoencoders (SAEs) using SAELens to decompose neural network activations into interpretable features. Use when discovering interpretable features, analyzing superposition, or studying monosemantic representations in language models.
-version: 1.0.0
-author: Orchestra Research
 license: MIT
-tags: [Sparse Autoencoders, SAE, Mechanistic Interpretability, Feature Discovery, Superposition]
-dependencies: [sae-lens>=6.0.0, transformer-lens>=2.0.0, torch>=2.0.0]
+metadata:
+  version: 1.0.0
+  author: Orchestra Research
+  tags: [Sparse Autoencoders, SAE, Mechanistic Interpretability, Feature Discovery, Superposition]
+  dependencies: [sae-lens>=6.0.0, transformer-lens>=2.0.0, torch>=2.0.0]
 ---
 
 # SAELens: Sparse Autoencoders for Mechanistic Interpretability

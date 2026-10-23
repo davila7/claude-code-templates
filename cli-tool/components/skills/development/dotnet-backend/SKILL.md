@@ -1,9 +1,10 @@
 ---
 name: dotnet-backend
 description: "Build ASP.NET Core 8+ backend services with EF Core, auth, background jobs, and production API patterns."
-risk: safe
-source: self
-date_added: "2026-02-27"
+metadata:
+  risk: safe
+  source: self
+  date_added: "2026-02-27"
 ---
 
 # .NET Backend Agent - ASP.NET Core & Enterprise API Expert

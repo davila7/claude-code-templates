@@ -1,9 +1,10 @@
 ---
 name: building-blog
 description: "Use when adding a blog to a Next.js + Sanity site, building a blog section from scratch, integrating Sanity CMS for editorial content, or setting up an SEO-optimized article surface. Triggers on phrases like 'add a blog', 'build the blog', 'create blog section', 'set up blog with Sanity', 'integrate Sanity CMS', 'blog architecture', or any new-blog scoping conversation on a Next.js project."
-risk: safe
-source: community
-date_added: "2026-05-21"
+metadata:
+  risk: safe
+  source: community
+  date_added: "2026-05-21"
 ---
 
 # Building a Blog (Next.js + Sanity)

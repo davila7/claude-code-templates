@@ -1,7 +1,8 @@
 ---
 name: stripe-integration
 description: "Build or review a Stripe integration with current Stripe guidance: Checkout Sessions, Payment Element, Setup Intents, subscriptions and the Customer Portal, webhook-driven fulfillment, idempotency, restricted API keys and Stripe Tax. Use when: stripe, payments, checkout, subscription, billing, webhook, refund, payment intent."
-source: "Rewritten 2026-10 from Stripe's documentation (docs.stripe.com) and its stripe-best-practices agent skill; first version from vibeship-spawner-skills (Apache 2.0)"
+metadata:
+  source: "Rewritten 2026-10 from Stripe's documentation (docs.stripe.com) and its stripe-best-practices agent skill; first version from vibeship-spawner-skills (Apache 2.0)"
 ---
 
 # Stripe Integration

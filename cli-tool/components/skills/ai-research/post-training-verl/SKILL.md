@@ -1,11 +1,12 @@
 ---
 name: verl-rl-training
 description: Provides guidance for training LLMs with reinforcement learning using verl (Volcano Engine RL). Use when implementing RLHF, GRPO, PPO, or other RL algorithms for LLM post-training at scale with flexible infrastructure backends.
-version: 1.0.0
-author: Orchestra Research
 license: MIT
-tags: [Reinforcement Learning, RLHF, GRPO, PPO, Post-Training, Distributed Training]
-dependencies: [verl>=0.3.0, torch>=2.0.0, ray>=2.41.0, vllm>=0.8.2, transformers>=4.40.0]
+metadata:
+  version: 1.0.0
+  author: Orchestra Research
+  tags: [Reinforcement Learning, RLHF, GRPO, PPO, Post-Training, Distributed Training]
+  dependencies: [verl>=0.3.0, torch>=2.0.0, ray>=2.41.0, vllm>=0.8.2, transformers>=4.40.0]
 ---
 
 # verl: Volcano Engine Reinforcement Learning for LLMs

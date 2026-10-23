@@ -1,11 +1,12 @@
 ---
 name: hqq-quantization
 description: Half-Quadratic Quantization for LLMs without calibration data. Use when quantizing models to 4/3/2-bit precision without needing calibration datasets, for fast quantization workflows, or when deploying with vLLM or HuggingFace Transformers.
-version: 1.0.0
-author: Orchestra Research
 license: MIT
-tags: [Quantization, HQQ, Optimization, Memory Efficiency, Inference, Model Compression]
-dependencies: [hqq>=0.2.0, torch>=2.0.0]
+metadata:
+  version: 1.0.0
+  author: Orchestra Research
+  tags: [Quantization, HQQ, Optimization, Memory Efficiency, Inference, Model Compression]
+  dependencies: [hqq>=0.2.0, torch>=2.0.0]
 ---
 
 # HQQ - Half-Quadratic Quantization

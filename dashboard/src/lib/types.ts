@@ -5,6 +5,10 @@ export interface Component {
   type: string;
   content: string;
   description?: string;
+  author?: string;
+  version?: string;
+  license?: string;
+  keywords?: string[];
   url?: string;
   downloads?: number;
   references?: string[];

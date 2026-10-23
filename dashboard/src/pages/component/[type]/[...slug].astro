@@ -134,6 +134,14 @@ const ogImage = component && config
   ? encodeURI(`/og/${typePlural}/${component.path?.replace(/\.(md|json)$/, '') ?? component.name}.png`)
   : undefined;
 const frontmatter = component ? parseFrontmatter(component.content, typePlural ?? '') : {};
+// Agent Skills keep author/version/tags/license under `metadata:`, which the
+// line parser above does not read; fall back to what the catalog generator parsed.
+if (component) {
+  for (const key of ['author', 'version', 'license'] as const) {
+    if (!frontmatter[key] && component[key]) frontmatter[key] = component[key]!;
+  }
+  if (!frontmatter.tags && component.keywords?.length) frontmatter.tags = component.keywords.join(', ');
+}
 const infoCards = CARD_FIELDS.filter((f) => {
   const v = frontmatter[f.key];
   return v && v !== '[]' && v !== '""' && v !== "''";

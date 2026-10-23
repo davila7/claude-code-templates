@@ -1,11 +1,12 @@
 ---
 name: miles-rl-training
 description: Provides guidance for enterprise-grade RL training using miles, a production-ready fork of slime. Use when training large MoE models with FP8/INT4, needing train-inference alignment, or requiring speculative RL for maximum throughput.
-version: 1.0.0
-author: Orchestra Research
 license: MIT
-tags: [Reinforcement Learning, MoE, FP8, INT4, Enterprise, SGLang, Megatron-LM]
-dependencies: [sglang-router>=0.2.3, ray, torch>=2.0.0, transformers>=4.40.0]
+metadata:
+  version: 1.0.0
+  author: Orchestra Research
+  tags: [Reinforcement Learning, MoE, FP8, INT4, Enterprise, SGLang, Megatron-LM]
+  dependencies: [sglang-router>=0.2.3, ray, torch>=2.0.0, transformers>=4.40.0]
 ---
 
 # miles: Enterprise-Grade RL for Large-Scale Model Training

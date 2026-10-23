@@ -1,11 +1,12 @@
 ---
 name: grpo-rl-training
 description: Expert guidance for GRPO/RL fine-tuning with TRL for reasoning and task-specific model training
-version: 1.0.0
-author: Orchestra Research
 license: MIT
-tags: [Post-Training, Reinforcement Learning, GRPO, TRL, RLHF, Reward Modeling, Reasoning, DPO, PPO, Structured Output]
-dependencies: [transformers>=4.47.0, trl>=0.14.0, datasets>=3.2.0, peft>=0.14.0, torch]
+metadata:
+  version: 1.0.0
+  author: Orchestra Research
+  tags: [Post-Training, Reinforcement Learning, GRPO, TRL, RLHF, Reward Modeling, Reasoning, DPO, PPO, Structured Output]
+  dependencies: [transformers>=4.47.0, trl>=0.14.0, datasets>=3.2.0, peft>=0.14.0, torch]
 ---
 
 # GRPO/RL Training with TRL

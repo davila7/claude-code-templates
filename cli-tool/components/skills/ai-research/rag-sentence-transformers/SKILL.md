@@ -1,11 +1,12 @@
 ---
 name: sentence-transformers
 description: Framework for state-of-the-art sentence, text, and image embeddings. Provides 5000+ pre-trained models for semantic similarity, clustering, and retrieval. Supports multilingual, domain-specific, and multimodal models. Use for generating embeddings for RAG, semantic search, or similarity tasks. Best for production embedding generation.
-version: 1.0.0
-author: Orchestra Research
 license: MIT
-tags: [Sentence Transformers, Embeddings, Semantic Similarity, RAG, Multilingual, Multimodal, Pre-Trained Models, Clustering, Semantic Search, Production]
-dependencies: [sentence-transformers, transformers, torch]
+metadata:
+  version: 1.0.0
+  author: Orchestra Research
+  tags: [Sentence Transformers, Embeddings, Semantic Similarity, RAG, Multilingual, Multimodal, Pre-Trained Models, Clustering, Semantic Search, Production]
+  dependencies: [sentence-transformers, transformers, torch]
 ---
 
 # Sentence Transformers - State-of-the-Art Embeddings

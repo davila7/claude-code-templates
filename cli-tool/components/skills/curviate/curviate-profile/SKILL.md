@@ -1,11 +1,12 @@
 ---
 name: curviate-profile
 description: "Read and write LinkedIn profiles and company pages with the Curviate CLI, and resolve human search terms into the opaque filter ids the search commands need. Covers `profile` (me, detail, sections, update, subscription, analytics, visitors, SSI), `company` (detail, employees, posts, jobs, followers, page inbox, follow-invite), `search parameters`, retrieval mode (`--mode`/`--max-age`), and the session/account commands (`login`, `config`, `account`). Use when fetching or updating a member or company profile, resolving a filter id, choosing between a stored copy and a live LinkedIn read, or connecting an account."
-version: 0.1.0
-author: Curviate
 license: MIT
-tags: [LinkedIn, CLI, Agents, Sales, Recruiting, Outreach]
-repository: https://github.com/Curviate/curviate-plugin
+metadata:
+  version: 0.1.0
+  author: Curviate
+  tags: [LinkedIn, CLI, Agents, Sales, Recruiting, Outreach]
+  repository: https://github.com/Curviate/curviate-plugin
 ---
 
 # Curviate: profiles, companies, and filter ids

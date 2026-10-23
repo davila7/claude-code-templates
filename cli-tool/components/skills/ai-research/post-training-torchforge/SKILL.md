@@ -1,11 +1,12 @@
 ---
 name: torchforge-rl-training
 description: Provides guidance for PyTorch-native agentic RL using torchforge, Meta's library separating infra from algorithms. Use when you want clean RL abstractions, easy algorithm experimentation, or scalable training with Monarch and TorchTitan.
-version: 1.0.0
-author: Orchestra Research
 license: MIT
-tags: [Reinforcement Learning, PyTorch, GRPO, SFT, Monarch, TorchTitan, Meta]
-dependencies: [torch>=2.9.0, torchtitan>=0.2.0, vllm, monarch]
+metadata:
+  version: 1.0.0
+  author: Orchestra Research
+  tags: [Reinforcement Learning, PyTorch, GRPO, SFT, Monarch, TorchTitan, Meta]
+  dependencies: [torch>=2.9.0, torchtitan>=0.2.0, vllm, monarch]
 ---
 
 # torchforge: PyTorch-Native Agentic RL Library
