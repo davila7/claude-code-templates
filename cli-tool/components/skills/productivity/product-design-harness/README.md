@@ -15,7 +15,7 @@ review is optional and depends on the host and the user's authorization.
 After this contribution is merged and published in the AI Templates catalog:
 
 ```sh
-npx claude-code-templates@latest --skill productivity/product-design-harness --yes
+npx claude-code-templates@1.30.0 --skill productivity/product-design-harness --yes
 ```
 
 The catalog installer downloads the complete directory into
@@ -45,6 +45,11 @@ The included examples are illustrative fixtures. They are not customer results,
 proof of revenue, retention measurements or an independent security audit.
 Validation checks the supplied contract and consistency; the host must enforce
 permissions, evidence access, human approvals and execution limits.
+The Python helpers read the supplied local JSON files and bundled schemas and
+write their results to stdout/stderr. They do not read credentials or environment
+variables, make network requests, execute child processes or grant host tools.
+This skill declares no automatic tool allowance. Any file or command permission
+still comes from the host and the user's existing authorization.
 
 ## Source and license
 
