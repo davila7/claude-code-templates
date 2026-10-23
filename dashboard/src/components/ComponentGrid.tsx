@@ -3,6 +3,7 @@ import type { Component } from '../lib/types';
 import { TYPE_CONFIG } from '../lib/icons';
 import { ITEMS_PER_PAGE } from '../lib/constants';
 import { fetchComponentsByType } from '../lib/data';
+import SkillSpectorBadge from './SkillSpectorBadge';
 import { fetchActiveAds, findSponsoredIndex, type ActiveAd } from '../lib/ads';
 import SaveToCollectionButton from './SaveToCollectionButton';
 
@@ -561,6 +562,7 @@ export default function ComponentGrid({ initialType }: Props) {
                       {component.downloads?.toLocaleString()}
                     </span>
                   )}
+                  <SkillSpectorBadge result={component.skillspector} />
                 </div>
 
                 {/* Actions */}
@@ -632,7 +634,7 @@ export default function ComponentGrid({ initialType }: Props) {
                 <p className="text-[12px] text-[var(--color-text-secondary)] line-clamp-2 leading-[1.6]">
                   {component.description || component.content?.slice(0, 120) || 'No description'}
                 </p>
-                <div className="flex items-center gap-2 mt-3">
+                <div className="flex flex-wrap items-center gap-2 mt-3">
                   {component.sponsored && (
                     <span className="font-mono text-[10px] font-semibold px-2 py-0.5 rounded border border-[var(--color-primary-500)]/40 bg-[var(--color-primary-500)]/10 text-[var(--color-primary-500)]">
                       Sponsored
@@ -651,6 +653,7 @@ export default function ComponentGrid({ initialType }: Props) {
                       {component.downloads?.toLocaleString()}
                     </span>
                   )}
+                  <SkillSpectorBadge result={component.skillspector} />
                 </div>
               </div>
 

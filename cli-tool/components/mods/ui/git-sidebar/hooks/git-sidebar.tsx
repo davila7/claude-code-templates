@@ -1,5 +1,5 @@
 /**
- * git-sidebar — Claude Mod (EARLY ACCESS)
+ * git-sidebar — Claude Mod
  *
  * A small lazygit-style pane: every worktree of the repository the session is
  * in, and its local branches, as rows you can click (or Tab to and press
@@ -15,7 +15,7 @@
  * ./git.ts. Nothing here writes to the repository except `git switch`, which
  * the mod refuses while the current worktree has uncommitted changes.
  *
- * Needs CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 (Claude Code >= 2.1.259).
+ * Needs Claude Code >= 2.1.287.
  *
  * Options (pluginConfigs["git-sidebar@skills-dir"].options):
  *   columns: number      width asked for the docked pane (default 44)

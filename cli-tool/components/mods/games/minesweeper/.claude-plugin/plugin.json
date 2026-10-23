@@ -1,7 +1,7 @@
 {
   "name": "minesweeper",
   "version": "0.2.0",
-  "description": "Minesweeper above the Claude Code prompt: open every cell that is not a mine. Plays while Claude works, pauses when the turn ends, keeps your best score; zero tokens. A single game split out of cc-arcade (MIT, Seza Akgün). Needs function hooks (early access) and an interactive terminal with a mouse.",
+  "description": "Minesweeper above the Claude Code prompt: open every cell that is not a mine. Plays while Claude works, pauses when the turn ends, keeps your best score; zero tokens. A single game split out of cc-arcade (MIT, Seza Akgün). Needs an interactive terminal with a mouse.",
   "author": {
     "name": "Seza Akgün"
   },

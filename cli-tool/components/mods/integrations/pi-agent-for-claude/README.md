@@ -68,13 +68,12 @@ don't reach teammate panes, and restart (inside tmux for teammate panes):
 ```json
 {
   "env": {
-    "CLAUDE_CODE_ENABLE_FUNCTION_HOOKS": "1",
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   },
   "teammateMode": "tmux"
 }
 ```
 
-It is written to `.claude/skills/pi-agent-for-claude/`, which Claude Code auto-loads as `pi-agent-for-claude@skills-dir` once the workspace is trusted. For one session with hot reload: `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir .claude/skills/pi-agent-for-claude`. `claude plugin validate .claude/skills/pi-agent-for-claude` prints every event it hooks and every `$` call it makes.
+It is written to `.claude/skills/pi-agent-for-claude/`, which Claude Code auto-loads as `pi-agent-for-claude@skills-dir` once the workspace is trusted. For one session with hot reload: `claude --plugin-dir .claude/skills/pi-agent-for-claude`. `claude plugin validate .claude/skills/pi-agent-for-claude` prints every event it hooks and every `$` call it makes.
 
-**Early access.** Mods need Claude Code 2.1.259+ with `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1`, and this one needs 2.1.275+; the `$` API may change between releases. Typed against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
+**Requirements.** Mods are on by default in Claude Code 2.1.287+, and this one needs 2.1.275+. Typed against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods

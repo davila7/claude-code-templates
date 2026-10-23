@@ -7,6 +7,8 @@ import MarkdownViewer from '../../../components/MarkdownViewer.tsx';
 import JsonViewer from '../../../components/JsonViewer.tsx';
 import SkillExplorer from '../../../components/SkillExplorer.tsx';
 import ComponentTerminal from '../../../components/ComponentTerminal.tsx';
+import SkillSpectorBadge from '../../../components/SkillSpectorBadge.tsx';
+import SkillSpectorReport from '../../../components/SkillSpectorReport.tsx';
 import { TYPE_CONFIG, ICONS } from '../../../lib/icons';
 import { fetchComponents, fetchComponentContentData, getInstallCommand } from '../../../lib/data';
 import type { Component } from '../../../lib/types';
@@ -17,7 +19,7 @@ const { type, slug } = Astro.params;
 
 let component: Component | null = null;
 let error: string | null = null;
-// Mods (function hooks, early access): a complete plugin directory; the
+// Mods (function hooks): a complete plugin directory; the
 // content file carries README.md as content plus every text file of it.
 let modFiles: Record<string, string> = {};
 
@@ -43,6 +45,13 @@ try {
   }
 } catch (e: any) {
   error = e.message;
+}
+
+// A missing component is a real 404 (agents and crawlers otherwise treat every
+// slug as an existing page). The "Component not found" view below still renders.
+if (!component && !error) {
+  Astro.response.status = 404;
+  Astro.response.statusText = 'Not Found';
 }
 
 function formatName(name: string): string {
@@ -120,6 +129,10 @@ const title = component ? formatName(component.name) : 'Component Not Found';
 const typePlural = type?.endsWith('s') ? type : (type + 's');
 const config = TYPE_CONFIG[typePlural ?? 'agents'];
 const installCmd = component ? getInstallCommand(component) : '';
+// Social preview rendered at build time by scripts/generate-og-images.mjs.
+const ogImage = component && config
+  ? encodeURI(`/og/${typePlural}/${component.path?.replace(/\.(md|json)$/, '') ?? component.name}.png`)
+  : undefined;
 const frontmatter = component ? parseFrontmatter(component.content, typePlural ?? '') : {};
 const infoCards = CARD_FIELDS.filter((f) => {
   const v = frontmatter[f.key];
@@ -262,6 +275,8 @@ const componentSchema = component
 <DashboardLayout
   title={`${title} — ${config?.label ?? 'Component'} for Claude Code | AI Templates`}
   description={seoDescription}
+  ogImage={ogImage}
+  ogImageAlt={component && config ? `${title}, a Claude Code ${config.singular}` : undefined}
 >
   {componentSchema && (
     <script type="application/ld+json" set:html={JSON.stringify(componentSchema)} />
@@ -348,6 +363,9 @@ const componentSchema = component
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
                         {component.downloads?.toLocaleString()}
                       </span>
+                    )}
+                    {component.skillspector && (
+                      <SkillSpectorBadge result={component.skillspector} size="md" href="#security-scan" />
                     )}
                   </div>
                 </div>
@@ -450,6 +468,8 @@ const componentSchema = component
           })
         )} />
 
+        {component.skillspector && <SkillSpectorReport result={component.skillspector} />}
+
         {/* Referenced components (loops only) */}
         {referencedComponents.length > 0 && (
           <div class="mb-10">
@@ -493,8 +513,8 @@ const componentSchema = component
         {/* Content viewer */}
         <h3 class="text-xs font-bold text-[var(--color-text-tertiary)] uppercase tracking-[0.08em] mb-4">Content</h3>
         {typePlural === 'mods' && (
-          <div class="mb-4 rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-2.5 text-[12px] text-[var(--color-text-secondary)]">
-            <strong class="text-amber-400">Early access.</strong> A mod is a complete Claude Code plugin built on function hooks (Anthropic's <a href="https://github.com/anthropics/claude-code/tree/main/mods" target="_blank" rel="noopener" class="underline underline-offset-2 hover:text-amber-300">mods/</a> layout); it loads in Claude Code 2.1.259+ with <code>CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1</code> and the <code>$</code> API may still change between releases.
+          <div class="mb-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-1)] px-4 py-2.5 text-[12px] text-[var(--color-text-secondary)]">
+            <strong class="text-[var(--color-text-primary)]">Claude Mod.</strong> A mod is a complete Claude Code plugin built on function hooks (Anthropic's <a href="https://github.com/anthropics/claude-code/tree/main/mods" target="_blank" rel="noopener" class="underline underline-offset-2 hover:text-[var(--color-text-primary)]">mods/</a> layout); it is on by default in Claude Code 2.1.287+.
             {modModules.length > 0 && (
               <span> Hooks module{modModules.length > 1 ? 's' : ''}: {modModules.map((mod, i) => (
                 <Fragment>{i > 0 && ', '}<code>hooks/{mod}</code></Fragment>

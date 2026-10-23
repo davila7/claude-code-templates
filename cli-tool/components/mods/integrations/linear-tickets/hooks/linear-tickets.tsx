@@ -1,5 +1,5 @@
 /**
- * linear-tickets — Claude Mod (EARLY ACCESS)
+ * linear-tickets — Claude Mod
  *
  * Your Linear tickets in a pane, with their status and how you are progressing:
  *
@@ -15,7 +15,7 @@
  * The key is sent only to api.linear.app, in the Authorization header, and is
  * never logged or drawn. Never hardcode it in this file.
  *
- * Needs CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 (Claude Code >= 2.1.259) and a
+ * Needs Claude Code >= 2.1.287 and a
  * Linear API key in the plugin's options.
  *
  * Options (pluginConfigs["linear-tickets@skills-dir"].options):

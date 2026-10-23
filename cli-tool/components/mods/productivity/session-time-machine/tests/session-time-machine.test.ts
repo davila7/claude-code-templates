@@ -1,4 +1,4 @@
-// Run with: CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude plugin test productivity/session-time-machine
+// Run with: claude plugin test productivity/session-time-machine
 import { describe, expect, test } from 'claude-code/testing'
 import type { On } from 'claude-code'
 import {
@@ -160,7 +160,7 @@ describe('the pane', () => {
     on('ui.status', () => ({ value: undefined }))
     on('prompt.fill', ($, e) => {
       fills.push(e.text)
-      return { value: { isFilled: true } } as never
+      return { isFilled: true } as never
     })
   }
 

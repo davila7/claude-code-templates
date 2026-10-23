@@ -9,7 +9,16 @@ import SearchModal from '../components/SearchModal.tsx';
 import CartSidebar from '../components/CartSidebar.tsx';
 import HomeStats from '../components/HomeStats.tsx';
 
+import fs from 'node:fs';
+import path from 'node:path';
+import { totalComponents } from '../lib/agent-readiness';
+
 export const prerender = true;
+
+let total = 2000;
+try {
+  total = totalComponents(JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public', 'counts.json'), 'utf-8')));
+} catch {}
 ---
 
 <DashboardLayout
@@ -40,7 +49,7 @@ export const prerender = true;
       <!-- ASCII hero banner -->
       <div class="px-6 pt-5 pb-1">
         <div class="hidden md:flex items-center justify-center gap-4 overflow-hidden">
-          <pre class="ascii-art shrink-0">
+          <pre class="ascii-art shrink-0" aria-hidden="true">
  █████╗ ██╗    ████████╗███████╗███╗   ███╗██████╗ ██╗      █████╗ ████████╗███████╗███████╗
 ██╔══██╗██║    ╚══██╔══╝██╔════╝████╗ ████║██╔══██╗██║     ██╔══██╗╚══██╔══╝██╔════╝██╔════╝
 ███████║██║       ██║   █████╗  ██╔████╔██║██████╔╝██║     ███████║   ██║   █████╗  ███████╗
@@ -54,13 +63,30 @@ export const prerender = true;
         </div>
         <div class="flex items-center justify-center gap-2 mt-2 mb-1">
           <span class="status-dot"></span>
-          <span class="font-ui-mono text-[12px] text-[var(--color-text-secondary)]">Ready-to-use configurations for your Claude Code projects</span>
+          <h1 class="font-ui-mono text-[12px] font-normal text-[var(--color-text-secondary)]"><span class="sr-only">Claude Code Templates: </span>Ready-to-use configurations for your Claude Code projects</h1>
         </div>
         <HomeStats client:load />
       </div>
 
       {/* <FeaturedSection /> */}
       <ComponentGrid client:load initialType="skills" />
+
+      <!-- Plain-HTML summary: readable without JavaScript (agents, crawlers, no-JS browsers) -->
+      <section class="px-6 pt-10 pb-2 max-w-3xl text-[13px] leading-relaxed text-[var(--color-text-secondary)]">
+        <h2 class="text-[14px] font-semibold text-[var(--color-text-primary)] mb-2">What is Claude Code Templates?</h2>
+        <p class="mb-2">
+          Claude Code Templates (aitmpl.com) is an open-source catalog of {total.toLocaleString('en-US')}+ components for
+          Claude Code: subagents, slash commands, skills, hooks, MCP server configurations, settings, loops and mods.
+          Every component is a plain file you can read before installing, with its source on
+          <a href="https://github.com/davila7/claude-code-templates" class="underline hover:text-[var(--color-text-primary)]">GitHub</a>.
+        </p>
+        <p>
+          Install any of them into your project with the CLI, for example
+          <code class="font-ui-mono text-[12px]">npx claude-code-templates@latest --agent development-team/frontend-developer</code>,
+          or combine several flags in one command. AI agents can start from <a href="/llms.txt" class="underline hover:text-[var(--color-text-primary)]">/llms.txt</a>
+          and the catalog data API described in <a href="/openapi.json" class="underline hover:text-[var(--color-text-primary)]">/openapi.json</a>.
+        </p>
+      </section>
     </div>
 
     <!-- Right: jobs sidebar (sticky, scrolls independently) -->

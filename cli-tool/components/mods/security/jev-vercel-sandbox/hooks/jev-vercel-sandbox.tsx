@@ -1,5 +1,5 @@
 /**
- * jev-vercel-sandbox — Claude Mod (EARLY ACCESS)
+ * jev-vercel-sandbox — Claude Mod
  *
  * A Vercel Sandbox (an isolated Linux microVM) as a place Claude sends work to
  * on purpose: a long test run, someone else's repository, an installer of
@@ -30,8 +30,7 @@
  * Vercel credentials and Jev keys come from the plugin's options
  * (pluginConfigs["jev-vercel-sandbox@skills-dir"].options in user settings), with
  * VERCEL_TOKEN / VERCEL_OIDC_TOKEN / VERCEL_TEAM_ID / VERCEL_PROJECT_ID as a
- * fallback. Never from this code. Needs CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1
- * (Claude Code >= 2.1.259).
+ * fallback. Never from this code. Needs Claude Code >= 2.1.287.
  *
  * Privacy: with a Jev key set, the user's latest request and each command
  * that is not a plain read go to that backend. /jev-vercel-sandbox uploads the

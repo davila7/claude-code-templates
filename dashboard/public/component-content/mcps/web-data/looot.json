@@ -1,0 +1,1 @@
+{"content": "{\n  \"mcpServers\": {\n    \"looot\": {\n      \"description\": \"Remote MCP server and API: one key for 2,500+ data endpoints (emails, phones, companies, SERP, web). Prepaid balance, no subscription. Sign in with OAuth in the browser or send an Authorization: Bearer key.\",\n      \"type\": \"http\",\n      \"url\": \"https://api.looot.ai/mcp\"\n    }\n  }\n}\n"}
