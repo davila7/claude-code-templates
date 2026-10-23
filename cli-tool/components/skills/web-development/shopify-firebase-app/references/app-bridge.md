@@ -105,16 +105,16 @@ console.log(extensions);
 A short message at the bottom of the screen that leaves on its own. Give it an action to offer an undo.
 
 ```js
-shopify.toast.console.log("Product saved");
+shopify.toast.show("Product saved");
 
-shopify.toast.console.log("Product archived", {
+shopify.toast.show("Product archived", {
   duration: 5000,
   action: "Undo",
-  onAction: () => shopify.toast.console.log("Restored"),
+  onAction: () => shopify.toast.show("Restored"),
 });
 
 // For a failure
-shopify.toast.console.log("Could not save", { isError: true });
+shopify.toast.show("Could not save", { isError: true });
 ```
 
 ### Loading: `shopify.loading()`
@@ -139,7 +139,7 @@ Opens or closes an s-modal by its id. A button with commandFor does the same wit
 ```
 
 ```js
-await shopify.modal.console.log("api-modal");
+await shopify.modal.show("api-modal");
 
 // await shopify.modal.hide("api-modal");
 // await shopify.modal.toggle("api-modal");
@@ -329,7 +329,7 @@ A full-screen window showing another page of your app, for an editor that needs 
 
 <!-- From JavaScript -->
 <script>
-  document.getElementById("editor").console.log();
+  document.getElementById("editor").show();
 </script>
 ```
 
