@@ -15,13 +15,36 @@ valid context pack authorizes implementation only inside the named boundary.
 | `examples/live-coding-review.json` | Canonical review result with `continue` verdict. |
 | `examples/live-coding-context-pack.json` | Implementation handoff allowed by the review. |
 
-Validate the chain before coding:
+### Installed Skill Validation
+
+For an installed skill, run from its `resources` directory. For repository
+contributors, run the same commands from the repository root. All relative
+example, schema, and script paths below use that working directory.
+
+Prepare the Python environment once:
 
 ```text
 python3 -m venv .venv
 .venv/bin/python -m pip install -r requirements-dev.txt
+```
+
+Validate the review and context pack together before coding:
+
+```text
+.venv/bin/python scripts/check_review.py examples/live-coding-review.json --context-pack examples/live-coding-context-pack.json
+```
+
+This joint check validates the review, context-pack schema, and copied handoff
+fields. A review-only check does not validate a context pack.
+
+### Repository Development Checks
+
+The complete source repository also contains `tests` and `scripts/validate.py`.
+These development checks run from the repository root; they are not installed
+skill commands and are not required to validate an implementation handoff.
+
+```text
 .venv/bin/python -m unittest discover -s tests
-.venv/bin/python scripts/check_review.py examples/live-coding-review.json
 .venv/bin/python scripts/validate.py
 ```
 
@@ -71,7 +94,6 @@ Validate the review before using it.
 
 Run:
 .venv/bin/python scripts/check_review.py <path-to-review-result.json>
-.venv/bin/python scripts/validate.py
 
 If validation fails, fix the review artifact. Do not code from an invalid
 review. If the verdict is verify, run only the proof step. If the verdict is
@@ -89,8 +111,14 @@ product_organization, stakeholder_effects, unresolved_assumptions,
 human_judgment_boundary, evidence IDs, stop conditions, human approval gates,
 and exact execution_boundary from the review.
 
-Implementation may begin only after the context pack validates. Implement only
-the scope named in the context pack. Do not expand scope.
+Set context-pack scope to an exact copy of the approved
+review.execution_boundary.may_do list. Do not summarize or expand it.
+
+Run the joint handoff check:
+.venv/bin/python scripts/check_review.py <path-to-review-result.json> --context-pack <path-to-context-pack.json>
+
+Implementation may begin only after the joint handoff check passes. Implement
+only the approved may_do actions. Do not expand scope.
 ```
 
 ### 5. Scope Change

@@ -15,19 +15,48 @@
     "product_brief": { "$ref": "product-brief.schema.json" },
     "claim_analysis": { "$ref": "claim-analysis.schema.json" },
     "independent_reviews": {
-      "type": "array",
-      "items": { "$ref": "reviewer-verdict.schema.json" },
-      "minItems": 3,
-      "maxItems": 3
+      "$ref": "#/$defs/flow_reviews",
+      "items": {
+        "$ref": "reviewer-verdict.schema.json",
+        "properties": { "review_round": { "const": "independent" } }
+      }
     },
     "challenge_reviews": {
-      "type": "array",
-      "items": { "$ref": "reviewer-verdict.schema.json" },
-      "minItems": 3,
-      "maxItems": 3
+      "$ref": "#/$defs/flow_reviews",
+      "items": {
+        "$ref": "reviewer-verdict.schema.json",
+        "properties": { "review_round": { "const": "challenge" } }
+      }
     },
     "uncertainty_review": { "$ref": "uncertainty-review.schema.json" },
     "red_team_review": { "$ref": "red-team-review.schema.json" }
+  },
+  "$defs": {
+    "flow_reviews": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "allOf": [
+        {
+          "contains": {
+            "required": ["reviewer"],
+            "properties": { "reviewer": { "const": "user_flow" } }
+          }
+        },
+        {
+          "contains": {
+            "required": ["reviewer"],
+            "properties": { "reviewer": { "const": "evidence_flow" } }
+          }
+        },
+        {
+          "contains": {
+            "required": ["reviewer"],
+            "properties": { "reviewer": { "const": "business_flow" } }
+          }
+        }
+      ]
+    }
   },
   "allOf": [
     {

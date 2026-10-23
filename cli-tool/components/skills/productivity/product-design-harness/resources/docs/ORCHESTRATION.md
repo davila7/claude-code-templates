@@ -59,8 +59,12 @@ continue in a council-tier decision, treat agreement as a signal to probe,
 not to relax. Run prompts/red-team.md before synthesis and attach its valid
 schemas/red-team-review.schema.json output as council_input.red_team_review.
 The output must name the challenged claims, evidence receipts, five failure
-modes, disconfirming tests, and a stop condition. The facilitator may downgrade
-the combined verdict to verify on red-team findings alone.
+modes, disconfirming tests, and a stop condition. A red-team finding can require
+verify without another independent vote: record the affected final lane as
+verify, including the counter-case and missing proof, before reducing the final
+lane verdicts. Keep the original independent and challenge receipts unchanged.
+The combined verdict still equals the most severe final lane verdict; changing
+only that headline is invalid.
 6. Run one challenge round per lane.
 7. Run Uncertainty Reviewer on evidence tier, risk, reversibility, and freshness.
 8. Run Council Facilitator.

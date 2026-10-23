@@ -11,50 +11,50 @@
   "stage": "idea",
   "actor_boundary": {
     "target_population": [
-      "Team admins who repeatedly export reports"
+      "Support teams handling customer requests"
     ],
-    "operator": "Team admin",
-    "beneficiary": "Reporting team",
-    "machine_actor": "Not applicable",
+    "operator": "Support team member",
+    "beneficiary": "Support team and customers receiving correct replies",
+    "machine_actor": "AI support agent",
     "affected_people": [
-      "Downstream report consumers"
+      "Customers receiving support replies"
     ],
     "excluded_groups": [
-      "Teams without recurring report export workflows"
+      "Internal-only support drafting workflows"
     ]
   },
   "product_organization": {
     "organization": "Example Product Co.",
-    "project_owner": "Reporting team",
+    "project_owner": "Support experience team",
     "issuer": "Example Product Co."
   },
   "stakeholder_effects": [
     {
-      "stakeholder": "Downstream report consumers",
-      "effect": "Scheduled exports could change how recurring reporting work is coordinated."
+      "stakeholder": "Customers receiving support replies",
+      "effect": "Unreviewed AI replies could give incorrect guidance and create escalation or recovery burden."
     }
   ],
   "human_judgment_boundary": {
     "human_owned_decisions": [
-      "Whether recurring export is strategically worth building"
+      "Acceptable risk of customer-facing AI replies"
     ],
     "machine_supported_inputs": [
-      "Support tickets",
-      "Product logs"
+      "Traceable support-failure artifacts",
+      "Observed customer reactions to human-reviewed drafts"
     ],
     "not_mechanized": [
-      "Roadmap priority trade-off"
+      "Risk tolerance for unreviewed customer-facing replies"
     ],
     "approval_gates": [
       {
-        "gate_id": "product-owner-scheduling-build-approval",
+        "gate_id": "risk-owner-reframe-approval",
         "accountable_owner": "Product owner",
-        "condition": "Before any scheduling infrastructure build starts."
+        "condition": "Before the reframed question enters a new review."
       }
     ]
   },
   "unresolved_assumptions": [
-    "Whether the request reflects a recurring workflow or one-off audits."
+    "Whether any customer wants unreviewed AI replies rather than faster human-reviewed drafting."
   ],
   "combined_verdict": "stop_reframe",
   "weakest_flow": "evidence",

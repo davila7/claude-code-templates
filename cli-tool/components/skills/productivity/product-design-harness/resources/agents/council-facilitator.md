@@ -42,8 +42,11 @@ Additional rules:
 
 - If every lane returned continue, require the structured red-team result
   (`schemas/red-team-review.schema.json`) in council_input.red_team_review
-  before synthesizing; its findings may downgrade the combined verdict to
-  verify.
+  before synthesizing. When a finding warrants verify, record verify in the
+  affected final lane review with the counter-case and missing proof, then
+  reduce the final lane verdicts using the table above. Preserve the original
+  independent and challenge-round receipts. Do not change only the combined
+  verdict while leaving every final lane at continue.
 - On stop_reframe, the execution boundary carries no build scope:
   may_do lists research and reframing actions only.
 - A human override of any verdict must be recorded through

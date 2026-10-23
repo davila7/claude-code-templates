@@ -91,7 +91,8 @@
   ],
   "execution_boundary": {
     "may_do": [
-      "Edit the empty-state headline and one action label."
+      "Edit the empty-state headline.",
+      "Edit one action label."
     ],
     "must_not_do": [
       "Change layout, permissions, data handling, or onboarding steps."

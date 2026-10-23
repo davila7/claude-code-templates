@@ -49,7 +49,8 @@ What outcome should execution achieve?
 
 ## 5. Scope
 
-What should be done now?
+Copy the approved review's execution_boundary.may_do list exactly. Any new,
+removed, reordered, or reworded scope item requires an updated review.
 
 ## 6. Non-Goals
 

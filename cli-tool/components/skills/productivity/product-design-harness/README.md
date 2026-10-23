@@ -2,7 +2,7 @@
 
 Review a product direction before committing to design, implementation, launch,
 growth or automation. UX3 connects User Flow, Evidence Flow and Business Flow
-and returns `continue`, `verify` or `reframe` with the next action, evidence
+and returns `continue`, `verify` or `stop_reframe` with the next action, evidence
 gaps and execution boundaries.
 
 Use it for a feature proposal, an onboarding change, a product experiment,
@@ -33,8 +33,9 @@ output identifies the weakest flow, distinguishes observed evidence from
 assumptions, and gives a bounded next action.
 
 Python 3 and the `jsonschema` package are needed to run the local validators.
-Run helpers through `python3`; this catalog copy removes interpreter headers
-and docstrings while preserving the executable Python statements.
+Run helpers through `python3`. This catalog copy omits interpreter headers,
+comments and docstrings. References to module help text are replaced with that
+same literal text, so a usage error still explains the required arguments.
 
 ```sh
 python3 .claude/skills/product-design-harness/resources/scripts/check_review.py review.json
@@ -54,17 +55,23 @@ still comes from the host and the user's existing authorization.
 ## Source and license
 
 Maintained by [cis2042](https://github.com/cis2042), licensed under MIT. This
-directory vendors all 89 files from upstream commit
-`35ccbd575103b85f73608ecf359d2832c132c682`. Eighty-six files are byte-identical;
-only non-executable interpreter headers/docstrings were removed from the three
-Python helpers. This README is the catalog-specific addition. No resource,
-schema, example, license text or executable statement was removed.
+directory vendors all 91 files from upstream commit
+`48965c6b501f61ebbb8130c9c2e4f9af08922b9f`. Eighty-eight files are byte-identical,
+including MIT LICENSE and both handbook diagrams. The three Python helpers
+omit comments/docstrings and retain equivalent executable ASTs after replacing
+module-help references with the original literal text. This README is the only
+catalog-specific extra file. All schemas, examples and required resources are
+retained. The refresh includes the upstream Council lane/round checks, exact
+handoff-scope checks, consistent examples and installation documentation.
 
 - [Canonical repository](https://github.com/cis2042/ux3-product-design-harness)
-- [Exact source](https://github.com/cis2042/ux3-product-design-harness/tree/35ccbd575103b85f73608ecf359d2832c132c682/skills/product-design-harness)
+- [Exact source](https://github.com/cis2042/ux3-product-design-harness/tree/48965c6b501f61ebbb8130c9c2e4f9af08922b9f/skills/product-design-harness)
 - [Product overview](https://cis2042.github.io/ux3-product-design-harness/)
 - [Adoption inquiries and feedback](https://www.linkedin.com/in/cis2042/)
 
 For an adoption discussion, describe your team, a real product decision and the
 review or handoff problem you want to improve. No hosted service, API key,
 subscription or paid inference is required by the local validation helpers.
+The host agent's own inference charges depend on the user's provider. Optional
+evidence retrieval uses only tools the user separately authorizes; the package
+configures no publisher endpoint or automatic tool grant.

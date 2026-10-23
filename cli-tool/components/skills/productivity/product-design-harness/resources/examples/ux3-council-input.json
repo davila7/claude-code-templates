@@ -11,32 +11,31 @@
     "stage": "prototype",
     "actor_boundary": {
       "target_population": [
-        "Workspace editors drafting internal notes"
+        "Operations teams handling recurring customer workflows"
       ],
-      "operator": "Workspace editor",
-      "beneficiary": "Workspace editor",
-      "machine_actor": "Repository-aware coding agent",
+      "operator": "Operations team member",
+      "beneficiary": "Operations team and customers receiving correct service",
+      "machine_actor": "Workflow assistant",
       "affected_people": [
-        "Workspace editors",
-        "Support team"
+        "Customers affected by completed operations"
       ],
       "excluded_groups": [
-        "External collaborators",
-        "Public note viewers"
+        "One-off workflows",
+        "Workflows without reversible approval paths"
       ]
     },
     "business_boundary": {
-      "product_organization": "Example Notes Co.",
-      "project_owner": "Editor experience team",
-      "issuer": "Example Notes Co.",
+      "product_organization": "Example Product Co.",
+      "project_owner": "Workflow automation team",
+      "issuer": "Example Product Co.",
       "customers": [
-        "Team workspace customers"
+        "Teams handling recurring customer operations"
       ],
       "buyers": [
-        "Workspace admins"
+        "Operations leads"
       ],
       "operators": [
-        "Workspace editors"
+        "Operations team members"
       ],
       "partners": [
         "Not applicable"
@@ -45,29 +44,39 @@
         "Not applicable"
       ],
       "platforms": [
-        "Web app"
+        "Workflow assistant in the operations workspace"
       ],
       "regulators": [
         "Not applicable"
       ],
       "externality_bearers": [
-        "Support team"
+        "Customers affected by completed operations"
       ],
       "decision_authority": "Product owner",
-      "value_exchange": "Editors get clearer save-state feedback while the product may reduce avoidable support questions."
+      "value_exchange": "Operators may spend less time preparing recurring customer work while human approval limits customer-facing errors and recovery costs."
     },
     "human_judgment_boundary": {
-      "human_owned_decisions": [],
-      "machine_supported_inputs": [
-        "Support ticket pattern",
-        "Session replay observation"
+      "human_owned_decisions": [
+        "Acceptable customer-facing recovery risk"
       ],
-      "not_mechanized": [],
-      "approval_gates": []
+      "machine_supported_inputs": [
+        "Support notes",
+        "Observed workflow traces",
+        "Approval behavior"
+      ],
+      "not_mechanized": [
+        "Risk tolerance for autonomous customer-facing action"
+      ],
+      "approval_gates": [
+        {
+          "gate_id": "accountable-owner-customer-action-approval",
+          "accountable_owner": "Named accountable owner",
+          "condition": "Before any customer-facing execution."
+        }
+      ]
     },
     "unresolved_assumptions": [
-      "The confusion comes from unclear save-state feedback rather than a real save failure.",
-      "A header label is noticeable enough without changing the editor workflow."
+      "Whether people want full autonomy or faster preparation with approval."
     ],
     "execution_boundary": {
       "may_do": [
@@ -83,48 +92,32 @@
     "problem_hypothesis": "Operators lose repeated time on recurring customer operations and may want delegated execution.",
     "current_evidence": [
       {
-        "evidence_id": "lc-support-save-state-001",
-        "source_id": "support-tag-editor-save-state-2026-07",
+        "evidence_id": "support-notes-001",
+        "source_id": "support-notes-recurring-operations-2026-07",
         "source_type": "internal",
-        "raw_artifact_uri": "internal://support/tags/editor-save-state/2026-07",
+        "raw_artifact_uri": "example://support/recurring-customer-operations/2026-07",
         "signal_type": "quote",
-        "signal": "Six support conversations in two weeks ask whether note edits were saved before closing the editor.",
-        "interpretation": "The uncertainty is visible enough to generate support contact.",
-        "decision_impact": "Supports a small reversible clarity change before deeper editor work.",
-        "evidence_tier": "t2",
-        "confidence_level": "medium",
-        "counter_signal": "The tickets do not prove data loss or quantify all editor sessions.",
+        "signal": "Operators report repeated time loss in recurring customer operations.",
+        "interpretation": "Reported pain suggests a workflow problem but does not show demand for autonomous execution.",
+        "decision_impact": "Supports observing workflows and testing draft-only assistance with human approval before any autonomous execution.",
+        "evidence_tier": "t1",
+        "confidence_level": "low",
+        "counter_signal": "No operator has asked for autonomous customer-facing action; review and recovery cost may exceed time saved.",
         "collected_at": "2026-07-09T12:00:00Z",
         "source_last_verified_at": "2026-07-09T12:00:00Z",
         "max_staleness_days": 30
-      },
-      {
-        "evidence_id": "lc-replay-exit-hesitation-001",
-        "source_id": "session-replay-note-editor-exit-2026-07",
-        "source_type": "workflow",
-        "raw_artifact_uri": "internal://replay/note-editor-exit-hesitation/2026-07",
-        "signal_type": "observed_behavior",
-        "signal": "Four of eight sampled editors pause near the close control after typing and before leaving the editor.",
-        "interpretation": "The hesitation aligns with the support pattern but is not yet a measured completion metric.",
-        "decision_impact": "Supports adding one visible save-state label and measuring whether exit hesitation falls.",
-        "evidence_tier": "t2",
-        "confidence_level": "medium",
-        "counter_signal": "The sample is small and may overrepresent uncertain sessions.",
-        "collected_at": "2026-07-09T13:00:00Z",
-        "source_last_verified_at": "2026-07-09T13:00:00Z",
-        "max_staleness_days": 30
       }
     ],
-    "business_goal": "Reduce avoidable save-state confusion without changing the editor workflow.",
+    "business_goal": "Reduce preparation time for recurring customer operations while keeping approval and recovery costs bounded.",
     "constraints": [
-      "Keep the change to the existing editor header.",
-      "Do not change persistence, permissions, notifications, or external delivery.",
-      "Preserve existing save behavior and rollback by removing the label."
+      "Keep customer-facing execution under human approval.",
+      "Do not remove approval or automate irreversible customer-facing actions.",
+      "Stop the draft-only test if correction or recovery costs exceed time saved."
     ],
     "proposed_next_step": "Decide whether to build autonomous execution or draft-only assistance.",
     "known_risks": [
-      "The label could be missed if it is too subtle.",
-      "The label could imply stronger save guarantees than the product currently provides."
+      "Reported operator pain may not imply willingness to delegate customer-facing actions.",
+      "Review and recovery costs may exceed preparation time saved."
     ]
   },
   "claim_analysis": {

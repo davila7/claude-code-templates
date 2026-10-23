@@ -30,7 +30,7 @@ The change is reversible, low risk, and tied to a known confusion point.
 
 | Field | Answer |
 |---|---|
-| Evidence tier | t1 |
+| Evidence tier | t2 |
 | Confidence level | Medium |
 | Riskiest claim | Clearer copy will improve first-action completion. |
 | Main uncertainty | Whether copy or missing guidance causes the hesitation. |

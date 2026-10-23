@@ -38,6 +38,10 @@ Standard Gate, and UX3 Council all return this shape.
 Council mode also requires council_record with independent review identifiers,
 three challenge receipts, and unresolved conflicts.
 
+A context pack must copy execution_boundary.may_do into scope exactly. Its
+scope is an approved action list, not another opportunity to propose work.
+Check both artifacts together with scripts/check_review.py and --context-pack.
+
 ## Outcome Branches
 
 | Verdict | Required output | Execution |
