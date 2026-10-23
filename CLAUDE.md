@@ -207,6 +207,12 @@ Two GitHub Actions drive it, both via the batch orchestrator
   > 50). Uploads an aggregated SARIF to the Security tab.
 - **`.github/workflows/skill-security-scan-all.yml`** (weekly + manual) — scans
   all skills, reports to the run summary and SARIF, and **never blocks**.
+- **`.github/workflows/component-skillspector-scan.yml`** (PR) — the other
+  types (agents, commands, hooks, MCPs, settings, loops, sandboxes, mods)
+  changed in the PR, via `scripts/skillspector_components_pr.py`, which reuses
+  the catalog's staging (`skillspector_catalog.scan`) so the PR shows what the
+  component page will. Comments only, **never blocks** (many false positives
+  outside skills).
 
 **Catalog traffic light (every component type).** `generate_components_json.py`
 also runs SkillSpector on every component through `scripts/skillspector_catalog.py`
@@ -225,9 +231,10 @@ settings are wrapped in a temporary SKILL.md (SkillSpector requires one), which
 is why JSON components with a script get an "MCP Least Privilege / no tool scope"
 finding. Flags: `--skip-skillspector`, `--skillspector-only TYPE/PATH ...`.
 
-SkillSpector requires Python 3.12+ and is installed from NVIDIA's `main`
-branch (`pip install git+https://github.com/NVIDIA/skillspector.git@main`); it
-is not published to PyPI. Risk bands: 0-20 LOW, 21-50 MEDIUM, 51-80 HIGH,
+SkillSpector requires Python 3.12+ and is installed from NVIDIA's repo at a
+pinned tag (`pip install git+https://github.com/NVIDIA/skillspector.git@v2.12.0`)
+in every workflow, so PR scores match the catalog; it is not published to PyPI.
+Bump the tag in all five workflows together. Risk bands: 0-20 LOW, 21-50 MEDIUM, 51-80 HIGH,
 81-100 CRITICAL.
 
 #### Statuslines with Python Scripts
