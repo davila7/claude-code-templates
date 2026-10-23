@@ -113,6 +113,12 @@ html {
   scroll-behavior: smooth;
 }
 
+html {
+  /* Stop iOS Safari from inflating text on its own (it skews em-sized boxes). */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 body {
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
