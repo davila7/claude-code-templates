@@ -1,0 +1,65 @@
+# UX3 Product Design Harness
+
+Review a product direction before committing to design, implementation, launch,
+growth or automation. UX3 connects User Flow, Evidence Flow and Business Flow
+and returns `continue`, `verify` or `reframe` with the next action, evidence
+gaps and execution boundaries.
+
+Use it for a feature proposal, an onboarding change, a product experiment,
+a launch decision or a disputed interpretation of customer feedback. It
+supports Quick Gate, Standard Gate and UX3 Council review modes. A council
+review is optional and depends on the host and the user's authorization.
+
+## Install
+
+After this contribution is merged and published in the AI Templates catalog:
+
+```sh
+npx claude-code-templates@latest --skill productivity/product-design-harness --yes
+```
+
+The catalog installer downloads the complete directory into
+`.claude/skills/product-design-harness/`. Read `SKILL.md` and keep `resources/`
+beside it. The skill contains schemas, product-brief and handoff templates,
+knowledge definitions, illustrative examples and three local Python helpers.
+It is not a standalone prompt that can operate without those resources.
+
+## First review
+
+Ask the host to use `product-design-harness` to review your product brief.
+Include the intended users, current problem, proposed change, observed evidence,
+business constraints, responsible owner and a decision to make. A useful first
+output identifies the weakest flow, distinguishes observed evidence from
+assumptions, and gives a bounded next action.
+
+Python 3 and the `jsonschema` package are needed to run the local validators.
+Run helpers through `python3`; this catalog copy removes interpreter headers
+and docstrings while preserving the executable Python statements.
+
+```sh
+python3 .claude/skills/product-design-harness/resources/scripts/check_review.py review.json
+python3 .claude/skills/product-design-harness/resources/scripts/check_review.py review.json --context-pack context-pack.json
+```
+
+The included examples are illustrative fixtures. They are not customer results,
+proof of revenue, retention measurements or an independent security audit.
+Validation checks the supplied contract and consistency; the host must enforce
+permissions, evidence access, human approvals and execution limits.
+
+## Source and license
+
+Maintained by [cis2042](https://github.com/cis2042), licensed under MIT. This
+directory vendors all 89 files from upstream commit
+`35ccbd575103b85f73608ecf359d2832c132c682`. Eighty-six files are byte-identical;
+only non-executable interpreter headers/docstrings were removed from the three
+Python helpers. This README is the catalog-specific addition. No resource,
+schema, example, license text or executable statement was removed.
+
+- [Canonical repository](https://github.com/cis2042/ux3-product-design-harness)
+- [Exact source](https://github.com/cis2042/ux3-product-design-harness/tree/35ccbd575103b85f73608ecf359d2832c132c682/skills/product-design-harness)
+- [Product overview](https://cis2042.github.io/ux3-product-design-harness/)
+- [Adoption inquiries and feedback](https://www.linkedin.com/in/cis2042/)
+
+For an adoption discussion, describe your team, a real product decision and the
+review or handoff problem you want to improve. No hosted service, API key,
+subscription or paid inference is required by the local validation helpers.

@@ -1,0 +1,276 @@
+{
+  "product_brief": {
+    "schema_version": "2.1",
+    "session_config": {
+      "working_language": "en",
+      "canonical_identifiers": "en",
+      "fallback_language": "en"
+    },
+    "product_direction": "Let a workflow assistant complete recurring customer operations without manual approval.",
+    "accountable_owner": "Product owner",
+    "stage": "prototype",
+    "actor_boundary": {
+      "target_population": [
+        "Workspace editors drafting internal notes"
+      ],
+      "operator": "Workspace editor",
+      "beneficiary": "Workspace editor",
+      "machine_actor": "Repository-aware coding agent",
+      "affected_people": [
+        "Workspace editors",
+        "Support team"
+      ],
+      "excluded_groups": [
+        "External collaborators",
+        "Public note viewers"
+      ]
+    },
+    "business_boundary": {
+      "product_organization": "Example Notes Co.",
+      "project_owner": "Editor experience team",
+      "issuer": "Example Notes Co.",
+      "customers": [
+        "Team workspace customers"
+      ],
+      "buyers": [
+        "Workspace admins"
+      ],
+      "operators": [
+        "Workspace editors"
+      ],
+      "partners": [
+        "Not applicable"
+      ],
+      "funders": [
+        "Not applicable"
+      ],
+      "platforms": [
+        "Web app"
+      ],
+      "regulators": [
+        "Not applicable"
+      ],
+      "externality_bearers": [
+        "Support team"
+      ],
+      "decision_authority": "Product owner",
+      "value_exchange": "Editors get clearer save-state feedback while the product may reduce avoidable support questions."
+    },
+    "human_judgment_boundary": {
+      "human_owned_decisions": [],
+      "machine_supported_inputs": [
+        "Support ticket pattern",
+        "Session replay observation"
+      ],
+      "not_mechanized": [],
+      "approval_gates": []
+    },
+    "unresolved_assumptions": [
+      "The confusion comes from unclear save-state feedback rather than a real save failure.",
+      "A header label is noticeable enough without changing the editor workflow."
+    ],
+    "execution_boundary": {
+      "may_do": [
+        "implement the approved bounded change"
+      ],
+      "must_not_do": [
+        "expand scope or execute external irreversible actions"
+      ],
+      "must_ask": [
+        "new stakeholder, data, risk, or scope appears"
+      ]
+    },
+    "problem_hypothesis": "Operators lose repeated time on recurring customer operations and may want delegated execution.",
+    "current_evidence": [
+      {
+        "evidence_id": "lc-support-save-state-001",
+        "source_id": "support-tag-editor-save-state-2026-07",
+        "source_type": "internal",
+        "raw_artifact_uri": "internal://support/tags/editor-save-state/2026-07",
+        "signal_type": "quote",
+        "signal": "Six support conversations in two weeks ask whether note edits were saved before closing the editor.",
+        "interpretation": "The uncertainty is visible enough to generate support contact.",
+        "decision_impact": "Supports a small reversible clarity change before deeper editor work.",
+        "evidence_tier": "t2",
+        "confidence_level": "medium",
+        "counter_signal": "The tickets do not prove data loss or quantify all editor sessions.",
+        "collected_at": "2026-07-09T12:00:00Z",
+        "source_last_verified_at": "2026-07-09T12:00:00Z",
+        "max_staleness_days": 30
+      },
+      {
+        "evidence_id": "lc-replay-exit-hesitation-001",
+        "source_id": "session-replay-note-editor-exit-2026-07",
+        "source_type": "workflow",
+        "raw_artifact_uri": "internal://replay/note-editor-exit-hesitation/2026-07",
+        "signal_type": "observed_behavior",
+        "signal": "Four of eight sampled editors pause near the close control after typing and before leaving the editor.",
+        "interpretation": "The hesitation aligns with the support pattern but is not yet a measured completion metric.",
+        "decision_impact": "Supports adding one visible save-state label and measuring whether exit hesitation falls.",
+        "evidence_tier": "t2",
+        "confidence_level": "medium",
+        "counter_signal": "The sample is small and may overrepresent uncertain sessions.",
+        "collected_at": "2026-07-09T13:00:00Z",
+        "source_last_verified_at": "2026-07-09T13:00:00Z",
+        "max_staleness_days": 30
+      }
+    ],
+    "business_goal": "Reduce avoidable save-state confusion without changing the editor workflow.",
+    "constraints": [
+      "Keep the change to the existing editor header.",
+      "Do not change persistence, permissions, notifications, or external delivery.",
+      "Preserve existing save behavior and rollback by removing the label."
+    ],
+    "proposed_next_step": "Decide whether to build autonomous execution or draft-only assistance.",
+    "known_risks": [
+      "The label could be missed if it is too subtle.",
+      "The label could imply stronger save guarantees than the product currently provides."
+    ]
+  },
+  "claim_analysis": {
+    "claims": [
+      {
+        "id": "c1",
+        "type": "user",
+        "claim": "Operators want delegated execution of recurring operations.",
+        "status": "assumption",
+        "support": "Support notes describe recurring time loss.",
+        "counter_signal": "No operator has asked for autonomous action.",
+        "confidence_level": "low",
+        "depends_on": [],
+        "breaks_if_false": [
+          "c2"
+        ],
+        "proof_step": "Observe five recurring workflows and ask about delegation.",
+        "stop_condition": "No recurring workflow has a clear operator cost."
+      },
+      {
+        "id": "c2",
+        "type": "business",
+        "claim": "Cycle-time reduction deepens workflow dependency and retention.",
+        "status": "assumption",
+        "support": "Cycle time is a stated operator pain.",
+        "counter_signal": "Review and recovery cost may exceed time saved.",
+        "confidence_level": "low",
+        "depends_on": [
+          "c1"
+        ],
+        "breaks_if_false": [
+          "c1"
+        ],
+        "proof_step": "Measure cycle time with draft-only assistance.",
+        "stop_condition": "Exception handling grows without bound."
+      }
+    ],
+    "riskiest_claim_id": "c1",
+    "critical_path": [
+      "c1",
+      "c2"
+    ],
+    "highest_leverage_proof_step": "Test draft-only assistance with human approval on five recurring workflows.",
+    "human_owned_decision": "risk"
+  },
+  "independent_reviews": [
+    {
+      "reviewer": "user_flow",
+      "review_round": "independent",
+      "verdict": "verify",
+      "evidence_tier": "t1",
+      "confidence_level": "low",
+      "strongest_signal": "user lane signal from support notes.",
+      "weakest_assumption": "user lane assumption untested with operators.",
+      "missing_evidence": "Observed workflows and approval preferences.",
+      "disconfirming_evidence": "Operators reject autonomous customer-facing action.",
+      "stop_condition": "Customer-facing errors cannot be traced or reversed.",
+      "next_smallest_action": "Test draft-only assistance with human approval."
+    },
+    {
+      "reviewer": "evidence_flow",
+      "review_round": "independent",
+      "verdict": "verify",
+      "evidence_tier": "t1",
+      "confidence_level": "low",
+      "strongest_signal": "evidence lane signal from support notes.",
+      "weakest_assumption": "evidence lane assumption untested with operators.",
+      "missing_evidence": "Observed workflows and approval preferences.",
+      "disconfirming_evidence": "Operators reject autonomous customer-facing action.",
+      "stop_condition": "Customer-facing errors cannot be traced or reversed.",
+      "next_smallest_action": "Test draft-only assistance with human approval."
+    },
+    {
+      "reviewer": "business_flow",
+      "review_round": "independent",
+      "verdict": "verify",
+      "evidence_tier": "t1",
+      "confidence_level": "low",
+      "strongest_signal": "business lane signal from support notes.",
+      "weakest_assumption": "business lane assumption untested with operators.",
+      "missing_evidence": "Observed workflows and approval preferences.",
+      "disconfirming_evidence": "Operators reject autonomous customer-facing action.",
+      "stop_condition": "Customer-facing errors cannot be traced or reversed.",
+      "next_smallest_action": "Test draft-only assistance with human approval."
+    }
+  ],
+  "challenge_reviews": [
+    {
+      "reviewer": "user_flow",
+      "review_round": "challenge",
+      "verdict": "verify",
+      "evidence_tier": "t1",
+      "confidence_level": "low",
+      "strongest_signal": "Cross-lane check of the strongest claim.",
+      "weakest_assumption": "The challenged lane may overweight reported pain.",
+      "missing_evidence": "Any behavioral trace supporting the challenged claim.",
+      "disconfirming_evidence": "Draft assistance does not reduce cycle time.",
+      "stop_condition": "The challenged claim fails without a replacement.",
+      "next_smallest_action": "Add the counter-evidence to the proof step.",
+      "objection_to": "business_flow",
+      "counter_evidence": "Support notes show pain but no delegation request.",
+      "position_change": "weakened"
+    },
+    {
+      "reviewer": "evidence_flow",
+      "review_round": "challenge",
+      "verdict": "verify",
+      "evidence_tier": "t1",
+      "confidence_level": "low",
+      "strongest_signal": "Cross-lane check of the strongest claim.",
+      "weakest_assumption": "The challenged lane may overweight reported pain.",
+      "missing_evidence": "Any behavioral trace supporting the challenged claim.",
+      "disconfirming_evidence": "Draft assistance does not reduce cycle time.",
+      "stop_condition": "The challenged claim fails without a replacement.",
+      "next_smallest_action": "Add the counter-evidence to the proof step.",
+      "objection_to": "user_flow",
+      "counter_evidence": "Support notes show pain but no delegation request.",
+      "position_change": "weakened"
+    },
+    {
+      "reviewer": "business_flow",
+      "review_round": "challenge",
+      "verdict": "verify",
+      "evidence_tier": "t1",
+      "confidence_level": "low",
+      "strongest_signal": "Cross-lane check of the strongest claim.",
+      "weakest_assumption": "The challenged lane may overweight reported pain.",
+      "missing_evidence": "Any behavioral trace supporting the challenged claim.",
+      "disconfirming_evidence": "Draft assistance does not reduce cycle time.",
+      "stop_condition": "The challenged claim fails without a replacement.",
+      "next_smallest_action": "Add the counter-evidence to the proof step.",
+      "objection_to": "evidence_flow",
+      "counter_evidence": "Support notes show pain but no delegation request.",
+      "position_change": "weakened"
+    }
+  ],
+  "uncertainty_review": {
+    "evidence_tier": "t1",
+    "confidence_level": "low",
+    "risk_class": "r3",
+    "reversibility": "low",
+    "main_uncertainty": "Whether people want full autonomy or faster preparation with approval.",
+    "false_confidence_risk": "Reported pain reads as demand for autonomy.",
+    "stale_evidence_ids": [],
+    "proof_bar": "Observed approval behavior on five real workflows.",
+    "verdict_impact": "verify",
+    "human_owned_decision": "risk"
+  }
+}
