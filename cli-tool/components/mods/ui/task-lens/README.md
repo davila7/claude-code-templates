@@ -1,22 +1,22 @@
 # task-lens
 
-Vendored from https://github.com/delpotro96/task-lens at tag v0.5.3 (MIT). I'm the author.
+Vendored from https://github.com/delpotro96/task-lens at tag v0.5.4 (MIT). I'm the author.
 
 **See what every background task is doing, and why, without leaving the prompt.**
 
 When Claude runs subagents, background shells or workflows, task-lens adds a band above the prompt with one line per task: what kind of work it is doing, one plain sentence about its purpose, and how long it has been going. No side panel, no extra window.
 
-![task-lens updating as background tasks run](https://raw.githubusercontent.com/delpotro96/task-lens/v0.5.3/docs/demo.gif)
+![task-lens updating as background tasks run](https://raw.githubusercontent.com/delpotro96/task-lens/v0.5.4/docs/demo.gif)
 
 ## Why
 
 Claude Code tells you *that* background work is running. It does not tell you *what* each task is doing, whether it is stuck, or what it found. task-lens fills that gap in the space you are already looking at.
 
-![The same session without and with task-lens](https://raw.githubusercontent.com/delpotro96/task-lens/v0.5.3/docs/before-after.png)
+![The same session without and with task-lens](https://raw.githubusercontent.com/delpotro96/task-lens/v0.5.4/docs/before-after.png)
 
 ## What you see
 
-![task-lens band above the Claude Code prompt](https://raw.githubusercontent.com/delpotro96/task-lens/v0.5.3/docs/band.png)
+![task-lens band above the Claude Code prompt](https://raw.githubusercontent.com/delpotro96/task-lens/v0.5.4/docs/band.png)
 
 **A purpose sentence for every running task.** Haiku writes it from the task's instructions, the request you sent, and the task's recent actions. It says why the task is running, not which file it opened, and it is rewritten as the work moves on (every 5 tool calls, at most every 20 seconds). Long sentences wrap to two lines.
 
@@ -48,7 +48,7 @@ Claude Code tells you *that* background work is running. It does not tell you *w
 
 Purpose and result sentences follow the language of your last prompt. A real capture from a Korean session with six tasks running at once:
 
-![task-lens in a Korean session](https://raw.githubusercontent.com/delpotro96/task-lens/v0.5.3/docs/band-real-ko.png)
+![task-lens in a Korean session](https://raw.githubusercontent.com/delpotro96/task-lens/v0.5.4/docs/band-real-ko.png)
 
 ## Install
 
@@ -108,11 +108,9 @@ Purpose sentences and results come from Haiku through Claude Code's own model ac
 
 Built and tested with Claude Code 2.1.307 and 2.1.309.
 
-## Typechecking
+## Tests
 
-Upstream typechecks cleanly against the 2.1.309 declarations. The shared `types/claude-code.d.ts` in this repo is the 2.1.301 file, whose tool list has no `PowerShell` and whose `claude-code/testing` `$.tool.call` does not take `agentId`, so `tsc` reports errors on `hooks/register.tsx` (the `Bash`/`PowerShell` hook) and `hooks/register.test.tsx` until the shared file is regenerated.
-
-Tests: `claude plugin test ui/task-lens` runs `hooks/register.test.tsx`.
+The test suite (`hooks/register.test.tsx`) stays in the upstream repository, https://github.com/delpotro96/task-lens, where `claude plugin test .` runs it. This package typechecks against the shared declarations here as is.
 
 ## License
 

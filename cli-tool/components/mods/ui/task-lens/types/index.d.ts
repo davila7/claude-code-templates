@@ -33,6 +33,8 @@ export type Task = {
   runId?: string
   // 에이전트에게 준 지시 · 셸 명령, 가리고 자른 것
   brief?: string
+  // 같은 agentId 로 재개될 때마다 늘어나는 회차, 늦게 온 Haiku 답을 가려낸다
+  run?: number
 }
 
 declare module 'claude-code' {

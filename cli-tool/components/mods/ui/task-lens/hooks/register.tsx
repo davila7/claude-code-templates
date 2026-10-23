@@ -17,8 +17,8 @@ const TAIL_MAX_BYTES = 256_000
 const KEEP_DONE = 30
 const KEEP_ALIVE = 200
 const SHELL_POLL_EVERY = 3
-const SHELL_IDLE_MIN = 5
-const SHELL_IDLE_MS = SHELL_IDLE_MIN * 60_000
+// 부모가 끝나고 이만큼 출력이 없는 셸은 다음 프롬프트 때 목록에서 뺀다 (중지로 기록하지는 않는다)
+const SHELL_ORPHAN_MS = 30 * 60_000
 const STALL_MS = 60_000
 const ACTIVE_WRITE_MS = 5_000
 const KID_TITLE_CELLS = 16
@@ -31,7 +31,6 @@ const SYM = {
   more: (n: number) => `+${n} …`,
   starting: '…',
   refused: '⊘',
-  unknown: '?',
 }
 
 const LANGUAGE_RULE = (language: string | undefined, sample: string | undefined) =>
@@ -74,7 +73,7 @@ const BEARER =
   /\b([Bb]earer|[Bb]asic|BEARER|BASIC)\s+(?=[A-Za-z0-9._~+/=-]*(?:[0-9+/=_.~-]|[a-z][A-Z]))[A-Za-z0-9._~+/=-]{8,}/g
 const SECRET =
   /((?<![\w.-])[\w.-]{0,40}?(?:passphrase|_pw|_pass|private[_-]?token|access[_-]?token|refresh[_-]?token|auth[_-]?token|api[_-]?key|secret[_-]?(?:access[_-]?)?key|access[_-]?key|private[_-]?key|client[_-]?secret|password|passwd|pwd|secret|token)["']?\s*[:=]\s*)(?![가-힣])("[^"]*"|'[^']*'|[^\s"'&,;]+)/gi
-const FLAG = /(--?(?:password|passwd|token|secret|api-key|access-token)(?:\s+|=))[^\s"']+/gi
+const FLAG = new RegExp(String.raw`(--?(?:password|passwd|pass|token|secret|api-key|apikey|access-token|auth-token|client-secret)(?:\s+|=))${QUOTED_OR_BARE}`, 'gi')
 const CURL_USER = /((?:^|\s)(?:-u|--user)(?:\s+|=))[^\s:]+:[^\s"']+/g
 const MYSQL_PW = new RegExp(String.raw`(\b(?:mysql|mariadb|mysqldump|mysqladmin)\b[^|;&\n]*?\s-p)(?=[^\s-])${QUOTED_OR_BARE}`, 'gi')
 const SSHPASS = new RegExp(String.raw`(\bsshpass\s+-p\s*)${QUOTED_OR_BARE}`, 'gi')
@@ -226,8 +225,11 @@ const fence = (s: string) => s.replace(/<\s*\/?\s*data\b[^>]*>/gi, '[data]')
 const UNSAFE_REPLY =
   /[a-z][\w+.-]*:\/\/|`|\$\(|\|\s*(?:sh|bash|pwsh|powershell)\b|[\\/]\w|\b\w+\.(?:java|kt|tsx?|jsx?|py|xml|sql|md|json|ya?ml|gradle|sh|ps1)\b/i
 
+const orphanShells = new Set<string>()
+
 const alive = (t: Task, list: readonly Task[]) =>
-  t.state === 'running' || (t.groupId !== undefined && list.some(g => g.id === t.groupId && g.state === 'running'))
+  (t.state === 'running' && !orphanShells.has(t.id)) ||
+  (t.groupId !== undefined && list.some(g => g.id === t.groupId && g.state === 'running'))
 
 const topsOf = (list: readonly Task[]) =>
   list
@@ -261,7 +263,7 @@ let lastHaikuError: string | undefined
 
 const forget = (id: string) => {
   for (const map of [inputs, purposeCalls, purposeLastAt, shellSeen]) map.delete(id)
-  for (const set of [purposeDue, purposeFailed]) set.delete(id)
+  for (const set of [purposeDue, purposeFailed, orphanShells]) set.delete(id)
 }
 
 function patch($: EngineInterface, id: string, fn: (t: Task) => Task) {
@@ -432,13 +434,16 @@ async function refreshPurpose($: EngineInterface, id: string) {
     }
     purposeFailed.delete(id)
     const { reply: purpose, tag } = answer
-    await patch($, id, t => (t.state === 'running' ? { ...t, purpose, tag: tag ?? t.tag } : t))
+    await patch($, id, t => (t.state === 'running' && t.run === task.run ? { ...t, purpose, tag: tag ?? t.tag } : t))
   } finally {
     purposeBusy.delete(id)
   }
 }
 
 async function summarizeResult($: EngineInterface, id: string, answer: string) {
+  const used = purposeCalls.get(id) ?? 0
+  if (used >= PURPOSE_MAX_PER_TASK) return
+  purposeCalls.set(id, used + 1)
   const task = await find($, id)
   const summary = await ask(
     $,
@@ -446,7 +451,7 @@ async function summarizeResult($: EngineInterface, id: string, answer: string) {
     `<data>\n${fence(`Task: ${task?.title ?? ''}\nResult:\n${mask(answer).slice(0, 3000)}`)}\n</data>`,
     LINE_MAX,
   )
-  if (summary) await patch($, id, t => ({ ...t, result: summary.reply }))
+  if (summary) await patch($, id, t => (t.run === task?.run ? { ...t, result: summary.reply } : t))
 }
 
 async function recordCall($: EngineInterface, agentId: string, action: string) {
@@ -526,6 +531,7 @@ async function onSpawn($: EngineInterface, agentId: string, e: SpawnFacts) {
     groupId: group?.id,
     brief,
     purpose: e.resume ? prev?.purpose : undefined,
+    run: (prev?.run ?? 0) + 1,
   })
   schedulePurpose($, agentId)
 }
@@ -605,10 +611,10 @@ async function pollShells($: EngineInterface) {
       const stat = await $.fs.stat(path)
       const seen = shellSeen.get(shell.id)
       if (seen && seen.size === stat.size) {
-        // 부모가 끝난 셸은 완료 알림이 메인으로 오지 않을 수 있어 출력이 멈추면 정리
+        // 부모가 끝난 셸은 완료 알림이 메인으로 오지 않을 수 있다, 오래 조용하면 정리 대상으로만 표시한다
         const parent = list.find(t => t.id === shell.parentId)
         const parentEnded = shell.parentId !== undefined && (!parent || parent.state !== 'running')
-        if (parentEnded && now - seen.at > SHELL_IDLE_MS) await finish($, shell.id, 'killed', SYM.unknown)
+        if (parentEnded && now - seen.at > SHELL_ORPHAN_MS) orphanShells.add(shell.id)
         continue
       }
       shellSeen.set(shell.id, { size: stat.size, at: now })
@@ -870,9 +876,9 @@ export const register: Register = (on, options) => {
     const { Box, Text } = $.ui.resolve(e)
     if (list.length === 0) return <Text dimColor>∅</Text>
     const now = await $.clock.now()
-    const room = Math.max(2, e.props.scroll.bodyRows)
     const blocks = topsOf(list).map(t => blockOf(t, list, now, e.props.bodyColumns))
-    const { lines, hidden } = layout(blocks, room)
+    const all = blocks.reduce((n, b) => n + 1 + b.details.length, 0)
+    const { lines, hidden } = layout(blocks, all)
     return (
       <Box flexDirection="column">
         {lines.map(l => (
