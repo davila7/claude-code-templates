@@ -23544,5 +23544,36 @@
         "cohesivity-local"
       ]
     }
+  },
+  {
+    "slug": "comment-scraper-mcp",
+    "name": "Comment Scraper Mcp",
+    "author": "supertj",
+    "description": "Read your Comment Scraper exports (Reddit and Hacker News threads) from Claude and other MCP clients. Local and read-only.",
+    "github": "https://github.com/supertj/comment-scraper-mcp",
+    "stars": 0,
+    "type": "plugin",
+    "tags": [
+      "skills",
+      "mcps"
+    ],
+    "contains": {
+      "skills": 1,
+      "mcps": 1
+    },
+    "highlights": [
+      "Web UI: https://comment-scraper.com"
+    ],
+    "website": "https://comment-scraper.com",
+    "marketplace_name": "comment-scraper",
+    "plugin_name": "comment-scraper",
+    "plugin_manifest": {
+      "skills": [
+        "exported-threads"
+      ],
+      "mcpServers": [
+        "comment-scraper"
+      ]
+    }
   }
 ]
