@@ -1,0 +1,268 @@
+/* OrcaRouter provider dashboard — light and dark themes, no external CSS. */
+
+:root {
+  --bg: #f7f8fa;
+  --panel: #ffffff;
+  --border: #d9dee6;
+  --text: #14181f;
+  --muted: #5a6473;
+  --accent: #0f8a7e;
+  --accent-contrast: #ffffff;
+  --warn: #9a6400;
+  --danger: #b3261e;
+  --radius: 10px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1216;
+    --panel: #171b21;
+    --border: #2c333d;
+    --text: #eef1f5;
+    --muted: #9aa4b2;
+    --accent: #2fbfae;
+    --accent-contrast: #06211d;
+    --warn: #e8b04b;
+    --danger: #ff6b60;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.topbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+}
+
+.brand { display: flex; gap: 12px; align-items: center; }
+.brand img { border-radius: 6px; background: #fff; padding: 2px; }
+.brand h1 { font-size: 18px; margin: 0; }
+.tagline { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+.topbar-meta { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.pill {
+  font: 12px ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+
+main {
+  max-width: 980px;
+  margin: 24px auto 64px;
+  padding: 0 20px;
+  display: grid;
+  gap: 20px;
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 22px;
+}
+
+.card h2 { margin: 0 0 6px; font-size: 17px; }
+.hint { color: var(--muted); font-size: 13px; margin: 0 0 16px; }
+
+.auth-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.auth-method {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.auth-method header { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.auth-method h3 { margin: 0; font-size: 15px; }
+
+.badge {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 2px 8px;
+  color: var(--muted);
+}
+
+.method-body { margin: 0; font-size: 13px; color: var(--muted); }
+.method-body code { font-size: 12px; }
+
+label, legend, .field-label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+
+input[type="text"], input[type="password"], select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+}
+
+/* Searchable model selector: a real expanded panel, not a native dropdown. */
+.combo { position: relative; }
+
+.combo-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-weight: 500;
+  text-align: left;
+}
+
+.combo-trigger .chev { color: var(--muted); font-size: 12px; }
+
+.combo-panel {
+  position: absolute;
+  z-index: 20;
+  left: 0;
+  right: 0;
+  top: calc(100% + 6px);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, .28);
+  padding: 8px;
+  max-height: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.combo-panel[hidden] { display: none; }
+
+#model-listbox {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  max-height: 240px;
+}
+
+#model-listbox li {
+  padding: 7px 9px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+#model-listbox li[aria-selected="true"] { background: color-mix(in srgb, var(--accent) 18%, transparent); }
+#model-listbox li:hover, #model-listbox li.active { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+#model-listbox li .model-id { font-family: ui-monospace, Menlo, monospace; }
+#model-listbox li .model-meta { color: var(--muted); font-size: 12px; }
+
+.combo-empty { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+
+.visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0);
+  white-space: nowrap; border: 0;
+}
+
+input:focus-visible, select:focus-visible, button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+button {
+  font: inherit;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  cursor: pointer;
+}
+
+button.secondary {
+  background: transparent;
+  color: var(--text);
+  border-color: var(--border);
+}
+
+button:disabled { opacity: .55; cursor: not-allowed; }
+
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.row input { flex: 1 1 180px; }
+
+.connect-panel {
+  border-top: 1px dashed var(--border);
+  padding-top: 12px;
+  display: grid;
+  gap: 8px;
+}
+
+.status { min-height: 1.2em; margin: 0; font-size: 13px; color: var(--muted); }
+.status.ok { color: var(--accent); }
+.status.warn { color: var(--warn); }
+.status.error { color: var(--danger); }
+
+.credential-summary {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: 13px;
+}
+
+.credential-summary .label { font-weight: 600; }
+#credential-detail { color: var(--muted); font-family: ui-monospace, Menlo, monospace; }
+
+.grid-controls {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(180px, 220px) 1fr;
+  margin-bottom: 14px;
+}
+
+fieldset.field { border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; }
+fieldset.field legend { padding: 0 4px; }
+.check { display: inline-flex; align-items: center; gap: 6px; font-weight: 400; margin-right: 14px; }
+.check input { width: auto; }
+
+.catalog-state { font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+.catalog-state.degraded { color: var(--warn); }
+.catalog-state.empty { color: var(--warn); }
+
+@media (max-width: 620px) {
+  .grid-controls { grid-template-columns: 1fr; }
+}
