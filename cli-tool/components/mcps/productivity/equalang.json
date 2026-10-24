@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "equalang": {
+      "description": "Equalang translates whole files with layout preservation where supported, translates text and subtitles, and transcribes recordings. Estimate costs before file processing. Requires an Equalang API key and credits; files are uploaded to Equalang.",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@equalang/mcp@0.2.4"
+      ],
+      "env": {
+        "EQUALANG_API_KEY": "<YOUR_EQUALANG_API_KEY>"
+      }
+    }
+  }
+}
