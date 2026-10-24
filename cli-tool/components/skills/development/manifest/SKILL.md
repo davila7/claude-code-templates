@@ -1,5 +1,5 @@
 ---
-name: Manifest
+name: manifest
 description: Install and configure the Manifest observability plugin for your agents. Use when setting up telemetry, configuring API keys or endpoints, troubleshooting plugin connection issues, or verifying the observability pipeline is running.
 ---
 

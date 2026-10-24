@@ -1,5 +1,5 @@
 ---
-name: "PocketBase Migrations"
+name: pb-migrations
 description: "Schema migrations and versioning for PocketBase. Use when creating migrations, managing schema versions, syncing collections between environments, using automigrate, or creating collections programmatically. Covers migrate commands, migration file format, snapshot imports, and the _migrations tracking table."
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: "PocketBase Deploy"
+name: pb-deploy
 description: "Production deployment for PocketBase. Use when deploying PocketBase to a server, setting up Docker, configuring systemd, reverse proxy (nginx/Caddy), TLS, SMTP, backups, S3 storage, rate limiting, or hardening for production. Provides ready-to-use configs."
 ---
 
