@@ -1,5 +1,5 @@
 ---
-name: pinecone
+name: rag-pinecone
 description: Managed vector database for production AI applications. Fully managed, auto-scaling, with hybrid search (dense + sparse), metadata filtering, and namespaces. Low latency (<100ms p95). Use for production RAG, recommendation systems, or semantic search at scale. Best for serverless, managed infrastructure.
 license: MIT
 metadata:

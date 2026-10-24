@@ -1,5 +1,5 @@
 ---
-name: model-pruning
+name: emerging-techniques-model-pruning
 description: Reduce LLM size and accelerate inference using pruning techniques like Wanda and SparseGPT. Use when compressing models without retraining, achieving 50% sparsity with minimal accuracy loss, or enabling faster inference on hardware accelerators. Covers unstructured pruning, structured pruning, N:M sparsity, magnitude pruning, and one-shot methods.
 license: MIT
 metadata:

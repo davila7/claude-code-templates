@@ -1,5 +1,5 @@
 ---
-name: nnsight-remote-interpretability
+name: mechanistic-interpretability-nnsight
 description: Provides guidance for interpreting and manipulating neural network internals using nnsight with optional NDIF remote execution. Use when needing to run interpretability experiments on massive models (70B+) without local GPU resources, or when working with any PyTorch architecture.
 license: MIT
 metadata:

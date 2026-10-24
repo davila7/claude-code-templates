@@ -1,5 +1,5 @@
 ---
-name: sentence-transformers
+name: rag-sentence-transformers
 description: Framework for state-of-the-art sentence, text, and image embeddings. Provides 5000+ pre-trained models for semantic similarity, clustering, and retrieval. Supports multilingual, domain-specific, and multimodal models. Use for generating embeddings for RAG, semantic search, or similarity tasks. Best for production embedding generation.
 license: MIT
 metadata:

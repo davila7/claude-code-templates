@@ -1,5 +1,5 @@
 ---
-name: implementing-llms-litgpt
+name: model-architecture-litgpt
 description: Implements and trains LLMs using Lightning AI's LitGPT with 20+ pretrained architectures (Llama, Gemma, Phi, Qwen, Mistral). Use when need clean model implementations, educational understanding of architectures, or production fine-tuning with LoRA/QLoRA. Single-file implementations, no abstraction layers.
 license: MIT
 metadata:

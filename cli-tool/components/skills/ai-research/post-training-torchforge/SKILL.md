@@ -1,5 +1,5 @@
 ---
-name: torchforge-rl-training
+name: post-training-torchforge
 description: Provides guidance for PyTorch-native agentic RL using torchforge, Meta's library separating infra from algorithms. Use when you want clean RL abstractions, easy algorithm experimentation, or scalable training with Monarch and TorchTitan.
 license: MIT
 metadata:

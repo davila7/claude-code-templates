@@ -1,5 +1,5 @@
 ---
-name: chroma
+name: rag-chroma
 description: Open-source embedding database for AI applications. Store embeddings and metadata, perform vector and full-text search, filter by metadata. Simple 4-function API. Scales from notebooks to production clusters. Use for semantic search, RAG applications, or document retrieval. Best for local development and open-source projects.
 license: MIT
 metadata:

@@ -1,5 +1,5 @@
 ---
-name: transformer-lens-interpretability
+name: mechanistic-interpretability-transformer-lens
 description: Provides guidance for mechanistic interpretability research using TransformerLens to inspect and manipulate transformer internals via HookPoints and activation caching. Use when reverse-engineering model algorithms, studying attention patterns, or performing activation patching experiments.
 license: MIT
 metadata:

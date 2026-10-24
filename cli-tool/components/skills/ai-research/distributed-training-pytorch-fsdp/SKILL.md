@@ -1,5 +1,5 @@
 ---
-name: pytorch-fsdp
+name: distributed-training-pytorch-fsdp
 description: Expert guidance for Fully Sharded Data Parallel training with PyTorch FSDP - parameter sharding, mixed precision, CPU offloading, FSDP2
 license: MIT
 metadata:

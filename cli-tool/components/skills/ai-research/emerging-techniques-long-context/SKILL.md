@@ -1,5 +1,5 @@
 ---
-name: long-context
+name: emerging-techniques-long-context
 description: Extend context windows of transformer models using RoPE, YaRN, ALiBi, and position interpolation techniques. Use when processing long documents (32k-128k+ tokens), extending pre-trained models beyond original context limits, or implementing efficient positional encodings. Covers rotary embeddings, attention biases, interpolation methods, and extrapolation strategies for LLMs.
 license: MIT
 metadata:

@@ -1,5 +1,5 @@
 ---
-name: langsmith-observability
+name: observability-langsmith
 description: LLM observability platform for tracing, evaluation, and monitoring. Use when debugging LLM applications, evaluating model outputs against datasets, monitoring production systems, or building systematic testing pipelines for AI applications.
 license: MIT
 metadata:

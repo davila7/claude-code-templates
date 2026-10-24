@@ -1,5 +1,5 @@
 ---
-name: dspy
+name: prompt-engineering-dspy
 description: Build complex AI systems with declarative programming, optimize prompts automatically, create modular RAG systems and agents with DSPy - Stanford NLP's framework for systematic LM programming
 license: MIT
 metadata:

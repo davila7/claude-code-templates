@@ -1,5 +1,5 @@
 ---
-name: llama-factory
+name: fine-tuning-llama-factory
 description: Expert guidance for fine-tuning LLMs with LLaMA-Factory - WebUI no-code, 100+ models, 2/3/4/5/6/8-bit QLoRA, multimodal support
 license: MIT
 metadata:

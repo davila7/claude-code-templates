@@ -1,5 +1,5 @@
 ---
-name: mlflow
+name: mlops-mlflow
 description: Track ML experiments, manage model registry with versioning, deploy models to production, and reproduce experiments with MLflow - framework-agnostic ML lifecycle platform
 license: MIT
 metadata:

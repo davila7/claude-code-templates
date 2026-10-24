@@ -1,5 +1,5 @@
 ---
-name: gptq
+name: optimization-gptq
 description: Post-training 4-bit quantization for LLMs with minimal accuracy loss. Use for deploying large models (70B, 405B) on consumer GPUs, when you need 4× memory reduction with <2% perplexity degradation, or for faster inference (3-4× speedup) vs FP16. Integrates with transformers and PEFT for QLoRA fine-tuning.
 license: MIT
 metadata:

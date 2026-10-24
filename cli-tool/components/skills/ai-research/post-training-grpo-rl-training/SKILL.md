@@ -1,5 +1,5 @@
 ---
-name: grpo-rl-training
+name: post-training-grpo-rl-training
 description: Expert guidance for GRPO/RL fine-tuning with TRL for reasoning and task-specific model training
 license: MIT
 metadata:

@@ -1,5 +1,5 @@
 ---
-name: tensorboard
+name: mlops-tensorboard
 description: Visualize training metrics, debug models with histograms, compare experiments, visualize model graphs, and profile performance with TensorBoard - Google's ML visualization toolkit
 license: MIT
 metadata:

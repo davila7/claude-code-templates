@@ -1,5 +1,5 @@
 ---
-name: crewai-multi-agent
+name: agents-crewai
 description: Multi-agent orchestration framework for autonomous AI collaboration. Use when building teams of specialized agents working together on complex tasks, when you need role-based agent collaboration with memory, or for production workflows requiring sequential/hierarchical execution. Built without LangChain dependencies for lean, fast execution.
 license: MIT
 metadata:

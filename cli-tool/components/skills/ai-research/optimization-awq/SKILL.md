@@ -1,5 +1,5 @@
 ---
-name: awq-quantization
+name: optimization-awq
 description: Activation-aware weight quantization for 4-bit LLM compression with 3x speedup and minimal accuracy loss. Use when deploying large models (7B-70B) on limited GPU memory, when you need faster inference than GPTQ with better accuracy preservation, or for instruction-tuned and multimodal models. MLSys 2024 Best Paper Award winner.
 license: MIT
 metadata:
