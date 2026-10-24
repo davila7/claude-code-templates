@@ -95,6 +95,31 @@ npx claude-code-templates@latest --mcp database/postgresql-integration --yes
 | **🪝 Hooks** | Automation triggers | Pre-commit validation, post-completion actions |
 | **🎨 Skills** | Reusable capabilities with progressive disclosure | PDF processing, Excel automation, custom workflows |
 
+## Removing components
+
+Remove components from the location where you installed them. Back up customized files before deleting or editing them. For project installations, these paths are relative to the project root (or the target passed to `--directory`):
+
+| Component | How to remove |
+|-----------|---------------|
+| **Skills** | Delete `.claude/skills/<name>/`, including its bundled scripts and resources. |
+| **Agents** | Delete `.claude/agents/<name>.md`. |
+| **Commands** | Delete `.claude/commands/<name>.md`. |
+| **MCPs** | Remove only the installed server entries under `mcpServers` in `.mcp.json`, preserving other servers. Use the server keys in that file, which may differ from the catalog component name. |
+| **Settings** | Remove only the keys or permission entries added by the component from the selected settings file. Restore previous values if installation overwrote them. |
+| **Hooks** | Remove only the installed hook entries from `hooks` in the selected settings file, preserving other hooks for the same event. |
+
+Use the installed name without the catalog category. For example, after installing `--skill creative-design/ui-design-system`, run this from the project root:
+
+```bash
+rm -r -- .claude/skills/ui-design-system
+```
+
+Settings and hooks can be installed in multiple scopes: local (`.claude/settings.local.json`, the default), project (`.claude/settings.json`), or user (`~/.claude/settings.json`). Back up and edit each file selected during installation. For enterprise managed settings, use the location reported by the installer and follow your organization's policy.
+
+Do not delete the entire `.claude/` directory or shared configuration files to remove one component. Remove supporting files in `.claude/hooks/` or `.claude/scripts/` only after removing their configuration entries and checking that no remaining component references them.
+
+Restart Claude Code after removal. Deleting component files does not uninstall external tools or dependencies you installed separately.
+
 ## 🛠️ Additional Tools
 
 Beyond the template catalog, Claude Code Templates includes powerful development tools:
