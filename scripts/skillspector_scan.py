@@ -127,15 +127,27 @@ def _renamed_files(base_ref: str) -> dict[Path, Path]:
     return renames
 
 
-def base_path_for(directory: Path, renames: dict[Path, Path]) -> Path:
-    """Where a (possibly renamed) skill dir lived on the base ref."""
+def _exists_at(commit: str, path: Path) -> bool:
+    return subprocess.run(
+        ["git", "cat-file", "-e", f"{commit}:{path.as_posix()}"],
+        capture_output=True,
+        check=False,
+    ).returncode == 0
+
+
+def base_path_for(directory: Path, renames: dict[Path, Path], commit: str) -> Path:
+    """Where a skill dir lived on the base ref.
+
+    The same path wins whenever it already holds a skill there. Otherwise the
+    dir counts as renamed only if its own manifest was renamed into it, so a
+    single auxiliary file moved in from another skill never lends that
+    skill's base score.
+    """
+    if any(_exists_at(commit, directory / name) for name in ("SKILL.md", "skill.md")):
+        return directory
     for new, old in renames.items():
-        try:
-            inner = new.relative_to(directory)
-        except ValueError:
-            continue
-        if old.parts[-len(inner.parts):] == inner.parts:
-            return Path(*old.parts[: -len(inner.parts)])
+        if new.parent == directory and new.name.lower() in MANIFEST_NAMES:
+            return old.parent
     return directory
 
 
@@ -170,14 +182,19 @@ def attach_base_scores(results: list[dict], base_ref: str) -> None:
     for res in results:
         if res.get("status") != "ok":
             continue
-        old_dir = base_path_for(Path(res["path"]), renames)
+        old_dir = base_path_for(Path(res["path"]), renames, commit)
         with tempfile.TemporaryDirectory() as tmp:
             extracted = extract_base_skill(commit, old_dir, Path(tmp))
             if extracted is None:
                 res["base_score"] = None  # new skill
                 continue
             base = scan_skill(extracted)
-        res["base_score"] = base["score"] if base.get("status") == "ok" else None
+        if base.get("status") == "ok":
+            res["base_score"] = base["score"]
+        else:
+            # Fail closed: an unscannable base can't prove the score didn't rise.
+            res["base_score"] = None
+            res["base_error"] = base.get("error", "base scan failed")
 
 
 def blocks(result: dict, threshold: int) -> bool:
@@ -189,6 +206,8 @@ def blocks(result: dict, threshold: int) -> bool:
     if result.get("status") != "ok" or result["score"] <= threshold:
         return False
     if "base_score" not in result:
+        return True
+    if result.get("base_error"):
         return True
     return result["score"] > (result["base_score"] or 0)
 
@@ -402,6 +421,9 @@ def build_markdown(results: list[dict], threshold: int) -> str:
         else:
             lines.append("| Skill | Score | Severity | Recommendation | Issues | Top findings |")
             lines.append("|-------|-------|----------|----------------|--------|--------------|")
+        # Blocking rows first so the row limit never hides why the check failed.
+        if compared:
+            flagged = sorted(flagged, key=lambda r: not blocks(r, threshold))
         for r in flagged[:30]:
             top_rules = ", ".join(
                 sorted({_rule_id(i) for i in r.get("issues", [])})[:5]
@@ -409,7 +431,12 @@ def build_markdown(results: list[dict], threshold: int) -> str:
             rec = str(r.get("recommendation", "")).replace("_", " ")
             sev = f"{_severity_emoji(r['severity'])} {r['severity']}"
             if compared:
-                base = "new" if r.get("base_score") is None else str(r["base_score"])
+                if r.get("base_error"):
+                    base = "scan error"
+                elif r.get("base_score") is None:
+                    base = "new"
+                else:
+                    base = str(r["base_score"])
                 lines.append(
                     f"| `{r['name']}` | {r['score']}/100 | {base} | "
                     f"{'⛔ yes' if blocks(r, threshold) else 'no'} | {sev} | "
@@ -432,6 +459,14 @@ def build_markdown(results: list[dict], threshold: int) -> str:
             lines.append(f"- `{r['path']}` — {r.get('error', 'unknown error')}")
         if len(errors) > 10:
             lines.append(f"- _...and {len(errors) - 10} more._")
+        lines.append("")
+
+    base_errors = [r for r in scanned if r.get("base_error")]
+    if base_errors:
+        lines.append("### ⚠️ Base scan errors (these skills block until the base scans)")
+        lines.append("")
+        for r in base_errors[:10]:
+            lines.append(f"- `{r['path']}` — {r['base_error']}")
         lines.append("")
 
     if not flagged and not errors:
