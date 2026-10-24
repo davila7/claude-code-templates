@@ -144,10 +144,12 @@ With a key set, the prompt text leaves the machine and goes to whichever backend
 The three tiers take an alias (`haiku`, `sonnet`, `opus`) or a full model id.
 A subagent is spawned with the name as given, the way the Agent tool takes it;
 the main loop's request needs an id, so there an alias is resolved to the
-family's current id (`haiku` → `claude-haiku-4-5-20251001`, `sonnet` →
-`claude-sonnet-5`, `opus` → `claude-opus-5`). Set a full id to pin a
-specific version. A decision for the tier the session already runs is not a
-change, so a session on `claude-opus-5[1m]` keeps its 1M-context id.
+family's current id (`haiku` → `claude-haiku-5-5`, `sonnet` →
+`claude-sonnet-5-5`, `opus` → `claude-opus-5-5`). This map changes with each
+model release, so with `routeMainModel` on, set full ids in `fastModel`,
+`balancedModel` and `deepModel` to pin a specific version. A decision for
+the tier the session already runs is not a change, so a session on
+`claude-opus-5[1m]` keeps its 1M-context id.
 
 Declared in `.claude-plugin/plugin.json` (`userConfig`). Set them in `/config`, in user settings (`~/.claude/settings.json`, not project settings), with `--settings <file>` or in managed settings:
 

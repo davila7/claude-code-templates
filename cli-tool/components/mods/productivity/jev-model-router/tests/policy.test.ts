@@ -377,9 +377,9 @@ test('the status line distinguishes a change from a deliberate no-change', () =>
 // `turn.step`'s `model` goes to the API as written, so a family alias has to
 // become an id there; the engine refuses "haiku" on a request.
 test('a family alias resolves to a full id for the main loop', () => {
-  expect(requestModelId('haiku')).toBe('claude-haiku-4-5-20251001')
-  expect(requestModelId('Sonnet')).toBe('claude-sonnet-5')
-  expect(requestModelId('opus')).toBe('claude-opus-5')
+  expect(requestModelId('haiku')).toBe('claude-haiku-5-5')
+  expect(requestModelId('Sonnet')).toBe('claude-sonnet-5-5')
+  expect(requestModelId('opus')).toBe('claude-opus-5-5')
 })
 
 test('a full id or an unknown name is passed through unchanged', () => {
