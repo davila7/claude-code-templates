@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "empiriolabs": {
+      "description": "Remote MCP server for the EmpirioLabs AI platform: 200+ models for chat, image, video, speech, music and 3D, plus web search, batches and async jobs. Usage is billed from prepaid account credits. Sign in with OAuth in the browser or send an Authorization: Bearer key.",
+      "type": "http",
+      "url": "https://mcp.empiriolabs.ai/mcp"
+    }
+  }
+}
