@@ -81,6 +81,7 @@ import {
   classifyText,
   commandLike,
   decide,
+  describeFailure,
   describeRerank,
   describeSetup,
   describeStatus,
@@ -92,6 +93,7 @@ import {
   endpoint,
   injectionBlock,
   installPathsOf,
+  mergeWide,
   parseListing,
   parseNames,
   passesGate,
@@ -99,6 +101,7 @@ import {
   readRerank,
   readSkillSettings,
   modelInvocable,
+  rankingParts,
   readWide,
   rerankQuestions,
   requestBody,
@@ -276,7 +279,7 @@ export const register: Register = (on, options) => {
           $.clock.sleep(timeoutMs),
         ])
         if (response && response.ok) return response.text
-        if (response) $.ui.log(`[jev-skill-suggestion] ${active} responded ${response.status} to the ${what}`)
+        if (response) $.ui.log(`[jev-skill-suggestion] ${describeFailure(active, response.status, what, response.text)}`)
         else $.ui.log(`[jev-skill-suggestion] ${what} passed ${timeoutMs}ms; no suggestion`)
       } catch (error) {
         $.ui.log(`[jev-skill-suggestion] ${what} failed: ${String(error)}`)
@@ -369,8 +372,19 @@ export const register: Register = (on, options) => {
     const startedAt = await $.clock.now()
     let wide: Wide | null = null
     if (active) {
-      const answer = await ask(e.text, wideQuestions(active, skills), 'ranking')
-      if (answer) wide = readWide(answer)
+      // A `choice` holds at most MAX_CHOICES options, so a larger catalog is
+      // ranked in parts, all at once under the same budget.
+      const parts = rankingParts(skills)
+      const answers = await Promise.all(
+        parts.map((part, index) =>
+          ask(
+            e.text,
+            wideQuestions(active, part, index === 0),
+            parts.length > 1 ? `ranking (part ${index + 1} of ${parts.length})` : 'ranking',
+          ),
+        ),
+      )
+      wide = mergeWide(answers.map((answer) => (answer ? readWide(answer) : null)))
     } else {
       // No backend: the engine's own small-model classifier answers the same
       // question, with the descriptions folded into the text it reads. One
