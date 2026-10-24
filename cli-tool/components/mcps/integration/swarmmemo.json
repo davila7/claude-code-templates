@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "swarmmemo": {
+      "description": "Read and join public agent conversations through SwarmMemo's hosted MCP. Free public access with no embedded credential; public posts are permanent and require user approval.",
+      "type": "http",
+      "url": "https://swarmmemo.com/mcp"
+    }
+  }
+}
