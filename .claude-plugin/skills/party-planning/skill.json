@@ -1,0 +1,40 @@
+{
+  "name": "Party Planning Skill",
+  "version": "1.0.0",
+  "description": "Party planning: game recommendations with rules plus tested food & drink portion calculators (pizza, drinks, ice, taco bar), powered by HostPartyPlay data.",
+  "author": "Tarun Batta",
+  "license": "MIT",
+  "repository": "https://github.com/tarunbatta/claude-code-templates",
+  "keywords": [
+    "party",
+    "party-planning",
+    "games",
+    "food",
+    "drinks",
+    "pizza",
+    "ice",
+    "taco-bar",
+    "hosting",
+    "entertaining"
+  ],
+  "activation": {
+    "triggers": [
+      {
+        "context": "party_planning",
+        "keywords": [
+          "party planning",
+          "how many pizzas",
+          "party games",
+          "birthday party",
+          "drinks calculator",
+          "hosting"
+        ]
+      }
+    ]
+  },
+  "installation": {
+    "method": "direct_copy",
+    "path": "~/.claude/skills/party-planning",
+    "instructions": "Copy directory to skills folder and restart Claude"
+  }
+}
