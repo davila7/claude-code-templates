@@ -1,0 +1,32 @@
+{
+  "name": "task-lens",
+  "version": "0.5.4",
+  "description": "Shows what each subagent, background shell and workflow is doing and why, as one sentence in a band above the prompt",
+  "author": {
+    "name": "delpotro96",
+    "url": "https://github.com/delpotro96"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/delpotro96/task-lens",
+  "repository": "https://github.com/delpotro96/task-lens",
+  "keywords": [
+    "mod",
+    "subagent",
+    "background-task",
+    "workflow",
+    "band",
+    "haiku",
+    "monitoring",
+    "multilingual"
+  ],
+  "icon": "./.claude-plugin/icon.png",
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "language": {
+      "type": "string",
+      "title": "Language",
+      "description": "auto follows the language of your last prompt; or name a language to always use (e.g. Korean, English, Japanese)",
+      "default": "auto"
+    }
+  }
+}
