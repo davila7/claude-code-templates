@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "truthifi": {
+      "description": "One verified household record for your AI: accounts, activity, holdings, fees, performance, cash flow and your Truthifi Score. Can't move money. Hosted server; sign in with OAuth in your browser.",
+      "type": "http",
+      "url": "https://api.truthifi.com/mcp"
+    }
+  }
+}
