@@ -414,6 +414,57 @@ export function bareCommand(text: string): boolean {
 }
 
 /**
+ * The effort the prompts folded into a running turn may give the rest of it:
+ * only a higher one.
+ *
+ * A prompt typed while the model works reaches `prompt.submit` with the running
+ * turn's id, and the engine delivers it into that turn: the next request is a
+ * later step of the same turn, which reuses what the first step settled on. A
+ * deep request typed during a short task therefore ran at the short task's
+ * effort, and its decision was never read. The first task is still under way,
+ * so the new one may lift the effort but not lower it. The model is left as it
+ * is mid-turn. Two prompts typed into the same turn both belong to it, so the
+ * higher effort either asks for wins; `decision` is the one that won, or the
+ * latest when none raised it.
+ */
+export function midTurnEffort(
+  decisions: readonly (Decision | null)[],
+  current: { model: string; effort?: string | number },
+  config: PolicyConfig,
+): Routing & { decision: Decision | null } {
+  const now = effortRank(current.effort)
+  let raise: (Routing & { decision: Decision | null }) | null = null
+  let reason = NOTHING.reason
+  for (const decision of decisions) {
+    const routing = route(decision, current, config)
+    const rank = effortRank(routing.effort ?? undefined)
+    if (rank !== null && now !== null && rank > now) {
+      if (!raise || rank > (effortRank(raise.effort ?? undefined) ?? -1)) {
+        raise = { model: null, effort: routing.effort, reason: routing.reason, decision }
+      }
+    } else {
+      reason = routing.effort ? `wanted ${routing.effort}; a prompt mid-turn only raises it` : routing.reason
+    }
+  }
+  return raise ?? { model: null, effort: null, reason, decision: decisions[decisions.length - 1] ?? null }
+}
+
+/**
+ * Where a prompt came from, as `prompt.submit` reports it: the kinds a person
+ * wrote. Everything else is the engine or another agent talking: a background
+ * task's `<task-notification>`, a peer session, a relay. In one session that
+ * ran ten background subagents, 11 of its 14 classifications were
+ * notifications: each spent a call, sent a subagent's report to the backend,
+ * and routed a turn on text nobody typed. The types declare `origin`; an
+ * engine that leaves it out counts as a person.
+ */
+const PERSON_ORIGINS = ['composer', 'bridge', 'sdk', 'scheduled-trigger']
+
+export function writtenByPerson(origin: { kind: string } | undefined): boolean {
+  return origin === undefined || PERSON_ORIGINS.includes(origin.kind)
+}
+
+/**
  * Holds a prompt's classification until the turn that reads that prompt
  * starts.
  *
