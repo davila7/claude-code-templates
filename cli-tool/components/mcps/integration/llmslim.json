@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "llmslim": {
+      "type": "stdio",
+      "description": "Long-term memory for Claude Code with no LLM call. Stores messages word for word in local SQLite (or Postgres) and recalls the ones that answer a question within a token budget; fit_context shrinks long text to a budget. Tools: remember, recall, list_memories, forget, fit_context. The user and agent scope is fixed when the server starts, not chosen by the model. No API key. Runs with uvx (needs uv), or install with pip install \"llmslim[mcp]\" and run llmslim mcp. MIT.",
+      "command": "uvx",
+      "args": ["--from", "llmslim[mcp]", "llmslim", "mcp"]
+    }
+  }
+}
