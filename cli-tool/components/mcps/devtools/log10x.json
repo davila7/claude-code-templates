@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "log10x": {
+      "description": "Ranks log patterns by volume and cost on Splunk, Datadog, Elasticsearch, CloudWatch and ClickHouse, and plans compact, tier down or offload for the excess over each cap. Runs locally over stdio; no log data reaches log10x. Read-only against a public demo dataset without an API key.",
+      "command": "npx",
+      "args": [
+        "-y",
+        "log10x-mcp@latest"
+      ]
+    }
+  }
+}
