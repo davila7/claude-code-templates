@@ -1,8 +1,10 @@
 name: Skill Security Scan
 
 # Runs SkillSpector (NVIDIA, Apache-2.0) static analysis on skill components
-# changed in a PR. Posts a report comment and blocks the PR if any changed
-# skill scores HIGH/CRITICAL (risk score > 50).
+# changed in a PR. Posts a report comment and blocks the PR if a changed
+# skill scores HIGH/CRITICAL (risk score > 50) and its score rose compared
+# with the merge base (a new skill counts as 0). Skills that already scored
+# that high on main can be edited without being blocked for old findings.
 
 on:
   pull_request:
@@ -42,6 +44,7 @@ jobs:
           python scripts/skillspector_scan.py \
             --changed \
             --base-ref "origin/${{ github.base_ref }}" \
+            --compare-base \
             --fail-on-risk \
             --threshold 50 \
             --output-md skillspector-report.md \
