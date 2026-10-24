@@ -118,11 +118,22 @@ jobs:
             comment += `\n---\n`;
             comment += `📊 **[View Full Report](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})** for detailed error messages and all components`;
 
-            // Post comment
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: comment
-            });
+            await core.summary.addRaw(comment).write();
+
+            const headRepo = context.payload.pull_request?.head?.repo?.full_name;
+            if (headRepo !== `${context.repo.owner}/${context.repo.repo}`) {
+              core.notice('Pull request from a fork: its read-only token cannot comment, so the report is in this job summary.');
+              return;
+            }
+
+            try {
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
+              });
+            } catch (error) {
+              core.warning(`Could not comment on the pull request (${error.status ?? 'no status'}: ${error.message}); the report is in this job summary.`);
+            }
 
