@@ -355,10 +355,10 @@ test('an already-injected skill is only named again, and one without a file is s
   expect(none).toContain('Load it with the Skill tool (skill: "pptx")')
 })
 
-test('a synced skill is looked for under every account directory, by its unprefixed name', () => {
-  expect(syncedFileCandidates('/home/u', ['acc_1', 'acc_2'], 'anthropic-skills:pptx')).toEqual([
-    '/home/u/.claude/skills/synced/acc_1/pptx/SKILL.md',
-    '/home/u/.claude/skills/synced/acc_2/pptx/SKILL.md',
+test('a synced skill is looked for under every account directory of the config dir, by its unprefixed name', () => {
+  expect(syncedFileCandidates('/cfg', ['acc_1', 'acc_2'], 'anthropic-skills:pptx')).toEqual([
+    '/cfg/skills/synced/acc_1/pptx/SKILL.md',
+    '/cfg/skills/synced/acc_2/pptx/SKILL.md',
   ])
   expect(syncedFileCandidates('/home/u', ['../etc'], 'pptx')).toEqual([])
   expect(syncedFileCandidates('/home/u', ['acc'], 'a/b')).toEqual([])
@@ -406,7 +406,15 @@ test('the setup instructions list every skill, carry the exact edit and the back
   const restore = setupInstructions('restore', plan, settings, '/s.json', '/b.json')
   expect(restore).toContain('Read /b.json')
   expect(restore).toContain('Only after a clear yes')
-  expect(restore).toContain('rm ~/.claude/jev-skill-suggestion.skill-overrides.backup.json')
+  // Byte for byte what commands/setup.md allows, so it runs without a prompt.
+  expect(restore).toContain('Bash tool: rm ~/.claude/jev-skill-suggestion.skill-overrides.backup.json\n')
+  // Under CLAUDE_CONFIG_DIR the backup is elsewhere: its own path, quoted for the shell.
+  expect(setupInstructions('restore', plan, settings, '/s.json', '/cfg/b.json', false, true)).toContain(
+    "Bash tool: rm '/cfg/b.json'\n",
+  )
+  expect(setupInstructions('restore', plan, settings, '/s.json', "/My Config/it's/b.json", false, true)).toContain(
+    "Bash tool: rm '/My Config/it'\\''s/b.json'\n",
+  )
   expect(describeStillListed(1)).toContain('1 skill is still listed')
   expect(describeStillListed(13)).toContain(`run /${SETUP_COMMAND}`)
 })
