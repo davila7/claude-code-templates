@@ -5,8 +5,8 @@ name: Component Validate
 # the nested catalog layout is adapted to what the validator accepts.
 #
 # - Pull requests: validates only the components the PR touches and blocks on errors.
-# - Weekly / manual: validates the whole catalog and reports; never blocks, because
-#   the catalog still has known errors (see the cleanup plan).
+# - Weekly / manual: validates the whole catalog and fails on any error (the catalog
+#   reached 0 errors in 2026-10), so a regression that slips past a PR shows up here.
 # Mods are validated by mods-typecheck.yml; settings and loops have no official validator.
 
 on:
@@ -51,9 +51,8 @@ jobs:
           git diff --name-only --diff-filter=d "origin/${{ github.base_ref }}...HEAD" -- cli-tool/components > changed.txt
           python3 scripts/validate_components.py --changed changed.txt --report component-validation.json
 
-      - name: Validate whole catalog (report only)
+      - name: Validate whole catalog
         if: github.event_name != 'pull_request'
-        continue-on-error: true
         run: python3 scripts/validate_components.py --report component-validation.json
 
       - name: Upload report

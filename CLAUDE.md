@@ -189,6 +189,15 @@ The agent will provide prioritized feedback:
 - **⚠️ Warnings**: Should fix (clarity, best practices)
 - **📋 Suggestions**: Nice to have improvements
 
+#### Official validation (`claude plugin validate`)
+
+`.github/workflows/component-validate.yml` runs Claude Code's own validator through
+`scripts/validate_components.py` (it flattens the nested `{type}/{category}/` layout,
+which the validator does not recurse into, and wraps hooks/MCPs one file at a time).
+PRs validate only the components they change; the weekly run validates the whole
+catalog. Both fail on errors: the catalog reached 0 errors on 2026-10-24. Run it
+locally with `python3 scripts/validate_components.py [--changed FILE] [--strict]`.
+
 #### Skill Security Scanning (SkillSpector)
 
 Skills under `cli-tool/components/skills/**` are scanned for security
