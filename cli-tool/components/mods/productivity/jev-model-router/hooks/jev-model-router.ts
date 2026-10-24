@@ -11,8 +11,10 @@
  * neither, the engine's own `$.model.classify` stands in, so the mod is
  * useful without any account.
  *
- * Three things it can set, each on its own switch:
+ * Four things it can set, each on its own switch:
  *   agent.spawn  — the model of each subagent (on by default)
+ *   turn.step    — the reasoning effort of each subagent, from the decision
+ *                  made at its spawn (on by default)
  *   turn.step    — the reasoning effort of the main loop (on by default)
  *   turn.step    — the model of the main loop (off by default: switching
  *                  models mid-session invalidates the prompt cache, which can
@@ -23,8 +25,10 @@
  * mistakes do not cost the same, so they do not clear the same confidence bar
  * (see `minUpgradeConfidence` / `minDowngradeConfidence` in policy.ts).
  *
- * The Agent tool has no effort parameter, so a subagent's effort is not ours
- * to set; only its model is.
+ * The Agent tool has no effort parameter, but a subagent's requests pass
+ * through `turn.step` with its `agentId`, which `agent.spawn`'s `next()`
+ * returns before the subagent's first request; the effort decided at the
+ * spawn is set there, on every request of that subagent.
  *
  * The prompt is classified at `prompt.submit`, which runs before the turn
  * starts, and the decision is applied at the turn's first request.
@@ -41,7 +45,7 @@
  * Privacy: with a key set, the prompt text is sent to whichever backend the
  * key belongs to.
  */
-import type { Register } from 'claude-code'
+import type { Register, TurnStepInput } from 'claude-code'
 import {
   DEFAULT_BASE_URL,
   DEFAULT_MODEL,
@@ -60,6 +64,9 @@ import {
   bareCommand,
 } from './policy.ts'
 import type { Decision, Effort, PolicyConfig, Provider, Tier } from './policy.ts'
+
+/** The effort a request can carry: a level, or a number on the caller's own scale. */
+type StepEffort = NonNullable<TurnStepInput['effort']>
 
 export const register: Register = (on, options) => {
   const text = (key: string, fallback: string) =>
@@ -97,6 +104,7 @@ export const register: Register = (on, options) => {
 
   const timeoutMs = number('timeoutMs', 800)
   const routeSubagentModel = flag('routeSubagentModel', true)
+  const routeSubagentEffort = flag('routeSubagentEffort', true)
   const routeMainEffort = flag('routeMainEffort', true)
   const routeMainModel = flag('routeMainModel', false)
   const routeMainLoop = routeMainEffort || routeMainModel
@@ -124,6 +132,19 @@ export const register: Register = (on, options) => {
   let announced = false
   let appliedTurnId: string | undefined
   let applied: { model?: string; effort?: Effort } | null = null
+  // Each subagent's spawn decision until its first request settles it into an
+  // effort (or none), kept for the rest of its requests so the effort never
+  // moves under its own cache. A finished run keeps its entry: a named
+  // subagent can be sent more work, each run a turn of its own under the same
+  // id. Only the latest 256 subagents are kept.
+  const subagents = new Map<string, { decision: Decision } | { effort: StepEffort | null }>()
+  const remember = (agentId: string, entry: { decision: Decision } | { effort: StepEffort | null }) => {
+    subagents.set(agentId, entry)
+    for (const oldest of subagents.keys()) {
+      if (subagents.size <= 256) break
+      subagents.delete(oldest)
+    }
+  }
 
   on('prompt.submit', async ($, e, next) => {
     // Before the routing guards: a module whose switches are all off has still
@@ -137,6 +158,7 @@ export const register: Register = (on, options) => {
             url,
             {
               subagentModel: routeSubagentModel,
+              subagentEffort: routeSubagentEffort,
               mainEffort: routeMainEffort,
               mainModel: routeMainModel,
             },
@@ -210,7 +232,34 @@ export const register: Register = (on, options) => {
   })
 
   on('turn.step', async function* ($, e, next) {
-    if (!routeMainLoop || e.agentId) return yield* next(e)
+    if (e.agentId) {
+      if (!routeSubagentEffort) return yield* next(e)
+      const held = subagents.get(e.agentId)
+      let effort: StepEffort | null = null
+      if (held && 'effort' in held) {
+        effort = held.effort
+      } else {
+        // The first request settles it. One that arrives before the spawn's
+        // decision (not seen) settles on none, so a later request never moves
+        // the effort under the subagent's cache. A model with no effort
+        // (Haiku) is left without one.
+        let routed: Effort | null = null
+        if (held && e.effort !== undefined) {
+          const routing = route(held.decision, { model: e.model, effort: e.effort }, policy)
+          routed = routing.effort
+          if (logDecisions) {
+            const what = routed ? `→ effort ${routed}: ` : ''
+            $.ui.log(`[jev-model-router] subagent ${e.agentId.slice(0, 8)} ${what}${routing.reason}`)
+          }
+        }
+        // Not routed, it keeps the effort it started with, so a change to the
+        // session's effort mid-run does not reach its cache either.
+        effort = routed ?? e.effort ?? null
+        remember(e.agentId, { effort })
+      }
+      return yield* next(effort !== null && effort !== e.effort ? { ...e, effort } : e)
+    }
+    if (!routeMainLoop) return yield* next(e)
 
     // Every request after the first reuses what the turn settled on, so
     // neither the model nor the effort changes under its own tool loop.
@@ -261,6 +310,7 @@ export const register: Register = (on, options) => {
             url,
             {
               subagentModel: routeSubagentModel,
+              subagentEffort: routeSubagentEffort,
               mainEffort: routeMainEffort,
               mainModel: routeMainModel,
             },
@@ -270,8 +320,10 @@ export const register: Register = (on, options) => {
       }
     }
 
-    // A fork inherits its parent's model; `model` is ignored for it.
-    if (!routeSubagentModel || e.fork) return next(e)
+    // A fork inherits its parent's model; `model` is ignored for it. It
+    // continues the parent's conversation, so its effort is left as inherited
+    // too: its requests find no decision here and settle on none.
+    if ((!routeSubagentModel && !routeSubagentEffort) || e.fork) return next(e)
 
     if (!unusableReported) {
       unusableReported = true
@@ -324,14 +376,17 @@ export const register: Register = (on, options) => {
 
     // The subagent's own model wins when the caller named one; otherwise it
     // would inherit the parent's, so that is what a change is measured from.
-    // The Agent tool takes no effort, so only the model is ours to set here.
+    // The Agent tool takes no effort: that is set at the subagent's first
+    // request (turn.step), from the decision kept here under its id.
     const current = e.model ?? e.parentModel
-    const { model, reason } = route(decision, { model: current }, policy)
-    if (!model) {
-      if (logDecisions) $.ui.log(`[jev-model-router] ${e.subagentType}: ${reason}`)
-      return next(e)
+    const { model, reason } = routeSubagentModel
+      ? route(decision, { model: current }, policy)
+      : { model: null, reason: 'subagent model routing off' }
+    if (logDecisions) $.ui.log(`[jev-model-router] ${e.subagentType}${model ? ` → ${model}` : ''}: ${reason}`)
+    const result = await next(model ? { ...e, model } : e)
+    if (routeSubagentEffort && decision && result.agentId && !subagents.has(result.agentId)) {
+      remember(result.agentId, { decision })
     }
-    if (logDecisions) $.ui.log(`[jev-model-router] ${e.subagentType} → ${model}: ${reason}`)
-    return next({ ...e, model })
+    return result
   })
 }
