@@ -63,6 +63,7 @@ REPOS = [
     ("chu2bard/pinion-os", None),
     ("Airtable/skills", None),
     ("krasserm/ml-plugins", None),
+    ("rays23/secret-handoff", None),
     ("cohesivity-org/cohesivity-plugin", "https://cohesivity.ai"),
     ("iOSDevSK/html2wp-cc-plugin", "https://html2wp.dev/"),
     ("curviate/curviate-plugin", "https://curviate.com/"),
