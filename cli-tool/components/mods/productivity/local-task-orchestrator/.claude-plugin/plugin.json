@@ -1,0 +1,32 @@
+{
+  "name": "local-task-orchestrator",
+  "version": "0.1.0",
+  "description": "Explicit advisory classification and extraction using a configured local model.",
+  "author": {
+    "name": "Claude Code Templates",
+    "url": "https://www.aitmpl.com"
+  },
+  "repository": "https://github.com/davila7/claude-code-templates",
+  "license": "MIT",
+  "keywords": ["mod", "function-hooks", "productivity", "local-model", "ollama"],
+  "userConfig": {
+    "model_id": {
+      "type": "string",
+      "title": "Installed Ollama model ID",
+      "description": "Exact already-installed Ollama model identifier; this mod never selects or downloads models.",
+      "required": true
+    },
+    "ollama_cloud_disabled": {
+      "type": "boolean",
+      "title": "Ollama cloud disabled",
+      "description": "Acknowledge that you manually verified cloud is disabled in the Ollama server configuration.",
+      "default": false
+    },
+    "host_egress_verified": {
+      "type": "boolean",
+      "title": "Host egress controls verified",
+      "description": "Acknowledge that you manually verified host egress controls for this local inference path.",
+      "default": false
+    }
+  }
+}
