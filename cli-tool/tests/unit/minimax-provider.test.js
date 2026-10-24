@@ -22,10 +22,13 @@ describe('MiniMax provider setting', () => {
     expect(setting.env.ANTHROPIC_AUTH_TOKEN).toBe('YOUR-MINIMAX-API-KEY');
   });
 
-  test('maps current MiniMax models to Claude model classes', () => {
-    expect(setting.env.ANTHROPIC_DEFAULT_HAIKU_MODEL).toBe('MiniMax-M2.7');
-    expect(setting.env.ANTHROPIC_DEFAULT_SONNET_MODEL).toBe('MiniMax-M3');
+  test('defaults to Flash and keeps M3 as the only alternative', () => {
+    expect(setting.env.ANTHROPIC_DEFAULT_HAIKU_MODEL).toBe('MiniMax-M3.1-Flash');
+    expect(setting.env.ANTHROPIC_DEFAULT_SONNET_MODEL).toBe('MiniMax-M3.1-Flash');
     expect(setting.env.ANTHROPIC_DEFAULT_OPUS_MODEL).toBe('MiniMax-M3');
+    expect(setting.model).toBe('MiniMax-M3.1-Flash');
+    expect(Object.keys(setting)).toEqual(['description', 'model', 'env']);
+    expect(setting.description).not.toMatch(/MiniMax-M2/);
   });
 
   test('documents the MiniMax-M3 context window', () => {
