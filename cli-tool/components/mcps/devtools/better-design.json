@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "better-design": {
+      "description": "Design systems, UI and UX principles, icons and UI review for AI coding agents. Finds or creates a design system that fits your product, installs its components, and reviews finished screens for hard-to-read text, hard-to-find buttons and unclear copy. Sign in with a free Better Design account (OAuth) on first connect.",
+      "type": "http",
+      "url": "https://better-design.com/api/mcp"
+    }
+  }
+}
