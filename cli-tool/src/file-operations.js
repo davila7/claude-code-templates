@@ -437,7 +437,7 @@ async function copyTemplateFiles(templateConfig, targetDir, options = {}) {
           console.log(chalk.yellow(`   This is normal for some templates - continuing...`));
           failedFiles++;
         }
-      } else if (file.source.includes('.claude') && !file.source.includes('examples/')) {
+      } else if (file.source.endsWith('/.claude') && !file.source.includes('examples/')) {
         // This is base .claude directory - download it but handle commands specially
         await fs.ensureDir(destPath);
         
