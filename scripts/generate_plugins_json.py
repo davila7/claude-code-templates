@@ -66,10 +66,12 @@ REPOS = [
     ("cohesivity-org/cohesivity-plugin", "https://cohesivity.ai"),
     ("iOSDevSK/html2wp-cc-plugin", "https://html2wp.dev/"),
     ("curviate/curviate-plugin", "https://curviate.com/"),
+    ("voicehook-ai/voicehook-agent", "https://voicehook.ai/?utm_source=aitmpl&utm_medium=plugin-directory"),
 ]
 
 DESCRIPTION_OVERRIDES = {
     "cohesivity-org/cohesivity-plugin": "cohesivity.ai offers free agent native backend services. Anonymous account (no-signup) to get started through MCP or API. Hosting, postgres, email, storage, containers, LLMs, voice and third-party APIs. Includes free tiers and 5 USD/mo in AI and Search credits. topups through x402.",
+    "voicehook-ai/voicehook-agent": "Talk with your agents. Voice for your agent fleet: talk to your coding agents from your phone while they keep working, with a shared status board and decisions across sessions. Agent-native: the voicehook-join plugin connects Claude Code to the voicehook MCP server, no keys.",
 }
 
 OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "..", "dashboard", "public", "plugins.json")
