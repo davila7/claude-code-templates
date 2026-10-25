@@ -1,0 +1,7 @@
+interface:
+  display_name: "Guided Goal"
+  short_description: "Turn rough intent into a verified completion contract"
+  brand_color: "#8B5CF6"
+  default_prompt: "Use $guided-goal to clarify this objective, present the completion contract, and wait for explicit activation."
+policy:
+  allow_implicit_invocation: false
