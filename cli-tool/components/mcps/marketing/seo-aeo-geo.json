@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "seoaeogeo": {
+      "description": "Remote MCP server that audits a public page for Google and AI search (ChatGPT, Claude, Perplexity): robots.txt rules per AI crawler, CDN and firewall blocks seen by OAI-SearchBot, Claude-SearchBot and PerplexityBot, and text visible without JavaScript. Returns a ranked fix pack with where each fix lives in the codebase and how to verify it. Free preview, no account or API key.",
+      "type": "http",
+      "url": "https://seoaeogeo.app/mcp"
+    }
+  }
+}
