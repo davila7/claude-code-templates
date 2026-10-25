@@ -66,6 +66,7 @@ REPOS = [
     ("cohesivity-org/cohesivity-plugin", "https://cohesivity.ai"),
     ("iOSDevSK/html2wp-cc-plugin", "https://html2wp.dev/"),
     ("curviate/curviate-plugin", "https://curviate.com/"),
+    ("anotb/management-consulting-plugin", None),
 ]
 
 DESCRIPTION_OVERRIDES = {
@@ -256,6 +257,21 @@ def get_local_source_path(plugin_entry):
     return None
 
 
+def is_root_plugin_source(source, repo):
+    """Whether a marketplace entry installs the root of this repository."""
+    if isinstance(source, str):
+        return source in (".", "./")
+    if not isinstance(source, dict) or source.get("path"):
+        return False
+    if source.get("source") == "github":
+        return source.get("repo") == repo
+    if source.get("source") == "url":
+        return source.get("url", "").rstrip("/") in (
+            f"https://github.com/{repo}", f"https://github.com/{repo}.git"
+        )
+    return False
+
+
 def _strip_component_ext(name):
     for ext in (".md", ".json", ".js", ".ts", ".py"):
         if name.endswith(ext):
@@ -310,6 +326,7 @@ def scan_plugin_dir_components(repo, dir_path, fetch_descriptions=True):
     and list the files inside each. Returns (counts, items) where `counts` is
     a dict of type -> count and `items` is a dict of type -> list of
     {"name", "description"} dicts, for types where names were resolved."""
+    prefix = f"{dir_path.rstrip('/')}/" if dir_path else ""
     components = {}
     component_items = {}
     # List the plugin's root directory
@@ -323,7 +340,7 @@ def scan_plugin_dir_components(repo, dir_path, fetch_descriptions=True):
     for comp_dir in component_dirs:
         if comp_dir in dir_names and dir_names[comp_dir] == "dir":
             # List items inside this component directory
-            items = gh_dir_listing(repo, f"{dir_path}/{comp_dir}")
+            items = gh_dir_listing(repo, f"{prefix}{comp_dir}")
             if items:
                 entries = []
                 for item in items:
@@ -333,16 +350,16 @@ def scan_plugin_dir_components(repo, dir_path, fetch_descriptions=True):
                         item_name = item["name"]
                         description = ""
                         if fetch_descriptions:
-                            md = gh_file_content(repo, f"{dir_path}/{comp_dir}/{item_name}/SKILL.md")
+                            md = gh_file_content(repo, f"{prefix}{comp_dir}/{item_name}/SKILL.md")
                             if not md:
-                                md = gh_file_content(repo, f"{dir_path}/{comp_dir}/{item_name}/{item_name}.md")
+                                md = gh_file_content(repo, f"{prefix}{comp_dir}/{item_name}/{item_name}.md")
                             description = extract_frontmatter_description(md)
                         entries.append({"name": item_name, "description": description})
                     elif item["name"].endswith((".md", ".json", ".js", ".ts", ".py")):
                         item_name = _strip_component_ext(item["name"])
                         description = ""
                         if fetch_descriptions and item["name"].endswith(".md"):
-                            md = gh_file_content(repo, f"{dir_path}/{comp_dir}/{item['name']}")
+                            md = gh_file_content(repo, f"{prefix}{comp_dir}/{item['name']}")
                             description = extract_frontmatter_description(md)
                         entries.append({"name": item_name, "description": description})
                 if entries:
@@ -350,7 +367,7 @@ def scan_plugin_dir_components(repo, dir_path, fetch_descriptions=True):
                     component_items[comp_dir] = entries
 
     # Check for mcpServers in plugin.json
-    plugin_json_raw = gh_file_content(repo, f"{dir_path}/.claude-plugin/plugin.json")
+    plugin_json_raw = gh_file_content(repo, f"{prefix}.claude-plugin/plugin.json")
     if plugin_json_raw:
         pj = parse_json_safe(plugin_json_raw)
         if pj:
@@ -547,6 +564,24 @@ def process_repo(repo_full, website_override=None):
         extract_plugin_components(plugin_json, repo=repo_full) if plugin_json else {}
     )
 
+    # Root plugins may rely on Claude's default component directories instead
+    # of declaring paths in plugin.json (including self-referencing git sources).
+    single_component_items = (
+        plugins_detail[0].get("components_items", {}) if len(plugins_detail) == 1 else {}
+    )
+    if (
+        repo_type == "plugin"
+        and plugin_json
+        and len(plugins_detail) == 1
+        and plugin_json.get("name") == plugins_detail[0].get("name")
+        and is_root_plugin_source(marketplace["plugins"][0].get("source"), repo_full)
+        and not single_components
+        and not marketplace_component_totals
+    ):
+        single_components, single_component_items = scan_plugin_dir_components(
+            repo_full, "", fetch_descriptions=False
+        )
+
     # 7. Build contains
     if repo_type == "marketplace":
         contains = {"plugins": len(marketplace.get("plugins", []))}
@@ -643,7 +678,11 @@ def process_repo(repo_full, website_override=None):
 
     # 15. Add plugin.json details for single plugins
     if plugin_json and repo_type == "plugin":
-        plugin_detail = {}
+        plugin_detail = {
+            key: [item["name"] for item in items]
+            for key, items in single_component_items.items()
+            if key in ("skills", "agents", "commands")
+        }
         for key in ("skills", "agents", "commands"):
             val = plugin_json.get(key)
             if isinstance(val, list) and val:
