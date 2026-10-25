@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "maqami-travel": {
+      "description": "Search hotels (3M+ hotels) and flights worldwide on MAQAMI, read hotel details, then send the customer a secure checkout link on book.maqami.co. Prebook (hotels) or verify (flights) confirms the final price and returns the link; the customer pays only on book.maqami.co. Claude Code asks for your permission before each tool call unless you allow it. Remote Streamable HTTP endpoint, no API key required.",
+      "type": "http",
+      "url": "https://mcp.maqami.co/"
+    }
+  }
+}
