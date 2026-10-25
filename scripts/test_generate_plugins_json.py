@@ -136,5 +136,88 @@ class CohesivityPluginGenerationTest(unittest.TestCase):
         )
 
 
+class FrontmatterDescriptionTest(unittest.TestCase):
+    def test_folded_block_scalar_is_expanded(self):
+        md = "---\nname: conduct\ndescription: >\n  Operating stance for a\n  main agent.\n---\nbody\n"
+        self.assertEqual(
+            generator.extract_frontmatter_description(md),
+            "Operating stance for a main agent.",
+        )
+
+    def test_stripped_folded_block_scalar_is_expanded(self):
+        md = "---\nname: x\ndescription: >-\n  Zero-token discipline\n  for waiting.\n---\n"
+        self.assertEqual(
+            generator.extract_frontmatter_description(md),
+            "Zero-token discipline for waiting.",
+        )
+
+    def test_plain_and_quoted_descriptions_are_unchanged(self):
+        self.assertEqual(
+            generator.extract_frontmatter_description("---\ndescription: Plain text\n---\n"),
+            "Plain text",
+        )
+        self.assertEqual(
+            generator.extract_frontmatter_description('---\ndescription: "Quoted: text"\n---\n'),
+            "Quoted: text",
+        )
+
+    def test_invalid_yaml_falls_back_to_the_description_line(self):
+        md = "---\ndescription: Uses a: colon and [unclosed\nother: : :\n---\n"
+        self.assertEqual(
+            generator.extract_frontmatter_description(md),
+            "Uses a: colon and [unclosed",
+        )
+
+
+class HooksDirectoryScanTest(unittest.TestCase):
+    def test_hooks_are_the_events_in_hooks_json_not_the_directory_entries(self):
+        hooks_json = json.dumps(
+            {
+                "hooks": {
+                    "SessionStart": [{"hooks": [{"type": "command", "command": "a"}]}],
+                    "PostCompact": [{"hooks": [{"type": "command", "command": "b"}]}],
+                }
+            }
+        )
+        files = {"plugins/handoff/hooks/hooks.json": hooks_json}
+        listings = {
+            "plugins/handoff": [{"name": "hooks", "type": "dir"}],
+            "plugins/handoff/hooks": [
+                {"name": "hooks.json", "type": "file"},
+                {"name": "scripts", "type": "dir"},
+            ],
+        }
+
+        with (
+            patch.object(generator, "gh_file_content", side_effect=lambda _repo, path: files.get(path)),
+            patch.object(generator, "gh_dir_listing", side_effect=lambda _repo, path: listings.get(path, [])),
+        ):
+            counts, items = generator.scan_plugin_dir_components("example/repo", "plugins/handoff")
+
+        self.assertEqual(counts, {"hooks": 2})
+        self.assertEqual(
+            items["hooks"],
+            [
+                {"name": "SessionStart", "description": ""},
+                {"name": "PostCompact", "description": ""},
+            ],
+        )
+
+    def test_hooks_dir_without_hooks_json_lists_nothing(self):
+        listings = {
+            "plugins/p": [{"name": "hooks", "type": "dir"}],
+            "plugins/p/hooks": [{"name": "scripts", "type": "dir"}],
+        }
+
+        with (
+            patch.object(generator, "gh_file_content", return_value=None),
+            patch.object(generator, "gh_dir_listing", side_effect=lambda _repo, path: listings.get(path, [])),
+        ):
+            counts, items = generator.scan_plugin_dir_components("example/repo", "plugins/p")
+
+        self.assertEqual(counts, {})
+        self.assertNotIn("hooks", items)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -23544,5 +23544,783 @@
         "cohesivity-local"
       ]
     }
+  },
+  {
+    "slug": "claude-plugins",
+    "name": "Claude Plugins",
+    "author": "jtsternberg",
+    "description": "Skills, hooks, and automation plugins for Claude Code and Codex",
+    "github": "https://github.com/jtsternberg/claude-plugins",
+    "stars": 5,
+    "type": "marketplace",
+    "tags": [
+      "skills",
+      "hooks"
+    ],
+    "contains": {
+      "plugins": 35,
+      "components": {
+        "skills": 81,
+        "hooks": 5
+      }
+    },
+    "highlights": [
+      "35 plugins in marketplace"
+    ],
+    "marketplace_name": "jtsternberg",
+    "plugins_list": [
+      {
+        "name": "git-tree",
+        "description": "Create and tear down git worktrees, and triage a repo's leftovers. Use when user says \"git worktree\", \"work on two branches\", \"parallel branch work\", \"review PR without switching\", \"keep my changes while checking out another branch\", or wants to clean up stale worktrees, merged or abandoned branches, stale remote-tracking refs, and old stashes without losing work.",
+        "source": "./plugins/git-tree",
+        "components": {
+          "skills": 2
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "create-git-tree",
+              "description": "Create git worktrees with symlinked vendor/node_modules for parallel branch work."
+            },
+            {
+              "name": "triage-repo-cleanup",
+              "description": "Triage and clean up a repo's leftovers — stale git worktrees, merged and abandoned local branches, stale remote-tracking refs, and old stashes — by classifying each one by whether deleting it would destroy work. Triggers on: clean up my branches, clean up leftover worktrees, prune stale branches, delete merged branches, remove old worktrees, clear my stashes, repo cleanup, tidy up this repo, what branches can I delete, landing the plane cleanup."
+            }
+          ]
+        }
+      },
+      {
+        "name": "headline-refiner",
+        "description": "Refines headlines using the 5-Part Headline Framework (Number, What, Who, Why, Twist the Knife). Triggers when writing or improving headlines for articles, blog posts, email subject lines, landing pages, or social media. Activates on requests like \"improve this headline\", \"write a better title\", or \"make this catchier\".",
+        "source": "./plugins/headline-refiner",
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "headline-refiner",
+              "description": "Refine headlines and titles using the 5-Part Headline Framework."
+            }
+          ]
+        }
+      },
+      {
+        "name": "obsidian-cli",
+        "description": "Interacts with Obsidian vaults from the terminal using the official Obsidian CLI (v1.12+). Manages notes, tasks, properties, daily notes, bases, tags, search, vault health, file operations, and Obsidian automation. Triggers on \"obsidian\", \"vault\", \"daily note\", \"obsidian task\", \"obsidian search\", \"obsidian property\", \"note in obsidian\", \"obsidian base\", or any request involving Obsidian vault interaction from the command line.",
+        "source": "./plugins/obsidian-cli",
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "obsidian-cli",
+              "description": "Work with Obsidian vaults from the terminal via the official Obsidian CLI — notes, daily notes, tasks, properties, tags, bases, search, vault health, automation."
+            }
+          ]
+        }
+      },
+      {
+        "name": "publish-insights",
+        "description": "Publish Claude Code /insights reports to GitHub Pages for easy sharing. Note: the full plugin is maintained in jtsternberg/claude-usage-data.",
+        "source": "./plugins/publish-insights"
+      },
+      {
+        "name": "generating-blog-images",
+        "description": "Generates AI image prompts for blog posts by analyzing content, identifying optimal placement points, and crafting detailed prompts. Use when the user asks for image prompts, illustrations, or visual suggestions for blog content, or mentions AI image generators like Midjourney, DALL-E, Imagen, or Nano Banana.",
+        "source": "./plugins/generating-blog-images",
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "blog-image-prompts",
+              "description": "Generate AI image prompts and placement points for a blog post."
+            }
+          ]
+        }
+      },
+      {
+        "name": "git-commits",
+        "description": "Skills for creating git commits from staged or unstaged files with AI-generated commit messages.",
+        "source": "./plugins/git-commits",
+        "components": {
+          "skills": 2
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "commit-staged",
+              "description": "Create a commit from already staged changes, using a supplied message or a concise conventional commit message inferred from the diff."
+            },
+            {
+              "name": "commit-unstaged",
+              "description": "Review unstaged changes, stage the intended files explicitly, and create a commit with a supplied or concise conventional message."
+            }
+          ]
+        }
+      },
+      {
+        "name": "address-pr-comments",
+        "description": "Address PR review comments — automated resolution or human-in-the-loop drafts.",
+        "source": "./plugins/pr-workflow/address-pr-comments",
+        "components": {
+          "skills": 2
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "address-pr-comments-human",
+              "description": "Address PR comments with human review before push and reply (draft then approve)"
+            },
+            {
+              "name": "address-pr-comments",
+              "description": "Address all PR comments by reviewing, fixing, committing, and replying (auto push and post)"
+            }
+          ]
+        }
+      },
+      {
+        "name": "qa-walkthrough-pr",
+        "description": "Guide manual QA of a pull request with a generated walkthrough and checklist.",
+        "source": "./plugins/pr-workflow/qa-walkthrough-pr",
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "qa-walkthrough-pr",
+              "description": "Guided manual QA walkthrough of a PR or branch — test plan as a beads epic, stepped interactively."
+            }
+          ]
+        }
+      },
+      {
+        "name": "update-pr-description",
+        "description": "Regenerate a pull request's description from its current diff and commits.",
+        "source": "./plugins/pr-workflow/update-pr-description",
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "update-pr-description",
+              "description": "Update a PR description from branch changes, optionally since a date or commit"
+            }
+          ]
+        }
+      },
+      {
+        "name": "walk-through-work-history",
+        "description": "Explain how work progressed — PR, branch, or project — one page at a time, plus a pre-merge PR review lens.",
+        "source": "./plugins/pr-workflow/walk-through-work-history",
+        "components": {
+          "skills": 2
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "pr-merge-review",
+              "description": "Walk through a GitHub pull request as a pre-merge review — the same paginated, plain-English, one-page-at-a-time history walkthrough as walk-through-work-history, pinned to PRs and tilted toward the merge decision (how it works, the tradeoffs, and the risks to merging). Use when someone says \"walk me through this PR\", \"review this pull request before I merge\", \"explain this PR like I'm 18\", \"what are the risks of merging this\", or wants a paginated, ADHD-friendly merge-readiness walkthrough of a github.com/<owner>/<repo>/pull/<n> link."
+            },
+            {
+              "name": "walk-through-work-history",
+              "description": "Research and explain how work progressed as an interactive, one-page-at-a-time walkthrough. Use when the user asks for the history, evolution, review progression, revisions, decisions, false starts, or outcome of a GitHub pull request (the primary use case), issue, branch, project, incident, document, ticket, or other chronological work record—including a Google Doc's revision history and comment threads—especially when they ask for a paginated, ADHD-friendly, story-like, or \"turn the page\" explanation."
+            }
+          ]
+        }
+      },
+      {
+        "name": "watch-pr-then-action",
+        "description": "Watch a PR for events (CI, reviews, ready-for-review) and run a follow-up action.",
+        "source": "./plugins/pr-workflow/watch-pr-then-action",
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "watch-pr-then-action",
+              "description": "Poll a GitHub PR until a condition (Copilot done, marked ready, review submitted), then run a follow-up action."
+            }
+          ]
+        }
+      },
+      {
+        "name": "pr-workflow",
+        "description": "PR workflow bundle: installs all five PR skills plugins (address-pr-comments, qa-walkthrough-pr, update-pr-description, walk-through-work-history, watch-pr-then-action).",
+        "source": "./plugins/pr-workflow/bundle"
+      },
+      {
+        "name": "skill-tools",
+        "description": "Skills for creating and reviewing Claude Code extensions and validating shared skills under Claude Code and Codex.",
+        "source": "./plugins/skill-tools",
+        "components": {
+          "skills": 6
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "create-skill",
+              "description": "Create a new skill end-to-end: scaffold, review against best practices, self-heal, deliver in one pass."
+            },
+            {
+              "name": "create-slash-command",
+              "description": "Create a new Claude command with proper structure and documentation"
+            },
+            {
+              "name": "create-subagent",
+              "description": "Create a new Claude subagent with best practices and proper configuration"
+            },
+            {
+              "name": "review-skill",
+              "description": "Review a skill for improvement opportunities against best practices"
+            },
+            {
+              "name": "review-slash-command",
+              "description": "Review a slash command for opportunities to split into subagents"
+            },
+            {
+              "name": "validate-dual-harness-skill",
+              "description": "Validate new or edited plugin skills against Claude Code and Codex discovery, invocation, metadata, path, permission, and runtime contracts"
+            }
+          ]
+        }
+      },
+      {
+        "name": "beads-workflow",
+        "description": "Skills for working through beads epics and fixing findings with granular task and commit tracking.",
+        "source": "./plugins/beads-workflow",
+        "components": {
+          "skills": 4,
+          "hooks": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "fix-findings-beads-tasks",
+              "description": "Fix a list of issues one-by-one, each with its own beads task, commit, and push"
+            },
+            {
+              "name": "tackle-epic",
+              "description": "Work on an epic from beads until completion, then create a PR"
+            },
+            {
+              "name": "triage-beads",
+              "description": "Autonomously sweep and triage ALL open beads (bd tasks) the way a careful engineer would by hand — reconcile each bead against reality (git history, passing tests, tool versions, whether its blockers have since closed), CLOSE the ones already satisfied with cited evidence, PARK the ones blocked on an external resource with a ready-to-run playbook, and SURFACE genuine JT-only decisions into an end-of-run report instead of guessing. Use this whenever the user wants to triage beads, clean up stale issues, sweep or prune open beads, audit the backlog, close out finished-but-still-open tasks, or asks why so many beads are piling up — and it is safe to run repeatedly and unattended (e.g. from a scheduled agent). Also fires on \"triage the backlog\", \"clear out stale beads\", \"which of these beads are already done\", and \"auto-triage\"."
+            },
+            {
+              "name": "tripwire-scan",
+              "description": "Match a change-set against the tripwire anchors that parked beads (bd issues) declare, and surface each parked bead whose watched code you're about to change — the edit-time warning that `bd ready` can't give, because it only fires when someone asks for work, never when you touch the file a bead warns about. Use when reviewing or creating a PR, before finishing a change, or when asked to \"check tripwires\", \"scan for tripwires\", or \"what parked beads touch this change\". A parked bead plants a `tripwire-paths:` line naming where its knowledge bites; this scans your diff against those anchors and reports each hit as bead-id → matched file → the bead's one-line why. Safe and read-only."
+            }
+          ],
+          "hooks": [
+            {
+              "name": "PostToolUse",
+              "description": ""
+            }
+          ]
+        }
+      },
+      {
+        "name": "handoff",
+        "description": "Skills and hooks for creating and picking up handoffs to preserve context between Claude Code sessions — session-start detection, drift-aware pickup, and a beads backend with markdown-file fallback.",
+        "source": "./plugins/handoff",
+        "components": {
+          "skills": 2,
+          "hooks": 2
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "handoff",
+              "description": "Write or update a handoff so a next agent with fresh context can continue — 'hand off', 'wrap up for the next agent', session ending, or right after mid-task compaction."
+            },
+            {
+              "name": "pickup-handoff",
+              "description": "Resume work from a handoff — a HANDOFF-*.md file, 'pick up where we left off', a pending-handoff beads issue, or a session-start pending-handoff notice."
+            }
+          ],
+          "hooks": [
+            {
+              "name": "SessionStart",
+              "description": ""
+            },
+            {
+              "name": "PostCompact",
+              "description": ""
+            }
+          ]
+        }
+      },
+      {
+        "name": "workspace-status",
+        "description": "Status line showing model name, directory, git branch/status, and context usage.",
+        "source": "./plugins/workspace-status"
+      },
+      {
+        "name": "slides-presentation",
+        "description": "Creates self-contained HTML slide presentations from talk prompts, outlines, or content descriptions. Supports dark/light themes, SVG diagrams, and AI-generated illustrations.",
+        "source": "./plugins/slides-presentation",
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "create-slides-presentation",
+              "description": "Create a self-contained, animated HTML slide deck from a talk prompt, outline, or content description."
+            }
+          ]
+        }
+      },
+      {
+        "name": "export-presentation",
+        "description": "Exports HTML slide presentations to PDF or PNG screenshots using browser automation. Companion to the slides-presentation plugin.",
+        "source": "./plugins/export-presentation",
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "export-presentation",
+              "description": "Export HTML slide presentations to PDF or PNG screenshots."
+            }
+          ]
+        }
+      },
+      {
+        "name": "localwp-shell",
+        "description": "Run WP-CLI, PHP, MySQL, and Composer through LocalWP's sandboxed environment",
+        "source": "./plugins/localwp-shell",
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "localwp-shell",
+              "description": "Run wp/php/mysql/composer through LocalWP's sandboxed environment when inside a LocalWP site — fixes 'command not found', wrong PHP version, opcache/xdebug load failures, MySQL socket errors."
+            }
+          ]
+        }
+      },
+      {
+        "name": "thinking-tools",
+        "description": "Metacognitive reasoning frameworks for careful decision-making. Includes Chesterton's Fence (investigate before removing), Pink Elephant (rewriting counterproductive negative instructions), Interview Mode (stop guessing after two rejected drafts and extract the user's own words), No Meat Proxy (rewrite a draft so the reader can relay it in their own words instead of forwarding it verbatim), Don't Lead the Witness (ask the way the real situation would, with no hint of the expected answer, so the response is genuine), and room for more thinking tools like pre-mortems, steelmanning, and first principles.",
+        "source": "./plugins/thinking-tools",
+        "components": {
+          "skills": 5
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "chestertons-fence",
+              "description": "Use before removing, refactoring, or 'simplifying' code, config, or processes whose purpose isn't fully understood — or when someone says 'Chesterton's Fence'. Understand why it was built before tearing it down."
+            },
+            {
+              "name": "dont-lead-the-witness",
+              "description": "Use when the user says 'don't lead the witness', or whenever you want someone's genuine, unprompted response: testing an agent or skill, asking a reviewer for a verdict, questioning the user, probing a real-world scenario. Ask the way the real situation would, with no hint of the answer you expect."
+            },
+            {
+              "name": "interview-mode",
+              "description": "Use when the user says 'interview me', 'interview mode', or 'stop guessing' — or when a second attempt at the same artifact (email, doc, plan, naming, UI copy, design) gets rejected or rewritten. Stop generating variants; interview the user and build from their own words."
+            },
+            {
+              "name": "no-meat-proxy",
+              "description": "Rewrite what you are about to hand the user so they can say it to a teammate in their own words, without opening a file. Manual invocation only — /thinking-tools:no-meat-proxy (Codex: $thinking-tools:no-meat-proxy) or \"no meat proxy\". Applies to the chat reply AND any draft headed to other humans (PR comment, issue, Slack)."
+            },
+            {
+              "name": "pink-elephant",
+              "description": "Use when the user flags a 'pink elephant' — an instruction phrased as a prohibition ('do not X', 'never X', 'avoid X') that draws attention to the very behavior it forbids. Rewrites negative rules into positive directives."
+            }
+          ]
+        }
+      },
+      {
+        "name": "bible",
+        "description": "Look up Bible verses and passages using the NLT API. Supports passage retrieval, reference parsing, and keyword search across NLT, KJV, and other translations.",
+        "source": "./plugins/bible",
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "bible-nlt-lookup",
+              "description": "Look up Bible verses, passages, or references via the NLT API."
+            }
+          ]
+        }
+      },
+      {
+        "name": "hotline",
+        "description": "Cross-workspace Claude Code communication. Dial another workspace to ask questions, delegate work, or collaborate in real-time.",
+        "source": "./plugins/hotline",
+        "components": {
+          "skills": 9
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "add-contact",
+              "description": "Register this workspace in dirmap so hotline-dial can reach it."
+            },
+            {
+              "name": "call-status",
+              "description": "Read the hotline call registry — which caller session dialed which callee session, on what transport and host handle. 'who called whom', 'list hotline calls', 'what callees are registered'."
+            },
+            {
+              "name": "caller-id",
+              "description": "Return the current Claude Code session ID — 'what is your/this session ID?'"
+            },
+            {
+              "name": "dial",
+              "description": "Call another Claude Code workspace — quick calls, work orders, conference calls. 'Call/dial/message/delegate to <workspace or project>'. Also dials a workspace on ANOTHER machine over SSH (--remote <ssh-target>, herdr on that box)."
+            },
+            {
+              "name": "pickup",
+              "description": "Generate and cache this workspace's identity for hotline-dial resolution."
+            },
+            {
+              "name": "ringing",
+              "description": "Prime this agent to handle an incoming hotline call — protocol, isolation rules, response format."
+            },
+            {
+              "name": "switchboard",
+              "description": "Live read-only HTML dashboard of hotline conversations — 'open/stop the switchboard', 'watch the hotline calls', 'is the switchboard running?'"
+            },
+            {
+              "name": "whoami",
+              "description": "Report this workspace's dirmap slug (hotline caller ID)."
+            },
+            {
+              "name": "wiretap",
+              "description": "Return the path to this session's JSONL conversation transcript — 'where is my transcript', 'open/show the transcript'."
+            }
+          ]
+        }
+      },
+      {
+        "name": "paperclip",
+        "description": "Rich interface for working with a locally-running Paperclip instance via the paperclipai CLI and direct filesystem access.",
+        "source": "./plugins/paperclip",
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "paperclip",
+              "description": "Operate a locally-running Paperclip instance via the paperclipai CLI."
+            }
+          ]
+        }
+      },
+      {
+        "name": "gws",
+        "description": "Google Workspace CLI (gws) integrations — upload markdown to Google Docs, draft Gmail messages from markdown, manage Drive files, manage YouTube playlists, and more.",
+        "source": "./plugins/gws",
+        "components": {
+          "skills": 7
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "account",
+              "description": "Check, add, list, or switch the active Google account. The only way to manage gws accounts — the CLI has no `account` subcommand."
+            },
+            {
+              "name": "calendar",
+              "description": "Google Calendar via the gws CLI — 'what's on my calendar', today's meetings, schedule, find an event, pull its Meet/Zoom link, create events, list calendars."
+            },
+            {
+              "name": "gmail-draft-from-markdown",
+              "description": "Turn a local markdown file into a Gmail draft via gws — converts to HTML, attaches local files, threads onto an existing message as a reply, never sends, returns the Gmail drafts URL for review."
+            },
+            {
+              "name": "gmail-read",
+              "description": "Search and read Gmail via gws — 'find the email about X', 'search my inbox for', read a message's full body as plain text."
+            },
+            {
+              "name": "google-doc-to-md",
+              "description": "Download a Google Doc (tabs supported) as local markdown, via gws CLI, gcloud ADC, or the Drive connector."
+            },
+            {
+              "name": "md-to-google-doc",
+              "description": "Upload or sync local markdown to Google Drive as a Google Doc, via gws CLI, gcloud ADC, or the Drive connector."
+            },
+            {
+              "name": "youtube",
+              "description": "Manage the user's own YouTube playlists via gws — list, add/remove videos, dedupe, merge, find duplicates, cleanup workflows. Use instead of raw YouTube Data API calls."
+            }
+          ]
+        }
+      },
+      {
+        "name": "session-tools",
+        "description": "Tools for managing Claude Code session transcripts — read one out of a session, catch up on it, fork new work off it, generate recaps, or leave yourself a breadcrumb before pausing one of your parallel conversations. Shared transcript machinery lives at the plugin root so the skills cannot drift.",
+        "source": "./plugins/session-tools",
+        "components": {
+          "skills": 6
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "note-to-self",
+              "description": "Leave a breadcrumb in this conversation about why you're pausing and where the work stands, so returning later — to any one of many parallel sessions — starts with orientation instead of archaeology. Records the user's own words verbatim alongside an agent-written state snapshot."
+            },
+            {
+              "name": "self-recap",
+              "description": "Recap where THIS session is right now — the arc, the decisions, and what's still open — summarized from the conversation already in context. For a long session whose thread has slipped."
+            },
+            {
+              "name": "sessions-catch-up",
+              "description": "Distill another session's transcript into a briefing — status, blockers, what's waiting — without touching it. 'catch me up on <session-id>', 'summarize session <id>', 'what's waiting on me in <id>'."
+            },
+            {
+              "name": "sessions-find",
+              "description": "Find the past Claude Code session where something happened — 'find the session where we X', 'which session did we clone/build/fix Y in', 'where did we do those PRs'. Returns session id, date, cwd, and a resume command."
+            },
+            {
+              "name": "sessions-fork",
+              "description": "Prime this session with another session's transferable context (decisions, constraints, repo state), then check in."
+            },
+            {
+              "name": "sessions-weekly-recap",
+              "description": "Generate daily/weekly recap notes from session transcripts; supports incremental merge and launchd cron."
+            }
+          ]
+        }
+      },
+      {
+        "name": "work-with-media",
+        "description": "Turns audio and video into text on macOS. Bundles a MacWhisper `mw` CLI wrapper for local-file transcription with a yt-dlp skill that pulls captions, descriptions, chapters, and audio from YouTube/Vimeo/any URL. The two skills compose — yt-dlp usually finishes URL requests from captions alone, and falls back to downloading audio for macwhisper-cli only when transcription is actually needed.",
+        "source": "./plugins/work-with-media",
+        "components": {
+          "skills": 2
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "macwhisper-cli",
+              "description": "Transcribe local audio/video files (.m4a/.wav/.mp3/.mp4) to text on macOS via the MacWhisper `mw` CLI — meetings, recordings, dictation. Any file-on-disk transcription, even unnamed; URL-based requests (YouTube etc.) route through the yt-dlp skill first."
+            },
+            {
+              "name": "yt-dlp",
+              "description": "Extract transcripts, captions, descriptions, chapters, or audio from YouTube, Vimeo, or any video URL — 'transcribe/summarize/TLDR this video'. Subs-first, no download; falls back to audio + the macwhisper-cli skill. Also transposed/pitch-shifted MP3s via ffmpeg."
+            }
+          ]
+        }
+      },
+      {
+        "name": "research-tools",
+        "description": "Tools for researching external sources from within Claude Code. Ships fetch-docs, a skill that pulls raw URL content into a local file so agents read the authoritative source instead of WebFetch's filtered summary.",
+        "source": "./plugins/research-tools",
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "fetch-docs",
+              "description": "Pull a URL's raw content into a local file (optional HTML→markdown) so the authoritative source gets read instead of WebFetch's summary — docs pages, API references, READMEs, changelogs."
+            }
+          ]
+        }
+      },
+      {
+        "name": "cmux-cli",
+        "description": "Control cmux (terminal multiplexer / workspace manager) from the command line. Manage windows, workspaces, panes, surfaces, and tabs; send keystrokes; read screen output; split panes; wait on and verify work through the cmux event stream; drive the embedded browser; send notifications. Triggers on mentions of cmux, workspaces, panes, surfaces, tabs, splits, or requests to send input to / read output from a cmux session.",
+        "source": "./plugins/cmux-cli",
+        "components": {
+          "skills": 3
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "auto-rename",
+              "description": "Rename cmux tabs or workspaces to meaningful names — 'rename this tab', 'auto-rename', 'fix these tab names' — or when default/stale names (zsh, bash, node) should reflect what's actually running."
+            },
+            {
+              "name": "send-at",
+              "description": "Wait until a target time within THIS live cmux-resident agent session, then deliver a prompt into one exact cmux surface (by UUID) and do a basic read-screen check. For 'send this at 3pm', 'in 30 minutes send X to surface <uuid>', 'schedule a prompt into that cmux surface', deferred/timed keystroke or prompt delivery into a specific cmux tab. Same-session best-effort timer, not a durable cron — it fires only while this session and the Mac stay alive."
+            },
+            {
+              "name": "using-cmux-cli",
+              "description": "Drives cmux (macOS terminal multiplexer) via the `cmux` CLI — windows, workspaces, panes, tabs, sending keystrokes and reading terminal output, the cmux event stream for waiting on and verifying work, embedded browser, notifications, sidebar progress, layouts."
+            }
+          ]
+        }
+      },
+      {
+        "name": "mac-caffeinate",
+        "description": "Keep your Mac awake while long-running Claude Code agents or commands run, using macOS's built-in caffeinate.",
+        "source": "./plugins/mac-caffeinate",
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "caffeinate-computer",
+              "description": "Keep the Mac awake during long-running agents, builds, or commands via macOS caffeinate."
+            }
+          ]
+        }
+      },
+      {
+        "name": "collab-tools",
+        "description": "Skills that help Claude collaborate more naturally with the user — routing work out of chat into appropriate channels (editor, files, etc.) when chat isn't the right surface.",
+        "source": "./plugins/collab-tools",
+        "components": {
+          "skills": 3
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "diff-view",
+              "description": "Generate a self-contained HTML code diff (2-way side-by-side or 3-way) from files, pasted code, or git refs — word-level highlights, optional PNG screenshots for a PR or Slack."
+            },
+            {
+              "name": "promote-draft",
+              "description": "Move a draft out of /tmp/collab-tools/ into its real home, optionally dropping the -draft/-date suffix. Companion to temp-draft; not for arbitrary file moves."
+            },
+            {
+              "name": "temp-draft",
+              "description": "Draft in a /tmp file opened in the user's $EDITOR instead of pasting into chat; Slack-message drafts use Slack-flavored markup so they paste cleanly."
+            }
+          ]
+        }
+      },
+      {
+        "name": "slack",
+        "description": "Slack from the terminal via the Slack Web API — read a thread, message, search result, or channel history as clean text (read-slack), and post notifications and summaries into one fixed channel through an incoming webhook (notify-slack).",
+        "source": "./plugins/slack",
+        "components": {
+          "skills": 2
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "notify-slack",
+              "description": "Post a message to Slack from the terminal via an incoming webhook — a completion notification, a progress update, a result summary, or a Block Kit message. Covers 'ping me on Slack when this finishes', 'post that summary to Slack', 'send this to the team channel'."
+            },
+            {
+              "name": "read-slack",
+              "description": "Read Slack from the terminal via the Web API — fetch a thread or message from a pasted slack.com/archives URL, search workspace messages, or read a channel's recent history as plain text. Covers 'pull/read/quote/investigate this Slack thread' and 'search Slack for X'."
+            }
+          ]
+        }
+      },
+      {
+        "name": "fable",
+        "description": "Skills for working with — and like — the Fable model (claude-fable-5). Ships fable-delegate, which keeps a Fable main agent in the thinker/boss role and routes execution to Opus/Sonnet subagents, and fable-mode, which codifies the operating stance behind Fable's judgment for agents on other models.",
+        "source": "./plugins/fable",
+        "components": {
+          "skills": 2
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "fable-delegate",
+              "description": "Delegation discipline for a main agent on the Fable model — load at session start and before it edits files, searches, runs tests, or does any mechanical multi-step work itself."
+            },
+            {
+              "name": "fable-mode",
+              "description": "Operating stance for trustworthy agent judgment. Use when a main agent on an Opus- or Sonnet-level model starts substantive work — debugging, investigation, refactoring, scope/autonomy calls — or is about to end a turn with a menu of questions. Not for Haiku."
+            }
+          ]
+        }
+      },
+      {
+        "name": "agentmail",
+        "description": "Give an agent its own email address. Send and receive email through the AgentMail API via the official agentmail CLI: create inboxes, send mail, read incoming messages and threads, reply / reply-all / forward, manage and schedule drafts, triage an inbox, keep a local address book of people and other agents, relay tagged work orders to another AI agent, and run the agent self-signup and OTP verification flow. Ships an opt-in hook that notices unread mail during a session. Triggers on mentions of AgentMail, agent email, inbox creation, sending or checking email for an agent, contacts or address lookup, inbox triage, and emailing another agent.",
+        "source": "./plugins/agentmail",
+        "components": {
+          "skills": 5,
+          "hooks": 2
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "check-mail",
+              "description": "Check an AgentMail inbox and triage it — list unread or recent mail, read full message bodies rather than previews, and classify each one as actionable, needs-reply, FYI, or spam with a proposed next step. Also turns the periodic unread reminder on or off. Triggers on: check my mail, any new mail, what is in the inbox, unread messages, read that email, triage the inbox, anything I need to deal with."
+            },
+            {
+              "name": "contacts",
+              "description": "Address book for agent email — add, list, update, remove, and look up contacts (people and other agents) by name, alias, or address, so an AgentMail send goes to a verified address instead of a remembered one. Records how each email address was confirmed. Triggers on: what is X's email, who is X, add a contact, list contacts, update a contact, remove a contact, look up an address, which inbox does that agent use."
+            },
+            {
+              "name": "relay-work-order",
+              "description": "Hand work to another AI agent over AgentMail email, or act on a work order that arrived that way, using the agreed protocol: a [HANDOFF] / [ASK] / [FYI] / [DONE] subject tag and a Goal / Context / Needed / Refs body. Destructive or outward-facing actions never happen off an email alone. Triggers on: email ChatGPT, send a handoff to the other agent, relay this task, ask the other agent, delegate by email, act on that handoff, close the loop."
+            },
+            {
+              "name": "replying",
+              "description": "Answer AgentMail messages in thread — reply to the sender, reply-all to everyone on the thread, or forward to someone new, with a reviewable draft for anything consequential. Counts recipients before a reply-all and never retries a failed send. Triggers on: reply to that email, answer this message, reply all, forward this, draft a response, respond in the thread, send a reply."
+            },
+            {
+              "name": "using-agentmail",
+              "description": "Send and receive email for an AI agent via the AgentMail API and `agentmail` CLI — create inboxes, send, read messages and threads, reply/forward, manage drafts, run agent self-signup + OTP verification. Also fires when the agent is asked about its own email identity ('what is your email address?', 'do you have an inbox?') — answer from `agentmail inboxes list`, not session context."
+            }
+          ],
+          "hooks": [
+            {
+              "name": "SessionStart",
+              "description": ""
+            },
+            {
+              "name": "UserPromptSubmit",
+              "description": ""
+            }
+          ]
+        }
+      },
+      {
+        "name": "maestro",
+        "description": "Orchestration stance for a main agent overseeing delegated multi-agent pipelines — boss/doer split, fresh agent per phase, verify-before-relay — plus the zero-token discipline for waiting on anything.",
+        "source": "./plugins/maestro",
+        "components": {
+          "skills": 3
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "conduct",
+              "description": "Operating stance for a main agent orchestrating delegated work — an implement → review → address pipeline across one or more repos/workspaces: boss/doer split, fresh agent per phase, work orders that carry the traps forward, verify-before-relay, and a \"Next for you:\" contract with the human. Use when the session's job is overseeing delegated agents (orchestrate, multi-agent workstream, boss mode, delegate a pipeline) rather than doing the work itself."
+            },
+            {
+              "name": "patient-waiting",
+              "description": "Zero-token discipline for waiting on anything — a file/status change, a review submit, a PR, CI, a deploy, a human's approval. Use BEFORE setting up any poll, watch loop, recurring check-in, or ScheduleWakeup loop, whenever the user says \"check in on X\", \"watch for Y\", \"tell me when Z\", \"poll\", \"monitor this\", or when a background watcher was killed and you're about to work around it. Prevents the runaway pattern where the main (possibly premium-model) agent wakes on a schedule to read an unchanged status file."
+            },
+            {
+              "name": "your-cue",
+              "description": "Read-only briefing across every live agent session — who is working, who is waiting on the user, what finished overnight — ending in one cue per workstream and a single prioritized \"Next for you:\". Use for a morning briefing or a status sweep of delegated work."
+            }
+          ]
+        }
+      },
+      {
+        "name": "delayed-work",
+        "description": "Hit a session limit mid-task? Stop for now and have this same session resume the work at the reset, with the context it already has and zero tokens spent waiting. Also plain timed work: run X at 9pm, or in 30 minutes.",
+        "source": "./plugins/delayed-work",
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "until",
+              "description": "Stop for now and pick this back up when a session limit resets, in THIS session: 'I hit my 5-hour session limit, stop for now and resume this at 9pm when my session resets', 'I'm rate limited, come back at the reset and keep going', 'resume at 9pm where we left off', 'pause on quota and pick this back up at 6am'. Wakes this session at a wall-clock time or after a delay and runs the queued work here, with the context it already has, spending zero tokens while waiting. Also the plain timed case: 'at 9pm run X', 'in 30 minutes do X', 'queue this for later', 'run this review tonight', 'wake me at 6am and ...', 'delayed work', and queueing several jobs at set times. Not cron and not durable — the watcher dies with the session; not a headless or cloud run in a fresh context; not timed delivery into another cmux surface, which is cmux-cli's send-at."
+            }
+          ]
+        }
+      }
+    ]
   }
 ]
