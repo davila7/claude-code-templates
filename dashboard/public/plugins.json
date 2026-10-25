@@ -23372,6 +23372,27 @@
     }
   },
   {
+    "slug": "clawcode",
+    "name": "ClawCode",
+    "author": "crisandrews",
+    "description": "Persistent agents for Claude Code as a plugin, not a harness. Memory, personality, messaging across WhatsApp, Telegram, and Discord, plus a service mode for 24/7 runs. Imports from OpenClaw.",
+    "github": "https://github.com/crisandrews/ClawCode",
+    "stars": 61,
+    "type": "plugin",
+    "tags": [
+      "skills",
+      "hooks"
+    ],
+    "contains": {
+      "skills": 20,
+      "hooks": 1
+    },
+    "highlights": [
+      "Web UI: https://github.com/crisandrews/ClawCode#quick-setup"
+    ],
+    "website": "https://github.com/crisandrews/ClawCode#quick-setup"
+  },
+  {
     "slug": "skills",
     "name": "Skills",
     "author": "Airtable",
@@ -23384,6 +23405,27 @@
     ],
     "contains": {},
     "highlights": []
+  },
+  {
+    "slug": "claude-whatsapp",
+    "name": "Claude WhatsApp",
+    "author": "crisandrews",
+    "description": "WhatsApp channel plugin for Claude Code — connect your WhatsApp to an AI agent. QR scan, voice transcription, access control, media support.",
+    "github": "https://github.com/crisandrews/claude-whatsapp",
+    "stars": 13,
+    "type": "plugin",
+    "tags": [
+      "skills",
+      "hooks"
+    ],
+    "contains": {
+      "skills": 2,
+      "hooks": 1
+    },
+    "highlights": [
+      "Web UI: https://github.com/crisandrews/claude-whatsapp#quick-setup"
+    ],
+    "website": "https://github.com/crisandrews/claude-whatsapp#quick-setup"
   },
   {
     "slug": "ml-plugins",
