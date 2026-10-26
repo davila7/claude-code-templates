@@ -9,7 +9,8 @@
   },
   "scripts": {
     "build": "echo 'Build complete'",
-    "test": "npm run check:version-sync && npm run test:version-sync",
+    "test": "npm run check:version-sync && npm run test:version-sync && npm run test:external-skill",
+    "test:external-skill": "node --test cli-tool/tests/unit/external-skill.node-test.js",
     "check:version-sync": "node scripts/sync-package-versions.js --check",
     "test:version-sync": "node --test scripts/sync-package-versions.test.js",
     "prepublishOnly": "npm run check:version-sync",

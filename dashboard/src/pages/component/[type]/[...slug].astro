@@ -188,6 +188,28 @@ if (typePlural === 'loops' && frontmatter.components) {
   }
 }
 
+// External skills (source.json): code fetched from the author's repo at a pinned commit.
+const externalSource = typePlural === 'skills' ? component?.source ?? null : null;
+const sourceHref = externalSource
+  ? externalSource.url
+  : `https://github.com/davila7/claude-code-templates/blob/main/cli-tool/components/${typePlural}/${component?.path}`;
+// Skills an external skill calls are installed with it, like a loop's components.
+if (externalSource?.requires?.length) {
+  const cfg = TYPE_CONFIG['skills'];
+  for (const refPath of externalSource.requires) {
+    referencedComponents.push({
+      type: 'skill',
+      typePlural: 'skills',
+      path: refPath,
+      name: refPath.split('/').pop() ?? refPath,
+      label: cfg?.label ?? 'skill',
+      color: cfg?.color ?? '#5e6ad2',
+      icon: ICONS['skills'] ?? '',
+      href: `/component/skills/${refPath}`,
+    });
+  }
+}
+
 // JSON-based types use JsonViewer instead of MarkdownViewer
 const isJsonType = typePlural === 'settings' || typePlural === 'hooks' || typePlural === 'mcps';
 
@@ -418,7 +440,7 @@ const componentSchema = component
             {/* Metadata labels + GitHub button — same row */}
             <div class="flex flex-wrap gap-2">
               <a
-                href={`https://github.com/davila7/claude-code-templates/blob/main/cli-tool/components/${typePlural}/${component.path}`}
+                href={sourceHref}
                 target="_blank"
                 rel="noopener noreferrer"
                 class="inline-flex items-center gap-2 px-3 py-2 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg text-[12px] font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-primary-500)]/40 hover:bg-[var(--color-surface-3)] hover:shadow-sm transition-all duration-150 active:scale-95"
@@ -486,7 +508,9 @@ const componentSchema = component
               Referenced Components ({referencedComponents.length})
             </h3>
             <p class="text-[13px] text-[var(--color-text-secondary)] mb-5 leading-relaxed">
-              This loop composes the components below. Installing the loop with the command above also installs each of them.
+              {externalSource
+                ? 'This skill calls the skills below. Installing it with the command above also installs each of them.'
+                : 'This loop composes the components below. Installing the loop with the command above also installs each of them.'}
             </p>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {referencedComponents.map((ref) => (
@@ -521,6 +545,11 @@ const componentSchema = component
         {/* Content area with optional file tree sidebar */}
         {/* Content viewer */}
         <h3 class="text-xs font-bold text-[var(--color-text-tertiary)] uppercase tracking-[0.08em] mb-4">Content</h3>
+        {externalSource && (
+          <div class="mb-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-1)] px-4 py-2.5 text-[12px] text-[var(--color-text-secondary)]">
+            <strong class="text-[var(--color-text-primary)]">External skill.</strong> The files live in <a href={externalSource.url} target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 hover:text-[var(--color-text-primary)]">{externalSource.repo}</a> and the CLI downloads them from commit <code>{externalSource.commit.slice(0, 7)}</code>, the version that was reviewed and scanned here. Newer commits reach this catalog only after a new review. License: {externalSource.license}{component?.author ? `, by ${component.author}` : ''}.
+          </div>
+        )}
         {typePlural === 'mods' && (
           <div class="mb-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-1)] px-4 py-2.5 text-[12px] text-[var(--color-text-secondary)]">
             <strong class="text-[var(--color-text-primary)]">Claude Mod.</strong> A mod is a complete Claude Code plugin built on function hooks (Anthropic's <a href="https://github.com/anthropics/claude-code/tree/main/mods" target="_blank" rel="noopener" class="underline underline-offset-2 hover:text-[var(--color-text-primary)]">mods/</a> layout); it is on by default in Claude Code 2.1.287+.
@@ -547,7 +576,7 @@ const componentSchema = component
             headings={contentHeadings}
             componentType={typePlural === 'mods' ? 'mods' : 'skills'}
             mainFile={typePlural === 'mods' ? 'README.md' : 'SKILL.md'}
-            files={typePlural === 'mods' ? modFiles : undefined}
+            files={typePlural === 'mods' || externalSource ? modFiles : undefined}
           />
         ) : isJsonType ? (
           <JsonViewer client:load content={component.content || ''} />

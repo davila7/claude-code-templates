@@ -11,6 +11,7 @@ on:
     paths:
       - 'cli-tool/components/skills/**'
       - 'scripts/skillspector_scan.py'
+      - 'scripts/external_skills.py'
       - '.github/workflows/skill-security-scan.yml'
 
 permissions:

@@ -42,11 +42,14 @@ import tarfile
 import tempfile
 from pathlib import Path
 
+import external_skills
+
 # Repo-relative root that holds every skill component.
 SKILLS_ROOT = Path("cli-tool/components/skills")
 
-# Accepted manifest filenames (case variants seen in the catalog).
-MANIFEST_NAMES = {"skill.md"}
+# Accepted manifest filenames (case variants seen in the catalog). source.json
+# marks an external skill: its code is fetched from the pinned commit to scan.
+MANIFEST_NAMES = {"skill.md", "source.json"}
 
 # Risk score above which a skill is considered HIGH/CRITICAL.
 DEFAULT_THRESHOLD = 50
@@ -242,12 +245,20 @@ def discover_changed_skills(base_ref: str, root: Path = SKILLS_ROOT) -> list[Pat
 def scan_skill(directory: Path) -> dict:
     """Run skillspector on one skill dir; return a normalized result dict."""
     result: dict = {"path": str(directory), "status": "ok"}
+    target = directory
+    if external_skills.is_external(directory):
+        try:
+            target = external_skills.local_dir(directory.resolve())
+        except (external_skills.ManifestError, OSError) as e:
+            result["status"] = "error"
+            result["error"] = f"external skill: {e}"[:500]
+            return result
     try:
         proc = subprocess.run(
             [
                 "skillspector",
                 "scan",
-                str(directory),
+                str(target),
                 "--no-llm",
                 "--format",
                 "json",

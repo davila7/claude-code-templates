@@ -18,6 +18,7 @@ on:
       - 'cli-tool/components/hooks/**'
       - 'cli-tool/components/mcps/**'
       - 'scripts/validate_components.py'
+      - 'scripts/external_skills.py'
       - '.github/workflows/component-validate.yml'
   schedule:
     - cron: '0 6 * * 1'
@@ -54,6 +55,19 @@ jobs:
       - name: Validate whole catalog
         if: github.event_name != 'pull_request'
         run: python3 scripts/validate_components.py --report component-validation.json
+
+      # External skills (source.json): pinned commit, SKILL.md present, license
+      # on the allowlist and matching the repo's LICENSE file at that commit.
+      - name: Check external skill manifests
+        if: success() || failure()
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            git diff --name-only --diff-filter=d "origin/${{ github.base_ref }}...HEAD" -- 'cli-tool/components/skills/*/*/source.json' > external.txt
+            if [ ! -s external.txt ]; then echo "no external skill changed"; exit 0; fi
+            python3 scripts/external_skills.py check $(cat external.txt)
+          else
+            python3 scripts/external_skills.py check
+          fi
 
       - name: Upload report
         if: always()

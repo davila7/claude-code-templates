@@ -37,6 +37,8 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from pathlib import Path
 
+import external_skills
+
 COMPONENTS_ROOT = Path("cli-tool/components")
 
 # Findings kept per component. The full report stays in CI; the catalog only
@@ -69,6 +71,9 @@ def source_files(component_type: str, component: dict) -> tuple[Path, list[Path]
     base = COMPONENTS_ROOT / component_type
     if component_type in ("skills", "mods"):
         root = base / component["path"]
+        if component_type == "skills" and external_skills.is_external(root):
+            # Scanned at its pinned commit, so the hash only moves with the commit.
+            root = external_skills.local_dir(root)
         files = sorted(
             p
             for p in root.rglob("*")
@@ -240,7 +245,7 @@ def attach_skillspector(components_data: dict, catalog_path: str = "docs/compone
             try:
                 root, files = source_files(ctype, c)
                 digest = content_hash(root, files)
-            except OSError:
+            except (OSError, ValueError):
                 continue
             prev = cache.get(key)
             fresh = prev and prev.get("hash") == digest and (version is None or prev.get("version") == version)
