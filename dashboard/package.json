@@ -29,7 +29,8 @@
     "marked": "^17.0.4",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "tailwindcss": "^4.1.18"
+    "tailwindcss": "^4.1.18",
+    "xss": "1.0.17"
   },
   "devDependencies": {
     "@resvg/resvg-js": "^2.6.2",

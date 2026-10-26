@@ -12,6 +12,7 @@ import SkillSpectorReport from '../../../components/SkillSpectorReport.tsx';
 import { TYPE_CONFIG, ICONS } from '../../../lib/icons';
 import { fetchComponents, fetchComponentContentData, getInstallCommand } from '../../../lib/data';
 import type { Component } from '../../../lib/types';
+import { jsonForScript } from '../../../lib/sanitize-html';
 
 export const prerender = false;
 
@@ -287,7 +288,7 @@ const componentSchema = component
   ogImageAlt={component && config ? `${title}, a Claude Code ${config.singular}` : undefined}
 >
   {componentSchema && (
-    <script type="application/ld+json" set:html={JSON.stringify(componentSchema)} />
+    <script type="application/ld+json" set:html={jsonForScript(componentSchema)} />
   )}
   <div class="max-w-7xl mx-auto py-12 px-6">
     {/* Back nav */}
@@ -468,7 +469,7 @@ const componentSchema = component
             <div id="metaModalBody" class="px-5 py-5 text-[13px] text-[var(--color-text-secondary)] max-h-[60vh] overflow-y-auto leading-relaxed"></div>
           </div>
         </div>
-        <script id="metaData" type="application/json" set:html={JSON.stringify(
+        <script id="metaData" type="application/json" set:html={jsonForScript(
           infoCards.map((card) => {
             const value = frontmatter[card.key];
             const isChipList = card.key === 'tools' || card.key === 'allowed-tools' || card.key === 'tags';
