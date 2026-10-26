@@ -52,18 +52,41 @@ The last argument (`my_app`, or `pxt://org:db` on Cloud) is a catalog directory,
 
 Provider keys (`OPENAI_API_KEY`, ...) come from the environment or `~/.pixeltable/config.toml`, and the `pxt` daemon reads both once, at startup; local services get them from the daemon. After changing either, run `pxt daemon restart` (every command answers 409 until you do), then `pxt service restart my_app/ingest`.
 
-Same file on [Cloud](https://docs.pixeltable.com/howto/deployment/cloud): add `[[pixeltable.database]]` with `name = 'pxt://org:db'` to `pixeltable.toml`, then:
+Same file on [Cloud](https://docs.pixeltable.com/howto/deployment/cloud): prefer `--add-config-entry` over writing the hosted `[[pixeltable.database]]` entry by hand, then:
 
 ```bash
 pxt login                                  # browser sign-in; or export PIXELTABLE_API_KEY, which wins
-pxt db update pxt://org:db -f              # project files, image, workers; not secrets, rows, or HTTP
+pxt db update pxt://org:db --add-config-entry -f  # project files, image, workers; not secrets, rows, or HTTP
 pxt schema update app.py pxt://org:db -f
 pxt service update app.py pxt://org:db -f
 ```
 
 Provider calls on a scheduler retry on their own (rate limits, 503s, timeouts, with backoff) and OpenAI-compatible calls reach a proxy through `OPENAI_BASE_URL`: do not wrap those calls in your own retry loop or client ([providers.md](references/providers.md#retries-and-proxies)). Under a coding agent, ask the user to run `pxt login` in their own terminal (it waits up to 10 minutes), and never ask for a secret's value in the chat.
 
-Provider keys on Cloud: `pxt secret set pxt://org OPENAI_API_KEY=...`, never in `pixeltable.toml`. After `pxt secret set` or `pxt secret delete`, run `pxt db restart pxt://org:db` for the database's tables and `pxt service restart pxt://org:db/NAME` for its services; both keep the old pods serving until the new ones are ready. Cloud handle: `pxt.get_table('pxt://org:db/docs')`. Media goes to the database's managed home bucket unless a column sets `destination=`; share a file by link or `/sign` ([Open and share media](https://docs.pixeltable.com/cloud#open-and-share-media)). Try the app with a dashboard insert plus `pxt schema diff`; read failures with `pxt service logs` / `pxt db logs`.
+Since Pixeltable 0.7.20, a command refused for want of `-f` or `--allow-destructive` exits 3 and ends with `next: <command>  # <what it does>`; `pxt errors` prints the same for each recomputable failed column (a snapshot column never changes, so it names no recompute).
+Run that command when it does what the user asked; ask first when it drops data, stops or restarts what others call, or recomputes rows the user did not mention.
+Exit codes: `0` done (a catalog dry run such as `pxt drop PATH -n` too), `1` error (a usage error too, in `schema`, `service`, `db`, and `init`), `2` a usage error anywhere else (for example `pxt feedback` without `--kind`), pending changes on a `schema`/`service`/`db` plan (`diff`, `-n`), or a hosted change still under way after the three-hour wait, `3` refused or declined.
+With `--json`, a no-TTY refusal is error_code CONFIRMATION_REQUIRED plus next (command and effect), or the refused plan for `schema`, `service`, and `db update`.
+When Pixeltable cannot do what the task needs, or you work around it, show the user `pxt feedback --kind gap '<what was needed, what you tried, what happened>'`, which prints a preview and sends nothing; add `--send` only once they agree.
+With `DO_NOT_TRACK` set to `1`, `true`, or `yes` (trimmed, case-insensitive), `--send` exits 3 and sends nothing; any other value, including empty, still sends.
+`--json` is also on `pxt usage` and `pxt feedback`.
+Single quotes keep the shell from running anything in the text.
+Use placeholder data, never customer names, hosts, paths, or secrets.
+
+Provider keys on Cloud: `pxt secret set pxt://org OPENAI_API_KEY=...`, never in `pixeltable.toml`.
+A hosted `pxt db diff` or `pxt db update` also refuses a secret key such as `[openai] api_key`.
+After `pxt secret set` or `pxt secret delete`, run `pxt db restart pxt://org:db` for the database's tables and `pxt service restart pxt://org:db/NAME` for its services; both keep the old pods serving until the new ones are ready.
+Cloud handle: `pxt.get_table('pxt://org:db/docs')`.
+Media goes to the database's managed home bucket unless a column sets `destination=`; share a file by link or `/sign` ([Open and share media](https://docs.pixeltable.com/cloud#open-and-share-media)).
+Try the app with a dashboard insert plus `pxt schema diff`; read failures with `pxt service logs` / `pxt db logs`.
+
+A missing `[[pixeltable.database]]` entry is an error that names `pxt db diff pxt://org:db --add-config-entry`.
+That flag on `diff` or `update` appends `name = '<uri>'` unless one already matches.
+Putting `name` on the local entry replaces that entry.
+`diff --add-config-entry` previews a first deployment; `update --add-config-entry` creates it.
+Size a hosted service in `pixeltable.toml` with `[pixeltable.database.services.'<path>']` (`cpu`, `memory_mb`, `workers`, `file_cache_gb`; path is `'<directory>/<service name>'`, or the name alone at the database root).
+`pxt service update` applies it; a `workers` change needs no restart, and a setting left out keeps the current value.
+Settings (`vars`, `db_*`, sections such as `[openai]`) reach a hosted database without an upload; `pxt db diff --json` reports those changes under target `config`.
 
 `pxt db update`, `start`, `stop`, `restart`, `retry`, `build-image`, and `delete` wait until Cloud has applied the change. Cloud carries on if the command stops: Ctrl-C or a timed-out tool call stops only the waiting. Pass `--no-wait` and follow with `pxt db status pxt://org:db`. After three hours the command exits 2 with the change still under way. A failed update: `pxt db retry pxt://org:db` or `pxt service retry pxt://org:db/NAME`. An update refused because the database changed after its plan is run again as is. If this Pixeltable is older than the database, the proxy error is `UNSUPPORTED_OPERATION` and says to run `pip install --upgrade pixeltable`. Full flags: [CLI docs](https://docs.pixeltable.com/platform/cli).
 
