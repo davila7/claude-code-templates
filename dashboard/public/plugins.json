@@ -23542,6 +23542,31 @@
     ]
   },
   {
+    "slug": "kumi",
+    "name": "Kumi",
+    "author": "annavetech",
+    "description": "A coordinated engineering team of named AI specialists that remembers your project between sessions.",
+    "github": "https://github.com/annavetech/kumi",
+    "stars": 1,
+    "type": "plugin",
+    "tags": [
+      "skills",
+      "agents",
+      "hooks"
+    ],
+    "contains": {
+      "skills": 24,
+      "agents": 20,
+      "hooks": 10
+    },
+    "highlights": [
+      "Web UI: https://docs.annave.tech/kumi/"
+    ],
+    "website": "https://docs.annave.tech/kumi/",
+    "marketplace_name": "kumi",
+    "plugin_name": "kumi"
+  },
+  {
     "slug": "cohesivity-plugin",
     "name": "Cohesivity Plugin",
     "author": "cohesivity-org",

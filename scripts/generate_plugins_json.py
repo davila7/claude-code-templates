@@ -67,6 +67,7 @@ REPOS = [
     ("iOSDevSK/html2wp-cc-plugin", "https://html2wp.dev/"),
     ("curviate/curviate-plugin", "https://curviate.com/"),
     ("firecrawl/firecrawl-claude-plugin", "https://www.firecrawl.dev/integrations/claude-code?utm_source=claude-code-templates&utm_medium=integration"),
+    ("annavetech/kumi", "https://docs.annave.tech/kumi/"),
 ]
 
 DESCRIPTION_OVERRIDES = {
