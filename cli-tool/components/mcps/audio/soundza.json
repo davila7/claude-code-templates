@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "soundza": {
+      "description": "Free sound effects, music loops and ambience for games, videos and apps. Search thousands of sounds, download WAV or MP3, or generate new sound effects from a prompt. Free for commercial use, no attribution needed. Sign in with OAuth in the browser.",
+      "type": "http",
+      "url": "https://mcp.soundza.com/mcp/oauth"
+    }
+  }
+}
