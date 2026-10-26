@@ -199,12 +199,6 @@ async function api() {
     return 'HTTP 401';
   });
 
-  await check('api', '/api/discord/interactions rejects unsigned requests', async () => {
-    const { res } = await get('/api/discord/interactions', { method: 'POST', body: '{"type":1}', headers: { 'Content-Type': 'application/json' } });
-    assert(res.status === 401, `HTTP ${res.status}`);
-    return 'HTTP 401';
-  });
-
   // Validation runs before the insert, so an empty body writes nothing
   await check('api', '/api/track-download-supabase validates input', async () => {
     const { res } = await get('/api/track-download-supabase', { method: 'POST', body: '{}', headers: { 'Content-Type': 'application/json' } });

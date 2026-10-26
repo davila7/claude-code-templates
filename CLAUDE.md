@@ -307,10 +307,6 @@ API endpoints live as Astro API routes in `dashboard/src/pages/api/`:
 - Used by CLI on every installation
 - Database: Supabase (component_downloads table)
 
-**`/api/discord/interactions`**
-- Discord bot slash commands
-- Features: /search, /info, /install, /popular
-
 **`/api/claude-code-check`**
 - Monitors Claude Code releases
 - Triggered every 30 minutes by the `cloudflare-workers/crons` Worker (not a Vercel cron)
@@ -539,9 +535,6 @@ SUPABASE_SERVICE_ROLE_KEY=xxx               # secret
 NEON_DATABASE_URL=postgresql://user:pass@host/db?sslmode=require   # secret
 
 # Discord
-DISCORD_APP_ID=xxx                 # secret
-DISCORD_BOT_TOKEN=xxx              # secret
-DISCORD_PUBLIC_KEY=xxx             # secret
 DISCORD_WEBHOOK_URL_CHANGELOG=https://discord.com/api/webhooks/xxx   # secret
 ```
 
