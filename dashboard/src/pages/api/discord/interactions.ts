@@ -131,22 +131,26 @@ function createEmbed(component: Component, type = 'info') {
 
 export const POST: APIRoute = async ({ request }) => {
   const rawBody = await request.text();
-  const body = JSON.parse(rawBody);
 
   const signature = request.headers.get('x-signature-ed25519');
   const timestamp = request.headers.get('x-signature-timestamp');
+  if (!signature || !timestamp) {
+    return jsonResponse({ error: 'Invalid request signature' }, 401);
+  }
 
-  const publicKey = import.meta.env.DISCORD_PUBLIC_KEY;
+  // Runtime secret: on Cloudflare it reaches process.env through the middleware
+  const publicKey = import.meta.env.DISCORD_PUBLIC_KEY || process.env.DISCORD_PUBLIC_KEY;
   if (!publicKey) {
     return jsonResponse({ error: 'Server configuration error' }, 500);
   }
 
-  const isValidRequest = verifyKey(rawBody, signature as string, timestamp as string, publicKey);
+  // verifyKey is async since discord-interactions v4; an unawaited Promise is always truthy
+  const isValidRequest = await verifyKey(rawBody, signature, timestamp, publicKey).catch(() => false);
   if (!isValidRequest) {
     return jsonResponse({ error: 'Invalid request signature' }, 401);
   }
 
-  const interaction = body;
+  const interaction = JSON.parse(rawBody);
 
   if (interaction.type === InteractionType.PING) {
     return jsonResponse({ type: InteractionResponseType.PONG });
