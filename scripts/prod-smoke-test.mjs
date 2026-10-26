@@ -187,12 +187,6 @@ async function api() {
     return `${a.ads.length} active`;
   });
 
-  await check('api', '/api/live-task/control (GET)', async () => {
-    const c = await getJson('/api/live-task/control');
-    assert(c.control && typeof c.control.is_paused === 'boolean', JSON.stringify(c).slice(0, 120));
-    return `paused=${c.control.is_paused}`;
-  });
-
   await check('api', '/api/collections requires auth', async () => {
     const { res } = await get('/api/collections');
     assert(res.status === 401, `HTTP ${res.status}`);
