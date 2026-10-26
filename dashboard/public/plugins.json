@@ -23544,5 +23544,27 @@
         "cohesivity-local"
       ]
     }
+  },
+  {
+    "slug": "design-to-build",
+    "name": "Design-to-Build Harness",
+    "author": "zhyuka",
+    "description": "Claude Code plugin and CLI for agents that build from Figma. It drives a build into each hover, focus, press and open state the design draws and fails the states it lacks. Reviewer agents can't write files, a builder can't stop until QA passes after its last edit, and a project's checks count only once proven. No model calls.",
+    "github": "https://github.com/zhyuka/design-to-build",
+    "stars": 0,
+    "type": "plugin",
+    "tags": [
+      "skills",
+      "agents",
+      "hooks"
+    ],
+    "contains": {
+      "skills": 4,
+      "agents": 1,
+      "hooks": 4
+    },
+    "highlights": [],
+    "marketplace_name": "zhyuka",
+    "plugin_name": "design-to-build"
   }
 ]
