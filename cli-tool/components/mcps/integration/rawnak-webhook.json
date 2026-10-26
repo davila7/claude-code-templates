@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "rawnak-webhook": {
+      "description": "RawNak Webhook - monitor store webhook deliveries (Salla, Zid, Shopify, WooCommerce, Stripe, Paddle, GitHub) to Telegram, Google Sheets, Make, Zapier or your own server. Ask why an event did not arrive, list failed deliveries, check destination health, and retry or replay events. Requires a RawNak account (rawnakwebhook.com). Uses OAuth 2.1 authentication.",
+      "type": "http",
+      "url": "https://api.rawnakwebhook.com/api/mcp"
+    }
+  }
+}
