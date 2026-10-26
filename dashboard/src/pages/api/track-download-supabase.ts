@@ -2,6 +2,7 @@ import type { APIRoute } from 'astro';
 import { createClient } from '@supabase/supabase-js';
 import { corsResponse, jsonResponse } from '../../lib/api/cors';
 import { captureApiError } from '../../lib/api/error-tracking';
+import { getCountry } from '../../lib/api/geo';
 
 function getSupabaseClient() {
   const supabaseUrl = import.meta.env.SUPABASE_URL || process.env.SUPABASE_URL;
@@ -46,7 +47,7 @@ export const POST: APIRoute = async ({ request }) => {
       request.headers.get('x-forwarded-for')?.split(',')[0] ||
       request.headers.get('x-real-ip') ||
       '127.0.0.1';
-    const country = request.headers.get('x-vercel-ip-country') || null;
+    const country = getCountry(request);
     const userAgent = request.headers.get('user-agent');
 
     const supabase = getSupabaseClient();

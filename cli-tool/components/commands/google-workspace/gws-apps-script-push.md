@@ -1,7 +1,7 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [resource] [method] [flags]
-description: Google Apps Script: Upload local files to an Apps Script project.
+argument-hint: "[resource] [method] [flags]"
+description: "Google Apps Script: Upload local files to an Apps Script project."
 ---
 
 # Google Workspace Apps Script Push

@@ -1,11 +1,12 @@
 ---
 name: curviate-inbox
 description: "Read and send LinkedIn messages with the Curviate CLI. Covers `inbox` (list, get, messages, search, mark-read), `inboxes` (personal and company-page discovery), `message` (new, send, get, edit, delete, react, attachment, InMail), replying as a company page, retrieval mode (`--mode`/`--max-age`) on the two inbox reads, and `webhook` for delivery of message events. Use when triaging conversations, reading a thread, sending or replying to a DM or InMail, or wiring event delivery."
-version: 0.1.0
-author: Curviate
 license: MIT
-tags: [LinkedIn, CLI, Agents, Sales, Recruiting, Outreach]
-repository: https://github.com/Curviate/curviate-plugin
+metadata:
+  version: 0.1.0
+  author: Curviate
+  tags: [LinkedIn, CLI, Agents, Sales, Recruiting, Outreach]
+  repository: https://github.com/Curviate/curviate-plugin
 ---
 
 # Curviate: inbox and messaging

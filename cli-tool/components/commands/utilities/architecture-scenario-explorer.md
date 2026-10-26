@@ -1,8 +1,7 @@
 ---
-description: "Compare architecture options and evaluate trade-offs."
+description: "Explore architectural decisions through systematic scenario analysis with trade-off evaluation and future-proofing assessment."
 allowed-tools: Read, Write, Edit
 argument-hint: "<system-or-component> [constraints]"
-
 ---
 
 # Architecture Scenario Explorer

@@ -1,7 +1,6 @@
 ---
-description: "This guide explains how to create pull requests using GitHub CLI in our project."
+description: "Create a pull request with GitHub CLI following the project conventions"
 allowed-tools: Read, Write, Edit, Bash
-
 ---
 
 # How to Create a Pull Request Using GitHub CLI

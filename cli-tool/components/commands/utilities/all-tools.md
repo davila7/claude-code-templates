@@ -1,7 +1,6 @@
 ---
 description: "Display all available development tools"
 allowed-tools: Read
-
 ---
 
 # Display All Available Development Tools

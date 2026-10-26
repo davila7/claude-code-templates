@@ -2,7 +2,6 @@
 description: "Create a new branch, commit changes, and submit a pull request."
 allowed-tools: Read, Write, Edit, Bash
 argument-hint: "[branch] [commit] [pull-request-title]"
-
 ---
 
 # Create Pull Request Command

@@ -2,7 +2,6 @@
 description: "Log work from orchestrated tasks to external project management tools like Linear, Obsidian, Jira, or GitHub Issues."
 allowed-tools: Read, Write, Edit, Bash
 argument-hint: "[TASK-ID] [options]"
-
 ---
 
 # Orchestration Log Command

@@ -1,7 +1,6 @@
 ---
-description: "Set up unit, component, and E2E testing for Svelte projects."
+description: "Set up comprehensive testing infrastructure for Svelte/SvelteKit projects, including unit testing, component testing, and E2E testing frameworks."
 allowed-tools: Read, Write, Edit, Bash(npm:*), Bash(npx:*)
-
 ---
 
 # /svelte:test-setup

@@ -1,7 +1,6 @@
 ---
-description: "Audit Svelte/SvelteKit accessibility for WCAG compliance."
+description: "Audit and improve accessibility in Svelte/SvelteKit applications, ensuring WCAG compliance and inclusive user experiences."
 allowed-tools: Read, Write, Edit, Bash
-
 ---
 
 # /svelte:a11y

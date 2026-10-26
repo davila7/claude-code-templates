@@ -2,7 +2,6 @@
 description: "Intelligently refactor and improve code quality"
 allowed-tools: Read, Write, Edit, Bash
 argument-hint: "[arguments]"
-
 ---
 
 # Intelligently Refactor and Improve Code Quality

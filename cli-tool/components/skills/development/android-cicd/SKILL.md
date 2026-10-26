@@ -1,14 +1,14 @@
 ---
 name: android-cicd
 description: "Automated Android CI/CD pipeline to Google Play — supports TWA, React Native, Flutter, and native Android. Run npx android-cicd to set up keystore generation, GitHub Secrets, and a multi-stage workflow (internal/alpha/beta/production) with auto-bump versionCode."
-risk: safe
-source: community
-date_added: "2026-05-12"
 license: MIT
 metadata:
   author: ezescholz
   version: "1.0.0"
   npm: android-cicd
+  risk: safe
+  source: community
+  date_added: "2026-05-12"
 ---
 
 # Skill: android-cicd

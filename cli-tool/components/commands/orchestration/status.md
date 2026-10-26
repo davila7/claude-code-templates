@@ -1,8 +1,7 @@
 ---
-description: Check orchestration task status with filters.
+description: "Check the current status of tasks in the orchestration system with various filtering and reporting options."
 allowed-tools: Read, Bash
 argument-hint: "[options]"
-
 ---
 
 # Task Status Command

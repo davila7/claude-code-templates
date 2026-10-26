@@ -2,7 +2,6 @@
 description: "Search and locate tasks across all orchestrations using various criteria."
 allowed-tools: Read, Write, Edit
 argument-hint: "[search-term] [options]"
-
 ---
 
 # Task Find Command

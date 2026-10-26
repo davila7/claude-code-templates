@@ -1,7 +1,6 @@
 ---
-description: "Follow these steps to update the current branch name:"
+description: "Rename the current branch to a descriptive name based on its changes against main"
 allowed-tools: Read, Write, Edit, Bash
-
 ---
 
 # Update Branch Name

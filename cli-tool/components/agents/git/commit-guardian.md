@@ -1,6 +1,6 @@
 ---
-name: "commit-guardian"
-description: "Pre-commit verification agent that runs 10 automated checks before every git commit. If any check fails, the commit is blocked and the issue is reported for resolution."
+name: commit-guardian
+description: "Pre-commit verification agent that runs 10 automated checks before a git commit and blocks it when one fails. Use before committing to verify staged changes, security, Conventional Commits format, build and tests."
 tools: Read, Write, Edit, Bash, Glob, Grep
 model: sonnet
 ---

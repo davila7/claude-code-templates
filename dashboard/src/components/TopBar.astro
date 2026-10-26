@@ -8,7 +8,7 @@ const fallbackStars = formatStars(FALLBACK_STARS);
 ---
 
 <header class="sticky top-0 z-20 bg-[var(--color-surface-0)] border-b border-[var(--color-border)] transition-all duration-200">
-  <div class="flex items-center gap-3 justify-between px-6 h-14">
+  <div class="flex items-center gap-2 sm:gap-3 justify-between px-4 sm:px-6 h-14">
     <!-- Mobile menu button -->
     <button
       class="md:hidden shrink-0 p-2 rounded border border-[var(--color-border)] hover:bg-[var(--color-surface-2)] text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)] transition-all duration-150 flex items-center justify-center"
@@ -23,22 +23,22 @@ const fallbackStars = formatStars(FALLBACK_STARS);
     <!-- Search trigger — terminal style -->
     <button
       id="searchTrigger"
-      class="flex items-center gap-2 px-4 py-2 border border-[var(--color-border)] rounded text-[13px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-accent)] hover:bg-[var(--color-surface-1)] transition-all duration-150 flex-1 min-w-0 max-w-md group font-ui-mono"
+      class="flex items-center gap-2 px-3 sm:px-4 py-2 border border-[var(--color-border)] rounded text-[13px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-accent)] hover:bg-[var(--color-surface-1)] transition-all duration-150 flex-1 min-w-0 max-w-md whitespace-nowrap group font-ui-mono"
     >
       <span class="terminal-prompt text-[13px]">&gt;</span>
-      <span class="text-[var(--color-text-tertiary)] group-hover:text-[var(--color-text-secondary)]">Search components...</span>
+      <span class="truncate text-[var(--color-text-tertiary)] group-hover:text-[var(--color-text-secondary)]">Search<span class="hidden sm:inline"> components</span>...</span>
       <kbd class="hidden sm:inline-flex ml-auto items-center gap-1 px-2 py-0.5 text-[10px] font-mono font-bold border border-[var(--color-border)] rounded bg-[var(--color-surface-2)] text-[var(--color-text-tertiary)] group-hover:border-[var(--color-accent)] transition-all">
         <span class="text-[11px]">⌘</span>K
       </kbd>
     </button>
 
     <!-- Right actions -->
-    <div class="flex items-center gap-2 ml-4">
+    <div class="flex items-center gap-1.5 sm:gap-2 shrink-0 sm:ml-4">
       <a
         href={GITHUB_REPO_URL}
         target="_blank"
         rel="noopener noreferrer"
-        class="flex items-center gap-2 px-3 py-2 rounded border border-[var(--color-border)] text-[13px] font-ui-mono font-semibold text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-accent)] hover:bg-[var(--color-surface-1)] transition-all duration-150 group"
+        class="flex items-center gap-2 px-2.5 sm:px-3 py-2 rounded border border-[var(--color-border)] text-[13px] font-ui-mono font-semibold text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-accent)] hover:bg-[var(--color-surface-1)] transition-all duration-150 group"
         aria-label="View on GitHub"
       >
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">

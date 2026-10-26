@@ -1,12 +1,13 @@
 ---
 name: railway-service
 description: Check service status, rename services, change service icons, link services, or create services with Docker images. For creating services with local code, prefer railway-new skill. For GitHub repo sources, use railway-new skill to create empty service then railway-environment skill to configure source.
-version: 1.0.0
-author: Railway
 license: MIT
-tags: [Railway, Service, Status, Docker, Container, Infrastructure, Management]
-dependencies: [railway-cli]
 allowed-tools: Bash(railway:*)
+metadata:
+  version: 1.0.0
+  author: Railway
+  tags: [Railway, Service, Status, Docker, Container, Infrastructure, Management]
+  dependencies: [railway-cli]
 ---
 
 # Railway Service Management

@@ -1,8 +1,7 @@
 ---
-description: "Run a multi-role code review and post results to GitHub: $ARGUMENTS"
+description: "Review a pull request from product, developer, quality, security, DevOps and UI/UX perspectives"
 allowed-tools: Read, Write, Edit, Bash(git:*), Bash(gh:*)
 argument-hint: "<PR-link-or-number>"
-
 ---
 
 # PR Review
