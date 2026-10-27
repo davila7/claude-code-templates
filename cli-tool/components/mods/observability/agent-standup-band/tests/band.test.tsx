@@ -22,7 +22,9 @@ const bottom = (on: On) => {   // what the engine does beneath the plugins: star
     return <Text>from below</Text>
   })
 }
-const world = (on: On, list: Record<string, string>, self = { id: 's-self' }) => {
+type Run = { argv: readonly string[] }
+const ps = (e: Run) => ({ value: { exitCode: 0, stdout: String(e.argv[4] ?? '').split(',').filter(p => p !== '103').join('\n'), stderr: '', isStdoutTruncated: false, isStderrTruncated: false } })   // ps -o pid= -p <pids>: all but the crashed one run
+const world = (on: On, list: Record<string, string>, self = { id: 's-self' }, run: (e: Run) => unknown = ps) => {
   mock.env(on, { HOME: '/home/ana' })
   on('session.id', () => ({ value: self.id }))
   on('fs.list', ($, e) => (e.path === DIR ? { value: Object.keys(list).map(name => ({ name, kind: 'file' as const, size: 1, mtimeMs: 0, isLink: false })) } : { deny: 'ENOENT' }))
@@ -30,7 +32,7 @@ const world = (on: On, list: Record<string, string>, self = { id: 's-self' }) =>
     const f = list[e.path.slice(DIR.length + 1)]
     return f === undefined ? { deny: 'ENOENT' } : { value: f }
   })
-  on('process.run', ($, e) => ({ value: { exitCode: 0, stdout: String(e.argv[4] ?? '').split(',').filter(p => p !== '103').join('\n'), stderr: '', isStdoutTruncated: false, isStderrTruncated: false } }))   // ps -o pid= -p <pids>: all but the crashed one run
+  on('process.run', ($, e) => run(e) as ReturnType<typeof ps>)
   bottom(on)
   return mock.clock(on, { now: 0 })
 }
@@ -110,6 +112,31 @@ test('Hide puts the band away until another session needs you', async ($, on) =>
   expect(await ui.find({ type: 'Text', text: /web-shop/ })).toBeDefined()   // back, with the new ones under its first three
   expect(await ui.find({ type: 'Text', text: 'and 2 more' })).toBeDefined()
   expect(toasts).toEqual(['✓ busy has finished: your turn there', '✋ new needs an approval', '✋ zed needs an approval'])   // nothing about what was already so at the first look
+  await ui.unmount()
+})
+
+test('a slow look that ends after a newer one does not bring back what the newer one cleared', async ($, on) => {
+  const list = { ...files }, toasts: string[] = []
+  let held: (() => void) | null = null, hold = false
+  const clock = world(on, list, { id: 's-self' }, e => (hold ? new Promise(r => { held = () => r(ps(e)) }) : ps(e)))   // ps answers late for one look
+  on('ui.toast', ($, e) => {
+    toasts.push(e.text)
+    return { value: undefined }
+  })
+  await $.session.start({ cwd: '/work/me', surface: 'terminal', isInteractive: true })
+  hold = true
+  await clock.advance(4000)   // look A: sees web-shop waiting, then waits for ps
+  hold = false
+  expect(held).not.toBeNull()
+  for (const k of Object.keys(list)) list[k] = list[k].replace('"status":"waiting"', '"status":"busy"')   // everything answered meanwhile
+  await clock.advance(4000)   // look B: nobody waits
+  const ui = await $.ui.mount({ plugin: 'agent-standup-band', surface: 'terminal', component: 'AbovePrompt', props: BAND })
+  expect(await ui.find({ type: 'Text', text: /needs/ })).toBeUndefined()
+  held!()   // look A ends now, with what was so before B
+  await clock.advance(1)
+  expect(await ui.find({ type: 'Text', text: /needs/ })).toBeUndefined()
+  await clock.advance(4000)   // and the next look announces nothing that did not happen
+  expect(toasts).toEqual([])
   await ui.unmount()
 })
 

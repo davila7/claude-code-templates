@@ -46,8 +46,10 @@ export const register: Register = on => {
     const dir = config.replace(/[\\/]+$/, '') + '/sessions'
     let before = new Map<string, string>()   // session id → what it was doing at the last look; nothing is announced at the first look
     let first = true
+    let looks = 0, applied = 0   // looks overlap when ps is slow: one that ends after a newer one has been applied is dropped, so the band never goes back in time
 
     const look = async () => {
+      const mine = ++looks
       const self = await $.session.id()   // read at every look: /clear and resume go on under another id, and no session.start fires for it
       let names: string[] = []
       try {
@@ -66,6 +68,8 @@ export const register: Register = on => {
       }
       const pids = rows.filter(waits).map(s => Number(s.pid)).filter(p => Number.isInteger(p) && p > 0)
       const live = await alive($, pids)
+      if (mine < applied) return
+      applied = mine
       const list: Need[] = rows.filter(s => waits(s) && live.has(Number(s.pid))).map(s => ({ id: String(s.sessionId), where: whereOf(s), what: whatOf(s.waitingFor) }))
       const keys = new Set(list.map(keyOf))
       if ([...hidden].some(k => !keys.has(k))) hidden = new Set([...hidden].filter(k => keys.has(k)))
