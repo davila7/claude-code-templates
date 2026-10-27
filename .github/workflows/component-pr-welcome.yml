@@ -75,7 +75,7 @@ jobs:
               ``,
               `### ⚠️ Do not commit generated catalog files`,
               `Please make sure your PR does **not** include \`docs/components.json\` or anything under \`dashboard/public/\` `,
-              `(\`components.json\`, \`counts.json\`, \`search-index.json\`, \`components/*.json\`, \`component-content/**\`). `,
+              `(\`components.json\`, \`counts.json\`, \`search-index.json\`, \`components/*.json\`, \`component-content/**\`, \`api/v1/**\`). `,
               `Those files are regenerated automatically by \`scripts/generate_components_json.py\` after merge, and committing them causes merge conflicts. `,
               `If you already ran the script, revert them with: \`git checkout origin/main -- docs/components.json dashboard/public/\``,
               ``,

@@ -1,8 +1,10 @@
 name: Discord Release Notification
 
 on:
-  release:
-    types: [published]
+  # Paused 2026-10-26 (Daniel). To resume, restore:
+  # release:
+  #   types: [published]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -10,6 +12,7 @@ permissions:
 jobs:
   notify-discord:
     name: Send Discord Notification
+    if: github.event_name == 'release'
     runs-on: ubuntu-latest
 
     steps:

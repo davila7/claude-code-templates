@@ -88,23 +88,23 @@ export function getStaticPaths() {
     <div class="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-[var(--color-primary-500)]/5 to-transparent rounded-full blur-3xl"></div>
     <div class="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-[var(--color-accent-400)]/5 to-transparent rounded-full blur-3xl"></div>
     
-    <div class="relative px-6 py-12 max-w-7xl mx-auto">
-      <div class="flex items-center gap-6">
+    <div class="relative px-4 py-5 sm:px-6 sm:py-12 max-w-7xl mx-auto">
+      <div class="flex items-center gap-4 sm:gap-6">
         <!-- Large icon -->
         <div 
-          class="w-20 h-20 rounded-2xl flex items-center justify-center shrink-0 shadow-2xl animate-float"
+          class="w-12 h-12 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl flex items-center justify-center shrink-0 shadow-2xl animate-float"
           style={`background: linear-gradient(135deg, ${config?.color ?? '#5e6ad2'}20 0%, ${config?.color ?? '#5e6ad2'}10 100%); border: 2px solid ${config?.color ?? '#5e6ad2'}30;`}
         >
-          <div class="[&>svg]:w-10 [&>svg]:h-10" style={`color: ${config?.color ?? '#5e6ad2'}`} set:html={ICONS[activeType]} />
+          <div class="[&>svg]:w-6 [&>svg]:h-6 sm:[&>svg]:w-10 sm:[&>svg]:h-10" style={`color: ${config?.color ?? '#5e6ad2'}`} set:html={ICONS[activeType]} />
         </div>
         
         <div class="flex-1">
-          <div class="flex flex-wrap items-center gap-x-3 gap-y-2 mb-2">
-            <h1 class="text-3xl font-bold text-[var(--color-text-primary)] tracking-tight">
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-2 mb-1 sm:mb-2">
+            <h1 class="text-2xl sm:text-3xl font-bold text-[var(--color-text-primary)] tracking-tight">
               {config?.label ?? activeType}
             </h1>
           </div>
-          <p class="text-[15px] text-[var(--color-text-secondary)] leading-relaxed max-w-2xl">
+          <p class="text-[13px] sm:text-[15px] text-[var(--color-text-secondary)] leading-relaxed max-w-2xl">
             {meta?.tagline ?? meta?.description}
           </p>
         </div>

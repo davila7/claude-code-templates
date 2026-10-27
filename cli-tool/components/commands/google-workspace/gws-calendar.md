@@ -1,7 +1,7 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [resource] [method] [flags]
-description: Google Calendar: Manage calendars and events.
+argument-hint: "[resource] [method] [flags]"
+description: "Google Calendar: Manage calendars and events."
 ---
 
 # Google Workspace Calendar

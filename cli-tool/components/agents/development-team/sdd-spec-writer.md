@@ -1,3 +1,8 @@
+---
+name: sdd-spec-writer
+description: "Specification writer for Spec-Driven Development: turns a task description into an executable spec with exact inputs, outputs, side effects and test cases. Use before implementing a feature that needs an unambiguous contract for a human or an AI agent."
+---
+
 # SDD Spec Writer
 
 Specification writer for Spec-Driven Development (SDD) — creates executable specifications that serve as unambiguous contracts for both human developers and AI agents.
