@@ -1,7 +1,7 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [resource] [method] [flags]
-description: Google Workspace Enterprise License Manager: Manage product licenses.
+argument-hint: "[resource] [method] [flags]"
+description: "Google Workspace Enterprise License Manager: Manage product licenses."
 ---
 
 # Google Workspace Licensing

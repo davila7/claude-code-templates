@@ -32,6 +32,7 @@ jobs:
         dashboard/public/claude-jobs.json
         dashboard/public/components
         dashboard/public/component-content
+        dashboard/public/api/v1
 
     steps:
       - name: Checkout repository
@@ -42,7 +43,8 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: '3.11'
+          # 3.12+: SkillSpector's minimum
+          python-version: '3.12'
           cache: 'pip'
 
       - name: Set up Node.js
@@ -55,7 +57,11 @@ jobs:
       - name: Install Python dependencies
         run: |
           pip install --upgrade pip
-          pip install requests python-dotenv pyyaml
+          pip install requests python-dotenv pyyaml jsonschema
+          # NVIDIA SkillSpector (not on PyPI). The generator only rescans
+          # components whose files changed, or every component when the
+          # SkillSpector version changes, so bump this tag on purpose.
+          pip install "git+https://github.com/NVIDIA/skillspector.git@v2.12.0"
 
       - name: Install Node.js dependencies
         run: |

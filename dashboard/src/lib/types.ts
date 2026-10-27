@@ -5,9 +5,36 @@ export interface Component {
   type: string;
   content: string;
   description?: string;
+  author?: string;
+  version?: string;
+  license?: string;
+  keywords?: string[];
   url?: string;
   downloads?: number;
   references?: string[];
+  skillspector?: SkillSpectorResult;
+}
+
+export interface SkillSpectorFinding {
+  id: string;
+  category: string;
+  severity: string;
+  title: string;
+  file: string;
+  line?: number | null;
+  count: number;
+}
+
+// NVIDIA SkillSpector static scan, written by scripts/skillspector_catalog.py.
+export interface SkillSpectorResult {
+  score: number;
+  severity: string;
+  recommendation: string;
+  issueCount: number;
+  analysis?: string;
+  findings: SkillSpectorFinding[];
+  version?: string;
+  scannedAt?: string;
 }
 
 export interface ComponentsData {

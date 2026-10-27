@@ -1,3 +1,7 @@
+---
+description: "Perform comprehensive analysis of $ARGUMENTS to identify code quality issues, security vulnerabilities, and optimization opportunities."
+---
+
 # File Analysis Tool
 
 Perform comprehensive analysis of $ARGUMENTS to identify code quality issues, security vulnerabilities, and optimization opportunities.

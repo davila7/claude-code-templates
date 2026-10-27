@@ -1,0 +1,50 @@
+name: Dashboard CI
+
+# deploy.yml runs these same unit tests and build, but only on main right
+# before deploying, so a PR that breaks the dashboard first fails after merge.
+# This job runs them on the PR. It needs no secrets: the PUBLIC_* values are
+# build-time only and the build succeeds without them.
+
+on:
+  pull_request:
+    paths:
+      - 'dashboard/**'
+      - '.github/workflows/dashboard-ci.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dashboard-ci-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  test-and-build:
+    name: Dashboard tests and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: dashboard/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+        working-directory: dashboard
+
+      - name: Unit tests
+        run: npm test
+        working-directory: dashboard
+
+      - name: Build
+        run: npm run build
+        working-directory: dashboard
+        env:
+          PUBLIC_COMPONENTS_JSON_URL: /components.json

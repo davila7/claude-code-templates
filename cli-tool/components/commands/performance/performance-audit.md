@@ -1,6 +1,6 @@
 ---
 allowed-tools: Read, Bash, Grep, Glob
-argument-hint: [target-area] | --frontend | --backend | --full
+argument-hint: "[target-area] | --frontend | --backend | --full"
 description: Comprehensive performance audit with metrics, bottleneck identification, and optimization recommendations
 ---
 

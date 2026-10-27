@@ -1,5 +1,5 @@
 ---
-name: nowait-reasoning-optimizer
+name: nowait
 description: Implements the NOWAIT technique for efficient reasoning in R1-style LLMs. Use when optimizing inference of reasoning models (QwQ, DeepSeek-R1, Phi4-Reasoning, Qwen3, Kimi-VL, QvQ), reducing chain-of-thought token usage by 27-51% while preserving accuracy. Triggers on "optimize reasoning", "reduce thinking tokens", "efficient inference", "suppress reflection tokens", or when working with verbose CoT outputs.
 ---
 

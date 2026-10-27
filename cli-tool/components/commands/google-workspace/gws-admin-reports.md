@@ -1,7 +1,7 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [resource] [method] [flags]
-description: Google Workspace Admin SDK: Audit logs and usage reports.
+argument-hint: "[resource] [method] [flags]"
+description: "Google Workspace Admin SDK: Audit logs and usage reports."
 ---
 
 # Google Workspace Admin Reports

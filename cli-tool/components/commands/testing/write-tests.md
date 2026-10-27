@@ -1,6 +1,6 @@
 ---
 allowed-tools: Read, Write, Edit, Bash
-argument-hint: [target-file] | [test-type] | --unit | --integration | --e2e | --component
+argument-hint: "[target-file] | [test-type] | --unit | --integration | --e2e | --component"
 description: Write comprehensive unit and integration tests with proper mocking and coverage
 ---
 

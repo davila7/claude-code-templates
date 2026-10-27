@@ -1,0 +1,48 @@
+name: Production smoke test
+
+# Read-only checks of www.aitmpl.com (web pages, API routes) and the published
+# CLI. Runs after every deploy, daily, on demand, and on PRs that change the test.
+on:
+  workflow_run:
+    workflows: ["Deploy to Cloudflare Pages"]
+    types: [completed]
+  schedule:
+    - cron: '30 12 * * *'
+  workflow_dispatch:
+    inputs:
+      base:
+        description: Site to test
+        default: https://www.aitmpl.com
+      cli_version:
+        description: claude-code-templates version to install
+        default: latest
+  pull_request:
+    paths:
+      - scripts/prod-smoke-test.mjs
+      - .github/workflows/prod-smoke-test.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: prod-smoke-test
+  cancel-in-progress: false
+
+jobs:
+  smoke:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - name: Wait for the edge to serve the new deploy
+        if: github.event_name == 'workflow_run'
+        run: sleep 60
+      - name: Smoke test web, API and CLI
+        env:
+          BASE: ${{ inputs.base || 'https://www.aitmpl.com' }}
+          CLI_VERSION: ${{ inputs.cli_version || 'latest' }}
+        run: node scripts/prod-smoke-test.mjs --base "$BASE" --cli-version "$CLI_VERSION"

@@ -2,7 +2,8 @@
 name: doordash-order-ledger
 description: Accountability layer for agent-driven DoorDash ordering. Works with the doordash-audit-log hook (which appends every dd-cli invocation to an append-only audit log) and the /doordash-report command to answer "what has my AI been ordering and what did it cost" from data instead of memory. Use when the user asks about their DoorDash spending, ordering patterns, what the agent did in past sessions, or wants jq recipes for querying the audit log. Covers log schema, query patterns, rotation, and privacy guidance.
 allowed-tools: Bash(dd-cli:*), Bash(jq:*), Bash(cat:*), Bash(wc:*), Bash(tail:*), Bash(mv:*), Bash(gzip:*), Read
-tags: [DoorDash, Audit Log, Spend Tracking, Analytics, Accountability, CLI]
+metadata:
+  tags: [DoorDash, Audit Log, Spend Tracking, Analytics, Accountability, CLI]
 ---
 
 # DoorDash Order Ledger

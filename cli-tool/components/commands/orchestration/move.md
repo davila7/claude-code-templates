@@ -1,3 +1,7 @@
+---
+description: "Move tasks between status folders following the task management protocol."
+---
+
 # Task Move Command
 
 Move tasks between status folders following the task management protocol.

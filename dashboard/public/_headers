@@ -1,29 +1,31 @@
-# Static JSON data — cached 24h at the edge, revalidated on deploy
+# Catalog JSON — browsers revalidate after 5 min (Pages answers with a 304 via ETag),
+# so a deploy reaches visitors within minutes instead of up to 24 h later
 /components.json
-  Cache-Control: public, max-age=86400, stale-while-revalidate=3600
+  Cache-Control: public, max-age=300, stale-while-revalidate=3600
   Access-Control-Allow-Origin: *
   Access-Control-Allow-Methods: GET
 
-# Tiny per-type counts (sidebars, plugins pages) — same 24h cache
+# Tiny per-type counts (sidebars, plugins pages) — same 5 min cache, so the
+# sidebar count and the grid never disagree
 /counts.json
-  Cache-Control: public, max-age=86400, stale-while-revalidate=3600
+  Cache-Control: public, max-age=300, stale-while-revalidate=3600
   Access-Control-Allow-Origin: *
   Access-Control-Allow-Methods: GET
 
 # Per-type index slices (grid loads only the active type)
 /components/*
-  Cache-Control: public, max-age=86400, stale-while-revalidate=3600
+  Cache-Control: public, max-age=300, stale-while-revalidate=3600
   Access-Control-Allow-Origin: *
   Access-Control-Allow-Methods: GET
 
 # Flat search index for the global (Cmd+K) search
 /search-index.json
-  Cache-Control: public, max-age=86400, stale-while-revalidate=3600
+  Cache-Control: public, max-age=300, stale-while-revalidate=3600
   Access-Control-Allow-Origin: *
   Access-Control-Allow-Methods: GET
 
 /component-content/*
-  Cache-Control: public, max-age=86400, stale-while-revalidate=3600
+  Cache-Control: public, max-age=300, stale-while-revalidate=3600
   Access-Control-Allow-Origin: *
   Access-Control-Allow-Methods: GET
 
@@ -39,6 +41,29 @@
 
 /claude-jobs.json
   Cache-Control: public, max-age=3600, stale-while-revalidate=300
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET
+
+# Catalog API v1 — the versioned public contract (/developers/catalog-api).
+# Same 5 min cache as the site's catalog; ETag exposed so browser clients can
+# send If-None-Match themselves. Poll version.json, fetch the catalog on change.
+/api/v1/*
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: public, max-age=300, stale-while-revalidate=3600
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET, HEAD
+  Access-Control-Expose-Headers: ETag
+  X-Catalog-Schema-Version: 1
+
+# Machine-readable files for agents (OpenAPI spec, llms.txt)
+/openapi.json
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: public, max-age=86400, stale-while-revalidate=3600
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET
+
+/llms.txt
+  Cache-Control: public, max-age=86400, stale-while-revalidate=3600
   Access-Control-Allow-Origin: *
   Access-Control-Allow-Methods: GET
 

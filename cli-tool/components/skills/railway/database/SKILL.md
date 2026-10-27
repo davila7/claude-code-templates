@@ -1,12 +1,13 @@
 ---
 name: railway-database
 description: Add official Railway database services (Postgres, Redis, MySQL, MongoDB). Use when user wants to add a database, says "add postgres", "add redis", "add database", "connect to database", or "wire up the database". For other templates (Ghost, Strapi, n8n), use the railway-templates skill.
-version: 1.0.0
-author: Railway
 license: MIT
-tags: [Railway, Database, Postgres, Redis, MySQL, MongoDB, Infrastructure, Deployment, Template]
-dependencies: [railway-cli]
 allowed-tools: Bash(railway:*)
+metadata:
+  version: 1.0.0
+  author: Railway
+  tags: [Railway, Database, Postgres, Redis, MySQL, MongoDB, Infrastructure, Deployment, Template]
+  dependencies: [railway-cli]
 ---
 
 # Railway Database

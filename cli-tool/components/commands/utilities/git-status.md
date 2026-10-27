@@ -1,3 +1,7 @@
+---
+description: "Show detailed git repository status"
+---
+
 # Git Status Command
 
 Show detailed git repository status
