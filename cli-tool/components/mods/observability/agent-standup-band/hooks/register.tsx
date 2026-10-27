@@ -8,7 +8,8 @@ import type { EngineInterface, Register } from 'claude-code'
 // A reload of the module starts them over, and the next look (every 4 s) fills them again.
 type Need = { id: string; where: string; what: string }   // the session that waits; its folder, name and app; "an approval", "an answer"
 let needs: readonly Need[] = []
-let hidden = ''   // the waits you put away with "Hide", until another one comes
+let hidden: ReadonlySet<string> = new Set()   // the waits you put away with "Hide": the band stays away until another one comes; one that ends is forgotten, so the same session asking again shows
+const keyOf = (n: Need): string => n.id + ':' + n.what
 
 type Status = { pid?: unknown; sessionId?: unknown; status?: unknown; waitingFor?: unknown; cwd?: unknown; name?: unknown; nameSource?: unknown; entrypoint?: unknown }
 
@@ -41,13 +42,13 @@ const alive = async ($: EngineInterface, pids: readonly number[]): Promise<Set<n
 export const register: Register = on => {
   on('session.start', async ($, e, next) => {
     const started = await next(e)
-    const self = await $.session.id()
     const config = (await $.env.get('CLAUDE_CONFIG_DIR')) || ((await $.env.get('HOME')) || (await $.env.get('USERPROFILE')) || '') + '/.claude'
     const dir = config.replace(/[\\/]+$/, '') + '/sessions'
     let before = new Map<string, string>()   // session id → what it was doing at the last look; nothing is announced at the first look
     let first = true
 
     const look = async () => {
+      const self = await $.session.id()   // read at every look: /clear and resume go on under another id, and no session.start fires for it
       let names: string[] = []
       try {
         names = (await $.fs.list(dir)).filter(f => f.kind === 'file' && /^\d+\.json$/.test(f.name)).map(f => f.name)
@@ -66,6 +67,8 @@ export const register: Register = on => {
       const pids = rows.filter(waits).map(s => Number(s.pid)).filter(p => Number.isInteger(p) && p > 0)
       const live = await alive($, pids)
       const list: Need[] = rows.filter(s => waits(s) && live.has(Number(s.pid))).map(s => ({ id: String(s.sessionId), where: whereOf(s), what: whatOf(s.waitingFor) }))
+      const keys = new Set(list.map(keyOf))
+      if ([...hidden].some(k => !keys.has(k))) hidden = new Set([...hidden].filter(k => keys.has(k)))
       if (JSON.stringify(needs) !== JSON.stringify(list)) {
         needs = list
         $.ui.invalidate('ui.render')
@@ -92,8 +95,8 @@ export const register: Register = on => {
 
   on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
     const list = needs
-    const sig = list.map(n => n.id + ':' + n.what).join(',')
-    if (e.props.hasSurvey || !list.length || hidden === sig) return next(e)
+    if (e.props.hasSurvey || !list.some(n => !hidden.has(keyOf(n)))) return next(e)
+    const below = await next(e)   // what the other mods and the engine draw there stays, under the band
     const { Box, Button, Text } = $.ui.resolve(e)
     return (
       <Box flexDirection="column">
@@ -110,11 +113,12 @@ export const register: Register = on => {
             label="Hide"
             plain
             onPress={() => {
-              hidden = sig
+              hidden = new Set(list.map(keyOf))
               $.ui.invalidate('ui.render')
             }}
           />
         </Box>
+        {below}
       </Box>
     )
   })

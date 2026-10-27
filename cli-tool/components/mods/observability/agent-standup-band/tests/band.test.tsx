@@ -15,16 +15,16 @@ const files: Record<string, string> = {
   '109.json': at({ pid: 109, sessionId: 's-sdk-ts', status: 'waiting', waitingFor: 'input needed', cwd: '/work/bot', entrypoint: 'sdk-ts' }),   // an Agent SDK host (Zed, a home-made app) shows its menus to a person: kept
   'notes.txt': 'not a session',
 }
-const bottom = (on: On) => {   // what the engine does beneath the plugins: start the session, draw its own empty band
+const bottom = (on: On) => {   // what the engine does beneath the plugins: start the session, draw what another mod or the engine puts in the band
   on('session.start', ($, e) => ({ cwd: e.cwd }))
   on('ui.render', ($, e) => {
-    const { Box } = $.ui.resolve(e)
-    return <Box key="engine" />
+    const { Text } = $.ui.resolve(e)
+    return <Text>from below</Text>
   })
 }
-const world = (on: On, list: Record<string, string>) => {
+const world = (on: On, list: Record<string, string>, self = { id: 's-self' }) => {
   mock.env(on, { HOME: '/home/ana' })
-  on('session.id', () => ({ value: 's-self' }))
+  on('session.id', () => ({ value: self.id }))
   on('fs.list', ($, e) => (e.path === DIR ? { value: Object.keys(list).map(name => ({ name, kind: 'file' as const, size: 1, mtimeMs: 0, isLink: false })) } : { deny: 'ENOENT' }))
   on('fs.read', ($, e) => {
     const f = list[e.path.slice(DIR.length + 1)]
@@ -46,8 +46,48 @@ test('the band lists the other sessions that wait on you, not a dialog opened by
     expect(await ui.find({ type: 'Text', text: 'needs an approval' })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: /bot/ })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: /api|old|me|busy|1f|script/ })).toBeUndefined()
+    expect(await ui.find({ type: 'Text', text: 'from below' })).toBeDefined()   // what was drawn beneath stays, under the band
     await ui.unmount()
   }
+})
+
+test('after /clear the session goes on under another id and is still not told about itself', async ($, on) => {
+  const list = { ...files }, self = { id: 's-self' }, toasts: string[] = []
+  const clock = world(on, list, self)
+  on('ui.toast', ($, e) => {
+    toasts.push(e.text)
+    return { value: undefined }
+  })
+  await $.session.start({ cwd: '/work/me', surface: 'terminal', isInteractive: true })
+  self.id = 's-cleared'   // no session.start fires for it
+  list['104.json'] = at({ pid: 104, sessionId: 's-cleared', status: 'busy', cwd: '/work/me' })
+  await clock.advance(4000)
+  list['104.json'] = at({ pid: 104, sessionId: 's-cleared', status: 'waiting', waitingFor: 'permission prompt', cwd: '/work/me' })
+  await clock.advance(4000)
+  list['104.json'] = at({ pid: 104, sessionId: 's-cleared', status: 'busy', cwd: '/work/me' })
+  await clock.advance(4000)
+  list['104.json'] = at({ pid: 104, sessionId: 's-cleared', status: 'idle', cwd: '/work/me' })
+  await clock.advance(4000)
+  const ui = await $.ui.mount({ plugin: 'agent-standup-band', surface: 'terminal', component: 'AbovePrompt', props: BAND })
+  expect(await ui.find({ type: 'Text', text: /me/ })).toBeUndefined()
+  expect(toasts).toEqual([])
+  await ui.unmount()
+})
+
+test('a wait you hid that ends is forgotten: the same session asking again shows the band', async ($, on) => {
+  const list = { ...files }
+  const clock = world(on, list)
+  await $.session.start({ cwd: '/work/me', surface: 'terminal', isInteractive: true })
+  const ui = await $.ui.mount({ plugin: 'agent-standup-band', surface: 'terminal', component: 'AbovePrompt', props: BAND })
+  await ui.press({ key: 'hide' })
+  list['101.json'] = at({ pid: 101, sessionId: 's-shop', status: 'busy', cwd: '/work/web-shop', entrypoint: 'claude-vscode' })   // approved there
+  await clock.advance(4000)
+  expect(await ui.find({ type: 'Text', text: /needs/ })).toBeUndefined()   // the other waits you hid stay away
+  list['101.json'] = at({ pid: 101, sessionId: 's-shop', status: 'waiting', waitingFor: 'permission prompt', cwd: '/work/web-shop', entrypoint: 'claude-vscode' })   // and asks again
+  await clock.advance(4000)
+  expect(await ui.find({ type: 'Text', text: /web-shop/ })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: 'from below' })).toBeDefined()
+  await ui.unmount()
 })
 
 test('Hide puts the band away until another session needs you', async ($, on) => {
