@@ -23567,6 +23567,34 @@
     "plugin_name": "kumi"
   },
   {
+    "slug": "oceantoken-plugins",
+    "name": "Oceantoken Plugins",
+    "author": "OceanTokenAI",
+    "description": "OceanToken for Codex, Claude Code, Cursor, Gemini CLI and OpenClaw: 500+ AI models (LLM, image, video, speech) with one account",
+    "github": "https://github.com/OceanTokenAI/oceantoken-plugins",
+    "stars": 0,
+    "type": "plugin",
+    "tags": [
+      "skills"
+    ],
+    "contains": {
+      "skills": 3
+    },
+    "highlights": [
+      "Web UI: https://oceantoken.ai"
+    ],
+    "website": "https://oceantoken.ai/integrations#claude-code-plugin",
+    "marketplace_name": "oceantoken",
+    "plugin_name": "oceantoken",
+    "plugin_manifest": {
+      "skills": [
+        "oceantoken-media",
+        "oceantoken-models",
+        "oceantoken-setup"
+      ]
+    }
+  },
+  {
     "slug": "cohesivity-plugin",
     "name": "Cohesivity Plugin",
     "author": "cohesivity-org",
