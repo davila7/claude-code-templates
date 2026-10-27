@@ -102,12 +102,12 @@ Install modular capabilities that Claude loads dynamically using Anthropic's pro
 
 ```bash
 # Install individual skills
-npx claude-code-templates@latest --skill pdf-processing-pro
-npx claude-code-templates@latest --skill algorithmic-art
-npx claude-code-templates@latest --skill mcp-builder
+npx claude-code-templates@latest --skill document-processing/pdf-processing-pro
+npx claude-code-templates@latest --skill creative-design/algorithmic-art
+npx claude-code-templates@latest --skill development/mcp-builder
 
 # Install multiple skills
-npx claude-code-templates@latest --skill pdf-anthropic,docx,xlsx,pptx
+npx claude-code-templates@latest --skill document-processing/pdf-anthropic,document-processing/docx,document-processing/xlsx,document-processing/pptx
 ```
 
 ### Featured Skills
