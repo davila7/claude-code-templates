@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "curlshot": {
+      "description": "CurlShot hosted MCP — screenshot API for agents. take_screenshot renders any URL in a real browser and returns the image so the model can see it, or a PDF or scrolling video; supports full page, device presets, dark mode and single-element capture. list_devices returns the available device presets. Streamable HTTP, nothing to install. Get an API key at https://curlshot.com (free plan: 100 screenshots/month, no credit card; paid plans from $19/month). Docs: https://curlshot.com/docs.",
+      "type": "http",
+      "url": "https://curlshot.com/api/mcp",
+      "headers": {
+        "Authorization": "Bearer <YOUR_CURLSHOT_API_KEY>"
+      }
+    }
+  }
+}
