@@ -43,8 +43,16 @@ const schemaData = JSON.stringify({
         "url": "https://www.aitmpl.com/logo.png"
       },
       "sameAs": [
-        "https://github.com/davila7/claude-code-templates"
-      ]
+        "https://github.com/davila7/claude-code-templates",
+        "https://www.npmjs.com/package/claude-code-templates"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "technical support",
+        "email": "dan.avila7@gmail.com",
+        "url": "https://github.com/davila7/claude-code-templates/issues",
+        "availableLanguage": ["English", "Spanish"]
+      }
     }
   ]
 });
@@ -58,6 +66,7 @@ const schemaData = JSON.stringify({
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL.href} />
+    <link rel="service-desc" type="application/vnd.oai.openapi+json" href="/openapi.json" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
@@ -123,6 +132,14 @@ const schemaData = JSON.stringify({
       <main id="main-content" class="flex-1 min-w-0 md:ml-[220px] overflow-y-auto bg-[var(--color-surface-0)] transition-all duration-300 ease-in-out">
         <slot />
         <footer class="border-t border-[var(--color-border)] mt-12 py-6 px-6 text-center text-sm text-[var(--color-text-secondary)]">
+          <nav aria-label="Site" class="flex items-center justify-center gap-4 flex-wrap mb-4 text-[12px]">
+            <a href="/about" class="hover:text-[var(--color-text-primary)] transition-colors">About</a>
+            <a href="/privacy" class="hover:text-[var(--color-text-primary)] transition-colors">Privacy</a>
+            <a href="https://docs.aitmpl.com" class="hover:text-[var(--color-text-primary)] transition-colors">Docs</a>
+            <a href="/llms.txt" class="hover:text-[var(--color-text-primary)] transition-colors">llms.txt</a>
+            <a href="/developers/catalog-api" class="hover:text-[var(--color-text-primary)] transition-colors">API</a>
+            <a href="https://github.com/davila7/claude-code-templates" class="hover:text-[var(--color-text-primary)] transition-colors">GitHub</a>
+          </nav>
           <p class="mb-3">Supported by the open source programs of</p>
           <div class="flex items-center justify-center gap-6 flex-wrap">
             <a href="https://vercel.com/open-source-program" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 hover:text-[var(--color-text-primary)] transition-colors">

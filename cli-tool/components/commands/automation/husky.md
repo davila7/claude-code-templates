@@ -1,6 +1,6 @@
 ---
 allowed-tools: Bash, Read
-argument-hint: [--skip-install] | [--only-lint] | [--skip-tests]
+argument-hint: "[--skip-install] | [--only-lint] | [--skip-tests]"
 description: Run comprehensive CI checks and fix issues until repository is in working state
 ---
 

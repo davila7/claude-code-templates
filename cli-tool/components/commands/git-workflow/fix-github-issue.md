@@ -1,3 +1,7 @@
+---
+description: "Analyze and fix a GitHub issue by number, with tests and a commit"
+---
+
 Please analyze and fix the GitHub issue: $ARGUMENTS.
 
 Follow these steps:

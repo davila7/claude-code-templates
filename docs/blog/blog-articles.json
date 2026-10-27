@@ -1,6 +1,25 @@
 {
   "articles": [
     {
+      "id": "spec-driven-quality-gates",
+      "title": "Spec-Driven Quality Gates for Claude Code: Plan Gate, TDD Gate and Scope Guard",
+      "description": "Combine three Claude Code hooks — Plan Gate, TDD Gate and Scope Guard — into a spec-driven workflow that warns before unplanned edits, blocks code without tests, and flags scope creep.",
+      "url": "spec-driven-quality-gates/",
+      "image": "assets/spec-driven-quality-gates-cover.png",
+      "category": "Automation",
+      "readTime": "6 min read",
+      "tags": [
+        "Claude Code",
+        "Hooks",
+        "Spec-Driven Development",
+        "TDD",
+        "Quality Gates"
+      ],
+      "difficulty": "intermediate",
+      "featured": true,
+      "order": 27
+    },
+    {
       "id": "task-move-command",
       "title": "Task Move Command for Claude Code: Automate Your Task Status Workflow",
       "description": "Install the Task Move command for Claude Code to move tasks between status folders (todos, in progress, QA, completed) with validation, bulk operations, and a full audit trail.",
@@ -531,11 +550,11 @@
     }
   ],
   "metadata": {
-    "lastUpdated": "2026-09-20",
-    "totalArticles": 28,
+    "lastUpdated": "2026-10-20",
+    "totalArticles": 29,
     "difficultyLevels": {
       "basic": 13,
-      "intermediate": 10,
+      "intermediate": 11,
       "advanced": 5
     }
   }

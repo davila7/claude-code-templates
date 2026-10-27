@@ -1,13 +1,13 @@
 ---
 name: patentfig
 description: Generate patent-office-compliant figures via the PatentFig AI API — patent line art from text (PNG or SVG), vectorize drawings to SVG/DXF/vector PDF, AI-upscale images, and convert to filing-ready TIFF/PDF/PNG. Use when the user asks for patent drawings, patent figures, invention diagrams, USPTO/EPO-compliant line art, vectorizing a drawing for CAD, or preparing figures for a patent filing. Requires a PATENTFIG_API_KEY environment variable.
-version: 1.0.0
-author: TopLocalAI
 license: MIT
-tags: [Patent, Patent Drawings, Line Art, SVG, Vectorize, DXF, USPTO, Image Generation, API]
 metadata:
   homepage: https://patentfig.ai
   docs: https://patentfig.ai/docs
+  version: 1.0.0
+  author: TopLocalAI
+  tags: [Patent, Patent Drawings, Line Art, SVG, Vectorize, DXF, USPTO, Image Generation, API]
 ---
 
 # PatentFig AI API

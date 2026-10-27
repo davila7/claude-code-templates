@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-10-15T03:10:10.492165+00:00",
-  "totalJobs": 91,
+  "lastUpdated": "2026-10-27T03:14:25.486383+00:00",
+  "totalJobs": 101,
   "sources": [
     "Anthropic",
     "HackerNews",
@@ -8,6 +8,241 @@
     "WeWorkRemotely"
   ],
   "jobs": [
+    {
+      "id": "anth-5455627008",
+      "company": "Anthropic",
+      "position": "Applied AI Architect, Public Sector (Federal Civilan)",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "As an Applied AI team member at Anthropic, you will be a Pre-Sales architect focused on becoming a trusted technical advisor helping state and local government agencies understand the value of Claude and paint the vision on how they can successfully integrate and deploy Claude into their technology...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5455627008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5455627008",
+      "postedAt": "2026-10-22T21:53:49-04:00",
+      "tags": [
+        "Python",
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5460211008",
+      "company": "Anthropic",
+      "position": "Applied AI Architect, Public Sector (GovTech)",
+      "location": "Washington, DC",
+      "remote": false,
+      "salary": "",
+      "description": "As an Applied AI team member at Anthropic, you will be a Pre-Sales architect focused on becoming a trusted technical advisor helping systems integrators, startups, and other GovTech companies understand the value of Claude and paint the vision on how they can successfully integrate and deploy...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5460211008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5460211008",
+      "postedAt": "2026-10-22T21:53:09-04:00",
+      "tags": [
+        "Python",
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "rok-remote-senior-backend-engineer-duckduckgo-1137551",
+      "company": "DuckDuckGo",
+      "position": "Senior Backend Engineer",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Who We Are Hi, we're DuckDuckGo, the online protection company and remote-first team of 400+ on a mission to raise the standard of trust online. Founded in 2008 and profitable since 2014, our annual revenue is in the hundreds of millions USD and millions use our browser on Mac , Windows , iOS , and...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-senior-backend-engineer-duckduckgo-1137551",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-senior-backend-engineer-duckduckgo-1137551",
+      "postedAt": "2026-10-21T14:29:21+00:00",
+      "tags": [
+        "JavaScript",
+        "Rust",
+        "Go",
+        "Node.js",
+        "AWS"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "anth-5455961008",
+      "company": "Anthropic",
+      "position": "Applied AI Demo Engineer",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "Anthropic's customer-facing teams are often the first place a customer sees what Claude can do. As a Demo Engineer, you'll build the demos, reference implementations, and reusable tooling that help those teams make new capabilities tangible, relevant, and trustworthy, ideally within days of a...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5455961008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5455961008",
+      "postedAt": "2026-10-19T18:38:51-04:00",
+      "tags": [
+        "TypeScript",
+        "Python",
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5456581008",
+      "company": "Anthropic",
+      "position": "Manager of Applied AI Architecture, Industries ",
+      "location": "Paris, France",
+      "remote": false,
+      "salary": "",
+      "description": "About Anthropic Anthropic’s mission is to create reliable, interpretable, and steerable AI systems. We want AI to be safe and beneficial for our users and for society as a whole. Our team is a quickly growing group of committed researchers, engineers, policy experts, and business leaders working...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5456581008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5456581008",
+      "postedAt": "2026-10-19T11:48:55-04:00",
+      "tags": [
+        "Rust",
+        "Go",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5456453008",
+      "company": "Anthropic",
+      "position": "Staff+ Software Engineer, Memory & Search",
+      "location": "New York City, NY; New York City, NY | Seattle, WA; Remote-Friendly, United Stat",
+      "remote": true,
+      "salary": "",
+      "description": "Anthropic is looking for Software Engineers to join the Memory & Search team. We own how Claude remembers you and how it finds what it needs, across Claude.ai, Cowork and Claude Code. That spans the user-facing experience (what Claude remembers, how people see and edit it, how search surfaces the...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5456453008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5456453008",
+      "postedAt": "2026-10-19T01:09:10-04:00",
+      "tags": [
+        "TypeScript",
+        "Python",
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5424305008",
+      "company": "Anthropic",
+      "position": "Manager, Applied AI Architects - Digital Natives, EMEA",
+      "location": "London, UK",
+      "remote": false,
+      "salary": "",
+      "description": "As Manager of the EMEA Digital Natives Applied AI Architecture team, you'll drive adoption of frontier AI across Europe's fastest-growing technology companies: SaaS scale-ups, fintechs, marketplaces, consumer platforms, and developer-tooling businesses. Your team makes Anthropic's products (Claude...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5424305008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5424305008",
+      "postedAt": "2026-10-16T05:34:58-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5454673008",
+      "company": "Anthropic",
+      "position": "Applied AI Engineer, Startups (Physical AI)",
+      "location": "San Francisco, CA",
+      "remote": false,
+      "salary": "",
+      "description": "As an Applied AI Engineer on the Startups team at Anthropic, you will be a trusted technical advisor to the top AI-native startups building in the physical world, across robotics, semiconductors, aerospace, manufacturing, and civil infrastructure, as they grow from early product to scale. Some of...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5454673008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5454673008",
+      "postedAt": "2026-10-15T18:50:02-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5453550008",
+      "company": "Anthropic",
+      "position": "Technical Program Manager, SOX Compliance",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "Anthropic is growing fast, and our SOX program needs to keep up. Many of the controls that matter for financial reporting run on engineering systems: who can access production and financial systems, how code changes are reviewed and deployed, and how usage is metered and billed. We’re hiring a...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5453550008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5453550008",
+      "postedAt": "2026-10-15T17:30:30-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "rok-remote-senior-software-engineer-ii-applied-ai-wrapbook-1137527",
+      "company": "Wrapbook",
+      "position": "Senior Software Engineer II Applied AI",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "About Us: Wrapbook is the AI platform for production finance. We’re building a system of action that puts finance teams in control of their whole production, from payroll, to spend, to accounting. Built for feature films, TV, and commercials, Wrapbook is trusted by teams at Netflix, Paramount,...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-senior-software-engineer-ii-applied-ai-wrapbook-1137527",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-senior-software-engineer-ii-applied-ai-wrapbook-1137527",
+      "postedAt": "2026-10-15T16:00:03+00:00",
+      "tags": [
+        "TypeScript",
+        "JavaScript",
+        "Python",
+        "Rust",
+        "Node.js",
+        "AWS",
+        "Java"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-50104234",
+      "company": "Treat Health",
+      "position": "Software Engineer",
+      "location": "Helsinki, Finland (Remote)",
+      "remote": true,
+      "salary": "",
+      "description": "Treat Health is building healthcare where the right care takes minutes, not days. You describe your concern in your own words, our smart intake asks the follow-up questions a doctor would ask, and a licensed doctor reviews the whole picture and decides on the care. Prescriptions and records go...",
+      "applyUrl": "https://news.ycombinator.com/item?id=50104234",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=50104234",
+      "postedAt": "2026-10-15T14:30:58+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "Rust",
+        "Go",
+        "GCP",
+        "Swift",
+        "Kotlin",
+        "Tailwind"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "rok-remote-graphic-designer-video-editor-bluetuskr-1137507",
       "company": "BlueTuskr",
@@ -339,6 +574,28 @@
       "companyIcon": ""
     },
     {
+      "id": "wwr-humane-world-for-animals-web-designer-ecrm-1",
+      "company": "Humane World for Animals",
+      "position": "Web Designer, eCRM",
+      "location": "Remote",
+      "remote": true,
+      "salary": "$80,000 – 115,000",
+      "description": "Headquarters: Humane World for Animals URL: https://humaneworld.org The general salary range for this full-time position is $80,000 – 115,000. Salary offers will be commensurate with experience, qualifications, skills, training and education. Humane World for Animals, a global leader in animal...",
+      "applyUrl": "https://weworkremotely.com/remote-jobs/humane-world-for-animals-web-designer-ecrm-1",
+      "source": "WeWorkRemotely",
+      "sourceUrl": "https://weworkremotely.com/remote-jobs/humane-world-for-animals-web-designer-ecrm-1",
+      "postedAt": "2026-10-02T17:39:45+00:00",
+      "tags": [
+        "JavaScript",
+        "AWS",
+        "Claude Code",
+        "Copilot",
+        "Rails",
+        "MySQL"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "hn-49931746",
       "company": "Search Atlas",
       "position": "Product Engineer",
@@ -505,27 +762,6 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
-      "id": "wwr-steuart-nutrition-software-developer-ai-coding",
-      "company": "STEUART NUTRITION",
-      "position": "Software Developer AI Coding",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Headquarters: Minnesota URL: https://www.steuartnutrition.com/ About us Steuart Nutrition is a GMP-certified contract manufacturer making powders, liquids, capsules and stick packs for growing wellness brands. We run on Extreme Ownership, clear communication and fast turnaround, and we want a...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/steuart-nutrition-software-developer-ai-coding",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/steuart-nutrition-software-developer-ai-coding",
-      "postedAt": "2026-09-23T15:03:18+00:00",
-      "tags": [
-        "TypeScript",
-        "JavaScript",
-        "Python",
-        "Cursor",
-        "Copilot"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "anth-5382518008",
       "company": "Anthropic",
       "position": "Applied AI Architect, Public Sector ",
@@ -552,7 +788,7 @@
       "location": "San Francisco, CA | New York City, NY",
       "remote": false,
       "salary": "",
-      "description": "As the Sales Enablement Trainer, Claude Products, you'll teach Anthropic's global field organization how to use our products, both to do their own work better and to position Claude credibly with customers. Anthropic ships quickly, and the surface area of what we build is growing faster than any...",
+      "description": "As a Sales Enablement Trainer, Claude Products, you'll teach Anthropic's global sales team how to use our products, both to do their own work better and to position Claude credibly with customers. Anthropic ships quickly, and the surface area of what we build is growing faster than any individual...",
       "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5428790008",
       "source": "Anthropic",
       "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5428790008",
@@ -606,67 +842,24 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
-      "id": "rok-remote-si-agent-engineer-sticker-mule-1137399",
-      "company": "Sticker Mule",
-      "position": "SI agent engineer",
-      "location": "Remote",
-      "remote": true,
+      "id": "anth-5423931008",
+      "company": "Anthropic",
+      "position": "Copywriter, Developer",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
       "salary": "",
-      "description": "Sticker Mule is building the most lucrative commerce platform on the Internet by combining software, manufacturing, and super intelligence in one stack. We're hiring an engineer to build, run and manage a team of SI agents to help us innovate faster, improve performance, and better serve customers....",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-si-agent-engineer-sticker-mule-1137399",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-si-agent-engineer-sticker-mule-1137399",
-      "postedAt": "2026-09-16T12:44:27+00:00",
+      "description": "As a Copywriter, Developer at Anthropic, you will shape how our brand speaks to developers, an audience that is notoriously allergic to being marketed to and quick to spot anything that doesn't ring true. Developers who stay sharp, curious, and direct AI tools with their own judgment are the ones...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5423931008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5423931008",
+      "postedAt": "2026-09-16T15:39:40-04:00",
       "tags": [
-        "TypeScript",
-        "JavaScript",
-        "Go",
-        "PostgreSQL",
-        "GCP",
-        "GraphQL"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "wwr-sticker-mule-si-agent-engineer",
-      "company": "Sticker Mule",
-      "position": "SI agent engineer",
-      "location": "Remote",
-      "remote": true,
-      "salary": "$150,000–$250,000",
-      "description": "Headquarters: New York, NY URL: https://www.stickermule.com Sticker Mule is building the most lucrative commerce platform on the Internet by combining software, manufacturing, and super intelligence in one stack. We're hiring an engineer to build, run and manage a team of SI agents to help us...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/sticker-mule-si-agent-engineer",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/sticker-mule-si-agent-engineer",
-      "postedAt": "2026-09-16T12:24:17+00:00",
-      "tags": [
-        "TypeScript",
-        "PostgreSQL",
-        "GCP",
-        "GraphQL"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "wwr-acculynx-senior-software-engineer",
-      "company": "AccuLynx",
-      "position": "Senior Software Engineer",
-      "location": "Remote",
-      "remote": true,
-      "salary": "",
-      "description": "Headquarters: Beloit, WI URL: http://acculynx.com Senior Software Engineer AccuLynx is a fast-growing SaaS provider of business management software for roofing contractors. With more than 10 years in the business and impressive year-over-year revenue growth, we have quickly established ourselves as...",
-      "applyUrl": "https://weworkremotely.com/remote-jobs/acculynx-senior-software-engineer",
-      "source": "WeWorkRemotely",
-      "sourceUrl": "https://weworkremotely.com/remote-jobs/acculynx-senior-software-engineer",
-      "postedAt": "2026-09-15T14:12:47+00:00",
-      "tags": [
-        "Go",
+        "Rust",
+        "AWS",
         "Claude Code",
-        "Copilot",
-        "Vue.js",
-        "Redis"
+        "Anthropic"
       ],
-      "companyIcon": ""
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
       "id": "anth-5421566008",
@@ -771,29 +964,6 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "hn-49552714",
-      "company": "AiMi",
-      "position": "AI Engineer",
-      "location": "Remote(Everywhere)",
-      "remote": true,
-      "salary": "",
-      "description": "AiMi builds agentic AI infrastructure for capital markets: autonomous agents that ingest venue and vendor notifications, assess impact across client infrastructure, and drive change management workflows in real time, replacing what used to be manual, static processes for exchanges and their ops...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49552714",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49552714",
-      "postedAt": "2026-09-03T16:29:17+00:00",
-      "tags": [
-        "React",
-        "TypeScript",
-        "Node.js",
-        "AWS",
-        "Claude Code",
-        "Cursor",
-        "MongoDB"
-      ],
-      "companyIcon": ""
     },
     {
       "id": "hn-49547792",
@@ -1146,6 +1316,68 @@
         "Python",
         "Rust",
         "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-4986159008",
+      "company": "Anthropic",
+      "position": "AI Outcomes Manager, GSI",
+      "location": "San Francisco, CA | Seattle, WA | New York City, NY | Washington, DC",
+      "remote": false,
+      "salary": "",
+      "description": "Join Anthropic's Customer Success team in a high-impact role driving AI adoption across our Industry segment. As an AI Outcomes Manager, GSI, you'll be the strategic partner and a trusted advisor to our most complex customers with a portfolio spanning Systems Integrators—helping them harness the...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/4986159008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/4986159008",
+      "postedAt": "2026-08-17T10:04:30-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5391062008",
+      "company": "Anthropic",
+      "position": "AI Outcomes Manager, Financial Services",
+      "location": "San Francisco, CA | Seattle, WA | New York City, NY | Washington, DC",
+      "remote": false,
+      "salary": "",
+      "description": "Join Anthropic's Customer Success team as an AI Outcome Manager in a high-impact role driving AI adoption across our Financial Services segment. As an AI Outcome Manager for FSI, you'll be the strategic partner and a trusted advisor to our most complex customers with a portfolio spanning Banking,...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5391062008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5391062008",
+      "postedAt": "2026-08-17T10:04:09-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5379140008",
+      "company": "Anthropic",
+      "position": "Staff+ Software Engineer, Safeguards Data ",
+      "location": "New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "Claude serves millions of individual users alongside enterprise clients. Safeguards Engineering develops the foundational infrastructure that ensures its safe use: robust access controls, active abuse detection, real-time probes and classifiers within the inference pipeline, offline monitoring for...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5379140008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5379140008",
+      "postedAt": "2026-08-14T19:01:15-04:00",
+      "tags": [
+        "Rust",
+        "AWS",
+        "GCP",
+        "Azure",
         "Claude Code",
         "Anthropic"
       ],
@@ -1559,32 +1791,6 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
-      "id": "anth-5288742008",
-      "company": "Anthropic",
-      "position": "Staff+ Software Engineer, Enterprise",
-      "location": "San Francisco, CA | New York City, NY",
-      "remote": false,
-      "salary": "",
-      "description": "Enterprise is central to Anthropic's mission. The organizations that could benefit most from Claude often have the most demanding needs, with rigorous requirements around end-user experience, procurement, security, and permissions. We believe earning their trust is essential to ensuring AI benefits...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5288742008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5288742008",
-      "postedAt": "2026-07-01T15:52:07-04:00",
-      "tags": [
-        "Python",
-        "Rust",
-        "Go",
-        "PostgreSQL",
-        "AWS",
-        "GCP",
-        "Azure",
-        "Kubernetes",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
       "id": "anth-5255912008",
       "company": "Anthropic",
       "position": "Engineering Manager, Enterprise",
@@ -1810,7 +2016,7 @@
     {
       "id": "anth-5082455008",
       "company": "Anthropic",
-      "position": "AI Outcomes Manager",
+      "position": "AI Outcomes Manager, Strategic Tech",
       "location": "New York City, NY; San Francisco, CA; Seattle, WA",
       "remote": false,
       "salary": "",
