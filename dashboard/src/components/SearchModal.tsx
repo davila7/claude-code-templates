@@ -252,7 +252,7 @@ export default function SearchModal() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="flex-1 bg-transparent text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] outline-none"
+            className="flex-1 bg-transparent text-base sm:text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] outline-none"
           />
           <kbd className="px-1.5 py-0.5 text-[10px] bg-[var(--color-surface-3)] border border-[var(--color-border)] rounded text-[var(--color-text-tertiary)]">
             ESC

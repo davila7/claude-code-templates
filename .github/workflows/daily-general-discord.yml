@@ -1,8 +1,9 @@
 name: Daily General Engagement
 
 on:
-  schedule:
-    - cron: '0 16 * * *' # 16:00 UTC (13:00 PM Chile) - 2 hours after component pick
+  # Paused 2026-10-26 (Daniel). To resume, restore:
+  # schedule:
+  #   - cron: '0 16 * * *' # 16:00 UTC (13:00 PM Chile) - 2 hours after component pick
   workflow_dispatch:
 
 permissions:

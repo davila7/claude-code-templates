@@ -292,10 +292,10 @@ Please review my MCP server configuration and suggest optimizations for:
 
 Consider my project structure and development needs to suggest the most beneficial MCP server setup.`;
 
-    const claudeCommand = `claude "${mcpSummary}"`;
-    
     try {
-      const child = spawn('sh', ['-c', claudeCommand], {
+      // Pass the summary as an argv entry: it contains server names, commands
+      // and descriptions read from .mcp.json, never parse it with a shell.
+      const child = spawn('claude', [mcpSummary], {
         stdio: 'inherit',
         cwd: targetDir
       });

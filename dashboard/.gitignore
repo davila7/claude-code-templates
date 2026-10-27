@@ -8,3 +8,6 @@ dist/
 # Dependencies
 node_modules
 .env*.local
+
+# Generated social preview images (scripts/generate-og-images.mjs)
+public/og/

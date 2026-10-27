@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { marked } from 'marked';
+import { sanitizeHtml, codeLang } from '../lib/sanitize-html';
 
 interface Heading {
   level: number;
@@ -31,10 +32,10 @@ function renderMarkdown(content: string): string {
   };
 
   renderer.code = ({ text, lang }: { text: string; lang?: string }) => {
-    return `<div class="md-code-block"><div class="md-code-lang">${lang || ''}</div><pre><code class="language-${lang || ''}">${text.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre></div>`;
+    return `<div class="md-code-block"><div class="md-code-lang">${codeLang(lang)}</div><pre><code class="language-${codeLang(lang)}">${text.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre></div>`;
   };
 
-  return marked.parse(stripped, { renderer }) as string;
+  return sanitizeHtml(marked.parse(stripped, { renderer }) as string);
 }
 
 /** Build a searchable index: map each paragraph/line to its nearest preceding heading */

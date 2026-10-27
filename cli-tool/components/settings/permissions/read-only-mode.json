@@ -4,8 +4,7 @@
     "allow": [
       "Read(**/*)",
       "Glob",
-      "Grep",
-      "LS"
+      "Grep"
     ],
     "deny": [
       "Edit",

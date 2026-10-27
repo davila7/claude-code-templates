@@ -1,8 +1,9 @@
 name: Daily Community Help
 
 on:
-  schedule:
-    - cron: '0 17 * * *' # 17:00 UTC (14:00 PM Chile) - 3 hours after component pick
+  # Paused 2026-10-26 (Daniel). To resume, restore:
+  # schedule:
+  #   - cron: '0 17 * * *' # 17:00 UTC (14:00 PM Chile) - 3 hours after component pick
   workflow_dispatch:
 
 permissions:

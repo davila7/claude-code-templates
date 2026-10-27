@@ -1,5 +1,5 @@
 ---
-name: "PocketBase Hooks"
+name: pb-hooks
 description: "Server-side JavaScript hooks for PocketBase (pb_hooks). Use when writing custom routes, event hooks, cron jobs, sending emails, making HTTP requests, querying the database, or extending PocketBase with server-side logic. Covers the goja ES5 runtime, routing, middleware, all event hooks, DB queries, record operations, and global APIs."
 ---
 

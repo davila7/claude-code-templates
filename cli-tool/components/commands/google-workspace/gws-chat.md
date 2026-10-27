@@ -1,7 +1,7 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [resource] [method] [flags]
-description: Google Chat: Manage Chat spaces and messages.
+argument-hint: "[resource] [method] [flags]"
+description: "Google Chat: Manage Chat spaces and messages."
 ---
 
 # Google Workspace Chat

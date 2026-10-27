@@ -1,0 +1,71 @@
+---
+import DashboardLayout from '../layouts/DashboardLayout.astro';
+import TopBar from '../components/TopBar.astro';
+import ProsePage from '../components/ProsePage.astro';
+import SearchModal from '../components/SearchModal.tsx';
+
+export const prerender = true;
+---
+
+<DashboardLayout
+  title="About Claude Code Templates | aitmpl.com"
+  description="Claude Code Templates (aitmpl.com) is an open-source registry and CLI for finding, inspecting and installing Claude Code components: agents, commands, skills, hooks, MCPs and settings."
+>
+  <TopBar />
+  <ProsePage heading="About Claude Code Templates">
+    <p>
+      Claude Code Templates, at aitmpl.com, is an open-source registry and command-line tool for discovering, inspecting
+      and installing components for Claude Code: subagents, slash commands, skills, hooks, MCP server configurations,
+      settings, loops and mods. It is maintained by <a href="https://github.com/davila7">Daniel Avila</a> together with
+      community contributors, and every component lives in the public
+      <a href="https://github.com/davila7/claude-code-templates">GitHub repository</a>.
+    </p>
+
+    <h2>Why it exists</h2>
+    <p>
+      Claude Code is configured through small, composable files, but good ones are scattered across personal repositories,
+      gists and blog posts. There was no reliable way to find them, judge whether they are safe to run, or install them
+      without copying files by hand. Hooks and MCP servers matter most here, because they run code with your local
+      permissions. Component authors had the opposite problem: no neutral place to show their work to the people who would use it.
+    </p>
+
+    <h2>What it does</h2>
+    <ul>
+      <li><strong>Web catalog.</strong> Every component has a page with its source, description, install command and a preview of the files it writes.</li>
+      <li><strong>CLI.</strong> <code>npx claude-code-templates@latest</code> installs any component, or several at once, into the right project or user location and merges existing configuration instead of overwriting it.</li>
+      <li><strong>Plain files.</strong> Components are not a black box. You can read, fork and edit them after installing, and each one links back to its source so changes can go upstream.</li>
+    </ul>
+
+    <h2>Security review</h2>
+    <p>
+      Every pull request that adds or changes a component goes through automated code review, a component validation
+      pipeline and, for skills, the SkillSpector static security scanner. Components that execute code, such as hooks and
+      MCP servers, get extra scrutiny of what they run and what they access. Still, read a component before you install it,
+      especially one that runs commands.
+    </p>
+
+    <h2>Sponsored placements</h2>
+    <p>
+      Component authors and companies can pay for a sponsored placement: one component shown in a slot at the top of search
+      results and as the first card of the component grid. That slot always carries a "Sponsored" label and the component
+      passes the same review as any other. Payment never changes the order of the other results, the categories or the
+      install recommendations. The revenue pays for hosting, security tooling and maintainer time.
+    </p>
+
+    <h2>Neutrality</h2>
+    <p>
+      The project is not a company and is not raising money. Components are judged on quality and safety, not on who built
+      them or who paid. The code is MIT licensed.
+    </p>
+
+    <h2>Contact</h2>
+    <p>
+      Bugs, component requests and contributions go to
+      <a href="https://github.com/davila7/claude-code-templates/issues">GitHub issues</a>. Security reports follow the
+      <a href="https://github.com/davila7/claude-code-templates/security/policy">security policy</a>. For anything else,
+      email <a href="mailto:dan.avila7@gmail.com">dan.avila7@gmail.com</a>. Documentation is at
+      <a href="https://docs.aitmpl.com">docs.aitmpl.com</a>.
+    </p>
+  </ProsePage>
+  <SearchModal client:idle />
+</DashboardLayout>

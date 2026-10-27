@@ -1,0 +1,318 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://www.aitmpl.com/api/v1/schema.json",
+  "title": "aitmpl.com catalog API v1",
+  "description": "The catalog of Claude Code components published at https://www.aitmpl.com/api/v1/catalog.json and /api/v1/catalog/{type}.json. The root schema describes those documents; $defs/version describes /api/v1/version.json. Within schemaVersion 1.x changes are additive only: consumers must ignore fields and type values they do not know.",
+  "$comment": "Docs: https://www.aitmpl.com/developers/catalog-api. Changelog: https://github.com/davila7/claude-code-templates/blob/main/docs/catalog-api/CHANGELOG.md",
+  "$ref": "#/$defs/catalog",
+  "$defs": {
+    "schemaVersion": {
+      "type": "string",
+      "pattern": "^1\\.\\d+\\.\\d+$",
+      "description": "Semantic version of this format. The major is always 1 at /api/v1/."
+    },
+    "timestamp": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+      "description": "UTC, ISO 8601, second precision."
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "agents",
+        "commands",
+        "mcps",
+        "settings",
+        "hooks",
+        "skills",
+        "loops",
+        "mods"
+      ],
+      "description": "Component type, plural. New values may be added in a minor version."
+    },
+    "segment": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._-]+$"
+    },
+    "catalog": {
+      "type": "object",
+      "required": [
+        "schemaVersion",
+        "generatedAt",
+        "source",
+        "docs",
+        "count",
+        "components"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "$ref": "#/$defs/schemaVersion"
+        },
+        "generatedAt": {
+          "$ref": "#/$defs/timestamp",
+          "description": "When the components last changed (content or download counts)."
+        },
+        "source": {
+          "type": "string",
+          "format": "uri",
+          "description": "Repository the catalog is generated from."
+        },
+        "docs": {
+          "type": "string",
+          "format": "uri"
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of entries in components."
+        },
+        "components": {
+          "type": "array",
+          "description": "Sorted by id, ascending. The order never depends on downloads, sponsorship or anything else.",
+          "items": {
+            "$ref": "#/$defs/component"
+          }
+        }
+      }
+    },
+    "component": {
+      "type": "object",
+      "description": "Every field listed here is always present; optional values are null, never missing or an empty string.",
+      "required": [
+        "id",
+        "type",
+        "name",
+        "category",
+        "path",
+        "description",
+        "author",
+        "repo",
+        "version",
+        "license",
+        "keywords",
+        "downloads",
+        "install",
+        "urls",
+        "files",
+        "scan"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z]+/[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$",
+          "description": "{type}/{category}/{name}. Unique in the catalog and permanent for the component; a moved or renamed component gets a new id."
+        },
+        "type": {
+          "$ref": "#/$defs/type"
+        },
+        "name": {
+          "$ref": "#/$defs/segment",
+          "description": "Last segment of path, without extension. Not unique on its own."
+        },
+        "category": {
+          "$ref": "#/$defs/segment",
+          "description": "First segment of path."
+        },
+        "path": {
+          "type": "string",
+          "description": "Location under cli-tool/components/{type}/ in the repository: {category}/{name}.md, {category}/{name}.json, or {category}/{name} for skills and mods (directories)."
+        },
+        "description": {
+          "type": "string",
+          "description": "Verbatim from the component's frontmatter or JSON; may be empty and may contain Markdown or <example> blocks."
+        },
+        "author": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "repo": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Upstream repository, when the component declares one."
+        },
+        "version": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "license": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "keywords": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "downloads": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total recorded installs through the CLI. Refreshed daily."
+        },
+        "install": {
+          "type": "object",
+          "required": [
+            "command",
+            "args"
+          ],
+          "properties": {
+            "command": {
+              "type": "string",
+              "description": "Shell command that installs the component in the current project."
+            },
+            "args": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "minItems": 2,
+              "description": "Arguments to pass after `npx claude-code-templates@latest`, as argv (no shell)."
+            }
+          }
+        },
+        "urls": {
+          "type": "object",
+          "required": [
+            "page",
+            "source",
+            "content"
+          ],
+          "properties": {
+            "page": {
+              "type": "string",
+              "format": "uri",
+              "description": "The component's page on aitmpl.com."
+            },
+            "source": {
+              "type": "string",
+              "format": "uri",
+              "description": "The component on GitHub."
+            },
+            "content": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uri",
+              "description": "JSON with the installed file as `content` (plus `files` for mods). Not covered by the v1 stability policy yet. null when the component has no content file."
+            }
+          }
+        },
+        "files": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "description": "Skills and mods: the other files of the directory, relative paths, without the main file (SKILL.md for skills, README.md for mods). null for single-file types."
+        },
+        "scan": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "description": "Latest static security scan. A risk hint for display, not a verdict; never used for ordering. null when the component has not been scanned.",
+          "required": [
+            "tool",
+            "toolVersion",
+            "severity",
+            "score",
+            "scannedAt"
+          ],
+          "properties": {
+            "tool": {
+              "type": "string",
+              "description": "Scanner name; currently always skillspector (NVIDIA SkillSpector, static mode)."
+            },
+            "toolVersion": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "severity": {
+              "type": "string",
+              "enum": [
+                "LOW",
+                "MEDIUM",
+                "HIGH",
+                "CRITICAL"
+              ]
+            },
+            "score": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 100,
+              "description": "Risk score: 0-20 LOW, 21-50 MEDIUM, 51-80 HIGH, 81-100 CRITICAL."
+            },
+            "scannedAt": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "version": {
+      "type": "object",
+      "description": "/api/v1/version.json: poll this (under 1 KB) and download the catalog only when sha256 changes.",
+      "required": [
+        "schemaVersion",
+        "generatedAt",
+        "sha256",
+        "count",
+        "counts",
+        "catalog",
+        "docs"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "$ref": "#/$defs/schemaVersion"
+        },
+        "generatedAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$",
+          "description": "SHA-256 of the exact bytes of /api/v1/catalog.json."
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "counts": {
+          "type": "object",
+          "description": "Components per type.",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "catalog": {
+          "type": "string",
+          "format": "uri"
+        },
+        "docs": {
+          "type": "string",
+          "format": "uri"
+        }
+      }
+    }
+  }
+}

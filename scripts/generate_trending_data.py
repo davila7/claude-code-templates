@@ -189,11 +189,14 @@ def main():
             if response is None:
                 consecutive_errors += 1
                 if consecutive_errors >= max_consecutive_errors:
-                    print(f"⚠️  {max_consecutive_errors} consecutive failures. Stopping at {len(all_downloads):,} records.")
-                    break
-                # Skip ahead by estimating next ID range to recover from persistent errors
-                last_id += page_size
-                print(f"⚠️  Skipping ahead to id > {last_id} (attempt {consecutive_errors}/{max_consecutive_errors})")
+                    # A partial table would publish wrong totals and trends;
+                    # yesterday's file is the better answer.
+                    keep_previous_trending_data(
+                        f"{max_consecutive_errors} consecutive page failures after id {last_id} "
+                        f"({len(all_downloads):,} of {total_count:,} records)")
+                    return
+                # Retry the same page; skipping ids would silently drop rows.
+                print(f"⚠️  Retrying page after id {last_id} (attempt {consecutive_errors}/{max_consecutive_errors})")
                 time.sleep(5)
                 continue
 
@@ -220,14 +223,12 @@ def main():
                 break
         
         if not all_downloads:
-            print("❌ No data fetched from Supabase")
-            print("📝 Generating fallback trending data...")
-            trending_data = generate_fallback_trending_data()
-        else:
-            print(f"\n✅ Successfully fetched {len(all_downloads):,} total records from Supabase")
-            print(f"📊 Processing download data to generate trending statistics...")
-            # Process the real data
-            trending_data = process_downloads_data(all_downloads)
+            keep_previous_trending_data("no rows fetched from Supabase")
+            return
+
+        print(f"\n✅ Successfully fetched {len(all_downloads):,} total records from Supabase")
+        print(f"📊 Processing download data to generate trending statistics...")
+        trending_data = process_downloads_data(all_downloads)
         
         # Write to JSON file
         output_file = "docs/trending-data.json"
@@ -240,16 +241,15 @@ def main():
             print(f"   • {component_type}: {len(items)} items")
         
     except Exception as e:
-        print(f"❌ Error: {str(e)}")
-        print("📝 Generating fallback trending data...")
-        trending_data = generate_fallback_trending_data()
-        
-        # Write fallback data
-        output_file = "docs/trending-data.json"
-        with open(output_file, 'w', encoding='utf-8') as f:
-            json.dump(trending_data, f, indent=2, ensure_ascii=False)
-        
-        print(f"✅ Generated fallback {output_file}")
+        keep_previous_trending_data(f"error: {e}")
+
+def keep_previous_trending_data(reason):
+    """
+    Leave docs/trending-data.json as it is. The daily cron used to overwrite
+    it with hardcoded placeholder data (or with a partial table) whenever
+    Supabase failed, and then publish that to aitmpl.com.
+    """
+    print(f"::warning::Trending data not refreshed ({reason}); keeping the previous docs/trending-data.json")
 
 def process_downloads_data(downloads):
     """Process raw download data and generate trending structure"""

@@ -1,11 +1,12 @@
 ---
-name: quantizing-models-bitsandbytes
+name: optimization-bitsandbytes
 description: Quantizes LLMs to 8-bit or 4-bit for 50-75% memory reduction with minimal accuracy loss. Use when GPU memory is limited, need to fit larger models, or want faster inference. Supports INT8, NF4, FP4 formats, QLoRA training, and 8-bit optimizers. Works with HuggingFace Transformers.
-version: 1.0.0
-author: Orchestra Research
 license: MIT
-tags: [Optimization, Bitsandbytes, Quantization, 8-Bit, 4-Bit, Memory Optimization, QLoRA, NF4, INT8, HuggingFace, Efficient Inference]
-dependencies: [bitsandbytes, transformers, accelerate, torch]
+metadata:
+  version: 1.0.0
+  author: Orchestra Research
+  tags: [Optimization, Bitsandbytes, Quantization, 8-Bit, 4-Bit, Memory Optimization, QLoRA, NF4, INT8, HuggingFace, Efficient Inference]
+  dependencies: [bitsandbytes, transformers, accelerate, torch]
 ---
 
 # bitsandbytes - LLM Quantization

@@ -1,5 +1,5 @@
 ---
-name: SEOAgent
+name: seoagent
 description: Persistent SEO workflow for Claude Code — run a technical SEO audit, build a hub-and-spoke keyword strategy, write page-type-aware content briefs, and draft SEO-optimized articles, persisting every artifact to a .seoagent/ workspace so the work compounds across sessions. Use when auditing a site's technical SEO, planning a keyword/content strategy, writing content briefs, drafting SEO articles with structured data, or resuming SEO work started in a previous session.
 ---
 
