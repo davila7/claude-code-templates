@@ -139,6 +139,7 @@ A rule with no matcher is rejected, since it would match everything. If that's w
   provider:        string  "auto" | "typesafe" | "gateway" | "builtin"
   typesafeBaseUrl, typesafeModel, gatewayBaseUrl, gatewayModel: overrides, empty for the defaults
   logLevel:        string  "blocked" (asks and denies, default) | "all" | "off"
+  dialogMaxChars:  number  characters of the action the Allow / Deny dialog shows; 0 shows all of it (default)
 ```
 
 Keys live only in the options, never in the policy JSON. Set them in user settings (`~/.claude/settings.json`, never project settings), with `--settings <file>` or in managed settings:

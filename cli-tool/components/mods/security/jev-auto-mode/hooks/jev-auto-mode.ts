@@ -121,6 +121,8 @@ function describePolicy(backend: string): string {
 export const register: Register = (on, options) => {
   const text = (key: string, fallback: string) =>
     typeof options[key] === 'string' && options[key] ? (options[key] as string) : fallback
+  const number = (key: string, fallback: number) =>
+    typeof options[key] === 'number' ? (options[key] as number) : fallback
   const typesafeKey = text('typesafeApiKey', '')
   const gatewayKey = text('gatewayApiKey', '')
   const forced = text('provider', 'auto')
@@ -135,6 +137,8 @@ export const register: Register = (on, options) => {
   const backend = active ? `${active} ${modelId}` : 'built-in classifier'
   const configFile = text('configFile', '')
   const logLevel = text('logLevel', 'blocked')
+  // the dialog is where the user approves the action, so by default it shows all of it; 0, negative or NaN mean all
+  const dialogChars = Math.max(0, Math.floor(number('dialogMaxChars', 0))) || Infinity
   const logs = (d: Decision | 'passthrough') => logLevel === 'all' || (logLevel === 'blocked' && d !== 'allow' && d !== 'passthrough')
 
   on('session.start', async ($, e, next) => {
@@ -300,7 +304,7 @@ export const register: Register = (on, options) => {
       }
       const who = agentId ? 'a subagent' : 'Claude'
       const answer = await $.ui
-        .ask(`${reason.replace(/[.\s]+$/, '')}. Allow ${who} to run ${entry.action}?`, { options: [ALLOW, DENY], header: 'auto mode' })
+        .ask(`${reason.replace(/[.\s]+$/, '')}. Allow ${who} to run ${describeAction(a, dialogChars)}?`, { options: [ALLOW, DENY], header: 'auto mode' })
         .catch(() => DENY)
       if (answer !== ALLOW) {
         $.ui.log(`[jev-auto-mode] you denied ${entry.action}`)
