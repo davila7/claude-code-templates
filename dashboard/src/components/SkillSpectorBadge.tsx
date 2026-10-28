@@ -24,8 +24,9 @@ export function ShieldCheckIcon({ className = '' }: { className?: string }) {
 export default function SkillSpectorBadge({ result, size = 'sm', href }: Props) {
   if (!result) return null;
   const md = size === 'md';
-  const className = `inline-flex items-center gap-1.5 font-mono font-semibold border whitespace-nowrap border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-text-secondary)] ${
-    md ? 'text-xs px-3 py-1.5 rounded-full shadow-sm hover:text-[var(--color-text-primary)] transition-colors' : 'text-[10px] px-2 py-0.5 rounded'
+  const className = `inline-flex items-center gap-1.5 font-mono font-semibold border border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-text-secondary)] ${
+    // md sits beside the component icon: on a phone the label may not fit on one line, so it wraps instead of being clipped
+    md ? 'max-w-full text-xs leading-snug px-3 py-1.5 rounded-2xl sm:whitespace-nowrap sm:rounded-full shadow-sm hover:text-[var(--color-text-primary)] transition-colors' : 'whitespace-nowrap text-[10px] px-2 py-0.5 rounded'
   }`;
   const body = (
     <>
