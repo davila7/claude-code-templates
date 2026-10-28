@@ -24,6 +24,7 @@ const { createInstallUI } = require('./install-ui');
 const { createGlobalAgent, listGlobalAgents, removeGlobalAgent, updateGlobalAgent } = require('./sdk/global-agent-manager');
 const SessionSharing = require('./session-sharing');
 const ConversationAnalyzer = require('./analytics/core/ConversationAnalyzer');
+const { runOrcaRouterCommand } = require('./orcarouter-cli');
 
 /**
  * Get platform-appropriate Python command candidates
@@ -127,6 +128,21 @@ async function createClaudeConfig(options = {}) {
     return;
   }
   
+  // Handle OrcaRouter provider commands (API key, PKCE connect, status, models, logout)
+  if (await runOrcaRouterCommand(options)) {
+    return;
+  }
+
+  // Handle the OrcaRouter provider dashboard (GUI for both auth methods + models)
+  if (options.orcarouterDashboard) {
+    const { runOrcaRouterDashboard } = require('./orcarouter-dashboard');
+    await runOrcaRouterDashboard({
+      port: options.orcarouterDashboardPort ? Number(options.orcarouterDashboardPort) : undefined,
+      credentialFile: options.orcarouterCredentialFile,
+    });
+    return;
+  }
+
   // Handle Claude Code Studio launch
   if (options.studio) {
     await launchClaudeCodeStudio(options, targetDir);

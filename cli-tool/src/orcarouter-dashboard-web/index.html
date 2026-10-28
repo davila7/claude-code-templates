@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>OrcaRouter provider — Claude Code Templates</title>
+<link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <img id="orca-logo" src="https://www.orcarouter.ai/orca-logo-classic.png" alt="OrcaRouter" width="28" height="28" />
+    <div>
+      <h1>OrcaRouter</h1>
+      <p class="tagline">One gateway, many providers — connected to Claude Code</p>
+    </div>
+  </div>
+  <div class="topbar-meta">
+    <span class="pill" id="inference-base">—</span>
+    <span class="pill" id="auth-base">—</span>
+  </div>
+</header>
+
+<main>
+  <section class="card" aria-labelledby="auth-heading">
+    <h2 id="auth-heading">Authentication</h2>
+    <p class="hint">
+      Both options produce the same OrcaRouter API key. Use whichever fits this machine —
+      they are independent, and neither one replaces the other.
+    </p>
+
+    <div class="auth-grid">
+      <article class="auth-method" id="method-api" aria-labelledby="method-api-heading">
+        <header>
+          <h3 id="method-api-heading">OrcaRouter - API</h3>
+          <span class="badge">API key</span>
+        </header>
+        <p class="method-body">
+          Paste an <code>sk-orca-…</code> key you created in the
+          <a id="console-keys-link" href="#" target="_blank" rel="noopener">OrcaRouter console</a>.
+          Works headless, in CI, and anywhere a browser is not available.
+        </p>
+        <form id="api-key-form" autocomplete="off">
+          <label for="api-key-input">API key</label>
+          <input id="api-key-input" name="key" type="password" placeholder="sk-orca-…" spellcheck="false" />
+          <div class="row">
+            <button type="submit" id="api-key-save">Save key</button>
+            <button type="button" id="api-key-clear" class="secondary">Clear</button>
+          </div>
+        </form>
+        <p class="status" id="api-key-status" role="status" aria-live="polite"></p>
+      </article>
+
+      <article class="auth-method" id="method-pkce" aria-labelledby="method-pkce-heading">
+        <header>
+          <h3 id="method-pkce-heading">OrcaRouter - Auth</h3>
+          <span class="badge">OAuth 2.0 + PKCE</span>
+        </header>
+        <p class="method-body">
+          Sign in with your OrcaRouter account in a browser. No client secret, no redirect URI to
+          register; the issued key is stored locally and reused until you revoke it.
+        </p>
+        <div class="row">
+          <button type="button" id="connect-start">Connect with OrcaRouter</button>
+          <button type="button" id="connect-cancel" class="secondary" disabled>Cancel</button>
+        </div>
+        <div id="connect-panel" class="connect-panel" hidden>
+          <p class="hint" id="connect-hint"></p>
+          <p><a id="connect-url" href="#" target="_blank" rel="noopener">Open the authorization page</a></p>
+          <div id="connect-oob">
+            <label for="connect-code">Authorization code</label>
+            <div class="row">
+              <input id="connect-code" type="text" placeholder="paste the code" spellcheck="false" />
+              <button type="button" id="connect-submit-code">Submit code</button>
+            </div>
+          </div>
+        </div>
+        <p class="status" id="pkce-status" role="status" aria-live="polite"></p>
+      </article>
+    </div>
+
+    <div class="credential-summary" id="credential-summary">
+      <span class="label">Stored credential</span>
+      <span id="credential-detail">not configured</span>
+      <button type="button" id="credential-clear" class="secondary">Sign out</button>
+    </div>
+  </section>
+
+  <section class="card" aria-labelledby="models-heading">
+    <h2 id="models-heading">Models</h2>
+    <p class="hint">
+      Options come from the live <code>GET /v1/models?capability=…</code> catalog on the configured
+      inference origin, filtered by the capability the surface can actually serve. Models are never
+      entered by hand.
+    </p>
+
+    <div class="grid-controls">
+      <div class="field">
+        <label for="capability-select">Capability</label>
+        <select id="capability-select">
+          <option value="chat">Text chat / agent</option>
+          <option value="embedding">Embedding</option>
+          <option value="image">Image generation</option>
+          <option value="video">Video generation</option>
+          <option value="rerank">Rerank</option>
+        </select>
+      </div>
+      <fieldset class="field">
+        <legend>Attachment input</legend>
+        <label class="check"><input type="checkbox" id="modality-image" value="image" /> Image</label>
+        <label class="check"><input type="checkbox" id="modality-audio" value="audio" /> Audio</label>
+        <label class="check"><input type="checkbox" id="modality-video" value="video" /> Video</label>
+      </fieldset>
+    </div>
+
+    <div class="catalog-state" id="catalog-state" role="status" aria-live="polite"></div>
+
+    <div class="field">
+      <span class="field-label" id="model-label">Model</span>
+      <div class="combo" id="model-combo">
+        <button type="button" id="model-trigger" class="combo-trigger"
+                role="combobox" aria-haspopup="listbox" aria-expanded="false"
+                aria-controls="model-listbox" aria-labelledby="model-label model-trigger">
+          <span id="model-trigger-label">No compatible model</span>
+          <span class="chev" aria-hidden="true">▾</span>
+        </button>
+        <div class="combo-panel" id="model-panel" hidden>
+          <label class="visually-hidden" for="model-search">Search models</label>
+          <input id="model-search" type="text" placeholder="Search models…" autocomplete="off" spellcheck="false" />
+          <ul id="model-listbox" role="listbox" aria-labelledby="model-label" tabindex="-1"></ul>
+          <p class="combo-empty" id="model-empty" hidden>No model matches this search.</p>
+        </div>
+      </div>
+    </div>
+    <p class="status" id="model-notes"></p>
+  </section>
+</main>
+
+<script src="/app.js"></script>
+</body>
+</html>

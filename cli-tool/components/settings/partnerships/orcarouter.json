@@ -1,0 +1,10 @@
+{
+  "description": "OrcaRouter (API key) - route Claude Code through OrcaRouter, an OpenAI- and Anthropic-compatible AI gateway that serves many providers behind one endpoint. Paste an sk-orca-... key issued at https://www.orcarouter.ai/console/token in place of YOUR-ORCAROUTER-API-KEY. Inference and model discovery live at https://api.orcarouter.ai/v1; authorization lives at https://www.orcarouter.ai. This preset uses the API-key path; `npx claude-code-templates@latest --orcarouter-connect` signs in with an OrcaRouter account via OAuth 2.0 + PKCE and stores the issued key instead.",
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://api.orcarouter.ai",
+    "ANTHROPIC_AUTH_TOKEN": "YOUR-ORCAROUTER-API-KEY",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "anthropic/claude-sonnet-4.6",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "anthropic/claude-opus-4.8",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "anthropic/claude-haiku-4.5"
+  }
+}
