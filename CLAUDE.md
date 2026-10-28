@@ -213,7 +213,7 @@ catalog folder `cli-tool/components/skills/{category}/{name}/` then holds only a
   lists the tree with one GitHub API call, downloads the files from
   raw.githubusercontent at that commit and checks each against its git blob sha.
   `requires` skills are installed too; downloads count under `skill` +
-  `{category}/{name}` like any skill. The Rust CLI does not support them yet.
+  `{category}/{name}` like any skill.
 - Add one with `python scripts/external_skills.py add OWNER/REPO PATH CATEGORY
   [--requires a/b ...] [--author NAME]` (resolves HEAD, checks the license).
   `check` validates manifests (license allowlist + matches the repo's LICENSE at
@@ -667,6 +667,12 @@ stranded this way before 2026-09-20. `daily-blog-discord.yml` picks from
 `docs/blog/blog-articles.json` and links to `aitmpl.com/blog/<slug>/`, so an
 unmirrored article is posted to Discord as a 404. Keep the two
 `blog-articles.json` files identical.
+
+## Rust CLI (`cli-rust/`): in backlog
+
+Daniel's call (2026-10-28): the Rust port is in the backlog until he picks it up
+again. Do not take it into account: no parity work, no mentions of it as a gap
+or follow-up in PRs, plans or replies, and no changes to it, unless he asks.
 
 ## Code Standards
 

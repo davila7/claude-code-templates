@@ -1,5 +1,8 @@
 # cct — Rust core for claude-code-templates
 
+> **In backlog (2026-10-28).** Paused until the maintainer picks it up again.
+> Do not plan or change anything here, or treat it as a gap in other work, until then.
+
 A Rust port of the **core** of the `claude-code-templates` CLI: component
 installation (`agents`, `commands`, `mcps`, `settings`, `hooks`, `skills`),
 verified at byte-for-byte parity with the Node.js CLI.
