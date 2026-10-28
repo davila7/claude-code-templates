@@ -4,6 +4,7 @@ const path = require('path');
 const express = require('express');
 const open = require('open');
 const os = require('os');
+const { getClaudeConfigDir } = require('./claude-paths');
 
 class PluginDashboard {
   constructor(options = {}) {
@@ -12,7 +13,7 @@ class PluginDashboard {
     this.port = 3336;
     this.httpServer = null;
     this.homeDir = os.homedir();
-    this.claudeDir = path.join(this.homeDir, '.claude');
+    this.claudeDir = getClaudeConfigDir(this.homeDir);
     this.settingsFile = path.join(this.claudeDir, 'settings.json');
   }
 
