@@ -34,9 +34,28 @@ function validateComponentData(data: { type?: string; name?: string; path?: stri
   return { valid: true, error: null };
 }
 
+// Agent names the CLI reports (cli-tool/src/agent-detection.js). Anything else is stored as 'other'.
+const KNOWN_AGENTS = new Set([
+  'claude', 'cowork', 'cursor', 'cursor-cli', 'codex', 'gemini', 'github-copilot',
+  'opencode', 'augment-cli', 'antigravity', 'devin', 'replit', 'v0', 'other',
+]);
+
+// Who ran the CLI, self-reported. Older CLI versions send none of these, so all three stay null.
+function clientSignals(body: { agent?: unknown; entrypoint?: unknown; isTty?: unknown }) {
+  const agent = typeof body.agent === 'string' ? (KNOWN_AGENTS.has(body.agent) ? body.agent : 'other') : null;
+  const entrypoint =
+    typeof body.entrypoint === 'string' && /^[a-z0-9_-]{1,32}$/.test(body.entrypoint) ? body.entrypoint : null;
+  const isTty = typeof body.isTty === 'boolean' ? body.isTty : null;
+  return { client_agent: agent, client_entrypoint: entrypoint, client_is_tty: isTty };
+}
+
+// PostgREST / Postgres codes for a column that does not exist yet (migration 004 not run).
+const MISSING_COLUMN_CODES = new Set(['PGRST204', '42703']);
+
 export const POST: APIRoute = async ({ request }) => {
   try {
-    const { type, name, path, category, cliVersion } = await request.json();
+    const body = await request.json();
+    const { type, name, path, category, cliVersion } = body;
     const validation = validateComponentData({ type, name, path, category });
 
     if (!validation.valid) {
@@ -52,20 +71,27 @@ export const POST: APIRoute = async ({ request }) => {
 
     const supabase = getSupabaseClient();
 
-    const { error: insertError } = await supabase
+    const row = {
+      component_type: type,
+      component_name: name,
+      component_path: path,
+      category: category,
+      user_agent: userAgent,
+      ip_address: ipAddress,
+      country: country,
+      cli_version: cliVersion,
+      download_timestamp: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+    };
+
+    let { error: insertError } = await supabase
       .from('component_downloads')
-      .insert({
-        component_type: type,
-        component_name: name,
-        component_path: path,
-        category: category,
-        user_agent: userAgent,
-        ip_address: ipAddress,
-        country: country,
-        cli_version: cliVersion,
-        download_timestamp: new Date().toISOString(),
-        created_at: new Date().toISOString(),
-      });
+      .insert({ ...row, ...clientSignals(body) });
+
+    // Until database/migrations/004 runs, keep counting downloads without the new columns.
+    if (insertError && MISSING_COLUMN_CODES.has(insertError.code)) {
+      ({ error: insertError } = await supabase.from('component_downloads').insert(row));
+    }
 
     if (insertError) {
       console.error('Supabase insert error:', insertError);
