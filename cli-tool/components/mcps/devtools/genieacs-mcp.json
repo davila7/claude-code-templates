@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "genieacs": {
+      "description": "MCP server for GenieACS, the open-source TR-069 ACS that manages routers, ONTs and other CPE devices. Search devices by tag, model, firmware or any parameter, read their parameters, tasks and faults, reboot them, push firmware or set parameters, and create or delete presets and provisions. Needs a GenieACS NBI (port 7557) this machine can reach.",
+      "command": "npx",
+      "args": ["-y", "genieacs-mcp@0.3.4"],
+      "env": {
+        "ACS_URL": "http://localhost:7557"
+      }
+    }
+  }
+}
