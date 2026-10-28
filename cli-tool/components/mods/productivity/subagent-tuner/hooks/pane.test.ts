@@ -1,7 +1,7 @@
 // @ts-nocheck: written for the Claude Code 2.1.296 types; this folder has the 2.1.283 declarations.
 import { expect, mock, test } from 'claude-code/testing'
 import type { Engine } from 'claude-code/testing'
-import { ABORTER, BUILD, CHANGE, CLOSER, MAIN, REVIEW, SEARCH, drawn, engine, expectClean, mountPane, start, valueOf, widthOf } from './harness'
+import { ABORTER, BUILD, CHANGE, CLOSER, CUSTOM, MAIN, REVIEW, SEARCH, UNTOUCHED, drawn, engine, expectClean, mountPane, offerAgent, start, valueOf, widthOf } from './harness'
 import type { Node } from './harness'
 import { PANE_PREFIX, PANE_WAIT_MS } from './register'
 
@@ -665,4 +665,47 @@ test('pane layout: the long Run label keeps the buttons in a column until they f
   await ui.press({ key: 'cancel' })
   await call
   await ui.unmount()
+})
+
+test('pane: a custom agent starts on inherit for the open fields, and Run starts the call unchanged', async ($, on) => {
+  const { clock, seen, panes } = engine(on, { pane: {} })
+
+  await start($)
+  await offerAgent($, 'acme-reviewer')
+
+  const call = $.tool.call(CUSTOM)
+
+  await clock.settle()
+
+  const ui = await mountPane($, panes.opened[0]!.id, 100)
+
+  expect(await valueOf(ui, 'model')).toBe('inherit')
+  expect(await valueOf(ui, 'effort')).toBe('inherit')
+  await ui.press({ key: 'run' })
+  await call
+
+  expect(seen).toEqual([UNTOUCHED('Review the diff')])
+  await ui.unmount()
+  await expectClean($, panes)
+})
+
+test('pane: a custom agent still takes a model picked in the pane', async ($, on) => {
+  const { clock, seen, panes } = engine(on, { pane: {} })
+
+  await start($)
+  await offerAgent($, 'acme-reviewer')
+
+  const call = $.tool.call(CUSTOM)
+
+  await clock.settle()
+
+  const ui = await mountPane($, panes.opened[0]!.id, 100)
+
+  await ui.select({ key: 'model', value: 'haiku' })
+  await ui.press({ key: 'run' })
+  await call
+
+  expect(seen).toEqual([{ model: 'haiku', effort: undefined, description: 'Review the diff' }])
+  await ui.unmount()
+  await expectClean($, panes)
 })

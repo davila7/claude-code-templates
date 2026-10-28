@@ -1,10 +1,10 @@
 # subagent-tuner
 
-Vendored from https://github.com/Kruhlikau/subagent-tuner at tag v0.1.4 (MIT). I'm the author.
+Vendored from https://github.com/Kruhlikau/subagent-tuner at tag v0.1.7 (MIT). I'm the author.
 
 A mod that settles the model and reasoning effort of every subagent Claude Code starts, so a review can run on Opus and a file search on Haiku.
 
-![A pick pane in Manual, and Auto replacing the model the agent asked for](https://raw.githubusercontent.com/Kruhlikau/subagent-tuner/v0.1.4/docs/media/demo.gif)
+![A pick pane in Manual, and Auto replacing the model the agent asked for](https://raw.githubusercontent.com/Kruhlikau/subagent-tuner/v0.1.7/docs/media/demo.gif)
 
 ## What it does
 
