@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "neverapply": {
+      "description": "NeverApply's hosted MCP server lets Claude, Cursor and other MCP clients search and match jobs, tailor resumes, answer screening questions, prepare for interviews, and apply to jobs with your approval. Remote Streamable HTTP; sign in with OAuth (no API key needed).",
+      "type": "http",
+      "url": "https://neverapply.co/mcp"
+    }
+  }
+}
