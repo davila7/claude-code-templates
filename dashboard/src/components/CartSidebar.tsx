@@ -125,10 +125,13 @@ export default function CartSidebar() {
         />
       )}
 
-      {/* Sidebar panel */}
+      {/* Sidebar panel. The clipping wrapper keeps the closed (off-screen)
+          panel inside the viewport box: iOS Safari counts a translated fixed
+          element in the page width and zooms the whole site out to fit it. */}
+      <div className="fixed inset-0 z-50 overflow-hidden pointer-events-none">
       <div
-        className={`fixed top-0 right-0 h-full w-96 max-w-[90vw] bg-[var(--color-surface-0)] border-l border-[var(--color-border)] shadow-2xl z-50 transform transition-transform duration-300 ease-out flex flex-col ${
-          open ? 'translate-x-0' : 'translate-x-full'
+        className={`absolute top-0 right-0 h-full w-96 max-w-[90vw] bg-[var(--color-surface-0)] border-l border-[var(--color-border)] transform transition-[transform,visibility] duration-300 ease-out flex flex-col pointer-events-auto ${
+          open ? 'translate-x-0 shadow-2xl' : 'translate-x-full invisible'
         }`}
       >
         {/* Header */}
@@ -298,6 +301,7 @@ export default function CartSidebar() {
             </div>
           </div>
         )}
+      </div>
       </div>
     </>
   );
