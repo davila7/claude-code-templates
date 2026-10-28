@@ -1,6 +1,6 @@
 {
   "name": "task-lens",
-  "version": "0.5.4",
+  "version": "0.5.5",
   "description": "Shows what each subagent, background shell and workflow is doing and why, as one sentence in a band above the prompt",
   "author": {
     "name": "delpotro96",

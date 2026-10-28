@@ -1,24 +1,24 @@
 # task-lens
 
-Vendored from https://github.com/delpotro96/task-lens at tag v0.5.4 (MIT). I'm the author.
+Vendored from https://github.com/delpotro96/task-lens at tag v0.5.5 (MIT). I'm the author.
 
 **See what every background task is doing, and why, without leaving the prompt.**
 
-When Claude runs subagents, background shells or workflows, task-lens adds a band above the prompt with one line per task: what kind of work it is doing, one plain sentence about its purpose, and how long it has been going. No side panel, no extra window.
+When Claude runs subagents, background shells or workflows, task-lens adds a band above the prompt with one line per running task: what kind of work it is doing, one plain sentence about its purpose, and how long it has been going. The band never grows past four lines. No side panel, no extra window.
 
-![task-lens updating as background tasks run](https://raw.githubusercontent.com/delpotro96/task-lens/v0.5.4/docs/demo.gif)
+![task-lens updating as background tasks run](https://raw.githubusercontent.com/delpotro96/task-lens/v0.5.5/docs/demo.gif)
 
 ## Why
 
 Claude Code tells you *that* background work is running. It does not tell you *what* each task is doing, whether it is stuck, or what it found. task-lens fills that gap in the space you are already looking at.
 
-![The same session without and with task-lens](https://raw.githubusercontent.com/delpotro96/task-lens/v0.5.4/docs/before-after.png)
+![The same session without and with task-lens](https://raw.githubusercontent.com/delpotro96/task-lens/v0.5.5/docs/before-after.png)
 
 ## What you see
 
-![task-lens band above the Claude Code prompt](https://raw.githubusercontent.com/delpotro96/task-lens/v0.5.4/docs/band.png)
+![task-lens band above the Claude Code prompt](https://raw.githubusercontent.com/delpotro96/task-lens/v0.5.5/docs/band.png)
 
-**A purpose sentence for every running task.** Haiku writes it from the task's instructions, the request you sent, and the task's recent actions. It says why the task is running, not which file it opened, and it is rewritten as the work moves on (every 5 tool calls, at most every 20 seconds). Long sentences wrap to two lines.
+**A purpose sentence for every running task.** Haiku writes it from the task's instructions, the request you sent, and the task's recent actions. It says why the task is running, not which file it opened, and it is rewritten as the work moves on (every 5 tool calls, at most every 20 seconds). Each task keeps to one line; type `/lens` to see task titles, workflow agents and results in full.
 
 **A tag for the kind of work happening right now.** The tag follows the current stage, so an agent that designs, then codes, then tests moves through `[plan]`, `[code]` and `[test]`. The moment an agent starts editing files, the tag switches to `[code]` (or `[docs]` for Markdown and text files) without waiting for Haiku.
 
@@ -39,16 +39,18 @@ Claude Code tells you *that* background work is running. It does not tell you *w
 | `$` | a background shell |
 | `3/7` | workflow progress (finished agents / all agents) |
 | `1:12` | elapsed time |
-| `⏳ 1:10` | time since the last sign of progress, shown after a minute |
-| `→` | the result of a finished task |
+| `⏳1:10` | time since the last sign of progress, shown after a minute |
+| `✓2 ✗1` | finished tasks, counted on one line |
+| `+3 …` | running tasks that did not fit in four lines |
+| `→` | the result of a finished task, in `/lens` |
 
-**Results stay until your next message.** A finished task keeps a one-line result, so you can see what it found even if you were looking elsewhere. Sending your next prompt clears it.
+**Results stay until your next message.** A finished task is counted in the band and keeps a one-line result in `/lens`, so you can see what it found even if you were looking elsewhere. Sending your next prompt clears it.
 
 ## In your language
 
 Purpose and result sentences follow the language of your last prompt. A real capture from a Korean session with six tasks running at once:
 
-![task-lens in a Korean session](https://raw.githubusercontent.com/delpotro96/task-lens/v0.5.4/docs/band-real-ko.png)
+![task-lens in a Korean session](https://raw.githubusercontent.com/delpotro96/task-lens/v0.5.5/docs/band-real-ko.png)
 
 ## Install
 

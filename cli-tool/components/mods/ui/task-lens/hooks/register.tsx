@@ -11,7 +11,7 @@ const PURPOSE_EVERY_TOOLS = 5
 const PURPOSE_COOLDOWN_MS = 20_000
 const PURPOSE_MAX_PER_TASK = 12
 const HAIKU_SESSION_MAX = 120
-const BAND_MAX_ROWS = 14
+const BAND_MAX_ROWS = 4
 const LINE_MAX = 80
 const TAIL_MAX_BYTES = 256_000
 const KEEP_DONE = 30
@@ -700,23 +700,30 @@ const blockOf = (t: Task, list: readonly Task[], now: number, columns: number): 
   return { head, details }
 }
 
-// 넘치면 작업 제목을 먼저 남기고, 작업마다 첫 세부 줄을 준 뒤 남는 자리를 나눈다
-const layout = (blocks: Block[], avail: number): { lines: Line[]; hidden: number } => {
-  if (blocks.length > avail) {
-    const shown = blocks.slice(0, Math.max(0, avail - 1))
-    return { lines: shown.map(b => b.head), hidden: blocks.length - shown.length }
-  }
-  let extra = avail - blocks.length
-  const take = blocks.map(() => 0)
-  for (let pass = 0; pass < 2; pass++) {
-    blocks.forEach((b, i) => {
-      const want = pass === 0 ? Math.min(1, b.details.length) : b.details.length - (take[i] ?? 0)
-      const give = Math.max(0, Math.min(want, extra))
-      take[i] = (take[i] ?? 0) + give
-      extra -= give
-    })
-  }
-  return { lines: blocks.flatMap((b, i) => [b.head, ...b.details.slice(0, take[i] ?? 0)]), hidden: 0 }
+// 띠는 진행 중 작업을 목적 한 줄씩 두고 끝난 작업은 개수로 묶는다, 제목과 결과는 /lens 에서 본다
+const rowOf = (t: Task, list: readonly Task[], now: number, columns: number): Line => {
+  const { suffix } = headOf(t, list, now)
+  const tag = t.tag ?? ruleTag(t)
+  const lead = `  ${STATE_VIEW.running.mark} ${tag ? `[${tag}] ` : ''}${t.kind === 'shell' ? SYM.shell : ''}`
+  // 워크플로는 하위 작업이 하나라도 움직이면 멈춘 것이 아니다
+  const activeAt = Math.max(t.activeAt, ...kidsOf(t, list).filter(k => k.state === 'running').map(k => k.activeAt))
+  const idle = t.kind === 'workflow' && kidsOf(t, list).length === 0 ? 0 : now - activeAt
+  const tail = `${suffix}${idle >= STALL_MS ? ` ${SYM.stall}${duration(idle)}` : ''}`
+  const text = t.purpose ? plain(t.purpose) : plain(t.title)
+  return { text: `${lead}${fit(text, Math.max(8, columns - width(lead) - width(tail)))}${tail}`, color: STATE_VIEW.running.color }
+}
+
+const bandLines = (list: readonly Task[], now: number, columns: number, room: number): Line[] => {
+  const tops = topsOf(list)
+  const rows = tops.filter(t => t.state === 'running').map(t => rowOf(t, list, now, columns))
+  const done = (['completed', 'failed', 'killed'] as const)
+    .map(s => [s, tops.filter(t => t.state === s).length] as const)
+    .filter(([, n]) => n > 0)
+    .map(([s, n]) => `${STATE_VIEW[s].mark}${n}`)
+    .join(' ')
+  if (rows.length + (done ? 1 : 0) <= room) return [...rows, ...(done ? [{ text: `  ${done}`, dim: true }] : [])]
+  const shown = rows.slice(0, room - 1)
+  return [...shown, { text: `  ${SYM.more(rows.length - shown.length)}${done ? ` ${done}` : ''}`, dim: true }]
 }
 
 export const register: Register = (on, options) => {
@@ -876,9 +883,10 @@ export const register: Register = (on, options) => {
     const { Box, Text } = $.ui.resolve(e)
     if (list.length === 0) return <Text dimColor>∅</Text>
     const now = await $.clock.now()
-    const blocks = topsOf(list).map(t => blockOf(t, list, now, e.props.bodyColumns))
-    const all = blocks.reduce((n, b) => n + 1 + b.details.length, 0)
-    const { lines, hidden } = layout(blocks, all)
+    const lines = topsOf(list).flatMap(t => {
+      const b = blockOf(t, list, now, e.props.bodyColumns)
+      return [b.head, ...b.details]
+    })
     return (
       <Box flexDirection="column">
         {lines.map(l => (
@@ -886,11 +894,6 @@ export const register: Register = (on, options) => {
             {l.text}
           </Text>
         ))}
-        {hidden > 0 && (
-          <Text dimColor wrap="truncate-end">
-            {`  ${SYM.more(hidden)}`}
-          </Text>
-        )}
       </Box>
     )
   })
@@ -904,10 +907,8 @@ export const register: Register = (on, options) => {
 
     const { Box, Text } = $.ui.resolve(e)
     const now = await $.clock.now()
-    // 줄마다 ▶ ✓ ✗ 표시가 있으므로 개수 머리줄은 두지 않는다
-    const room = Math.max(2, Math.min(BAND_MAX_ROWS, e.props.maxRows))
-    const blocks = topsOf(list).map(t => blockOf(t, list, now, e.props.bodyColumns))
-    const { lines, hidden } = layout(blocks, room)
+    const room = Math.max(1, Math.min(BAND_MAX_ROWS, e.props.maxRows))
+    const lines = bandLines(list, now, e.props.bodyColumns, room)
 
     return (
       <Box flexDirection="column">
@@ -917,11 +918,6 @@ export const register: Register = (on, options) => {
               {l.text}
             </Text>
           ))}
-          {hidden > 0 && (
-            <Text dimColor wrap="truncate-end">
-              {`  ${SYM.more(hidden)}`}
-            </Text>
-          )}
         </Box>
         {below}
       </Box>
