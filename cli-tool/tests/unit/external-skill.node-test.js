@@ -101,3 +101,21 @@ test('fetchExternalManifest: 404 means a regular skill', async () => {
   assert.equal(m.repo, 't3dotgg/tstack');
   assert.equal(await fetchExternalManifest('../x', async () => reply(200, manifest)), null);
 });
+
+test('include keeps only the listed files and folders', async () => {
+  assert.throws(() => validateManifest({ ...manifest, include: [] }), /include/);
+  assert.throws(() => validateManifest({ ...manifest, include: ['scripts'] }), /SKILL.md/);
+  assert.throws(() => validateManifest({ ...manifest, include: ['SKILL.md', '../x'] }), /include/);
+  assert.deepEqual(validateManifest({ ...manifest, include: ['SKILL.md', 'scripts/'] }).include, ['SKILL.md', 'scripts']);
+  assert.equal(validateManifest(manifest).include, null);
+
+  const { fetchImpl, calls } = fakeGitHub({
+    'SKILL.md': { content: 'x' },
+    'scripts/pr-wait': { content: 'y', mode: '100755' },
+    'scripts-old/a': { content: 'z' },
+    'demo/big.gif': { content: 'gif' }
+  });
+  const files = await downloadExternalSkill(validateManifest({ ...manifest, include: ['SKILL.md', 'scripts'] }), fetchImpl);
+  assert.deepEqual(Object.keys(files).sort(), ['SKILL.md', 'scripts/pr-wait']);
+  assert.ok(!calls.some((u) => u.includes('demo/') || u.includes('scripts-old')), 'excluded files are never downloaded');
+});

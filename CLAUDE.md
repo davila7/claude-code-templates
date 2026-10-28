@@ -210,7 +210,9 @@ locally with `python3 scripts/validate_components.py [--changed FILE] [--strict]
 A skill can live in its author's GitHub repo instead of being copied here. Its
 catalog folder `cli-tool/components/skills/{category}/{name}/` then holds only a
 `source.json` (`repo`, `path`, `commit`, `license`, optional `author`,
-`requires`), never a `SKILL.md`. First ones: the 9 `git/` skills from
+`requires`, `include`), never a `SKILL.md`. `include` lists the files/folders
+under `path` to keep (must list `SKILL.md`; size limits of 200 files / 5 MB apply
+after filtering) for repos whose skill folder also holds demos or tests. First ones: the 9 `git/` skills from
 `t3dotgg/tstack` (2026-10-26).
 
 - `commit` must be a full 40-hex sha: never a branch or tag, so upstream changes

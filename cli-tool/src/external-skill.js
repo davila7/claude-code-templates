@@ -9,7 +9,9 @@
  *     "commit": "<40-hex sha>",       the reviewed commit; never a branch or tag
  *     "license": "MIT",               SPDX id, checked in CI against the repo
  *     "author": "...",
- *     "requires": ["git/file-pr"]     other catalog skills it calls (optional)
+ *     "requires": ["git/file-pr"],    other catalog skills it calls (optional)
+ *     "include": ["SKILL.md", "scripts"]  only these files/folders under path (optional;
+ *                                       for repos whose skill folder also holds demos, tests...)
  *   }
  *
  * The files are downloaded from that exact commit and each one is checked
@@ -54,7 +56,21 @@ function validateManifest(manifest) {
   if (!Array.isArray(requires) || requires.some((r) => typeof r !== 'string' || !SKILL_REF_RE.test(r))) {
     throw new Error('source.json: "requires" must be a list of "category/name" skills');
   }
-  return { ...manifest, path: skillPath.replace(/^\/+|\/+$/g, ''), requires };
+  let include = null;
+  if (manifest.include !== undefined) {
+    if (!Array.isArray(manifest.include) || manifest.include.length === 0 ||
+        manifest.include.some((p) => typeof p !== 'string' || !isSafeRelativePath(p.replace(/\/+$/, '')))) {
+      throw new Error('source.json: "include" must be a non-empty list of relative paths');
+    }
+    include = manifest.include.map((p) => p.replace(/\/+$/, ''));
+    if (!include.includes('SKILL.md')) throw new Error('source.json: "include" must list SKILL.md');
+  }
+  return { ...manifest, path: skillPath.replace(/^\/+|\/+$/g, ''), requires, include };
+}
+
+/** True when rel is one of the include entries or sits under one (no include = everything). */
+function isIncluded(rel, include) {
+  return !include || include.some((inc) => rel === inc || rel.startsWith(inc + '/'));
 }
 
 /** A relative path with no "..", no absolute root and no backslashes. */
@@ -124,6 +140,7 @@ async function listSkillTree(manifest, fetchImpl = fetch) {
     if (prefix && !entry.path.startsWith(prefix)) continue;
     const rel = entry.path.slice(prefix.length);
     if (entry.mode === '120000') continue; // symlinks are never written
+    if (!isIncluded(rel, manifest.include)) continue;
     if (!isSafeRelativePath(rel)) throw new Error(`Unsafe path in ${repo}: ${entry.path}`);
     files.push({ path: rel, sha: entry.sha, mode: entry.mode, size: entry.size ?? 0 });
   }
@@ -162,6 +179,7 @@ module.exports = {
   CATALOG_SKILLS_RAW,
   validateManifest,
   isSafeRelativePath,
+  isIncluded,
   gitBlobSha,
   fetchExternalManifest,
   listSkillTree,

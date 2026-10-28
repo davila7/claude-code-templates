@@ -10,8 +10,13 @@ SKILL.md (regular skill) or a source.json (external skill), never both:
       "commit": "<40-hex sha>",
       "license": "MIT",
       "author": "Theo Browne",
-      "requires": ["git/leaving-pr-comments"]
+      "requires": ["git/leaving-pr-comments"],
+      "include": ["SKILL.md", "scripts"]
     }
+
+`include` (optional) keeps only those files/folders under `path`, for repos whose
+skill folder also carries demos, tests or dev tooling. It must list SKILL.md, and
+the size limits apply after filtering.
 
 The CLI (cli-tool/src/external-skill.js) downloads the files from that commit
 at install time. Everything in this repo that reads a skill folder (the catalog
@@ -22,12 +27,13 @@ skill's folder there. The code is never committed to this repo.
 Usage:
   python scripts/external_skills.py check [PATH ...]   validate manifests (all, or the given folders/files)
   python scripts/external_skills.py materialize DIR    print the local folder of the external skill in DIR
-  python scripts/external_skills.py add OWNER/REPO PATH CATEGORY [--name N] [--requires a/b ...] [--commit SHA]
+  python scripts/external_skills.py add OWNER/REPO PATH CATEGORY [--name N] [--requires a/b ...] [--include p ...] [--commit SHA]
   python scripts/external_skills.py outdated           list manifests whose repo has newer commits
 """
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import shutil
@@ -43,7 +49,7 @@ MANIFEST_NAME = "source.json"
 REPO_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9-]{0,38}/[A-Za-z0-9._-]{1,100}$")
 COMMIT_RE = re.compile(r"^[0-9a-f]{40}$")
 SKILL_REF_RE = re.compile(r"^[a-z0-9][a-z0-9-]*/[a-z0-9][a-z0-9-]*$", re.I)
-ALLOWED_FIELDS = {"repo", "path", "commit", "license", "author", "requires"}
+ALLOWED_FIELDS = {"repo", "path", "commit", "license", "author", "requires", "include"}
 
 # Licenses that allow redistribution and modification. A repo with no license
 # is "all rights reserved" and cannot be listed.
@@ -93,7 +99,20 @@ def validate_manifest(data: object) -> dict:
         raise ManifestError('"requires" must be a list of "category/name" skills')
     if "author" in data and not isinstance(data["author"], str):
         raise ManifestError('"author" must be a string')
-    return {**data, "path": path.strip("/"), "requires": requires}
+    include = None
+    if "include" in data:
+        raw = data["include"]
+        if not isinstance(raw, list) or not raw or not all(isinstance(p, str) and _safe_rel(p.rstrip("/")) for p in raw):
+            raise ManifestError('"include" must be a non-empty list of relative paths')
+        include = [p.rstrip("/") for p in raw]
+        if "SKILL.md" not in include:
+            raise ManifestError('"include" must list SKILL.md')
+    return {**data, "path": path.strip("/"), "requires": requires, "include": include}
+
+
+def is_included(rel: str, include: list[str] | None) -> bool:
+    """True when rel is one of the include entries or sits under one (no include = everything)."""
+    return include is None or any(rel == inc or rel.startswith(inc + "/") for inc in include)
 
 
 def read_manifest(skill_dir: Path) -> dict:
@@ -130,6 +149,10 @@ def local_dir(skill_dir: Path) -> Path:
     m = read_manifest(skill_dir)
     repo, commit, path = m["repo"], m["commit"], m["path"]
     dest = CACHE_ROOT / "trees" / repo.replace("/", "__") / commit / (path or "_root")
+    if m["include"]:
+        # A different include is a different file set: give it its own cache folder.
+        digest = hashlib.sha256("\0".join(sorted(m["include"])).encode()).hexdigest()[:12]
+        dest = dest.parent / f"{dest.name}@{digest}"
     done = dest.parent / f".{dest.name}.complete"
     if done.exists():
         return dest
@@ -144,6 +167,8 @@ def local_dir(skill_dir: Path) -> Path:
         if path and not full.startswith(path + "/"):
             continue
         rel = full[len(path) + 1:] if path else full
+        if not is_included(rel, m["include"]):
+            continue
         if not _safe_rel(rel):
             raise ManifestError(f"unsafe path in {repo}: {full}")
         entries.append((rel, sha, mode, int(size)))
@@ -257,7 +282,7 @@ def remote_head(repo: str) -> str:
 
 
 def add(repo: str, path: str, category: str, name: str | None, requires: list[str], commit: str | None,
-        author: str | None) -> Path:
+        author: str | None, include: list[str] | None = None) -> Path:
     commit = commit or remote_head(repo)
     name = name or (path.rstrip("/").split("/")[-1] if path else repo.split("/")[1])
     m = {"repo": repo, "path": path.strip("/"), "commit": commit, "license": "MIT"}
@@ -270,6 +295,8 @@ def add(repo: str, path: str, category: str, name: str | None, requires: list[st
         m["author"] = author
     if requires:
         m["requires"] = requires
+    if include:
+        m["include"] = include
     validate_manifest(m)
     dest = SKILLS_ROOT / category / name
     if dest.exists():
@@ -295,6 +322,7 @@ def main() -> int:
     a.add_argument("--author")
     a.add_argument("--commit")
     a.add_argument("--requires", nargs="*", default=[])
+    a.add_argument("--include", nargs="*", default=None)
     sub.add_parser("outdated")
     args = ap.parse_args()
 
@@ -309,7 +337,7 @@ def main() -> int:
         print(local_dir(Path(args.dir).resolve()))
         return 0
     if args.cmd == "add":
-        dest = add(args.repo, args.path, args.category, args.name, args.requires, args.commit, args.author)
+        dest = add(args.repo, args.path, args.category, args.name, args.requires, args.commit, args.author, args.include)
         print(f"wrote {(dest / MANIFEST_NAME).relative_to(ROOT)}")
         return 0
     if args.cmd == "outdated":

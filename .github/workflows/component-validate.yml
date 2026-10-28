@@ -19,6 +19,7 @@ on:
       - 'cli-tool/components/mcps/**'
       - 'scripts/validate_components.py'
       - 'scripts/external_skills.py'
+      - 'scripts/test_external_skills.py'
       - '.github/workflows/component-validate.yml'
   schedule:
     - cron: '0 6 * * 1'
@@ -61,6 +62,7 @@ jobs:
       - name: Check external skill manifests
         if: success() || failure()
         run: |
+          python3 -m unittest scripts/test_external_skills.py
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             git diff --name-only --diff-filter=d "origin/${{ github.base_ref }}...HEAD" -- 'cli-tool/components/skills/*/*/source.json' > external.txt
             if [ ! -s external.txt ]; then echo "no external skill changed"; exit 0; fi
