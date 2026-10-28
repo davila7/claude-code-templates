@@ -9,7 +9,10 @@
     "LICENSE",
     "scripts",
     "templates",
-    "references",
+    "references/scripts.md",
+    "references/devices.md",
+    "references/ci-platform-pitfalls.md",
+    "references/gotchas.md",
     "docs/contract.md",
     "mcp"
   ]
