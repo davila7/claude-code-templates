@@ -44,7 +44,7 @@ curl -s "https://varg.ai/how-to/api/search?q=<the request, URL-encoded>&client=<
 The answer is Markdown with the best-matching how-to page, the options to show the person, and the top skills with exact install commands for Claude Code, Codex, Cursor, OpenClaw and Gemini CLI. Add `&limit=15` for more. For JSON (ranked cards with `kind`, `slug`, `markdown`, `install`), call the API:
 
 ```bash
-curl -s "https://api.varg.ai/v2/skills/search?q=<request>&limit=10&client=<your agent>"
+curl -sG "https://api.varg.ai/v2/skills/search" --data-urlencode "q=<request>" -d limit=10 -d "client=<your agent>"
 ```
 
 Pass `client` (your agent's name) on every search. It is optional, but it shows varg which agents use the catalog, so it can rank better for them. Searches are logged without IP or key.
@@ -77,7 +77,7 @@ Anonymous search is enough to find and run anything. If a varg key is already on
 
 ```bash
 export VARG_API_KEY="${VARG_API_KEY:-$(grep -o '"api_key"[^,}]*' ~/.varg/credentials 2>/dev/null | head -1 | cut -d'"' -f4)}"
-[ -n "$VARG_API_KEY" ] && curl -s -H "Authorization: Bearer $VARG_API_KEY" "https://api.varg.ai/v2/skills/me/search?q=<request>&client=<your agent>"
+[ -n "$VARG_API_KEY" ] && curl -sG -H "Authorization: Bearer $VARG_API_KEY" "https://api.varg.ai/v2/skills/me/search" --data-urlencode "q=<request>" -d "client=<your agent>"
 ```
 
 A 404 or 401 means the personal search is not available for this key. Fall back to the public search. In the varg MCP (`https://mcp.varg.ai/mcp`), `search_skills` signs in through OAuth and does the same: the agent authorizes itself in the browser, and no key is copied.
@@ -116,3 +116,5 @@ Start from these, by request:
 | Podcast-style dialogue video | `varg-podcast-video` | `varg-ai` |
 | Download a video by link | `media-download` | |
 | Single image, clip, voice or song | `varg-ai` | |
+
+Install any of them with `npx skills add vargHQ/skills --skill <name>`. Two come from other repos: `remotion-captions` is `npx skills add remotion-dev/skills --skill remotion-captions`, and `hyperframes` is `npx skills add heygen-com/hyperframes --skill hyperframes`.
