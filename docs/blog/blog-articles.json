@@ -1,6 +1,25 @@
 {
   "articles": [
     {
+      "id": "postgresql-dba-agent",
+      "title": "PostgreSQL DBA Agent for Claude Code: Inspect, Query and Tune Your Database",
+      "description": "Install the PostgreSQL DBA agent for Claude Code to inspect schemas, run and optimize queries, and manage Postgres databases through the VS Code PostgreSQL extension tools.",
+      "url": "postgresql-dba-agent/",
+      "image": "assets/postgresql-dba-agent-cover.png",
+      "category": "Agents",
+      "readTime": "5 min read",
+      "tags": [
+        "Claude Code",
+        "Agents",
+        "PostgreSQL",
+        "Database",
+        "SQL"
+      ],
+      "difficulty": "basic",
+      "featured": true,
+      "order": 28
+    },
+    {
       "id": "spec-driven-quality-gates",
       "title": "Spec-Driven Quality Gates for Claude Code: Plan Gate, TDD Gate and Scope Guard",
       "description": "Combine three Claude Code hooks — Plan Gate, TDD Gate and Scope Guard — into a spec-driven workflow that warns before unplanned edits, blocks code without tests, and flags scope creep.",
@@ -550,10 +569,10 @@
     }
   ],
   "metadata": {
-    "lastUpdated": "2026-10-20",
-    "totalArticles": 29,
+    "lastUpdated": "2026-10-27",
+    "totalArticles": 30,
     "difficultyLevels": {
-      "basic": 13,
+      "basic": 14,
       "intermediate": 11,
       "advanced": 5
     }
