@@ -1,0 +1,11 @@
+{
+  "name": "remote-qr",
+  "version": "0.1.1",
+  "description": "Shows a QR Code for the /remote-control link so you can open the session on your phone",
+  "author": { "name": "Heber Holanda" },
+  "license": "MIT",
+  "homepage": "https://github.com/heberholanda/Claude-RemoteQR",
+  "repository": "https://github.com/heberholanda/Claude-RemoteQR",
+  "keywords": ["remote-control", "qr-code", "mobile"],
+  "types": "./types/index.d.ts"
+}
