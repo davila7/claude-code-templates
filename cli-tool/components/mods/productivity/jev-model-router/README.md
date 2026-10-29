@@ -47,6 +47,7 @@ The two mistakes do not cost the same, so they do not clear the same bar:
 - Spending **less** needs `minDowngradeConfidence`, 0.6 by default. Being wrong means a task handled by too small a model or too little thought.
 - `risky` above 0.7 takes the deep tier and real reasoning, past both bars. That one is not a confidence question.
 - A backend that reports no confidence at all — the Gateway without a distribution, or the built-in classifier — may only move a request **up**. Spending less on an unmeasured hunch is the bad trade.
+- A request with no effort (a subagent, whose Agent tool takes none, or a model without one such as Haiku) gets none, unless its model is being changed: a Haiku turn lifted to Opus by risk also gets real reasoning.
 - A model id matching no tier, or a numeric effort (the caller's own scale), has no knowable direction: the model gets the gentler upgrade bar, and a numeric effort is left alone.
 
 Every other failure — a non-2xx response, a timeout, a malformed body, a thrown error — leaves the request exactly as the engine built it. The router never blocks a turn.
@@ -145,9 +146,13 @@ The three tiers take an alias (`haiku`, `sonnet`, `opus`) or a full model id.
 A subagent is spawned with the name as given, the way the Agent tool takes it;
 the main loop's request needs an id, so there an alias is resolved to the
 family's current id (`haiku` → `claude-haiku-4-5-20251001`, `sonnet` →
-`claude-sonnet-5`, `opus` → `claude-opus-5`). Set a full id to pin a
-specific version. A decision for the tier the session already runs is not a
-change, so a session on `claude-opus-5[1m]` keeps its 1M-context id.
+`claude-sonnet-5`, `opus` → `claude-opus-5-5`, as `--model <alias>` resolves
+them in Claude Code 2.1.280). Set a full id to pin a specific version. A
+decision for the tier the session already runs is not a change, even one
+forced by risk, so a session on `claude-opus-5-5[1m]` keeps its 1M-context id.
+A Fable session ranks as the deep tier. `fable` is not one of the aliases
+resolved here, so to route the main loop to it, set its full id
+(`claude-fable-5-1`).
 
 Declared in `.claude-plugin/plugin.json` (`userConfig`). Set them in `/config`, in user settings (`~/.claude/settings.json`, not project settings), with `--settings <file>` or in managed settings:
 
