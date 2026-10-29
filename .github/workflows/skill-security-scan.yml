@@ -68,36 +68,23 @@ jobs:
           sarif_file: skillspector.sarif
           category: skillspector
 
-      - name: Comment PR with results
+      - name: Add Report to Job Summary
         if: always()
         uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');
             const reportPath = 'skillspector-report.md';
+            
             if (!fs.existsSync(reportPath)) {
               console.log('No SkillSpector report found.');
               return;
             }
+            
             const body = fs.readFileSync(reportPath, 'utf8');
-            const marker = '<!-- skillspector-report:v1 -->';
-            const { owner, repo } = context.repo;
-            const issue_number = context.issue.number;
 
-            const existing = await github.paginate(
-              github.rest.issues.listComments,
-              { owner, repo, issue_number, per_page: 100 }
-            );
-            const prev = existing.find(c => c.body && c.body.includes(marker));
-            if (prev) {
-              await github.rest.issues.updateComment({
-                owner, repo, comment_id: prev.id, body,
-              });
-            } else {
-              await github.rest.issues.createComment({
-                owner, repo, issue_number, body,
-              });
-            }
+            // Write directly to the GitHub Actions Job Summary
+            await core.summary.addRaw(body).write();
 
       - name: Enforce gate
         if: steps.scan.outputs.failed == 'true'
