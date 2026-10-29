@@ -1,6 +1,6 @@
 # remote-qr
 
-Vendored from https://github.com/heberholanda/Claude-RemoteQR at tag v0.1.1 (MIT). I'm the author.
+Vendored from https://github.com/heberholanda/Claude-RemoteQR at commit 0318df6 (v0.1.2, MIT). I'm the author.
 
 Shows a **QR Code** for the `/remote-control` link, so you can pick up the session on your phone by pointing the camera at the terminal, with no copying and pasting.
 

@@ -6,6 +6,9 @@ import { qrText } from './qr'
 
 const shown = atom({ plugin: 'remote-qr', key: 'url' } as const, null as ShownUrl)
 
+// Bumped by every prompt, so a wait that outlives a dismissal never shows the code.
+let generation = 0
+
 export const register: Register = on => {
   on('command.run', { command: 'remote-control' }, async ($, e, next) => {
     // /remote-control prints nothing as text; the engine records the bridge id in
@@ -27,9 +30,10 @@ export const register: Register = on => {
     }
 
     // The bridge connects after the command returns, so wait for its id off the hook's clock.
-    const showQrOnConnect = async () => {
-      for (let i = 0; i < 30; i++) {
+    const showQrOnConnect = async (asOf: number) => {
+      for (let i = 0; i < 30 && asOf === generation; i++) {
         const now = await bridgeId().catch(() => undefined)
+        if (asOf !== generation) return
         if (now) {
           await update($, shown, () => `https://claude.ai/code/${now}`)
           return
@@ -41,12 +45,13 @@ export const register: Register = on => {
     // Already connected means the command shows its menu: leave that alone.
     const before = await bridgeId().catch(() => undefined)
     const ran = await next(e)
-    if (!before) void showQrOnConnect()
+    if (!before) void showQrOnConnect(generation)
 
     return ran
   })
 
   on('prompt.submit', async ($, e, next) => {
+    generation++
     if (await read($, shown)) await update($, shown, () => null)
 
     return next(e)
@@ -58,6 +63,8 @@ export const register: Register = on => {
     if (e.props.hasSurvey || !qr) return next(e)
 
     const { Box, Button, Text } = $.ui.resolve(e)
+    // Other mods draw here too: keep what they drew below the code.
+    const below = await next(e)
 
     return (
       <Box flexDirection="column">
@@ -71,6 +78,7 @@ export const register: Register = on => {
             {line}
           </Text>
         ))}
+        {below}
       </Box>
     )
   })
