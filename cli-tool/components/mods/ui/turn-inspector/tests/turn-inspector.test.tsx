@@ -161,8 +161,8 @@ const PANE_PROPS = {
   view: {},
 }
 
-async function step($: Engine, index: number) {
-  const s = $.turn.step({ turnId: 't1', index, model: 'claude-opus-5-5', messageCount: 1 + index * 2 })
+async function step($: Engine, index: number, turnId = 't1') {
+  const s = $.turn.step({ turnId, index, model: 'claude-opus-5-5', messageCount: 1 + index * 2 })
   for (;;) {
     const x = await s.next()
     if (x.done) return x.value
@@ -214,4 +214,52 @@ describe('the pane', () => {
       await ui.unmount()
     })
   }
+})
+
+const mountPane = ($: Engine) =>
+  $.ui.mount({ plugin: 'turn-inspector', surface: 'terminal', component: 'Pane', requestId: 'turn-inspector', props: PANE_PROPS })
+
+describe('the main loop alone', () => {
+  test('a subagent starting its run adds nothing to the next main request', async ($, on) => {
+    fakeEngine(on)
+    await $.turn.start({ text: 'why does auth log me out?', turnId: 't1' })
+    await step($, 0)
+    // newer engines raise turn.start for each subagent run, with its agentId
+    await $.turn.start({ text: 'Explore the auth module', turnId: 'a1', agentId: 'agent-1' } as never)
+    await $.tool.call({ tool: 'Read', file_path: 'src/auth.ts' } as never)
+    await step($, 1)
+    const ui = await mountPane($)
+    expect(await ui.find({ type: 'Text', text: /Explore the auth module/ })).toBeUndefined()
+    expect(await ui.find({ type: 'Text', text: /User message/ })).toBeUndefined()
+    await ui.unmount()
+  })
+
+  test('a /clear forgets the turns before it', async ($, on) => {
+    fakeEngine(on)
+    on('session.end', async ($, e) => ({ sessionId: e.sessionId }))
+    await $.turn.start({ text: 'why does auth log me out?', turnId: 't1' })
+    await step($, 0)
+    await step($, 1)
+    // a /clear ends the conversation, and no session.start follows it
+    await $.session.end({ reason: 'clear', sessionId: 's1', resume: { id: 's1' } })
+    await $.turn.start({ text: 'start over', turnId: 't2' })
+    await step($, 0, 't2')
+    const ui = await mountPane($)
+    expect(await ui.find({ type: 'Text', text: /why does auth log me out/ })).toBeUndefined()
+    expect(await ui.find({ type: 'Text', text: /compacted/ })).toBeUndefined()
+    await ui.unmount()
+  })
+
+  test('an interrupted request is not left streaming', async ($, on) => {
+    fakeEngine(on)
+    await $.turn.start({ text: 'why does auth log me out?', turnId: 't1' })
+    // an interrupt closes the stream before its result
+    const s = $.turn.step({ turnId: 't1', index: 0, model: 'claude-opus-5-5', messageCount: 1 })
+    await s.next()
+    await s.return(undefined as never)
+    const ui = await mountPane($)
+    expect((await ui.find({ key: 'turn:1' }))?.text).toContain('no response')
+    expect(await ui.find({ type: 'Text', text: /streaming/ })).toBeUndefined()
+    await ui.unmount()
+  })
 })

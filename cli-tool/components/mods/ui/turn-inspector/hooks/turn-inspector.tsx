@@ -101,6 +101,18 @@ export const register: Register = (on, options) => {
     return r
   })
 
+  // a /clear ends the conversation, and no session.start follows it
+  on('session.end', async ($, e, next) => {
+    const r = await next(e)
+    if (e.reason !== 'clear') return r
+    ledger = Object.assign(createLedger(), { window: ledger.window, system: ledger.system, isFresh: true })
+    live = undefined
+    expanded.clear()
+    follow = true
+    if (isOpen) $.ui.invalidate('ui.render')
+    return r
+  })
+
   on('command.run', { command: COMMAND }, async ($, e) => {
     const arg = e.args.trim().toLowerCase()
     if (arg === 'stop' || arg === 'close') {
@@ -138,6 +150,8 @@ export const register: Register = (on, options) => {
   })
 
   on('turn.start', async ($, e, next) => {
+    // a subagent's run starts a turn too (agentId, newer than these declarations)
+    if ('agentId' in e && e.agentId !== undefined) return next(e)
     promptStarted(ledger, e.turnId, e.text)
     return next(e)
   })
@@ -163,22 +177,27 @@ export const register: Register = (on, options) => {
     if (isOpen) $.ui.invalidate('ui.render')
     const names = new Map<number, string>()
     const stream = next(e)
-    for await (const c of stream) {
-      let isNew = false
-      if (c.kind === 'thinking') isNew = chunk(turn, c.index, 'thinking', c.text)
-      else if (c.kind === 'text') isNew = chunk(turn, c.index, 'text', c.text)
-      else if (c.kind === 'tool') {
-        names.set(c.index, c.name)
-        isNew = chunk(turn, c.index, 'tool_use', c.name, c.name)
-      } else if (c.kind === 'input') isNew = chunk(turn, c.index, 'tool_use', c.json, names.get(c.index))
-      if (isNew && isOpen) $.ui.invalidate('ui.render')
-      yield c
+    try {
+      for await (const c of stream) {
+        let isNew = false
+        if (c.kind === 'thinking') isNew = chunk(turn, c.index, 'thinking', c.text)
+        else if (c.kind === 'text') isNew = chunk(turn, c.index, 'text', c.text)
+        else if (c.kind === 'tool') {
+          names.set(c.index, c.name)
+          isNew = chunk(turn, c.index, 'tool_use', c.name, c.name)
+        } else if (c.kind === 'input') isNew = chunk(turn, c.index, 'tool_use', c.json, names.get(c.index))
+        if (isNew && isOpen) $.ui.invalidate('ui.render')
+        yield c
+      }
+      const r = await stream.result
+      stepEnded(ledger, turn, r.usage, r.stopReason)
+      return r
+    } finally {
+      // an interrupt closes the stream before its result: no usage came
+      if (turn.status === 'streaming') stepEnded(ledger, turn, null, null)
+      if (live === turn) live = undefined
+      if (isOpen) $.ui.invalidate('ui.render')
     }
-    const r = await stream.result
-    stepEnded(ledger, turn, r.usage, r.stopReason)
-    if (live === turn) live = undefined
-    if (isOpen) $.ui.invalidate('ui.render')
-    return r
   })
 
   on('turn.complete', async ($, e, next) => {
