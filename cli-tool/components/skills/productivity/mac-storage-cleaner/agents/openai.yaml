@@ -1,0 +1,9 @@
+# Codex-specific presentation and invocation policy. Codex reads this file
+# alongside SKILL.md; every other agent ignores the directory.
+interface:
+  display_name: Mac Storage Cleaner
+  short_description: Safe, reversible macOS disk cleanup with an audit log.
+policy:
+  # The skill should surface when a user says they are out of disk space, not
+  # only when they name it explicitly.
+  allow_implicit_invocation: true
