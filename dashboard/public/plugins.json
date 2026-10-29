@@ -23567,6 +23567,27 @@
     "plugin_name": "kumi"
   },
   {
+    "slug": "design-engineer-skills",
+    "name": "Design Engineer Skills",
+    "author": "modeinspect",
+    "description": "Six agent skills for designers who ship UI in a real codebase: from a fresh clone to a pull request an engineer can review. For Claude Code, Cursor and Codex.",
+    "github": "https://github.com/modeinspect/design-engineer-skills",
+    "stars": 1,
+    "type": "plugin",
+    "tags": [
+      "skills"
+    ],
+    "contains": {
+      "skills": 6
+    },
+    "highlights": [
+      "Web UI: https://modeinspect.com/design-engineer/skills"
+    ],
+    "website": "https://modeinspect.com/design-engineer/skills",
+    "marketplace_name": "modeinspect",
+    "plugin_name": "design-engineer"
+  },
+  {
     "slug": "cohesivity-plugin",
     "name": "Cohesivity Plugin",
     "author": "cohesivity-org",
