@@ -1,0 +1,33 @@
+{
+  "name": "session-chats",
+  "version": "0.1.0",
+  "description": "A side pane with every conversation between your Claude Code sessions: who messaged whom (SendMessage), what they said, and when. The record is kept on disk, so it survives after the sessions close, and each conversation has an Open button that resumes that session in a new terminal (claude --resume in its own folder).",
+  "author": {
+    "name": "claude-code-templates",
+    "url": "https://www.aitmpl.com"
+  },
+  "repository": "https://github.com/davila7/claude-code-templates",
+  "license": "MIT",
+  "keywords": ["mod", "function-hooks", "productivity", "sessions", "sendmessage", "resume", "sidebar", "history"],
+  "userConfig": {
+    "terminal": {
+      "type": "string",
+      "title": "Open in",
+      "description": "Where Open resumes a session: auto (a tmux window inside tmux, else macOS Terminal), Terminal, iTerm, tmux, or copy (only copy the command)",
+      "options": ["auto", "Terminal", "iTerm", "tmux", "copy"],
+      "default": "auto"
+    },
+    "keepDays": {
+      "type": "number",
+      "title": "Keep history (days)",
+      "description": "Forget a session's log once it has not been written for this many days",
+      "default": 90
+    },
+    "columns": {
+      "type": "number",
+      "title": "Pane width",
+      "description": "Columns asked for the docked pane in the fullscreen layout (40-140)",
+      "default": 72
+    }
+  }
+}

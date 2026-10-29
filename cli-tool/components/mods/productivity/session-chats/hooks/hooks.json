@@ -1,0 +1,6 @@
+{
+  "description": "session-chats: session.send and session.receive record each cross-session message (observe only); /chats opens a Pane with every conversation and a button to resume each session in a new terminal",
+  "modules": [
+    "./session-chats.tsx"
+  ]
+}
