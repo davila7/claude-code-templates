@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "claude-imagine": {
+      "description": "Claude Imagine - generate and edit AI images and videos (Nano Banana 2, GPT Image 2.5, Seedream 4.5, Flux 2 Pro, Veo 3.1 Fast) from Claude Code. Hosted remote server (Streamable HTTP) with OAuth 2.1 sign-in, so there is no API key to paste; run /mcp once to log in. Free signup credits, then paid plans. Independent service, not affiliated with Anthropic. Docs: https://claudeimagine.com/docs/mcp",
+      "type": "http",
+      "url": "https://claudeimagine.com/api/mcp"
+    }
+  }
+}
