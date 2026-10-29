@@ -1,7 +1,7 @@
 {
   "name": "jev-model-router",
   "version": "0.4.2",
-  "description": "Picks the model and the reasoning effort for each task with TypeSafe's Jev, a System One decision model reached either through TypeSafe's own API or the Vercel AI Gateway. Routes subagent models at agent.spawn and the main loop's effort and model at turn.step, in both directions, falling back to the engine's built-in classifier when no key is set.",
+  "description": "Picks the model and the reasoning effort for each task with TypeSafe's Jev, a System One decision model reached either through TypeSafe's own API or the Vercel AI Gateway. Routes subagent models at agent.spawn, subagent effort at their first request, and the main loop's effort and model at turn.step, in both directions, falling back to the engine's built-in classifier when no key is set.",
   "author": {
     "name": "claude-code-templates",
     "url": "https://www.aitmpl.com"
@@ -98,7 +98,13 @@
     "routeSubagentModel": {
       "type": "boolean",
       "title": "Route subagent models",
-      "description": "Pick the model of each subagent at agent.spawn (the Agent tool takes no effort)",
+      "description": "Pick the model of each subagent at agent.spawn",
+      "default": true
+    },
+    "routeSubagentEffort": {
+      "type": "boolean",
+      "title": "Route subagent effort",
+      "description": "Set each subagent's reasoning effort at its first request, from the decision made at its spawn, and keep it for the rest of its requests",
       "default": true
     },
     "routeMainEffort": {
