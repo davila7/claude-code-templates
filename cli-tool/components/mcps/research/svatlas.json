@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "svatlas": {
+      "description": "Silicon Valley Atlas: search sourced profiles of AI startups, founders, funding and investors, rank the companies most likely to buy a product from its website, and keep outreach lists. Hosted; sign in with Google through OAuth when Claude Code prompts, no API key.",
+      "type": "http",
+      "url": "https://svatlas.io/mcp"
+    }
+  }
+}
