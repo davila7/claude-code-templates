@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "tweetapi": {
+      "description": "Hosted MCP server for read-only Twitter data: search tweets and look up profiles, followers, lists, communities and Spaces. Signs in with OAuth in the browser using a TweetAPI account. Paid, with 100 free requests for new accounts. Not affiliated with X Corp.",
+      "type": "http",
+      "url": "https://mcp.tweetapi.com/mcp"
+    }
+  }
+}
