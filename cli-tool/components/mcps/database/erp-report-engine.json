@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "erp-report-engine": {
+      "description": "Read-only SQL access to an ERP's database (Logo Tiger, Netsis, Mikro): canonical entities through a statement-checking guard.",
+      "command": "uvx",
+      "args": [
+        "--from",
+        "erp-report-engine[mcp]",
+        "erp-report-engine",
+        "mcp",
+        "-c",
+        "<path-to-your-erp-config.yaml>"
+      ]
+    }
+  }
+}
