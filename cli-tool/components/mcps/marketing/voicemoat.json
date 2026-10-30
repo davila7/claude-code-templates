@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "voicemoat": {
+      "description": "VoiceMoat, the personal brand OS for Twitter/X and LinkedIn. Score drafts against your own voice profile, improve them, get hook and post ideas, read your post analytics, and publish or schedule posts. Posting is two-step: the first call returns a preview and a one-time code, and only a second call with that code posts. Hosted remote server (Streamable HTTP). Requires a VoiceMoat account on the Pro or Enterprise plan (https://voicemoat.com/mcp). Uses OAuth 2.1 (dynamic client registration, PKCE), no API key needed: the MCP client prompts you to sign in on first use. Setup: https://docs.voicemoat.com/connect-voicemoat-to-an-assistant",
+      "type": "http",
+      "url": "https://app.voicemoat.com/api/mcp"
+    }
+  }
+}
