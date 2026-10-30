@@ -23567,6 +23567,28 @@
     "plugin_name": "kumi"
   },
   {
+    "slug": "pitstop",
+    "name": "Pitstop",
+    "author": "yognevoy",
+    "description": "A pit crew for your codebase. Check the wear, keep the pace.",
+    "github": "https://github.com/yognevoy/pitstop",
+    "stars": 1,
+    "type": "plugin",
+    "tags": [
+      "skills",
+      "agents",
+      "commands"
+    ],
+    "contains": {
+      "skills": 1,
+      "agents": 3,
+      "commands": 1
+    },
+    "highlights": [],
+    "marketplace_name": "pitstop",
+    "plugin_name": "pitstop"
+  },
+  {
     "slug": "cohesivity-plugin",
     "name": "Cohesivity Plugin",
     "author": "cohesivity-org",
