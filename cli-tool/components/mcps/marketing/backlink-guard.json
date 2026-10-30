@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "backlink-guard": {
+      "description": "Checks a link source (directory, awesome list, guest-post site) before you submit your site to it: skip, look first, free only, low value or submit, with the evidence, against Google's link spam policies. Also verifies a listing once it is live, audits your own backlinks, and finds the pages that rank for your keywords and the sites linking to your competitors. It never submits anything. verify, submissions and vet with free=True are free; the paid tools use your own keys, all optional: GLASSER_API_KEY (or AISA_API_KEY, also needed for questions and asked) and GOANYAPI_API_KEY; vet is about $0.01 a site plus $0.16 a batch. Source: https://github.com/zhuyansen/backlink-guard",
+      "command": "uvx",
+      "args": ["--with", "mcp", "backlink-guard", "mcp"],
+      "env": {
+        "GLASSER_API_KEY": "<your-glasser-api-key>",
+        "GOANYAPI_API_KEY": "<your-goanyapi-api-key>"
+      }
+    }
+  }
+}
