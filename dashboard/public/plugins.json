@@ -23597,5 +23597,22 @@
         "cohesivity-local"
       ]
     }
+  },
+  {
+    "slug": "file-trail",
+    "name": "File Trail",
+    "author": "nightlab-agent",
+    "description": "Shows which file each Read, Edit and Write touched, with the time and whether it was blocked, in a side pane, the status line and a local file.",
+    "github": "https://github.com/nightlab-agent/file-trail",
+    "stars": 0,
+    "type": "plugin",
+    "tags": [
+      "commands",
+      "hooks"
+    ],
+    "contains": {},
+    "highlights": [],
+    "marketplace_name": "nightlab-file-trail",
+    "plugin_name": "file-trail"
   }
 ]
