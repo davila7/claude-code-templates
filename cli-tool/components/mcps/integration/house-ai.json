@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "house-ai": {
+      "description": "House AI's hosted MCP server for interior and exterior design: redesign rooms, house exteriors and yards from a photo in 100+ styles, preview wall paint and flooring, and find furniture and decor from partner stores. Browsing styles works without an account. Design tools need a House AI account and use its credits; sign-in is OAuth, so after installing run /mcp in Claude Code to sign in. Clients without OAuth can send a personal API token as an Authorization: Bearer header.",
+      "type": "http",
+      "url": "https://mcp.houseaiapp.com/mcp"
+    }
+  }
+}
