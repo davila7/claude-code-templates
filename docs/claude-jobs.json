@@ -1,12 +1,35 @@
 {
-  "lastUpdated": "2026-10-28T03:08:32.317981+00:00",
-  "totalJobs": 101,
+  "lastUpdated": "2026-10-31T03:13:47.532992+00:00",
+  "totalJobs": 102,
   "sources": [
     "Anthropic",
     "HackerNews",
     "RemoteOK"
   ],
   "jobs": [
+    {
+      "id": "rok-remote-cloud-engineer-automation-smile-digital-health-1137600",
+      "company": "Smile Digital Health",
+      "position": "Cloud Engineer Automation",
+      "location": "Remote",
+      "remote": true,
+      "salary": "",
+      "description": "Working for a company like Smile Digital Health means supporting our mandate for #BetterGlobalHealth . We strive towards this goal every day, and the results can be seen in the impact of our innovative health data platform and data management solutions, which are used in over 20 countries. We were...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-cloud-engineer-automation-smile-digital-health-1137600",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-cloud-engineer-automation-smile-digital-health-1137600",
+      "postedAt": "2026-10-29T16:00:03+00:00",
+      "tags": [
+        "Python",
+        "Go",
+        "PostgreSQL",
+        "Azure",
+        "Kubernetes",
+        "Claude Code",
+        "Rails"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "anth-5464493008",
       "company": "Anthropic",
@@ -1237,27 +1260,6 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
-      "id": "anth-5390894008",
-      "company": "Anthropic",
-      "position": "Manager Applied AI Architecture, Financial Services",
-      "location": "New York City, NY; San Francisco, CA | New York City, NY",
-      "remote": false,
-      "salary": "",
-      "description": "As manager of the Financial Services Solutions Architect team within Applied AI at Anthropic, you will drive the adoption of frontier AI in partnership with the rest of the go to market organization. We work with customers that include companies across banking, insurance, asset management, and...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5390894008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5390894008",
-      "postedAt": "2026-08-20T21:55:46-04:00",
-      "tags": [
-        "Rust",
-        "Go",
-        "AWS",
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
       "id": "anth-5390890008",
       "company": "Anthropic",
       "position": "Manager Applied AI Architecture, Healthcare & Life Sciences",
@@ -1910,6 +1912,27 @@
       "tags": [
         "React",
         "TypeScript",
+        "Rust",
+        "AWS",
+        "Claude Code",
+        "Rails",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "anth-5174755008",
+      "company": "Anthropic",
+      "position": "Staff+ Software Engineer, Backend",
+      "location": "San Francisco, CA | New York City, NY",
+      "remote": false,
+      "salary": "",
+      "description": "Anthropic is looking for experienced, product-minded engineers to own the backend systems that power user experiences across our API, Claude Code, and Claude.ai. You'll independently scope complex, multi-month projects through ambiguous problem spaces and lead peers through technical and product...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5174755008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5174755008",
+      "postedAt": "2026-04-08T14:57:22-04:00",
+      "tags": [
         "Rust",
         "AWS",
         "Claude Code",

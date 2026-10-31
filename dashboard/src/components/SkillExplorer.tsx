@@ -190,6 +190,16 @@ export default function SkillExplorer({ skillContent, skillName, skillPath, refe
       .finally(() => setLoading(false));
   }, [selectedFile, skillPath, skillContent, componentType, mainFile, files]);
 
+  // The component page's file list opens a file here ('component-file:open', detail = path).
+  useEffect(() => {
+    const open = (e: Event) => {
+      const file = (e as CustomEvent<string>).detail;
+      if (file === mainFile || references.includes(file)) setSelectedFile(file);
+    };
+    window.addEventListener('component-file:open', open);
+    return () => window.removeEventListener('component-file:open', open);
+  }, [mainFile, references]);
+
   // Search results
   const searchResults = useMemo((): SearchMatch[] => {
     if (!searchQuery.trim() || searchQuery.length < 2) return [];
