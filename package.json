@@ -1,6 +1,6 @@
 {
   "name": "claude-code-templates",
-  "version": "1.30.0",
+  "version": "1.30.1",
   "description": "Component templates and tracking system for Claude Code",
   "main": "cli-tool/src/index.js",
   "bin": {
