@@ -1,7 +1,6 @@
 {
   "permissions": {
     "allow": [
-      "Bash",
       "Edit",
       "MultiEdit",
       "Write",
