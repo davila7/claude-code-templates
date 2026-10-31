@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "ravenpost": {
+      "description": "Ravenpost - social media scheduler for AI agents. List the accounts connected in Ravenpost (Instagram, TikTok, X, LinkedIn, Threads, Bluesky, YouTube, Pinterest, Telegram), prepare media, preview a post as each network will render it with a warning for anything a network would reject, then save it as a draft, schedule it, queue it or publish it; edit or cancel pending posts and read followers and engagement. Hosted remote server; sign in with your Ravenpost account, there is no key to paste (https://ravenpo.st/mcp/).",
+      "type": "http",
+      "url": "https://api.ravenpo.st/mcp"
+    }
+  }
+}
