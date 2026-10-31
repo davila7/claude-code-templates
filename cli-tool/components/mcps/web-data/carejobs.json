@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "carejobs": {
+      "description": "Remote MCP server for US healthcare jobs: search 170,000+ open jobs read daily from 258 hospitals' and health systems' career sites, with the pay each employer posts. Free, read-only, no API key.",
+      "type": "http",
+      "url": "https://carejobs.now/api/mcp"
+    }
+  }
+}
