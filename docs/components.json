@@ -88033,7 +88033,6 @@
       "category": "languages",
       "description": "Common project template",
       "files": [
-        ".mcp.json",
         "README.md",
         ".claude/commands/project-setup.md",
         ".claude/commands/git-workflow.md",
@@ -88106,7 +88105,6 @@
       "category": "languages",
       "description": "Go project template",
       "files": [
-        ".mcp.json",
         "README.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=go --yes",
@@ -88120,7 +88118,6 @@
       "category": "languages",
       "description": "Javascript-Typescript project template",
       "files": [
-        ".mcp.json",
         "README.md",
         ".claude/settings.json",
         ".claude/commands/refactor.md",
@@ -88161,7 +88158,6 @@
       "category": "languages",
       "description": "Python project template",
       "files": [
-        ".mcp.json",
         ".claude/settings.json",
         ".claude/commands/lint.md",
         ".claude/commands/test.md",
@@ -88210,7 +88206,6 @@
       "category": "languages",
       "description": "Ruby project template",
       "files": [
-        ".mcp.json",
         ".claude/settings.json",
         ".claude/commands/model.md",
         ".claude/commands/test.md",
@@ -88227,7 +88222,6 @@
       "category": "languages",
       "description": "Rust project template",
       "files": [
-        ".mcp.json",
         "README.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=rust --yes",
