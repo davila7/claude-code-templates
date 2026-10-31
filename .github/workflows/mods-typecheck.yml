@@ -40,7 +40,9 @@ jobs:
           npx -y -p typescript@5 tsc -p tsconfig.json
 
       - name: Install Claude Code (for plugin validate / plugin test)
-        run: npm install -g @anthropic-ai/claude-code
+        # Pin the test harness while jev-auto-mode is adapted to the permission
+        # behavior introduced in 2.1.307 (issue #1298). Do not skip its tests.
+        run: npm install -g @anthropic-ai/claude-code@2.1.306
 
       - name: claude plugin validate + claude plugin test on every mod
         run: |
