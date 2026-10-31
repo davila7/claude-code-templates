@@ -1,0 +1,7 @@
+# Written by Claude Code when it loads the mod.
+.claude-plugin/types/
+# Compiled output from local type-checks.
+hooks/*.js
+tests/*.js
+.DS_Store
+.env*
