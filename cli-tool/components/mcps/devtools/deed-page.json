@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "deed-page": {
+      "description": "deed.page remote MCP server (deed.page/mcp, Streamable HTTP): publish HTML files or a folder Claude Code built to a permanent https://<slug>.deed.page URL, then update it, list or restore versions, read cookieless view counts, and attach a custom domain. No account or API key: the first publish_site call returns a token for that site, which Claude passes as the token argument on later updates. Free plan: 25 sites, 25 MB per site, 4 MB per request. Free sites are public, so do not publish private data. Registry id page.deed/deed-page; companion skill at github.com/f-o-x11/deed-page-skill (MIT).",
+      "type": "http",
+      "url": "https://deed.page/mcp"
+    }
+  }
+}
