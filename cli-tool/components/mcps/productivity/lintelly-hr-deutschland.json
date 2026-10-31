@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "lintelly-hr-deutschland": {
+      "description": "German employment law only, for small companies in Germany: notice periods, employer costs, sick pay, maternity protection, dismissals, contract clauses and HR workflows, each with calculation and official source. 38 read-only tools, no sign-in, nothing stored. Open source (MIT): https://github.com/NicksAdvisory/lintelly-hr-deutschland",
+      "type": "http",
+      "url": "https://hr.lintelly.com/mcp"
+    }
+  }
+}
