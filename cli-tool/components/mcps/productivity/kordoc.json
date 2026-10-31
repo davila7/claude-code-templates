@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "kordoc": {
+      "description": "Parse Korean and office documents into Markdown and structured data: HWP 3.x/5.x, HWPX, HWPML, PDF, DOCX, XLS/XLSX, PPTX and PNG/JPG/WebP images. Also compares two documents, fills forms, applies format-preserving HWPX/HWP patches, generates HWPX from Markdown and renders previews. 17 tools that work on local file paths. No API key; requires Node.js 20+. Open source (MIT).",
+      "command": "npx",
+      "args": ["-y", "kordoc", "mcp"]
+    }
+  }
+}

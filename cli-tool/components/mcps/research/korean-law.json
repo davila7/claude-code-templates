@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "korean-law": {
+      "description": "Search and read Korean law through the official Open API of Korea's Ministry of Government Legislation (법제처): statutes, precedents, administrative rules, local ordinances, treaties and legal interpretations, plus citation verification that checks statute and precedent citations in AI-written answers against the official database. 10 tools. Hosted endpoint; works without a key through a shared, rate-limited key, or append your own free 법제처 Open API key as ?oc=YOUR_KEY. Open source (MIT); also runs locally as the korean-law-mcp npm package.",
+      "type": "http",
+      "url": "https://mcp.gomdori.app/law"
+    }
+  }
+}
