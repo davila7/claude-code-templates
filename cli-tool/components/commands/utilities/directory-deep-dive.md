@@ -1,5 +1,7 @@
 ---
 description: "Analyze directory structure and purpose"
+allowed-tools: Read, Write, Edit, Bash
+argument-hint: "[arguments]"
 ---
 
 # Directory Deep Dive

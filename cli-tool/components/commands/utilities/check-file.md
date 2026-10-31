@@ -1,5 +1,7 @@
 ---
 description: "Perform comprehensive analysis of $ARGUMENTS to identify code quality issues, security vulnerabilities, and optimization opportunities."
+allowed-tools: Read, Bash(grep:*), Bash(sed:*), Bash(awk:*)
+argument-hint: "[file-path]"
 ---
 
 # File Analysis Tool

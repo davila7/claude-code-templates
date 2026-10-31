@@ -1,5 +1,6 @@
 ---
 description: "Diagnose and fix common Storybook issues in SvelteKit projects, including build errors, module problems, and configuration issues."
+allowed-tools: Read, Write, Edit, Bash(npm run storybook:*), Bash(npx storybook:*)
 ---
 
 # /svelte:storybook-troubleshoot

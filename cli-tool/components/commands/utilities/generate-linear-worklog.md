@@ -1,5 +1,7 @@
 ---
 description: "Generate a technical work log comment for a Linear issue from recent git commits"
+allowed-tools: Read, Write, Edit, Bash
+argument-hint: "[issue-id]"
 ---
 
 # Generate Linear Work Log
