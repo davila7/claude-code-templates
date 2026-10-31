@@ -47,6 +47,10 @@ jobs:
         uses: actions/checkout@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          # Full history (trees only) for each component's last commit and
+          # date added on its page; a shallow clone keeps the previous values.
+          fetch-depth: 0
+          filter: blob:none
 
       - name: Set up Python
         uses: actions/setup-python@v6

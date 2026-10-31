@@ -1,4 +1,5 @@
 import os
+import re
 import json
 import shutil
 import requests
@@ -406,6 +407,95 @@ def scan_directory_recursively(directory_path, relative_to_path=None):
                 files_list.append(file)
     
     return files_list
+
+# Language per extension for the component page's language bar; the same map
+# as dashboard/scripts/generate-og-images.mjs, so the share card and the page agree.
+LANGUAGE_BY_EXT = {
+    '.md': 'Markdown', '.ts': 'TypeScript', '.tsx': 'TypeScript', '.js': 'JavaScript', '.mjs': 'JavaScript',
+    '.json': 'JSON', '.py': 'Python', '.sh': 'Shell', '.txt': 'Text', '.yaml': 'YAML', '.yml': 'YAML',
+}
+
+def git_component_history(components_base_path):
+    """
+    One `git log` pass over the components tree. Returns {repo path: {'last': commit, 'added': date}}
+    keyed by every changed file and by every skill/mod directory, or None when the history is not
+    there (a shallow clone), so the caller can keep the previous values instead of wrong ones.
+    """
+    try:
+        shallow = subprocess.run(['git', 'rev-parse', '--is-shallow-repository'],
+                                 capture_output=True, text=True, check=True).stdout.strip()
+        if shallow == 'true':
+            print("Warning: shallow clone, keeping the previous git metadata of each component")
+            return None
+        log = subprocess.run(
+            ['git', 'log', '--no-renames', '--format=%x01%H%x09%aI%x09%an%x09%s', '--name-only', '--', components_base_path],
+            capture_output=True, text=True, check=True).stdout
+    except (OSError, subprocess.CalledProcessError) as e:
+        print(f"Warning: could not read git history: {e}")
+        return None
+
+    history = {}
+    for block in log.split('\x01')[1:]:
+        header, _, names = block.partition('\n')
+        sha, date, author, subject = (header.split('\t', 3) + ['', '', '', ''])[:4]
+        commit = {'sha': sha, 'date': date, 'author': author, 'subject': subject}
+        keys = set()
+        for name in names.split('\n'):
+            if not name:
+                continue
+            keys.add(name)
+            parts = name.split('/')
+            if len(parts) > 5 and parts[2] in ('skills', 'mods'):
+                keys.add('/'.join(parts[:5]))
+        # Newest first: the first commit seen is the last change, the last one seen is the oldest.
+        for key in keys:
+            entry = history.setdefault(key, {'last': commit})
+            entry['added'] = date
+    return history
+
+def component_file_stats(root):
+    """Files of a component on disk with their size, line count and language, plus bytes per language."""
+    if os.path.isdir(root):
+        rels = sorted(scan_directory_recursively(root, root))
+        paths = [(rel, os.path.join(root, rel)) for rel in rels]
+    elif os.path.isfile(root):
+        paths = [(os.path.basename(root), root)]
+    else:
+        return [], []
+    files = []
+    language_bytes = defaultdict(int)
+    for rel, full in paths:
+        try:
+            size = os.path.getsize(full)
+            with open(full, 'rb') as f:
+                data = f.read()
+        except OSError:
+            continue
+        lines = None if b'\0' in data else data.count(b'\n') + (1 if data and not data.endswith(b'\n') else 0)
+        files.append({'path': rel, 'bytes': size, 'lines': lines})
+        # Licence texts would dominate small components, as on the share card.
+        if not os.path.basename(rel).startswith('LICENSE'):
+            language_bytes[LANGUAGE_BY_EXT.get(os.path.splitext(rel)[1].lower(), 'Other')] += size
+    languages = [{'name': n, 'bytes': b} for n, b in sorted(language_bytes.items(), key=lambda x: -x[1])]
+    return files, languages
+
+def component_page_meta(components_base_path, ctype, component, history, previous):
+    """The `meta` block of a component's content file: files, languages and its git history."""
+    repo_path = f"{components_base_path}/{ctype}/{component['path']}"
+    files, languages = component_file_stats(repo_path)
+    meta = {'files': files, 'languages': languages}
+    if history is None:
+        for key in ('lastCommit', 'addedAt'):
+            if previous.get(key):
+                meta[key] = previous[key]
+    elif repo_path in history:
+        entry = history[repo_path]
+        last = dict(entry['last'])
+        pr = re.search(r'\(#(\d+)\)\s*$', last['subject'])
+        last['pr'] = int(pr.group(1)) if pr else None
+        meta['lastCommit'] = last
+        meta['addedAt'] = entry['added']
+    return meta
 
 def generate_components_json(skip_downloads=False, skip_skillspector=False, skillspector_only=None):
     """
@@ -912,6 +1002,7 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
     # 1. Write per-component content files directly to dashboard/public/component-content/
     os.makedirs(dashboard_content_dir, exist_ok=True)
     written_content_count = 0
+    git_history = git_component_history(components_base_path)
     for ctype in content_bearing_types:
         for component in components_data.get(ctype, []):
             raw_content = component.get('content', '')
@@ -925,6 +1016,15 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
             if component.get('files'):
                 # Mods: the whole plugin (every text file) rides in the content file
                 content_payload['files'] = component['files']
+            previous_meta = {}
+            if git_history is None:
+                try:
+                    with open(content_file_path, 'r', encoding='utf-8') as f:
+                        previous_meta = json.load(f).get('meta') or {}
+                except (OSError, ValueError):
+                    pass
+            # Shown on the component page: file list, language bar, last commit and date added.
+            content_payload['meta'] = component_page_meta(components_base_path, ctype, component, git_history, previous_meta)
             try:
                 with open(content_file_path, 'w', encoding='utf-8') as f:
                     json.dump(content_payload, f, ensure_ascii=False)

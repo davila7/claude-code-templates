@@ -6,11 +6,12 @@ import SaveToCollectionButton from '../../../components/SaveToCollectionButton.t
 import MarkdownViewer from '../../../components/MarkdownViewer.tsx';
 import JsonViewer from '../../../components/JsonViewer.tsx';
 import SkillExplorer from '../../../components/SkillExplorer.tsx';
-import ComponentTerminal from '../../../components/ComponentTerminal.tsx';
-import SkillSpectorBadge from '../../../components/SkillSpectorBadge.tsx';
+import AddToStackButton from '../../../components/AddToStackButton.tsx';
 import SkillSpectorReport from '../../../components/SkillSpectorReport.tsx';
 import { TYPE_CONFIG, ICONS } from '../../../lib/icons';
 import { fetchComponents, fetchComponentContentData, getInstallCommand } from '../../../lib/data';
+import type { ComponentPageMeta } from '../../../lib/data';
+import { commitTitle, formatBytes, formatCount, formatDate, initials, languageShares, topLevelEntries, totals } from '../../../lib/component-page';
 import type { Component } from '../../../lib/types';
 import { jsonForScript } from '../../../lib/sanitize-html';
 
@@ -23,6 +24,8 @@ let error: string | null = null;
 // Mods (function hooks): a complete plugin directory; the
 // content file carries README.md as content plus every text file of it.
 let modFiles: Record<string, string> = {};
+// Files, languages and git history for the file list and the About column.
+let pageMeta: ComponentPageMeta | null = null;
 
 try {
   const data = await fetchComponents();
@@ -43,6 +46,7 @@ try {
     const contentData = await fetchComponentContentData(component.type, cleanSlug);
     component = { ...component, content: contentData.content };
     modFiles = contentData.files ?? {};
+    pageMeta = contentData.meta ?? null;
   }
 } catch (e: any) {
   error = e.message;
@@ -108,22 +112,21 @@ function parseFrontmatter(content: string, componentType: string): Record<string
   return fields;
 }
 
-const CARD_FIELDS: { key: string; label: string; icon: string }[] = [
-  { key: 'description', label: 'Description', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12" /></svg>' },
-  { key: 'tools', label: 'Tools', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17l-5.3-5.3a1.5 1.5 0 010-2.12l.88-.88a1.5 1.5 0 012.12 0l.88.88a1.5 1.5 0 002.12 0l3.18-3.18a1.5 1.5 0 012.12 0l1.77 1.77a1.5 1.5 0 010 2.12L15.66 12" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.07 4.93a1.5 1.5 0 010 2.12L15.66 12" /></svg>' },
-  { key: 'allowed-tools', label: 'Allowed Tools', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17l-5.3-5.3a1.5 1.5 0 010-2.12l.88-.88a1.5 1.5 0 012.12 0l.88.88a1.5 1.5 0 002.12 0l3.18-3.18a1.5 1.5 0 012.12 0l1.77 1.77a1.5 1.5 0 010 2.12L15.66 12" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.07 4.93a1.5 1.5 0 010 2.12L15.66 12" /></svg>' },
-  { key: 'model', label: 'Model', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" /></svg>' },
-  { key: 'argument-hint', label: 'Arguments', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z" /></svg>' },
-  { key: 'interval', label: 'Interval', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9" /><path stroke-linecap="round" stroke-linejoin="round" d="M12 7v5l3 2" /></svg>' },
-  { key: 'events', label: 'Events', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" /></svg>' },
-  { key: 'module', label: 'Module', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" /></svg>' },
-  { key: 'stop-condition', label: 'Stop Condition', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>' },
-  { key: 'version', label: 'Version', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" /><path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6z" /></svg>' },
-  { key: 'author', label: 'Author', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0" /></svg>' },
-  { key: 'tags', label: 'Tags', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" /><path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6z" /></svg>' },
-  { key: 'license', label: 'License', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582" /></svg>' },
-  { key: 'server-name', label: 'Server', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-1.35h7.126c1.062 0 2.062.5 2.7 1.35l2.587 3.45a4.5 4.5 0 01.9 2.7" /></svg>' },
-  { key: 'command', label: 'Command', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><polyline points="4 17 10 11 4 5" /><line x1="12" y1="19" x2="20" y2="19" /></svg>' },
+// Frontmatter shown as rows in the About column (description has its own paragraph).
+const ABOUT_FIELDS: { key: string; label: string; kind?: 'chips' | 'code' }[] = [
+  { key: 'model', label: 'Model' },
+  { key: 'tools', label: 'Tools', kind: 'chips' },
+  { key: 'allowed-tools', label: 'Allowed tools', kind: 'chips' },
+  { key: 'argument-hint', label: 'Arguments', kind: 'code' },
+  { key: 'interval', label: 'Interval' },
+  { key: 'events', label: 'Events', kind: 'chips' },
+  { key: 'module', label: 'Module', kind: 'code' },
+  { key: 'stop-condition', label: 'Stops when' },
+  { key: 'server-name', label: 'Server', kind: 'code' },
+  { key: 'command', label: 'Runs', kind: 'code' },
+  { key: 'version', label: 'Version' },
+  { key: 'author', label: 'Author' },
+  { key: 'license', label: 'License' },
 ];
 
 const title = component ? formatName(component.name) : 'Component Not Found';
@@ -143,10 +146,10 @@ if (component) {
   }
   if (!frontmatter.tags && component.keywords?.length) frontmatter.tags = component.keywords.join(', ');
 }
-const infoCards = CARD_FIELDS.filter((f) => {
-  const v = frontmatter[f.key];
-  return v && v !== '[]' && v !== '""' && v !== "''";
-});
+const hasValue = (v?: string) => !!v && v !== '[]' && v !== '""' && v !== "''";
+const chipList = (v: string) => v.replace(/^\[|\]$/g, '').split(/,\s*/).map((x) => x.trim().replace(/^["']|["']$/g, '')).filter(Boolean);
+const aboutRows = ABOUT_FIELDS.filter((f) => hasValue(frontmatter[f.key]));
+const topics = hasValue(frontmatter.tags) ? chipList(frontmatter.tags) : [];
 
 // Loops reference other components via the frontmatter `components` field,
 // encoded as a flat list of `type:path` tokens, e.g.
@@ -212,29 +215,40 @@ if (component?.content && !isJsonType) {
 // Cast to any to access references which may not be in the TS type yet
 const refs: string[] = (component as any)?.references ?? [];
 
-// Props for the animated Claude Code terminal in the hero. `detail` gives the
-// demo session a real handle to show (the MCP server name, the hook event);
-// `fileCount` is how many files the install actually writes for skills/mods.
-function firstHookEvent(content: string): string {
-  try {
-    const json = JSON.parse(content);
-    return Object.keys(json.hooks ?? {})[0] ?? '';
-  } catch {
-    return '';
-  }
-}
-const terminalDetail =
-  typePlural === 'mcps'
-    ? frontmatter['server-name'] ?? ''
-    : typePlural === 'hooks'
-      ? firstHookEvent(component?.content ?? '')
+// GitHub-style page data. pageMeta is missing until the catalog is regenerated
+// with this generator, so every block below degrades to what the index has.
+const slugName = component?.name?.replace(/\.(md|json)$/, '') ?? '';
+const metaFiles = pageMeta?.files ?? [];
+const fileTotals = totals(metaFiles);
+const fileEntries = topLevelEntries(metaFiles);
+const langShares = languageShares(pageMeta?.languages ?? []);
+const lastCommit = pageMeta?.lastCommit;
+// The explorer (Files tab) exists for multi-file components; single files show in Overview only.
+const hasExplorer = refs.length > 0;
+const REPO_URL = 'https://github.com/davila7/claude-code-templates';
+const sourceUrl = component ? `${REPO_URL}/${hasExplorer ? 'tree' : 'blob'}/main/cli-tool/components/${typePlural}/${component.path}` : '';
+// Where the CLI writes it (cli-tool/src/index.js); other types show no line.
+const INSTALL_TARGET: Record<string, string> = {
+  agents: `.claude/agents/${slugName}.md`,
+  commands: `.claude/commands/${slugName}.md`,
+  loops: `.claude/loops/${slugName}.md`,
+  skills: `.claude/skills/${slugName}/`,
+  mods: `.claude/skills/${slugName}/`,
+};
+const targetDir = INSTALL_TARGET[typePlural ?? ''];
+const installTarget = typePlural === 'mcps'
+  ? 'Merges into .mcp.json'
+  : typePlural === 'hooks' || typePlural === 'settings'
+    ? 'Merges into the settings file you pick'
+    : targetDir
+      ? (targetDir.endsWith('/') && fileTotals.files > 0 ? `Writes ${formatCount(fileTotals.files, 'file', 'files')} to ${targetDir}` : `Writes ${targetDir}`)
       : '';
-const terminalFileCount =
-  typePlural === 'mods'
-    ? Object.keys(modFiles).length
-    : typePlural === 'skills'
-      ? refs.length + 1
-      : 0;
+// The command wraps only between its words (each word breaks inside only when it is wider than the box).
+const cmdParts = installCmd.split(' ');
+// Agent descriptions often carry escaped newlines and <example> tags from their frontmatter.
+const aboutDescription = (frontmatter.description ?? '').replace(/\\n/g, ' ').replace(/<\/?[a-z]+>/gi, ' ').replace(/\s+/g, ' ').trim();
+const fileOpen = (file: string) => (hasExplorer ? file : '');
+const typeLabel = typePlural === 'mcps' ? 'MCP' : (config?.singular ?? typePlural ?? '').replace(/^./, (c) => c.toUpperCase());
 
 const seoDescription = frontmatter.description
   ? frontmatter.description.slice(0, 155)
@@ -290,46 +304,23 @@ const componentSchema = component
   {componentSchema && (
     <script type="application/ld+json" set:html={jsonForScript(componentSchema)} />
   )}
-  <div class="max-w-7xl mx-auto py-12 px-6">
-    {/* Back nav */}
-    <a
-      href={`/${typePlural}`}
-      class="inline-flex items-center gap-2.5 text-[13px] font-semibold text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:gap-3 transition-all duration-200 mb-10 group px-4 py-2 rounded-xl hover:bg-[var(--color-surface-2)] border border-transparent hover:border-[var(--color-border)]"
-    >
-      <svg class="w-4 h-4 transition-transform duration-200 group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-      </svg>
-      Back to {config?.label ?? 'Components'}
-    </a>
-
+  <div class="max-w-[1280px] mx-auto px-4 md:px-8 py-6 md:py-8">
     {error && (
-      <div class="bg-red-500/10 border border-red-500/30 rounded-xl p-5 mb-8">
-        <div class="flex items-start gap-3">
-          <svg class="w-5 h-5 text-red-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-          </svg>
-          <div>
-            <p class="text-sm font-medium text-red-400 mb-1">Error loading component</p>
-            <p class="text-sm text-red-400/80">{error}</p>
-          </div>
-        </div>
+      <div class="bg-red-500/10 border border-red-500/30 rounded-lg p-5 mb-8">
+        <p class="text-sm font-medium text-red-400 mb-1">Error loading component</p>
+        <p class="text-sm text-red-400/80">{error}</p>
       </div>
     )}
 
     {!component && !error && (
       <div class="flex flex-col items-center justify-center py-32 px-6">
-        <div class="w-24 h-24 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-border)] flex items-center justify-center mb-6 shadow-lg">
-          <svg class="w-12 h-12 text-[var(--color-text-tertiary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-        </div>
-        <h3 class="text-lg font-bold text-[var(--color-text-primary)] mb-2">Component not found</h3>
+        <h3 class="text-lg font-semibold text-[var(--color-text-primary)] mb-2">Component not found</h3>
         <p class="text-[14px] text-[var(--color-text-secondary)] text-center max-w-md mb-8 leading-relaxed">
           The component you're looking for doesn't exist or may have been removed.
         </p>
-        <a 
-          href={`/${typePlural}`} 
-          class="px-5 py-2.5 text-[13px] font-semibold rounded-lg bg-[var(--color-primary-500)] text-white hover:bg-[var(--color-primary-600)] hover:shadow-lg transition-all duration-150 active:scale-95"
+        <a
+          href={`/${typePlural}`}
+          class="px-5 py-2.5 text-[13px] font-semibold rounded-md bg-[var(--color-accent)] text-[var(--color-surface-0)] hover:bg-[var(--color-accent-hover)] transition-colors"
         >
           Browse {config?.label}
         </a>
@@ -338,236 +329,335 @@ const componentSchema = component
 
     {component && (
       <article>
-        {/* Hero — component identity + install on the left, a live Claude Code
-            terminal replaying the install and a session on the right. */}
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10 items-stretch">
-          {/* Left column */}
-          <div class="flex flex-col gap-5 min-w-0">
-            <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[var(--color-surface-1)] to-[var(--color-surface-2)] border border-[var(--color-border)] p-6 shadow-xl">
-              {/* Decorative background */}
-              <div class="absolute inset-0 opacity-20">
-                <div class="absolute inset-0 bg-gradient-to-br from-[var(--color-primary-500)]/20 via-transparent to-[var(--color-accent-400)]/20" style="background-size: 200% 200%; animation: gradient-shimmer 8s ease infinite;"></div>
-              </div>
-
-              <div class="relative flex items-start gap-5">
-                <div
-                  class="w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 shadow-2xl animate-float [&>svg]:w-8 [&>svg]:h-8 transition-transform duration-300 hover:scale-110 hover:rotate-6"
-                  style={`background: linear-gradient(135deg, ${config?.color ?? '#5e6ad2'}25 0%, ${config?.color ?? '#5e6ad2'}15 100%); color: ${config?.color ?? '#5e6ad2'}; border: 2px solid ${config?.color ?? '#5e6ad2'}40;`}
-                  set:html={ICONS[typePlural ?? 'agents'] ?? ''}
-                />
-
-                <div class="flex-1 min-w-0">
-                  <h1 class="text-2xl lg:text-3xl font-bold text-[var(--color-text-primary)] mb-3 tracking-tight">{title}</h1>
-                  <div class="flex items-center flex-wrap gap-2">
-                    <span class="text-xs font-bold px-3 py-1.5 rounded-full bg-[var(--color-surface-3)] text-[var(--color-text-secondary)] border border-[var(--color-border)] shadow-sm">
-                      {config?.label}
-                    </span>
-                    {component.category && (
-                      <span class="text-xs font-semibold px-3 py-1.5 rounded-full bg-[var(--color-surface-3)] text-[var(--color-text-tertiary)] border border-[var(--color-border)] shadow-sm">
-                        {component.category}
-                      </span>
-                    )}
-                    {(component.downloads ?? 0) > 0 && (
-                      <span class="text-xs font-bold text-emerald-400 flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-emerald-500/15 to-emerald-400/15 border border-emerald-500/30 shadow-lg shadow-emerald-500/10">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
-                        {component.downloads?.toLocaleString()}
-                      </span>
-                    )}
-                    {component.skillspector && (
-                      <SkillSpectorBadge result={component.skillspector} size="md" href="#security-scan" />
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {frontmatter.description && (
-                <p class="relative mt-5 text-[13px] leading-relaxed text-[var(--color-text-secondary)] line-clamp-4">
-                  {frontmatter.description}
-                </p>
-              )}
-            </div>
-
-            {/* Install command */}
-            <div class="relative overflow-hidden bg-gradient-to-br from-[var(--color-surface-2)] to-[var(--color-surface-3)] border border-[var(--color-border)] rounded-2xl p-5 shadow-xl hover:shadow-2xl transition-all duration-300 group">
-              {/* Animated gradient overlay */}
-              <div class="absolute inset-0 bg-gradient-to-r from-[var(--color-primary-500)]/0 via-[var(--color-primary-500)]/5 to-[var(--color-primary-500)]/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style="animation: shimmer-glow 3s ease-in-out infinite;"></div>
-
-              <div class="relative flex items-center justify-between mb-3.5">
-                <div class="flex items-center gap-3">
-                  <div class="w-8 h-8 rounded-lg bg-[var(--color-primary-500)]/15 border border-[var(--color-primary-500)]/30 flex items-center justify-center">
-                    <svg class="w-4 h-4 text-[var(--color-primary-400)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                  </div>
-                  <span class="text-xs font-bold text-[var(--color-text-secondary)] uppercase tracking-wider">Install Command</span>
-                </div>
-                <button
-                  id="copyBtn"
-                  class="flex items-center gap-2 px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-[var(--color-primary-500)] to-[var(--color-primary-600)] hover:from-[var(--color-primary-600)] hover:to-[var(--color-primary-700)] rounded-xl transition-all duration-200 active:scale-95 shadow-lg hover:shadow-xl"
-                  data-cmd={installCmd}
-                >
-                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                  </svg>
-                  <span>Copy</span>
-                </button>
-              </div>
-              <code class="relative text-[13px] text-[var(--color-accent-400)] font-mono break-all leading-relaxed block bg-[var(--color-surface-4)]/50 px-4 py-3 rounded-xl border border-[var(--color-border)]">{installCmd}</code>
-            </div>
-
-            {/* Metadata labels + GitHub button — same row */}
-            <div class="flex flex-wrap gap-2">
-              <a
-                href={`https://github.com/davila7/claude-code-templates/blob/main/cli-tool/components/${typePlural}/${component.path}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="inline-flex items-center gap-2 px-3 py-2 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg text-[12px] font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-primary-500)]/40 hover:bg-[var(--color-surface-3)] hover:shadow-sm transition-all duration-150 active:scale-95"
-              >
-                <svg class="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd" />
-                </svg>
-                View on GitHub
-              </a>
-              {infoCards.map((card, i) => (
-                <button
-                  class="meta-label flex items-center gap-2 px-3 py-2 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg text-[12px] font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-primary-500)]/40 hover:bg-[var(--color-surface-3)] hover:shadow-sm transition-all duration-150 cursor-pointer active:scale-95"
-                  data-meta-index={i}
-                >
-                  <span class="text-[var(--color-primary-400)] shrink-0 [&>svg]:w-3.5 [&>svg]:h-3.5" set:html={card.icon} />
-                  <span>{card.label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Right column — Claude Code CLI replaying install + usage */}
-          <div class="h-[420px] lg:h-auto lg:min-h-[460px]">
-            <ComponentTerminal
-              client:visible
+        {/* Header: the component as a path, like a repository name. */}
+        <header class="flex flex-col gap-4 md:flex-row md:items-center">
+          <nav aria-label="Breadcrumb" class="min-w-0 flex-1 flex flex-wrap items-baseline gap-x-1.5 gap-y-1 text-[17px] md:text-[20px] leading-snug">
+            <a href={`/${typePlural}`} class="text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] hover:underline underline-offset-4">{typePlural}</a>
+            <span class="text-[var(--color-text-tertiary)]">/</span>
+            {component.category && (
+              <Fragment>
+                <span class="text-[var(--color-text-secondary)]">{component.category}</span>
+                <span class="text-[var(--color-text-tertiary)]">/</span>
+              </Fragment>
+            )}
+            <span class="basis-full md:basis-auto flex flex-wrap items-center gap-x-2.5 gap-y-1 min-w-0">
+              <h1 class="text-[26px] md:text-[20px] font-semibold tracking-tight text-[var(--color-text-primary)] break-words min-w-0">{slugName}</h1>
+              <span class="inline-flex items-center rounded-full border border-[var(--color-border)] px-2.5 text-[12px] leading-[22px] font-medium text-[var(--color-text-secondary)]">{typeLabel}</span>
+            </span>
+          </nav>
+          <div class="hidden md:flex items-center gap-2 shrink-0">
+            <SaveToCollectionButton
+              client:idle
+              variant="button"
+              componentType={component.type}
+              componentPath={component.path}
+              componentName={component.name}
+              componentCategory={component.category ?? ''}
+            />
+            <AddToStackButton
+              client:idle
               typePlural={typePlural ?? 'agents'}
-              title={title}
-              path={component.path?.replace(/\.(md|json)$/, '') ?? component.name}
-              installCmd={installCmd}
-              detail={terminalDetail}
-              fileCount={terminalFileCount}
+              name={component.name}
+              path={component.path}
+              category={component.category ?? ''}
+              description={component.description ?? ''}
             />
           </div>
-        </div>
+        </header>
 
-        {/* Metadata modal */}
-        <div id="metaModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div class="bg-[var(--color-surface-1)] border border-[var(--color-border)] rounded-2xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden">
-            <div class="flex items-center justify-between px-5 py-4 border-b border-[var(--color-border)]">
-              <div class="flex items-center gap-3">
-                <span id="metaModalIcon" class="text-[var(--color-primary-400)] [&>svg]:w-5 [&>svg]:h-5"></span>
-                <h4 id="metaModalTitle" class="text-[15px] font-bold text-[var(--color-text-primary)]"></h4>
-              </div>
-              <button id="metaModalClose" class="text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] p-2 rounded-lg hover:bg-[var(--color-surface-3)] transition-all duration-150 active:scale-95">
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-              </button>
-            </div>
-            <div id="metaModalBody" class="px-5 py-5 text-[13px] text-[var(--color-text-secondary)] max-h-[60vh] overflow-y-auto leading-relaxed"></div>
-          </div>
-        </div>
-        <script id="metaData" type="application/json" set:html={jsonForScript(
-          infoCards.map((card) => {
-            const value = frontmatter[card.key];
-            const isChipList = card.key === 'tools' || card.key === 'allowed-tools' || card.key === 'tags';
-            return { label: card.label, icon: card.icon, value, isChipList };
-          })
-        )} />
-
-        {component.skillspector && <SkillSpectorReport result={component.skillspector} />}
-
-        {/* Referenced components (loops only) */}
-        {referencedComponents.length > 0 && (
-          <div class="mb-10">
-            <h3 class="text-xs font-bold text-[var(--color-text-tertiary)] uppercase tracking-[0.08em] mb-4">
-              Referenced Components ({referencedComponents.length})
-            </h3>
-            <p class="text-[13px] text-[var(--color-text-secondary)] mb-5 leading-relaxed">
-              This loop composes the components below. Installing the loop with the command above also installs each of them.
+        <div class="mt-6 md:mt-0 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-x-8">
+          {/* About column. On phones it comes first (install right under the name); on desktop it sits on the right. */}
+          <aside class="lg:col-start-2 lg:row-start-2 lg:pt-6 flex flex-col gap-5 min-w-0">
+            {aboutDescription && (
+              <p class="lg:hidden text-[15px] leading-relaxed text-[var(--color-text-secondary)] line-clamp-3">{aboutDescription}</p>
+            )}
+            <p class="lg:hidden -mt-2 font-mono text-[12.5px] leading-relaxed text-[var(--color-text-tertiary)]">
+              {(component.downloads ?? 0) > 0 && `${formatCount(component.downloads ?? 0, 'download', 'downloads')} · `}
+              {metaFiles.length > 0 && `${formatCount(fileTotals.files, 'file', 'files')} · ${formatBytes(fileTotals.bytes)} · `}
+              {pageMeta?.addedAt && `${formatDate(pageMeta.addedAt)} · `}
+              <a href={sourceUrl} target="_blank" rel="noopener noreferrer" class="text-[var(--color-accent)] whitespace-nowrap">Source ↗</a>
             </p>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {referencedComponents.map((ref) => (
-                <a
-                  href={ref.href}
-                  class="group flex items-center gap-3 p-4 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-border)] hover:border-[var(--color-primary-500)]/40 hover:bg-[var(--color-surface-3)] hover:shadow-md transition-all duration-150 active:scale-[0.98]"
+
+            <section aria-labelledby="install-h">
+              <h2 id="install-h" class="hidden lg:block text-[14px] font-semibold text-[var(--color-text-primary)] mb-2">Install</h2>
+              <div class="flex items-center gap-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-1)] py-1.5 pl-3 pr-1.5">
+                <code class="flex-1 min-w-0 font-mono text-[12px] leading-relaxed text-[var(--color-text-primary)] [overflow-wrap:anywhere]">
+                  {cmdParts.map((part, i) => (
+                    <Fragment>{i > 0 && ' '}<span class="inline-block max-w-full">{part}</span></Fragment>
+                  ))}
+                </code>
+                <button
+                  id="copyBtn"
+                  type="button"
+                  data-cmd={installCmd}
+                  aria-label="Copy install command"
+                  class="inline-flex items-center justify-center gap-1.5 h-11 md:h-9 min-w-[84px] lg:min-w-0 px-3 lg:px-2.5 rounded-md bg-[var(--color-accent)] text-[var(--color-surface-0)] text-[14px] md:text-[13px] font-semibold hover:bg-[var(--color-accent-hover)] transition-colors shrink-0"
                 >
-                  <div
-                    class="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 [&>svg]:w-5 [&>svg]:h-5"
-                    style={`background: ${ref.color}1a; color: ${ref.color}; border: 1px solid ${ref.color}33;`}
-                    set:html={ref.icon}
-                  />
-                  <div class="min-w-0">
-                    <div class="text-[13px] font-semibold text-[var(--color-text-primary)] truncate group-hover:text-[var(--color-primary-400)] transition-colors">
-                      {ref.name}
-                    </div>
-                    <div class="text-[11px] text-[var(--color-text-tertiary)] truncate">
-                      <span class="font-medium" style={`color: ${ref.color};`}>{ref.label}</span>
-                      <span class="mx-1.5">·</span>
-                      <span class="font-mono">{ref.path}</span>
-                    </div>
-                  </div>
-                  <svg class="w-4 h-4 text-[var(--color-text-tertiary)] ml-auto shrink-0 transition-transform duration-150 group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-                  </svg>
-                </a>
-              ))}
+                  <svg data-copy-icon class="w-4 h-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="5" y="5" width="9" height="9" rx="1.5" /><path d="M11 5V3.5A1.5 1.5 0 0 0 9.5 2h-6A1.5 1.5 0 0 0 2 3.5v6A1.5 1.5 0 0 0 3.5 11H5" /></svg>
+                  <svg data-done-icon class="w-4 h-4" style="display:none" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m3.5 8.5 3 3 6-7" /></svg>
+                  <span class="lg:sr-only">Copy</span>
+                </button>
+              </div>
+              {installTarget && (
+                <p class="mt-2 font-mono text-[12px] text-[var(--color-text-tertiary)] break-words">{installTarget}</p>
+              )}
+            </section>
+
+            <div class="grid grid-cols-2 gap-2 md:hidden">
+              <SaveToCollectionButton
+                client:idle
+                variant="button"
+                componentType={component.type}
+                componentPath={component.path}
+                componentName={component.name}
+                componentCategory={component.category ?? ''}
+              />
+              <AddToStackButton
+                client:idle
+                typePlural={typePlural ?? 'agents'}
+                name={component.name}
+                path={component.path}
+                category={component.category ?? ''}
+                description={component.description ?? ''}
+              />
             </div>
-          </div>
-        )}
 
-        {/* Content area with optional file tree sidebar */}
-        {/* Content viewer */}
-        <h3 class="text-xs font-bold text-[var(--color-text-tertiary)] uppercase tracking-[0.08em] mb-4">Content</h3>
-        {typePlural === 'mods' && (
-          <div class="mb-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-1)] px-4 py-2.5 text-[12px] text-[var(--color-text-secondary)]">
-            <strong class="text-[var(--color-text-primary)]">Claude Mod.</strong> A mod is a complete Claude Code plugin built on function hooks (Anthropic's <a href="https://github.com/anthropics/claude-code/tree/main/mods" target="_blank" rel="noopener" class="underline underline-offset-2 hover:text-[var(--color-text-primary)]">mods/</a> layout); it is on by default in Claude Code 2.1.287+.
-            {modModules.length > 0 && (
-              <span> Hooks module{modModules.length > 1 ? 's' : ''}: {modModules.map((mod, i) => (
-                <Fragment>{i > 0 && ', '}<code>hooks/{mod}</code></Fragment>
-              ))}.</span>
-            )}
-            {modOptions.length > 0 && (
-              <span> Options: {modOptions.map((opt, i) => (
-                <Fragment>{i > 0 && ', '}<code>{opt}</code></Fragment>
-              ))} (set in user or managed settings <code>pluginConfigs</code>, or <code>/config</code>).</span>
-            )}
-            {' '}Run <code>claude plugin validate</code> on the installed folder to see every event it hooks and every <code>$</code> call it makes.
-          </div>
-        )}
-        {refs.length > 0 ? (
-          <SkillExplorer
-            client:load
-            skillContent={component.content || ''}
-            skillName={component.name}
-            skillPath={component.path}
-            references={refs}
-            headings={contentHeadings}
-            componentType={typePlural === 'mods' ? 'mods' : 'skills'}
-            mainFile={typePlural === 'mods' ? 'README.md' : 'SKILL.md'}
-            files={typePlural === 'mods' ? modFiles : undefined}
-          />
-        ) : isJsonType ? (
-          <JsonViewer client:load content={component.content || ''} />
-        ) : (
-          <MarkdownViewer
-            client:load
-            content={component.content || ''}
-            headings={contentHeadings}
-          />
-        )}
+            <section aria-labelledby="about-h" class="hidden lg:block border-t border-[var(--color-border)] pt-5">
+              <h2 id="about-h" class="text-[14px] font-semibold text-[var(--color-text-primary)] mb-2">About</h2>
+              {aboutDescription && (
+                <p class="text-[13.5px] leading-relaxed text-[var(--color-text-secondary)] mb-4 line-clamp-6" title={aboutDescription}>{aboutDescription}</p>
+              )}
+              <ul class="flex flex-col gap-2 text-[13.5px] text-[var(--color-text-secondary)]">
+                <li>
+                  {(component.downloads ?? 0) > 0
+                    ? <Fragment><b class="font-medium text-[var(--color-text-primary)]">{(component.downloads ?? 0).toLocaleString('en-US')}</b> downloads</Fragment>
+                    : 'No downloads yet'}
+                </li>
+                {metaFiles.length > 0 && (
+                  <li><b class="font-medium text-[var(--color-text-primary)]">{formatCount(fileTotals.files, 'file', 'files')}</b> · {formatBytes(fileTotals.bytes)}</li>
+                )}
+                {pageMeta?.addedAt && (
+                  <li>Added {formatDate(pageMeta.addedAt)}</li>
+                )}
+                <li>
+                  <a href={sourceUrl} target="_blank" rel="noopener noreferrer" class="text-[var(--color-accent)] hover:underline underline-offset-4">View source on GitHub</a>
+                </li>
+              </ul>
+              {aboutRows.length > 0 && (
+                <dl class="mt-4 grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-2 text-[13px]">
+                  {aboutRows.map((row) => (
+                    <Fragment>
+                      <dt class="text-[var(--color-text-tertiary)]">{row.label}</dt>
+                      <dd class="min-w-0 text-[var(--color-text-primary)] break-words">
+                        {row.kind === 'chips' ? (
+                          <span class="flex flex-wrap gap-1">
+                            {chipList(frontmatter[row.key]).map((chip) => (
+                              <span class="font-mono text-[11.5px] rounded bg-[var(--color-surface-2)] px-1.5 py-0.5">{chip}</span>
+                            ))}
+                          </span>
+                        ) : row.kind === 'code' ? (
+                          <code class="font-mono text-[12px]">{frontmatter[row.key]}</code>
+                        ) : frontmatter[row.key]}
+                      </dd>
+                    </Fragment>
+                  ))}
+                </dl>
+              )}
+              {topics.length > 0 && (
+                <div class="mt-4 flex flex-wrap gap-1.5">
+                  {topics.map((t) => (
+                    <span class="rounded-full bg-[var(--color-accent-light)] px-2.5 py-0.5 text-[12px] font-medium text-[var(--color-accent)]">{t}</span>
+                  ))}
+                </div>
+              )}
+            </section>
 
-        {/* Action buttons */}
-        <div class="mt-8 flex items-center gap-3">
-          <SaveToCollectionButton
-            client:visible
-            componentType={component.type}
-            componentPath={component.path}
-            componentName={component.name}
-            componentCategory={component.category ?? ''}
-          />
+            {component.skillspector && (
+              <section class="rounded-lg border border-[var(--color-border)] px-3.5 py-3 lg:rounded-none lg:border-x-0 lg:border-b-0 lg:px-0 lg:pt-5 lg:pb-0 flex items-start gap-2.5 text-[13px] text-[var(--color-text-secondary)]">
+                <svg class="w-4 h-4 mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6l7-3z" /><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4" /></svg>
+                <div>
+                  <p class="font-medium text-[var(--color-text-primary)]">Scanned by NVIDIA SkillSpector</p>
+                  <p>
+                    {formatCount(component.skillspector.issueCount, 'observation', 'observations')}
+                    {component.skillspector.scannedAt && <span class="hidden lg:inline"> · {formatDate(component.skillspector.scannedAt)}</span>}
+                    {' · '}<a href="#security-scan" data-tab-link="security" class="text-[var(--color-accent)] hover:underline underline-offset-4">Read the report</a>
+                  </p>
+                </div>
+              </section>
+            )}
+
+            {langShares.length > 0 && (
+              <section aria-labelledby="lang-h" class="hidden lg:block border-t border-[var(--color-border)] pt-5">
+                <h2 id="lang-h" class="text-[14px] font-semibold text-[var(--color-text-primary)] mb-2.5">Languages</h2>
+                <div class="flex h-2 overflow-hidden rounded gap-0.5" aria-hidden="true">
+                  {langShares.map((l, i) => (
+                    <span class="block h-full" style={`width:${l.pct}%;background:${i === 0 ? 'var(--color-accent)' : `color-mix(in srgb, var(--color-text-tertiary) ${Math.max(30, 75 - i * 15)}%, transparent)`}`}></span>
+                  ))}
+                </div>
+                <ul class="mt-2 flex flex-wrap gap-x-3.5 gap-y-1 text-[12px] text-[var(--color-text-secondary)]">
+                  {langShares.map((l, i) => (
+                    <li class="flex items-center gap-1.5">
+                      <span class="w-2 h-2 rounded-full" style={`background:${i === 0 ? 'var(--color-accent)' : `color-mix(in srgb, var(--color-text-tertiary) ${Math.max(30, 75 - i * 15)}%, transparent)`}`}></span>
+                      <span class="text-[var(--color-text-primary)] font-medium">{l.name}</span> {l.pct}%
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+          </aside>
+
+          {/* Tabs */}
+          <div class="lg:col-span-2 lg:row-start-1 -mx-4 md:mx-0 mt-6 lg:mt-4 border-b border-[var(--color-border)] overflow-x-auto">
+            <nav class="flex gap-1 px-2.5 md:px-0" role="tablist" aria-label="Component sections">
+              <a href="#overview" role="tab" data-tab="overview" class="tab-link">Overview</a>
+              {hasExplorer && (
+                <a href="#files" role="tab" data-tab="files" class="tab-link">Files <span class="tab-count">{refs.length + 1}</span></a>
+              )}
+              {component.skillspector && (
+                <a href="#security-scan" role="tab" data-tab="security" class="tab-link"><span>Security<span class="hidden sm:inline"> scan</span></span> <span class="tab-count">{component.skillspector.issueCount}</span></a>
+              )}
+            </nav>
+          </div>
+
+          <div class="lg:col-start-1 lg:row-start-2 min-w-0 pt-4 lg:pt-6 pb-8">
+            {/* Overview: file list + the main file rendered, like a README. */}
+            <section data-pane="overview" class="flex flex-col gap-4">
+              {metaFiles.length > 0 && (
+                <div class="hidden md:flex items-center gap-2">
+                  <span class="font-mono text-[13px] text-[var(--color-text-secondary)]">
+                    {formatCount(fileTotals.files, 'file', 'files')} · {formatCount(fileTotals.lines, 'line', 'lines')} · {formatBytes(fileTotals.bytes)}
+                  </span>
+                  <span class="flex-1"></span>
+                  <a href={sourceUrl} target="_blank" rel="noopener noreferrer" class="inline-flex h-9 items-center gap-1.5 px-3 rounded-md border border-[var(--color-border)] bg-[var(--color-surface-1)] text-[13px] font-medium text-[var(--color-text-primary)] hover:bg-[var(--color-surface-2)] transition-colors">
+                    View on GitHub
+                    <svg class="w-3 h-3" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M9 2.5h4.5V7M13.5 2.5 7 9M12 10v3.5H2.5V4H6" /></svg>
+                  </a>
+                </div>
+              )}
+
+              {(metaFiles.length > 0 || lastCommit) && (
+                <div class="rounded-lg border border-[var(--color-border)] overflow-hidden">
+                  {lastCommit && (
+                    <div class="flex items-center gap-2.5 px-4 py-2.5 bg-[var(--color-surface-1)] border-b border-[var(--color-border)] text-[13px] min-w-0">
+                      <span class="w-[22px] h-[22px] rounded-full bg-[var(--color-surface-3)] grid place-items-center text-[9px] font-semibold text-[var(--color-text-secondary)] shrink-0" aria-hidden="true">{initials(lastCommit.author)}</span>
+                      <span class="font-semibold text-[var(--color-text-primary)] shrink-0">{lastCommit.author}</span>
+                      <span class="hidden md:block min-w-0 flex-1 truncate text-[var(--color-text-secondary)]">{commitTitle(lastCommit.subject)}</span>
+                      {lastCommit.pr && (
+                        <a href={`${REPO_URL}/pull/${lastCommit.pr}`} target="_blank" rel="noopener noreferrer" class="shrink-0 text-[var(--color-accent)] hover:underline underline-offset-4">#{lastCommit.pr}</a>
+                      )}
+                      <span class="flex-1 md:hidden"></span>
+                      <a href={`${REPO_URL}/commit/${lastCommit.sha}`} target="_blank" rel="noopener noreferrer" class="shrink-0 text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)]">
+                        <span class="hidden md:inline font-mono text-[12px] mr-2">{lastCommit.sha.slice(0, 7)}</span>{formatDate(lastCommit.date)}
+                      </a>
+                    </div>
+                  )}
+                  <ul>
+                    {fileEntries.map((entry) => {
+                      const target = fileOpen(entry.firstFile);
+                      const inner = (
+                        <Fragment>
+                          <span class="text-[var(--color-text-tertiary)] shrink-0" aria-hidden="true">
+                            {entry.kind === 'dir' ? (
+                              <svg class="w-4 h-4" viewBox="0 0 16 16" fill="currentColor" opacity=".8"><path d="M1.5 3.5a1 1 0 0 1 1-1h3.6l1.4 1.5h6a1 1 0 0 1 1 1v7.5a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1z" /></svg>
+                            ) : (
+                              <svg class="w-4 h-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M4 1.5h5L12.5 5v9.5h-8.5z" /><path d="M9 1.5V5h3.5" /></svg>
+                            )}
+                          </span>
+                          <span class="flex-1 min-w-0 truncate text-[var(--color-text-primary)]">{entry.name}</span>
+                          <span class="shrink-0 font-mono text-[12px] text-[var(--color-text-tertiary)]">
+                            {entry.kind === 'dir'
+                              ? `${formatCount(entry.files, 'file', 'files')}${entry.lines ? ` · ${formatCount(entry.lines, 'line', 'lines')}` : ''}`
+                              : `${entry.lines ? `${formatCount(entry.lines, 'line', 'lines')} · ` : ''}${formatBytes(entry.bytes)}`}
+                          </span>
+                        </Fragment>
+                      );
+                      return (
+                        <li class="border-t first:border-t-0 border-[var(--color-border)]">
+                          {target ? (
+                            <a href="#files" data-open-file={target} class="flex items-center gap-2.5 px-4 py-3 md:py-2.5 text-[15px] md:text-[13.5px] hover:bg-[var(--color-surface-1)] transition-colors">{inner}</a>
+                          ) : (
+                            <div class="flex items-center gap-2.5 px-4 py-3 md:py-2.5 text-[15px] md:text-[13.5px]">{inner}</div>
+                          )}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              )}
+
+              {typePlural === 'mods' && (
+                <div class="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-1)] px-4 py-2.5 text-[12px] text-[var(--color-text-secondary)]">
+                  <strong class="text-[var(--color-text-primary)]">Claude Mod.</strong> A mod is a complete Claude Code plugin built on function hooks (Anthropic's <a href="https://github.com/anthropics/claude-code/tree/main/mods" target="_blank" rel="noopener" class="underline underline-offset-2 hover:text-[var(--color-text-primary)]">mods/</a> layout); it is on by default in Claude Code 2.1.287+.
+                  {modModules.length > 0 && (
+                    <span> Hooks module{modModules.length > 1 ? 's' : ''}: {modModules.map((mod, i) => (
+                      <Fragment>{i > 0 && ', '}<code>hooks/{mod}</code></Fragment>
+                    ))}.</span>
+                  )}
+                  {modOptions.length > 0 && (
+                    <span> Options: {modOptions.map((opt, i) => (
+                      <Fragment>{i > 0 && ', '}<code>{opt}</code></Fragment>
+                    ))} (set in user or managed settings <code>pluginConfigs</code>, or <code>/config</code>).</span>
+                  )}
+                  {' '}Run <code>claude plugin validate</code> on the installed folder to see every event it hooks and every <code>$</code> call it makes.
+                </div>
+              )}
+
+              {referencedComponents.length > 0 && (
+                <div class="rounded-lg border border-[var(--color-border)] overflow-hidden">
+                  <div class="px-4 py-2.5 bg-[var(--color-surface-1)] border-b border-[var(--color-border)] text-[13px]">
+                    <span class="font-semibold text-[var(--color-text-primary)]">Installs with it</span>
+                    <span class="text-[var(--color-text-secondary)]"> · {referencedComponents.length} referenced components</span>
+                  </div>
+                  <ul>
+                    {referencedComponents.map((ref) => (
+                      <li class="border-t first:border-t-0 border-[var(--color-border)]">
+                        <a href={ref.href} class="flex items-center gap-2.5 px-4 py-3 md:py-2.5 text-[15px] md:text-[13.5px] hover:bg-[var(--color-surface-1)] transition-colors">
+                          <span class="w-20 shrink-0 text-[12px] text-[var(--color-text-tertiary)] capitalize">{ref.type}</span>
+                          <span class="min-w-0 truncate text-[var(--color-text-primary)]">{ref.path}</span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              <div class="rounded-lg border border-[var(--color-border)] overflow-hidden">
+                <div class="flex items-center gap-2.5 px-4 py-2.5 bg-[var(--color-surface-1)] border-b border-[var(--color-border)] text-[13px]">
+                  <svg class="w-4 h-4 text-[var(--color-text-tertiary)]" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5.5 4h8M5.5 8h8M5.5 12h8M2.5 4h.01M2.5 8h.01M2.5 12h.01" /></svg>
+                  <span class="font-semibold text-[var(--color-text-primary)]">{typePlural === 'mods' ? 'README.md' : typePlural === 'skills' ? 'SKILL.md' : component.path.split('/').pop()}</span>
+                </div>
+                <div class="p-4 md:p-6">
+                  {isJsonType ? (
+                    <JsonViewer client:load content={component.content || ''} />
+                  ) : (
+                    <MarkdownViewer client:load content={component.content || ''} headings={contentHeadings} />
+                  )}
+                </div>
+              </div>
+            </section>
+
+            {hasExplorer && (
+              <section data-pane="files" id="files" hidden>
+                <SkillExplorer
+                  client:load
+                  skillContent={component.content || ''}
+                  skillName={component.name}
+                  skillPath={component.path}
+                  references={refs}
+                  headings={contentHeadings}
+                  componentType={typePlural === 'mods' ? 'mods' : 'skills'}
+                  mainFile={typePlural === 'mods' ? 'README.md' : 'SKILL.md'}
+                  files={typePlural === 'mods' ? modFiles : undefined}
+                />
+              </section>
+            )}
+
+            {component.skillspector && (
+              <div data-pane="security" hidden>
+                <SkillSpectorReport result={component.skillspector} />
+              </div>
+            )}
+          </div>
         </div>
       </article>
     )}
@@ -577,74 +667,116 @@ const componentSchema = component
   <CartSidebar client:idle />
 </DashboardLayout>
 
+<style>
+  .tab-link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 12px 11px;
+    font-size: 14px;
+    white-space: nowrap;
+    color: var(--color-text-secondary);
+  }
+  .tab-link:hover { color: var(--color-text-primary); }
+  .tab-link[aria-selected='true'] { color: var(--color-text-primary); font-weight: 600; }
+  .tab-link[aria-selected='true']::after {
+    content: '';
+    position: absolute;
+    left: 6px;
+    right: 6px;
+    bottom: -1px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--color-accent);
+  }
+  .tab-count {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 18px;
+    padding: 0 7px;
+    border-radius: 999px;
+    background: var(--color-surface-2);
+    color: var(--color-text-secondary);
+  }
+</style>
+
 <script is:inline>
-  // Copy button
-  document.getElementById('copyBtn')?.addEventListener('click', (e) => {
-    const btn = e.currentTarget;
-    const cmd = btn.dataset.cmd;
-    if (cmd) {
-      navigator.clipboard.writeText(cmd);
-      const icon = btn.querySelector('svg');
-      const text = btn.querySelector('span');
-      if (icon) icon.style.display = 'none';
-      if (text) text.textContent = 'Copied!';
-      setTimeout(() => {
-        if (icon) icon.style.display = '';
-        if (text) text.textContent = 'Copy';
-      }, 2000);
+  (function () {
+    // Tabs: #files and #security-scan open their pane, anything else shows Overview.
+    var HASH_TO_TAB = { '#files': 'files', '#security-scan': 'security' };
+    var TAB_TO_HASH = { overview: '#overview', files: '#files', security: '#security-scan' };
+
+    function show(tab) {
+      var panes = document.querySelectorAll('[data-pane]');
+      if (!document.querySelector('[data-pane="' + tab + '"]')) tab = 'overview';
+      panes.forEach(function (p) { p.hidden = p.getAttribute('data-pane') !== tab; });
+      document.querySelectorAll('[data-tab]').forEach(function (t) {
+        t.setAttribute('aria-selected', String(t.getAttribute('data-tab') === tab));
+      });
     }
-  });
 
-  // Metadata modal
-  const metaModal = document.getElementById('metaModal');
-  const metaModalIcon = document.getElementById('metaModalIcon');
-  const metaModalTitle = document.getElementById('metaModalTitle');
-  const metaModalBody = document.getElementById('metaModalBody');
-  const metaModalClose = document.getElementById('metaModalClose');
-  const metaDataEl = document.getElementById('metaData');
+    function go(tab, scroll) {
+      show(tab);
+      try { history.replaceState(null, '', tab === 'overview' ? location.pathname + location.search : TAB_TO_HASH[tab]); } catch (e) {}
+      if (scroll) {
+        var bar = document.querySelector('[role="tablist"]');
+        var top = bar ? bar.getBoundingClientRect().top : 0;
+        if (bar && (top < 0 || top > window.innerHeight * 0.6)) bar.scrollIntoView({ block: 'start' });
+      }
+    }
 
-  if (metaModal && metaDataEl) {
-    const metaItems = JSON.parse(metaDataEl.textContent || '[]');
+    show(HASH_TO_TAB[location.hash] || 'overview');
+    window.addEventListener('hashchange', function () { show(HASH_TO_TAB[location.hash] || 'overview'); });
 
-    document.querySelectorAll('.meta-label').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const idx = Number(btn.dataset.metaIndex);
-        const item = metaItems[idx];
-        if (!item) return;
-        if (metaModalIcon) metaModalIcon.innerHTML = item.icon;
-        if (metaModalTitle) metaModalTitle.textContent = item.label;
-        if (metaModalBody) {
-          if (item.isChipList) {
-            const chips = item.value.replace(/^\[|\]$/g, '').split(/,\s*/).map(s => s.trim()).filter(Boolean);
-            // Use textContent to prevent XSS
-            metaModalBody.innerHTML = '';
-            const container = document.createElement('div');
-            container.className = 'flex flex-wrap gap-2';
-            chips.forEach(c => {
-              const chip = document.createElement('span');
-              chip.className = 'px-3 py-1.5 rounded-lg bg-[var(--color-surface-3)] border border-[var(--color-border)] text-[var(--color-text-primary)] font-mono text-[12px] font-medium';
-              chip.textContent = c; // Safe: uses textContent instead of innerHTML
-              container.appendChild(chip);
-            });
-            metaModalBody.appendChild(container);
-          } else {
-            metaModalBody.textContent = item.value;
-          }
-        }
-        metaModal.classList.remove('hidden');
-        metaModal.classList.add('flex');
+    document.querySelectorAll('[data-tab]').forEach(function (t) {
+      t.addEventListener('click', function (e) { e.preventDefault(); go(t.getAttribute('data-tab'), false); });
+    });
+    document.querySelectorAll('[data-tab-link]').forEach(function (a) {
+      a.addEventListener('click', function (e) { e.preventDefault(); go(a.getAttribute('data-tab-link'), true); });
+    });
+    // A row of the file list opens that file in the Files tab's explorer.
+    document.querySelectorAll('[data-open-file]').forEach(function (a) {
+      a.addEventListener('click', function (e) {
+        e.preventDefault();
+        go('files', true);
+        window.dispatchEvent(new CustomEvent('component-file:open', { detail: a.getAttribute('data-open-file') }));
       });
     });
 
-    metaModalClose?.addEventListener('click', () => {
-      metaModal.classList.add('hidden');
-      metaModal.classList.remove('flex');
-    });
-    metaModal.addEventListener('click', (e) => {
-      if (e.target === metaModal) {
-        metaModal.classList.add('hidden');
-        metaModal.classList.remove('flex');
-      }
-    });
-  }
+    // Copy the install command; fall back to selecting it where the clipboard is refused.
+    var btn = document.getElementById('copyBtn');
+    if (btn) {
+      btn.addEventListener('click', function () {
+        var cmd = btn.getAttribute('data-cmd') || '';
+        var label = btn.querySelector('span');
+        var copyIcon = btn.querySelector('[data-copy-icon]');
+        var doneIcon = btn.querySelector('[data-done-icon]');
+        var done = function () {
+          if (label) label.textContent = 'Copied';
+          if (copyIcon) copyIcon.style.display = 'none';
+          if (doneIcon) doneIcon.style.display = '';
+          setTimeout(function () {
+            if (label) label.textContent = 'Copy';
+            if (copyIcon) copyIcon.style.display = '';
+            if (doneIcon) doneIcon.style.display = 'none';
+          }, 2000);
+        };
+        var select = function () {
+          var code = btn.parentElement && btn.parentElement.querySelector('code');
+          if (!code) return;
+          var range = document.createRange();
+          range.selectNodeContents(code);
+          var sel = window.getSelection();
+          if (sel) { sel.removeAllRanges(); sel.addRange(range); }
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(cmd).then(done, select);
+        } else {
+          select();
+        }
+      });
+    }
+  })();
 </script>

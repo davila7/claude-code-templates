@@ -566,7 +566,7 @@ npx astro dev --port 4321   # Dashboard + APIs at http://localhost:4321
 - `dashboard/public/counts.json` — Per-type counts only (e.g. `{"agents": 421, ...}`), used by the sidebar/plugins pages instead of loading the full catalog
 - `dashboard/public/components/{type}.json` — One file per component type (agents.json, commands.json, etc.), loaded on demand by `ComponentGrid.tsx` for the active tab
 - `dashboard/public/search-index.json` — Flat array for `SearchModal.tsx`
-- `dashboard/public/component-content/{type}/{slug}.json` — Full per-component content (incl. markdown body), fetched on demand when a component's detail view or PR flow needs it
+- `dashboard/public/component-content/{type}/{slug}.json` — Full per-component content (incl. markdown body), fetched on demand when a component's detail view or PR flow needs it. Also carries `meta` for the GitHub-style component page: `files` (path, bytes, lines), `languages` (bytes), and `lastCommit` / `addedAt` read from one `git log` pass, which is why both catalog workflows check out full history (`fetch-depth: 0`, `filter: blob:none`); in a shallow clone the generator keeps each file's previous git fields
 - `dashboard/public/trending-data.json` — Trending/download stats
 - `dashboard/public/api/v1/` — **Catalog API v1, the public contract** (see below)
 
