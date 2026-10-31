@@ -20,6 +20,7 @@ const { runPluginDashboard } = require('./plugin-dashboard');
 const { runSkillDashboard } = require('./skill-dashboard');
 const { runTeamsDashboard } = require('./teams-dashboard');
 const { trackingService } = require('./tracking-service');
+const { fetchExternalManifest, downloadExternalSkill } = require('./external-skill');
 const { createInstallUI } = require('./install-ui');
 const { createGlobalAgent, listGlobalAgents, removeGlobalAgent, updateGlobalAgent } = require('./sdk/global-agent-manager');
 const SessionSharing = require('./session-sharing');
@@ -1572,6 +1573,13 @@ async function installIndividualSkill(skillName, targetDir, options) {
     // Extract the actual skill name (last part of the path)
     const skillBaseName = skillName.includes('/') ? skillName.split('/').pop() : skillName;
 
+    // External skill: the catalog folder holds only source.json and the code
+    // is downloaded from the pinned commit of the author's repository.
+    const manifest = await fetchExternalManifest(skillName);
+    if (manifest) {
+      return await installExternalSkill(skillName, skillBaseName, manifest, targetDir, options, startTime);
+    }
+
     // Use GitHub API to download ALL files and directories for the skill
     const githubApiUrl = `https://api.github.com/repos/davila7/claude-code-templates/contents/cli-tool/components/skills/${skillName}`;
 
@@ -1691,6 +1699,62 @@ async function installIndividualSkill(skillName, targetDir, options) {
     trackingService.trackInstallationOutcome('skill', skillName, 'failure', { errorType: 'network_error', errorMessage: error.message, durationMs: Date.now() - startTime, batchId: options.batchId });
     return false;
   }
+}
+
+async function installExternalSkill(skillName, skillBaseName, manifest, targetDir, options, startTime) {
+  const shortCommit = manifest.commit.slice(0, 7);
+  console.log(chalk.gray(`📥 Downloading from ${manifest.repo}@${shortCommit} (external skill, ${manifest.license})...`));
+
+  let files;
+  try {
+    files = await downloadExternalSkill(manifest);
+  } catch (error) {
+    console.log(chalk.red(`❌ ${error.message}`));
+    trackingService.trackInstallationOutcome('skill', skillName, 'failure', { errorType: 'network_error', errorMessage: error.message, durationMs: Date.now() - startTime, batchId: options.batchId });
+    return false;
+  }
+
+  const skillDir = path.join(targetDir, '.claude', 'skills', skillBaseName);
+  for (const [relPath, file] of Object.entries(files)) {
+    const fullPath = path.join(skillDir, relPath);
+    // Paths were validated in downloadExternalSkill; keep the write inside the skill folder anyway.
+    if (!fullPath.startsWith(skillDir + path.sep)) continue;
+    await fs.ensureDir(path.dirname(fullPath));
+    await fs.writeFile(fullPath, file.content);
+    options.onWrite?.(fullPath);
+    if (file.executable) await fs.chmod(fullPath, '755');
+    if (!options.silent) console.log(chalk.green(`✓ Downloaded: ${relPath}`));
+  }
+
+  if (!options.silent) {
+    console.log(chalk.green(`✅ Skill "${skillName}" installed successfully!`));
+    console.log(chalk.cyan(`📁 Installed to: ${path.relative(targetDir, path.join(skillDir, 'SKILL.md'))}`));
+    console.log(chalk.cyan(`📦 Source: https://github.com/${manifest.repo}/tree/${manifest.commit}${manifest.path ? '/' + manifest.path : ''}`));
+  }
+
+  trackingService.trackDownload('skill', skillName, {
+    installation_type: 'individual_skill',
+    target_directory: path.relative(process.cwd(), targetDir),
+    source: 'external',
+    repo: manifest.repo,
+    commit: manifest.commit,
+    total_files: Object.keys(files).length
+  });
+  trackingService.trackInstallationOutcome('skill', skillName, 'success', { durationMs: Date.now() - startTime, batchId: options.batchId });
+
+  // Skills this one calls (e.g. full-send uses sol-loop). Each is installed once per run.
+  const installing = options.installingSkills || new Set();
+  installing.add(skillName);
+  const pending = manifest.requires.filter((ref) => !installing.has(ref));
+  if (pending.length > 0) {
+    console.log(chalk.blue(`🧩 Installing ${pending.length} skill(s) it uses: ${pending.join(', ')}`));
+    for (const ref of pending) {
+      if (installing.has(ref)) continue;
+      installing.add(ref);
+      await installIndividualSkill(ref, targetDir, { ...options, installingSkills: installing });
+    }
+  }
+  return true;
 }
 
 /**
@@ -2033,6 +2097,8 @@ async function installMultipleComponents(options, targetDir) {
     };
     const usesLocations = new Set(['setting', 'hook', 'loop']);
 
+    // Skills listed here are not installed again as another skill's dependency.
+    const installingSkills = new Set(components.skills);
     const results = [];
     for (const item of items) {
       const result = await ui.runStep(item, onWrite => installers[item.type](item.name, targetDir, {
@@ -2040,6 +2106,7 @@ async function installMultipleComponents(options, targetDir) {
         silent: true,
         batchId,
         onWrite,
+        installingSkills,
         ...(usesLocations.has(item.type) ? { sharedInstallLocations } : {})
       }));
       results.push(result);

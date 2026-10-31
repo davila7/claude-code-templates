@@ -64141,6 +64141,61 @@
       }
     },
     {
+      "name": "babysit-pr",
+      "path": "git/babysit-pr",
+      "category": "git",
+      "type": "skill",
+      "description": "Monitor a pull request through review and CI. Use when the user asks to monitor, watch, or babysit a PR.",
+      "author": "Theo Browne",
+      "repo": "https://github.com/t3dotgg/tstack",
+      "version": "",
+      "license": "MIT",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "scripts/pr-wait"
+      ],
+      "source": {
+        "repo": "t3dotgg/tstack",
+        "path": "skills/babysit-pr",
+        "commit": "7de017b3fc9d50c03cf3ecb98fb71e0ca65a78bd",
+        "license": "MIT",
+        "url": "https://github.com/t3dotgg/tstack/tree/7de017b3fc9d50c03cf3ecb98fb71e0ca65a78bd/skills/babysit-pr",
+        "requires": [
+          "git/leaving-pr-comments"
+        ]
+      },
+      "skillspector": {
+        "score": 7,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 1,
+        "analysis": "complete",
+        "findings": [
+          {
+            "id": "LP3",
+            "category": "MCP Least Privilege",
+            "severity": "MEDIUM",
+            "title": "Without declared permissions the skill's intent is opaque and cannot be validated.",
+            "file": "SKILL.md",
+            "line": 1,
+            "count": 1
+          }
+        ],
+        "hash": "fe72d9cd46c12bd0",
+        "version": "2.12.0",
+        "scannedAt": "2026-10-31T17:23:54Z"
+      }
+    },
+    {
       "name": "commit-smart",
       "path": "git/commit-smart",
       "category": "git",
@@ -64171,6 +64226,202 @@
         "hash": "54f25f1325bbb0b3",
         "version": "2.12.0",
         "scannedAt": "2026-10-17T20:36:45Z"
+      }
+    },
+    {
+      "name": "council",
+      "path": "git/council",
+      "category": "git",
+      "type": "skill",
+      "description": "Trigger this if the user says 'council'.",
+      "author": "Theo Browne",
+      "repo": "https://github.com/t3dotgg/tstack",
+      "version": "",
+      "license": "MIT",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [],
+      "source": {
+        "repo": "t3dotgg/tstack",
+        "path": "skills/council",
+        "commit": "7de017b3fc9d50c03cf3ecb98fb71e0ca65a78bd",
+        "license": "MIT",
+        "url": "https://github.com/t3dotgg/tstack/tree/7de017b3fc9d50c03cf3ecb98fb71e0ca65a78bd/skills/council",
+        "requires": []
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "hash": "e71eb254da151f5c",
+        "version": "2.12.0",
+        "scannedAt": "2026-10-31T17:23:54Z"
+      }
+    },
+    {
+      "name": "file-pr",
+      "path": "git/file-pr",
+      "category": "git",
+      "type": "skill",
+      "description": "File a concise pull request. Use when the user asks to file, open, or create a PR.",
+      "author": "Theo Browne",
+      "repo": "https://github.com/t3dotgg/tstack",
+      "version": "",
+      "license": "MIT",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [],
+      "source": {
+        "repo": "t3dotgg/tstack",
+        "path": "skills/file-pr",
+        "commit": "7de017b3fc9d50c03cf3ecb98fb71e0ca65a78bd",
+        "license": "MIT",
+        "url": "https://github.com/t3dotgg/tstack/tree/7de017b3fc9d50c03cf3ecb98fb71e0ca65a78bd/skills/file-pr",
+        "requires": [
+          "git/leaving-pr-comments"
+        ]
+      },
+      "skillspector": {
+        "score": 3,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 1,
+        "analysis": "complete",
+        "findings": [
+          {
+            "id": "TR1",
+            "category": "Trigger Abuse",
+            "severity": "LOW",
+            "title": "Overly Broad Trigger",
+            "file": "SKILL.md",
+            "line": 1,
+            "count": 1
+          }
+        ],
+        "hash": "a9bd9b4848e6ae09",
+        "version": "2.12.0",
+        "scannedAt": "2026-10-31T17:23:54Z"
+      }
+    },
+    {
+      "name": "full-send",
+      "path": "git/full-send",
+      "category": "git",
+      "type": "skill",
+      "description": "Trigger this if the user says 'full send'.",
+      "author": "Theo Browne",
+      "repo": "https://github.com/t3dotgg/tstack",
+      "version": "",
+      "license": "MIT",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "agents/openai.yaml"
+      ],
+      "source": {
+        "repo": "t3dotgg/tstack",
+        "path": "skills/full-send",
+        "commit": "7de017b3fc9d50c03cf3ecb98fb71e0ca65a78bd",
+        "license": "MIT",
+        "url": "https://github.com/t3dotgg/tstack/tree/7de017b3fc9d50c03cf3ecb98fb71e0ca65a78bd/skills/full-send",
+        "requires": [
+          "git/sol-loop",
+          "git/file-pr",
+          "git/babysit-pr"
+        ]
+      },
+      "skillspector": {
+        "score": 7,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 1,
+        "analysis": "complete",
+        "findings": [
+          {
+            "id": "EA2",
+            "category": "Excessive Agency",
+            "severity": "MEDIUM",
+            "title": "Autonomous Decision Making",
+            "file": "SKILL.md",
+            "line": 20,
+            "count": 1
+          }
+        ],
+        "hash": "d68bfb4263f0fa40",
+        "version": "2.12.0",
+        "scannedAt": "2026-10-31T17:23:54Z"
+      }
+    },
+    {
+      "name": "full-stop",
+      "path": "git/full-stop",
+      "category": "git",
+      "type": "skill",
+      "description": "Trigger this if the user says 'full stop'.",
+      "author": "Theo Browne",
+      "repo": "https://github.com/t3dotgg/tstack",
+      "version": "",
+      "license": "MIT",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "agents/openai.yaml"
+      ],
+      "source": {
+        "repo": "t3dotgg/tstack",
+        "path": "skills/full-stop",
+        "commit": "7de017b3fc9d50c03cf3ecb98fb71e0ca65a78bd",
+        "license": "MIT",
+        "url": "https://github.com/t3dotgg/tstack/tree/7de017b3fc9d50c03cf3ecb98fb71e0ca65a78bd/skills/full-stop",
+        "requires": [
+          "git/full-send"
+        ]
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "hash": "a80d6ff05955d443",
+        "version": "2.12.0",
+        "scannedAt": "2026-10-31T17:23:54Z"
       }
     },
     {
@@ -64207,6 +64458,135 @@
         "hash": "266a5112aa9048e6",
         "version": "2.12.0",
         "scannedAt": "2026-10-26T03:06:46Z"
+      }
+    },
+    {
+      "name": "leaving-pr-comments",
+      "path": "git/leaving-pr-comments",
+      "category": "git",
+      "type": "skill",
+      "description": "Use whenever leaving comments on GitHub.",
+      "author": "Theo Browne",
+      "repo": "https://github.com/t3dotgg/tstack",
+      "version": "",
+      "license": "MIT",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "agents/openai.yaml"
+      ],
+      "source": {
+        "repo": "t3dotgg/tstack",
+        "path": "skills/leaving-pr-comments",
+        "commit": "7de017b3fc9d50c03cf3ecb98fb71e0ca65a78bd",
+        "license": "MIT",
+        "url": "https://github.com/t3dotgg/tstack/tree/7de017b3fc9d50c03cf3ecb98fb71e0ca65a78bd/skills/leaving-pr-comments",
+        "requires": []
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "hash": "73f0aa350b388010",
+        "version": "2.12.0",
+        "scannedAt": "2026-10-31T17:23:54Z"
+      }
+    },
+    {
+      "name": "modernize",
+      "path": "git/modernize",
+      "category": "git",
+      "type": "skill",
+      "description": "For getting old prs up to date. Use when asked to rebase a pr or \"modernize\".",
+      "author": "Theo Browne",
+      "repo": "https://github.com/t3dotgg/tstack",
+      "version": "",
+      "license": "MIT",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "agents/openai.yaml"
+      ],
+      "source": {
+        "repo": "t3dotgg/tstack",
+        "path": "skills/modernize",
+        "commit": "7de017b3fc9d50c03cf3ecb98fb71e0ca65a78bd",
+        "license": "MIT",
+        "url": "https://github.com/t3dotgg/tstack/tree/7de017b3fc9d50c03cf3ecb98fb71e0ca65a78bd/skills/modernize",
+        "requires": [
+          "git/leaving-pr-comments"
+        ]
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "hash": "253f5814152822d1",
+        "version": "2.12.0",
+        "scannedAt": "2026-10-31T17:23:54Z"
+      }
+    },
+    {
+      "name": "sol-loop",
+      "path": "git/sol-loop",
+      "category": "git",
+      "type": "skill",
+      "description": "Use when the user says \"sol loop\".",
+      "author": "Theo Browne",
+      "repo": "https://github.com/t3dotgg/tstack",
+      "version": "",
+      "license": "MIT",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [],
+      "source": {
+        "repo": "t3dotgg/tstack",
+        "path": "skills/sol-loop",
+        "commit": "7de017b3fc9d50c03cf3ecb98fb71e0ca65a78bd",
+        "license": "MIT",
+        "url": "https://github.com/t3dotgg/tstack/tree/7de017b3fc9d50c03cf3ecb98fb71e0ca65a78bd/skills/sol-loop",
+        "requires": []
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "CAUTION",
+        "issueCount": 0,
+        "analysis": "partial",
+        "findings": [],
+        "hash": "ee15b470e3cb1a3d",
+        "version": "2.12.0",
+        "scannedAt": "2026-10-31T17:23:54Z"
       }
     },
     {
@@ -64280,6 +64660,52 @@
         "hash": "5e027b17fbf6809c",
         "version": "2.12.0",
         "scannedAt": "2026-10-17T20:36:45Z"
+      }
+    },
+    {
+      "name": "takeover",
+      "path": "git/takeover",
+      "category": "git",
+      "type": "skill",
+      "description": "Take over existing work. Use when the user asks to take over a PR, branch, or agent thread, or requests a takeover.",
+      "author": "Theo Browne",
+      "repo": "https://github.com/t3dotgg/tstack",
+      "version": "",
+      "license": "MIT",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [],
+      "source": {
+        "repo": "t3dotgg/tstack",
+        "path": "skills/takeover",
+        "commit": "7de017b3fc9d50c03cf3ecb98fb71e0ca65a78bd",
+        "license": "MIT",
+        "url": "https://github.com/t3dotgg/tstack/tree/7de017b3fc9d50c03cf3ecb98fb71e0ca65a78bd/skills/takeover",
+        "requires": [
+          "git/modernize",
+          "git/file-pr",
+          "git/babysit-pr",
+          "git/leaving-pr-comments"
+        ]
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "hash": "eaa2e43572cb2d71",
+        "version": "2.12.0",
+        "scannedAt": "2026-10-31T17:23:54Z"
       }
     },
     {
@@ -88033,11 +88459,11 @@
       "category": "languages",
       "description": "Common project template",
       "files": [
-        ".mcp.json",
         "README.md",
+        "CLAUDE.md",
+        ".mcp.json",
         ".claude/commands/project-setup.md",
-        ".claude/commands/git-workflow.md",
-        "CLAUDE.md"
+        ".claude/commands/git-workflow.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=common --yes",
       "downloads": 0
@@ -88051,10 +88477,10 @@
       "language": "python",
       "description": "Django-App with Python",
       "files": [
-        ".claude/commands/admin.md",
-        ".claude/commands/views.md",
+        "CLAUDE.md",
         ".claude/commands/django-model.md",
-        "CLAUDE.md"
+        ".claude/commands/admin.md",
+        ".claude/commands/views.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=django-app --yes",
       "downloads": 0
@@ -88068,12 +88494,12 @@
       "language": "python",
       "description": "Fastapi-App with Python",
       "files": [
-        ".claude/commands/deployment.md",
+        "CLAUDE.md",
         ".claude/commands/auth.md",
+        ".claude/commands/testing.md",
         ".claude/commands/database.md",
         ".claude/commands/api-endpoints.md",
-        ".claude/commands/testing.md",
-        "CLAUDE.md"
+        ".claude/commands/deployment.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=fastapi-app --yes",
       "downloads": 0
@@ -88087,13 +88513,13 @@
       "language": "python",
       "description": "Flask-App with Python",
       "files": [
-        ".claude/commands/deployment.md",
-        ".claude/commands/flask-route.md",
-        ".claude/commands/blueprint.md",
-        ".claude/commands/app-factory.md",
-        ".claude/commands/database.md",
+        "CLAUDE.md",
         ".claude/commands/testing.md",
-        "CLAUDE.md"
+        ".claude/commands/flask-route.md",
+        ".claude/commands/database.md",
+        ".claude/commands/deployment.md",
+        ".claude/commands/blueprint.md",
+        ".claude/commands/app-factory.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=flask-app --yes",
       "downloads": 0
@@ -88106,8 +88532,8 @@
       "category": "languages",
       "description": "Go project template",
       "files": [
-        ".mcp.json",
-        "README.md"
+        "README.md",
+        ".mcp.json"
       ],
       "installCommand": "npx claude-code-templates@latest --template=go --yes",
       "downloads": 0
@@ -88120,17 +88546,17 @@
       "category": "languages",
       "description": "Javascript-Typescript project template",
       "files": [
-        ".mcp.json",
         "README.md",
+        "CLAUDE.md",
+        ".mcp.json",
         ".claude/settings.json",
-        ".claude/commands/refactor.md",
-        ".claude/commands/npm-scripts.md",
-        ".claude/commands/typescript-migrate.md",
-        ".claude/commands/lint.md",
         ".claude/commands/test.md",
-        ".claude/commands/debug.md",
         ".claude/commands/api-endpoint.md",
-        "CLAUDE.md"
+        ".claude/commands/npm-scripts.md",
+        ".claude/commands/lint.md",
+        ".claude/commands/debug.md",
+        ".claude/commands/typescript-migrate.md",
+        ".claude/commands/refactor.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=javascript-typescript --yes",
       "downloads": 0
@@ -88144,11 +88570,11 @@
       "language": "javascript-typescript",
       "description": "Node-Api with Javascript-Typescript",
       "files": [
-        ".claude/commands/database.md",
-        ".claude/commands/middleware.md",
-        ".claude/commands/route.md",
+        "CLAUDE.md",
         ".claude/commands/api-endpoint.md",
-        "CLAUDE.md"
+        ".claude/commands/database.md",
+        ".claude/commands/route.md",
+        ".claude/commands/middleware.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=node-api --yes",
       "downloads": 0
@@ -88161,11 +88587,11 @@
       "category": "languages",
       "description": "Python project template",
       "files": [
+        "CLAUDE.md",
         ".mcp.json",
         ".claude/settings.json",
-        ".claude/commands/lint.md",
         ".claude/commands/test.md",
-        "CLAUDE.md"
+        ".claude/commands/lint.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=python --yes",
       "downloads": 0
@@ -88179,8 +88605,8 @@
       "language": "ruby",
       "description": "Rails-App with Ruby",
       "files": [
-        ".claude/commands/authentication.md",
-        "CLAUDE.md"
+        "CLAUDE.md",
+        ".claude/commands/authentication.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=rails-app --yes",
       "downloads": 0
@@ -88194,10 +88620,10 @@
       "language": "javascript-typescript",
       "description": "React-App with Javascript-Typescript",
       "files": [
-        ".claude/commands/state-management.md",
+        "CLAUDE.md",
         ".claude/commands/hooks.md",
-        ".claude/commands/component.md",
-        "CLAUDE.md"
+        ".claude/commands/state-management.md",
+        ".claude/commands/component.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=react-app --yes",
       "downloads": 0
@@ -88210,11 +88636,11 @@
       "category": "languages",
       "description": "Ruby project template",
       "files": [
+        "CLAUDE.md",
         ".mcp.json",
         ".claude/settings.json",
-        ".claude/commands/model.md",
         ".claude/commands/test.md",
-        "CLAUDE.md"
+        ".claude/commands/model.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=ruby --yes",
       "downloads": 0
@@ -88227,8 +88653,8 @@
       "category": "languages",
       "description": "Rust project template",
       "files": [
-        ".mcp.json",
-        "README.md"
+        "README.md",
+        ".mcp.json"
       ],
       "installCommand": "npx claude-code-templates@latest --template=rust --yes",
       "downloads": 0
@@ -88242,8 +88668,8 @@
       "language": "javascript-typescript",
       "description": "Vue-App with Javascript-Typescript",
       "files": [
-        ".claude/commands/components.md",
-        ".claude/commands/composables.md"
+        ".claude/commands/composables.md",
+        ".claude/commands/components.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=vue-app --yes",
       "downloads": 0

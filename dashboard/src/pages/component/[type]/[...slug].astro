@@ -191,6 +191,25 @@ if (typePlural === 'loops' && frontmatter.components) {
   }
 }
 
+// External skills (source.json): code fetched from the author's repo at a pinned commit.
+const externalSource = typePlural === 'skills' ? component?.source ?? null : null;
+// Skills an external skill calls are installed with it, like a loop's components.
+if (externalSource?.requires?.length) {
+  const cfg = TYPE_CONFIG['skills'];
+  for (const refPath of externalSource.requires) {
+    referencedComponents.push({
+      type: 'skill',
+      typePlural: 'skills',
+      path: refPath,
+      name: refPath.split('/').pop() ?? refPath,
+      label: cfg?.label ?? 'skill',
+      color: cfg?.color ?? '#5e6ad2',
+      icon: ICONS['skills'] ?? '',
+      href: `/component/skills/${refPath}`,
+    });
+  }
+}
+
 // JSON-based types use JsonViewer instead of MarkdownViewer
 const isJsonType = typePlural === 'settings' || typePlural === 'hooks' || typePlural === 'mcps';
 
@@ -226,7 +245,7 @@ const lastCommit = pageMeta?.lastCommit;
 // The explorer (Files tab) exists for multi-file components; single files show in Overview only.
 const hasExplorer = refs.length > 0;
 const REPO_URL = 'https://github.com/davila7/claude-code-templates';
-const sourceUrl = component ? `${REPO_URL}/${hasExplorer ? 'tree' : 'blob'}/main/cli-tool/components/${typePlural}/${component.path}` : '';
+const sourceUrl = externalSource ? externalSource.url : component ? `${REPO_URL}/${hasExplorer ? 'tree' : 'blob'}/main/cli-tool/components/${typePlural}/${component.path}` : '';
 // Where the CLI writes it (cli-tool/src/index.js); other types show no line.
 const INSTALL_TARGET: Record<string, string> = {
   agents: `.claude/agents/${slugName}.md`,
@@ -585,6 +604,12 @@ const componentSchema = component
                 </div>
               )}
 
+              {externalSource && (
+                <div class="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-1)] px-4 py-2.5 text-[12px] text-[var(--color-text-secondary)]">
+                  <strong class="text-[var(--color-text-primary)]">External skill.</strong> The files live in <a href={externalSource.url} target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 hover:text-[var(--color-text-primary)]">{externalSource.repo}</a> and the CLI downloads them from commit <code>{externalSource.commit.slice(0, 7)}</code>, the version that was reviewed and scanned here. Newer commits reach this catalog only after a new review. License: {externalSource.license}{component?.author ? `, by ${component.author}` : ''}.
+                </div>
+              )}
+
               {typePlural === 'mods' && (
                 <div class="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-1)] px-4 py-2.5 text-[12px] text-[var(--color-text-secondary)]">
                   <strong class="text-[var(--color-text-primary)]">Claude Mod.</strong> A mod is a complete Claude Code plugin built on function hooks (Anthropic's <a href="https://github.com/anthropics/claude-code/tree/main/mods" target="_blank" rel="noopener" class="underline underline-offset-2 hover:text-[var(--color-text-primary)]">mods/</a> layout); it is on by default in Claude Code 2.1.287+.
@@ -647,7 +672,7 @@ const componentSchema = component
                   headings={contentHeadings}
                   componentType={typePlural === 'mods' ? 'mods' : 'skills'}
                   mainFile={typePlural === 'mods' ? 'README.md' : 'SKILL.md'}
-                  files={typePlural === 'mods' ? modFiles : undefined}
+                  files={typePlural === 'mods' || externalSource ? modFiles : undefined}
                 />
               </section>
             )}

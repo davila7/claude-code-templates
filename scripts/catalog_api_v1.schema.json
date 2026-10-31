@@ -47,7 +47,7 @@
     "component": {
       "type": "object",
       "description": "Every field listed here is always present; optional values are null, never missing or an empty string.",
-      "required": ["id", "type", "name", "category", "path", "description", "author", "repo", "version", "license", "keywords", "downloads", "install", "urls", "files", "scan"],
+      "required": ["id", "type", "name", "category", "path", "description", "author", "repo", "version", "license", "keywords", "downloads", "install", "urls", "files", "scan", "source"],
       "properties": {
         "id": {
           "type": "string",
@@ -86,7 +86,7 @@
           "required": ["page", "source", "content"],
           "properties": {
             "page": { "type": "string", "format": "uri", "description": "The component's page on aitmpl.com." },
-            "source": { "type": "string", "format": "uri", "description": "The component on GitHub." },
+            "source": { "type": "string", "format": "uri", "description": "The component on GitHub. For an external skill (see `source`), its folder in the author's repository at the pinned commit." },
             "content": {
               "type": ["string", "null"],
               "format": "uri",
@@ -98,6 +98,17 @@
           "type": ["array", "null"],
           "items": { "type": "string" },
           "description": "Skills and mods: the other files of the directory, relative paths, without the main file (SKILL.md for skills, README.md for mods). null for single-file types."
+        },
+        "source": {
+          "type": ["object", "null"],
+          "description": "External skills only: the code lives in another GitHub repository and the CLI downloads it from this exact commit at install time. null for components stored in this repository.",
+          "required": ["repo", "path", "commit", "license"],
+          "properties": {
+            "repo": { "type": "string", "description": "owner/name on GitHub." },
+            "path": { "type": "string", "description": "Folder of the skill inside that repository; empty for the repository root." },
+            "commit": { "type": "string", "pattern": "^[0-9a-f]{40}$", "description": "The reviewed commit. Never a branch or tag." },
+            "license": { "type": "string", "description": "SPDX id of the license at that commit." }
+          }
         },
         "scan": {
           "type": ["object", "null"],

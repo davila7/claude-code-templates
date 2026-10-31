@@ -21,7 +21,7 @@ import json
 import os
 import re
 
-SCHEMA_VERSION = '1.0.0'
+SCHEMA_VERSION = '1.1.0'
 SCHEMA_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'catalog_api_v1.schema.json')
 
 SITE = 'https://www.aitmpl.com'
@@ -68,12 +68,20 @@ def _scan(skillspector):
     }
 
 
+def _source(source):
+    """External skills: where the code lives (see scripts/external_skills.py)."""
+    if not isinstance(source, dict) or not source.get('commit'):
+        return None
+    return {k: source[k] for k in ('repo', 'path', 'commit', 'license')}
+
+
 def to_v1(component, type_key, has_content=True):
     """One legacy index entry -> one v1 component."""
     path = component['path']
     slug = _slug(path)
     flag = TYPES[type_key]
     blob = 'tree' if type_key in DIRECTORY_TYPES else 'blob'
+    source = _source(component.get('source'))
     return {
         'id': f'{type_key}/{slug}',
         'type': type_key,
@@ -93,11 +101,12 @@ def to_v1(component, type_key, has_content=True):
         },
         'urls': {
             'page': f'{SITE}/component/{type_key}/{slug}',
-            'source': f'{REPO}/{blob}/main/cli-tool/components/{type_key}/{path}',
+            'source': component['source']['url'] if source else f'{REPO}/{blob}/main/cli-tool/components/{type_key}/{path}',
             'content': f'{SITE}/component-content/{type_key}/{slug}.json' if has_content else None,
         },
         'files': list(component.get('references') or []) if type_key in DIRECTORY_TYPES else None,
         'scan': _scan(component.get('skillspector')),
+        'source': source,
     }
 
 

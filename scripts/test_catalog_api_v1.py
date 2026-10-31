@@ -75,6 +75,23 @@ class ToV1Test(unittest.TestCase):
         self.assertEqual(by_id['mcps/devtools/stripe']['install']['args'], ['--mcp', 'devtools/stripe'])
         self.assertEqual(by_id['mods/ui/stack-viewer']['install']['args'], ['--mod', 'ui/stack-viewer'])
 
+    def test_external_skill_publishes_source_and_links_upstream(self):
+        commit = '7de017b3fc9d50c03cf3ecb98fb71e0ca65a78bd'
+        data = index()
+        data['skills'].append(entry('skill', 'git/babysit-pr', license='MIT', source={
+            'repo': 't3dotgg/tstack', 'path': 'skills/babysit-pr', 'commit': commit, 'license': 'MIT',
+            'url': f'https://github.com/t3dotgg/tstack/tree/{commit}/skills/babysit-pr', 'requires': []}))
+        by_id = {c['id']: c for c in v1.build_components(data)}
+        ext = by_id['skills/git/babysit-pr']
+        self.assertEqual(ext['source'], {'repo': 't3dotgg/tstack', 'path': 'skills/babysit-pr',
+                                         'commit': commit, 'license': 'MIT'})
+        self.assertEqual(ext['urls']['source'], f'https://github.com/t3dotgg/tstack/tree/{commit}/skills/babysit-pr')
+        self.assertEqual(ext['install']['args'], ['--skill', 'git/babysit-pr'])
+        self.assertIsNone(by_id['skills/development/pdf']['source'])
+        v1.validate({'catalog.json': ('catalog', {'schemaVersion': v1.SCHEMA_VERSION, 'generatedAt': '2026-10-26T00:00:00Z',
+                                                  'source': 'x', 'docs': 'https://www.aitmpl.com/developers/catalog-api',
+                                                  'count': 1, 'components': [ext]})})
+
     def test_leftover_groups_are_not_published(self):
         types = {c['type'] for c in v1.build_components(index())}
         self.assertEqual(types, {'agents', 'skills', 'mcps', 'mods'})

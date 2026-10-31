@@ -9,6 +9,15 @@ Within a major version every change is additive. A breaking change ships as a
 new major at a new path, announced here on the day it ships, and the previous
 major stays published for at least 6 months.
 
+## [1.1.0] - 2026-10-26
+
+- New component field `source` (`object | null`): set on external skills, whose
+  code lives in another GitHub repository and is downloaded by the CLI from a
+  pinned commit at install time. Holds `repo`, `path`, `commit` (40-hex sha)
+  and `license` (SPDX). `null` for every component stored in this repository.
+- For external skills `urls.source` points at the skill's folder in the
+  author's repository at that commit, instead of this repository.
+
 ## [1.0.0] - 2026-10-21
 
 First versioned release.

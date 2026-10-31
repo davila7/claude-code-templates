@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 from pathlib import Path
 from generate_trending_data import fetch_with_retry
 from skillspector_catalog import attach_skillspector
+import external_skills
 from catalog_api_v1 import write_catalog_api_v1
 
 # Load environment variables
@@ -482,7 +483,14 @@ def component_file_stats(root):
 def component_page_meta(components_base_path, ctype, component, history, previous):
     """The `meta` block of a component's content file: files, languages and its git history."""
     repo_path = f"{components_base_path}/{ctype}/{component['path']}"
-    files, languages = component_file_stats(repo_path)
+    stats_root = repo_path
+    # External skills: list the files the CLI installs (upstream, pinned commit), not the source.json.
+    if ctype == 'skills' and os.path.isdir(repo_path) and external_skills.is_external(Path(repo_path)):
+        try:
+            stats_root = str(external_skills.local_dir(Path(repo_path)))
+        except (OSError, ValueError) as e:
+            print(f"   Warning: could not materialize external skill {component['path']}: {e}")
+    files, languages = component_file_stats(stats_root)
     meta = {'files': files, 'languages': languages}
     if history is None:
         for key in ('lastCommit', 'addedAt'):
@@ -538,8 +546,23 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
                     for skill_dir in os.listdir(category_path):
                         skill_dir_path = os.path.join(category_path, skill_dir)
                         if os.path.isdir(skill_dir_path):
+                            # External skill: source.json points at a pinned commit of
+                            # another repo; read the files from the local checkout of it.
+                            source = None
+                            skill_root = skill_dir_path
+                            if external_skills.is_external(Path(skill_dir_path)):
+                                manifest = external_skills.read_manifest(Path(skill_dir_path))
+                                skill_root = str(external_skills.local_dir(Path(skill_dir_path)))
+                                source = {
+                                    'repo': manifest['repo'],
+                                    'path': manifest['path'],
+                                    'commit': manifest['commit'],
+                                    'license': manifest['license'],
+                                    'url': external_skills.source_url(manifest),
+                                    'requires': manifest['requires'],
+                                }
                             # Look for SKILL.md inside the skill directory
-                            skill_file_path = os.path.join(skill_dir_path, 'SKILL.md')
+                            skill_file_path = os.path.join(skill_root, 'SKILL.md')
                             if os.path.isfile(skill_file_path):
                                 name = skill_dir  # Use directory name as skill name
 
@@ -584,10 +607,15 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
 
                                 # Collect reference files (all files except SKILL.md)
                                 references = []
-                                for ref_file in scan_directory_recursively(skill_dir_path, skill_dir_path):
+                                for ref_file in scan_directory_recursively(skill_root, skill_root):
                                     if ref_file != 'SKILL.md':
                                         references.append(ref_file)
                                 references.sort()
+
+                                if source:
+                                    author = manifest.get('author') or author
+                                    license_field = manifest['license']
+                                    repo = f"https://github.com/{manifest['repo']}"
 
                                 # Path includes category for proper organization
                                 component = {
@@ -606,6 +634,17 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
                                     'security': security,
                                     'references': references
                                 }
+                                if source:
+                                    component['source'] = source
+                                    # The site cannot read these files from this repo, so
+                                    # they ride in the content file (like mods).
+                                    component['files'] = {}
+                                    for rel in ['SKILL.md'] + references:
+                                        try:
+                                            with open(os.path.join(skill_root, rel), 'r', encoding='utf-8') as f:
+                                                component['files'][rel] = f.read()
+                                        except (UnicodeDecodeError, OSError):
+                                            pass
                                 components_data[component_type].append(component)
                                 print(f"  Processed skill: {category}/{name}")
             continue  # Skip the normal file scanning for skills

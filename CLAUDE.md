@@ -205,6 +205,34 @@ PRs validate only the components they change; the weekly run validates the whole
 catalog. Both fail on errors: the catalog reached 0 errors on 2026-10-24. Run it
 locally with `python3 scripts/validate_components.py [--changed FILE] [--strict]`.
 
+#### External skills (code in another repo)
+
+A skill can live in its author's GitHub repo instead of being copied here. Its
+catalog folder `cli-tool/components/skills/{category}/{name}/` then holds only a
+`source.json` (`repo`, `path`, `commit`, `license`, optional `author`,
+`requires`, `include`), never a `SKILL.md`. `include` lists the files/folders
+under `path` to keep (must list `SKILL.md`; size limits of 200 files / 5 MB apply
+after filtering) for repos whose skill folder also holds demos or tests. First ones: the 9 `git/` skills from
+`t3dotgg/tstack` (2026-10-26).
+
+- `commit` must be a full 40-hex sha: never a branch or tag, so upstream changes
+  reach users only through a PR here that bumps it (the weekly
+  `external-skills-outdated.yml` keeps an issue listing newer upstream commits).
+- The CLI (`cli-tool/src/external-skill.js`) reads `source.json` from `main`,
+  lists the tree with one GitHub API call, downloads the files from
+  raw.githubusercontent at that commit and checks each against its git blob sha.
+  `requires` skills are installed too; downloads count under `skill` +
+  `{category}/{name}` like any skill.
+- Add one with `python scripts/external_skills.py add OWNER/REPO PATH CATEGORY
+  [--requires a/b ...] [--author NAME]` (resolves HEAD, checks the license).
+  `check` validates manifests (license allowlist + matches the repo's LICENSE at
+  that commit; CI runs it in `component-validate.yml`).
+- Everything that reads a skill folder (generator, SkillSpector catalog and PR
+  scans, `validate_components.py`) calls `external_skills.local_dir()`, which
+  fetches the commit with git into `.cache/external-skills/` (gitignored). The
+  generator puts the files in the component's content file (`files`) so the
+  site can show them, and `source` on the catalog entry (Catalog API v1.1.0).
+
 #### Skill Security Scanning (SkillSpector)
 
 Skills under `cli-tool/components/skills/**` are scanned for security
@@ -644,6 +672,12 @@ stranded this way before 2026-09-20. `daily-blog-discord.yml` (schedule paused 2
 `docs/blog/blog-articles.json` and links to `aitmpl.com/blog/<slug>/`, so an
 unmirrored article is posted to Discord as a 404. Keep the two
 `blog-articles.json` files identical.
+
+## Rust CLI (`cli-rust/`): in backlog
+
+Daniel's call (2026-10-28): the Rust port is in the backlog until he picks it up
+again. Do not take it into account: no parity work, no mentions of it as a gap
+or follow-up in PRs, plans or replies, and no changes to it, unless he asks.
 
 ## Code Standards
 
