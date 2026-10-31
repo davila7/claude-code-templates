@@ -104,6 +104,22 @@ export default function ComponentGrid({ initialType }: Props) {
       const saved = localStorage.getItem('claudeCodeCart');
       if (saved) setCart(JSON.parse(saved));
     } catch {}
+    // Keep in sync with the Stack sidebar (same tab) and other tabs, so the
+    // page button's Add/Remove choice reflects the current stack.
+    const onCartUpdated = (e: Event) => {
+      const detail = (e as CustomEvent<CartState>).detail;
+      if (detail) setCart(detail);
+    };
+    const onStorage = (e: StorageEvent) => {
+      if (e.key !== 'claudeCodeCart') return;
+      try { setCart(e.newValue ? JSON.parse(e.newValue) : {}); } catch {}
+    };
+    window.addEventListener('cart-updated', onCartUpdated);
+    window.addEventListener('storage', onStorage);
+    return () => {
+      window.removeEventListener('cart-updated', onCartUpdated);
+      window.removeEventListener('storage', onStorage);
+    };
   }, []);
 
 
@@ -210,6 +226,32 @@ export default function ComponentGrid({ initialType }: Props) {
       return newItems;
     });
   }, []);
+
+  // Adds or removes a set of components in one write (one localStorage save,
+  // one cart-updated event), used by the page-level Add/Remove button.
+  const setManyInCart = useCallback((components: Component[], add: boolean) => {
+    setCart((prev) => {
+      const next: CartState = { ...prev };
+      for (const component of components) {
+        const typePlural = component.type.endsWith('s') ? component.type : component.type + 's';
+        const items = next[typePlural] ?? [];
+        const exists = items.some((i) => i.path === component.path);
+        if (add && !exists) {
+          next[typePlural] = [...items, {
+            name: component.name, path: component.path, category: component.category ?? '',
+            description: component.description ?? '', icon: typePlural,
+          }];
+        } else if (!add && exists) {
+          next[typePlural] = items.filter((i) => i.path !== component.path);
+        }
+      }
+      localStorage.setItem('claudeCodeCart', JSON.stringify(next));
+      window.dispatchEvent(new CustomEvent('cart-updated', { detail: next }));
+      return next;
+    });
+  }, []);
+
+  const pageInStack = paged.length > 0 && paged.every((comp) => isInCart(comp.path, comp.type));
 
   if (loading) {
     return (
@@ -512,17 +554,12 @@ export default function ComponentGrid({ initialType }: Props) {
           {filtered.length > 0 && (
             <div className="hidden sm:flex items-center gap-2 ml-4">
               <button
-                onClick={() => {
-                  paged.forEach(comp => {
-                    if (!isInCart(comp.path, comp.type)) {
-                      toggleCart(comp);
-                    }
-                  });
-                }}
+                onClick={() => setManyInCart(paged, !pageInStack)}
                 className="text-[11px] font-semibold px-3 py-1.5 rounded-lg bg-[var(--color-surface-2)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-3)] border border-[var(--color-border)] hover:border-[var(--color-border-hover)] transition-all active:scale-95"
-                title="Add all visible components to stack"
+                title={pageInStack ? 'Remove the components on this page from your stack' : 'Add all visible components to stack'}
+                aria-pressed={pageInStack}
               >
-                + Add Page to Stack
+                {pageInStack ? '− Remove Page from Stack' : '+ Add Page to Stack'}
               </button>
             </div>
           )}
