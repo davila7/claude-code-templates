@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "pixeltable": {
+      "description": "Local MCP server for building, inspecting, and operating Pixeltable applications. Scaffold app.py, check/diff/apply schema and service updates, and inspect the catalog. Requires Python 3.11+, PIXELTABLE_MCP_PROJECT_ROOT, and PIXELTABLE_HOME.",
+      "command": "uvx",
+      "args": [
+        "--from",
+        "git+https://github.com/pixeltable/mcp-server-pixeltable-developer.git",
+        "mcp-server-pixeltable-developer"
+      ],
+      "env": {
+        "PIXELTABLE_MCP_PROJECT_ROOT": "<path-to-your-pixeltable-app>",
+        "PIXELTABLE_HOME": "<path-to-your-pixeltable-catalog>"
+      }
+    }
+  }
+}
