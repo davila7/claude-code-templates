@@ -3,7 +3,7 @@
  *
  * Keeps a record of every conversation between Claude Code sessions (one
  * session's SendMessage to another, and the replies) and draws it in a side
- * pane as a graph: a node per session, an arrow per conversation. Who was
+ * pane as a tree: a row per session, an arrow per conversation. Who was
  * talking to whom survives after those sessions close, and the selected
  * session opens again in a new terminal (`claude --resume <id>` in its folder).
  *
@@ -16,7 +16,7 @@
  * (`~/.claude/sessions/<pid>.json`) at the moment of the message. The record
  * is the mod's own store (`~/.claude/plugins/store/`), one key per session.
  *
- * Needs Claude Code >= 2.1.287 (recorded live on 2.1.312, graph drawn live on 2.1.314).
+ * Needs Claude Code >= 2.1.287 (recorded live on 2.1.312, tree drawn live on 2.1.314).
  *
  * Options (pluginConfigs["session-chats@skills-dir"].options):
  *   terminal: auto|Terminal|iTerm|tmux|copy  how Open starts the session (default auto)
@@ -30,7 +30,6 @@ import {
   asLog,
   bareAddress,
   canResume,
-  cell,
   conversations,
   emptyLog,
   findLive,
@@ -52,8 +51,8 @@ import {
   windowName,
 } from './chats.ts'
 import type { Conversation, Live, Log, Side } from './chats.ts'
-import { buildGraph, drawCells, drawSvg, layout } from './graph.ts'
-import type { Graph, Node as GraphNode, Paint, SvgColors } from './graph.ts'
+import { buildGraph, tree } from './graph.ts'
+import type { Graph, Node as GraphNode, Row } from './graph.ts'
 
 const PANE = 'session-chats'
 const COMMAND = 'chats'
@@ -68,37 +67,6 @@ const GRAY = '#b0aea5'
 const DIM = '#87867f'
 const LINE = '#5e5d59'
 const ROW_BG = '#3d3d3a'
-/** What an `Svg` source may hold. */
-const SVG_MAX = 131072
-
-const PAINT: Record<Paint, string | undefined> = {
-  node: LINE,
-  nodeSel: ORANGE,
-  name: IVORY,
-  nameSel: ORANGE,
-  sub: DIM,
-  dotOn: ORANGE,
-  dotOff: DIM,
-  edge: GRAY,
-  edgeSel: ORANGE,
-  edgeDim: DIM,
-  blank: undefined,
-}
-
-// the SVG is a picture with its own dark card, so it reads on a light or a dark panel
-const SVG_COLORS: SvgColors = {
-  bg: '#1f1e1d',
-  node: LINE,
-  nodeSel: ORANGE,
-  fill: '#30302e',
-  name: IVORY,
-  sub: DIM,
-  on: ORANGE,
-  off: DIM,
-  edge: GRAY,
-  edgeSel: ORANGE,
-  edgeDim: DIM,
-}
 
 let convs: Conversation[] = []
 let live: Live[] = []
@@ -126,7 +94,7 @@ export const register: Register = (on, options) => {
     await $.command
       .register({
         name: COMMAND,
-        description: 'Graph of the sessions that messaged each other, with a button to reopen each one (close)',
+        description: 'Tree of the sessions that messaged each other, with a button to reopen each one (close)',
         argumentHint: '[close]',
         immediate: true,
       })
@@ -249,7 +217,7 @@ export const register: Register = (on, options) => {
     const sp = spacer(e.surface)
     const noop = () => {}
     const now = await $.clock.now()
-    const { g, layers, sel } = view()
+    const { g, rows, sel } = view()
     const links = g.edges.length
 
     const top = (
@@ -278,63 +246,55 @@ export const register: Register = (on, options) => {
           </Text>
         </Box>,
       )
-    } else if (e.surface === 'terminal') {
-      const rows = drawCells(g, layers, width, sel?.key)
-      if (rows) {
-        body.push(
-          <Box key="graph" flexDirection="column" marginBottom={1}>
-            {rows.map((runs, y) => (
-              <Text key={`g${y}`} wrap="truncate-end">
-                {runs.map((run, i) => (
-                  <Text key={`r${i}`} color={PAINT[run.paint]} bold={run.paint === 'name' || run.paint === 'nameSel'}>
-                    {run.text}
-                  </Text>
-                ))}
-              </Text>
-            ))}
-          </Box>,
-        )
-      } else {
-        body.push(<Text key="narrow" color={DIM} wrap="wrap">{'Too many sessions side by side for this width: widen the pane to see the graph.'}</Text>)
-      }
-    } else {
-      const { Svg } = $.ui.resolve(e)
-      const svg = drawSvg(g, layers, sel?.key, SVG_COLORS)
-      if (svg.source.length > SVG_MAX) {
-        body.push(<Text key="narrow" color={DIM} wrap="wrap">{'Too many sessions to draw: select one below to see its links.'}</Text>)
-      } else body.push(
-        <Box key="graph" flexDirection="column" marginBottom={1}>
-          <Svg key="svg" source={svg.source} alt={`${g.nodes.length} sessions, ${links} links${sel ? `; ${label(sel.side)} selected` : ''}`} />
+    }
+
+    // the tree: one row per session, and one per link to a session shown on another row
+    const numbers = new Map<string, number>()
+    for (const r of rows) if (!r.isRef && numbers.size < 9) numbers.set(r.node.key, numbers.size + 1)
+    const lead = (r: Row) => Array.from(r.prefix).length + (r.arrow ? 2 : 0) + 2 + (numbers.has(r.node.key) && !r.isRef ? 3 : 0) + Array.from(label(r.node.side)).length
+    const col = Math.min(Math.floor(width * 0.6), Math.max(0, ...rows.map(lead)) + 2)
+    if (rows.length > 0) {
+      body.push(
+        <Box key="tree" flexDirection="column" marginBottom={1}>
+          {rows.map((r, i) => {
+            const n = r.node
+            const isSel = n.key === sel?.key
+            const touchesSel = !!r.edge && !!sel && (r.edge.from === sel.key || r.edge.to === sel.key)
+            const e2 = r.edge
+            const facts = r.isRef
+              ? ['(above)', e2 && count(e2.count), e2 && ago(e2.lastAt, now)]
+              : e2
+                ? [n.isSelf ? 'this session' : n.sub, count(e2.count), ago(e2.lastAt, now), e2.isAnswered ? '' : 'no answer']
+                : [n.isSelf ? 'this session' : n.sub]
+            const pad = ' '.repeat(Math.max(2, col - lead(r)))
+            const num = numbers.get(n.key)
+            const bg = isSel && !r.isRef ? ROW_BG : undefined
+            return (
+              <Box key={`t${i}`} flexDirection="row" width={width} backgroundColor={bg}>
+                <Text key="p" color={DIM} backgroundColor={bg}>{sp(r.prefix.slice(0, -2))}</Text>
+                <Text key="b" color={touchesSel ? ORANGE : DIM} backgroundColor={bg}>{sp(r.prefix.slice(-2) + (r.arrow ? `${r.arrow} ` : ''))}</Text>
+                {r.isRef ? (
+                  <Text key="n" color={DIM}>{sp(`  ${label(n.side)}`)}</Text>
+                ) : (
+                  [
+                    <Text key="d" color={n.isRunning ? ORANGE : DIM} backgroundColor={bg}>{n.isRunning ? '● ' : '○ '}</Text>,
+                    <Button
+                      key={`node:${hash(n.key)}`}
+                      plain
+                      hotkey={num !== undefined ? String(num) : undefined}
+                      label={label(n.side)}
+                      hover={{ color: ORANGE }}
+                      onPress={noop}
+                    />,
+                  ]
+                )}
+                <Text key="f" color={isSel ? GRAY : DIM} backgroundColor={bg} wrap="truncate-end">{sp(pad + facts.filter(Boolean).join(' · '))}</Text>
+              </Box>
+            )
+          })}
         </Box>,
       )
     }
-
-    // one row per node: what selects it (a click or its digit)
-    const nameW = Math.min(20, Math.max(4, ...g.nodes.map(n => Array.from(label(n.side)).length)))
-    const order = layers.flat()
-    body.push(
-      <Box key="nodes" flexDirection="column" marginBottom={1}>
-        {order.map((n, i) => {
-          const isSel = n.key === sel?.key
-          const bg = isSel ? ROW_BG : undefined
-          const facts = [n.isRunning ? 'running' : 'closed', n.isSelf ? 'this session' : n.sub].filter(Boolean).join(' · ')
-          return (
-            <Box key={`row${hash(n.key)}`} flexDirection="row" width={width} backgroundColor={bg}>
-              <Text key="m" color={n.isRunning ? ORANGE : DIM} backgroundColor={bg}>{sp(n.isRunning ? ' ● ' : ' ○ ')}</Text>
-              <Button
-                key={`node:${hash(n.key)}`}
-                plain
-                hotkey={i < 9 ? String(i + 1) : undefined}
-                label={sp(cell(label(n.side), nameW))}
-                hover={{ color: ORANGE }}
-                onPress={noop}
-              />
-              <Text key="f" color={DIM} backgroundColor={bg} wrap="truncate-end">{sp(`  ${facts}`)}</Text>
-            </Box>
-          )
-        })}
-      </Box>,
-    )
 
     if (sel) body.push(detail(sel, g, now, width, sp, { Box, Text, Button }))
 
@@ -348,19 +308,24 @@ export const register: Register = (on, options) => {
             <Button key="refresh" label="refresh" hotkey="r" onPress={noop} />
             <Button key="close" label="close" onPress={noop} />
           </Box>
-          <Text key="hint" color={DIM}>{sp(fit(`1–${Math.min(9, Math.max(1, order.length))} select a session · dashed: not answered yet · r refresh`, width))}</Text>
+          {numbers.size > 0 ? <Text key="hint" color={DIM}>{sp(fit(`${numbers.size === 1 ? '1' : `1–${numbers.size}`} select · → wrote first · ⇢ no answer · ↺ shown above`, width))}</Text> : null}
         </Box>
       </Box>
     )
   })
 }
 
-/** The graph the pane shows now, its layers, and the selected node (this session by default). */
-function view(): { g: Graph; layers: GraphNode[][]; sel: GraphNode | undefined } {
+/** The graph the pane shows now, its tree rows, and the selected node (this session by default). */
+function view(): { g: Graph; rows: Row[]; sel: GraphNode | undefined } {
   const g = buildGraph(convs, running, me.id, isActive)
-  const layers = layout(g)
-  const sel = g.nodes.find(n => n.key === selected) ?? g.nodes.find(n => n.isSelf) ?? layers[0]?.[0]
-  return { g, layers, sel }
+  const rows = tree(g)
+  const sel = g.nodes.find(n => n.key === selected) ?? g.nodes.find(n => n.isSelf) ?? rows[0]?.node
+  return { g, rows, sel }
+}
+
+/** `3 msgs`, `1 msg`. */
+function count(n: number): string {
+  return `${n} msg${n === 1 ? '' : 's'}`
 }
 
 type Parts = Pick<ElementTable<'terminal'>, 'Box' | 'Text' | 'Button'>

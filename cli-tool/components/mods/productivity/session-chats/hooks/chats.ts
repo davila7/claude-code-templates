@@ -294,12 +294,6 @@ export function fit(text: string, width: number): string {
   return chars.length <= w ? text : chars.slice(0, Math.max(0, w - 1)).join('') + '…'
 }
 
-/** `text` cut or padded to exactly `width` cells. */
-export function cell(text: string, width: number, align: 'left' | 'right' = 'left'): string {
-  const t = fit(text, width)
-  const pad = ' '.repeat(Math.max(0, width - Array.from(t).length))
-  return align === 'left' ? t + pad : pad + t
-}
 
 /** `3m`, `2h`, `5d`: how long ago. */
 export function ago(at: number, now: number): string {

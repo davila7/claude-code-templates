@@ -86062,7 +86062,7 @@
       "path": "productivity/session-chats",
       "category": "productivity",
       "type": "mod",
-      "description": "A side pane that draws your Claude Code sessions as a graph: one node per session, one arrow per conversation (SendMessage), dashed until the other side answers. The record is kept on disk, so it survives after the sessions close; select a session to see its links and last messages, and Open resumes it in a new terminal (claude --resume in its own folder).",
+      "description": "A side pane that shows your Claude Code sessions as a tree: which session messaged which (SendMessage), who wrote first, and which conversations have no answer yet. The record is kept on disk, so it survives after the sessions close; select a session to see its conversations and last messages, and Open resumes it in a new terminal (claude --resume in its own folder).",
       "author": "claude-code-templates",
       "repo": "https://github.com/davila7/claude-code-templates",
       "version": "0.1.0",

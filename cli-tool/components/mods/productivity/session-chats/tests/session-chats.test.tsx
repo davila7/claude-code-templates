@@ -21,7 +21,7 @@ import {
   windowName,
 } from '../hooks/chats.ts'
 import type { Conversation, Log, Side } from '../hooks/chats.ts'
-import { buildGraph, drawCells, drawSvg, layout } from '../hooks/graph.ts'
+import { buildGraph, tree } from '../hooks/graph.ts'
 
 const HOME = '/Users/me'
 const A_ID = '0efbafed-9090-44a1-9bdc-dfb80fd148bd'
@@ -157,8 +157,6 @@ describe('the graph', () => {
       [`id:${A_ID}`, `id:${B_ID}`, true],
       [`id:${B_ID}`, `id:${C.id}`, false],
     ])
-    const layers = layout(g)
-    expect(layers.map(r => r.map(n => n.side.name))).toEqual([['app-d4'], ['api-f2'], ['worker-72']])
     expect(g.nodes.find(n => n.isSelf)?.sub).toBe('this session')
     // newest first: a resumed session's new name wins over the one in an older conversation
     const renamed = buildGraph([conv(A, { ...B, name: 'api-9c' }, ['a'], 20), ...convs], new Set(), A_ID, false)
@@ -171,29 +169,25 @@ describe('the graph', () => {
     expect(g.edges.length).toBe(1)
   })
 
-  test('a cycle is laid out without looping, and drawn in cells and in SVG', () => {
-    const g = buildGraph([...convs, conv(C, A, ['a', 'b'], 9)], new Set(), A_ID, false)
-    const layers = layout(g)
-    expect(layers.flat().length).toBe(3)
-    const rows = drawCells(g, layers, 72, `id:${B_ID}`)!
-    const text = rows.map(r => r.map(x => x.text).join(''))
-    expect(text.every(t => Array.from(t).length === 72)).toBe(true)
-    expect(text.join('\n')).toContain('api-f2')
-    expect(text.join('\n')).toMatch(/▼/)
-    expect(text.join('\n')).toMatch(/┆/)
-    expect(rows.flat().some(x => x.paint === 'nodeSel')).toBe(true)
-    expect(drawCells(g, [layers.flat()], 30, undefined)).toBeUndefined()
-    const svg = drawSvg(g, layers, undefined, { bg: '#000', node: '#111', nodeSel: '#222', fill: '#333', name: '#444', sub: '#555', on: '#666', off: '#777', edge: '#888', edgeSel: '#999', edgeDim: '#aaa' })
-    expect(svg.source.startsWith('<svg')).toBe(true)
-    expect(svg.source).toContain('stroke-dasharray')
-    expect(svg.source.length).toBeLessThan(131072)
+  test('the tree starts at this session and draws each link once', () => {
+    const rows = tree(buildGraph(convs, new Set(), A_ID, false))
+    expect(rows.map(r => `${r.prefix}${r.arrow}${r.node.side.name}`)).toEqual(['app-d4', '└─→api-f2', '    └─⇢worker-72'])
   })
 
-  test('a name with markup is escaped in the SVG', () => {
-    const evil: Side = { id: '9d3c1f00-1111-4222-8333-444455556666', name: '<script>x</script>', cwd: '/tmp' }
-    const g = buildGraph([conv(A, evil, ['a'], 1)], new Set(), A_ID, false)
-    const src = drawSvg(g, layout(g), undefined, { bg: '', node: '', nodeSel: '', fill: '', name: '', sub: '', on: '', off: '', edge: '', edgeSel: '', edgeDim: '' }).source
-    expect(src).not.toContain('<script>')
+  test('a link to a session already in the tree is a reference, and other groups get their own root', () => {
+    const D: Side = { id: '1d3c1f00-1111-4222-8333-444455556666', name: 'infra-3c', cwd: '/tmp/infra' }
+    const E: Side = { id: '2d3c1f00-1111-4222-8333-444455556666', name: 'ci-88', cwd: '/tmp/ci' }
+    const rows = tree(buildGraph([...convs, conv(C, A, ['a', 'b'], 9), conv(D, E, ['a', 'b'], 3)], new Set(), A_ID, false))
+    const text = rows.map(r => `${r.prefix}${r.arrow}${r.node.side.name}`)
+    expect(text[0]).toBe('app-d4')
+    expect(text.filter(t => t.includes('↺')).length).toBe(1)
+    expect(rows.filter(r => !r.isRef).map(r => r.node.side.name).sort()).toEqual(['api-f2', 'app-d4', 'ci-88', 'infra-3c', 'worker-72'])
+    expect(text.slice(-2)).toEqual(['infra-3c', '└─→ci-88'])
+    // every link appears exactly once
+    expect(rows.filter(r => r.edge).length).toBe(4)
+  })
+
+  test('a peer name has no control bytes', () => {
     expect(label({ name: 'x\u0001\u001b[31my' })).toBe('xy')
   })
 })
@@ -258,8 +252,7 @@ test('a message and its reply show as one conversation with an Open button, on e
   await $.command.run({ command: 'chats', args: '' })
   for (const surface of ['terminal', 'desktop'] as const) {
     const ui = await $.ui.mount({ ...PANE, surface })
-    if (surface === 'terminal') expect(await ui.find({ type: 'Text', text: /╭─/ })).toBeTruthy()
-    else expect((await ui.find({ type: 'Svg' }))?.props.source).toContain('<svg')
+    expect((await ui.find({ key: 'tree' }))?.text).toMatch(/└─→\s+○\s+api-f2/)
     // this session is selected first; select B, the closed one
     await ui.press({ key: `node:${hash(`id:${B_ID}`)}` })
     expect((await ui.find({ key: 'detail' }))?.text).toMatch(/42\sverdes/)
