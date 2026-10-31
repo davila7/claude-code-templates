@@ -104,6 +104,22 @@ export default function ComponentGrid({ initialType }: Props) {
       const saved = localStorage.getItem('claudeCodeCart');
       if (saved) setCart(JSON.parse(saved));
     } catch {}
+    // Keep in sync with the Stack sidebar (same tab) and other tabs, so the
+    // page button's Add/Remove choice reflects the current stack.
+    const onCartUpdated = (e: Event) => {
+      const detail = (e as CustomEvent<CartState>).detail;
+      if (detail) setCart(detail);
+    };
+    const onStorage = (e: StorageEvent) => {
+      if (e.key !== 'claudeCodeCart') return;
+      try { setCart(e.newValue ? JSON.parse(e.newValue) : {}); } catch {}
+    };
+    window.addEventListener('cart-updated', onCartUpdated);
+    window.addEventListener('storage', onStorage);
+    return () => {
+      window.removeEventListener('cart-updated', onCartUpdated);
+      window.removeEventListener('storage', onStorage);
+    };
   }, []);
 
 
