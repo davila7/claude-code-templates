@@ -1,10 +1,6 @@
 {
   "permissions": {
     "allow": [
-      "Bash",
-      "Edit",
-      "MultiEdit",
-      "Write",
       "Bash(python:*)",
       "Bash(pip:*)",
       "Bash(pytest:*)",
@@ -22,8 +18,7 @@
       "Bash(curl:*)",
       "Bash(wget:*)",
       "Bash(rm -rf:*)"
-    ],
-    "defaultMode": "allowEdits"
+    ]
   },
   "env": {
     "BASH_DEFAULT_TIMEOUT_MS": "60000",

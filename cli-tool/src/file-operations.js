@@ -179,12 +179,18 @@ async function downloadDirectoryFromGitHub(dirPath, retryCount = 0) {
 }
 
 // Helper functions for processing downloaded content
+/** Only the hooks the user ticked; none when nothing was ticked. */
+function selectHooks(settings, templateConfig) {
+  const available = getHooksForLanguage(templateConfig.language);
+  return filterHooksBySelection(settings, templateConfig.selectedHooks, available).hooks;
+}
+
 async function processSettingsFileFromContent(settingsContent, destPath, templateConfig) {
   const settings = JSON.parse(settingsContent);
   
   // Filter hooks based on selection
   if (templateConfig.selectedHooks && settings.hooks) {
-    settings.hooks = filterHooksBySelection(settings.hooks, templateConfig.selectedHooks);
+    settings.hooks = selectHooks(settings, templateConfig);
   }
   
   const destDir = path.dirname(destPath);
@@ -202,7 +208,7 @@ async function mergeSettingsFileFromContent(settingsContent, destPath, templateC
   
   // Filter hooks based on selection
   if (templateConfig.selectedHooks && newSettings.hooks) {
-    newSettings.hooks = filterHooksBySelection(newSettings.hooks, templateConfig.selectedHooks);
+    newSettings.hooks = selectHooks(newSettings, templateConfig);
   }
   
   // Merge settings
@@ -437,7 +443,7 @@ async function copyTemplateFiles(templateConfig, targetDir, options = {}) {
           console.log(chalk.yellow(`   This is normal for some templates - continuing...`));
           failedFiles++;
         }
-      } else if (file.source.includes('.claude') && !file.source.includes('examples/')) {
+      } else if (file.source.endsWith('/.claude')) {
         // This is base .claude directory - download it but handle commands specially
         await fs.ensureDir(destPath);
         
@@ -447,7 +453,9 @@ async function copyTemplateFiles(templateConfig, targetDir, options = {}) {
           
           // Write non-command files first
           for (const [fileName, content] of Object.entries(baseClaudeFiles)) {
-            if (fileName !== 'commands') { // Skip commands directory, handle separately
+            // Commands are handled below; settings.json has its own entry that
+            // keeps only the selected hooks.
+            if (fileName !== 'commands' && fileName !== 'settings.json') {
               const destFile = path.join(destPath, fileName);
               
               // In merge mode, skip if file already exists

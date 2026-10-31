@@ -1,6 +1,6 @@
 const inquirer = require('inquirer');
 const chalk = require('chalk');
-const { select, isCancel, cancel } = require('@clack/prompts');
+const { cancel } = require('@clack/prompts');
 const fs = require('fs-extra');
 const path = require('path');
 const ora = require('ora');
@@ -61,56 +61,22 @@ function replacePythonCommands(config) {
   return config;
 }
 
-async function showMainMenu() {
-  const action = await select({
-    message: 'What would you like to do?',
-    options: [
-      { value: 'analytics', label: '📊 Analytics Dashboard', hint: 'Monitor Claude Code usage and sessions' },
-      { value: 'setup',     label: '⚙️  Project Setup',      hint: 'Configure Claude Code for your project' },
-      { value: 'agents',   label: '🤖 Agents Dashboard',    hint: 'View multi-agent collaboration sessions' },
-      { value: 'chats',    label: '💬 Chats Mobile',         hint: 'AI-first mobile interface for conversations' },
-      { value: 'health',   label: '🔍 Health Check',         hint: 'Verify your Claude Code setup' },
-    ],
-  });
-
-  if (isCancel(action)) {
-    cancel('Cancelled.');
-    process.exit(0);
-  }
-
-  if (action === 'analytics') {
-    trackingService.trackAnalyticsDashboard({ page: 'dashboard', source: 'interactive_menu' });
-    await runAnalytics({});
+async function runCatalogBrowser(options, targetDir) {
+  const { browseCatalog, equivalentCommand, printNonInteractiveHelp } = require('./catalog-browser');
+  const version = require('../package.json').version;
+  const interactive = Boolean(process.stdout.isTTY && process.stdin.isTTY) && !process.env.CI;
+  if (!interactive) {
+    printNonInteractiveHelp(version);
     return;
   }
-
-  if (action === 'chats') {
-    trackingService.trackAnalyticsDashboard({ page: 'chats-mobile', source: 'interactive_menu' });
-    await startChatsMobile({});
+  trackingService.trackCommandExecution('catalog-browser');
+  const selection = await browseCatalog({ version, targetDir });
+  if (!selection) {
+    cancel('Nothing installed.');
     return;
   }
-
-  if (action === 'agents') {
-    trackingService.trackAnalyticsDashboard({ page: 'agents', source: 'interactive_menu' });
-    await runAnalytics({ openTo: 'agents' });
-    return;
-  }
-
-  if (action === 'health') {
-    const healthResult = await runHealthCheck();
-    trackingService.trackHealthCheck({
-      setup_recommended: healthResult.runSetup,
-      issues_found: healthResult.issues || 0
-    });
-    if (healthResult.runSetup) {
-      return await createClaudeConfig({});
-    } else {
-      return await showMainMenu();
-    }
-  }
-
-  // 'setup'
-  return await createClaudeConfig({ setupFromMenu: true });
+  console.log(chalk.gray('│'));
+  await installMultipleComponents({ ...selection, skipHeader: true, repeatCommand: equivalentCommand(selection) }, targetDir);
 }
 
 async function createClaudeConfig(options = {}) {
@@ -328,14 +294,15 @@ async function createClaudeConfig(options = {}) {
       console.log(chalk.blue('⚙️  Starting Project Setup...'));
       shouldRunSetup = true;
     } else {
-      console.log(chalk.green('👍 Health check completed. Returning to main menu...'));
-      return await showMainMenu();
+      console.log(chalk.green('👍 Health check completed.'));
+      return;
     }
   }
   
-  // Add initial choice prompt (only if no specific options are provided and not continuing from health check or menu)
-  if (!shouldRunSetup && !options.setupFromMenu && !options.yes && !options.language && !options.framework && !options.dryRun) {
-    return await showMainMenu();
+  // No arguments: browse the catalog in a terminal, print usage anywhere else
+  // (agents, CI, pipes), so the command never waits for input nobody can give.
+  if (!shouldRunSetup && !options.setupFromMenu && !options.yes && !options.language && !options.framework && !options.template && !options.dryRun) {
+    return await runCatalogBrowser(options, targetDir);
   } else {
     console.log(chalk.blue('🚀 Setting up Claude Code configuration...'));
   }
@@ -371,8 +338,10 @@ async function createClaudeConfig(options = {}) {
       mcps: defaultMCPs
     };
   } else {
-    // Interactive prompts with back navigation
-    config = await interactivePrompts(projectInfo, options);
+    // Interactive prompts with back navigation (--template preselects the language)
+    config = await interactivePrompts(projectInfo, options.template && !options.language
+      ? { ...options, language: options.template }
+      : options);
   }
   
   // Check if user confirmed the setup
@@ -468,8 +437,9 @@ async function createClaudeConfig(options = {}) {
     });
   }
   
-  // Run post-installation validation
-  if (!options.dryRun) {
+  // Offer a Claude Code review of the result; never with --yes or without a
+  // terminal, where nobody can answer the prompt.
+  if (!options.dryRun && !options.yes && process.stdin.isTTY) {
     await runPostInstallationValidation(targetDir, templateConfig);
   }
   
@@ -2010,7 +1980,7 @@ async function installMultipleComponents(options, targetDir) {
       ...components.mods.map(name => ({ type: 'mod', name }))
     ];
 
-    ui.header();
+    if (!options.skipHeader) ui.header();
     ui.plan(items);
 
     // Ask for installation locations once for configuration components.
@@ -2075,7 +2045,7 @@ async function installMultipleComponents(options, targetDir) {
       }
     }
     
-    ui.summary(results, items);
+    ui.summary(results, items, { repeatCommand: options.repeatCommand });
     if (successfullyInstalled === 0) return;
 
     if (options.yaml) {
@@ -3650,4 +3620,4 @@ async function executeE2BSandbox(options, targetDir) {
   }
 }
 
-module.exports = { createClaudeConfig, showMainMenu };
+module.exports = { createClaudeConfig };

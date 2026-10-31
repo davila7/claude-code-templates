@@ -295,7 +295,7 @@ function createInstallUI({ version, targetDir }) {
     return { ok, files, detail };
   }
 
-  function summary(results, items) {
+  function summary(results, items, { repeatCommand } = {}) {
     const installed = results.filter(r => r.ok).length;
     const failed = results.length - installed;
     const seconds = ((Date.now() - startedAt) / 1000).toFixed(1);
@@ -311,6 +311,7 @@ function createInstallUI({ version, targetDir }) {
     if (failed === 0) {
       line(`${chalk.green(S_BAR_END)}  ${chalk.green.bold(`Installed ${installed} of ${results.length}`)} ${chalk.gray(`· 0 failed · ${seconds}s`)}`);
       line(`   ${chalk.gray('Next:')} run ${chalk.cyan('claude')} in this folder to use them.`);
+      if (repeatCommand) line(`   ${chalk.gray('Same install elsewhere:')} ${chalk.cyan(repeatCommand)}`);
     } else {
       const color = installed > 0 ? chalk.yellow : chalk.red;
       line(`${color(S_BAR_END)}  ${color.bold(`Installed ${installed} of ${results.length}`)} ${chalk.gray('·')} ${chalk.red(`${failed} failed`)} ${chalk.gray(`· ${seconds}s`)}`);
