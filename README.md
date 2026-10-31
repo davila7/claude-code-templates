@@ -58,42 +58,55 @@
 
 # Claude Code Templates ([aitmpl.com](https://aitmpl.com))
 
-**Ready-to-use configurations for Anthropic's Claude Code.** A comprehensive collection of AI agents, custom commands, settings, hooks, external integrations (MCPs), and project templates to enhance your development workflow.
+**Ready-to-use configurations for Anthropic's Claude Code.** An open catalog of about 1,900 components (skills, agents, slash commands, MCP integrations, settings, hooks, mods, loops, sandboxes and project templates), installable with one command.
 
 ## Browse & Install Components and Templates
 
-**[Browse All Templates](https://aitmpl.com)** - Interactive web interface to explore and install 100+ agents, commands, settings, hooks, and MCPs.
+**[Browse all components](https://aitmpl.com)**: search the catalog, preview every file a component writes, and combine several components into a single install command.
 
-<img width="1787" height="958" alt="image" src="https://github.com/user-attachments/assets/d84feaa4-f871-4843-bbee-42d8f51b2f21" />
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/readme/aitmpl-catalog-dark.png" />
+  <source media="(prefers-color-scheme: light)" srcset="docs/images/readme/aitmpl-catalog-light.png" />
+  <img src="docs/images/readme/aitmpl-catalog-dark.png" alt="The aitmpl.com component catalog" width="1600" />
+</picture>
 
 
 ## 🚀 Quick Installation
 
 ```bash
 # Install a complete development stack
-npx claude-code-templates@latest --agent development-team/frontend-developer --command testing/generate-tests --mcp development/github-integration --yes
+npx claude-code-templates@latest --agent development-team/frontend-developer --command testing/generate-tests --mcp integration/github-integration --yes
 
 # Browse and install interactively
 npx claude-code-templates@latest
 
 # Install specific components
+npx claude-code-templates@latest --skill creative-design/frontend-design --yes
 npx claude-code-templates@latest --agent development-tools/code-reviewer --yes
-npx claude-code-templates@latest --command performance/optimize-bundle --yes
-npx claude-code-templates@latest --setting performance/mcp-timeouts --yes
-npx claude-code-templates@latest --hook git/pre-commit-validation --yes
+npx claude-code-templates@latest --command performance/optimize-bundle-size --yes
+npx claude-code-templates@latest --setting mcp/mcp-timeouts --yes
+npx claude-code-templates@latest --hook git/conventional-commits --yes
 npx claude-code-templates@latest --mcp database/postgresql-integration --yes
+npx claude-code-templates@latest --mod security/secret-redactor --yes
+npx claude-code-templates@latest --loop engineering/docs-sweep-loop --yes  # also installs the components the loop uses
 ```
 
 ## What You Get
 
 | Component | Description | Examples |
 |-----------|-------------|----------|
-| **🤖 Agents** | AI specialists for specific domains | Security auditor, React performance optimizer, database architect |
-| **⚡ Commands** | Custom slash commands | `/generate-tests`, `/optimize-bundle`, `/check-security` |
-| **🔌 MCPs** | External service integrations | GitHub, PostgreSQL, Stripe, AWS, OpenAI |
-| **⚙️ Settings** | Claude Code configurations | Timeouts, memory settings, output styles |
-| **🪝 Hooks** | Automation triggers | Pre-commit validation, post-completion actions |
-| **🎨 Skills** | Reusable capabilities with progressive disclosure | PDF processing, Excel automation, custom workflows |
+| **🎨 Skills** (890+) | Reusable capabilities with progressive disclosure | PDF processing, frontend design, code review |
+| **🤖 Agents** (420+) | AI specialists for specific domains | Security auditor, frontend developer, database architect |
+| **⚡ Commands** (280+) | Custom slash commands | `/generate-tests`, `/optimize-bundle-size`, `/security-audit` |
+| **🔌 MCPs** (100+) | External service integrations | GitHub, PostgreSQL, Stripe, Supabase, Sentry |
+| **⚙️ Settings** (75+) | Claude Code configurations | Timeouts, permissions, status lines |
+| **🪝 Hooks** (60+) | Automation triggers | Conventional commits, blocking direct pushes |
+| **🧩 Mods** (45+) | Plugins that change Claude Code's own interface and behavior (Claude Code 2.1.287+) | Secret redaction, protected paths, terminal games |
+| **🔁 Loops** (18) | Autonomous workflows with a goal, an interval and a stop condition | Docs sweep, build-test-fix, adversarial review |
+| **📦 Sandboxes** (11) | Run Claude Code in an isolated environment | E2B, Cloudflare, Docker |
+| **🗂️ Templates** (14) | Complete project configurations | Language and framework setups |
+
+Current counts are in [`dashboard/public/counts.json`](dashboard/public/counts.json).
 
 ## 🛠️ Additional Tools
 
@@ -106,14 +119,14 @@ Monitor your AI-powered development sessions in real-time with live state detect
 npx claude-code-templates@latest --analytics
 ```
 
-### 💬 Conversation Monitor  
-Mobile-optimized interface to view Claude responses in real-time with secure remote access.
+### 💬 Conversation Monitor
+Mobile-optimized interface to view Claude responses in real time, with optional remote access through a Cloudflare Tunnel.
 
 ```bash
 # Local access
 npx claude-code-templates@latest --chats
 
-# Secure remote access via Cloudflare Tunnel
+# Remote access via Cloudflare Tunnel
 npx claude-code-templates@latest --chats --tunnel
 ```
 
@@ -137,7 +150,7 @@ npx claude-code-templates@latest --plugins
 
 ## Contributing
 
-We welcome contributions! **[Browse existing templates](https://aitmpl.com)** to see what's available, then check our [contributing guidelines](CONTRIBUTING.md) to add your own agents, commands, MCPs, settings, or hooks.
+We welcome contributions! **[Browse existing templates](https://aitmpl.com)** to see what's available, then check our [contributing guidelines](CONTRIBUTING.md) to add your own skills, agents, commands, MCPs, settings, hooks or mods. Every pull request is checked by Claude Code's plugin validator and scanned by [NVIDIA SkillSpector](https://github.com/NVIDIA/skillspector).
 
 **Please read our [Code of Conduct](CODE_OF_CONDUCT.md) before contributing.**
 
