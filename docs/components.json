@@ -85957,7 +85957,7 @@
       "path": "productivity/session-chats",
       "category": "productivity",
       "type": "mod",
-      "description": "A side pane with every conversation between your Claude Code sessions: who messaged whom (SendMessage), what they said, and when. The record is kept on disk, so it survives after the sessions close, and each conversation has an Open button that resumes that session in a new terminal (claude --resume in its own folder).",
+      "description": "A side pane that draws your Claude Code sessions as a graph: one node per session, one arrow per conversation (SendMessage), dashed until the other side answers. The record is kept on disk, so it survives after the sessions close; select a session to see its links and last messages, and Open resumes it in a new terminal (claude --resume in its own folder).",
       "author": "claude-code-templates",
       "repo": "https://github.com/davila7/claude-code-templates",
       "version": "0.1.0",
@@ -86014,6 +86014,7 @@
       "references": [
         ".claude-plugin/plugin.json",
         "hooks/chats.ts",
+        "hooks/graph.ts",
         "hooks/hooks.json",
         "hooks/session-chats.tsx",
         "tests/session-chats.test.tsx"

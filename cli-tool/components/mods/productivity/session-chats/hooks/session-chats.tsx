@@ -2,10 +2,10 @@
  * session-chats — Claude Mod
  *
  * Keeps a record of every conversation between Claude Code sessions (one
- * session's SendMessage to another, and the replies) and shows it in a side
- * pane, so who was talking to whom survives after those sessions close. Each
- * conversation has a button that opens a closed session again in a new
- * terminal (`claude --resume <id>` in its own folder).
+ * session's SendMessage to another, and the replies) and draws it in a side
+ * pane as a graph: a node per session, an arrow per conversation. Who was
+ * talking to whom survives after those sessions close, and the selected
+ * session opens again in a new terminal (`claude --resume <id>` in its folder).
  *
  *   `/chats` opens the pane · `/chats close` closes it
  *
@@ -16,14 +16,14 @@
  * (`~/.claude/sessions/<pid>.json`) at the moment of the message. The record
  * is the mod's own store (`~/.claude/plugins/store/`), one key per session.
  *
- * Needs Claude Code >= 2.1.287 (cross-session messages recorded live on 2.1.312).
+ * Needs Claude Code >= 2.1.287 (recorded live on 2.1.312, graph drawn live on 2.1.314).
  *
  * Options (pluginConfigs["session-chats@skills-dir"].options):
  *   terminal: auto|Terminal|iTerm|tmux|copy  how Open starts the session (default auto)
  *   keepDays: number   forget logs not written for this many days (default 90)
  *   columns:  number   width asked for the docked pane (default 72)
  */
-import type { EngineInterface, Register, RenderChildren, RenderSurface } from 'claude-code'
+import type { ElementTable, EngineInterface, Register, RenderChildren, RenderSurface } from 'claude-code'
 import {
   ago,
   appleQuote,
@@ -45,12 +45,15 @@ import {
   record,
   resumeCommand,
   shortPath,
+  sideKey,
   sideOf,
   stale,
   tmuxLiteral,
   windowName,
 } from './chats.ts'
 import type { Conversation, Live, Log, Side } from './chats.ts'
+import { buildGraph, drawCells, drawSvg, layout } from './graph.ts'
+import type { Graph, Node as GraphNode, Paint, SvgColors } from './graph.ts'
 
 const PANE = 'session-chats'
 const COMMAND = 'chats'
@@ -65,6 +68,37 @@ const GRAY = '#b0aea5'
 const DIM = '#87867f'
 const LINE = '#5e5d59'
 const ROW_BG = '#3d3d3a'
+/** What an `Svg` source may hold. */
+const SVG_MAX = 131072
+
+const PAINT: Record<Paint, string | undefined> = {
+  node: LINE,
+  nodeSel: ORANGE,
+  name: IVORY,
+  nameSel: ORANGE,
+  sub: DIM,
+  dotOn: ORANGE,
+  dotOff: DIM,
+  edge: GRAY,
+  edgeSel: ORANGE,
+  edgeDim: DIM,
+  blank: undefined,
+}
+
+// the SVG is a picture with its own dark card, so it reads on a light or a dark panel
+const SVG_COLORS: SvgColors = {
+  bg: '#1f1e1d',
+  node: LINE,
+  nodeSel: ORANGE,
+  fill: '#30302e',
+  name: IVORY,
+  sub: DIM,
+  on: ORANGE,
+  off: DIM,
+  edge: GRAY,
+  edgeSel: ORANGE,
+  edgeDim: DIM,
+}
 
 let convs: Conversation[] = []
 let live: Live[] = []
@@ -74,8 +108,10 @@ let me: Side = {}
 let home = ''
 let isOpen = false
 let note: string | undefined
-const expanded = new Set<string>()
-const folded = new Set<string>()
+/** The selected node's key; undefined selects this session. */
+let selected: string | undefined
+/** Only running sessions and the links between them. */
+let isActive = false
 let timer: { cancel: () => void } | undefined
 let keepDays = 90
 let writing: Promise<void> = Promise.resolve()
@@ -90,7 +126,7 @@ export const register: Register = (on, options) => {
     await $.command
       .register({
         name: COMMAND,
-        description: 'Conversations between your Claude Code sessions, with a button to reopen each one (close)',
+        description: 'Graph of the sessions that messaged each other, with a button to reopen each one (close)',
         argumentHint: '[close]',
         immediate: true,
       })
@@ -152,8 +188,9 @@ export const register: Register = (on, options) => {
       void reread($).then(() => $.ui.invalidate('ui.render'), () => undefined)
     })
     $.ui.invalidate('ui.render')
-    const hint = e.presentation?.isFullscreen ? 'click a conversation to open it' : 'drawn above the prompt; /tui fullscreen docks it beside the transcript'
-    return { text: `${convs.length} conversation${convs.length === 1 ? '' : 's'} · ${hint} · /${COMMAND} close` }
+    const hint = e.presentation?.isFullscreen ? 'press 1–9 to select a session' : 'drawn above the prompt; /tui fullscreen docks it beside the transcript'
+    const { g } = view()
+    return { text: `${g.nodes.length} session${g.nodes.length === 1 ? '' : 's'} · ${g.edges.length} link${g.edges.length === 1 ? '' : 's'} · ${hint} · /${COMMAND} close` }
   })
 
   on('ui.close', async ($, e, next) => {
@@ -176,23 +213,17 @@ export const register: Register = (on, options) => {
     if (key === 'refresh') {
       note = undefined
       await reread($)
-    } else if (key.startsWith('conv:')) {
-      const ck = key.slice(5)
-      const isShown = expanded.has(ck) || (!folded.has(ck) && convs[0] && hash(convs[0].key) === ck)
-      if (isShown) {
-        expanded.delete(ck)
-        folded.add(ck)
-      } else {
-        folded.delete(ck)
-        expanded.add(ck)
-      }
-    } else if (key.startsWith('open:') || key.startsWith('copy:')) {
-      const [verb, ck, end] = key.split(':')
-      const c = convs.find(x => hash(x.key) === ck)
-      const side = c && (end === 'a' ? c.a : c.b)
+    } else if (key === 'filter:all' || key === 'filter:active') {
+      isActive = key === 'filter:active'
+    } else if (key.startsWith('node:')) {
+      const n = view().g.nodes.find(x => hash(x.key) === key.slice(5))
+      if (n) selected = n.key
+      note = undefined
+    } else if (key === 'open' || key === 'copy') {
+      const side = view().sel?.side
       if (side && canResume(side)) {
         const cmd = resumeCommand(side)
-        if (verb === 'copy') {
+        if (key === 'copy') {
           const { isCopied } = await $.ui.copy({ text: cmd }).catch(() => ({ isCopied: false }))
           note = isCopied ? `copied: ${cmd}` : `run in a terminal: ${cmd}`
         } else {
@@ -218,110 +249,94 @@ export const register: Register = (on, options) => {
     const sp = spacer(e.surface)
     const noop = () => {}
     const now = await $.clock.now()
+    const { g, layers, sel } = view()
+    const links = g.edges.length
 
     const top = (
       <Box key="top" flexDirection="column" borderStyle="round" borderColor={LINE} paddingX={1} marginBottom={1}>
         <Text key="t">
           <Text color={ORANGE} bold>{'◆ '}</Text>
-          <Text bold color={IVORY}>{'Session chats'}</Text>
-          <Text color={DIM}>{sp(`   ${convs.length} conversation${convs.length === 1 ? '' : 's'}`)}</Text>
+          <Text bold color={IVORY}>{'Session flow'}</Text>
+          <Text color={DIM}>{sp(`   ${g.nodes.length} session${g.nodes.length === 1 ? '' : 's'} · ${links} link${links === 1 ? '' : 's'}`)}</Text>
         </Text>
-        <Text key="s" color={DIM} wrap="truncate-end">
-          {sp(`this session  ${label(me)}  ${shortPath(me.cwd, home, Math.max(8, width - label(me).length - 20))}`)}
-        </Text>
+        <Box key="f" flexDirection="row" columnGap={1}>
+          <Button key="filter:all" label="All" dimColor={isActive} hover={{ color: ORANGE }} onPress={noop} />
+          <Button key="filter:active" label="Active" dimColor={!isActive} hover={{ color: ORANGE }} onPress={noop} />
+        </Box>
       </Box>
     )
 
     const body: RenderChildren[] = []
-    if (convs.length === 0) {
+    if (g.nodes.length === 0) {
       body.push(
-        <Box key="empty" flexDirection="column">
-          <Text key="a" color={IVORY}>{'No conversations yet.'}</Text>
+        <Box key="empty" flexDirection="column" marginBottom={1}>
+          <Text key="a" color={IVORY}>{isActive && convs.length > 0 ? 'No running sessions in your conversations.' : 'No conversations yet.'}</Text>
           <Text key="b" color={DIM} wrap="wrap">
-            {'When a session sends a message to another one (SendMessage), or gets one, the conversation shows up here and stays after both close.'}
+            {isActive && convs.length > 0
+              ? 'Press All to see the sessions that have closed.'
+              : 'When a session sends a message to another one (SendMessage), or gets one, both show up here and stay after they close.'}
           </Text>
+        </Box>,
+      )
+    } else if (e.surface === 'terminal') {
+      const rows = drawCells(g, layers, width, sel?.key)
+      if (rows) {
+        body.push(
+          <Box key="graph" flexDirection="column" marginBottom={1}>
+            {rows.map((runs, y) => (
+              <Text key={`g${y}`} wrap="truncate-end">
+                {runs.map((run, i) => (
+                  <Text key={`r${i}`} color={PAINT[run.paint]} bold={run.paint === 'name' || run.paint === 'nameSel'}>
+                    {run.text}
+                  </Text>
+                ))}
+              </Text>
+            ))}
+          </Box>,
+        )
+      } else {
+        body.push(<Text key="narrow" color={DIM} wrap="wrap">{'Too many sessions side by side for this width: widen the pane to see the graph.'}</Text>)
+      }
+    } else {
+      const { Svg } = $.ui.resolve(e)
+      const svg = drawSvg(g, layers, sel?.key, SVG_COLORS)
+      if (svg.source.length > SVG_MAX) {
+        body.push(<Text key="narrow" color={DIM} wrap="wrap">{'Too many sessions to draw: select one below to see its links.'}</Text>)
+      } else body.push(
+        <Box key="graph" flexDirection="column" marginBottom={1}>
+          <Svg key="svg" source={svg.source} alt={`${g.nodes.length} sessions, ${links} links${sel ? `; ${label(sel.side)} selected` : ''}`} />
         </Box>,
       )
     }
 
-    convs.forEach((c, i) => {
-      const ck = hash(c.key)
-      const isShown = expanded.has(ck) || (i === 0 && !folded.has(ck))
-      const isMine = c.a.id !== undefined && c.a.id === me.id
-      const title = isMine ? label(c.b) : `${label(c.a)}  ⇄  ${label(c.b)}`
-      const when = ago(c.lastAt, now)
-      const titleW = Math.max(8, width - 4 - when.length - 1)
-      const last = c.lines[c.lines.length - 1]
-      const count = `${c.lines.length} message${c.lines.length === 1 ? '' : 's'}`
-      const facts = isMine
-        ? withPath([state(c.b), count].filter(Boolean).join(' · '), c.b.cwd, width - 3)
-        : [`${folder(c.a.cwd)} ⇄ ${folder(c.b.cwd)}`, count].join(' · ')
-
-      const rows: RenderChildren[] = [
-        <Box key="h" flexDirection="row" width={width} backgroundColor={ROW_BG}>
-          <Text key="m" color={ORANGE} backgroundColor={ROW_BG} bold>{sp(isShown ? ' ▾ ' : ' ▸ ')}</Text>
-          <Button key={`conv:${ck}`} plain label={sp(cell(title, titleW))} hover={{ color: ORANGE }} onPress={noop} />
-          <Text key="w" color={GRAY} backgroundColor={ROW_BG}>{sp(cell(when, when.length + 1, 'right'))}</Text>
-        </Box>,
-        <Text key="f" color={DIM} wrap="truncate-end">{sp(`   ${fit(facts, width - 3)}`)}</Text>,
-      ]
-
-      if (!isShown && last) {
-        rows.push(
-          <Text key="p" wrap="truncate-end">
-            <Text color={ORANGE}>{sp(isMine ? `   ${last.by === 'a' ? '→' : '←'} ` : `   ${label(last.by === 'a' ? c.a : c.b)}: `)}</Text>
-            <Text color={GRAY}>{sp(oneLine(last.text))}</Text>
-          </Text>,
-        )
-      }
-
-      if (isShown) {
-        const shown = c.lines.slice(-8)
-        if (c.lines.length > shown.length) rows.push(<Text key="more" color={DIM}>{sp(`   … ${c.lines.length - shown.length} earlier`)}</Text>)
-        shown.forEach((m, j) => {
-          const who = m.by === 'a' ? (isMine ? 'you' : label(c.a)) : label(c.b)
-          rows.push(
-            <Box key={`l${j}`} flexDirection="column" marginTop={j === 0 ? 1 : 0}>
-              <Text key="w">
-                <Text color={m.by === 'a' && isMine ? ORANGE : IVORY} bold>{sp(`   ${who}`)}</Text>
-                <Text color={DIM}>{sp(`  ${clock(m.at)}`)}</Text>
-              </Text>
-              <Box key="t" paddingLeft={3}>
-                <Text color={GRAY} wrap="wrap">
-                  {fit(m.text, 600)}
-                </Text>
-              </Box>
-            </Box>,
+    // one row per node: what selects it (a click or its digit)
+    const nameW = Math.min(20, Math.max(4, ...g.nodes.map(n => Array.from(label(n.side)).length)))
+    const order = layers.flat()
+    body.push(
+      <Box key="nodes" flexDirection="column" marginBottom={1}>
+        {order.map((n, i) => {
+          const isSel = n.key === sel?.key
+          const bg = isSel ? ROW_BG : undefined
+          const facts = [n.isRunning ? 'running' : 'closed', n.isSelf ? 'this session' : n.sub].filter(Boolean).join(' · ')
+          return (
+            <Box key={`row${hash(n.key)}`} flexDirection="row" width={width} backgroundColor={bg}>
+              <Text key="m" color={n.isRunning ? ORANGE : DIM} backgroundColor={bg}>{sp(n.isRunning ? ' ● ' : ' ○ ')}</Text>
+              <Button
+                key={`node:${hash(n.key)}`}
+                plain
+                hotkey={i < 9 ? String(i + 1) : undefined}
+                label={sp(cell(label(n.side), nameW))}
+                hover={{ color: ORANGE }}
+                onPress={noop}
+              />
+              <Text key="f" color={DIM} backgroundColor={bg} wrap="truncate-end">{sp(`  ${facts}`)}</Text>
+            </Box>
           )
-        })
-        const ends: ['a' | 'b', Side][] = isMine ? [['b', c.b]] : [['a', c.a], ['b', c.b]]
-        const nameW = Math.min(18, Math.max(...ends.map(([, s]) => Array.from(label(s)).length)))
-        ends.forEach(([end, s], j) => {
-          const st = state(s)
-          const lead = <Text key="n" color={IVORY}>{sp(`   ${cell(label(s), nameW)}  `)}</Text>
-          let row: RenderChildren
-          if (!canResume(s)) {
-            const why = s.address && !s.address.startsWith('uds:') ? 'remote session, not on this machine' : 'session id unknown'
-            row = [lead, <Text key="x" color={DIM}>{sp(why)}</Text>]
-          } else if (st) {
-            row = [lead, <Text key="x" color={DIM}>{sp(`${st}  `)}</Text>, <Button key={`copy:${ck}:${end}`} label="copy command" hover={{ color: ORANGE }} onPress={noop} />]
-          } else {
-            row = [lead, <Button key={`open:${ck}:${end}`} label={sp('Open ↗')} hover={{ color: ORANGE }} onPress={noop} />, <Text key="g">{' '}</Text>, <Button key={`copy:${ck}:${end}`} label="copy command" hover={{ color: ORANGE }} onPress={noop} />]
-          }
-          rows.push(
-            <Box key={`act${end}`} flexDirection="row" marginTop={j === 0 ? 1 : 0}>
-              {row}
-            </Box>,
-          )
-        })
-      }
+        })}
+      </Box>,
+    )
 
-      body.push(
-        <Box key={`c${ck}`} flexDirection="column" marginBottom={1}>
-          {rows}
-        </Box>,
-      )
-    })
+    if (sel) body.push(detail(sel, g, now, width, sp, { Box, Text, Button }))
 
     return (
       <Box flexDirection="column">
@@ -333,11 +348,86 @@ export const register: Register = (on, options) => {
             <Button key="refresh" label="refresh" hotkey="r" onPress={noop} />
             <Button key="close" label="close" onPress={noop} />
           </Box>
-          <Text key="hint" color={DIM}>{sp(fit('click a conversation to open or fold it · Open resumes a closed session in a new terminal', width))}</Text>
+          <Text key="hint" color={DIM}>{sp(fit(`1–${Math.min(9, Math.max(1, order.length))} select a session · dashed: not answered yet · r refresh`, width))}</Text>
         </Box>
       </Box>
     )
   })
+}
+
+/** The graph the pane shows now, its layers, and the selected node (this session by default). */
+function view(): { g: Graph; layers: GraphNode[][]; sel: GraphNode | undefined } {
+  const g = buildGraph(convs, running, me.id, isActive)
+  const layers = layout(g)
+  const sel = g.nodes.find(n => n.key === selected) ?? g.nodes.find(n => n.isSelf) ?? layers[0]?.[0]
+  return { g, layers, sel }
+}
+
+type Parts = Pick<ElementTable<'terminal'>, 'Box' | 'Text' | 'Button'>
+
+/** The selected session: its links, the last message on each, and Open. */
+function detail(n: GraphNode, g: Graph, now: number, width: number, sp: (s: string) => string, { Box, Text, Button }: Parts): RenderChildren {
+  const noop = () => {}
+  const s = n.side
+  const mine = g.edges.filter(x => x.from === n.key || x.to === n.key).sort((x, y) => y.lastAt - x.lastAt)
+  const byKey = new Map(g.nodes.map(x => [x.key, x]))
+  const st = state(s)
+  const where = shortPath(s.cwd, home, Math.max(8, width - 6))
+
+  const rows: RenderChildren[] = [
+    <Text key="n">
+      <Text color={n.isRunning ? ORANGE : DIM}>{n.isRunning ? '● ' : '○ '}</Text>
+      <Text color={IVORY} bold>{label(s)}</Text>
+      <Text color={DIM}>{sp(`  ${n.isSelf ? 'this session' : st ?? 'closed'}`)}</Text>
+    </Text>,
+  ]
+  if (s.cwd) rows.push(<Text key="p" color={DIM} wrap="truncate-end">{sp(where)}</Text>)
+
+  mine.forEach((x, i) => {
+    const isOut = x.from === n.key
+    const other = byKey.get(isOut ? x.to : x.from)
+    const last = x.conv.lines[x.conv.lines.length - 1]
+    // conversations() puts this session on side a; any other node can be either
+    const lastIsOther = last && (sideKey(last.by === 'a' ? x.conv.a : x.conv.b) !== n.key)
+    const facts = `${x.count} message${x.count === 1 ? '' : 's'} · ${ago(x.lastAt, now)}${x.isAnswered ? '' : ' · not answered yet'}`
+    rows.push(
+      <Box key={`l${i}`} flexDirection="column" marginTop={i === 0 ? 1 : 0}>
+        <Text key="h" wrap="truncate-end">
+          <Text color={ORANGE}>{isOut ? '↗ ' : '↙ '}</Text>
+          <Text color={IVORY}>{sp(`${isOut ? 'to' : 'from'} ${other ? label(other.side) : '?'}`)}</Text>
+          <Text color={DIM}>{sp(`  ${facts}`)}</Text>
+        </Text>
+        {last ? (
+          <Text key="m" wrap="truncate-end">
+            <Text color={DIM}>{sp(`  ${lastIsOther ? `${other ? label(other.side) : '?'}: ` : ''}`)}</Text>
+            <Text color={GRAY}>{sp(oneLine(last.text))}</Text>
+          </Text>
+        ) : null}
+      </Box>,
+    )
+  })
+
+  let actions: RenderChildren
+  if (n.isSelf) {
+    actions = null
+  } else if (!canResume(s)) {
+    actions = <Text key="x" color={DIM}>{s.address && !s.address.startsWith('uds:') ? 'remote session, not on this machine' : 'session id unknown: cannot reopen it'}</Text>
+  } else if (st) {
+    actions = [<Text key="x" color={DIM}>{sp('still running  ')}</Text>, <Button key="copy" label="copy command" hover={{ color: ORANGE }} onPress={noop} />]
+  } else {
+    actions = [<Button key="open" label={sp('Open ↗')} hotkey="o" hover={{ color: ORANGE }} onPress={noop} />, <Text key="g">{' '}</Text>, <Button key="copy" label="copy command" hover={{ color: ORANGE }} onPress={noop} />]
+  }
+
+  return (
+    <Box key="detail" flexDirection="column" borderStyle="round" borderColor={ORANGE} paddingX={1} marginBottom={1}>
+      {rows}
+      {actions ? (
+        <Box key="act" flexDirection="row" marginTop={1}>
+          {actions}
+        </Box>
+      ) : null}
+    </Box>
+  )
 }
 
 /** Reads the registry and every session's log again. */
@@ -451,25 +541,6 @@ async function openTerminal(
   } catch {
     return undefined
   }
-}
-
-/** `facts · path`, the path cut at the front to fit `width`. */
-function withPath(facts: string, path: string | undefined, width: number): string {
-  const room = width - Array.from(facts).length - 3
-  return path && room >= 8 ? `${facts} · ${shortPath(path, home, room)}` : facts
-}
-
-/** The last folder of a path: `api`. */
-function folder(path: string | undefined): string {
-  return path ? path.replace(/[\\/]+$/, '').split(/[\\/]/).pop() || path : '?'
-}
-
-/** `15:48`, or `Oct 27` for another day. */
-function clock(at: number): string {
-  const d = new Date(at)
-  const today = new Date()
-  if (d.toDateString() === today.toDateString()) return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 }
 
 /** Desktop and the remote surfaces collapse runs of spaces; keep them. */

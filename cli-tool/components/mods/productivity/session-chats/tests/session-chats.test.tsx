@@ -9,6 +9,7 @@ import {
   findLive,
   findSelf,
   hash,
+  label,
   looksLikeSession,
   parseEnvelope,
   parseRegistry,
@@ -19,7 +20,8 @@ import {
   tmuxLiteral,
   windowName,
 } from '../hooks/chats.ts'
-import type { Log, Side } from '../hooks/chats.ts'
+import type { Conversation, Log, Side } from '../hooks/chats.ts'
+import { buildGraph, drawCells, drawSvg, layout } from '../hooks/graph.ts'
 
 const HOME = '/Users/me'
 const A_ID = '0efbafed-9090-44a1-9bdc-dfb80fd148bd'
@@ -136,6 +138,66 @@ describe('opening a session again', () => {
   })
 })
 
+describe('the graph', () => {
+  const C: Side = { id: '7d3c1f00-1111-4222-8333-444455556666', name: 'worker-72', cwd: `${HOME}/worker` }
+  const conv = (a: Side, b: Side, by: ('a' | 'b')[], at: number): Conversation => ({
+    key: [`id:${a.id}`, `id:${b.id}`].sort().join('|'),
+    a,
+    b,
+    firstAt: at,
+    lastAt: at + by.length,
+    lines: by.map((x, i) => ({ at: at + i, by: x, text: `m${i}` })),
+  })
+  const convs = [conv(A, B, ['a', 'b'], 1), conv(B, C, ['a'], 5)]
+
+  test('the first writer points at the other; an unanswered link is marked', () => {
+    const g = buildGraph(convs, new Set([B_ID]), A_ID, false)
+    expect(g.nodes.length).toBe(3)
+    expect(g.edges.map(e => [e.from, e.to, e.isAnswered])).toEqual([
+      [`id:${A_ID}`, `id:${B_ID}`, true],
+      [`id:${B_ID}`, `id:${C.id}`, false],
+    ])
+    const layers = layout(g)
+    expect(layers.map(r => r.map(n => n.side.name))).toEqual([['app-d4'], ['api-f2'], ['worker-72']])
+    expect(g.nodes.find(n => n.isSelf)?.sub).toBe('this session')
+    // newest first: a resumed session's new name wins over the one in an older conversation
+    const renamed = buildGraph([conv(A, { ...B, name: 'api-9c' }, ['a'], 20), ...convs], new Set(), A_ID, false)
+    expect(renamed.nodes.find(n => n.side.id === B_ID)?.side.name).toBe('api-9c')
+  })
+
+  test('Active keeps the running sessions and the links between them', () => {
+    const g = buildGraph(convs, new Set([B_ID]), A_ID, true)
+    expect(g.nodes.map(n => n.side.name).sort()).toEqual(['api-f2', 'app-d4'])
+    expect(g.edges.length).toBe(1)
+  })
+
+  test('a cycle is laid out without looping, and drawn in cells and in SVG', () => {
+    const g = buildGraph([...convs, conv(C, A, ['a', 'b'], 9)], new Set(), A_ID, false)
+    const layers = layout(g)
+    expect(layers.flat().length).toBe(3)
+    const rows = drawCells(g, layers, 72, `id:${B_ID}`)!
+    const text = rows.map(r => r.map(x => x.text).join(''))
+    expect(text.every(t => Array.from(t).length === 72)).toBe(true)
+    expect(text.join('\n')).toContain('api-f2')
+    expect(text.join('\n')).toMatch(/▼/)
+    expect(text.join('\n')).toMatch(/┆/)
+    expect(rows.flat().some(x => x.paint === 'nodeSel')).toBe(true)
+    expect(drawCells(g, [layers.flat()], 30, undefined)).toBeUndefined()
+    const svg = drawSvg(g, layers, undefined, { bg: '#000', node: '#111', nodeSel: '#222', fill: '#333', name: '#444', sub: '#555', on: '#666', off: '#777', edge: '#888', edgeSel: '#999', edgeDim: '#aaa' })
+    expect(svg.source.startsWith('<svg')).toBe(true)
+    expect(svg.source).toContain('stroke-dasharray')
+    expect(svg.source.length).toBeLessThan(131072)
+  })
+
+  test('a name with markup is escaped in the SVG', () => {
+    const evil: Side = { id: '9d3c1f00-1111-4222-8333-444455556666', name: '<script>x</script>', cwd: '/tmp' }
+    const g = buildGraph([conv(A, evil, ['a'], 1)], new Set(), A_ID, false)
+    const src = drawSvg(g, layout(g), undefined, { bg: '', node: '', nodeSel: '', fill: '', name: '', sub: '', on: '', off: '', edge: '', edgeSel: '', edgeDim: '' }).source
+    expect(src).not.toContain('<script>')
+    expect(label({ name: 'x\u0001\u001b[31my' })).toBe('xy')
+  })
+})
+
 const PANE = {
   plugin: 'session-chats',
   component: 'Pane',
@@ -174,6 +236,7 @@ function engine(on: On, files: Record<string, string>) {
   on('command.register', () => ({ value: { command: 'chats' } }))
   on('ui.open', () => ({ value: { isPlaced: true } }))
   on('ui.copy', () => ({ value: { isCopied: true } }))
+  on('ui.toast', () => ({ value: undefined }))
   on('session.send', () => ({ isDelivered: true }))
   on('session.receive', (_, e) => ({ text: e.text }))
   return { store, runs }
@@ -195,10 +258,13 @@ test('a message and its reply show as one conversation with an Open button, on e
   await $.command.run({ command: 'chats', args: '' })
   for (const surface of ['terminal', 'desktop'] as const) {
     const ui = await $.ui.mount({ ...PANE, surface })
-    expect((await ui.find({ type: 'Text', text: /42 verdes/ }))?.text).toContain('42 verdes')
+    if (surface === 'terminal') expect(await ui.find({ type: 'Text', text: /╭─/ })).toBeTruthy()
+    else expect((await ui.find({ type: 'Svg' }))?.props.source).toContain('<svg')
+    // this session is selected first; select B, the closed one
+    await ui.press({ key: `node:${hash(`id:${B_ID}`)}` })
+    expect((await ui.find({ key: 'detail' }))?.text).toMatch(/42\sverdes/)
     // kill -0 failed: B is closed, so it can be opened
-    const key = [`id:${A_ID}`, `id:${B_ID}`].sort().join('|')
-    await ui.press({ key: `open:${hash(key)}:b` })
+    await ui.press({ key: 'open' })
     await ui.unmount()
   }
   const tmux = runs.find(r => r[0] === 'tmux')

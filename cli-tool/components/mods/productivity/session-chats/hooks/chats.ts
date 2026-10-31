@@ -183,7 +183,7 @@ export function record(log: Log, self: Side, peer: Side, msg: Msg, now: number, 
 // ---------------------------------------------------------------------------
 // reading it back
 
-function sideKey(s: Side): string {
+export function sideKey(s: Side): string {
   return s.id ? `id:${s.id}` : s.address ? `a:${s.address}` : `n:${s.name ?? '?'}`
 }
 
@@ -320,7 +320,9 @@ export function shortPath(path: string | undefined, home: string, width: number)
 
 /** What a side is called in the pane. */
 export function label(s: Side): string {
-  return s.name ?? (s.id ? s.id.slice(0, 8) : s.address?.replace(/^uds:.*\//, '') ?? 'unknown')
+  const raw = s.name ?? (s.id ? s.id.slice(0, 8) : s.address?.replace(/^uds:.*\//, '') ?? 'unknown')
+  // a peer names itself: no control bytes, and short
+  return Array.from(clean(raw)).slice(0, 60).join('') || 'unknown'
 }
 
 /** The message on one line. */
