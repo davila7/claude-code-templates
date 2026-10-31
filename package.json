@@ -53,6 +53,7 @@
     "cli-tool/bin/",
     "cli-tool/src/",
     "cli-tool/components/sandbox/",
+    "cli-tool/templates/",
     "cli-tool/package.json",
     "README.md"
   ]

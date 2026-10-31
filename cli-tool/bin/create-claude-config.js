@@ -64,7 +64,10 @@ program
                             options.updateAgent ||
                             isComponentInstall;
       
-      if (!isQuietCommand) {
+      // No arguments opens the catalog browser, which prints its own header
+      // (or plain usage text when there is no terminal).
+      const isBareRun = process.argv.length <= 2;
+      if (!isQuietCommand && !isBareRun) {
         showBanner(pkg.version);
       }
       

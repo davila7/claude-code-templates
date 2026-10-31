@@ -15,8 +15,7 @@ const TEMPLATES_CONFIG = {
     files: [
       { source: 'javascript-typescript/CLAUDE.md', destination: 'CLAUDE.md' },
       { source: 'javascript-typescript/.claude', destination: '.claude' },
-      { source: 'javascript-typescript/.claude/settings.json', destination: '.claude/settings.json' },
-      { source: 'javascript-typescript/.mcp.json', destination: '.mcp.json' }
+      { source: 'javascript-typescript/.claude/settings.json', destination: '.claude/settings.json' }
     ],
     frameworks: {
       'react': {
@@ -51,8 +50,7 @@ const TEMPLATES_CONFIG = {
     files: [
       { source: 'python/CLAUDE.md', destination: 'CLAUDE.md' },
       { source: 'python/.claude', destination: '.claude' },
-      { source: 'python/.claude/settings.json', destination: '.claude/settings.json' },
-      { source: 'python/.mcp.json', destination: '.mcp.json' }
+      { source: 'python/.claude/settings.json', destination: '.claude/settings.json' }
     ],
     frameworks: {
       'django': {
@@ -82,8 +80,7 @@ const TEMPLATES_CONFIG = {
     files: [
       { source: 'ruby/CLAUDE.md', destination: 'CLAUDE.md' },
       { source: 'ruby/.claude', destination: '.claude' },
-      { source: 'ruby/.claude/settings.json', destination: '.claude/settings.json' },
-      { source: 'ruby/.mcp.json', destination: '.mcp.json' }
+      { source: 'ruby/.claude/settings.json', destination: '.claude/settings.json' }
     ],
     frameworks: {
       'rails': {
@@ -106,7 +103,6 @@ const TEMPLATES_CONFIG = {
     description: 'Optimized for Rust development',
     comingSoon: true,
     files: [
-      { source: 'rust/.mcp.json', destination: '.mcp.json' }
     ]
   },
   'go': {
@@ -114,7 +110,6 @@ const TEMPLATES_CONFIG = {
     description: 'Optimized for Go development', 
     comingSoon: true,
     files: [
-      { source: 'go/.mcp.json', destination: '.mcp.json' }
     ]
   }
 };
