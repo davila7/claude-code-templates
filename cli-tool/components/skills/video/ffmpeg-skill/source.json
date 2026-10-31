@@ -1,0 +1,19 @@
+{
+  "repo": "kajisho5/ffmpeg-skill",
+  "path": "",
+  "commit": "1ae1bdf1ca0adbb1606fbca493948b1bbb2f83ff",
+  "license": "MIT",
+  "author": "Shogo Kajiyama",
+  "include": [
+    "SKILL.md",
+    "LICENSE",
+    "scripts",
+    "templates",
+    "references/scripts.md",
+    "references/devices.md",
+    "references/ci-platform-pitfalls.md",
+    "references/gotchas.md",
+    "docs/contract.md",
+    "mcp"
+  ]
+}
