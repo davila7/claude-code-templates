@@ -68,11 +68,13 @@ REPOS = [
     ("curviate/curviate-plugin", "https://curviate.com/"),
     ("firecrawl/firecrawl-claude-plugin", "https://www.firecrawl.dev/integrations/claude-code?utm_source=claude-code-templates&utm_medium=integration"),
     ("annavetech/kumi", "https://docs.annave.tech/kumi/"),
+    ("eurafaeldecarvalho/aplica", "https://eurafaeldecarvalho.github.io/aplica/"),
 ]
 
 DESCRIPTION_OVERRIDES = {
     "cohesivity-org/cohesivity-plugin": "cohesivity.ai offers free agent native backend services. Anonymous account (no-signup) to get started through MCP or API. Hosting, postgres, email, storage, containers, LLMs, voice and third-party APIs. Includes free tiers and 5 USD/mo in AI and Search credits. topups through x402.",
     "firecrawl/firecrawl-claude-plugin": "Search the web, developer sources, and scientific papers with Firecrawl.",
+    "eurafaeldecarvalho/aplica": "Job search plugin that scores public postings against your profile and applies in your own logged-in Chrome with your real data, under daily caps. Needs a paid Claude plan; job sites restrict automation, so accounts can be limited.",
 }
 
 OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "..", "dashboard", "public", "plugins.json")
