@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "lumi-app-finder": {
+      "description": "Finds which Lumi Studio iPhone or iPad app fits a task in learning, productivity, photo, travel, or wellness, using a read-only first-party catalog of 29 verified live apps across all 50 Apple locales. Returns localized publisher-authored evidence, purchase model, and direct App Store links; it is not an independent ranking. Fetches public catalog data over HTTPS without sending the user's query and falls back to a bundled snapshot. No account, API key, or analytics; requires Node.js 20+.",
+      "command": "npx",
+      "args": [
+        "-y",
+        "https://codeload.github.com/alice51849/lumi-mcp/tar.gz/89d5cf5c13cb943163267b8ddcd62e6164971578"
+      ]
+    }
+  }
+}
