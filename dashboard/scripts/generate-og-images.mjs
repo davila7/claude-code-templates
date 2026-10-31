@@ -9,23 +9,23 @@
 //
 // Usage: node scripts/generate-og-images.mjs [--only type/path ...] [--out dir]
 
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { readFileSync, writeFileSync, mkdirSync, existsSync, statSync, readdirSync } from 'node:fs';
+import { dirname, join, extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 import { availableParallelism } from 'node:os';
 import { Worker, isMainThread, workerData } from 'node:worker_threads';
 import satori from 'satori';
 import { Resvg } from '@resvg/resvg-js';
-import { ICONS, TYPE_CONFIG } from '../src/lib/icons.ts';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+const COMPONENTS_DIR = join(ROOT, '..', 'cli-tool', 'components');
 const WIDTH = 1200;
 const HEIGHT = 630;
 // Bump when the design changes so cached images are re-rendered.
-const DESIGN_VERSION = '1';
+const DESIGN_VERSION = '2';
 
-// Pill label per type: "Subagent" is Claude Code's own name for agents.
+// Stat label per type: "Subagent" is Claude Code's own name for agents.
 const TYPE_LABEL = {
   skills: 'Skill',
   agents: 'Subagent',
@@ -37,6 +37,15 @@ const TYPE_LABEL = {
   mods: 'Mod',
 };
 
+// Anthropic palette only: cream card, dark ink, orange as the one accent.
+const C = { bg: '#FAF9F5', ink: '#141413', muted: '#5E5D59', faint: '#87867F' };
+// Language bar segments, largest first: orange, then palette neutrals.
+const BAR_COLORS = ['#D97757', '#B0AEA5', '#C6613F', '#E8E6DC', '#5E5D59'];
+const LANGUAGE = {
+  '.md': 'Markdown', '.ts': 'TypeScript', '.tsx': 'TypeScript', '.js': 'JavaScript', '.mjs': 'JavaScript',
+  '.json': 'JSON', '.py': 'Python', '.sh': 'Shell', '.txt': 'Text', '.yaml': 'YAML', '.yml': 'YAML',
+};
+
 const args = process.argv.slice(2);
 const argValue = (flag) => {
   const i = args.indexOf(flag);
@@ -45,86 +54,106 @@ const argValue = (flag) => {
 const only = args.flatMap((a, i) => (args[i - 1] === '--only' ? [a] : []));
 const outDir = argValue('--out') ?? join(ROOT, 'public', 'og');
 
-const fontDir = join(ROOT, 'node_modules', 'geist', 'dist', 'fonts');
+const fontDir = join(ROOT, 'node_modules', 'geist', 'dist', 'fonts', 'geist-sans');
 const fonts = [
-  { name: 'Geist', weight: 700, data: readFileSync(join(fontDir, 'geist-sans', 'Geist-Bold.ttf')) },
-  { name: 'Geist', weight: 500, data: readFileSync(join(fontDir, 'geist-sans', 'Geist-Medium.ttf')) },
-  { name: 'Geist Mono', weight: 400, data: readFileSync(join(fontDir, 'geist-mono', 'GeistMono-Regular.ttf')) },
+  { name: 'Geist', weight: 400, data: readFileSync(join(fontDir, 'Geist-Regular.ttf')) },
+  { name: 'Geist', weight: 600, data: readFileSync(join(fontDir, 'Geist-SemiBold.ttf')) },
+  { name: 'Geist', weight: 700, data: readFileSync(join(fontDir, 'Geist-Bold.ttf')) },
 ];
 
 const h = (type, style, children) => ({ type, props: { style, children } });
+const el = (type, props) => ({ type, props });
 
-function formatName(name) {
-  return name.replace(/\.(md|json)$/, '').replace(/[-_]/g, ' ')
-    .split(' ').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+// The favicon (public/favicon.svg) drawn at `size`.
+function logo(size) {
+  const s = size / 32;
+  const block = (x, y, w, rx) => el('rect', { x: x * s, y: y * s, width: w * s, height: w * s, rx: rx * s, fill: C.bg });
+  return el('svg', {
+    width: size, height: size, viewBox: `0 0 ${size} ${size}`,
+    children: [
+      el('rect', { x: 0, y: 0, width: size, height: size, rx: 7 * s, fill: C.ink }),
+      block(7, 7, 8, 1.6), block(17, 17, 8, 1.6), block(7, 17, 8, 1.6),
+      el('rect', { x: 18 * s, y: 8 * s, width: 6 * s, height: 6 * s, rx: 1.2 * s, fill: 'none', stroke: C.bg, strokeWidth: 2 * s }),
+    ],
+  });
 }
 
-// The site's type icons (src/lib/icons.ts) as satori elements: an <img> of
-// the SVG string does not survive the resvg pass, inline elements do.
-function iconElement(typeKey, color, size) {
-  const svg = ICONS[typeKey];
-  const attrs = (str) => Object.fromEntries([...str.matchAll(/([\w-]+)="([^"]*)"/g)]
-    .map(([, k, v]) => [k.replace(/-(\w)/g, (_, c) => c.toUpperCase()), v === 'currentColor' ? color : v]));
-  const root = attrs(svg.slice(0, svg.indexOf('>')));
-  const children = [...svg.matchAll(/<(path|circle|rect|line|polyline|polygon)\b([^>]*?)\/>/g)]
-    .map(([, tag, a]) => ({ type: tag, props: attrs(a) }));
-  return { type: 'svg', props: { ...root, width: size, height: size, children } };
-}
+const ICON = {
+  downloads: 'M12 4v11m0 0l-4.5-4.5M12 15l4.5-4.5M5 19.5h14',
+  type: 'M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3zm0 0v18M4 7.5l8 4.5 8-4.5',
+  files: 'M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8l-5-5zm0 0v5h5',
+  version: 'M3.5 12.6V5a1.5 1.5 0 011.5-1.5h7.6l8 8a1.5 1.5 0 010 2.1l-7.6 7.6a1.5 1.5 0 01-2.1 0l-7.4-7.6zM8 8h.01',
+};
 
-// Long titles step down in size so they fit in three lines.
-function titleSize(title) {
-  if (title.length <= 20) return 96;
-  if (title.length <= 32) return 84;
-  return 70;
-}
-
-function card({ typeKey, title, category, command }) {
-  const color = TYPE_CONFIG[typeKey].color;
-  const size = titleSize(title);
-
-  return h('div', {
-    width: WIDTH, height: HEIGHT, display: 'flex', flexDirection: 'column', fontFamily: 'Geist',
-    backgroundColor: '#161616',
-    // Faint glow in the type's color behind the icon.
-    backgroundImage: `radial-gradient(circle at 140px 170px, ${color}30 0%, ${color}00 420px)`,
-  }, [
-    h('div', { display: 'flex', flexDirection: 'row', alignItems: 'flex-start', padding: '96px 96px 0 96px', flexGrow: 1 }, [
-      h('div', {
-        width: 92, height: 92, borderRadius: 22, display: 'flex', alignItems: 'center', justifyContent: 'center',
-        backgroundColor: '#1d1d1d', border: `1.5px solid ${color}66`, marginRight: 40, flexShrink: 0,
-      }, [iconElement(typeKey, color, 50)]),
-      h('div', { display: 'flex', flexDirection: 'column', flexGrow: 1, flexShrink: 1, maxWidth: 880 }, [
-        h('div', { display: 'flex', marginTop: 2 }, [
-          h('div', {
-            display: 'flex', alignItems: 'center', fontFamily: 'Geist Mono', fontSize: 24, color: '#b5b5b5',
-            border: '1.5px solid #353535', borderRadius: 999, padding: '7px 20px', backgroundColor: '#1c1c1c',
-          }, [
-            h('span', { color }, TYPE_LABEL[typeKey]),
-            h('span', { color: '#555555', margin: '0 12px' }, '/'),
-            h('span', {}, category),
-          ]),
-        ]),
-        h('div', {
-          display: 'block', marginTop: 36, fontSize: size, fontWeight: 700, color: '#ffffff',
-          lineHeight: 1.04, letterSpacing: -size * 0.035, lineClamp: 3,
-        }, title),
-      ]),
+function stat(icon, value, label) {
+  return h('div', { display: 'flex', flexDirection: 'column', marginRight: 64 }, [
+    h('div', { display: 'flex', alignItems: 'center', fontSize: 30, fontWeight: 600, color: C.ink }, [
+      h('div', { display: 'flex', marginRight: 10 }, [el('svg', {
+        width: 26, height: 26, viewBox: '0 0 24 24',
+        children: [el('path', { d: ICON[icon], fill: 'none', stroke: C.muted, strokeWidth: 1.7, strokeLinecap: 'round', strokeLinejoin: 'round' })],
+      })]),
+      value,
     ]),
-
-    h('div', {
-      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      margin: '0 96px', padding: '30px 0 44px 0', borderTop: '1.5px solid #282828',
-    }, [
-      h('div', {
-        display: 'block', fontFamily: 'Geist Mono', fontSize: 21, color: '#7a7a7a',
-        width: 760, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
-      }, `$ ${command}`),
-      h('div', { display: 'flex', alignItems: 'center', fontSize: 24, fontWeight: 500, color: '#ededed' }, [
-        h('div', { width: 10, height: 10, borderRadius: 5, backgroundColor: '#d97757', marginRight: 12, display: 'flex' }),
-        'aitmpl.com',
-      ]),
-    ]),
+    h('div', { display: 'flex', fontSize: 20, color: C.faint, marginTop: 6, marginLeft: 36 }, label),
   ]);
+}
+
+const compact = (n) => (n >= 1000 ? `${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}k` : `${n}`);
+
+// Agents keep <example> blocks in `description`: the card shows only the lead.
+function lead(description) {
+  return (description ?? '').split(/<example>|\n\s*\n/)[0].replace(/\s+/g, ' ').trim().replace(/\s*Specifically:?$/, '');
+}
+
+// Long titles step down so `category/name` stays within two lines.
+const titleSize = (text) => (text.length <= 34 ? 66 : text.length <= 48 ? 56 : 48);
+
+function card({ category, name, description, stats, bar }) {
+  const size = titleSize(`${category}/${name}`);
+  return h('div', { width: WIDTH, height: HEIGHT, display: 'flex', flexDirection: 'column', backgroundColor: C.bg, fontFamily: 'Geist' }, [
+    h('div', { display: 'flex', flexGrow: 1, padding: '84px 84px 0 84px' }, [
+      h('div', { display: 'flex', flexDirection: 'column', flexGrow: 1, flexShrink: 1, maxWidth: 820 }, [
+        h('div', { display: 'block', fontSize: size, lineHeight: 1.1, color: C.ink, letterSpacing: -size * 0.023, lineClamp: 2 }, [
+          h('span', { fontWeight: 400, color: C.muted }, `${category}/`),
+          h('span', { fontWeight: 700 }, name),
+        ]),
+        h('div', { display: 'block', fontSize: 27, lineHeight: 1.45, color: C.muted, marginTop: 28, lineClamp: 3 }, description),
+      ]),
+      h('div', { display: 'flex', marginLeft: 56, flexShrink: 0 }, [logo(168)]),
+    ]),
+    h('div', { display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', padding: '0 84px 52px 84px' }, [
+      h('div', { display: 'flex' }, stats.map(([icon, value, label]) => stat(icon, value, label))),
+      h('div', { display: 'flex', fontSize: 24, fontWeight: 600, color: C.ink, marginBottom: 30 }, 'aitmpl.com'),
+    ]),
+    h('div', { display: 'flex', height: 16, width: WIDTH }, bar.map(([share, color]) =>
+      h('div', { display: 'flex', height: 16, width: Math.round(share * WIDTH), backgroundColor: color }))),
+  ]);
+}
+
+function walk(dir) {
+  return readdirSync(dir, { withFileTypes: true })
+    .flatMap((d) => (d.isDirectory() ? walk(join(dir, d.name)) : [join(dir, d.name)]));
+}
+
+// Bytes per language of the component's files, like GitHub's language bar.
+// Licence texts are left out so they do not dominate small skills.
+function languages(typeKey, rawPath) {
+  const base = join(COMPONENTS_DIR, typeKey, rawPath);
+  let files = [];
+  try {
+    files = statSync(base).isDirectory() ? walk(base) : [base];
+  } catch { /* not on disk (e.g. external skill): solid bar, no file count */ }
+  files = files.filter((f) => !/(^|\/)LICENSE[^/]*$/.test(f));
+  const bytes = {};
+  for (const f of files) {
+    const lang = LANGUAGE[extname(f).toLowerCase()] ?? 'Other';
+    bytes[lang] = (bytes[lang] ?? 0) + statSync(f).size;
+  }
+  const total = Object.values(bytes).reduce((a, b) => a + b, 0);
+  const bar = total
+    ? Object.values(bytes).sort((a, b) => b - a).map((b, i) => [b / total, BAR_COLORS[i % BAR_COLORS.length]])
+    : [[1, BAR_COLORS[0]]];
+  return { bar, files: files.length };
 }
 
 function entries() {
@@ -134,12 +163,18 @@ function entries() {
     for (const c of catalog[typeKey] ?? []) {
       const path = c.path?.replace(/\.(md|json)$/, '') ?? c.name;
       if (!path || path.includes('..')) continue;
+      const { bar, files } = languages(typeKey, c.path ?? path);
+      const stats = [['downloads', compact(c.downloads ?? 0), 'Downloads'], ['type', TYPE_LABEL[typeKey], 'Type']];
+      if (files > 1) stats.push(['files', `${files}`, 'Files']);
+      if (c.version) stats.push(['version', `v${String(c.version).replace(/^v/, '')}`, 'Version']);
       out.push({
         typeKey,
         path,
-        title: formatName(c.name),
         category: c.category || 'general',
-        command: `npx claude-code-templates@latest ${TYPE_CONFIG[typeKey].flag} ${path}`,
+        name: c.name.replace(/\.(md|json)$/, ''),
+        description: lead(c.description),
+        stats,
+        bar,
       });
     }
   }
