@@ -981,8 +981,17 @@ async function installIndividualSetting(settingName, targetDir, options) {
           try {
             // A setting may only add files under the install location's .claude/
             // directory: no absolute paths, no ~, no `..` out of it.
-            const claudeRoot = path.resolve(currentTargetDir, '.claude');
-            const resolvedFilePath = path.resolve(currentTargetDir, filePath);
+            // Exception: Claude Code reads custom themes only from ~/.claude/themes/,
+            // while a `theme` key works from any settings file, so theme files always
+            // go to the user's home whatever location the setting is installed in.
+            const fileBaseDir = /^\.claude[\\/]themes[\\/]/.test(filePath)
+              ? require('os').homedir()
+              : currentTargetDir;
+            if (fileBaseDir !== currentTargetDir) {
+              console.log(chalk.gray(`🎨 Theme file goes to ~/.claude/themes/, the only folder Claude Code reads themes from`));
+            }
+            const claudeRoot = path.resolve(fileBaseDir, '.claude');
+            const resolvedFilePath = path.resolve(fileBaseDir, filePath);
             if (path.isAbsolute(filePath) || filePath.startsWith('~') ||
                 !resolvedFilePath.startsWith(claudeRoot + path.sep)) {
               console.log(chalk.red(`❌ Skipped file outside .claude/: ${filePath}`));
