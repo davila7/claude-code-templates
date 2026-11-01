@@ -510,6 +510,8 @@ Deploying = merging to `main`. The deployer agent (`.claude/agents/deployer.md`)
 - Changes in `dashboard/**` trigger tests, a build and `wrangler pages deploy dist --project-name=aitmpl-dashboard`
 - `prod-smoke-test.yml` then runs read-only checks of www.aitmpl.com and the published CLI (also daily)
 
+**Auto-merge (agent PRs)**: `main` has a ruleset (`.github/rulesets/main-automerge.json`, imported in Settings > Rules) that requires one check, `All checks green` from `.github/workflows/pr-gate.yml`. The gate waits for every other check on the head commit and fails if any failed; it also fails on purpose when the PR touches `.github/**`, `cli-tool/src/**` or `cli-tool/bin/**` (CI does not cover them), so those are merged by hand. An agent that opens a PR from a branch of this repo marks it ready and enables auto-merge (squash) itself, which deploys on merge. Enable it with the user's identity (the GitHub MCP `enable_pr_auto_merge`), never from a workflow's `GITHUB_TOKEN`: a merge made with `GITHUB_TOKEN` does not trigger `deploy.yml` or `update-component-content.yml`. Never enable it on a fork PR or on a security fix (those stay private until release). A re-run of a failed check does not re-run the gate: re-run the gate too.
+
 **Required GitHub Secrets** (Settings > Secrets > Actions):
 - `CLOUDFLARE_API_TOKEN` — Cloudflare API token with Pages edit permission
 - `CLOUDFLARE_ACCOUNT_ID` — Cloudflare account ID
