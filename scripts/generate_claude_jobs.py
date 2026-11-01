@@ -773,8 +773,9 @@ FIRECRAWL_QUERIES = [
 ]
 BOARD_URL_RES = [
     ("ashby", re.compile(r"^https?://jobs\.ashbyhq\.com/([^/?#]+)", re.IGNORECASE)),
-    ("greenhouse", re.compile(r"^https?://(?:job-)?boards\.greenhouse\.io/([^/?#]+)", re.IGNORECASE)),
+    # The embed form comes first: the general pattern would read its slug as "embed".
     ("greenhouse", re.compile(r"^https?://boards\.greenhouse\.io/embed/job_board\?for=([^&#]+)", re.IGNORECASE)),
+    ("greenhouse", re.compile(r"^https?://(?:job-)?boards\.greenhouse\.io/([^/?#]+)", re.IGNORECASE)),
     ("lever", re.compile(r"^https?://jobs\.lever\.co/([^/?#]+)", re.IGNORECASE)),
 ]
 
