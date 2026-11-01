@@ -150,7 +150,7 @@ npx claude-code-templates@latest --plugins
 
 ## Contributing
 
-We welcome contributions! **[Browse existing templates](https://aitmpl.com)** to see what's available, then check our [contributing guidelines](CONTRIBUTING.md) to add your own skills, agents, commands, MCPs, settings, hooks or mods. Every pull request is checked by Claude Code's plugin validator and scanned by [NVIDIA SkillSpector](https://github.com/NVIDIA/skillspector).
+We welcome contributions! **[Browse existing templates](https://aitmpl.com)** to see what's available, then check our [contributing guidelines](CONTRIBUTING.md) to add your own skills, agents, commands, MCPs, settings, hooks or mods. Pull requests that add or change components are scanned by [NVIDIA SkillSpector](https://github.com/NVIDIA/skillspector), and agents, commands, skills, hooks and MCPs are also checked with Claude Code's plugin validator.
 
 **Please read our [Code of Conduct](CODE_OF_CONDUCT.md) before contributing.**
 
