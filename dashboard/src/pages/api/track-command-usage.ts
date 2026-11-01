@@ -17,6 +17,8 @@ const VALID_COMMANDS = [
   'mcp-stats',
   'skills-manager',
   '2025-year-in-review',
+  'teams',
+  'catalog-browser',
 ];
 
 function validateCommandData(data: { command?: string }) {
