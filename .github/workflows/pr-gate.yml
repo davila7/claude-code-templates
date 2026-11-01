@@ -12,7 +12,14 @@
 #   cli-tool/bin/**
 # Those PRs never auto-merge; Daniel merges them by hand.
 #
-# A re-run of a failed check does not re-run this gate: re-run it too.
+# It also fails while the PR has unresolved review threads, so a finding from a
+# reviewer or a review bot (cubic, greptile) blocks the merge until it is fixed
+# or answered and resolved. Some bots only comment, with no check to wait on,
+# so the gate first lets at least 5 minutes pass since it started.
+#
+# A re-run of a failed check does not re-run this gate, and neither does
+# resolving a thread: re-run the gate, or remove and re-add the `automerge`
+# label, after resolving threads without a new push.
 
 name: PR Gate
 
@@ -63,6 +70,7 @@ jobs:
 
       - name: Wait for every other check on the head commit
         run: |
+          date +%s > "$RUNNER_TEMP/gate-start"
           # Give workflows triggered by the same push time to register.
           sleep 30
           stable=0
@@ -98,3 +106,21 @@ jobs:
             fi
             sleep 30
           done
+
+      - name: No unresolved review threads
+        run: |
+          # Review bots that only comment have no check to wait on.
+          elapsed=$(( $(date +%s) - $(cat "$RUNNER_TEMP/gate-start") ))
+          [ "$elapsed" -lt 300 ] && sleep $(( 300 - elapsed ))
+          # Count unresolved review threads (humans and review bots alike).
+          open=$(gh api graphql -F owner="${REPO%/*}" -F name="${REPO#*/}" -F pr="$PR" -f query='
+            query($owner:String!,$name:String!,$pr:Int!){repository(owner:$owner,name:$name){
+              pullRequest(number:$pr){reviewThreads(first:100){nodes{isResolved path
+                comments(first:1){nodes{author{login}}}}}}}}' \
+            --jq '.data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved|not) | "\(.comments.nodes[0].author.login) on \(.path)"')
+          if [ -n "$open" ]; then
+            echo "::error::Unresolved review threads:"; echo "$open"
+            { echo "### Unresolved review threads"; echo '```'; echo "$open"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+          echo "No unresolved review threads."
