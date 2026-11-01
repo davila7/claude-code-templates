@@ -15,7 +15,7 @@ When the user says "deploy", the correct action is:
 2. Push to `origin/main`
 3. The GitHub Actions pipeline handles the rest
 
-**Do NOT run `./scripts/deploy.sh` or root `npm run deploy`: they are a stale Vercel deploy.** A manual `cd dashboard && npm run build && npx wrangler pages deploy dist --project-name=aitmpl-dashboard` is only for when CI cannot deploy.
+**Do NOT run `./scripts/deploy.sh` or root `npm run deploy`: they are a stale Vercel deploy.** If a push did not deploy, re-run CI first: `gh workflow run deploy.yml --ref main`. A local `cd dashboard && npm run build && npx wrangler pages deploy dist --project-name=aitmpl-dashboard` is only for when GitHub Actions itself cannot deploy, and the build must get the same `PUBLIC_*` values as the Build step of `deploy.yml` (export them first): `npm run build` does not read them from `wrangler.toml`, and without them GitHub sign-in on the live site breaks.
 
 ## Architecture
 
