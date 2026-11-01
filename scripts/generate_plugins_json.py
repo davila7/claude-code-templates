@@ -68,6 +68,7 @@ REPOS = [
     ("curviate/curviate-plugin", "https://curviate.com/"),
     ("firecrawl/firecrawl-claude-plugin", "https://www.firecrawl.dev/integrations/claude-code?utm_source=claude-code-templates&utm_medium=integration"),
     ("annavetech/kumi", "https://docs.annave.tech/kumi/"),
+    ("glidezo/skills", "https://glidezo.com/"),
 ]
 
 DESCRIPTION_OVERRIDES = {
@@ -709,10 +710,16 @@ def main():
     results = []
     errors = []
 
+    seen_slugs = set()
     for repo_full, website in REPOS:
         try:
             data = process_repo(repo_full, website)
             if data:
+                # Two repos with the same name (e.g. Airtable/skills and glidezo/skills) would share a
+                # /plugins/<slug> page; the later one gets its owner prefixed, the earlier keeps its URL.
+                if data["slug"] in seen_slugs:
+                    data["slug"] = f"{repo_full.split('/')[0].lower()}-{data['slug']}"
+                seen_slugs.add(data["slug"])
                 results.append(data)
             else:
                 errors.append(repo_full)
