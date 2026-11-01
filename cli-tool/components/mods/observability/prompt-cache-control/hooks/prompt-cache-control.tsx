@@ -134,7 +134,7 @@ type Settings = { promptCacheTtl?: unknown; idleCompaction?: unknown; autoCompac
 
 // the settings the mod follows, each from the first settings file that sets it (local over project over user)
 async function readSettings($: EngineInterface): Promise<Settings> {
-  const home = await $.env.get('HOME').catch(() => undefined)
+  const home = (await $.env.get('HOME').catch(() => undefined)) || (await $.env.get('USERPROFILE').catch(() => undefined))
   const cwd = await $.session.cwd().catch(() => undefined)
   const files = [cwd && `${cwd}/.claude/settings.local.json`, cwd && `${cwd}/.claude/settings.json`, home && `${home}/.claude/settings.json`]
   const out: Settings = {}
@@ -156,7 +156,7 @@ async function readSettings($: EngineInterface): Promise<Settings> {
 // Only those two keys are kept; nothing else in the file is held by the mod.
 async function readGlobalConfig($: EngineInterface): Promise<{ flag?: unknown; autoCompact?: unknown }> {
   const dir = await $.env.get('CLAUDE_CONFIG_DIR').catch(() => undefined)
-  const home = await $.env.get('HOME').catch(() => undefined)
+  const home = (await $.env.get('HOME').catch(() => undefined)) || (await $.env.get('USERPROFILE').catch(() => undefined))
   const file = dir ? `${dir}/.claude.json` : home ? `${home}/.claude.json` : undefined
   if (!file) return {}
   try {
