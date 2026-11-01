@@ -11,7 +11,9 @@
 #   - the PR is open, not a draft, from a branch of this repo (fork PRs have no
 #     pull_requests entry in workflow_run, so they never get here),
 #   - it carries the `automerge` label,
-#   - it touches nothing under .github/, cli-tool/src/ or cli-tool/bin/.
+#   - it touches nothing under .github/, cli-tool/src/ or cli-tool/bin/,
+#   - it has no unresolved review threads (checked again here, since a review
+#     can land between the gate passing and this job starting).
 #
 # A merge made with GITHUB_TOKEN triggers no push workflows, so this job
 # dispatches what a push to main would have run: update-component-content
@@ -66,6 +68,12 @@ jobs:
           if printf '%s\n' "$files" | grep -qE '^(\.github/|cli-tool/src/|cli-tool/bin/)'; then
             reason="touches .github/ or cli-tool/src|bin/"
           fi
+          open=$(gh api graphql -F owner="${REPO%/*}" -F name="${REPO#*/}" -F pr="$PR" -f query='
+            query($owner:String!,$name:String!,$pr:Int!){repository(owner:$owner,name:$name){
+              pullRequest(number:$pr){reviewThreads(first:100){nodes{isResolved path
+                comments(first:1){nodes{author{login}}}}}}}}' \
+            --jq '.data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved|not) | "\(.comments.nodes[0].author.login) on \(.path)"')
+          [ -z "$open" ] || reason="unresolved review threads"
           if [ -n "$reason" ]; then
             echo "Not merging #$PR: $reason"; echo "merge=false" >> "$GITHUB_OUTPUT"; exit 0
           fi
