@@ -22,7 +22,9 @@ interface JobsData {
 const SOURCE_COLORS: Record<string, string> = {
   HackerNews: 'bg-orange-500/15 text-orange-400 border-orange-500/20',
   RemoteOK: 'bg-blue-500/15 text-blue-400 border-blue-500/20',
-  WeWorkRemotely: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20',
+  Greenhouse: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20',
+  Ashby: 'bg-cyan-500/15 text-cyan-400 border-cyan-500/20',
+  Lever: 'bg-amber-500/15 text-amber-400 border-amber-500/20',
   Anthropic: 'bg-purple-500/15 text-purple-400 border-purple-500/20',
 };
 

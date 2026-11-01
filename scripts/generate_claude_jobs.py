@@ -5,6 +5,8 @@ Sources (all free, no API keys required):
 1. HN Firebase API - "Who is Hiring" thread comments (last 3 months)
 2. RemoteOK API - JSON job feed
 3. Anthropic Careers - Greenhouse API (jobs mentioning Claude Code)
+4. Company job boards on Greenhouse, Ashby and Lever, listed in
+   scripts/jobs_ats_boards.json (public APIs, no keys)
 
 A job is kept only if its text names Claude Code itself (see
 is_claude_related); a passing mention of "Claude" the model is not enough.
@@ -13,6 +15,7 @@ Output: docs/claude-jobs.json
 """
 
 import json
+import os
 import re
 import time
 from datetime import datetime, timezone
@@ -404,7 +407,7 @@ def extract_tech_tags(text):
 
 def find_latest_hiring_threads():
     """The last three 'Who is hiring?' threads posted by the whoishiring account."""
-    print("[1/3] Finding latest HN 'Who is Hiring' threads...")
+    print("[1/4] Finding latest HN 'Who is Hiring' threads...")
     data = fetch_json(
         "https://hn.algolia.com/api/v1/search_by_date?tags=story,author_whoishiring&hitsPerPage=12"
     )
@@ -483,7 +486,7 @@ def remoteok_salary(item):
 
 def collect_remoteok():
     """Collect jobs from RemoteOK API."""
-    print("[2/3] Searching RemoteOK API...")
+    print("[2/4] Searching RemoteOK API...")
     data = fetch_json("https://remoteok.com/api")
     if not data:
         return []
@@ -552,7 +555,7 @@ def collect_anthropic_careers():
     One request: the board's list endpoint returns every job with its
     content when called with content=true.
     """
-    print("[3/3] Searching Anthropic Careers (Greenhouse API)...")
+    print("[3/4] Searching Anthropic Careers (Greenhouse API)...")
     data = fetch_json(
         "https://boards-api.greenhouse.io/v1/boards/anthropic/jobs?content=true", timeout=60
     )
@@ -624,6 +627,124 @@ def collect_anthropic_careers():
 
 
 # ---------------------------------------------------------------------------
+# Source 4: company job boards (Greenhouse, Ashby, Lever public APIs)
+# ---------------------------------------------------------------------------
+
+ATS_BOARDS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "jobs_ats_boards.json")
+ATS_LABELS = {"greenhouse": "Greenhouse", "ashby": "Ashby", "lever": "Lever"}
+
+
+def _greenhouse_postings(slug):
+    data = fetch_json(f"https://boards-api.greenhouse.io/v1/boards/{slug}/jobs?content=true", timeout=60)
+    for job in (data or {}).get("jobs", []):
+        loc = job.get("location") or {}
+        name = loc.get("name", "") if isinstance(loc, dict) else ""
+        yield {
+            "id": job.get("id"),
+            "title": job.get("title", ""),
+            "text": strip_html(unescape(job.get("content", ""))),
+            "location": name,
+            "remote": "remote" in name.lower(),
+            "url": job.get("absolute_url", ""),
+            "postedAt": job.get("updated_at") or job.get("first_published", ""),
+        }
+
+
+def _ashby_postings(slug):
+    data = fetch_json(f"https://api.ashbyhq.com/posting-api/job-board/{slug}?includeCompensation=true", timeout=60)
+    for job in (data or {}).get("jobs", []):
+        if job.get("isListed") is False:
+            continue
+        places = [job.get("location") or ""]
+        places += [(s or {}).get("location", "") for s in job.get("secondaryLocations") or []]
+        comp = (job.get("compensation") or {}).get("compensationTierSummary") or ""
+        yield {
+            "id": job.get("id"),
+            "title": job.get("title", ""),
+            "text": job.get("descriptionPlain") or strip_html(job.get("descriptionHtml", "")),
+            "location": " | ".join(p for p in places if p),
+            # workplaceType is Remote / Hybrid / OnSite; isRemote is true for
+            # some on-site HQ roles, so it is not used
+            "remote": (job.get("workplaceType") or "").lower() == "remote",
+            "url": job.get("jobUrl", ""),
+            "postedAt": job.get("publishedAt", ""),
+            "salary": comp,
+        }
+
+
+def _lever_postings(slug):
+    data = fetch_json(f"https://api.lever.co/v0/postings/{slug}?mode=json", timeout=60)
+    for job in data if isinstance(data, list) else []:
+        lists = " ".join(f"{l.get('text', '')} {strip_html(l.get('content', ''))}" for l in job.get("lists") or [])
+        cats = job.get("categories") or {}
+        created = job.get("createdAt")
+        yield {
+            "id": job.get("id"),
+            "title": job.get("text", ""),
+            "text": f"{job.get('descriptionPlain', '')} {lists} {job.get('additionalPlain', '')}",
+            "location": " | ".join(cats.get("allLocations") or [cats.get("location") or ""]),
+            "remote": (job.get("workplaceType") or "").lower() == "remote",
+            "url": job.get("hostedUrl", ""),
+            "postedAt": datetime.fromtimestamp(created / 1000, tz=timezone.utc).isoformat() if created else "",
+        }
+
+
+ATS_FETCHERS = {"greenhouse": _greenhouse_postings, "ashby": _ashby_postings, "lever": _lever_postings}
+
+
+def collect_ats_boards():
+    """Postings that name Claude Code on the company boards in jobs_ats_boards.json."""
+    print("[4/4] Searching company job boards (Greenhouse, Ashby, Lever)...")
+    try:
+        with open(ATS_BOARDS_PATH, encoding="utf-8") as f:
+            boards = json.load(f)["boards"]
+    except (OSError, ValueError, KeyError) as e:
+        print(f"  [warn] Could not read {ATS_BOARDS_PATH}: {e}")
+        return []
+
+    def scan(board):
+        fetch = ATS_FETCHERS.get(board.get("ats"))
+        if not fetch:
+            print(f"  [warn] Unknown ATS {board.get('ats')!r} for {board.get('slug')}")
+            return []
+        found = []
+        for post in fetch(board["slug"]):
+            full_text = f"{post['title']} {post['text']}"
+            if not is_claude_related(full_text):
+                continue
+            locations = split_locations(post["location"])
+            remote = post["remote"] or any("remote" in l.lower() for l in locations)
+            tags = extract_tech_tags(full_text)
+            domain = board.get("domain", "")
+            found.append({
+                "id": f"{board['ats'][:2]}-{board['slug']}-{post['id']}",
+                "company": board["company"],
+                "position": post["title"][:120],
+                "location": join_locations(locations)[:120] or ("Remote" if remote else "On-site"),
+                "locations": locations,
+                "remote": remote,
+                "salary": post.get("salary") or extract_salary(full_text),
+                "description": truncate(post["text"], 300),
+                "applyUrl": post["url"],
+                "source": ATS_LABELS[board["ats"]],
+                "sourceUrl": post["url"],
+                "postedAt": post["postedAt"],
+                "tags": tags,
+                "companyIcon": f"https://{domain}/favicon.ico" if domain else company_icon(board["company"]),
+            })
+        return found
+
+    jobs = []
+    with ThreadPoolExecutor(max_workers=8) as executor:
+        for board, found in zip(boards, executor.map(scan, boards)):
+            if found:
+                print(f"  {board['company']}: {len(found)}")
+            jobs.extend(found)
+    print(f"  Found {len(jobs)} Claude Code jobs on {len(boards)} company boards")
+    return jobs
+
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
@@ -653,6 +774,7 @@ def generate():
     all_jobs.extend(collect_hn_firebase())
     all_jobs.extend(collect_remoteok())
     all_jobs.extend(collect_anthropic_careers())
+    all_jobs.extend(collect_ats_boards())
 
     unique = dedupe(all_jobs)
 
@@ -668,7 +790,6 @@ def generate():
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(output, f, indent=2, ensure_ascii=False)
 
-    import os
     dashboard_path = "dashboard/public/claude-jobs.json"
     if os.path.isdir("dashboard/public"):
         with open(dashboard_path, "w", encoding="utf-8") as f:

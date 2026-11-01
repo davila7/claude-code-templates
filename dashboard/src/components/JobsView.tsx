@@ -30,7 +30,9 @@ type SortOption = 'recent' | 'company' | 'salary';
 const SOURCE_COLORS: Record<string, string> = {
   HackerNews: 'bg-orange-500/15 text-orange-400 border-orange-500/20',
   RemoteOK: 'bg-blue-500/15 text-blue-400 border-blue-500/20',
-  WeWorkRemotely: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20',
+  Greenhouse: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20',
+  Ashby: 'bg-cyan-500/15 text-cyan-400 border-cyan-500/20',
+  Lever: 'bg-amber-500/15 text-amber-400 border-amber-500/20',
   Anthropic: 'bg-purple-500/15 text-purple-400 border-purple-500/20',
 };
 
@@ -226,7 +228,7 @@ export default function JobsView() {
         </h1>
         <p className="text-[13px] text-[var(--color-text-tertiary)] mt-1">
           Companies actively hiring developers who use Claude Code in their workflow.
-          Updated daily from HackerNews "Who is Hiring", RemoteOK and Anthropic careers.
+          Updated daily from HackerNews "Who is Hiring", RemoteOK and company job boards (Greenhouse, Ashby).
         </p>
       </div>
 
