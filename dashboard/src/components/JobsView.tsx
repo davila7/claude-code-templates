@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import CompanyLogo from './CompanyLogo';
 
 interface Job {
   id: string;
@@ -152,26 +153,16 @@ export default function JobsView() {
     return uniqueCompanies;
   }, [data]);
 
-  // Get company logo for a given company name
-  const getCompanyLogo = (companyName: string): string => {
-    if (!data) return '';
-    const job = data.jobs.find(j => j.company === companyName);
-    // If companyIcon exists in data, use it
-    if (job?.companyIcon) return job.companyIcon;
-    
-    // Otherwise, try to fetch from Clearbit Logo API
-    // Format: https://logo.clearbit.com/{domain}
-    const domain = companyName.toLowerCase()
-      .replace(/\s+/g, '')
-      .replace(/[^a-z0-9]/g, '');
-    return `https://logo.clearbit.com/${domain}.com`;
-  };
+  // Icon for a company in the filter dropdown: the first job that has one
+  const companyIcon = (companyName: string): string =>
+    data?.jobs.find((j) => j.company === companyName && j.companyIcon)?.companyIcon || '';
 
   const allTags = useMemo(() => {
     if (!data) return [];
-    const tagSet = new Set<string>();
-    data.jobs.forEach(job => job.tags.forEach(tag => tagSet.add(tag)));
-    return Array.from(tagSet).sort();
+    // Most frequent first, so the visible chips are the useful ones
+    const counts = new Map<string, number>();
+    data.jobs.forEach((job) => job.tags.forEach((tag) => counts.set(tag, (counts.get(tag) || 0) + 1)));
+    return Array.from(counts.keys()).sort((a, b) => counts.get(b)! - counts.get(a)! || a.localeCompare(b));
   }, [data]);
 
   // Custom dropdown state
@@ -235,7 +226,7 @@ export default function JobsView() {
         </h1>
         <p className="text-[13px] text-[var(--color-text-tertiary)] mt-1">
           Companies actively hiring developers who use Claude Code in their workflow.
-          Updated daily from HackerNews "Who is Hiring", RemoteOK, and more.
+          Updated daily from HackerNews "Who is Hiring", RemoteOK and Anthropic careers.
         </p>
       </div>
 
@@ -266,7 +257,7 @@ export default function JobsView() {
         {[
           { label: 'Total Jobs', value: String(data.totalJobs) },
           { label: 'Remote', value: String(remoteCount) },
-          { label: 'On-site', value: String(onsiteCount) },
+          { label: 'On-site / Hybrid', value: String(onsiteCount) },
           { label: 'Sources', value: String(data.sources.length) },
         ].map((s) => (
           <div key={s.label} className="bg-[var(--color-card-bg)] border border-[var(--color-border)] rounded-lg px-4 py-3">
@@ -355,20 +346,7 @@ export default function JobsView() {
               ) : (
                 <>
                   <div className="w-4 h-4 rounded bg-[var(--color-surface-3)] border border-[var(--color-border)] flex items-center justify-center shrink-0 overflow-hidden">
-                    <img
-                      src={getCompanyLogo(companyFilter)}
-                      alt=""
-                      className="w-3 h-3 object-contain"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.style.display = 'none';
-                        const fallback = target.nextElementSibling as HTMLElement;
-                        if (fallback) fallback.style.display = 'flex';
-                      }}
-                    />
-                    <span className="text-[8px] font-bold text-[var(--color-text-tertiary)]" style={{ display: 'none' }}>
-                      {companyFilter.charAt(0).toUpperCase()}
-                    </span>
+                    <CompanyLogo company={companyFilter} icon={companyIcon(companyFilter)} imgClassName="w-3 h-3 object-contain" initialClassName="text-[8px] font-bold text-[var(--color-text-tertiary)]" />
                   </div>
                   <span className="truncate">{companyFilter}</span>
                 </>
@@ -412,20 +390,7 @@ export default function JobsView() {
                     }`}
                   >
                     <div className="w-5 h-5 rounded bg-[var(--color-surface-3)] border border-[var(--color-border)] flex items-center justify-center shrink-0 overflow-hidden">
-                      <img
-                        src={getCompanyLogo(company)}
-                        alt=""
-                        className="w-4 h-4 object-contain"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.style.display = 'none';
-                          const fallback = target.nextElementSibling as HTMLElement;
-                          if (fallback) fallback.style.display = 'flex';
-                        }}
-                      />
-                      <span className="text-[9px] font-bold text-[var(--color-text-tertiary)]" style={{ display: 'none' }}>
-                        {company.charAt(0).toUpperCase()}
-                      </span>
+                      <CompanyLogo company={company} icon={companyIcon(company)} imgClassName="w-4 h-4 object-contain" initialClassName="text-[9px] font-bold text-[var(--color-text-tertiary)]" />
                     </div>
                     <span className="truncate">{company}</span>
                   </button>
@@ -622,24 +587,7 @@ export default function JobsView() {
               <div className="flex items-start gap-3">
                 {/* Company icon - Enhanced with internet fallback */}
                 <div className="w-12 h-12 rounded-lg bg-[var(--color-surface-2)] border border-[var(--color-border)] flex items-center justify-center shrink-0 overflow-hidden group-hover:border-[var(--color-border-hover)] transition-colors">
-                  <img
-                    src={job.companyIcon || getCompanyLogo(job.company)}
-                    alt={job.company}
-                    className="w-7 h-7 object-contain"
-                    style={{ display: 'block' }}
-                    onError={(e) => { 
-                      const target = e.target as HTMLImageElement;
-                      target.style.display = 'none';
-                      const fallback = target.nextElementSibling as HTMLElement;
-                      if (fallback) fallback.style.display = 'flex';
-                    }}
-                  />
-                  <span 
-                    className="text-[16px] font-bold text-[var(--color-text-tertiary)]"
-                    style={{ display: 'none' }}
-                  >
-                    {job.company.charAt(0).toUpperCase()}
-                  </span>
+                  <CompanyLogo company={job.company} icon={job.companyIcon} imgClassName="w-7 h-7 object-contain" initialClassName="text-[16px] font-bold text-[var(--color-text-tertiary)]" />
                 </div>
 
                 {/* Content */}
