@@ -1,0 +1,97 @@
+# One required check for auto-merge on main.
+#
+# Most workflows here have `paths:` filters, so requiring each of them by name
+# would leave a PR waiting forever on the checks that never start. This job
+# runs on every PR instead, waits until every other check run and commit status
+# on the head commit has finished, and passes only if none of them failed.
+# The ruleset in .github/rulesets/main-automerge.json requires only this check.
+#
+# It also fails, on purpose, when a PR touches paths CI does not really cover:
+#   .github/**         a PR could rewrite this gate or the deploy
+#   cli-tool/src/**    the cli-tool jest suite does not run in CI
+#   cli-tool/bin/**
+# Those PRs never auto-merge; Daniel merges them by hand (admin bypass).
+#
+# A re-run of a failed check does not re-run this gate: re-run it too.
+
+name: PR Gate
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  checks: read
+  statuses: read
+  pull-requests: read
+
+concurrency:
+  group: pr-gate-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  gate:
+    name: All checks green
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      PR: ${{ github.event.pull_request.number }}
+      SHA: ${{ github.event.pull_request.head.sha }}
+      SELF: All checks green
+    steps:
+      - name: Refuse paths CI does not cover
+        run: |
+          files=$(gh api --paginate "repos/$REPO/pulls/$PR/files?per_page=100" --jq '.[].filename')
+          hits=$(printf '%s\n' "$files" | grep -E '^(\.github/|cli-tool/src/|cli-tool/bin/)' || true)
+          if [ -n "$hits" ]; then
+            {
+              echo "### Manual merge required"
+              echo "This PR touches paths that CI does not cover, so it never auto-merges:"
+              echo '```'
+              printf '%s\n' "$hits"
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "::error::Touches .github/ or cli-tool/src|bin/: merge by hand."
+            exit 1
+          fi
+
+      - name: Wait for every other check on the head commit
+        run: |
+          # Give workflows triggered by the same push time to register.
+          sleep 30
+          stable=0
+          while :; do
+            # Latest run per check name, excluding this gate.
+            runs=$(gh api --paginate "repos/$REPO/commits/$SHA/check-runs?per_page=100" \
+              --jq '.check_runs[] | [.id, .name, .status, (.conclusion // "")] | @tsv' \
+              | grep -v -P "^\d+\t\Q$SELF\E\t" \
+              | sort -t$'\t' -k2,2 -k1,1nr | awk -F'\t' '!seen[$2]++' || true)
+            statuses=$(gh api "repos/$REPO/commits/$SHA/status" \
+              --jq '.statuses[] | [.context, .state] | @tsv' || true)
+
+            pending=$(printf '%s\n' "$runs" | awk -F'\t' 'NF && $3!="completed"{print $2}')
+            pending+=$(printf '%s\n' "$statuses" | awk -F'\t' 'NF && $2=="pending"{print "\n"$1}')
+            failed=$(printf '%s\n' "$runs" | awk -F'\t' 'NF && $3=="completed" && $4!~/^(success|skipped|neutral)$/{print $2" ("$4")"}')
+            failed+=$(printf '%s\n' "$statuses" | awk -F'\t' 'NF && $2~/^(failure|error)$/{print "\n"$1" ("$2")"}')
+
+            if [ -n "$(echo "$failed" | tr -d '[:space:]')" ]; then
+              echo "::error::Failed checks:"; echo "$failed"
+              { echo "### Failed checks"; echo '```'; echo "$failed"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+              exit 1
+            fi
+            if [ -z "$(echo "$pending" | tr -d '[:space:]')" ]; then
+              # Two quiet polls in a row, so a late-starting workflow is not missed.
+              stable=$((stable + 1))
+              if [ "$stable" -ge 2 ]; then
+                echo "All checks finished green:"; printf '%s\n' "$runs" | cut -f2,4
+                exit 0
+              fi
+            else
+              stable=0
+              echo "Waiting on:"; echo "$pending"
+            fi
+            sleep 30
+          done
