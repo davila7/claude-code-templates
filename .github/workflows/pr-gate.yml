@@ -1,16 +1,16 @@
-# One required check for auto-merge on main.
+# The check auto-merge waits on (see pr-automerge.yml).
 #
 # Most workflows here have `paths:` filters, so requiring each of them by name
 # would leave a PR waiting forever on the checks that never start. This job
 # runs on every PR instead, waits until every other check run and commit status
 # on the head commit has finished, and passes only if none of them failed.
-# The ruleset in .github/rulesets/main-automerge.json requires only this check.
+# pr-automerge.yml merges a PR labelled `automerge` once this passes.
 #
 # It also fails, on purpose, when a PR touches paths CI does not really cover:
 #   .github/**         a PR could rewrite this gate or the deploy
 #   cli-tool/src/**    the cli-tool jest suite does not run in CI
 #   cli-tool/bin/**
-# Those PRs never auto-merge; Daniel merges them by hand (admin bypass).
+# Those PRs never auto-merge; Daniel merges them by hand.
 #
 # A re-run of a failed check does not re-run this gate: re-run it too.
 
@@ -18,7 +18,7 @@ name: PR Gate
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
+    types: [opened, synchronize, reopened, ready_for_review, labeled]
 
 permissions:
   contents: read
@@ -27,12 +27,15 @@ permissions:
   pull-requests: read
 
 concurrency:
-  group: pr-gate-${{ github.event.pull_request.number }}
+  # Other labels (the welcome bot adds some) get their own group and are
+  # skipped, so they never cancel a gate run that is waiting.
+  group: pr-gate-${{ github.event.pull_request.number }}-${{ github.event.action == 'labeled' && github.event.label.name || 'head' }}
   cancel-in-progress: true
 
 jobs:
   gate:
     name: All checks green
+    if: github.event.action != 'labeled' || github.event.label.name == 'automerge'
     runs-on: ubuntu-latest
     timeout-minutes: 90
     env:

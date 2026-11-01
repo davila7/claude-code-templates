@@ -1,0 +1,85 @@
+# Merges agent PRs once PR Gate passes, without a ruleset.
+#
+# A ruleset that requires the gate cannot exempt GitHub Actions in a personal
+# repo ("invalid actor"), and without that exemption the bots that push the
+# catalog to main (update-component-content, update-json-data, star-history)
+# would be blocked. So this workflow does the merge instead.
+#
+# It runs on workflow_run, so the copy on main runs, never a PR's own edit of
+# it. It merges only when:
+#   - PR Gate succeeded on the PR's current head commit,
+#   - the PR is open, not a draft, from a branch of this repo (fork PRs have no
+#     pull_requests entry in workflow_run, so they never get here),
+#   - it carries the `automerge` label,
+#   - it touches nothing under .github/, cli-tool/src/ or cli-tool/bin/.
+#
+# A merge made with GITHUB_TOKEN triggers no push workflows, so this job
+# dispatches what a push to main would have run: update-component-content
+# (which then dispatches the deploy) or deploy.
+
+name: PR Auto-merge
+
+on:
+  workflow_run:
+    workflows: [PR Gate]
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+concurrency:
+  group: pr-automerge-main
+  cancel-in-progress: false
+
+jobs:
+  merge:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.pull_requests[0] != null
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      PR: ${{ github.event.workflow_run.pull_requests[0].number }}
+      SHA: ${{ github.event.workflow_run.head_sha }}
+    steps:
+      - name: Check the PR may auto-merge
+        id: check
+        run: |
+          pr=$(gh api "repos/$REPO/pulls/$PR")
+          state=$(jq -r .state <<<"$pr"); draft=$(jq -r .draft <<<"$pr")
+          head=$(jq -r .head.sha <<<"$pr"); head_repo=$(jq -r '.head.repo.full_name // ""' <<<"$pr")
+          base=$(jq -r .base.ref <<<"$pr")
+          label=$(jq -r '[.labels[].name] | index("automerge") != null' <<<"$pr")
+          reason=""
+          [ "$state" = open ] || reason="not open"
+          [ "$draft" = false ] || reason="draft"
+          [ "$head" = "$SHA" ] || reason="head moved since the gate ran"
+          [ "$head_repo" = "$REPO" ] || reason="not a branch of this repo"
+          [ "$base" = main ] || reason="base is not main"
+          [ "$label" = true ] || reason="no automerge label"
+          files=$(gh api --paginate "repos/$REPO/pulls/$PR/files?per_page=100" --jq '.[].filename')
+          if printf '%s\n' "$files" | grep -qE '^(\.github/|cli-tool/src/|cli-tool/bin/)'; then
+            reason="touches .github/ or cli-tool/src|bin/"
+          fi
+          if [ -n "$reason" ]; then
+            echo "Not merging #$PR: $reason"; echo "merge=false" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          echo "merge=true" >> "$GITHUB_OUTPUT"
+          if printf '%s\n' "$files" | grep -qE '^(cli-tool/components/|cli-tool/templates/|scripts/generate_components_json\.py$)'; then
+            echo "dispatch=update-component-content.yml" >> "$GITHUB_OUTPUT"
+          elif printf '%s\n' "$files" | grep -q '^dashboard/'; then
+            echo "dispatch=deploy.yml" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Squash-merge
+        if: steps.check.outputs.merge == 'true'
+        run: gh pr merge "$PR" --repo "$REPO" --squash --delete-branch --match-head-commit "$SHA"
+
+      - name: Run what a push to main would have run
+        if: steps.check.outputs.merge == 'true' && steps.check.outputs.dispatch != ''
+        run: gh workflow run "${{ steps.check.outputs.dispatch }}" --repo "$REPO" --ref main
