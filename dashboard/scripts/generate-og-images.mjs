@@ -182,7 +182,7 @@ function siteEntry() {
   const total = sizes.reduce((a, [, n]) => a + n, 0);
   const downloads = Object.keys(TYPE_PLURAL)
     .reduce((a, t) => a + (catalog[t] ?? []).reduce((b, c) => b + (c.downloads ?? 0), 0), 0);
-  // The five largest types get their own segment; the rest share the last one.
+  // The four largest types get their own segment; the rest share a fifth, "More".
   const top = sizes.slice(0, 4);
   const rest = sizes.slice(4).reduce((a, [, n]) => a + n, 0);
   const segments = [...top.map(([t, n]) => [TYPE_PLURAL[t], n]), ...(rest ? [['More', rest]] : [])];
