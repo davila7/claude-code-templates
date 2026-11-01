@@ -329,8 +329,8 @@ API endpoints live as Astro API routes in `dashboard/src/pages/api/`:
 ### Emergency Rollback
 
 ```bash
-# List recent Pages deployments
-npx wrangler pages deployment list --project-name=aitmpl-dashboard
+# List recent production deployments
+npx wrangler pages deployment list --project-name=aitmpl-dashboard --environment=production
 # Roll back: Wrangler has no Pages rollback command. Cloudflare dashboard → Workers & Pages →
 # aitmpl-dashboard → Deployments → last good production deployment → Rollback
 # (or POST /accounts/{account_id}/pages/projects/aitmpl-dashboard/deployments/{id}/rollback)
