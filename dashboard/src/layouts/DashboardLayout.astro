@@ -13,10 +13,10 @@ interface Props {
 const {
   title = 'Claude Code Templates',
   description = 'Browse and install 1000+ components for Claude Code: AI agents, slash commands, MCP integrations, hooks, settings, and skills. Free, open-source CLI tool.',
-  ogImage = '/logo.png',
+  ogImage = '/og/site.png',
   ogImageAlt,
 } = Astro.props;
-// Generated 1200x630 previews live under /og/; the default logo has no fixed size.
+// Generated 1200x630 previews live under /og/ (scripts/generate-og-images.mjs).
 const ogImageSized = ogImage.startsWith('/og/');
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
