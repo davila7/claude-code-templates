@@ -805,6 +805,10 @@ def board_from_url(url):
     return None
 
 
+def slug_title(slug):
+    return re.sub(r"[-_]+", " ", slug).strip().title()
+
+
 DISCOVERED_BOARDS_PATH = "docs/claude-jobs-discovered-boards.json"
 DISCOVERED_TTL_DAYS = 60
 
@@ -854,7 +858,7 @@ def collect_discovered_boards(listed_boards, excluded):
     for ats, slug in discover_with_firecrawl(skip | set(saved)):
         saved[(ats, slug.lower())] = {
             "ats": ats, "slug": slug,
-            "company": "" if ats == "greenhouse" else re.sub(r"[-_]+", " ", slug).strip().title(),
+            "company": "" if ats == "greenhouse" else slug_title(slug),
             "firstSeen": today, "lastHit": today,
         }
 
@@ -869,6 +873,9 @@ def collect_discovered_boards(listed_boards, excluded):
                     board["company"] = posts[0]["company"]
                 jobs.extend(posts)
             if board.get("lastHit", today) >= cutoff:
+                # A Greenhouse board takes its name from its first posting; one
+                # with none yet keeps a name derived from its slug.
+                board["company"] = board.get("company") or slug_title(board["slug"])
                 kept.append(board)
 
     try:

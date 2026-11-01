@@ -228,7 +228,7 @@ export default function JobsView() {
         </h1>
         <p className="text-[13px] text-[var(--color-text-tertiary)] mt-1">
           Companies actively hiring developers who use Claude Code in their workflow.
-          Updated daily from HackerNews "Who is Hiring", RemoteOK and company job boards (Greenhouse, Ashby).
+          Updated daily from HackerNews "Who is Hiring", RemoteOK and company job boards (Greenhouse, Ashby, Lever).
         </p>
       </div>
 
@@ -692,7 +692,7 @@ export default function JobsView() {
       <div className="px-6 pb-6 text-center">
         <p className="text-[11px] text-[var(--color-text-tertiary)]">
           Last updated: {new Date(data.lastUpdated).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-          {' | '}Data sourced from HackerNews "Who is Hiring", RemoteOK, WeWorkRemotely, and Anthropic Careers
+          {' | '}Data sourced from HackerNews "Who is Hiring", RemoteOK, and company job boards (Greenhouse, Ashby, Lever)
         </p>
       </div>
     </div>
