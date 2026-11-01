@@ -504,7 +504,7 @@ A single Cloudflare Pages project (`aitmpl-dashboard`) serves all domains. Confi
 
 ### Deployment
 
-Deploying = merging to `main`. The deployer agent (`.claude/agents/deployer.md`) only verifies and troubleshoots deploy runs (its rollback section still describes Vercel). Manual deploy only when CI cannot: `cd dashboard && npm run build && npx wrangler pages deploy dist --project-name=aitmpl-dashboard`. Root `npm run deploy` is the stale Vercel script.
+Deploying = merging to `main`. The deployer agent (`.claude/agents/deployer.md`) only verifies and troubleshoots deploy runs. Manual deploy only when CI cannot: `cd dashboard && npm run build && npx wrangler pages deploy dist --project-name=aitmpl-dashboard`. Root `npm run deploy` is the stale Vercel script.
 
 **CI/CD**: Pushes to `main` auto-deploy via GitHub Actions (`.github/workflows/deploy.yml`):
 - Changes in `dashboard/**` trigger tests, a build and `wrangler pages deploy dist --project-name=aitmpl-dashboard`
