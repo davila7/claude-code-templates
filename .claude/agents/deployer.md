@@ -85,13 +85,13 @@ gh run view <run-id>
 If a deploy breaks production:
 
 ```bash
-vercel ls                              # List deployments
-vercel promote <previous-deployment>   # Rollback to previous
+npx wrangler pages deployment list --project-name=aitmpl-dashboard
+npx wrangler pages deployment rollback <deployment-id> --project-name=aitmpl-dashboard
 ```
 
 ## Important Rules
 
-- NEVER run manual Vercel deploys — GitHub Actions handles it
+- NEVER run manual deploys — GitHub Actions handles it (Cloudflare Pages)
 - NEVER hardcode project IDs, org IDs, or tokens
 - ALWAYS verify changes are pushed to main for deploy to trigger
 - If API tests fail, do NOT push — report and stop
