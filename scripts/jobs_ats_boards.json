@@ -1,5 +1,6 @@
 {
-  "_comment": "Public job boards scanned by scripts/generate_claude_jobs.py (collect_ats_boards). Only postings that name Claude Code are kept. Add a board with its ATS (greenhouse, ashby or lever), the slug from its public URL, the company name shown on the site and the company's domain (used for the logo). Anthropic has its own collector and is not listed here.",
+  "_comment": "Public job boards scanned by scripts/generate_claude_jobs.py (collect_ats_boards). Only postings that name Claude Code are kept. Add a board with its ATS (greenhouse, ashby or lever), the slug from its public URL, the company name shown on the site and the company's domain (used for the logo). Anthropic has its own collector and is not listed here. `exclude` lists ats/slug boards of recruiters and job aggregators, which Firecrawl discovery would otherwise pick up.",
+  "exclude": ["lever/jobgether", "ashby/g2i", "greenhouse/remotepeople"],
   "boards": [
     {"ats": "greenhouse", "slug": "airbnb", "company": "Airbnb", "domain": "airbnb.com"},
     {"ats": "ashby", "slug": "airbyte", "company": "Airbyte", "domain": "airbyte.com"},

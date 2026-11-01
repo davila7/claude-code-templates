@@ -7,6 +7,9 @@ Sources (all free, no API keys required):
 3. Anthropic Careers - Greenhouse API (jobs mentioning Claude Code)
 4. Company job boards on Greenhouse, Ashby and Lever, listed in
    scripts/jobs_ats_boards.json (public APIs, no keys)
+5. Optional: Firecrawl Search finds more boards with Claude Code postings
+   (only when FIRECRAWL_API_KEY is set; ~24 credits a run). The postings
+   themselves are still read from the free board APIs.
 
 A job is kept only if its text names Claude Code itself (see
 is_claude_related); a passing mention of "Claude" the model is not enough.
@@ -18,7 +21,7 @@ import json
 import os
 import re
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from html import unescape
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from urllib.request import Request, urlopen
@@ -407,7 +410,7 @@ def extract_tech_tags(text):
 
 def find_latest_hiring_threads():
     """The last three 'Who is hiring?' threads posted by the whoishiring account."""
-    print("[1/4] Finding latest HN 'Who is Hiring' threads...")
+    print("[1/5] Finding latest HN 'Who is Hiring' threads...")
     data = fetch_json(
         "https://hn.algolia.com/api/v1/search_by_date?tags=story,author_whoishiring&hitsPerPage=12"
     )
@@ -486,7 +489,7 @@ def remoteok_salary(item):
 
 def collect_remoteok():
     """Collect jobs from RemoteOK API."""
-    print("[2/4] Searching RemoteOK API...")
+    print("[2/5] Searching RemoteOK API...")
     data = fetch_json("https://remoteok.com/api")
     if not data:
         return []
@@ -555,7 +558,7 @@ def collect_anthropic_careers():
     One request: the board's list endpoint returns every job with its
     content when called with content=true.
     """
-    print("[3/4] Searching Anthropic Careers (Greenhouse API)...")
+    print("[3/5] Searching Anthropic Careers (Greenhouse API)...")
     data = fetch_json(
         "https://boards-api.greenhouse.io/v1/boards/anthropic/jobs?content=true", timeout=60
     )
@@ -641,6 +644,7 @@ def _greenhouse_postings(slug):
         name = loc.get("name", "") if isinstance(loc, dict) else ""
         yield {
             "id": job.get("id"),
+            "company": job.get("company_name", ""),
             "title": job.get("title", ""),
             "text": strip_html(unescape(job.get("content", ""))),
             "location": name,
@@ -692,51 +696,61 @@ def _lever_postings(slug):
 ATS_FETCHERS = {"greenhouse": _greenhouse_postings, "ashby": _ashby_postings, "lever": _lever_postings}
 
 
-def collect_ats_boards():
-    """Postings that name Claude Code on the company boards in jobs_ats_boards.json."""
-    print("[4/4] Searching company job boards (Greenhouse, Ashby, Lever)...")
+def scan_board(board):
+    """Claude Code postings on one company board."""
+    fetch = ATS_FETCHERS.get(board.get("ats"))
+    if not fetch:
+        print(f"  [warn] Unknown ATS {board.get('ats')!r} for {board.get('slug')}")
+        return []
+    found = []
+    for post in fetch(board["slug"]):
+        full_text = f"{post['title']} {post['text']}"
+        if not is_claude_related(full_text):
+            continue
+        locations = split_locations(post["location"])
+        remote = post["remote"] or any("remote" in l.lower() for l in locations)
+        tags = extract_tech_tags(full_text)
+        domain = board.get("domain", "")
+        found.append({
+            "id": f"{board['ats'][:2]}-{board['slug']}-{post['id']}",
+            "company": board.get("company") or post.get("company") or board["slug"],
+            "position": post["title"][:120],
+            "location": join_locations(locations)[:120] or ("Remote" if remote else "On-site"),
+            "locations": locations,
+            "remote": remote,
+            "salary": post.get("salary") or extract_salary(full_text),
+            "description": truncate(post["text"], 300),
+            "applyUrl": post["url"],
+            "source": ATS_LABELS[board["ats"]],
+            "sourceUrl": post["url"],
+            "postedAt": post["postedAt"],
+            "tags": tags,
+            "companyIcon": f"https://{domain}/favicon.ico" if domain else company_icon(board.get("company") or ""),
+        })
+    return found
+
+
+
+def load_ats_boards():
+    """(boards, excluded) from jobs_ats_boards.json; excluded is a set of
+    (ats, slug) for recruiters and job aggregators that are not employers."""
     try:
         with open(ATS_BOARDS_PATH, encoding="utf-8") as f:
-            boards = json.load(f)["boards"]
-    except (OSError, ValueError, KeyError) as e:
+            config = json.load(f)
+    except (OSError, ValueError) as e:
         print(f"  [warn] Could not read {ATS_BOARDS_PATH}: {e}")
-        return []
+        return [], set()
+    excluded = {tuple(x.lower().split("/", 1)) for x in config.get("exclude", []) if "/" in x}
+    return config.get("boards", []), excluded
 
-    def scan(board):
-        fetch = ATS_FETCHERS.get(board.get("ats"))
-        if not fetch:
-            print(f"  [warn] Unknown ATS {board.get('ats')!r} for {board.get('slug')}")
-            return []
-        found = []
-        for post in fetch(board["slug"]):
-            full_text = f"{post['title']} {post['text']}"
-            if not is_claude_related(full_text):
-                continue
-            locations = split_locations(post["location"])
-            remote = post["remote"] or any("remote" in l.lower() for l in locations)
-            tags = extract_tech_tags(full_text)
-            domain = board.get("domain", "")
-            found.append({
-                "id": f"{board['ats'][:2]}-{board['slug']}-{post['id']}",
-                "company": board["company"],
-                "position": post["title"][:120],
-                "location": join_locations(locations)[:120] or ("Remote" if remote else "On-site"),
-                "locations": locations,
-                "remote": remote,
-                "salary": post.get("salary") or extract_salary(full_text),
-                "description": truncate(post["text"], 300),
-                "applyUrl": post["url"],
-                "source": ATS_LABELS[board["ats"]],
-                "sourceUrl": post["url"],
-                "postedAt": post["postedAt"],
-                "tags": tags,
-                "companyIcon": f"https://{domain}/favicon.ico" if domain else company_icon(board["company"]),
-            })
-        return found
+
+def collect_ats_boards(boards):
+    """Postings that name Claude Code on the company boards in jobs_ats_boards.json."""
+    print("[4/5] Searching company job boards (Greenhouse, Ashby, Lever)...")
 
     jobs = []
     with ThreadPoolExecutor(max_workers=8) as executor:
-        for board, found in zip(boards, executor.map(scan, boards)):
+        for board, found in zip(boards, executor.map(scan_board, boards)):
             if found:
                 print(f"  {board['company']}: {len(found)}")
             jobs.extend(found)
@@ -745,8 +759,138 @@ def collect_ats_boards():
 
 
 # ---------------------------------------------------------------------------
+# Source 5 (optional): Firecrawl Search to discover more company boards
+# ---------------------------------------------------------------------------
+
+FIRECRAWL_SEARCH_URL = "https://api.firecrawl.dev/v2/search"
+# One query per ATS host. Search costs 2 credits per 10 results, so
+# 4 queries x 30 results = 24 credits a run (~720 a month on the daily cron).
+FIRECRAWL_QUERIES = [
+    ('"Claude Code" site:jobs.ashbyhq.com', 30),
+    ('"Claude Code" site:job-boards.greenhouse.io -anthropic', 30),
+    ('"Claude Code" site:boards.greenhouse.io -anthropic', 30),
+    ('"Claude Code" site:jobs.lever.co', 30),
+]
+BOARD_URL_RES = [
+    ("ashby", re.compile(r"^https?://jobs\.ashbyhq\.com/([^/?#]+)", re.IGNORECASE)),
+    ("greenhouse", re.compile(r"^https?://(?:job-)?boards\.greenhouse\.io/([^/?#]+)", re.IGNORECASE)),
+    ("greenhouse", re.compile(r"^https?://boards\.greenhouse\.io/embed/job_board\?for=([^&#]+)", re.IGNORECASE)),
+    ("lever", re.compile(r"^https?://jobs\.lever\.co/([^/?#]+)", re.IGNORECASE)),
+]
+
+
+def firecrawl_search(api_key, query, limit):
+    """Web results of one Firecrawl search, or None when the call fails
+    (bad key, no credits left = HTTP 402, network)."""
+    req = Request(
+        FIRECRAWL_SEARCH_URL,
+        data=json.dumps({"query": query, "limit": limit, "tbs": "qdr:m"}).encode(),
+        headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+    )
+    try:
+        with urlopen(req, timeout=60) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+    except Exception as e:  # HTTPError carries the status (402 = out of credits)
+        print(f"  [warn] Firecrawl search failed ({getattr(e, 'code', e)}): {query}")
+        return None
+    return (data.get("data") or {}).get("web") or []
+
+
+def board_from_url(url):
+    for ats, rx in BOARD_URL_RES:
+        m = rx.match(url or "")
+        if m:
+            return ats, m.group(1)
+    return None
+
+
+DISCOVERED_BOARDS_PATH = "docs/claude-jobs-discovered-boards.json"
+DISCOVERED_TTL_DAYS = 60
+
+
+def load_discovered_boards():
+    try:
+        with open(DISCOVERED_BOARDS_PATH, encoding="utf-8") as f:
+            return json.load(f).get("boards", [])
+    except (OSError, ValueError):
+        return []
+
+
+def discover_with_firecrawl(skip):
+    """(ats, slug) pairs of boards Firecrawl Search finds, minus `skip`."""
+    api_key = os.environ.get("FIRECRAWL_API_KEY", "").strip()
+    if not api_key:
+        print("  Firecrawl discovery skipped (FIRECRAWL_API_KEY not set)")
+        return []
+    found = {}
+    for query, limit in FIRECRAWL_QUERIES:
+        results = firecrawl_search(api_key, query, limit)
+        if results is None:
+            break  # a 402 or bad key fails every later query too
+        for result in results:
+            board = board_from_url(result.get("url"))
+            if board and (board[0], board[1].lower()) not in skip:
+                found.setdefault((board[0], board[1].lower()), board)
+    print(f"  Firecrawl found {len(found)} boards not listed yet")
+    return list(found.values())
+
+
+def collect_discovered_boards(listed_boards, excluded):
+    """Scan boards found by Firecrawl Search, now or on earlier runs.
+
+    Discovered boards are kept in DISCOVERED_BOARDS_PATH (committed by the
+    daily workflow), so a run without FIRECRAWL_API_KEY or without credits
+    still scans them through the free board APIs. A board drops out after
+    DISCOVERED_TTL_DAYS without a Claude Code posting.
+    """
+    print("[5/5] Scanning boards discovered with Firecrawl Search...")
+    skip = {(b["ats"], b["slug"].lower()) for b in listed_boards} | excluded
+    skip.add(("greenhouse", "anthropic"))
+
+    saved = {(b["ats"], b["slug"].lower()): b for b in load_discovered_boards()
+             if (b["ats"], b["slug"].lower()) not in skip}
+    today = datetime.now(timezone.utc).date().isoformat()
+    for ats, slug in discover_with_firecrawl(skip | set(saved)):
+        saved[(ats, slug.lower())] = {
+            "ats": ats, "slug": slug,
+            "company": "" if ats == "greenhouse" else re.sub(r"[-_]+", " ", slug).strip().title(),
+            "firstSeen": today, "lastHit": today,
+        }
+
+    boards = sorted(saved.values(), key=lambda b: (b["ats"], b["slug"].lower()))
+    jobs, kept = [], []
+    cutoff = (datetime.now(timezone.utc).date() - timedelta(days=DISCOVERED_TTL_DAYS)).isoformat()
+    with ThreadPoolExecutor(max_workers=8) as executor:
+        for board, posts in zip(boards, executor.map(scan_board, boards)):
+            if posts:
+                board["lastHit"] = today
+                if not board.get("company"):
+                    board["company"] = posts[0]["company"]
+                jobs.extend(posts)
+            if board.get("lastHit", today) >= cutoff:
+                kept.append(board)
+
+    try:
+        with open(DISCOVERED_BOARDS_PATH, "w", encoding="utf-8") as f:
+            json.dump({"_comment": "Generated by scripts/generate_claude_jobs.py: job boards found with "
+                       "Firecrawl Search. Move a board to scripts/jobs_ats_boards.json to keep it for good, "
+                       "or add it to `exclude` there to drop it.", "boards": kept}, f, indent=2, ensure_ascii=False)
+    except OSError as e:
+        print(f"  [warn] Could not write {DISCOVERED_BOARDS_PATH}: {e}")
+
+    print(f"  Found {len(jobs)} Claude Code jobs on {len(boards)} discovered boards ({len(kept)} kept)")
+    return jobs
+
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
+
+# Company boards can hold dozens of postings that share one boilerplate line
+# ("we use Claude Code"); keep the newest few so one employer can't fill the page.
+MAX_JOBS_PER_BOARD_COMPANY = 10
+BOARD_SOURCES = {"Greenhouse", "Ashby", "Lever"}
+
 
 def dedupe(jobs):
     """Drop repeats: same id, or the same company + title outside Anthropic
@@ -755,10 +899,15 @@ def dedupe(jobs):
     recent posting."""
     jobs = sorted(jobs, key=lambda j: j.get("postedAt", ""), reverse=True)
     seen_ids, seen_roles, unique = set(), set(), []
+    per_company = {}
     for job in jobs:
         role = (normalize_key(job["company"]), normalize_key(job["position"]))
         if job["id"] in seen_ids or (job["source"] != "Anthropic" and role in seen_roles):
             continue
+        if job["source"] in BOARD_SOURCES:
+            if per_company.get(role[0], 0) >= MAX_JOBS_PER_BOARD_COMPANY:
+                continue
+            per_company[role[0]] = per_company.get(role[0], 0) + 1
         seen_ids.add(job["id"])
         seen_roles.add(role)
         unique.append(job)
@@ -774,7 +923,9 @@ def generate():
     all_jobs.extend(collect_hn_firebase())
     all_jobs.extend(collect_remoteok())
     all_jobs.extend(collect_anthropic_careers())
-    all_jobs.extend(collect_ats_boards())
+    boards, excluded = load_ats_boards()
+    all_jobs.extend(collect_ats_boards(boards))
+    all_jobs.extend(collect_discovered_boards(boards, excluded))
 
     unique = dedupe(all_jobs)
 
