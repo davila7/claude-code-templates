@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import { corsResponse, jsonResponse } from '../../lib/api/cors';
 import { captureApiError } from '../../lib/api/error-tracking';
 import { getCountry } from '../../lib/api/geo';
+import { COMPONENT_TYPES } from '../../lib/api/usage-tracking';
 
 function getSupabaseClient() {
   const supabaseUrl = import.meta.env.SUPABASE_URL || process.env.SUPABASE_URL;
@@ -22,8 +23,7 @@ function validateComponentData(data: { type?: string; name?: string; path?: stri
     return { valid: false, error: 'Component type and name are required' };
   }
 
-  const validTypes = ['agent', 'command', 'setting', 'hook', 'mcp', 'skill', 'loop', 'mod', 'template'];
-  if (!validTypes.includes(type)) {
+  if (!(COMPONENT_TYPES as readonly string[]).includes(type)) {
     return { valid: false, error: 'Invalid component type' };
   }
 

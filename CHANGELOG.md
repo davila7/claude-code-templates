@@ -5,6 +5,72 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.31.0] - 2026-11-02
+
+Includes the changes prepared as 1.30.1 (#1334), which was never published to npm.
+
+### Removed
+- **CLI flags that saw little or no use** (0 to 65 runs each in the last 30
+  days, against 16.8K npm downloads): `--plugins`, `--skills-manager`,
+  `--command-stats`, `--hook-stats`, `--mcp-stats`, `--agents`,
+  `--chats-mobile`, `--teams`, `--2025`, `--studio`, `--sandbox` (with
+  `--e2b-api-key` and `--anthropic-api-key`), `--tunnel`, `--create-agent`,
+  `--list-agents`, `--update-agent`, `--remove-agent` and `--clone-session`.
+  Running one prints what replaced it (`/plugin`, `/hooks`, `/mcp`, the
+  `ui/stack-viewer` mod, `--analytics`, `--chats`) and exits with code 1;
+  `npx claude-code-templates@1.30.0 <flag>` still runs the old version, except
+  for `--tunnel`. Global agents created with `--create-agent` keep working.
+- The sandbox launchers are no longer in the npm package; they stay in
+  `cli-tool/components/sandbox/`.
+- Dependencies: `@supabase/supabase-js`, `axios`, `dotenv`, `qrcode`, `uuid`.
+
+### Added
+- **No arguments opens the catalog browser** (#1333): pick a type, search,
+  select across types, then the usual plan table and install. Without a
+  terminal it prints short usage text and exits 0.
+- A setting's `.claude/themes/` files go to `~/.claude/themes/`, the only
+  folder Claude Code reads custom themes from (#1338).
+
+### Security
+- `--analytics` and `--chats` listen on 127.0.0.1 only (they listened on every
+  interface) and answer only requests addressed to `localhost` from their own
+  page: a foreign `Host` (DNS rebinding) or `Origin` (another site) gets 403,
+  including the `/ws` WebSocket handshake. `Access-Control-Allow-Origin: *` is
+  gone.
+- `--prompt` starts `claude` without a shell, so the prompt is one argument and
+  never shell syntax.
+
+### Fixed
+- `--analytics` and `--chats` showed 0 conversations when `~/.claude` held a
+  dangling symlink, which Claude Code itself leaves at `~/.claude/debug/latest`
+  (#575, #621). The scan now reads only `~/.claude/projects`, skips entries it
+  cannot read and follows each linked folder once; the project count no longer
+  includes `debug/`, `todos/` and the other `~/.claude` folders.
+- `--analytics` never received live updates: the page reopened its WebSocket
+  on every status change, subscribed with a message the server ignored, and
+  routed messages by a field the server did not send. It now keeps one
+  connection and refreshes within a second of a conversation changing.
+- `--chats` loaded an empty page since June (`WebSocketService is not
+  defined`): its three scripts were deleted by the analytics UI build and are
+  back, also in `analytics-ui/public/` so the next build keeps them.
+- `--health-check` did not exit after the report: its connectivity check left
+  the connection to api.anthropic.com open. Without a terminal (CI, pipes,
+  agents) it also waited forever on its setup question; it now prints the
+  report and exits in under a second, without the 19 s of pauses between
+  sections. `--check` and `--verify` were rejected as unknown
+  options and work again. The placeholder "MCP Hooks: not implemented" warning
+  no longer lowers the score.
+- `--prompt` split the prompt into words (and failed on quotes), and without a
+  terminal waited on its confirmation; it now prints the `claude` command to
+  run instead. The template review prompt (`--template`) used `sh -c`, which
+  does not exist on Windows.
+- A dashboard whose port is taken reports it instead of crashing.
+- Usage tracking: `--analytics` and `--health-check` were also sent to the
+  download counter, which rejected them; `--workflow` runs and removed flags
+  are now counted as commands, and the dashboard API accepts installation
+  outcomes for mods and loops (until now always rejected). Tracking calls
+  return their request so a caller can wait for it before exiting.
+
 ## [1.30.0] - 2026-10-10
 
 ### Changed

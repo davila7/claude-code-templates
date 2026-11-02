@@ -9,6 +9,9 @@ on:
   pull_request:
     paths:
       - 'dashboard/**'
+      # tests/usage-tracking.test.ts checks every event name the CLI sends
+      # against the tracking endpoints, so a CLI change must run it too.
+      - 'cli-tool/src/**'
       - '.github/workflows/dashboard-ci.yml'
 
 permissions:
