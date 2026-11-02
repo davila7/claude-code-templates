@@ -23567,6 +23567,38 @@
     "plugin_name": "kumi"
   },
   {
+    "slug": "vidbyte-memory",
+    "name": "Vidbyte Memory",
+    "author": "cerredz",
+    "description": "Correction-driven memory for coding agents: a GitHub template where each correction becomes a slim fact, a pytest test and a commit. No API key, no database, no service. For Claude Code and any agent that reads AGENTS.md.",
+    "github": "https://github.com/cerredz/vidbyte-memory",
+    "stars": 0,
+    "type": "plugin",
+    "tags": [
+      "skills",
+      "agents",
+      "hooks"
+    ],
+    "contains": {
+      "agents": 4
+    },
+    "highlights": [
+      "Plugin declares: 4 agents",
+      "Web UI: https://github.com/cerredz/vidbyte-memory-example"
+    ],
+    "website": "https://github.com/cerredz/vidbyte-memory#readme",
+    "marketplace_name": "vidbyte",
+    "plugin_name": "vidbyte-memory",
+    "plugin_manifest": {
+      "agents": [
+        "./.claude/agents/feedback-fact.md",
+        "./.claude/agents/feedback-test.md",
+        "./.claude/agents/feedback-update.md",
+        "./.claude/agents/verifier.md"
+      ]
+    }
+  },
+  {
     "slug": "cohesivity-plugin",
     "name": "Cohesivity Plugin",
     "author": "cohesivity-org",
