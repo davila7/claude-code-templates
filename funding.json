@@ -1,0 +1,71 @@
+{
+  "$schema": "https://fundingjson.org/schema/v1.1.0.json",
+  "version": "v1.1.0",
+  "entity": {
+    "type": "individual",
+    "role": "maintainer",
+    "name": "Daniel Avila",
+    "email": "dan.avila7@gmail.com",
+    "description": "Creator and maintainer of Claude Code Templates (aitmpl.com), an open-source registry of components for AI coding agents. AI software engineer with 17+ years building developer tools, co-founder of CodeGPT (2.5M+ VS Code installs).",
+    "webpageUrl": {
+      "url": "https://aitmpl.com",
+      "wellKnown": "https://aitmpl.com/.well-known/funding-manifest-urls"
+    }
+  },
+  "projects": [
+    {
+      "guid": "claude-code-templates",
+      "name": "Claude Code Templates",
+      "description": "Open-source registry and CLI for AI coding agent components: agents, commands, skills, hooks, MCP servers and settings. Developers browse aitmpl.com and install any component with one npx command. 1,900+ components, 33K+ GitHub stars, 3.8K+ forks, 130+ contributors and 215K+ npm downloads in the last 12 months. Every contributed component goes through automated security review (static analysis, NVIDIA SkillSpector and AI code review) before it reaches users, because installing third-party agent components is a software supply chain risk. The catalog is also published as a versioned public API that other tools build on. The registry is independent (not affiliated with Anthropic) and MIT licensed.",
+      "webpageUrl": {
+        "url": "https://aitmpl.com",
+        "wellKnown": "https://aitmpl.com/.well-known/funding-manifest-urls"
+      },
+      "repositoryUrl": {
+        "url": "https://github.com/davila7/claude-code-templates",
+        "wellKnown": "https://github.com/davila7/claude-code-templates/blob/main/.well-known/funding-manifest-urls"
+      },
+      "licenses": ["spdx:MIT"],
+      "tags": ["developer-tools", "artificial-intelligence", "security", "cli", "coding-agents", "ai-agents", "mcp", "supply-chain-security", "registry", "ai"]
+    }
+  ],
+  "funding": {
+    "channels": [
+      {
+        "guid": "github-sponsors",
+        "type": "payment-provider",
+        "address": "https://github.com/sponsors/davila7",
+        "description": "GitHub Sponsors for one-time or recurring support."
+      },
+      {
+        "guid": "bank",
+        "type": "bank",
+        "address": "",
+        "description": "Direct bank transfer for grants. Details shared privately on request."
+      }
+    ],
+    "plans": [
+      {
+        "guid": "maintenance-security",
+        "status": "active",
+        "name": "Maintenance and component security review",
+        "description": "Funds maintainer time to review and merge community contributions, keep the security review pipeline for submitted components running, and keep the CLI compatible with fast-moving agent harness releases.",
+        "amount": 25000,
+        "currency": "USD",
+        "frequency": "yearly",
+        "channels": ["github-sponsors", "bank"]
+      },
+      {
+        "guid": "infrastructure",
+        "status": "active",
+        "name": "Infrastructure",
+        "description": "Hosting, CDN, monitoring and CI costs for aitmpl.com and the component registry.",
+        "amount": 0,
+        "currency": "USD",
+        "frequency": "monthly",
+        "channels": ["github-sponsors"]
+      }
+    ],
+    "history": []
+  }
+}
