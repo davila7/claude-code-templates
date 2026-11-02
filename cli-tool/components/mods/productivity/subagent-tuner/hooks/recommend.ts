@@ -28,6 +28,32 @@ const RULES: readonly Rule[] = [
   { kind: 'explore', pattern: /\b(explor|search|research)/i, model: 'haiku', effort: 'low' },
 ]
 
+/** The agent types the engine ships: a name the offers never raised is still one of these or a custom agent. */
+const BUILT_IN_TYPES: readonly string[] = ['general-purpose', 'Explore', 'Plan', 'claude', 'statusline-setup', 'claude-code-guide']
+
+/** Per agent type the engine offered: true when it provided it itself (a built-in). */
+export type OfferCache = ReadonlyMap<string, boolean>
+
+/**
+ * True where the agent type may carry a definition of its own. The tuner never
+ * sees a definition's `model` or `effort`, so for such a type it recommends
+ * nothing: a pinned model must not be replaced by a keyword guess. The offers
+ * are the evidence; a type no offer was seen for is judged by its name (see
+ * `isJudgedByName`; the spawn may tell better, for the engine's offer can come late).
+ */
+export const isJudgedByName = (subagentType: string | undefined, offers: OfferCache): boolean =>
+  subagentType !== undefined && !offers.has(subagentType) && !BUILT_IN_TYPES.includes(subagentType)
+
+export function hasOwnDefinition(subagentType: string | undefined, offers: OfferCache): boolean {
+  if (subagentType === undefined) {
+    return false
+  }
+
+  const isBuiltIn = offers.get(subagentType)
+
+  return isBuiltIn === undefined ? !BUILT_IN_TYPES.includes(subagentType) : !isBuiltIn
+}
+
 export type AgentRequest = {
   subagent_type?: string
   description?: string

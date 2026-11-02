@@ -71,6 +71,8 @@ export function engine(on: On, options: Options = {}) {
   const script = [...(options.script ?? [])]
 
   on('session.start', (_$, e) => ({ cwd: e.cwd }))
+  // Beneath the plugins the engine offers every type to the model.
+  on('agent.offer', () => ({ isOffered: true }))
   on('session.surfaces', () => ({ value: options.surfaces ?? (['terminal'] as const) }))
   on('state.get', (_$, e, next) => {
     reads += 1
@@ -178,6 +180,15 @@ export function engine(on: On, options: Options = {}) {
     }
 
     return { result: { ok: true } } as never
+  })
+
+  // The engine starts the subagent: records the model the spawn reached it with.
+  const spawned: (string | undefined)[] = []
+
+  on('agent.spawn', (_$, e) => {
+    spawned.push(e.model)
+
+    return { model: e.model ?? 'parent' }
   })
 
   const touched = new Set<string>()
@@ -295,6 +306,7 @@ export function engine(on: On, options: Options = {}) {
   return {
     clock,
     seen,
+    spawned,
     toasts,
     diagnostics,
     asked,
@@ -373,7 +385,27 @@ export const textOf = async (ui: Band, text: RegExp) => (await ui.find({ type: '
 // A plain cycler carries a trailing mark that is not part of the value.
 export const labelOf = async (ui: Band, key: string) => String((await ui.find({ key }))?.props.label).replace(/>$/, '')
 
-export const start = ($: Engine) => $.session.start({ cwd: '/', surface: 'terminal', isInteractive: true })
+// The engine raises `agent.offer` for each type when it builds the agent listing, before the model can
+// name one. The fixtures' types stand for built-in agents (the tuner's own recommendation applies to
+// them); a test of a custom agent offers its own type with `offerAgent`.
+export const offerAgent = (
+  $: Engine,
+  agent: string,
+  isBuiltIn = false,
+  source: string = isBuiltIn ? 'built-in' : 'plugin',
+  provider = isBuiltIn ? { plugin: 'engine', tier: 'core' } : { plugin: 'acme', tier: 'append' },
+) => $.agent.offer({ agent, description: '', source, provider } as never)
+
+export const start = async ($: Engine) => {
+  for (const one of [REVIEW, BUILD, SEARCH]) {
+    await offerAgent($, one.subagent_type, true)
+  }
+
+  return $.session.start({ cwd: '/', surface: 'terminal', isInteractive: true })
+}
+
+/** A custom agent's call: its own type, which the listing offered as a plugin's, not the engine's. */
+export const CUSTOM = { tool: 'Agent', description: 'Review the diff', prompt: 'p', subagent_type: 'acme-reviewer' } as const
 
 export const SAVE_LABEL = (_question: string, labels: readonly string[]) => labels.find(label => label.includes('save default'))!
 
@@ -447,3 +479,7 @@ export const CLOSER = {
     })
   },
 } as const
+
+/** The engine's `agent.spawn` for a call, as it reaches the hooks: the provider says who supplies the type. */
+export const spawnAgent = ($: Engine, toolUseId: string, subagentType: string, provider = { plugin: 'engine', tier: 'core' }) =>
+  $.agent.spawn({ tool_use_id: toolUseId, prompt: 'p', description: 'Review the diff', subagentType, provider } as never)
