@@ -7,10 +7,19 @@
 # pr-automerge.yml merges a PR labelled `automerge` once this passes.
 #
 # It also fails, on purpose, when a PR touches paths CI does not really cover:
-#   .github/**         a PR could rewrite this gate or the deploy
-#   cli-tool/src/**    the cli-tool jest suite does not run in CI
-#   cli-tool/bin/**
-# Those PRs never auto-merge; Daniel merges them by hand.
+# (MANUAL_PATHS below; keep it identical in pr-automerge.yml):
+#   .github/**                 a PR could rewrite this gate or the deploy
+#   cli-tool/src/**, bin/**    the cli-tool jest suite does not run in CI
+#   scripts/**                 catalog generator, scanners, release tooling
+#   dashboard/src/pages/api/**, dashboard/src/lib/api/**, dashboard/src/middleware*
+#                              auth, download tracking, CORS, secrets at runtime
+#   dashboard/wrangler.toml, astro.config.mjs, public/_headers, public/_redirects
+#                              deploy config, caching and redirects of the live site
+#   any package.json, package-lock.json, Cargo.toml, Cargo.lock
+#                              dependency changes (supply chain)
+# Those PRs never auto-merge; Daniel merges them by hand. So does any PR with
+# the `needs-human` label, which anyone can add to stop one PR from merging
+# itself; removing the label runs the gate again.
 #
 # It also fails while the PR has unresolved review threads, so a finding from a
 # reviewer or a review bot (cubic, greptile) blocks the merge until it is fixed
@@ -25,7 +34,7 @@ name: PR Gate
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review, labeled]
+    types: [opened, synchronize, reopened, ready_for_review, labeled, unlabeled]
 
 permissions:
   contents: read
@@ -35,14 +44,18 @@ permissions:
 
 concurrency:
   # Other labels (the welcome bot adds some) get their own group and are
-  # skipped, so they never cancel a gate run that is waiting.
-  group: pr-gate-${{ github.event.pull_request.number }}-${{ github.event.action == 'labeled' && github.event.label.name || 'head' }}
+  # skipped, so they never cancel a gate run that is waiting. `needs-human`
+  # shares the head group, so adding it stops a waiting run at once.
+  group: pr-gate-${{ github.event.pull_request.number }}-${{ (github.event.action == 'labeled' || github.event.action == 'unlabeled') && github.event.label.name != 'needs-human' && format('{0}-{1}', github.event.action, github.event.label.name) || 'head' }}
   cancel-in-progress: true
 
 jobs:
   gate:
     name: All checks green
-    if: github.event.action != 'labeled' || github.event.label.name == 'automerge'
+    if: >-
+      (github.event.action != 'labeled' && github.event.action != 'unlabeled') ||
+      (github.event.action == 'labeled' && github.event.label.name == 'automerge') ||
+      github.event.label.name == 'needs-human'
     runs-on: ubuntu-latest
     timeout-minutes: 90
     env:
@@ -51,20 +64,30 @@ jobs:
       PR: ${{ github.event.pull_request.number }}
       SHA: ${{ github.event.pull_request.head.sha }}
       SELF: All checks green
+      MANUAL_PATHS: '^(\.github/|cli-tool/src/|cli-tool/bin/|scripts/|dashboard/src/pages/api/|dashboard/src/lib/api/|dashboard/src/middleware|dashboard/wrangler\.toml$|dashboard/astro\.config\.mjs$|dashboard/public/_(headers|redirects)$|(.*/)?package(-lock)?\.json$|(.*/)?Cargo\.(toml|lock)$)'
     steps:
-      - name: Refuse paths CI does not cover
+      - name: Refuse PRs labelled needs-human
+        run: |
+          if gh api "repos/$REPO/issues/$PR/labels" --jq '.[].name' | grep -qx needs-human; then
+            echo "### Manual merge required" >> "$GITHUB_STEP_SUMMARY"
+            echo "Labelled \`needs-human\`: remove the label to let it auto-merge." >> "$GITHUB_STEP_SUMMARY"
+            echo "::error::Labelled needs-human: merge by hand."
+            exit 1
+          fi
+
+      - name: Refuse paths a human must merge
         run: |
           files=$(gh api --paginate "repos/$REPO/pulls/$PR/files?per_page=100" --jq '.[].filename')
-          hits=$(printf '%s\n' "$files" | grep -E '^(\.github/|cli-tool/src/|cli-tool/bin/)' || true)
+          hits=$(printf '%s\n' "$files" | grep -E "$MANUAL_PATHS" || true)
           if [ -n "$hits" ]; then
             {
               echo "### Manual merge required"
-              echo "This PR touches paths that CI does not cover, so it never auto-merges:"
+              echo "This PR touches paths that a human merges, so it never auto-merges:"
               echo '```'
               printf '%s\n' "$hits"
               echo '```'
             } >> "$GITHUB_STEP_SUMMARY"
-            echo "::error::Touches .github/ or cli-tool/src|bin/: merge by hand."
+            echo "::error::Touches paths that need a human (see the job summary): merge by hand."
             exit 1
           fi
 
