@@ -11,9 +11,11 @@
 #   .github/**                 a PR could rewrite this gate or the deploy
 #   cli-tool/src/**, bin/**    the cli-tool jest suite does not run in CI
 #   scripts/**                 catalog generator, scanners, release tooling
-#   dashboard/src/pages/api/**, dashboard/src/lib/api/**, dashboard/src/middleware*
+#   dashboard/src/pages/api/**, dashboard/src/lib/api/**, dashboard/src/middleware*,
+#   dashboard/src/lib/github-api.ts
 #                              auth, download tracking, CORS, secrets at runtime
-#   dashboard/wrangler.toml, astro.config.mjs, public/_headers, public/_redirects
+#   dashboard/wrangler.toml, astro.config.mjs, public/_headers, public/_redirects,
+#   cloudflare-workers/*/wrangler.toml
 #                              deploy config, caching and redirects of the live site
 #   any package.json, package-lock.json, Cargo.toml, Cargo.lock
 #                              dependency changes (supply chain)
@@ -64,7 +66,7 @@ jobs:
       PR: ${{ github.event.pull_request.number }}
       SHA: ${{ github.event.pull_request.head.sha }}
       SELF: All checks green
-      MANUAL_PATHS: '^(\.github/|cli-tool/src/|cli-tool/bin/|scripts/|dashboard/src/pages/api/|dashboard/src/lib/api/|dashboard/src/middleware|dashboard/wrangler\.toml$|dashboard/astro\.config\.mjs$|dashboard/public/_(headers|redirects)$|(.*/)?package(-lock)?\.json$|(.*/)?Cargo\.(toml|lock)$)'
+      MANUAL_PATHS: '^(\.github/|cli-tool/src/|cli-tool/bin/|scripts/|dashboard/src/pages/api/|dashboard/src/lib/api/|dashboard/src/lib/github-api\.ts$|dashboard/src/middleware|dashboard/wrangler\.toml$|cloudflare-workers/[^/]+/wrangler\.toml$|dashboard/astro\.config\.mjs$|dashboard/public/_(headers|redirects)$|(.*/)?package(-lock)?\.json$|(.*/)?Cargo\.(toml|lock)$)'
     steps:
       - name: Refuse PRs labelled needs-human
         run: |

@@ -7,7 +7,8 @@
 #
 # It runs on workflow_run, so the copy on main runs, never a PR's own edit of
 # it. It merges only when:
-#   - PR Gate succeeded on the PR's current head commit,
+#   - PR Gate succeeded on the PR's current head commit, and its newest
+#     non-skipped `All checks green` check run there passed,
 #   - the PR is open, not a draft, from a branch of this repo (fork PRs have no
 #     pull_requests entry in workflow_run, so they never get here),
 #   - it carries the `automerge` label,
@@ -49,7 +50,7 @@ jobs:
       REPO: ${{ github.repository }}
       PR: ${{ github.event.workflow_run.pull_requests[0].number }}
       SHA: ${{ github.event.workflow_run.head_sha }}
-      MANUAL_PATHS: '^(\.github/|cli-tool/src/|cli-tool/bin/|scripts/|dashboard/src/pages/api/|dashboard/src/lib/api/|dashboard/src/middleware|dashboard/wrangler\.toml$|dashboard/astro\.config\.mjs$|dashboard/public/_(headers|redirects)$|(.*/)?package(-lock)?\.json$|(.*/)?Cargo\.(toml|lock)$)'
+      MANUAL_PATHS: '^(\.github/|cli-tool/src/|cli-tool/bin/|scripts/|dashboard/src/pages/api/|dashboard/src/lib/api/|dashboard/src/lib/github-api\.ts$|dashboard/src/middleware|dashboard/wrangler\.toml$|cloudflare-workers/[^/]+/wrangler\.toml$|dashboard/astro\.config\.mjs$|dashboard/public/_(headers|redirects)$|(.*/)?package(-lock)?\.json$|(.*/)?Cargo\.(toml|lock)$)'
     steps:
       - name: Check the PR may auto-merge
         id: check
@@ -66,6 +67,12 @@ jobs:
           [ "$head_repo" = "$REPO" ] || reason="not a branch of this repo"
           [ "$base" = main ] || reason="base is not main"
           [ "$label" = true ] || reason="no automerge label"
+          # A gate run skipped for an unrelated label event still completes the
+          # workflow as success, so require the gate check itself: the newest
+          # run of it on this head that was not skipped must have passed.
+          gate=$(gh api "repos/$REPO/commits/$SHA/check-runs?check_name=All%20checks%20green&filter=all&per_page=100" \
+            --jq '[.check_runs[] | select(.conclusion != "skipped")] | sort_by(.id) | last | .conclusion // "pending"')
+          [ "$gate" = success ] || reason="gate check on this head is $gate"
           if jq -e '[.labels[].name] | index("needs-human") != null' <<<"$pr" >/dev/null; then
             reason="labelled needs-human"
           fi
