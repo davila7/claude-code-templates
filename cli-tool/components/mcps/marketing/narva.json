@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "narva": {
+      "description": "Official hosted MCP server of Narva: make faceless YouTube videos and Shorts from a topic or a script (script, AI narration in 32 languages, AI visuals, archive footage, motion graphics, captions, music, thumbnails), edit them in words and publish or schedule them to your YouTube channel. OAuth sign-in to your Narva account (a plan is required to make videos).",
+      "type": "http",
+      "url": "https://narva.app/mcp"
+    }
+  }
+}
