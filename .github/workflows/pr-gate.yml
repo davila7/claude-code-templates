@@ -72,7 +72,7 @@ jobs:
         run: |
           # Assign first: under bash -e a failed lookup then stops the job,
           # where a failed pipe into grep would just look like "no label".
-          labels=$(gh api "repos/$REPO/issues/$PR/labels" --jq '.[].name')
+          labels=$(gh api --paginate "repos/$REPO/issues/$PR/labels?per_page=100" --jq '.[].name')
           if printf '%s\n' "$labels" | grep -qx needs-human; then
             echo "### Manual merge required" >> "$GITHUB_STEP_SUMMARY"
             echo "Labelled \`needs-human\`: remove the label to let it auto-merge." >> "$GITHUB_STEP_SUMMARY"
