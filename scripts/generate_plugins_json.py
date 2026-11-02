@@ -68,6 +68,7 @@ REPOS = [
     ("curviate/curviate-plugin", "https://curviate.com/"),
     ("firecrawl/firecrawl-claude-plugin", "https://www.firecrawl.dev/integrations/claude-code?utm_source=claude-code-templates&utm_medium=integration"),
     ("annavetech/kumi", "https://docs.annave.tech/kumi/"),
+    ("nightlab-agent/file-trail", None),
 ]
 
 DESCRIPTION_OVERRIDES = {
