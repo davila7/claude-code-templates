@@ -1,6 +1,12 @@
 /**
- * TrackingService - Anonymous download analytics using Supabase database
- * Records component installations for analytics without impacting user experience
+ * TrackingService - anonymous usage analytics, sent to www.aitmpl.com:
+ * - trackDownload            -> /api/track-download-supabase    (Supabase component_downloads)
+ * - trackCommandExecution    -> /api/track-command-usage        (Neon command_usage_logs)
+ * - trackInstallationOutcome -> /api/track-installation-outcome (Neon installation_outcomes)
+ * The endpoints only accept the names in dashboard/src/lib/api/usage-tracking.ts;
+ * dashboard/tests/usage-tracking.test.ts fails when this CLI sends one they reject.
+ * Every request is best effort: it never throws and gives up after 5 s.
+ * Opt out with CCT_NO_TRACKING=true or CCT_NO_ANALYTICS=true (CI=true also disables it).
  */
 
 class TrackingService {
@@ -39,8 +45,9 @@ class TrackingService {
             // Create tracking payload
             const trackingData = this.createTrackingPayload(componentType, componentName, metadata);
             
-            // Fire-and-forget tracking (don't block user experience)
-            this.sendTrackingData(trackingData)
+            // Callers may ignore the promise (fire-and-forget) or await it
+            // when the process is about to exit.
+            return this.sendTrackingData(trackingData)
                 .catch(error => {
                     // Silent failure - tracking should never impact functionality
                     // Only show debug info when explicitly enabled
@@ -88,7 +95,6 @@ class TrackingService {
         const timeoutId = setTimeout(() => controller.abort(), this.timeout);
 
         try {
-            // Send to Vercel database endpoint
             await this.sendToDatabase(trackingData, controller.signal);
 
             clearTimeout(timeoutId);
@@ -107,7 +113,7 @@ class TrackingService {
     }
 
     /**
-     * Send tracking data to Vercel database
+     * Send a component download to /api/track-download-supabase
      */
     async sendToDatabase(trackingData, signal) {
         try {
@@ -196,29 +202,11 @@ class TrackingService {
     }
 
     /**
-     * Track health check usage
-     */
-    async trackHealthCheck(results = {}) {
-        return this.trackDownload('health-check', 'system-validation', {
-            installation_type: 'health_check',
-            results_summary: results
-        });
-    }
-
-    /**
-     * Track analytics dashboard usage
-     */
-    async trackAnalyticsDashboard(metadata = {}) {
-        return this.trackDownload('analytics', 'dashboard-launch', {
-            installation_type: 'analytics_dashboard',
-            ...metadata
-        });
-    }
-
-    /**
-     * Track CLI command execution
-     * @param {string} commandName - Command name (chats, analytics, health-check, plugins, sandbox, etc.)
+     * Track CLI command execution (anything that is not a component install)
+     * @param {string} commandName - One of VALID_COMMANDS in dashboard/src/lib/api/usage-tracking.ts
+     *   (analytics, chats, health-check, catalog-browser, workflow, removed-command, ...)
      * @param {object} metadata - Additional context (optional)
+     * @returns {Promise<void>} Settles when the request finishes or times out; never rejects
      */
     async trackCommandExecution(commandName, metadata = {}) {
         if (!this.trackingEnabled) {
@@ -236,8 +224,7 @@ class TrackingService {
                 metadata: metadata
             };
 
-            // Fire-and-forget to Neon Database
-            this.sendCommandTracking(payload)
+            return this.sendCommandTracking(payload)
                 .catch(error => {
                     if (process.env.CCT_DEBUG === 'true') {
                         console.debug('📊 Command tracking info (non-critical):', error.message);
@@ -288,7 +275,7 @@ class TrackingService {
     }
     /**
      * Track installation outcome (success/failure with timing)
-     * @param {string} componentType - agent, command, mcp, setting, hook, skill, template
+     * @param {string} componentType - agent, command, mcp, setting, hook, skill, loop, mod, template
      * @param {string} componentName - Name of the component
      * @param {string} outcome - success, failure, or partial
      * @param {object} metadata - { errorType, errorMessage, durationMs, batchId }
@@ -313,7 +300,7 @@ class TrackingService {
                 batchId: metadata.batchId || null
             };
 
-            this.sendInstallationOutcome(payload)
+            return this.sendInstallationOutcome(payload)
                 .catch(error => {
                     if (process.env.CCT_DEBUG === 'true') {
                         console.debug('📊 Installation outcome tracking info (non-critical):', error.message);
