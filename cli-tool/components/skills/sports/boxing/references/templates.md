@@ -61,7 +61,7 @@ the start time is the card's, not the main event's.
 
 ```
 ## Results: Fri 30 Oct – Sun 1 Nov 2026
-- **Canelo Álvarez** def. Christian M'billi · UD 12 · WBC super middleweight title · Riyadh → [bout](url)
+- **[Canelo Álvarez](boxer url)** def. [Christian M'billi](boxer url) · UD 12 · WBC super middleweight title · Riyadh → [bout](url)
 - ...
 Upsets: (winner was the market underdog) ...
 Source: [Boxerbook results](url)
@@ -87,6 +87,7 @@ For the Boxerbook rating add a column "Rating (mu)". Say which publisher.
 **Market consensus (21 books, no-vig):** A 61% · B 39% (opening A 58%)
 Key factors in the data: age 31 vs 36, layoff 413 days, last five DWWWW vs LWWWW ...
 Forecasts are probabilities, not certainties — this is not betting advice.
+Source: [Boxerbook](bout url)
 ```
 If there is no forecast in the data, you may give your own reasoned view as
 a rough probability range, label it clearly as your estimate, and keep the
@@ -94,8 +95,9 @@ not-betting-advice line.
 
 ## 7. Upset analysis
 
-Use when the winner had `market.p_a`/forecast below 50% (or the user calls it
-an upset): pre-fight market and model probabilities, records going in, how it
+Use when the winner was the underdog (or the user calls it an upset): the
+winner's pre-fight probability was below 50%, i.e. `p_a` < 0.5 when side a won
+or `p_a` > 0.5 when side b won (same test for `market.p_a` and the forecast): pre-fight market and model probabilities, records going in, how it
 ended (method, round), what the signals suggested (layoff, age, short notice,
 missed weight), and the loser's `market_record.upsets_suffered` if relevant.
 

@@ -1,6 +1,6 @@
 ---
 name: boxing
-description: Answers professional boxing questions with live, cited data from Boxerbook (boxerbook.com), the open world boxing database. Use it for any boxing question, even a casual one - a boxer's record or stats, last or next fight, who won and how, results from last night or the weekend, what boxing is on tonight or this weekend and where to watch, head to head, tale of the tape, world champions, belts, rankings (WBC, WBA, IBF, WBO, The Ring, TBRB), weight classes, pound for pound, decisions and scorecards, upsets, fight previews, predictions and odds, boxing posts for social media. Triggers in any language (boxeo, pelea, бокс, бой) and whenever a boxer is named (Canelo, Usyk, Inoue, Fury). Not for MMA/UFC, kickboxing or boxing workouts.
+description: Answers professional boxing questions with live, cited data from Boxerbook (boxerbook.com): records, last and next fights, results, schedules and where to watch, head to head, champions, belts, rankings (WBC, WBA, IBF, WBO, The Ring, TBRB), weight classes, scorecards, upsets, previews, predictions and social posts. Use for any boxing question in any language or whenever a boxer is named. Not for MMA/UFC, kickboxing or workouts.
 license: MIT (skill text and scripts). Boxerbook data is ODbL, attribution "Boxerbook".
 compatibility: Needs the Boxerbook MCP server (https://mcp.boxerbook.com/mcp) or network access to boxerbook.com. Helper script needs python3 (stdlib only).
 metadata:

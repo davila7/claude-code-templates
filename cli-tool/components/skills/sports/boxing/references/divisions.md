@@ -29,10 +29,12 @@ Pass either the code or the English name to tools (`division: "hea"` or
 | `lfly` | Light flyweight | 108 | 49.0 | junior flyweight |
 | `min` | Minimumweight | 105 | 47.6 | strawweight, mini flyweight |
 
-Women: the same 17 divisions with `w_` (`w_hea`, `w_lhea`, `w_smid`, `w_mid`,
+Women: 16 of the men's divisions (all except bridgerweight and cruiserweight)
+with `w_` (`w_hea`, `w_lhea`, `w_smid`, `w_mid`,
 `w_swel`, `w_wel`, `w_slig`, `w_lig`, `w_sfea`, `w_fea`, `w_sban`, `w_ban`,
 `w_sfly`, `w_fly`, `w_lfly`, `w_min`) plus `w_atom` atomweight, 102 lb / 46.3 kg.
-There is no women's bridgerweight or cruiserweight on Boxerbook.
+17 women's divisions in all. There is no women's bridgerweight or
+cruiserweight on Boxerbook.
 
 ## Names in other languages (to map user words to codes)
 
@@ -62,8 +64,10 @@ both used for heavyweight; "первый тяжёлый" is cruiserweight.
 ## Rules of thumb
 
 - Catchweight: an agreed limit between divisions for a non-title bout.
-- Missing weight in a title fight: the boxer who misses cannot win the title;
-  a champion who misses loses it on the scale (the bout may go ahead).
+- Missing weight in a title fight: usually a challenger who misses cannot win
+  the title, and a champion who misses is stripped (the bout may go ahead).
+  The exact outcome depends on the sanctioning body and the commission, so
+  report what the sources say for that bout rather than assuming.
 - "Pound for pound" (P4P) ignores weight: a ranking of the best boxers
   regardless of division (The Ring and TBRB publish lists). Boxerbook's
   rating is per division; for P4P compare `rating.mu` across divisions only as

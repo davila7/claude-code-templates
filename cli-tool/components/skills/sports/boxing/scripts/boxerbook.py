@@ -25,6 +25,7 @@ signals and long source lists); --no-utm leaves boxerbook.com links untouched
 Data: Boxerbook (https://boxerbook.com), open under the ODbL. Cite the `url`.
 """
 import argparse
+import email.utils
 import json
 import sys
 import time
@@ -36,14 +37,35 @@ BASE = "https://boxerbook.com/v1"
 UA = "boxerbook-skill/1.0 (+https://github.com/maxvotek/boxerbook-skill)"
 UTM = "utm_source=claude-skill"
 TRIM_KEYS = {"signals", "a_unknown", "b_unknown"}
+MAX_WAIT = 30  # seconds; a longer Retry-After is reported, not slept through
+SITE_HOSTS = {"boxerbook.com", "www.boxerbook.com"}
 
 
 class ApiError(Exception):
     pass
 
 
+def retry_after(value, default=2):
+    """Seconds to wait from a Retry-After header (delta-seconds or HTTP-date)."""
+    if not value:
+        return default
+    value = value.strip()
+    if value.isdigit():
+        return int(value)
+    try:
+        when = email.utils.parsedate_to_datetime(value)
+    except (TypeError, ValueError):
+        return default
+    if when is None:
+        return default
+    return max(0, int(when.timestamp() - time.time()) + 1)
+
+
 def get(path, params=None, retries=2):
-    """GET a /v1 path and return parsed JSON. Retries once on 429/5xx."""
+    """GET a /v1 path and return parsed JSON.
+
+    Retries up to `retries` times on 429/5xx and network errors, honouring
+    Retry-After; every failure ends as ApiError (never a traceback)."""
     qs = ""
     if params:
         clean = {k: v for k, v in params.items() if v is not None}
@@ -54,36 +76,53 @@ def get(path, params=None, retries=2):
     for attempt in range(retries + 1):
         try:
             with urllib.request.urlopen(req, timeout=30) as r:
-                return json.loads(r.read().decode("utf-8"))
+                raw = r.read()
         except urllib.error.HTTPError as e:
-            body = e.read().decode("utf-8", "replace")
+            try:
+                body = e.read().decode("utf-8", "replace")
+            except OSError:
+                body = ""
             if e.code in (429, 500, 502, 503, 504) and attempt < retries:
-                wait = int(e.headers.get("Retry-After") or 2)
-                time.sleep(min(wait, 10))
+                wait = retry_after(e.headers.get("Retry-After"))
+                if wait > MAX_WAIT:
+                    raise ApiError(f"HTTP {e.code} for {url}: rate limited, retry after {wait} s")
+                time.sleep(wait)
                 continue
             try:
                 detail = json.loads(body).get("detail") or body
             except ValueError:
                 detail = body[:300]
             raise ApiError(f"HTTP {e.code} for {url}: {detail}")
-        except urllib.error.URLError as e:
+        except OSError as e:  # URLError, socket timeouts, connection resets
             if attempt < retries:
                 time.sleep(2)
                 continue
             raise ApiError(
-                f"cannot reach {url}: {e.reason}. In Claude.ai, allow the domain "
+                f"cannot reach {url}: {getattr(e, 'reason', None) or e}. In Claude.ai, allow the domain "
                 "boxerbook.com in Settings > Capabilities (code execution network access)."
             )
+        try:
+            return json.loads(raw.decode("utf-8"))
+        except (UnicodeDecodeError, ValueError) as e:
+            raise ApiError(f"invalid JSON from {url}: {e}")
 
 
 def tag(url):
-    if not isinstance(url, str) or "boxerbook.com" not in url or UTM in url:
+    """Add utm_source to boxerbook.com site links (not the API, not other hosts)."""
+    if not isinstance(url, str):
         return url
-    if url.startswith("https://boxerbook.com/v1") or "/mcp" in url:
+    try:
+        u = urllib.parse.urlsplit(url)
+    except ValueError:
         return url
-    base, hashpart = (url.split("#", 1) + [""])[:2]
-    sep = "&" if "?" in base else "?"
-    return base + sep + UTM + ("#" + hashpart if hashpart else "")
+    if u.scheme != "https" or (u.hostname or "").lower() not in SITE_HOSTS:
+        return url
+    if u.path == "/v1" or u.path.startswith("/v1/"):
+        return url
+    if "utm_source" in urllib.parse.parse_qs(u.query, keep_blank_values=True):
+        return url
+    query = u.query + "&" + UTM if u.query else UTM
+    return urllib.parse.urlunsplit((u.scheme, u.netloc, u.path, query, u.fragment))
 
 
 def shape(obj, full=False, utm=True):
@@ -143,8 +182,12 @@ def cmd_boxer(a):
 
 
 def cmd_bouts(a):
-    card, _ = resolve(a.query)
-    return get(f"/boxers/{card['id']}/bouts", {"limit": a.limit, "offset": a.offset})
+    card, others = resolve(a.query)
+    out = get(f"/boxers/{card['id']}/bouts", {"limit": a.limit, "offset": a.offset})
+    out["boxer"] = {k: card.get(k) for k in ("id", "name", "slug", "record", "division", "url")}
+    if others:
+        out["other_matches"] = others
+    return out
 
 
 def cmd_next(a):
@@ -162,8 +205,8 @@ def cmd_next(a):
 
 
 def cmd_h2h(a):
-    ca, _ = resolve(a.a)
-    cb, _ = resolve(a.b)
+    ca, others_a = resolve(a.a)
+    cb, others_b = resolve(a.b)
     meetings, offset, total = [], 0, None
     while total is None or offset < total:
         page = get(f"/boxers/{ca['id']}/bouts", {"limit": 50, "offset": offset})
@@ -175,7 +218,7 @@ def cmd_h2h(a):
         if offset > 1000:
             break
     brief = lambda c: {k: c.get(k) for k in ("id", "name", "record", "division", "last_result", "next_fight", "url")}
-    return {
+    out = {
         "a": brief(ca),
         "b": brief(cb),
         "met": bool(meetings),
@@ -183,6 +226,9 @@ def cmd_h2h(a):
         "note": None if meetings else f"{ca['name']} and {cb['name']} have no bout on record on Boxerbook.",
         "attribution": {"source": "Boxerbook", "license": "ODbL", "url": ca.get("url")},
     }
+    if others_a or others_b:
+        out["other_matches"] = {"a": others_a, "b": others_b}
+    return out
 
 
 def cmd_bout(a):

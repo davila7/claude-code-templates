@@ -2,7 +2,8 @@
 
 Boxerbook rankings take `publisher` = `wbc` | `wba` | `ibf` | `wbo` | `ring` |
 `tbrb` | `boxerbook`. Always quote the list's `list_date`: publisher lists are
-monthly and lag recent fights.
+monthly and lag recent fights (the `boxerbook` rating list is dated the day of
+its last rating run).
 
 ## The four major sanctioning bodies
 
@@ -13,8 +14,11 @@ monthly and lag recent fights.
 | **IBF** International Boxing Federation | 1983, New Jersey | one champion per division; strict mandatory-challenger rules; second weigh-in on fight morning (a boxer may not gain more than 10 lb over the limit) |
 | **WBO** World Boxing Organization | 1988, Puerto Rico | one champion; also "super champion" honours and "interim" |
 
-Ranking lists: each body ranks contenders 1–15 and lists the champion on top
-(Boxerbook `position: 0`, `champion_flag: "champion"`). A body's ranked
+Ranking lists: each body ranks contenders 1–15 and lists its titleholder on top
+as Boxerbook `position: 0` with a `champion_flag` (`champion`, or for the WBA
+`super`/`regular`; `interim` is not the full champion). When no `position: 0`
+item comes back, the title is vacant: say so and never promote the #1
+contender to champion. A body's ranked
 contender is not necessarily the most accomplished, as rankings also follow
 the body's own mandatory/eliminator system.
 

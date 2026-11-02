@@ -28,7 +28,7 @@ Use the user's language. Terms in the same row are equivalents.
 | weigh-in | pesaje | взвешивание | official weight |
 | missed weight | no dio el peso | не уложился в вес | over the limit |
 | catchweight | peso pactado | промежуточный (договорной) вес | agreed limit |
-| southpaw / orthodox | zurdo / ortodoxo | левша (правосторонняя стойка) / ортодокс | stance |
+| southpaw / orthodox | zurdo / ortodoxo | левша (правосторонняя стойка) / ортодокс (левосторонняя стойка) | stance |
 | reach | alcance | размах рук | arm span |
 | card (event) | cartelera, velada | вечер бокса, кард | the event |
 | main event / co-main | pelea estelar / coestelar | главный бой / со-главный бой | |

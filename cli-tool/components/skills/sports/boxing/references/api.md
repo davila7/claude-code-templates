@@ -46,7 +46,7 @@ fights use `bout` with "A vs B", `search`+`fetch` on `boxer:<id>`, or the REST
 
 ## 2. REST API
 
-Base `https://boxerbook.com/v1`, free, no key, CORS open (`*`), rate limited
+Host `https://boxerbook.com` (all paths below start with `/v1`), free, no key, CORS open (`*`), rate limited
 per IP (429 + `Retry-After`). OpenAPI 3.1: `https://boxerbook.com/v1/openapi.json`.
 Errors are RFC 7807 problems: `{"type","title","status","detail"}`.
 
@@ -59,7 +59,7 @@ Errors are RFC 7807 problems: `{"type","title","status","detail"}`.
 | `GET /v1/events/{id}` | event id | a card with its bouts and broadcasters |
 | `GET /v1/schedule` | `when` today\|tonight\|weekend\|30d, `country`, `division` | `events[]` with `bouts[]` |
 | `GET /v1/results` | `days` 1–14, `country`, `division` | `bouts[]` newest first with winner, method, round, sources |
-| `GET /v1/rankings/{division}` | `publisher` boxerbook\|wbc\|wba\|ibf\|wbo\|ring\|tbrb | `items[]`: position (publisher lists: 0 = champion), name, id, slug, champion_flag, record (when present), mu/rd (Boxerbook rating list); no url per item: build `https://boxerbook.com/boxers/<slug>` |
+| `GET /v1/rankings/{division}` | `publisher` boxerbook\|wbc\|wba\|ibf\|wbo\|ring\|tbrb | `list_date`, `items[]`: position (publisher lists: 0 = titleholder, absent when vacant), name, id, slug, champion_flag (`champion`, `super`, `regular`, `interim`), record (when present), mu/rd (Boxerbook rating list); no url per item: build `https://boxerbook.com/boxers/<slug>` |
 | `GET /v1/status` | – | data freshness: last rating run, number of bouts and boxers |
 
 The REST API has no "A vs B" lookup and no `lang`: links are English. Use the
@@ -74,7 +74,10 @@ helper's `h2h` command for head to head.
 `status`. `--full` keeps bulky fields (forecast `signals`, every source link);
 by default source lists are reduced to names + 3 links. Links to boxerbook.com
 come back tagged `?utm_source=claude-skill`; cite them as they are. Exit code 1
-with `{"error": ...}` on stderr when nothing matches or the API fails.
+with `{"error": ...}` on stderr when the API fails or a command that resolves a
+boxer (`boxer`, `bouts`, `next`, `h2h`) finds no match; `search` with no match
+exits 0 with an empty `results` list. `boxer`, `bouts`, `next` and `h2h` add
+`other_matches` when the name is shared: check them before answering.
 
 ## 4. Fields and how to read them
 
