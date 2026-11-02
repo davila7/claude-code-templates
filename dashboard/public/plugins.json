@@ -23434,6 +23434,29 @@
     "highlights": []
   },
   {
+    "slug": "aplica",
+    "name": "Aplica",
+    "author": "eurafaeldecarvalho",
+    "description": "Job search plugin that scores public postings against your profile and applies in your own logged-in Chrome with your real data, under daily caps. Needs a paid Claude plan; job sites restrict automation, so accounts can be limited.",
+    "github": "https://github.com/eurafaeldecarvalho/aplica",
+    "stars": 2,
+    "type": "plugin",
+    "tags": [
+      "skills",
+      "commands"
+    ],
+    "contains": {
+      "skills": 3,
+      "commands": 5
+    },
+    "highlights": [
+      "Web UI: https://eurafaeldecarvalho.github.io/aplica/"
+    ],
+    "website": "https://eurafaeldecarvalho.github.io/aplica/",
+    "marketplace_name": "aplica",
+    "plugin_name": "aplica"
+  },
+  {
     "slug": "best-claude-skills",
     "name": "Best Claude Skills",
     "author": "Nyanbalaji28",
