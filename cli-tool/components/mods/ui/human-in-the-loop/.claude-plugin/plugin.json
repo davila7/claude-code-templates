@@ -1,0 +1,24 @@
+{
+  "name": "human-in-the-loop",
+  "displayName": "Human in the loop",
+  "version": "0.1.4",
+  "description": "Claude assigns you the tasks only you can do. They wait in a My tasks pane, counted under the prompt, until you answer or reject them, so nothing Claude needs from you gets lost in the chat.",
+  "author": {
+    "name": "Tzafrir Rehan"
+  },
+  "homepage": "https://tzafrir.github.io/human-in-the-loop/",
+  "repository": "https://github.com/tzafrir/human-in-the-loop",
+  "license": "MIT",
+  "icon": "./.claude-plugin/icon.png",
+  "documentationUrl": "https://tzafrir.github.io/human-in-the-loop/",
+  "supportUrl": "https://github.com/tzafrir/human-in-the-loop/issues",
+  "privacyPolicyUrl": "https://tzafrir.github.io/human-in-the-loop/privacy",
+  "keywords": [
+    "tasks",
+    "human-in-the-loop",
+    "ui",
+    "mod",
+    "function-hooks"
+  ],
+  "types": "./types/index.d.ts"
+}
