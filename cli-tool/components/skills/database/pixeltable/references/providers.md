@@ -8,7 +8,7 @@ Keys come from the environment or [config](https://docs.pixeltable.com/platform/
 
 | Provider | Module | Functions | Extract |
 |----------|--------|-----------|---------|
-| OpenAI | `openai` | `chat_completions`, `responses`, `embeddings`, `speech`, `transcriptions`, `translations`, `image_generations`, `image_edits`, `image_variations`, `moderations`, `invoke_tools` | chat: `.choices[0].message.content`; Responses: `.output_text` |
+| OpenAI | `openai` | `chat_completions`, `responses`, `embeddings`, `speech`, `transcriptions`, `translations`, `image_generations`, `image_edits`, `image_variations`, `moderations`, `decisions` (0.7.22+; `openai>=3.32`, `model` required), `invoke_tools` | chat: `.choices[0].message.content`; Responses: `.output_text`; Decisions: `.answers` in question order |
 | Anthropic | `anthropic` | `messages`, `invoke_tools` | `.content[0].text` |
 | Gemini | `gemini` | `generate_content`, `embed_content`, `generate_images`, `generate_videos`, `generate_speech`, `transcribe`, `invoke_tools` | content: Json; generation/transcription returns typed Image, Video, Audio, or String |
 | Bedrock | `bedrock` | `converse`, `invoke_model`, `embed`, `invoke_tools` | `.output.message.content[0].text` |
@@ -37,9 +37,9 @@ Keys come from the environment or [config](https://docs.pixeltable.com/platform/
 
 ## Retries and proxies
 
-A computed column retries a provider call when that call is on a scheduler. OpenAI, Anthropic, and Gemini report their rate limits and retry up to 10 times. Providers on the request-rate scheduler retry up to 3 times, paced by `rate_limit` in their config section, or a per-model value under `rate_limits` (600 requests a minute when unset). HTTP 429, 503, 408, and 504, connection errors, and timeouts are retried, with a backoff that honors `Retry-After`. Bedrock and the local wrappers (Hugging Face, Whisper, WhisperX, Ollama, llama.cpp, vLLM, YOLOX) are not on those schedulers, so a failed call is stored without that retry. A cell that still fails holds the error: `pxt errors PATH` lists it, and `pxt recompute PATH COLUMN --errors-only -f` runs it again. Do not add a retry loop, `tenacity`, or a second client around a call the scheduler already retries.
+A computed column retries a provider call when that call is on a scheduler. OpenAI, Anthropic, and Gemini report their rate limits and retry up to 10 times. Providers on the request-rate scheduler, including Bedrock, retry up to 3 times, paced by `rate_limit` in their config section, or a per-model value under `rate_limits` (600 requests a minute when unset). HTTP 429, 503, 408, and 504, connection errors, and timeouts are retried, with a backoff that honors `Retry-After`. The local wrappers (Hugging Face, Whisper, WhisperX, Ollama, llama.cpp, vLLM, YOLOX) are not on those schedulers, so a failed call is stored without that retry. A cell that still fails holds the error: `pxt errors PATH` lists it, and `pxt recompute PATH COLUMN --errors-only -f` runs it again. Do not add a retry loop, `tenacity`, or a second client around a call the scheduler already retries.
 
-To send OpenAI-compatible calls through a proxy such as LiteLLM, set `OPENAI_BASE_URL` (or `base_url` under `[openai]` in `config.toml`); on Cloud, `pxt secret set pxt://org OPENAI_BASE_URL=https://<proxy>/v1`, then restart. Only the OpenAI client reads a base URL from Pixeltable's config.
+To send OpenAI-compatible calls through a proxy such as LiteLLM, set `OPENAI_BASE_URL` (or `base_url` under `[openai]` in `config.toml`); on Cloud, `pxt secret set pxt://org OPENAI_BASE_URL=https://<proxy>/v1`, then restart. DeepSeek reads `DEEPSEEK_BASE_URL` / `[deepseek] base_url` the same way (0.7.22+).
 
 Not model providers, but in the same namespace: `net.presigned_url` turns a blob-storage URI into a time-limited HTTP URL for serving media, and `vision` carries `eval_detections`, the `mean_ap` UDA, `bboxes_draw` / `overlay_segmentation` and the `bboxes_*` conversion family.
 
@@ -59,7 +59,7 @@ embed_fn = embeddings.using(model='text-embedding-3-small')
 - **Model argument.** `model=` on most. `model_id=` on `bedrock` and `huggingface`, `model_name=` on `twelvelabs`, `repo_id=` + `repo_filename=` (or `model_path=`) on `llama_cpp`, `app=` on `fal`, `ref=` on `replicate`.
 - **Other request parameters** go in one dict, never as top-level keywords: `model_kwargs={...}` on OpenAI, Anthropic, Groq, Together, Mistral, Nebius, Fireworks, DeepSeek, OpenRouter, Fabric, llama.cpp, and RunwayML (`temperature`, `response_format`, OpenAI's `max_tokens`). Gemini takes `config=`, Bedrock `converse` takes `inference_config=`, Ollama takes `options=`, vLLM takes `sampling_params=`. An unknown top-level keyword fails signature binding.
 - **Anthropic `messages` requires `max_tokens=`** as a top-level argument: `messages(messages=[...], model=..., max_tokens=1024)`.
-- **Images** go in an OpenAI message as `{'type': 'image_url', 'image_url': t.image}`: the image column itself, not the HTTP API's `{'url': ...}` wrapper. Pixeltable serializes it. `openai.vision` is deprecated.
+- **Images** go in an OpenAI message as `{'type': 'image_url', 'image_url': t.image}` (the column; Pixeltable serializes it). The API's `{'url': ...}` form also works: `url` can be an image (`{'url': t.image}`) or a public URL string such as `t.image.fileurl` (0.7.22+). `openai.vision` is deprecated.
 - **Output.** OpenAI-compatible chat completions return `.choices[0].message.content`; OpenAI `responses` exposes simple text as `.output_text`; Anthropic returns `.content[0].text`.
 - **Tools** are per provider: pair `pxt.tools(...)` with that module's own `invoke_tools`. The full chain is in [core-api.md](core-api.md#tools).
 
