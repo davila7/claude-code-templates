@@ -69,7 +69,7 @@ jobs:
           if jq -e '[.labels[].name] | index("needs-human") != null' <<<"$pr" >/dev/null; then
             reason="labelled needs-human"
           fi
-          files=$(gh api --paginate "repos/$REPO/pulls/$PR/files?per_page=100" --jq '.[].filename')
+          files=$(gh api --paginate "repos/$REPO/pulls/$PR/files?per_page=100" --jq '.[] | .filename, (.previous_filename // empty)')
           if printf '%s\n' "$files" | grep -qE "$MANUAL_PATHS"; then
             reason="touches paths a human merges"
           fi

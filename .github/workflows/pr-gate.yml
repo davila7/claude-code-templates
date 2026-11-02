@@ -68,7 +68,10 @@ jobs:
     steps:
       - name: Refuse PRs labelled needs-human
         run: |
-          if gh api "repos/$REPO/issues/$PR/labels" --jq '.[].name' | grep -qx needs-human; then
+          # Assign first: under bash -e a failed lookup then stops the job,
+          # where a failed pipe into grep would just look like "no label".
+          labels=$(gh api "repos/$REPO/issues/$PR/labels" --jq '.[].name')
+          if printf '%s\n' "$labels" | grep -qx needs-human; then
             echo "### Manual merge required" >> "$GITHUB_STEP_SUMMARY"
             echo "Labelled \`needs-human\`: remove the label to let it auto-merge." >> "$GITHUB_STEP_SUMMARY"
             echo "::error::Labelled needs-human: merge by hand."
@@ -77,7 +80,7 @@ jobs:
 
       - name: Refuse paths a human must merge
         run: |
-          files=$(gh api --paginate "repos/$REPO/pulls/$PR/files?per_page=100" --jq '.[].filename')
+          files=$(gh api --paginate "repos/$REPO/pulls/$PR/files?per_page=100" --jq '.[] | .filename, (.previous_filename // empty)')
           hits=$(printf '%s\n' "$files" | grep -E "$MANUAL_PATHS" || true)
           if [ -n "$hits" ]; then
             {
