@@ -60,8 +60,13 @@ jobs:
           path: cli-tool/security-report.json
           retention-days: 30
 
+      # A `pull_request` event from a fork gets a read-only GITHUB_TOKEN, so the
+      # `pull-requests: write` above is not granted and createComment() 403s with
+      # "Resource not accessible by integration", failing an otherwise-green audit
+      # for external contributors. Only comment when the head branch lives in this
+      # repository; fork PRs still get the JSON report and the uploaded artifact.
       - name: Comment PR with Results
-        if: github.event_name == 'pull_request' && always()
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && always()
         uses: actions/github-script@v9
         with:
           script: |
