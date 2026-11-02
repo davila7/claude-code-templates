@@ -23597,5 +23597,24 @@
         "cohesivity-local"
       ]
     }
+  },
+  {
+    "slug": "banquish-plugin",
+    "name": "Banquish",
+    "author": "banquish-app",
+    "description": "Adds the MCP server and skill for Banquish, a free macOS (Apple silicon) browser, so Claude places live parts of real pages on a Workspace. Plugin MIT; the app is closed-source and must be installed.",
+    "github": "https://github.com/banquish-app/banquish-plugin",
+    "stars": 0,
+    "type": "plugin",
+    "tags": [
+      "skills"
+    ],
+    "contains": {
+      "skills": 1
+    },
+    "highlights": [],
+    "website": "https://banquish.space",
+    "marketplace_name": "banquish",
+    "plugin_name": "banquish"
   }
 ]

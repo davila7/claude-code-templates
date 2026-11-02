@@ -68,11 +68,13 @@ REPOS = [
     ("curviate/curviate-plugin", "https://curviate.com/"),
     ("firecrawl/firecrawl-claude-plugin", "https://www.firecrawl.dev/integrations/claude-code?utm_source=claude-code-templates&utm_medium=integration"),
     ("annavetech/kumi", "https://docs.annave.tech/kumi/"),
+    ("banquish-app/banquish-plugin", "https://banquish.space"),
 ]
 
 DESCRIPTION_OVERRIDES = {
     "cohesivity-org/cohesivity-plugin": "cohesivity.ai offers free agent native backend services. Anonymous account (no-signup) to get started through MCP or API. Hosting, postgres, email, storage, containers, LLMs, voice and third-party APIs. Includes free tiers and 5 USD/mo in AI and Search credits. topups through x402.",
     "firecrawl/firecrawl-claude-plugin": "Search the web, developer sources, and scientific papers with Firecrawl.",
+    "banquish-app/banquish-plugin": "Adds the MCP server and skill for Banquish, a free macOS (Apple silicon) browser, so Claude places live parts of real pages on a Workspace. Plugin MIT; the app is closed-source and must be installed.",
 }
 
 OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "..", "dashboard", "public", "plugins.json")
