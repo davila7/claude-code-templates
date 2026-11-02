@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-11-01T03:10:27.060644+00:00",
-  "totalJobs": 482,
+  "lastUpdated": "2026-11-02T03:14:19.171153+00:00",
+  "totalJobs": 480,
   "sources": [
     "Anthropic",
     "Ashby",
@@ -10,6 +10,129 @@
     "RemoteOK"
   ],
   "jobs": [
+    {
+      "id": "gr-twilio-8009057",
+      "company": "Twilio",
+      "position": "Software Engineer L3",
+      "location": "Remote - US",
+      "locations": [
+        "Remote - US"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "Who we are At Twilio, we’re shaping the future of communications, all from the comfort of our homes. We deliver innovative solutions to hundreds of thousands of businesses and empower millions of developers worldwide to craft personalized customer experiences. Our dedication to remote-first work ,...",
+      "applyUrl": "https://job-boards.greenhouse.io/twilio/jobs/8009057",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/twilio/jobs/8009057",
+      "postedAt": "2026-11-01T20:22:30-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Go",
+        "AWS",
+        "Azure",
+        "Docker",
+        "Kubernetes",
+        "Java"
+      ],
+      "companyIcon": "https://twilio.com/favicon.ico"
+    },
+    {
+      "id": "gr-twilio-8026211",
+      "company": "Twilio",
+      "position": "Software Engineer, Platform Access (L2)",
+      "location": "Remote - US",
+      "locations": [
+        "Remote - US"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "Who we are At Twilio, we’re shaping the future of communications, all from the comfort of our homes. We deliver innovative solutions to hundreds of thousands of businesses and empower millions of developers worldwide to craft personalized customer experiences. Our dedication to remote-first work ,...",
+      "applyUrl": "https://job-boards.greenhouse.io/twilio/jobs/8026211",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/twilio/jobs/8026211",
+      "postedAt": "2026-11-01T20:22:30-05:00",
+      "tags": [
+        "Claude Code",
+        "Go",
+        "AWS",
+        "GCP",
+        "Azure",
+        "Docker",
+        "Kubernetes",
+        "Copilot"
+      ],
+      "companyIcon": "https://twilio.com/favicon.ico"
+    },
+    {
+      "id": "gr-twilio-8026207",
+      "company": "Twilio",
+      "position": "Software Engineer, Platform Engineering (L2)",
+      "location": "Remote - US",
+      "locations": [
+        "Remote - US"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "Who we are At Twilio, we’re shaping the future of communications, all from the comfort of our homes. We deliver innovative solutions to hundreds of thousands of businesses and empower millions of developers worldwide to craft personalized customer experiences. Our dedication to remote-first work ,...",
+      "applyUrl": "https://job-boards.greenhouse.io/twilio/jobs/8026207",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/twilio/jobs/8026207",
+      "postedAt": "2026-11-01T20:22:30-05:00",
+      "tags": [
+        "Claude Code",
+        "Go",
+        "AWS",
+        "Azure",
+        "Docker",
+        "Kubernetes"
+      ],
+      "companyIcon": "https://twilio.com/favicon.ico"
+    },
+    {
+      "id": "gr-purestorage-8129789",
+      "company": "Everpure",
+      "position": "Business Intelligence Analyst",
+      "location": "Bangalore, India",
+      "locations": [
+        "Bangalore, India"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Everpure (NYSE: P) has evolved from storage pioneer to data platform, closing fiscal 2026 with $3.7 billion in revenue, its first billion-dollar quarter, and accelerating growth into FY27. Our strategic agenda spans the companies defining the next era of technology - hyperscalers, AI labs, the AI...",
+      "applyUrl": "https://job-boards.greenhouse.io/purestorage/jobs/8129789",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/purestorage/jobs/8129789",
+      "postedAt": "2026-11-01T03:54:00-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Cursor",
+        "Copilot"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-purestorage-8129785",
+      "company": "Everpure",
+      "position": "Staff AI & Automation Data Analyst",
+      "location": "Bangalore, India",
+      "locations": [
+        "Bangalore, India"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Everpure (NYSE: P) has evolved from storage pioneer to data platform, closing fiscal 2026 with $3.7 billion in revenue, its first billion-dollar quarter, and accelerating growth into FY27. Our strategic agenda spans the companies defining the next era of technology - hyperscalers, AI labs, the AI...",
+      "applyUrl": "https://job-boards.greenhouse.io/purestorage/jobs/8129785",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/purestorage/jobs/8129785",
+      "postedAt": "2026-11-01T03:54:00-05:00",
+      "tags": [
+        "Claude Code",
+        "Python"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "as-pebl-03cd41b2-5acd-4f6c-be73-5c6126170af0",
       "company": "Pebl",
@@ -265,19 +388,19 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-affirm-7871458003",
+      "id": "gr-affirm-7822389003",
       "company": "Affirm",
-      "position": "Analytics Lead, Full Stack (Strategic Revenue Insights)",
+      "position": "Machine Learning Engineer II (Underwriting ML)",
       "location": "Remote Canada",
       "locations": [
         "Remote Canada"
       ],
       "remote": true,
-      "salary": "$145,000 - $205,000",
-      "description": "At Affirm, we exist for the moments that matter—giving people a clear, predictable way to pay over time, with no hidden fees, no surprises, and no tradeoffs on what matters most. About the Revenue team The Revenue team drives Affirm’s top-line growth through strategic partnerships, pricing, and...",
-      "applyUrl": "https://job-boards.greenhouse.io/affirm/jobs/7871458003",
+      "salary": "$133,000 - $183,000",
+      "description": "At Affirm, we exist for the moments that matter—giving people a clear, predictable way to pay over time, with no hidden fees, no surprises, and no tradeoffs on what matters most. Affirm is reinventing credit to make it more honest and friendly, giving consumers the flexibility to buy now and pay...",
+      "applyUrl": "https://job-boards.greenhouse.io/affirm/jobs/7822389003",
       "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/affirm/jobs/7871458003",
+      "sourceUrl": "https://job-boards.greenhouse.io/affirm/jobs/7822389003",
       "postedAt": "2026-10-30T17:15:12-04:00",
       "tags": [
         "Claude Code",
@@ -287,41 +410,19 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-affirm-7822387003",
+      "id": "gr-affirm-7718808003",
       "company": "Affirm",
-      "position": "Machine Learning Engineer II (Underwriting ML)",
+      "position": "Security Risk Management Lead",
       "location": "Remote US",
       "locations": [
         "Remote US"
       ],
       "remote": true,
       "salary": "$165,000 - $225,000",
-      "description": "At Affirm, we exist for the moments that matter—giving people a clear, predictable way to pay over time, with no hidden fees, no surprises, and no tradeoffs on what matters most. On the Underwriting ML team, you’ll build and improve machine learning systems that make real-time transaction...",
-      "applyUrl": "https://job-boards.greenhouse.io/affirm/jobs/7822387003",
+      "description": "At Affirm, we exist for the moments that matter—giving people a clear, predictable way to pay over time, with no hidden fees, no surprises, and no tradeoffs on what matters most. Affirm values security as being critical to the company’s continued success. Our mission is to cultivate a culture of...",
+      "applyUrl": "https://job-boards.greenhouse.io/affirm/jobs/7718808003",
       "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/affirm/jobs/7822387003",
-      "postedAt": "2026-10-30T17:15:12-04:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "Cursor"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-affirm-8036613003",
-      "company": "Affirm",
-      "position": "Security Risk Management Lead",
-      "location": "Remote Canada",
-      "locations": [
-        "Remote Canada"
-      ],
-      "remote": true,
-      "salary": "$128,000 - $188,000",
-      "description": "At Affirm, we exist for the moments that matter—giving people a clear, predictable way to pay over time, with no hidden fees, no surprises, and no tradeoffs on what matters most. At Affirm, we exist for the moments that matter—giving people a clear, predictable way to pay over time, with no hidden...",
-      "applyUrl": "https://job-boards.greenhouse.io/affirm/jobs/8036613003",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/affirm/jobs/8036613003",
+      "sourceUrl": "https://job-boards.greenhouse.io/affirm/jobs/7718808003",
       "postedAt": "2026-10-30T17:15:12-04:00",
       "tags": [
         "Claude Code",
@@ -357,19 +458,19 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-affirm-7806681003",
+      "id": "gr-affirm-7806679003",
       "company": "Affirm",
       "position": "Senior Software Engineer, Back-end (Fraud)",
-      "location": "Remote Poland",
+      "location": "Remote Spain",
       "locations": [
-        "Remote Poland"
+        "Remote Spain"
       ],
       "remote": true,
-      "salary": "$32,000-$48,000",
+      "salary": "€86,000 - €122,000",
       "description": "At Affirm, we exist for the moments that matter—giving people a clear, predictable way to pay over time, with no hidden fees, no surprises, and no tradeoffs on what matters most. The Fraud Engineering organization builds the foundational and tactical software that enables Affirm to respond...",
-      "applyUrl": "https://job-boards.greenhouse.io/affirm/jobs/7806681003",
+      "applyUrl": "https://job-boards.greenhouse.io/affirm/jobs/7806679003",
       "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/affirm/jobs/7806681003",
+      "sourceUrl": "https://job-boards.greenhouse.io/affirm/jobs/7806679003",
       "postedAt": "2026-10-30T17:15:12-04:00",
       "tags": [
         "Claude Code",
@@ -405,19 +506,19 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-affirm-8011038003",
+      "id": "gr-affirm-8011040003",
       "company": "Affirm",
       "position": "Staff Product Manager, Consumer Growth Loyalty",
-      "location": "Remote US",
+      "location": "Remote Canada",
       "locations": [
-        "Remote US"
+        "Remote Canada"
       ],
       "remote": true,
-      "salary": "$230,000 - $290,000",
+      "salary": "$181,000 - $241,000",
       "description": "At Affirm, we exist for the moments that matter—giving people a clear, predictable way to pay over time, with no hidden fees, no surprises, and no tradeoffs on what matters most. About the Product team The Product team listens to our customers’ needs and translates those insights into a clear...",
-      "applyUrl": "https://job-boards.greenhouse.io/affirm/jobs/8011038003",
+      "applyUrl": "https://job-boards.greenhouse.io/affirm/jobs/8011040003",
       "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/affirm/jobs/8011038003",
+      "sourceUrl": "https://job-boards.greenhouse.io/affirm/jobs/8011040003",
       "postedAt": "2026-10-30T17:15:12-04:00",
       "tags": [
         "Claude Code",
@@ -426,19 +527,19 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-affirm-7829427003",
+      "id": "gr-affirm-7829429003",
       "company": "Affirm",
       "position": "Staff Software Engineer, Mobile (App Infrastructure)",
-      "location": "Remote US",
+      "location": "Remote Canada",
       "locations": [
-        "Remote US"
+        "Remote Canada"
       ],
       "remote": true,
-      "salary": "$230,000 - $290,000",
+      "salary": "$181,000 - $241,000",
       "description": "At Affirm, we exist for the moments that matter—giving people a clear, predictable way to pay over time, with no hidden fees, no surprises, and no tradeoffs on what matters most. App Infrastructure is the team behind Affirm's shared mobile app infrastructure — the platform every other mobile...",
-      "applyUrl": "https://job-boards.greenhouse.io/affirm/jobs/7829427003",
+      "applyUrl": "https://job-boards.greenhouse.io/affirm/jobs/7829429003",
       "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/affirm/jobs/7829427003",
+      "sourceUrl": "https://job-boards.greenhouse.io/affirm/jobs/7829429003",
       "postedAt": "2026-10-30T17:15:12-04:00",
       "tags": [
         "Claude Code",
@@ -505,19 +606,19 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-fivetran-7859203003",
+      "id": "gr-fivetran-7865037003",
       "company": "Fivetran",
       "position": "Engineering Manager, Metadata",
-      "location": "Oakland, California, United States",
+      "location": "Toronto, Ontario, Canada",
       "locations": [
-        "Oakland, California, United States"
+        "Toronto, Ontario, Canada"
       ],
       "remote": false,
       "salary": "",
       "description": "From Fivetran’s founding until now, our mission has remained the same: to make access to data as simple and reliable as electricity. With Fivetran, customer data arrives in their warehouses, canonical and ready to query, with no engineering or maintenance required. We’re proud that more...",
-      "applyUrl": "https://www.fivetran.com/careers/job?gh_jid=7859203003",
+      "applyUrl": "https://www.fivetran.com/careers/job?gh_jid=7865037003",
       "source": "Greenhouse",
-      "sourceUrl": "https://www.fivetran.com/careers/job?gh_jid=7859203003",
+      "sourceUrl": "https://www.fivetran.com/careers/job?gh_jid=7865037003",
       "postedAt": "2026-10-30T16:17:07-04:00",
       "tags": [
         "Claude Code",
@@ -822,32 +923,6 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-samsara-8210697",
-      "company": "Samsara",
-      "position": "Sr. Software Engineer II / Tech lead, Agentic Platform (Poland, Remote, B2B)",
-      "location": "Remote - Poland",
-      "locations": [
-        "Remote - Poland"
-      ],
-      "remote": true,
-      "salary": "",
-      "description": "Who we are Samsara (NYSE: IOT) is the pioneer of the Connected Operations™ Cloud, which is a platform that enables organizations that depend on physical operations to harness Internet of Things (IoT) data to develop actionable insights and improve their operations. At Samsara, we are helping...",
-      "applyUrl": "https://www.samsara.com/company/careers/roles/8210697?gh_jid=8210697",
-      "source": "Greenhouse",
-      "sourceUrl": "https://www.samsara.com/company/careers/roles/8210697?gh_jid=8210697",
-      "postedAt": "2026-10-30T11:52:01-04:00",
-      "tags": [
-        "Claude Code",
-        "React",
-        "TypeScript",
-        "Go",
-        "Cursor",
-        "GraphQL",
-        "MCP"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "gr-binance-5008126101",
       "company": "Binance",
       "position": "Binance Accelerator Program - Applied Data Scientist",
@@ -926,58 +1001,6 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-twilio-8026211",
-      "company": "Twilio",
-      "position": "Software Engineer, Platform Access (L2)",
-      "location": "Remote - US",
-      "locations": [
-        "Remote - US"
-      ],
-      "remote": true,
-      "salary": "",
-      "description": "Who we are At Twilio, we’re shaping the future of communications, all from the comfort of our homes. We deliver innovative solutions to hundreds of thousands of businesses and empower millions of developers worldwide to craft personalized customer experiences. Our dedication to remote-first work ,...",
-      "applyUrl": "https://job-boards.greenhouse.io/twilio/jobs/8026211",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/twilio/jobs/8026211",
-      "postedAt": "2026-10-30T11:43:23-04:00",
-      "tags": [
-        "Claude Code",
-        "Go",
-        "AWS",
-        "GCP",
-        "Azure",
-        "Docker",
-        "Kubernetes",
-        "Copilot"
-      ],
-      "companyIcon": "https://twilio.com/favicon.ico"
-    },
-    {
-      "id": "gr-twilio-8026207",
-      "company": "Twilio",
-      "position": "Software Engineer, Platform Engineering (L2)",
-      "location": "Remote - US",
-      "locations": [
-        "Remote - US"
-      ],
-      "remote": true,
-      "salary": "",
-      "description": "Who we are At Twilio, we’re shaping the future of communications, all from the comfort of our homes. We deliver innovative solutions to hundreds of thousands of businesses and empower millions of developers worldwide to craft personalized customer experiences. Our dedication to remote-first work ,...",
-      "applyUrl": "https://job-boards.greenhouse.io/twilio/jobs/8026207",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/twilio/jobs/8026207",
-      "postedAt": "2026-10-30T11:41:46-04:00",
-      "tags": [
-        "Claude Code",
-        "Go",
-        "AWS",
-        "Azure",
-        "Docker",
-        "Kubernetes"
-      ],
-      "companyIcon": "https://twilio.com/favicon.ico"
-    },
-    {
       "id": "gr-binance-5002449101",
       "company": "Binance",
       "position": "Binance Accelerator Program - Full Stack Engineer (APAC Remote)",
@@ -1001,62 +1024,6 @@
         "Cursor",
         "Copilot",
         "Java"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-twilio-8009057",
-      "company": "Twilio",
-      "position": "Software Engineer L3",
-      "location": "Remote - US",
-      "locations": [
-        "Remote - US"
-      ],
-      "remote": true,
-      "salary": "",
-      "description": "Who we are At Twilio, we’re shaping the future of communications, all from the comfort of our homes. We deliver innovative solutions to hundreds of thousands of businesses and empower millions of developers worldwide to craft personalized customer experiences. Our dedication to remote-first work ,...",
-      "applyUrl": "https://job-boards.greenhouse.io/twilio/jobs/8009057",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/twilio/jobs/8009057",
-      "postedAt": "2026-10-30T11:39:51-04:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "Go",
-        "AWS",
-        "Azure",
-        "Docker",
-        "Kubernetes",
-        "Java"
-      ],
-      "companyIcon": "https://twilio.com/favicon.ico"
-    },
-    {
-      "id": "gr-binance-5002258101",
-      "company": "Binance",
-      "position": "Binance Accelerator Program - Data Scientist, Analytics",
-      "location": "Australia · Hong Kong · Singapore · Taiwan · United Arab Emirates",
-      "locations": [
-        "Australia",
-        "Hong Kong",
-        "Singapore",
-        "Taiwan",
-        "United Arab Emirates"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "Binance is a leading global blockchain ecosystem behind the world’s largest cryptocurrency exchange by trading volume and registered users. We are trusted by 300+ million people in 100+ countries for our industry-leading security, user fund transparency, trading engine speed, deep liquidity, and an...",
-      "applyUrl": "https://job-boards.eu.greenhouse.io/binance/jobs/5002258101",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.eu.greenhouse.io/binance/jobs/5002258101",
-      "postedAt": "2026-10-30T11:38:57-04:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "PostgreSQL",
-        "Cursor",
-        "MongoDB",
-        "MySQL"
       ],
       "companyIcon": ""
     },
@@ -1248,6 +1215,34 @@
       "companyIcon": ""
     },
     {
+      "id": "gr-binance-5002441101",
+      "company": "Binance",
+      "position": "Pioneer Talent Program - Full Stack Engineer (Back-end Oriented, APAC Remote)",
+      "location": "Hong Kong · Singapore · Taiwan",
+      "locations": [
+        "Hong Kong",
+        "Singapore",
+        "Taiwan"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Binance is a leading global blockchain ecosystem behind the world’s largest cryptocurrency exchange by trading volume and registered users. We are trusted by 300+ million people in 100+ countries for our industry-leading security, user fund transparency, trading engine speed, deep liquidity, and an...",
+      "applyUrl": "https://job-boards.eu.greenhouse.io/binance/jobs/5002441101",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.eu.greenhouse.io/binance/jobs/5002441101",
+      "postedAt": "2026-10-30T11:28:29-04:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "Go",
+        "Node.js",
+        "Cursor",
+        "Copilot",
+        "Java"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "gr-earnin-8335388",
       "company": "EarnIn",
       "position": "Senior Software Engineer",
@@ -1277,19 +1272,19 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-samsara-8281483",
+      "id": "gr-samsara-7917475",
       "company": "Samsara",
       "position": "Senior AI Data & Analytics Engineer II",
-      "location": "Remote - CA",
+      "location": "Remote - SF Bay Area",
       "locations": [
-        "Remote - CA"
+        "Remote - SF Bay Area"
       ],
       "remote": true,
       "salary": "",
       "description": "Who we are Samsara (NYSE: IOT) is the pioneer of the Connected Operations™ Cloud, which is a platform that enables organizations that depend on physical operations to harness Internet of Things (IoT) data to develop actionable insights and improve their operations. At Samsara, we are helping...",
-      "applyUrl": "https://www.samsara.com/company/careers/roles/8281483?gh_jid=8281483",
+      "applyUrl": "https://www.samsara.com/company/careers/roles/7917475?gh_jid=7917475",
       "source": "Greenhouse",
-      "sourceUrl": "https://www.samsara.com/company/careers/roles/8281483?gh_jid=8281483",
+      "sourceUrl": "https://www.samsara.com/company/careers/roles/7917475?gh_jid=7917475",
       "postedAt": "2026-10-30T11:22:26-04:00",
       "tags": [
         "Claude Code",
@@ -1299,19 +1294,19 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-samsara-8109358",
+      "id": "gr-samsara-7752678",
       "company": "Samsara",
       "position": "Staff Software Engineer, DevEx",
-      "location": "Remote - Canada",
+      "location": "Remote - US",
       "locations": [
-        "Remote - Canada"
+        "Remote - US"
       ],
       "remote": true,
       "salary": "",
       "description": "Who we are Samsara (NYSE: IOT) is the pioneer of the Connected Operations™ Cloud, which is a platform that enables organizations that depend on physical operations to harness Internet of Things (IoT) data to develop actionable insights and improve their operations. At Samsara, we are helping...",
-      "applyUrl": "https://www.samsara.com/company/careers/roles/8109358?gh_jid=8109358",
+      "applyUrl": "https://www.samsara.com/company/careers/roles/7752678?gh_jid=7752678",
       "source": "Greenhouse",
-      "sourceUrl": "https://www.samsara.com/company/careers/roles/8109358?gh_jid=8109358",
+      "sourceUrl": "https://www.samsara.com/company/careers/roles/7752678?gh_jid=7752678",
       "postedAt": "2026-10-30T11:15:54-04:00",
       "tags": [
         "Claude Code",
@@ -1862,19 +1857,19 @@
       "companyIcon": "https://fivetran.com/favicon.ico"
     },
     {
-      "id": "gr-fivetran-7980977003",
+      "id": "gr-fivetran-8017186003",
       "company": "Fivetran",
       "position": "Senior Software Engineer - Orchestration",
-      "location": "Ontario, Canada",
+      "location": "USA - Austin (dbt)",
       "locations": [
-        "Ontario, Canada"
+        "USA - Austin (dbt)"
       ],
       "remote": false,
       "salary": "",
       "description": "From Fivetran’s founding until now, our mission has remained the same: to make access to data as simple and reliable as electricity. With Fivetran, customer data arrives in their warehouses, canonical and ready to query, with no engineering or maintenance required. We’re proud that more...",
-      "applyUrl": "https://www.fivetran.com/careers/job?gh_jid=7980977003",
+      "applyUrl": "https://www.fivetran.com/careers/job?gh_jid=8017186003",
       "source": "Greenhouse",
-      "sourceUrl": "https://www.fivetran.com/careers/job?gh_jid=7980977003",
+      "sourceUrl": "https://www.fivetran.com/careers/job?gh_jid=8017186003",
       "postedAt": "2026-10-30T08:53:34-04:00",
       "tags": [
         "Claude Code",
@@ -1891,19 +1886,19 @@
       "companyIcon": "https://fivetran.com/favicon.ico"
     },
     {
-      "id": "gr-fivetran-7918612003",
+      "id": "gr-fivetran-7975857003",
       "company": "Fivetran",
       "position": "Senior Data Analyst, People",
-      "location": "Oakland, California, United States, AMER",
+      "location": "USA - New York (dbt)",
       "locations": [
-        "Oakland, California, United States, AMER"
+        "USA - New York (dbt)"
       ],
       "remote": false,
       "salary": "",
       "description": "From Fivetran’s founding until now, our mission has remained the same: to make access to data as simple and reliable as electricity. With Fivetran, customer data arrives in their warehouses, canonical and ready to query, with no engineering or maintenance required. We’re proud that more...",
-      "applyUrl": "https://www.fivetran.com/careers/job?gh_jid=7918612003",
+      "applyUrl": "https://www.fivetran.com/careers/job?gh_jid=7975857003",
       "source": "Greenhouse",
-      "sourceUrl": "https://www.fivetran.com/careers/job?gh_jid=7918612003",
+      "sourceUrl": "https://www.fivetran.com/careers/job?gh_jid=7975857003",
       "postedAt": "2026-10-30T08:53:18-04:00",
       "tags": [
         "Claude Code"
@@ -7684,29 +7679,6 @@
       "companyIcon": "https://grafana.com/favicon.ico"
     },
     {
-      "id": "gr-purestorage-8129789",
-      "company": "Everpure",
-      "position": "Business Intelligence Analyst",
-      "location": "Bangalore, India",
-      "locations": [
-        "Bangalore, India"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "Everpure (NYSE: P) has evolved from storage pioneer to data platform, closing fiscal 2026 with $3.7 billion in revenue, its first billion-dollar quarter, and accelerating growth into FY27. Our strategic agenda spans the companies defining the next era of technology - hyperscalers, AI labs, the AI...",
-      "applyUrl": "https://job-boards.greenhouse.io/purestorage/jobs/8129789",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/purestorage/jobs/8129789",
-      "postedAt": "2026-10-05T22:28:47-04:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "Cursor",
-        "Copilot"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "as-plaid-ab1d1a90-c615-4b5b-94de-0b7a6d5a364a",
       "company": "Plaid",
       "position": "Corporate Engineer",
@@ -8409,19 +8381,19 @@
       "companyIcon": "https://intercom.com/favicon.ico"
     },
     {
-      "id": "gr-tailscale-4721713005",
+      "id": "gr-tailscale-4721714005",
       "company": "Tailscale",
       "position": "Software Engineer, Strategic Projects",
-      "location": "Remote (Canada)",
+      "location": "Remote (United States)",
       "locations": [
-        "Remote (Canada)"
+        "Remote (United States)"
       ],
       "remote": true,
       "salary": "",
       "description": "Thank you for considering Tailscale. If this job description resonates with you, please apply. Frequently cited statistics show that people who identify with historically marginalized groups are likely to apply to jobs only if they meet 100% of the qualifications. We encourage you to help us break...",
-      "applyUrl": "https://job-boards.greenhouse.io/tailscale/jobs/4721713005",
+      "applyUrl": "https://job-boards.greenhouse.io/tailscale/jobs/4721714005",
       "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/tailscale/jobs/4721713005",
+      "sourceUrl": "https://job-boards.greenhouse.io/tailscale/jobs/4721714005",
       "postedAt": "2026-09-29T20:38:27-04:00",
       "tags": [
         "Claude Code",
@@ -10120,46 +10092,25 @@
       "companyIcon": "https://baseten.co/favicon.ico"
     },
     {
-      "id": "gr-instacart-8084090",
+      "id": "gr-instacart-8084089",
       "company": "Instacart",
       "position": "Staff Experience Designer",
-      "location": "Canada - Remote (ON, AB, BC, or NS Only)",
+      "location": "United States - Remote",
       "locations": [
-        "Canada - Remote (ON, AB, BC, or NS Only)"
+        "United States - Remote"
       ],
       "remote": true,
       "salary": "",
       "description": "We're transforming the grocery industry At Instacart, we invite the world to share love through food because we believe everyone should have access to the food they love and more time to enjoy it together. Where others see a simple need for grocery delivery, we see exciting complexity and endless...",
-      "applyUrl": "https://instacart.careers/job/?gh_jid=8084090",
+      "applyUrl": "https://instacart.careers/job/?gh_jid=8084089",
       "source": "Greenhouse",
-      "sourceUrl": "https://instacart.careers/job/?gh_jid=8084090",
+      "sourceUrl": "https://instacart.careers/job/?gh_jid=8084089",
       "postedAt": "2026-08-24T13:15:00-04:00",
       "tags": [
         "Claude Code",
         "Cursor"
       ],
       "companyIcon": "https://instacart.com/favicon.ico"
-    },
-    {
-      "id": "gr-purestorage-8129785",
-      "company": "Everpure",
-      "position": "Staff AI & Automation Data Analyst",
-      "location": "Bangalore, India",
-      "locations": [
-        "Bangalore, India"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "Everpure (NYSE: P) has evolved from storage pioneer to data platform, closing fiscal 2026 with $3.7 billion in revenue, its first billion-dollar quarter, and accelerating growth into FY27. Our strategic agenda spans the companies defining the next era of technology - hyperscalers, AI labs, the AI...",
-      "applyUrl": "https://job-boards.greenhouse.io/purestorage/jobs/8129785",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/purestorage/jobs/8129785",
-      "postedAt": "2026-08-23T22:12:54-04:00",
-      "tags": [
-        "Claude Code",
-        "Python"
-      ],
-      "companyIcon": ""
     },
     {
       "id": "anth-5393526008",
@@ -11350,19 +11301,19 @@
       "companyIcon": "https://ramp.com/favicon.ico"
     },
     {
-      "id": "gr-brex-8463703002",
+      "id": "gr-brex-8463702002",
       "company": "Brex",
       "position": "Data Analyst II",
-      "location": "São Paulo, São Paulo, Brazil",
+      "location": "New York, New York, United States",
       "locations": [
-        "São Paulo, São Paulo, Brazil"
+        "New York, New York, United States"
       ],
       "remote": false,
-      "salary": "",
+      "salary": "$93,600 - $117,000",
       "description": "Why join us Brex is the intelligent finance platform that enables companies to spend smarter and move faster in more than 200 markets. By combining global corporate cards and banking with intuitive spend management, bill pay, and travel software, Brex enables founders and finance teams to...",
-      "applyUrl": "https://www.brex.com/careers/8463703002?gh_jid=8463703002",
+      "applyUrl": "https://www.brex.com/careers/8463702002?gh_jid=8463702002",
       "source": "Greenhouse",
-      "sourceUrl": "https://www.brex.com/careers/8463703002?gh_jid=8463703002",
+      "sourceUrl": "https://www.brex.com/careers/8463702002?gh_jid=8463702002",
       "postedAt": "2026-06-10T13:59:16-04:00",
       "tags": [
         "Claude Code",
