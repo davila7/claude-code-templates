@@ -285,14 +285,17 @@ export const register: Register = (on, options) => {
         return next(e)
       }
 
-      // ask
-      if (config.askWith === 'engine') {
+      // ask. With no one here, `headless` decides on both paths: since Claude Code 2.1.304 a hook's ask
+      // goes to a person, never to the auto-mode classifier, so a headless engine ask is always a deny.
+      // -1: the surfaces could not be read. The engine path then assumes someone is here (its dialog decides);
+      // the mod's own dialog treats it as headless, as before.
+      const surfaces = await $.session.surfaces().then(s => s.length, () => -1)
+      if (config.askWith === 'engine' && surfaces !== 0) {
         if (id) verdicts.set(id, { decision: 'ask', reason })
         approve()
         return next(e)
       }
-      const surfaces = await $.session.surfaces().then(s => s.length, () => 0)
-      if (surfaces === 0) {
+      if (surfaces <= 0) {
         if (config.headless === 'deny') return { deny: `${reason} (asked, but no one is here to answer: headless runs deny)` }
         if (id) verdicts.set(id, { decision: 'allow', reason })
         approve()

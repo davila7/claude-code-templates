@@ -27,25 +27,25 @@
   --font-mono: 'Geist Mono', 'JetBrains Mono', 'Fira Code', monospace;
 }
 
-/* Dark mode (default) — GitHub-dark terminal palette */
+/* Dark mode (default) — near-black warm neutrals (Anthropic), orange as the single accent */
 :root,
 html.dark {
-  /* Backgrounds - GitHub-dark terminal */
-  --color-surface-0: #0d1117;
-  --color-surface-1: #161b22;
-  --color-surface-2: #21262d;
-  --color-surface-3: #2a3038;
-  --color-surface-4: #30363d;
+  /* Backgrounds */
+  --color-surface-0: #0b0b0a;
+  --color-surface-1: #141413;
+  --color-surface-2: #1c1c1a;
+  --color-surface-3: #262624;
+  --color-surface-4: #302f2c;
 
   /* Borders - Sharp terminal borders */
-  --color-border: #30363d;
+  --color-border: #2a2926;
   --color-border-hover: #d57455;
-  --color-border-strong: #3d444d;
+  --color-border-strong: #3d3c38;
 
   /* Text colors */
-  --color-text-primary: #c9d1d9;
-  --color-text-secondary: #7d8590;
-  --color-text-tertiary: #6e7681;
+  --color-text-primary: #faf9f5;
+  --color-text-secondary: #a3a197;
+  --color-text-tertiary: #85837b;
 
   /* Accent color */
   --color-accent: #d57455;
@@ -57,8 +57,8 @@ html.dark {
   --color-success-bg: rgba(63, 185, 80, 0.1);
 
   /* Card backgrounds */
-  --color-card-bg: #161b22;
-  --color-card-hover: #1c2330;
+  --color-card-bg: #141413;
+  --color-card-hover: #1c1c1a;
 
   /* Card shadows — flat terminal look */
   --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4);
