@@ -35,7 +35,7 @@ const BASH_RULES: readonly BashRule[] = [
   { category: 'data', pattern: /\bprisma\s+migrate\s+(?:deploy|reset)\b|\balembic\s+(?:upgrade|downgrade)\b|\brails\s+db:(?:migrate|drop|reset)\b/, what: 'run a database migration' },
 ]
 
-const DESTRUCTIVE_SQL_RE = /\b(?:DROP|TRUNCATE|ALTER)\s+(?:TABLE|DATABASE|SCHEMA|ROLE|USER)\b|\bDELETE\s+FROM\b(?![^;]*\bWHERE\b)|\bUPDATE\s+[\w."]+\s+SET\b(?![^;]*\bWHERE\b)/i
+const DESTRUCTIVE_SQL_RE = /\b(?:DROP|TRUNCATE|ALTER)\s+(?:TABLE|DATABASE|SCHEMA|ROLE|USER)\b|\bDELETE\s+FROM\b(?![^;]*\bWHERE\b)|\bUPDATE\s+(?:ONLY\s+)?[\w."]+(?:\s+(?:AS\s+)?(?!SET\b)\w+)?\s+SET\b(?![^;]*\bWHERE\b)/i
 /** SQL with its string literals and comments blanked, so `SET bio = 'WHERE'` or `-- WHERE` is not read as a filter. */
 export function sqlCode(sql: string): string {
   return sql.replace(/'(?:[^']|'')*(?:'|$)|\$(\w*)\$[\s\S]*?(?:\$\1\$|$)|--[^\n]*|\/\*[\s\S]*?(?:\*\/|$)/g, m => ' '.repeat(m.length))
@@ -58,6 +58,8 @@ export function unquote(segment: string): string {
  * `cd x && npm publish` is caught and `git commit -m "a && npm publish"` is one segment.
  */
 export function segments(command: string): string[] {
+  // A backslash-newline continues the line: `npm \\\n publish` is one command.
+  command = command.replace(/\\\r?\n/g, ' ')
   const out: string[] = []
   let cur = ''
   let quote: '"' | "'" | undefined
@@ -138,10 +140,20 @@ export function pushTargets(segment: string): PushTargets | undefined {
   }
   const args = w.slice(i + 1)
   if (args.some(a => a === '--all' || a === '--mirror' || a === '--branches')) return { all: true }
-  const positional = args.filter(a => !a.startsWith('-'))
+  // Options that take the next word as their value, and `--repo`, which names the repository itself.
+  const positional: string[] = []
+  let repoGiven = false
+  for (let k = 0; k < args.length; k++) {
+    const a = args[k]
+    if (a === '--repo') { repoGiven = true; k++ }
+    else if (a.startsWith('--repo=')) repoGiven = true
+    else if (a === '-o' || a === '--push-option' || a === '--receive-pack' || a === '--exec') k++
+    else if (!a.startsWith('-')) positional.push(a)
+  }
+  const refspecs = repoGiven ? positional : positional.slice(1)
   const refs: string[] = []
-  let current = positional.length <= 1 // `git push` or `git push origin`
-  for (const ref of positional.slice(1)) {
+  let current = refspecs.length === 0 // `git push`, `git push origin`, `git push --repo=origin`
+  for (const ref of refspecs) {
     const target = (ref.includes(':') ? ref.split(':').pop() ?? '' : ref).replace(/^\+/, '').replace(/^refs\/heads\//, '')
     if (target === 'HEAD' || target === '@' || target === '') current = true
     else refs.push(target)
@@ -175,13 +187,21 @@ function mcpParts(tool: string): { server: string; name: string } | undefined {
 }
 
 const READ_VERB = /^(?:list|get|retrieve|search|read|fetch|describe|find|count|query_read)(?:_|$)/i
+/** A word that changes something: `get_or_create_customer` is no read. */
+const WRITE_WORD = /(?:^|_)(?:create|update|delete|remove|cancel|set|add|send|pay|charge|refund|capture|confirm|finalize|void|transfer|upsert|write|post)(?:_|$)/i
+
+/** `sendMessage`, `addIssueComment`, `send-message` → `send_message`, `add_issue_comment`. */
+function snake(name: string): string {
+  return name.replace(/([a-z0-9])([A-Z])/g, '$1_$2').replace(/-/g, '_').toLowerCase()
+}
 
 function mcpGate(tool: string, on: (c: Category) => boolean): Gate | undefined {
-  const p = mcpParts(tool)
-  if (!p) return undefined
-  const isRead = READ_VERB.test(p.name)
+  const parts = mcpParts(tool)
+  if (!parts) return undefined
+  const p = { server: parts.server, name: snake(parts.name) }
+  const isRead = READ_VERB.test(p.name) && !WRITE_WORD.test(p.name)
   if (on('money') && !isRead && /stripe/i.test(p.server)) return { category: 'money', what: 'a Stripe action that changes money or customers' }
-  if (on('money') && !isRead && /(?:^|_)(?:refund|payout|charge|transfer|payment_intent|capture|invoice_(?:send|pay|finalize))/i.test(p.name)) return { category: 'money', what: 'move money' }
+  if (on('money') && !isRead && /(?:^|_)(?:refund|payout|charge|transfer|payment_intent|capture|invoice)/i.test(p.name)) return { category: 'money', what: 'move money' }
   if (on('outbound') && /(?:^|_)(?:send|forward|reply|post|publish|share)(?:_|$)|(?:^|_)(?:add|create)_\w*comment/i.test(p.name)) return { category: 'outbound', what: 'send a message outside the session' }
   if (on('deploy') && /(?:^|_)deploy(?:_|$)|publish_website|delete_(?:project|branch|postgres_database|database|bucket)/i.test(p.name)) return { category: 'deploy', what: 'change or delete a hosted resource' }
   return undefined

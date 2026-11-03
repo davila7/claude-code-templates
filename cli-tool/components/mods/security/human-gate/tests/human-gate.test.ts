@@ -137,6 +137,24 @@ describe('human-gate: rules', () => {
     }
   })
 
+  test('review round 2: option values, aliases, continuations, camelCase and compound names', async () => {
+    const onFeature = async () => 'feature'
+    expect(pushTargets('git push --repo=origin main')).toEqual({ refs: ['main'], current: false })
+    expect(pushTargets('git push --repo origin main')).toEqual({ refs: ['main'], current: false })
+    expect(pushTargets('git push -o ci.skip origin feature')).toEqual({ refs: ['feature'], current: false })
+    expect((await gateFor('Bash', { command: 'git push --repo=origin main' }, all, onFeature))?.what).toBe('push to main')
+    expect((await gateFor('Bash', { command: 'npm \\\npublish' }, all, none))?.category).toBe('publish')
+    expect(await gateFor('Bash', { command: "echo 'npm publish; echo ok'" }, all, none)).toBe(undefined)
+    expect((await gateFor('mcp__Neon__run_sql', { sql: 'UPDATE users AS u SET admin = true' }, all, none))?.category).toBe('data')
+    expect((await gateFor('mcp__Neon__run_sql', { sql: 'UPDATE ONLY users u SET admin = true' }, all, none))?.category).toBe('data')
+    expect(await gateFor('mcp__Neon__run_sql', { sql: 'UPDATE users AS u SET admin = true WHERE u.id = 1' }, all, none)).toBe(undefined)
+    expect((await gateFor('mcp__slack__sendMessage', {}, all, none))?.category).toBe('outbound')
+    expect((await gateFor('mcp__github__addIssueComment', {}, all, none))?.category).toBe('outbound')
+    expect((await gateFor('mcp__paypal__create_invoice', {}, all, none))?.category).toBe('money')
+    expect((await gateFor('mcp__stripe__get_or_create_customer', {}, all, none))?.category).toBe('money')
+    expect(await gateFor('mcp__stripe__list_invoices', {}, all, none)).toBe(undefined)
+  })
+
   test('WHERE inside a SQL string or comment is no filter', async () => {
     for (const sql of ["UPDATE users SET bio = 'WHERE'", 'DELETE FROM users -- WHERE id = 1', 'UPDATE users SET bio = $$ WHERE $$', 'DELETE FROM t /* WHERE */']) {
       expect((await gateFor('mcp__Neon__run_sql', { sql }, all, none))?.category).toBe('data')

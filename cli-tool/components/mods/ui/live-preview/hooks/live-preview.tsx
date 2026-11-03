@@ -60,6 +60,9 @@ async function findBrowser($: EngineInterface): Promise<string | undefined> {
   return undefined
 }
 
+/** An `Image` holds at most 2 MiB of decoded PNG. */
+const MAX_IMAGE_BYTES = 2 * 1024 * 1024
+
 async function capture($: EngineInterface): Promise<void> {
   if (view.busy) return
   view.busy = true
@@ -76,10 +79,11 @@ async function capture($: EngineInterface): Promise<void> {
     }
     // Chrome does not create the folder, and exits 0 when it cannot write: make it, and check the file is new.
     await $.fs.write(SHOT_DIR_IGNORE, '*\n')
-    const started = Date.now()
+    // The file must be newer than the one before this run (or new): Chrome exits 0 when it cannot write.
+    const before = await $.fs.stat(SHOT_PATH).then(st => st.mtimeMs, () => undefined)
     const r = await $.process.run(screenshotArgv(exe, url, device, SHOT_PATH, view.extraArgs), { timeoutMs: 30000 })
     const stat = await $.fs.stat(SHOT_PATH).catch(() => undefined)
-    if (r.exitCode === 0 && (!stat || stat.mtimeMs < started - 1000)) {
+    if (r.exitCode === 0 && (!stat || (before !== undefined && stat.mtimeMs <= before))) {
       view.error = `The browser did not write ${SHOT_PATH}: ${(r.stderr || r.stdout).trim().split('\n').slice(-1)[0] ?? ''}`
       return
     }
@@ -182,7 +186,9 @@ export const register: Register = (on, options) => {
     let picture
     if (view.error) picture = <Text color={ORANGE}>{view.error}</Text>
     else if (!view.shot) picture = <Text color={GRAY}>{view.busy ? 'Taking the first capture…' : 'No capture yet. Press Refresh, or wait for Claude to edit a frontend file.'}</Text>
-    else if (e.surface === 'terminal') {
+    else if (e.surface === 'terminal' && view.shot.png.length * 3 / 4 > MAX_IMAGE_BYTES) {
+      picture = <Text color={GRAY}>The capture ({view.shot.width}×{view.shot.height}) is over the 2 MiB a pane image may hold. It is at {SHOT_PATH}.</Text>
+    } else if (e.surface === 'terminal') {
       const { Image } = $.ui.resolve(e)
       const cells = cellsFor(view.shot.width, view.shot.height, columns, Math.max(6, bodyRows - 6))
       picture = <Image key="shot" source={{ png: view.shot.png }} columns={cells.columns} rows={cells.rows} alt={`Screenshot of ${view.shot.url} (${view.shot.width}×${view.shot.height}). This terminal cannot draw images: see ${SHOT_PATH}`} />

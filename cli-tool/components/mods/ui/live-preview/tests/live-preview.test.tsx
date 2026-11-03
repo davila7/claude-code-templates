@@ -36,6 +36,7 @@ describe('capture rules', () => {
   test('edits to frontend files count, generated and dependency files do not', () => {
     expect(isWatched('src/components/Grid.tsx', DEFAULT_WATCH)).toBe(true)
     expect(isWatched('src/styles/a.css', DEFAULT_WATCH)).toBe(true)
+    expect(isWatched('node_modules\\x\\index.js', ['js'])).toBe(false)
     expect(isWatched('node_modules/x/index.js', DEFAULT_WATCH)).toBe(false)
     expect(isWatched('dist/app.js', DEFAULT_WATCH)).toBe(false)
     expect(isWatched('server/main.go', DEFAULT_WATCH)).toBe(false)

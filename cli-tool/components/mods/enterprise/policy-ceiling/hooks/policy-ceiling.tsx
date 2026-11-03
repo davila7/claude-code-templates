@@ -67,7 +67,8 @@ export const register: Register = on => {
     const key = JSON.stringify(snap)
     if (key !== last) {
       last = key
-      void update($, snapshot, () => snap)
+      // Awaited, so a `/policy` right after this read sees these rows.
+      await update($, snapshot, () => snap).catch(() => undefined)
     }
     return { value: result.settings }
   }).catch(async ($, e, next) => {

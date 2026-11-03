@@ -42,6 +42,7 @@ export function editedPath(tool: string, input: unknown): string | undefined {
 
 /** Whether a path is a frontend file worth a new capture. Paths under node_modules, dist and .claude never are. */
 export function isWatched(path: string, extensions: readonly string[]): boolean {
+  path = path.replace(/\\/g, '/') // Windows paths
   if (/(?:^|\/)(?:node_modules|dist|build|\.next|\.astro|\.claude|\.git)\//.test(path)) return false
   const ext = /\.([a-z0-9]+)$/i.exec(path)?.[1]?.toLowerCase()
   return ext !== undefined && extensions.includes(ext)

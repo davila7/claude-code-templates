@@ -50,7 +50,9 @@ export const register: Register = (on, options) => {
     const gate = await gateFor(e.tool, e.input, config, async dir => {
       try {
         const r = await $.process.run(['git', ...(dir ? ['-C', dir] : []), 'rev-parse', '--abbrev-ref', 'HEAD'], { timeoutMs: 5000 })
-        return r.exitCode === 0 ? r.stdout.trim() : undefined
+        // A detached HEAD prints `HEAD`: no branch to judge, so the push is held.
+        const branch = r.exitCode === 0 ? r.stdout.trim() : ''
+        return branch && branch !== 'HEAD' ? branch : undefined
       } catch {
         return undefined
       }

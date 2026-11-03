@@ -83010,7 +83010,7 @@
       "path": "enterprise/policy-ceiling",
       "category": "enterprise",
       "type": "mod",
-      "description": "Makes an organization's managed limits act as ceilings and floors over each person's settings (retention, model, effort, permission mode, sandbox) instead of fixed values, and shows in /policy what each layer asked and what the session runs with.",
+      "description": "Makes an organization's managed limits act as ceilings and floors over each person's merged settings (retention, model, effort, permission mode, sandbox) instead of fixed values, and shows in /policy the requested value, limit and effective value for each rule.",
       "author": "claude-code-templates",
       "repo": "https://github.com/davila7/claude-code-templates",
       "version": "0.1.0",
@@ -83044,7 +83044,7 @@
         "deniedModels": {
           "type": "string",
           "title": "Denied models",
-          "description": "Comma-separated model names or aliases a person may not pick, e.g. opus[1m]; also cleared from the ANTHROPIC_*_MODEL environment variables. Read from managed settings only.",
+          "description": "Comma-separated model names or aliases replaced in the settings `model` (e.g. opus[1m]), and cleared from env ANTHROPIC_MODEL, ANTHROPIC_DEFAULT_OPUS_MODEL, ANTHROPIC_DEFAULT_SONNET_MODEL, ANTHROPIC_DEFAULT_HAIKU_MODEL, ANTHROPIC_SMALL_FAST_MODEL and CLAUDE_CODE_SUBAGENT_MODEL. Not an allowlist: --model and /model are not capped. Read from managed settings only.",
           "default": ""
         },
         "fallbackModel": {
