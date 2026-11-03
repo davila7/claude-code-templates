@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- **FLOSS/fund application** (#1359, #1361): `funding.json` (funding.json
+  v1.1.0) at the repository root, with `.well-known/funding-manifest-urls` in
+  the repository and served by aitmpl.com. Submitted to the FLOSS/fund
+  directory on 2026-11-02 as an application for a 25,000 USD/year grant; both
+  URLs show as verified in the
+  [listing](https://dir.floss.fund/view/project/@github.com/davila7/claude-code-templates).
+
 ## [1.31.0] - 2026-11-02
 
 Includes the changes prepared as 1.30.1 (#1334), which was never published to npm.
@@ -125,7 +135,7 @@ Includes the changes prepared as 1.30.1 (#1334), which was never published to np
   - Resolved `npx`/`claude` via their `.cmd` shims on Windows so removing
     `shell: true` does not break agent installation on win32.
 
-## [Unreleased]
+## Changes after 1.28.16 (not assigned to a release)
 
 ### Added
 - X/Twitter scraper skill (#390)
@@ -289,7 +299,7 @@ Includes the changes prepared as 1.30.1 (#1334), which was never published to np
 
 For changes prior to v1.25.0, see the [commit history](https://github.com/davila7/claude-code-templates/commits/main).
 
-[Unreleased]: https://github.com/davila7/claude-code-templates/compare/v1.28.16...HEAD
+[Unreleased]: https://github.com/davila7/claude-code-templates/compare/v1.31.0...HEAD
 [1.28.16]: https://github.com/davila7/claude-code-templates/compare/v1.28.14...v1.28.16
 [1.28.14]: https://github.com/davila7/claude-code-templates/compare/v1.28.3...v1.28.14
 [1.28.3]: https://github.com/davila7/claude-code-templates/compare/v1.27.0...v1.28.3
