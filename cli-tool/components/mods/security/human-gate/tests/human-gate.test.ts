@@ -160,7 +160,7 @@ describe('human-gate: rules', () => {
       expect((await gateFor('mcp__Neon__run_sql', { sql }, all, none))?.category).toBe('data')
     }
     expect((await gateFor('Bash', { command: `psql -c "UPDATE users SET bio = 'WHERE'"` }, all, none))?.category).toBe('data')
-    for (const sql of ['UPDATE users SET "where" = 1', 'DELETE FROM users # WHERE id = 1', 'DELETE FROM `where`', 'UPDATE t SET a = 1 /* WHERE */', '/*!DELETE FROM users*/', 'DELETE FROM "a;b WHERE"']) {
+    for (const sql of ['UPDATE users SET "where" = 1', 'DELETE FROM users # WHERE id = 1', 'DELETE FROM `where`', 'UPDATE t SET a = 1 /* WHERE */', '/*!DELETE FROM users*/', 'DELETE FROM "a;b WHERE"', "UPDATE users SET bio = E'foo\\' WHERE'", "UPDATE users SET bio = 'it\\'s WHERE'"]) {
       expect((await gateFor('mcp__mysql__query', { sql }, all, none))?.category).toBe('data')
     }
     expect(await gateFor('mcp__mysql__query', { sql: 'DELETE FROM `users` WHERE `id` = 1' }, all, none)).toBe(undefined)

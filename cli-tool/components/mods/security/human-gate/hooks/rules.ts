@@ -42,7 +42,10 @@ const DESTRUCTIVE_SQL_RE = /\b(?:DROP|TRUNCATE|ALTER)\s+(?:TABLE|DATABASE|SCHEMA
  * spaces, quoted identifiers (`"…"`, `` `…` ``) keep their quotes with `x`
  * inside, and a MySQL executable comment (`/*! … *\/`) keeps its body, since
  * MySQL runs it. Blanking `#` also blanks Postgres's XOR operator; that only
- * ever hides a `WHERE`, which holds the call (fails closed).
+ * ever hides a `WHERE`, which holds the call (fails closed). A backslash
+ * inside `'…'` escapes the next character (MySQL, Postgres `E'…'`); in a
+ * standard Postgres string that can only swallow a real `WHERE`, which also
+ * holds the call.
  */
 export function sqlCode(sql: string): string {
   let out = ''
@@ -53,7 +56,11 @@ export function sqlCode(sql: string): string {
     const two = sql.slice(i, i + 2)
     if (c === "'") {
       let j = i + 1
-      while (j < sql.length && !(sql[j] === "'" && sql[j + 1] !== "'")) j += sql[j] === "'" ? 2 : 1
+      while (j < sql.length) {
+        if (sql[j] === '\\') { j += 2; continue }
+        if (sql[j] === "'" && sql[j + 1] !== "'") break
+        j += sql[j] === "'" ? 2 : 1
+      }
       blank(Math.min(j + 1, sql.length) - i)
     } else if (c === '"' || c === '`') {
       const end = sql.indexOf(c, i + 1)
