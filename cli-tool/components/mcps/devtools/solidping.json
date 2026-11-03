@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "solidping": {
+      "description": "SolidPing uptime monitoring: list and create checks across 40+ check types (HTTP, DNS, TCP, SSL, databases, queues, heartbeats), read results and incidents, diagnose a failing check, and manage status pages. Streamable HTTP, OAuth sign-in in the browser. Hosted with a free tier, or self-hosted at https://<your-host>/api/v1/mcp.",
+      "type": "http",
+      "url": "https://solidping.io/api/v1/mcp"
+    }
+  }
+}

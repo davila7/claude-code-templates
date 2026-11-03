@@ -67,6 +67,12 @@
   Access-Control-Allow-Origin: *
   Access-Control-Allow-Methods: GET
 
+# FLOSS/fund provenance check (funding.json at the repo root). The file has no
+# extension, so without this Pages would serve it as application/octet-stream.
+/.well-known/funding-manifest-urls
+  Content-Type: text/plain; charset=utf-8
+  Cache-Control: public, max-age=3600
+
 # Astro hashed assets — immutable forever (hash changes on content change)
 /_astro/*
   Cache-Control: public, max-age=31536000, immutable
