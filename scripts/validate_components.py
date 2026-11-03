@@ -16,6 +16,8 @@ Exit code 1 when any (selected) component has an error.
 import argparse, json, os, shutil, subprocess, sys, tempfile
 from pathlib import Path
 
+import external_skills
+
 ROOT = Path(__file__).resolve().parent.parent
 BASE = ROOT / "cli-tool" / "components"
 MANIFEST = {"name": "catalog-probe", "version": "0.0.0", "description": "scratch plugin", "author": {"name": "catalog"}}
@@ -69,6 +71,15 @@ def main():
         if changed is None or any(c.startswith(p.parent.relative_to(BASE).as_posix() + "/") for c in changed):
             flat = "skills/" + p.parent.relative_to(BASE / "skills").as_posix().replace("/", "__")
             shutil.copytree(p.parent, plug / flat, symlinks=True); mapping[flat] = rel; n += 1
+    # External skills: source.json + the files at the pinned commit.
+    for d in external_skills.all_external_dirs():
+        rel = (d / "source.json").relative_to(BASE).as_posix()
+        if changed is None or any(c.startswith(d.relative_to(BASE).as_posix() + "/") for c in changed):
+            flat = "skills/" + d.relative_to(BASE / "skills").as_posix().replace("/", "__")
+            try:
+                shutil.copytree(external_skills.local_dir(d), plug / flat); mapping[flat] = rel; n += 1
+            except (external_skills.ManifestError, OSError) as e:
+                findings.append({"type": "skill", "file": rel, "errors": [{"message": str(e)}], "warnings": []})
     if n:
         for c in claude(plug, a.strict).get("contents", []):
             f = Path(c["file"]).relative_to(plug).as_posix()

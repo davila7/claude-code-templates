@@ -14,6 +14,7 @@ on:
       - 'cli-tool/components/**'
       - 'cli-tool/templates/**'
       - 'scripts/generate_components_json.py'
+      - 'scripts/external_skills.py'
   workflow_dispatch:
 
 permissions:
