@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "ghostedit": {
+      "description": "Ghostedit - schedule, move and cancel Instagram, TikTok and YouTube posts from Claude Code, and read back how they did. Each post is checked against the platform's limits (caption, hashtags, title, length, size) before it is queued; accounts set to 'needs approval' wait for a person. Hosted remote server with OAuth sign-in in the browser, no key to paste. Early access: posting opens in small batches while platform approvals finish, join at https://ghostedit.ai/connect. An independent service, not made by or affiliated with Meta, TikTok or Google.",
+      "type": "http",
+      "url": "https://mcp.ghostedit.ai/mcp"
+    }
+  }
+}
