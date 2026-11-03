@@ -44,7 +44,7 @@ Concrete patterns that reviews miss, grouped by area. Each is something to look 
 - `defer f.Close()` inside a loop keeps every file open until the function returns.
 - Writing to a `nil` map panics; reading from a nil map does not, so the bug hides in tests.
 - Closures, goroutines or `&v` capturing a loop variable when the `go` directive in `go.mod` is below 1.22 (the directive decides, not the toolchain).
-- A goroutine or ticker with no way to stop (no `ctx.Done()` case), a channel that is never closed.
+- A goroutine or ticker with no way to stop (no `ctx.Done()` case), or a receive or `range` that can block forever because nothing guarantees a send or a close on its channel.
 - `http.Response.Body` not closed; `context.Background()` where the request context should propagate.
 - Returning a typed `nil` pointer as an `error` interface makes `err != nil` true.
 
