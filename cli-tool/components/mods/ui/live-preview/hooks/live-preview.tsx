@@ -64,6 +64,9 @@ async function capture($: EngineInterface): Promise<void> {
   if (view.busy) return
   view.busy = true
   view.dirty = false
+  // The picture is labelled with what it was taken of, even if the URL or device changes while the browser runs.
+  const url = view.url
+  const device = view.device
   if (view.isOpen) $.ui.invalidate('ui.render')
   try {
     const exe = await findBrowser($)
@@ -74,7 +77,7 @@ async function capture($: EngineInterface): Promise<void> {
     // Chrome does not create the folder, and exits 0 when it cannot write: make it, and check the file is new.
     await $.fs.write(SHOT_DIR_IGNORE, '*\n')
     const started = Date.now()
-    const r = await $.process.run(screenshotArgv(exe, view.url, view.device, SHOT_PATH, view.extraArgs), { timeoutMs: 30000 })
+    const r = await $.process.run(screenshotArgv(exe, url, device, SHOT_PATH, view.extraArgs), { timeoutMs: 30000 })
     const stat = await $.fs.stat(SHOT_PATH).catch(() => undefined)
     if (r.exitCode === 0 && (!stat || stat.mtimeMs < started - 1000)) {
       view.error = `The browser did not write ${SHOT_PATH}: ${(r.stderr || r.stdout).trim().split('\n').slice(-1)[0] ?? ''}`
@@ -85,8 +88,8 @@ async function capture($: EngineInterface): Promise<void> {
       return
     }
     const { base64 } = await $.fs.read(SHOT_PATH, { as: 'bytes' })
-    const size = pngSize(fromBase64(base64)) ?? VIEWPORTS[view.device]
-    view.shot = { png: base64, width: size.width, height: size.height, at: Date.now(), url: view.url, device: view.device, generation: ++view.generation }
+    const size = pngSize(fromBase64(base64)) ?? VIEWPORTS[device]
+    view.shot = { png: base64, width: size.width, height: size.height, at: Date.now(), url, device, generation: ++view.generation }
     view.error = undefined
     view.editsSince = 0
   } catch (err) {
@@ -95,6 +98,8 @@ async function capture($: EngineInterface): Promise<void> {
     view.busy = false
     if (view.isOpen) $.ui.invalidate('ui.render')
   }
+  // A change made while the browser ran was skipped by the busy check: take it now.
+  if (view.isOpen && (view.url !== url || view.device !== device)) await capture($)
 }
 
 export const register: Register = (on, options) => {

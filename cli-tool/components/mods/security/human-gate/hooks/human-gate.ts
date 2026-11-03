@@ -47,9 +47,9 @@ export const register: Register = (on, options) => {
     const core = await next(e)
     if (core.decision === 'deny') return core
 
-    const gate = await gateFor(e.tool, e.input, config, async () => {
+    const gate = await gateFor(e.tool, e.input, config, async dir => {
       try {
-        const r = await $.process.run(['git', 'rev-parse', '--abbrev-ref', 'HEAD'], { timeoutMs: 5000 })
+        const r = await $.process.run(['git', ...(dir ? ['-C', dir] : []), 'rev-parse', '--abbrev-ref', 'HEAD'], { timeoutMs: 5000 })
         return r.exitCode === 0 ? r.stdout.trim() : undefined
       } catch {
         return undefined

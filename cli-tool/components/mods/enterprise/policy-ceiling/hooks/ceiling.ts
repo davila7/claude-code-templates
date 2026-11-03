@@ -119,9 +119,13 @@ export function apply(merged: Settings, rules: Rules): { settings: Settings; row
     const max = rules.maxEffort
     const asked = merged.effortLevel
     let clamped = false
+    const askedParts: string[] = []
+    const resultParts: string[] = []
     if (asked !== undefined) {
       const lowered = lowerEffort(asked, max)
       if (lowered !== asked) { out.effortLevel = lowered; clamped = true }
+      askedParts.push(show(asked))
+      resultParts.push(show(lowered))
     }
     // Opus/Sonnet 5.5+ read effort per model: modelSettings[id].effortLevel.
     if (isObject(merged.modelSettings)) {
@@ -131,11 +135,19 @@ export function apply(merged: Settings, rules: Rules): { settings: Settings; row
           const lowered = lowerEffort(s.effortLevel, max)
           if (lowered !== s.effortLevel) clamped = true
           next[id] = { ...s, effortLevel: lowered }
+          askedParts.push(`${id}: ${show(s.effortLevel)}`)
+          resultParts.push(`${id}: ${show(lowered)}`)
         } else next[id] = s
       }
       out.modelSettings = next
     }
-    rows.push({ setting: 'effortLevel', requested: show(asked), limit: `≤ ${max}`, result: show(clamped && asked !== undefined ? out.effortLevel : asked), state: clamped ? 'clamped' : asked === undefined ? 'unset' : 'within' })
+    rows.push({
+      setting: 'effortLevel',
+      requested: askedParts.length > 0 ? askedParts.join(', ') : show(undefined),
+      limit: `≤ ${max}`,
+      result: resultParts.length > 0 ? resultParts.join(', ') : show(undefined),
+      state: clamped ? 'clamped' : askedParts.length === 0 ? 'unset' : 'within',
+    })
   }
 
   if (rules.forbiddenModes.length > 0) {

@@ -51,6 +51,12 @@ describe('apply', () => {
     expect(rows.map(r => r.state)).toEqual(['clamped', 'clamped', 'clamped', 'clamped', 'forced'])
   })
 
+  test('the effort row shows per-model values, also with no top-level effort', () => {
+    const { rows } = apply({ modelSettings: { 'claude-opus-5-5': { effortLevel: 'max' } } }, rules)
+    const effort = rows.find(r => r.setting === 'effortLevel')!
+    expect(effort).toMatchObject({ requested: 'claude-opus-5-5: max', result: 'claude-opus-5-5: xhigh', state: 'clamped' })
+  })
+
   test('values inside the limits are untouched', () => {
     const merged = { cleanupPeriodDays: 7, model: 'sonnet', effortLevel: 'medium', permissions: { defaultMode: 'acceptEdits' }, sandbox: { enabled: true, allowUnsandboxedCommands: false } }
     const { settings, rows } = apply(merged, rules)

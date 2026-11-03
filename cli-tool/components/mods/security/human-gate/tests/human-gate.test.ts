@@ -107,7 +107,43 @@ describe('human-gate: rules', () => {
     expect(pushTargets('git push origin')).toEqual({ refs: [], current: true })
     expect(pushTargets('git push origin HEAD')).toEqual({ refs: [], current: true })
     expect(pushTargets('git push --mirror')).toEqual({ all: true })
-    expect(pushTargets('git -C app push origin main')).toEqual({ refs: ['main'], current: false })
+    expect(pushTargets('git -C app push origin main')).toEqual({ refs: ['main'], current: false, dir: 'app' })
+    expect(pushTargets('git push origin "HEAD:main"')).toEqual({ refs: ['main'], current: false })
+    expect(pushTargets("git push origin 'main'")).toEqual({ refs: ['main'], current: false })
+  })
+
+  test('a quoted separator stays inside its segment', () => {
+    expect(segments('git commit -m "npm publish && done" && echo ok')).toEqual(['git commit -m "npm publish && done"', 'echo ok'])
+  })
+
+  test('a push resolves its branch in the directory it runs in', async () => {
+    const asked: (string | undefined)[] = []
+    const mainIn = (where: string) => async (dir?: string) => { asked.push(dir); return dir === where ? 'main' : 'feature' }
+    expect((await gateFor('Bash', { command: 'git -C app push' }, all, mainIn('app')))?.what).toBe('push to main')
+    expect((await gateFor('Bash', { command: 'cd app && git push' }, all, mainIn('app')))?.what).toBe('push to main')
+    expect((await gateFor('Bash', { command: 'cd app && git -C web push' }, all, mainIn('app/web')))?.what).toBe('push to main')
+    expect(await gateFor('Bash', { command: 'git push' }, all, mainIn('app'))).toBe(undefined)
+    expect(asked).toEqual(['app', 'app', 'app/web', undefined])
+    // a directory the shell would expand cannot be resolved here: hold
+    for (const command of ['cd ~/repo && git push', 'git -C "$REPO" push', 'cd - && git push']) {
+      expect((await gateFor('Bash', { command }, all, mainIn('nowhere')))?.category).toBe('push-main')
+    }
+  })
+
+  test('a quoted destination is still a destination', async () => {
+    const onFeature = async () => 'feature'
+    for (const command of ['git push origin "HEAD:main"', "git push origin 'main'", 'git push origin HEAD:"main"']) {
+      expect((await gateFor('Bash', { command }, all, onFeature))?.what).toBe('push to main')
+    }
+  })
+
+  test('WHERE inside a SQL string or comment is no filter', async () => {
+    for (const sql of ["UPDATE users SET bio = 'WHERE'", 'DELETE FROM users -- WHERE id = 1', 'UPDATE users SET bio = $$ WHERE $$', 'DELETE FROM t /* WHERE */']) {
+      expect((await gateFor('mcp__Neon__run_sql', { sql }, all, none))?.category).toBe('data')
+    }
+    expect((await gateFor('Bash', { command: `psql -c "UPDATE users SET bio = 'WHERE'"` }, all, none))?.category).toBe('data')
+    expect(await gateFor('mcp__Neon__run_sql', { sql: "UPDATE users SET bio = 'x' WHERE id = 1" }, all, none)).toBe(undefined)
+    expect(await gateFor('Bash', { command: `psql -c "DELETE FROM users WHERE name = 'a;b'"` }, all, none)).toBe(undefined)
   })
 
   test('pushes to a protected branch the review found missing are held', async () => {
