@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { TYPE_CONFIG } from '../lib/icons';
 import TypeIcon from './TypeIcon';
 import CountryFlag from './CountryFlag';
+import AgentSplitView, { type ClientSplit } from './AgentSplitView';
 
 interface TrendingItem {
   id: string;
@@ -35,6 +36,7 @@ interface TrendingData {
   globalStats: GlobalStats;
   topCountries: TopCountry[];
   trending: Record<string, TrendingItem[]>;
+  clientSplit?: ClientSplit;
 }
 
 function formatName(name: string): string {
@@ -54,6 +56,16 @@ export default function TrendingView() {
   const [loading, setLoading] = useState(true);
   const [activeType, setActiveType] = useState<string>('all');
   const [period, setPeriod] = useState<'downloadsWeek' | 'downloadsMonth' | 'downloadsTotal'>('downloadsWeek');
+  const [view, setView] = useState<'components' | 'agents'>('components');
+
+  useEffect(() => {
+    if (window.location.hash === '#agents') setView('agents');
+  }, []);
+
+  const selectView = (next: 'components' | 'agents') => {
+    setView(next);
+    history.replaceState(null, '', next === 'agents' ? '#agents' : window.location.pathname + window.location.search);
+  };
 
   useEffect(() => {
     fetch('/trending-data.json')
@@ -193,6 +205,31 @@ export default function TrendingView() {
         </div>
       </div>
 
+      {/* View tabs */}
+      <div className="px-6 pb-5">
+        <div role="tablist" className="inline-flex items-center gap-1 p-1 rounded-lg bg-[var(--color-surface-2)] border border-[var(--color-border)]">
+          {([['components', 'Components'], ['agents', 'Agents vs humans']] as const).map(([key, label]) => (
+            <button
+              key={key}
+              role="tab"
+              aria-selected={view === key}
+              onClick={() => selectView(key)}
+              className={`px-3 py-1.5 rounded-md text-[12px] font-medium transition-colors ${
+                view === key
+                  ? 'bg-[var(--color-surface-0)] text-[var(--color-text-primary)] shadow-sm'
+                  : 'text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)]'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {view === 'agents' ? (
+        <AgentSplitView split={data.clientSplit} />
+      ) : (
+      <>
       {/* Top countries with icons */}
       <div className="px-6 pb-6">
         <div className="bg-[var(--color-surface-1)] border border-[var(--color-border)] rounded-xl p-4">
@@ -436,6 +473,9 @@ export default function TrendingView() {
           </div>
         </div>
       </div>
+
+      </>
+      )}
 
       {/* Last updated with icon */}
       <div className="px-6 pb-6">
