@@ -86623,7 +86623,7 @@
       "description": "A permission layer driven by a JSON policy: allow, ask or deny every tool call (Bash, edits, web, MCP, subagents, skills), every slash command or skill you type, and every skill preloaded into a subagent. Rules decide first (deny > ask > allow, compound Bash commands split); what no rule covers can go to TypeSafe's Jev, which judges the action against your latest request with thresholds you set. Claude can never edit the policy.",
       "author": "claude-code-templates",
       "repo": "https://github.com/davila7/claude-code-templates",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "license": "MIT",
       "keywords": [
         "mod",
@@ -86718,7 +86718,7 @@
         "score": 100,
         "severity": "CRITICAL",
         "recommendation": "DO_NOT_INSTALL",
-        "issueCount": 73,
+        "issueCount": 76,
         "analysis": "partial",
         "findings": [
           {
@@ -86767,9 +86767,9 @@
             "count": 1
           }
         ],
-        "hash": "c55ae57506a92320",
+        "hash": "4d79f074dad648e6",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-03T02:14:29Z"
       }
     },
     {
