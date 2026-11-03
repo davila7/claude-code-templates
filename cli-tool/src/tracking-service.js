@@ -9,6 +9,8 @@
  * Opt out with CCT_NO_TRACKING=true or CCT_NO_ANALYTICS=true (CI=true also disables it).
  */
 
+const { detectClient } = require('./agent-detection');
+
 class TrackingService {
     constructor() {
         this.trackingEnabled = this.shouldEnableTracking();
@@ -83,6 +85,7 @@ class TrackingService {
                 arch: process.arch,
                 cli_version: this.getCliVersion()
             },
+            client: detectClient(),
             metadata: metadata
         };
     }
@@ -132,7 +135,10 @@ class TrackingService {
                 name: trackingData.component_name,
                 path: componentPath,
                 category: category,
-                cliVersion: trackingData.environment?.cli_version || 'unknown'
+                cliVersion: trackingData.environment?.cli_version || 'unknown',
+                agent: trackingData.client?.agent ?? null,
+                entrypoint: trackingData.client?.entrypoint ?? null,
+                isTty: trackingData.client?.isTty ?? null
             };
 
             const response = await fetch('https://www.aitmpl.com/api/track-download-supabase', {
