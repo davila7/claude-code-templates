@@ -70,7 +70,7 @@ async function gitInit(directory: string) {
 ```
 
 ### Layer 4: Debug Instrumentation
-**Purpose:** Capture context for forensics
+**Purpose:** Record diagnostic details for later analysis
 
 ```typescript
 async function gitInit(directory: string) {

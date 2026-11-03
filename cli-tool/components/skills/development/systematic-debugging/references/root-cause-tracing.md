@@ -33,7 +33,7 @@ digraph when_to_use {
 
 ### 1. Observe the Symptom
 ```
-Error: git init failed in /Users/jesse/project/packages/core
+Error: git init failed in ~/project/packages/core
 ```
 
 ### 2. Find Immediate Cause
@@ -98,10 +98,10 @@ npm test 2>&1 | grep 'DEBUG git init'
 
 If something appears during tests but you don't know which test:
 
-Use the bisection script `find-polluter.sh` in this directory:
+Run `scripts/find-polluter.sh` from this skill against your project. Run it from the project root, because it searches the current directory for test files; it runs them one by one (set `TEST_CMD` if your runner is not `npm test`):
 
 ```bash
-./find-polluter.sh '.git' 'src/**/*.test.ts'
+bash .claude/skills/systematic-debugging/scripts/find-polluter.sh 'packages/core/.git' 'src/**/*.test.ts'
 ```
 
 Runs tests one-by-one, stops at first polluter. See script for usage.
