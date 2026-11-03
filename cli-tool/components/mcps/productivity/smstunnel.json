@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "smstunnel": {
+      "description": "Send texts (SMS) and sign-in codes from your own Android phone and your own number, check whether they went out, and read replies. Needs the SMSTunnel app from Google Play on the phone and SMSTUNNEL_API_KEY set in your environment (a key from dashboard.smstunnel.io: Apps → Add an app).",
+      "command": "npx",
+      "args": ["-y", "@narcisbodea/smstunnel-mcp"],
+      "env": {
+        "SMSTUNNEL_API_KEY": "${SMSTUNNEL_API_KEY}"
+      }
+    }
+  }
+}
