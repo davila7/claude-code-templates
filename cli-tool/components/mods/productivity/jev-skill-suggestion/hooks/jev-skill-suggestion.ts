@@ -259,6 +259,14 @@ export const register: Register = (on, options) => {
     if (!e.text.trim() || /^\/\S/.test(e.text.trim())) return next(e)
     if (e.origin && NOT_A_TASK.has(e.origin.kind)) return next(e)
 
+    // Ranking sees only this prompt, not the task a reply may refer back to.
+    // Keep attached prompts and short tasks such as "fix tests" eligible.
+    if (
+      !e.attachments?.length &&
+      (!/\p{L}/u.test(e.text) ||
+        /^(?:go|ok(?:ay)?|continue|yes|no|thanks|thank you|hi|hello)[.!?]*$/i.test(e.text.trim()))
+    ) return next(e)
+
     /** One request to the active backend, or null on timeout, error or a non-2xx. */
     const ask = async (
       prompt: string,

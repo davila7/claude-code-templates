@@ -43,30 +43,24 @@ jobs:
         id: audit
         run: |
           cd cli-tool
-          npm run security-audit:ci
+          npm run security-audit:ci -- --json --output="$RUNNER_TEMP/security-report.json"
         continue-on-error: true
-
-      - name: Generate JSON Report
-        if: always()
-        run: |
-          cd cli-tool
-          npm run security-audit:json
 
       - name: Upload Security Report
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: security-audit-report
-          path: cli-tool/security-report.json
+          path: ${{ runner.temp }}/security-report.json
           retention-days: 30
 
       - name: Comment PR with Results
-        if: github.event_name == 'pull_request' && always()
+        if: always() && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
         uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');
-            const reportPath = 'cli-tool/security-report.json';
+            const reportPath = require('path').join(process.env.RUNNER_TEMP, 'security-report.json');
 
             if (!fs.existsSync(reportPath)) {
               console.log('No security report found');
@@ -126,3 +120,6 @@ jobs:
               body: comment
             });
 
+      - name: Enforce Audit Outcome
+        if: always() && steps.audit.outcome == 'failure'
+        run: exit 1
