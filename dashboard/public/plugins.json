@@ -23597,5 +23597,26 @@
         "cohesivity-local"
       ]
     }
+  },
+  {
+    "slug": "testoptim-mcp",
+    "name": "TestOptim",
+    "author": "TestOptim-AI",
+    "description": "Connect Claude Code, Cursor, VS Code and other MCP clients to TestOptim to run AI QA tests and read the bugs they find.",
+    "github": "https://github.com/TestOptim-AI/testoptim-mcp",
+    "stars": 0,
+    "type": "plugin",
+    "tags": [
+      "skills"
+    ],
+    "contains": {
+      "skills": 1
+    },
+    "highlights": [
+      "Web UI: https://www.testoptim.com"
+    ],
+    "website": "https://www.testoptim.com/",
+    "marketplace_name": "testoptim",
+    "plugin_name": "testoptim"
   }
 ]
