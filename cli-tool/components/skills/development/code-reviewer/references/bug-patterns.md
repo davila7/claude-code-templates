@@ -59,7 +59,7 @@ Concrete patterns that reviews miss, grouped by area. Each is something to look 
 ## SQL and migrations
 
 - String-built queries anywhere user input reaches them. Values (including `LIMIT`/`OFFSET`) can be bound parameters; identifiers (the `ORDER BY` column, sort direction, table or column names) cannot, so whitelist them.
-- `ADD COLUMN ... NOT NULL` with no default fails on a table that has rows. On Postgres 11+ a constant default is cheap, but a volatile default (`clock_timestamp()`, `random()`, `gen_random_uuid()`; `now()` is stable and stays cheap) rewrites the table, and `SET NOT NULL` or a new constraint without `NOT VALID` scans it under an exclusive lock.
+- `ADD COLUMN ... NOT NULL` with no default fails on a table that has rows. On Postgres 11+ a constant default is cheap, but a volatile default (`clock_timestamp()`, `random()`, `gen_random_uuid()`; `now()` is stable and stays cheap) rewrites the table, and `SET NOT NULL` or a new constraint without `NOT VALID` scans every existing row while holding a lock that blocks writes (`ACCESS EXCLUSIVE` for `SET NOT NULL` and `CHECK`, `SHARE ROW EXCLUSIVE` for a foreign key).
 - Dropping or renaming a column the currently deployed code still reads (deploy order matters: expand, migrate, contract).
 - A new query on a column with no index, on a table that is large in production.
 - `UPDATE` or `DELETE` whose `WHERE` can be empty or always true.
