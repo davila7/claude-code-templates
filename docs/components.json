@@ -26174,6 +26174,38 @@
       }
     },
     {
+      "name": "empiriolabs",
+      "path": "devtools/empiriolabs.json",
+      "category": "devtools",
+      "type": "mcp",
+      "description": "Remote MCP server for the EmpirioLabs AI platform: 200+ models for chat, image, video, speech, music and 3D, plus web search, batches and async jobs. Usage is billed from prepaid account credits. Sign in with OAuth in the browser or send an Authorization: Bearer key.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "hash": "7ba04244a2095bc7",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-03T17:52:19Z"
+      }
+    },
+    {
       "name": "figma-dev-mode",
       "path": "devtools/figma-dev-mode.json",
       "category": "devtools",
