@@ -52059,11 +52059,11 @@
       "path": "development/code-reviewer",
       "category": "development",
       "type": "skill",
-      "description": "Comprehensive code review skill for TypeScript, JavaScript, Python, Swift, Kotlin, Go. Includes automated code analysis, best practice checking, security scanning, and review checklist generation. Use when reviewing pull requests, providing code feedback, identifying issues, or ensuring code quality standards.",
-      "author": "",
+      "description": "You MUST use this when asked to review code: a pull request, a branch, a commit, staged or uncommitted changes, or \"check this before I merge\". Scopes the review to the diff, reads the surrounding code, hunts for real bugs (correctness, security, data loss, concurrency, broken callers, missing tests), verifies every finding against the code before reporting it, and returns a short severity-ranked list with a concrete failure scenario for each. Use it for any language; not for writing new code or for style-only cleanups.",
+      "author": "claude-code-templates",
       "repo": "",
-      "version": "",
-      "license": "",
+      "version": "2.0.0",
+      "license": "MIT",
       "keywords": [],
       "downloads": 34041,
       "security": {
@@ -52075,42 +52075,18 @@
         "lastValidated": null
       },
       "references": [
-        "references/code_review_checklist.md",
-        "references/coding_standards.md",
-        "references/common_antipatterns.md",
-        "scripts/code_quality_checker.py",
-        "scripts/pr_analyzer.py",
-        "scripts/review_report_generator.py"
+        "references/bug-patterns.md"
       ],
       "skillspector": {
-        "score": 22,
-        "severity": "MEDIUM",
+        "score": 0,
+        "severity": "LOW",
         "recommendation": "CAUTION",
-        "issueCount": 2,
-        "analysis": "complete",
-        "findings": [
-          {
-            "id": "PE3",
-            "category": "Privilege Escalation",
-            "severity": "HIGH",
-            "title": "Credential Access",
-            "file": "SKILL.md",
-            "line": 126,
-            "count": 1
-          },
-          {
-            "id": "LP3",
-            "category": "MCP Least Privilege",
-            "severity": "MEDIUM",
-            "title": "Skill declares no tool scope ('permissions' or 'allowed-tools') but code capabilities were detected: file_write.",
-            "file": "SKILL.md",
-            "line": 1,
-            "count": 1
-          }
-        ],
-        "hash": "3bc76f0ebc97c5d1",
+        "issueCount": 0,
+        "analysis": "partial",
+        "findings": [],
+        "hash": "4a84c292f424ee5e",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:30:55Z"
+        "scannedAt": "2026-11-03T01:19:37Z"
       }
     },
     {
@@ -59801,11 +59777,11 @@
       "path": "development/systematic-debugging",
       "category": "development",
       "type": "skill",
-      "description": "Use when encountering any bug, test failure, or unexpected behavior, before proposing fixes",
-      "author": "",
+      "description": "You MUST use this whenever something is broken, before proposing or making any fix, including quick fixes and when the user is in a hurry: a bug, a failing or red test, a build or CI failure, a crash, a performance problem, unexpected behavior. Finds the root cause in four phases (investigate, compare, test one hypothesis, fix with a failing test first) instead of guessing, and stops after three failed fixes to question the design. Not for writing new features.",
+      "author": "Jesse Vincent (obra/superpowers), adapted by claude-code-templates",
       "repo": "",
-      "version": "",
-      "license": "",
+      "version": "2.0.0",
+      "license": "MIT",
       "keywords": [],
       "downloads": 2238,
       "security": {
@@ -59817,64 +59793,23 @@
         "lastValidated": null
       },
       "references": [
-        "CREATION-LOG.md",
-        "condition-based-waiting-example.ts",
-        "condition-based-waiting.md",
-        "defense-in-depth.md",
-        "find-polluter.sh",
-        "root-cause-tracing.md",
-        "test-academic.md",
-        "test-pressure-1.md",
-        "test-pressure-2.md",
-        "test-pressure-3.md"
+        "LICENSE",
+        "references/condition-based-waiting-example.ts",
+        "references/condition-based-waiting.md",
+        "references/defense-in-depth.md",
+        "references/root-cause-tracing.md",
+        "scripts/find-polluter.sh"
       ],
       "skillspector": {
-        "score": 77,
-        "severity": "HIGH",
-        "recommendation": "DO_NOT_INSTALL",
-        "issueCount": 5,
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "CAUTION",
+        "issueCount": 0,
         "analysis": "partial",
-        "findings": [
-          {
-            "id": "AE1",
-            "category": "analysis-evasion",
-            "severity": "HIGH",
-            "title": "Incomplete referenced artifact analysis",
-            "file": "SKILL.md",
-            "line": 284,
-            "count": 1
-          },
-          {
-            "id": "E4",
-            "category": "Data Exfiltration",
-            "severity": "HIGH",
-            "title": "Context Leakage",
-            "file": "defense-in-depth.md",
-            "line": 73,
-            "count": 1
-          },
-          {
-            "id": "PE3",
-            "category": "Privilege Escalation",
-            "severity": "HIGH",
-            "title": "Credential Access",
-            "file": "SKILL.md",
-            "line": 100,
-            "count": 2
-          },
-          {
-            "id": "EA4",
-            "category": "Excessive Agency",
-            "severity": "MEDIUM",
-            "title": "Unbounded Resource Access",
-            "file": "condition-based-waiting.md",
-            "line": 89,
-            "count": 1
-          }
-        ],
-        "hash": "75a8a456c6adf0b6",
+        "findings": [],
+        "hash": "b466b9ff148ea82e",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-03T01:19:37Z"
       }
     },
     {
