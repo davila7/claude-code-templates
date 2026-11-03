@@ -135,7 +135,7 @@ Includes the changes prepared as 1.30.1 (#1334), which was never published to np
   - Resolved `npx`/`claude` via their `.cmd` shims on Windows so removing
     `shell: true` does not break agent installation on win32.
 
-## [Unreleased]
+## Changes after 1.28.16 (not assigned to a release)
 
 ### Added
 - X/Twitter scraper skill (#390)
@@ -299,7 +299,7 @@ Includes the changes prepared as 1.30.1 (#1334), which was never published to np
 
 For changes prior to v1.25.0, see the [commit history](https://github.com/davila7/claude-code-templates/commits/main).
 
-[Unreleased]: https://github.com/davila7/claude-code-templates/compare/v1.28.16...HEAD
+[Unreleased]: https://github.com/davila7/claude-code-templates/compare/v1.31.0...HEAD
 [1.28.16]: https://github.com/davila7/claude-code-templates/compare/v1.28.14...v1.28.16
 [1.28.14]: https://github.com/davila7/claude-code-templates/compare/v1.28.3...v1.28.14
 [1.28.3]: https://github.com/davila7/claude-code-templates/compare/v1.27.0...v1.28.3
