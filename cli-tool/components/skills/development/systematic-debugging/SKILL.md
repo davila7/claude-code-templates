@@ -69,7 +69,7 @@ Before attempting ANY fix:
    # Layer 1: CI job
    echo "API_TOKEN in job: $([ -n "${API_TOKEN:-}" ] && echo SET || echo UNSET)"
    # Layer 2: build script
-   echo "config file: ${CONFIG_PATH:-<unset>}"; test -r "$CONFIG_PATH" && echo readable
+   echo "config file: ${CONFIG_PATH:-<unset>}"; test -r "${CONFIG_PATH:-}" && echo readable
    # Layer 3: the service at startup
    node -e 'console.log("NODE_ENV=", process.env.NODE_ENV)'
    ```
@@ -99,7 +99,10 @@ observed, not something you assumed.
 ## Phase 3: Hypothesis and testing
 
 1. **State one hypothesis:** "X is the root cause because Y." Be specific.
-2. **Test it with the smallest possible change.** One variable at a time.
+2. **Test it with the smallest possible experiment:** a log line, a
+   debugger check, or a temporary change. One variable at a time. Revert
+   any code change once it has answered the question; the real fix comes
+   in Phase 4, after the failing test.
 3. **Check the result.** Confirmed: go to Phase 4. Not confirmed: form a
    new hypothesis from what you learned. Do not stack another change on top
    of a failed one; revert it first.
