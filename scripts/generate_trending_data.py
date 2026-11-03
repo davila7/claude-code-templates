@@ -251,6 +251,57 @@ def keep_previous_trending_data(reason):
     """
     print(f"::warning::Trending data not refreshed ({reason}); keeping the previous docs/trending-data.json")
 
+def client_kind(download):
+    """
+    Who ran the CLI for one download row, from the columns of migration 004
+    (filled by CLI >= 1.32.0, cli-tool/src/agent-detection.js). Self-reported.
+    Returns 'agent', 'human', 'nonInteractive', or 'unknown' (older CLI).
+    """
+    is_tty = download.get('client_is_tty')
+    if is_tty is None:
+        return 'unknown'
+    if download.get('client_agent'):
+        return 'agent'
+    return 'human' if is_tty else 'nonInteractive'
+
+
+def build_client_split(rows, chart_dates):
+    """
+    Agent vs human split for the last 30 days. rows: (date 'YYYY-MM-DD', download).
+    Rows from CLIs that do not report (client_is_tty null) count only as 'unknown'.
+    """
+    kinds = ('agent', 'human', 'nonInteractive', 'unknown')
+    daily = {kind: defaultdict(int) for kind in kinds}
+    agents = Counter()
+    entrypoints = Counter()
+    first_reported = None
+    window = set(chart_dates)
+    for date, download in rows:
+        if date not in window:
+            continue
+        kind = client_kind(download)
+        daily[kind][date] += 1
+        if kind == 'unknown':
+            continue
+        if first_reported is None or date < first_reported:
+            first_reported = date
+        if kind == 'agent':
+            agents[download['client_agent']] += 1
+            if download.get('client_entrypoint'):
+                entrypoints[download['client_entrypoint']] += 1
+    totals = {kind: sum(daily[kind].values()) for kind in kinds}
+    return {
+        'since': first_reported,
+        'totals': totals,
+        'agents': [{'name': name, 'downloads': n} for name, n in agents.most_common(10)],
+        'entrypoints': [{'name': name, 'downloads': n} for name, n in entrypoints.most_common(8)],
+        'daily': {
+            'dates': chart_dates,
+            **{kind: [daily[kind].get(d, 0) for d in chart_dates] for kind in kinds},
+        },
+    }
+
+
 def process_downloads_data(downloads):
     """Process raw download data and generate trending structure"""
 
@@ -280,6 +331,9 @@ def process_downloads_data(downloads):
         'category': '',
         'name': ''
     })
+
+    # (date, row) for the last 30 days, for the agent vs human split
+    client_rows = []
 
     # Track unique countries
     unique_countries = set()
@@ -371,6 +425,7 @@ def process_downloads_data(downloads):
             download_date = download_time.strftime('%Y-%m-%d')
 
             chart_data[download_date][plural_type(component_type)] += 1
+            client_rows.append((download_date, download))
 
     # Debug: Print total counts by period
     print(f"📊 Total downloads by period:")
@@ -534,7 +589,8 @@ def process_downloads_data(downloads):
         "chartData": {
             "dates": chart_dates,
             "series": chart_series
-        }
+        },
+        "clientSplit": build_client_split(client_rows, chart_dates)
     }
     
     # Debug: Print what component types we found
