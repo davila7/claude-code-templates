@@ -20,6 +20,8 @@ const {
 const ogImageSized = ogImage.startsWith('/og/');
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+// Google Analytics 4 measurement ID (wrangler.toml [vars]); unset = no analytics.
+const gaId = import.meta.env.PUBLIC_GA_MEASUREMENT_ID ?? '';
 const ogImageURL = new URL(ogImage, Astro.site).href;
 
 const schemaData = JSON.stringify({
@@ -99,6 +101,18 @@ const schemaData = JSON.stringify({
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    {gaId && (
+      <>
+        <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}></script>
+        <script is:inline define:vars={{ gaId }}>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', gaId);
+        </script>
+      </>
+    )}
+
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
   </head>
   <body class="bg-[var(--color-surface-0)] text-[var(--color-text-primary)] antialiased transition-colors duration-200 overflow-x-hidden">
