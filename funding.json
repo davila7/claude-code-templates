@@ -66,6 +66,21 @@
         "channels": ["github-sponsors"]
       }
     ],
-    "history": []
+    "history": [
+      {
+        "year": 2025,
+        "income": 3000,
+        "expenses": 1300,
+        "currency": "USD",
+        "description": "Approximate, July to December 2025 (the project started in July). Income from project sponsors. Expenses: Cloudflare hosting and a Claude Max subscription used to build and maintain the project."
+      },
+      {
+        "year": 2026,
+        "income": 10000,
+        "expenses": 2100,
+        "currency": "USD",
+        "description": "Approximate, year to date (January to October 2026). Income from project sponsors. Expenses: Cloudflare hosting and a Claude Max subscription used to build and maintain the project."
+      }
+    ]
   }
 }
