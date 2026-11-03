@@ -13,7 +13,7 @@ set -e
 if [ $# -ne 2 ]; then
   echo "Usage: $0 <file_to_check> <test_pattern>"
   echo "Example: $0 'packages/core/.git' 'src/**/*.test.ts'"
-  exit 1
+  exit 2
 fi
 
 POLLUTION_CHECK="$1"
