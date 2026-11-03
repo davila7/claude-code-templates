@@ -50,7 +50,7 @@ Concrete patterns that reviews miss, grouped by area. Each is something to look 
 
 ## Java / Kotlin
 
-- `==` on `String` or boxed `Integer` outside the cache range.
+- Java: `==` on `String` or boxed `Integer` outside the cache range. (Kotlin `==` is value equality; `===` is reference equality.)
 - `equals` overridden without `hashCode`.
 - Kotlin: a Java platform type (`String!`) assigned to a non-null Kotlin type, which throws an NPE later, far from the call.
 - `Optional.get()` without `isPresent()`; a `stream()` with side effects.
@@ -59,7 +59,7 @@ Concrete patterns that reviews miss, grouped by area. Each is something to look 
 ## SQL and migrations
 
 - String-built queries anywhere user input reaches them. Values (including `LIMIT`/`OFFSET`) can be bound parameters; identifiers (the `ORDER BY` column, sort direction, table or column names) cannot, so whitelist them.
-- `ADD COLUMN ... NOT NULL` with no default fails on a table that has rows. On Postgres 11+ a constant default is cheap, but a volatile default (`now()`, `random()`) rewrites the table, and `SET NOT NULL` or a new constraint without `NOT VALID` scans it under an exclusive lock.
+- `ADD COLUMN ... NOT NULL` with no default fails on a table that has rows. On Postgres 11+ a constant default is cheap, but a volatile default (`clock_timestamp()`, `random()`, `gen_random_uuid()`; `now()` is stable and stays cheap) rewrites the table, and `SET NOT NULL` or a new constraint without `NOT VALID` scans it under an exclusive lock.
 - Dropping or renaming a column the currently deployed code still reads (deploy order matters: expand, migrate, contract).
 - A new query on a column with no index, on a table that is large in production.
 - `UPDATE` or `DELETE` whose `WHERE` can be empty or always true.

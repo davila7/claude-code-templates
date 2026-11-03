@@ -29,6 +29,7 @@ Work out exactly which change is under review before reading any code.
 Then:
 
 - Run `git diff --stat` on the same range (for a PR, `gh pr view <n> --json files,additions,deletions`) to see the size and the files touched.
+- Make sure everything you read, grep and run is the reviewed version. If the working tree is on another branch, read files with `git show <rev>:<path>` and grep with `git grep <pattern> <rev>`, and run tests in a separate worktree (`git worktree add <tmp-dir> <rev>`, removed afterwards). Never switch, stash or reset the user's checkout. For a staged-only review, remember that unstaged edits are in the working tree but not in the change.
 - Skip generated, vendored and lock files (`*.lock`, `dist/`, minified bundles, snapshots) unless the change is in them on purpose.
 - If the diff is very large (roughly 1,500+ changed lines), say so and review the riskiest files first: anything touching auth, money, persistence, migrations, concurrency, public APIs, or input parsing.
 
