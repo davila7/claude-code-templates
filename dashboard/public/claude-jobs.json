@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-11-03T02:11:42.055564+00:00",
-  "totalJobs": 529,
+  "lastUpdated": "2026-11-03T03:07:59.192853+00:00",
+  "totalJobs": 539,
   "sources": [
     "Anthropic",
     "Ashby",
@@ -10,6 +10,86 @@
     "RemoteOK"
   ],
   "jobs": [
+    {
+      "id": "as-temporal-dfa01032-82b4-443f-bfdc-1a20bd976b9c",
+      "company": "Temporal",
+      "position": "Senior Staff Software Engineer - Builder Platform",
+      "location": "United States (Remote) · Canada (Remote)",
+      "locations": [
+        "United States (Remote)",
+        "Canada (Remote)"
+      ],
+      "remote": true,
+      "salary": "$208,000 – $341,250 • Offers Equity • Multiple Ranges",
+      "description": "ROLE SUMMARY\n\nJoin our Builder Platform Team as a Senior Staff Software Engineer. Our mission is to empower a company of builders by delivering a frictionless, standardized, and governed platform for agents, workflows, and core engineering tools. We operate Temporal as customer zero: we partner...",
+      "applyUrl": "https://jobs.ashbyhq.com/temporal/dfa01032-82b4-443f-bfdc-1a20bd976b9c",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/temporal/dfa01032-82b4-443f-bfdc-1a20bd976b9c",
+      "postedAt": "2026-11-03T02:24:55.806+00:00",
+      "tags": [
+        "Claude Code",
+        "TypeScript",
+        "JavaScript",
+        "Python",
+        "Go",
+        "Java",
+        "MCP"
+      ],
+      "companyIcon": "https://temporal.io/favicon.ico"
+    },
+    {
+      "id": "as-temporal-a1e22a53-a8c2-410d-9385-814a488dd6c1",
+      "company": "Temporal",
+      "position": "Staff Software Engineer - Builder Platform",
+      "location": "United States (Remote) · Canada (Remote)",
+      "locations": [
+        "United States (Remote)",
+        "Canada (Remote)"
+      ],
+      "remote": true,
+      "salary": "$169,600 – $278,250 • Offers Equity • Multiple Ranges",
+      "description": "ROLE SUMMARY\n\nJoin our Builder Platform Team as a Staff Software Engineer. Our mission is to empower a company of builders by delivering a frictionless, standardized, and governed platform for agents, workflows, and core engineering tools. We operate Temporal as customer zero: we partner directly...",
+      "applyUrl": "https://jobs.ashbyhq.com/temporal/a1e22a53-a8c2-410d-9385-814a488dd6c1",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/temporal/a1e22a53-a8c2-410d-9385-814a488dd6c1",
+      "postedAt": "2026-11-03T02:22:51.259+00:00",
+      "tags": [
+        "Claude Code",
+        "TypeScript",
+        "JavaScript",
+        "Python",
+        "Go",
+        "Java",
+        "MCP"
+      ],
+      "companyIcon": "https://temporal.io/favicon.ico"
+    },
+    {
+      "id": "as-temporal-86db065f-0f55-4985-b0f1-ce6a5e75f622",
+      "company": "Temporal",
+      "position": "Senior Software Engineer - Builder Platform",
+      "location": "United States (Remote)",
+      "locations": [
+        "United States (Remote)"
+      ],
+      "remote": true,
+      "salary": "$140.8K – $231K • Offers Equity • Multiple Ranges",
+      "description": "ROLE SUMMARY\n\nJoin our Builder Platform Team as a Senior Software Engineer. Our mission is to empower a company of builders by delivering a frictionless, standardized, and governed platform for agents, workflows, and core engineering tools. We operate Temporal as customer zero: we partner directly...",
+      "applyUrl": "https://jobs.ashbyhq.com/temporal/86db065f-0f55-4985-b0f1-ce6a5e75f622",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/temporal/86db065f-0f55-4985-b0f1-ce6a5e75f622",
+      "postedAt": "2026-11-03T02:19:42.315+00:00",
+      "tags": [
+        "Claude Code",
+        "TypeScript",
+        "JavaScript",
+        "Python",
+        "Go",
+        "Java",
+        "MCP"
+      ],
+      "companyIcon": "https://temporal.io/favicon.ico"
+    },
     {
       "id": "as-Bevaya-148e370a-e2bd-48fb-a783-6a535088cbe3",
       "company": "Bevaya",
@@ -1516,19 +1596,19 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-affirm-7829429003",
+      "id": "gr-affirm-7829427003",
       "company": "Affirm",
       "position": "Staff Software Engineer, Mobile (App Infrastructure)",
-      "location": "Remote Canada",
+      "location": "Remote US",
       "locations": [
-        "Remote Canada"
+        "Remote US"
       ],
       "remote": true,
-      "salary": "$181,000 - $241,000",
+      "salary": "$230,000 - $290,000",
       "description": "At Affirm, we exist for the moments that matter—giving people a clear, predictable way to pay over time, with no hidden fees, no surprises, and no tradeoffs on what matters most. App Infrastructure is the team behind Affirm's shared mobile app infrastructure — the platform every other mobile...",
-      "applyUrl": "https://job-boards.greenhouse.io/affirm/jobs/7829429003",
+      "applyUrl": "https://job-boards.greenhouse.io/affirm/jobs/7829427003",
       "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/affirm/jobs/7829429003",
+      "sourceUrl": "https://job-boards.greenhouse.io/affirm/jobs/7829427003",
       "postedAt": "2026-10-30T17:15:12-04:00",
       "tags": [
         "Claude Code",
@@ -2209,19 +2289,19 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-samsara-7917475",
+      "id": "gr-samsara-8281491",
       "company": "Samsara",
       "position": "Senior AI Data & Analytics Engineer II",
-      "location": "Remote - SF Bay Area",
+      "location": "Remote - MA",
       "locations": [
-        "Remote - SF Bay Area"
+        "Remote - MA"
       ],
       "remote": true,
       "salary": "",
       "description": "Who we are Samsara (NYSE: IOT) is the pioneer of the Connected Operations™ Cloud, which is a platform that enables organizations that depend on physical operations to harness Internet of Things (IoT) data to develop actionable insights and improve their operations. At Samsara, we are helping...",
-      "applyUrl": "https://www.samsara.com/company/careers/roles/7917475?gh_jid=7917475",
+      "applyUrl": "https://www.samsara.com/company/careers/roles/8281491?gh_jid=8281491",
       "source": "Greenhouse",
-      "sourceUrl": "https://www.samsara.com/company/careers/roles/7917475?gh_jid=7917475",
+      "sourceUrl": "https://www.samsara.com/company/careers/roles/8281491?gh_jid=8281491",
       "postedAt": "2026-10-30T11:22:26-04:00",
       "tags": [
         "Claude Code",
@@ -2322,19 +2402,19 @@
       "companyIcon": "https://gusto.com/favicon.ico"
     },
     {
-      "id": "gr-alphasense-8860806002",
+      "id": "gr-alphasense-8887127002",
       "company": "AlphaSense",
       "position": "Product Manager, New Content Initiatives and Analysis",
-      "location": "Remote - United States",
+      "location": "Remote - United Kingdom",
       "locations": [
-        "Remote - United States"
+        "Remote - United Kingdom"
       ],
       "remote": true,
       "salary": "",
       "description": "About AlphaSense: AlphaSense is the AI platform redefining market intelligence and workflow orchestration, trusted by thousands of leading organizations to drive faster, more confident decisions in business and finance. The platform combines domain-specific AI with a vast content universe of over...",
-      "applyUrl": "https://job-boards.greenhouse.io/alphasense/jobs/8860806002",
+      "applyUrl": "https://job-boards.greenhouse.io/alphasense/jobs/8887127002",
       "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/alphasense/jobs/8860806002",
+      "sourceUrl": "https://job-boards.greenhouse.io/alphasense/jobs/8887127002",
       "postedAt": "2026-10-30T09:54:20-04:00",
       "tags": [
         "Claude Code"
@@ -2620,19 +2700,19 @@
       "companyIcon": "https://fivetran.com/favicon.ico"
     },
     {
-      "id": "gr-fivetran-8003725003",
+      "id": "gr-fivetran-7980977003",
       "company": "Fivetran",
       "position": "Senior Software Engineer - Orchestration",
-      "location": "Oakland, California, United States",
+      "location": "Ontario, Canada",
       "locations": [
-        "Oakland, California, United States"
+        "Ontario, Canada"
       ],
       "remote": false,
       "salary": "",
       "description": "From Fivetran’s founding until now, our mission has remained the same: to make access to data as simple and reliable as electricity. With Fivetran, customer data arrives in their warehouses, canonical and ready to query, with no engineering or maintenance required. We’re proud that more...",
-      "applyUrl": "https://www.fivetran.com/careers/job?gh_jid=8003725003",
+      "applyUrl": "https://www.fivetran.com/careers/job?gh_jid=7980977003",
       "source": "Greenhouse",
-      "sourceUrl": "https://www.fivetran.com/careers/job?gh_jid=8003725003",
+      "sourceUrl": "https://www.fivetran.com/careers/job?gh_jid=7980977003",
       "postedAt": "2026-10-30T08:53:34-04:00",
       "tags": [
         "Claude Code",
@@ -2649,19 +2729,19 @@
       "companyIcon": "https://fivetran.com/favicon.ico"
     },
     {
-      "id": "gr-fivetran-7975857003",
+      "id": "gr-fivetran-7918612003",
       "company": "Fivetran",
       "position": "Senior Data Analyst, People",
-      "location": "USA - New York (dbt)",
+      "location": "Oakland, California, United States, AMER",
       "locations": [
-        "USA - New York (dbt)"
+        "Oakland, California, United States, AMER"
       ],
       "remote": false,
       "salary": "",
       "description": "From Fivetran’s founding until now, our mission has remained the same: to make access to data as simple and reliable as electricity. With Fivetran, customer data arrives in their warehouses, canonical and ready to query, with no engineering or maintenance required. We’re proud that more...",
-      "applyUrl": "https://www.fivetran.com/careers/job?gh_jid=7975857003",
+      "applyUrl": "https://www.fivetran.com/careers/job?gh_jid=7918612003",
       "source": "Greenhouse",
-      "sourceUrl": "https://www.fivetran.com/careers/job?gh_jid=7975857003",
+      "sourceUrl": "https://www.fivetran.com/careers/job?gh_jid=7918612003",
       "postedAt": "2026-10-30T08:53:18-04:00",
       "tags": [
         "Claude Code"
@@ -2739,6 +2819,34 @@
         "Go",
         "Cursor",
         "Copilot"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "le-baselane-89a1a0c9-ce0b-4c0e-b6a7-2ef437071256",
+      "company": "Baselane",
+      "position": "QA Lead",
+      "location": "Remote Role",
+      "locations": [
+        "Remote Role"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "About Baselane\n \nBaselane is a rapidly growing banking and financial management platform for individual landlords and real estate investors. We are backed by leading FinTech investors, including Activant Capital, Collaborative Fund, Conversion Capital, Diagram Ventures, ThomVest, and many FinTech...",
+      "applyUrl": "https://jobs.lever.co/baselane/89a1a0c9-ce0b-4c0e-b6a7-2ef437071256",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/baselane/89a1a0c9-ce0b-4c0e-b6a7-2ef437071256",
+      "postedAt": "2026-10-29T21:25:51.631000+00:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "TypeScript",
+        "JavaScript",
+        "Node.js",
+        "PostgreSQL",
+        "AWS",
+        "Cursor",
+        "GraphQL"
       ],
       "companyIcon": ""
     },
@@ -4832,6 +4940,47 @@
         "Cursor",
         "Copilot",
         "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-nous-38dad14c-1f51-452b-96c1-567e71ad84fe",
+      "company": "Nous",
+      "position": "Product Manager",
+      "location": "Nous HQ",
+      "locations": [
+        "Nous HQ"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "ABOUT NOUS\n\nNous is a household AI agent. It takes over the bills and admin people don't have time for and acts for them: switching energy, buying insurance, cancelling forgotten subscriptions, managing the family calendar. Nearly 250,000 UK households have signed up, and another joins every...",
+      "applyUrl": "https://jobs.ashbyhq.com/nous/38dad14c-1f51-452b-96c1-567e71ad84fe",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/nous/38dad14c-1f51-452b-96c1-567e71ad84fe",
+      "postedAt": "2026-10-25T19:55:55.910+00:00",
+      "tags": [
+        "Claude Code",
+        "Go"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-nous-c41f78fd-1689-41aa-a806-b4db084752bd",
+      "company": "Nous",
+      "position": "Chief of Staff",
+      "location": "Nous HQ",
+      "locations": [
+        "Nous HQ"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "ABOUT NOUS\n\nNous is a household AI agent. It takes over the bills and admin people don't have time for and acts for them: switching energy, buying insurance, cancelling forgotten subscriptions, managing the family calendar. Nearly 250,000 UK households have signed up, and another joins every...",
+      "applyUrl": "https://jobs.ashbyhq.com/nous/c41f78fd-1689-41aa-a806-b4db084752bd",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/nous/c41f78fd-1689-41aa-a806-b4db084752bd",
+      "postedAt": "2026-10-25T19:55:26.548+00:00",
+      "tags": [
+        "Claude Code"
       ],
       "companyIcon": ""
     },
@@ -11434,19 +11583,19 @@
       "companyIcon": "https://baseten.co/favicon.ico"
     },
     {
-      "id": "gr-instacart-8084089",
+      "id": "gr-instacart-8084090",
       "company": "Instacart",
       "position": "Staff Experience Designer",
-      "location": "United States - Remote",
+      "location": "Canada - Remote (ON, AB, BC, or NS Only)",
       "locations": [
-        "United States - Remote"
+        "Canada - Remote (ON, AB, BC, or NS Only)"
       ],
       "remote": true,
       "salary": "",
       "description": "We're transforming the grocery industry At Instacart, we invite the world to share love through food because we believe everyone should have access to the food they love and more time to enjoy it together. Where others see a simple need for grocery delivery, we see exciting complexity and endless...",
-      "applyUrl": "https://instacart.careers/job/?gh_jid=8084089",
+      "applyUrl": "https://instacart.careers/job/?gh_jid=8084090",
       "source": "Greenhouse",
-      "sourceUrl": "https://instacart.careers/job/?gh_jid=8084089",
+      "sourceUrl": "https://instacart.careers/job/?gh_jid=8084090",
       "postedAt": "2026-08-24T13:15:00-04:00",
       "tags": [
         "Claude Code",
@@ -12113,6 +12262,27 @@
       "companyIcon": ""
     },
     {
+      "id": "as-nous-1f7dee70-3fc1-441a-b868-f27454ecf9d6",
+      "company": "Nous",
+      "position": "Product Builder",
+      "location": "Nous HQ",
+      "locations": [
+        "Nous HQ"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "ABOUT NOUS\n\nNous is a household AI agent. It takes over the bills and admin people don't have time for and acts for them: switching energy, buying insurance, cancelling forgotten subscriptions, managing the family calendar. Nearly 250,000 UK households have signed up, and another joins every...",
+      "applyUrl": "https://jobs.ashbyhq.com/nous/1f7dee70-3fc1-441a-b868-f27454ecf9d6",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/nous/1f7dee70-3fc1-441a-b868-f27454ecf9d6",
+      "postedAt": "2026-07-31T13:29:19.452+00:00",
+      "tags": [
+        "Claude Code",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "as-glia-42aa65ae-8e98-4669-9862-50441efaee3d",
       "company": "Glia",
       "position": "Senior Security Engineer (Team Lead)",
@@ -12228,6 +12398,31 @@
         "Cursor"
       ],
       "companyIcon": "https://sierra.ai/favicon.ico"
+    },
+    {
+      "id": "as-nous-c4e7fba2-b3bf-460f-8389-cddb7e8182f9",
+      "company": "Nous",
+      "position": "Product Engineer (all levels)",
+      "location": "Nous HQ",
+      "locations": [
+        "Nous HQ"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "👋 Hi, I’m Sina, CTO at Nous. \n\nI’ve spent my entire career in startups, starting my first company when I was a teenager, and navigated many 0→1 journeys (including starting the largest social network of its time in my home country).\n\nThe common thread that led me here is finding complexity that...",
+      "applyUrl": "https://jobs.ashbyhq.com/nous/c4e7fba2-b3bf-460f-8389-cddb7e8182f9",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/nous/c4e7fba2-b3bf-460f-8389-cddb7e8182f9",
+      "postedAt": "2026-07-20T12:10:21.176+00:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "TypeScript",
+        "PostgreSQL",
+        "AWS",
+        "Rails"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "as-langchain-6f50988c-8e95-4a68-aeea-a94872651ff7",
@@ -12560,19 +12755,19 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-brex-8463702002",
+      "id": "gr-brex-8463703002",
       "company": "Brex",
       "position": "Data Analyst II",
-      "location": "New York, New York, United States",
+      "location": "São Paulo, São Paulo, Brazil",
       "locations": [
-        "New York, New York, United States"
+        "São Paulo, São Paulo, Brazil"
       ],
       "remote": false,
-      "salary": "$93,600 - $117,000",
+      "salary": "",
       "description": "Why join us Brex is the intelligent finance platform that enables companies to spend smarter and move faster in more than 200 markets. By combining global corporate cards and banking with intuitive spend management, bill pay, and travel software, Brex enables founders and finance teams to...",
-      "applyUrl": "https://www.brex.com/careers/8463702002?gh_jid=8463702002",
+      "applyUrl": "https://www.brex.com/careers/8463703002?gh_jid=8463703002",
       "source": "Greenhouse",
-      "sourceUrl": "https://www.brex.com/careers/8463702002?gh_jid=8463702002",
+      "sourceUrl": "https://www.brex.com/careers/8463703002?gh_jid=8463703002",
       "postedAt": "2026-06-10T13:59:16-04:00",
       "tags": [
         "Claude Code",
@@ -12834,6 +13029,31 @@
       "companyIcon": "https://ramp.com/favicon.ico"
     },
     {
+      "id": "as-nous-abeb30e7-30c5-4e46-93f3-7bf51407b066",
+      "company": "Nous",
+      "position": "Staff Product Engineer",
+      "location": "Nous HQ",
+      "locations": [
+        "Nous HQ"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "ABOUT NOUS\n\nNous is a household AI agent. It takes over the bills and admin people don't have time for and acts for them: switching energy, buying insurance, cancelling forgotten subscriptions, managing the family calendar. Nearly 250,000 UK households have signed up, and another joins every...",
+      "applyUrl": "https://jobs.ashbyhq.com/nous/abeb30e7-30c5-4e46-93f3-7bf51407b066",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/nous/abeb30e7-30c5-4e46-93f3-7bf51407b066",
+      "postedAt": "2026-01-12T09:58:28.899+00:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "TypeScript",
+        "PostgreSQL",
+        "AWS",
+        "Rails"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "as-etude-cfa1bfa4-e3de-4024-8ecb-431c4dc8418b",
       "company": "Etude",
       "position": "Full Stack Software Engineer",
@@ -12886,6 +13106,34 @@
         "Redis"
       ],
       "companyIcon": "https://deepnote.com/favicon.ico"
+    },
+    {
+      "id": "le-baselane-970d4d23-0316-46e6-84ca-216e4f9a08e8",
+      "company": "Baselane",
+      "position": "Senior Full Stack Engineer",
+      "location": "Toronto",
+      "locations": [
+        "Toronto"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "About Baselane\n \nBaselane is a rapidly growing banking and financial management platform for individual landlords and real estate investors. We are backed by leading FinTech investors, including Activant Capital, Collaborative Fund, Conversion Capital, Diagram Ventures, ThomVest, and many FinTech...",
+      "applyUrl": "https://jobs.lever.co/baselane/970d4d23-0316-46e6-84ca-216e4f9a08e8",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/baselane/970d4d23-0316-46e6-84ca-216e4f9a08e8",
+      "postedAt": "2023-11-10T20:06:24.289000+00:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "TypeScript",
+        "JavaScript",
+        "Node.js",
+        "PostgreSQL",
+        "AWS",
+        "Cursor",
+        "GraphQL"
+      ],
+      "companyIcon": ""
     }
   ]
 }

@@ -1,11 +1,11 @@
 {
-  "lastUpdated": "2026-11-03T02:11:06.239775+00:00Z",
+  "lastUpdated": "2026-11-03T03:07:07.805189+00:00Z",
   "globalStats": {
     "totalComponents": 2194,
-    "totalDownloads": 1664448,
-    "monthlyDownloads": 93565,
-    "weeklyDownloads": 22422,
-    "todayDownloads": 161,
+    "totalDownloads": 1664489,
+    "monthlyDownloads": 93606,
+    "weeklyDownloads": 22463,
+    "todayDownloads": 202,
     "totalCountries": 194
   },
   "topCountries": [
@@ -13,14 +13,14 @@
       "code": "US",
       "name": "United States",
       "flag": "🇺🇸",
-      "downloads": 199591,
+      "downloads": 199593,
       "percentage": 12.0
     },
     {
       "code": "BR",
       "name": "Brazil",
       "flag": "🇧🇷",
-      "downloads": 88671,
+      "downloads": 88674,
       "percentage": 5.3
     },
     {
@@ -262,19 +262,19 @@
         "id": "agent-backend-architect",
         "name": "backend-architect",
         "category": "development-team",
-        "downloadsToday": 5,
-        "downloadsWeek": 166,
-        "downloadsMonth": 723,
-        "downloadsTotal": 23895
+        "downloadsToday": 6,
+        "downloadsWeek": 167,
+        "downloadsMonth": 724,
+        "downloadsTotal": 23896
       },
       {
         "id": "agent-fullstack-developer",
         "name": "fullstack-developer",
         "category": "development-team",
-        "downloadsToday": 2,
-        "downloadsWeek": 139,
-        "downloadsMonth": 621,
-        "downloadsTotal": 18320
+        "downloadsToday": 3,
+        "downloadsWeek": 140,
+        "downloadsMonth": 622,
+        "downloadsTotal": 18321
       },
       {
         "id": "agent-prompt-engineer",
@@ -603,91 +603,91 @@
         "id": "skill-frontend-design",
         "name": "frontend-design",
         "category": "creative-design",
-        "downloadsToday": 9,
-        "downloadsWeek": 987,
-        "downloadsMonth": 3982,
-        "downloadsTotal": 52412
+        "downloadsToday": 13,
+        "downloadsWeek": 991,
+        "downloadsMonth": 3986,
+        "downloadsTotal": 52416
       },
       {
         "id": "skill-ui-ux-pro-max",
         "name": "ui-ux-pro-max",
         "category": "creative-design",
-        "downloadsToday": 4,
-        "downloadsWeek": 737,
-        "downloadsMonth": 2900,
-        "downloadsTotal": 30004
+        "downloadsToday": 8,
+        "downloadsWeek": 741,
+        "downloadsMonth": 2904,
+        "downloadsTotal": 30008
       },
       {
         "id": "skill-senior-frontend",
         "name": "senior-frontend",
         "category": "development",
-        "downloadsToday": 1,
-        "downloadsWeek": 519,
-        "downloadsMonth": 2109,
-        "downloadsTotal": 31001
+        "downloadsToday": 3,
+        "downloadsWeek": 521,
+        "downloadsMonth": 2111,
+        "downloadsTotal": 31003
       },
       {
         "id": "skill-code-reviewer",
         "name": "code-reviewer",
         "category": "development",
-        "downloadsToday": 3,
-        "downloadsWeek": 449,
-        "downloadsMonth": 2034,
-        "downloadsTotal": 34104
-      },
-      {
-        "id": "skill-senior-backend",
-        "name": "senior-backend",
-        "category": "development",
-        "downloadsToday": 2,
-        "downloadsWeek": 410,
-        "downloadsMonth": 1680,
-        "downloadsTotal": 26637
+        "downloadsToday": 4,
+        "downloadsWeek": 450,
+        "downloadsMonth": 2035,
+        "downloadsTotal": 34105
       },
       {
         "id": "skill-brainstorming",
         "name": "brainstorming",
         "category": "development",
-        "downloadsToday": 9,
-        "downloadsWeek": 410,
-        "downloadsMonth": 996,
-        "downloadsTotal": 11714
+        "downloadsToday": 12,
+        "downloadsWeek": 413,
+        "downloadsMonth": 999,
+        "downloadsTotal": 11717
+      },
+      {
+        "id": "skill-senior-backend",
+        "name": "senior-backend",
+        "category": "development",
+        "downloadsToday": 4,
+        "downloadsWeek": 412,
+        "downloadsMonth": 1682,
+        "downloadsTotal": 26639
       },
       {
         "id": "skill-senior-architect",
         "name": "senior-architect",
         "category": "development",
-        "downloadsToday": 1,
-        "downloadsWeek": 309,
-        "downloadsMonth": 1288,
-        "downloadsTotal": 21660
+        "downloadsToday": 2,
+        "downloadsWeek": 310,
+        "downloadsMonth": 1289,
+        "downloadsTotal": 21661
       },
       {
         "id": "skill-ui-design-system",
         "name": "ui-design-system",
         "category": "creative-design",
-        "downloadsToday": 1,
-        "downloadsWeek": 307,
-        "downloadsMonth": 1122,
-        "downloadsTotal": 17424
+        "downloadsToday": 3,
+        "downloadsWeek": 309,
+        "downloadsMonth": 1124,
+        "downloadsTotal": 17426
       },
       {
         "id": "skill-react-best-practices",
         "name": "react-best-practices",
-        "category": "web-development",
-        "downloadsToday": 4,
-        "downloadsWeek": 304,
-        "downloadsMonth": 1113,
-        "downloadsTotal": 18541
+        "category": "development",
+        "downloadsToday": 6,
+        "downloadsWeek": 306,
+        "downloadsMonth": 1115,
+        "downloadsTotal": 18543
       },
       {
         "id": "skill-seo-optimizer",
         "name": "seo-optimizer",
         "category": "business-marketing",
-        "downloadsToday": 1,
-        "downloadsWeek": 249,
-        "downloadsMonth": 1026,
-        "downloadsTotal": 11760
+        "downloadsToday": 2,
+        "downloadsWeek": 250,
+        "downloadsMonth": 1027,
+        "downloadsTotal": 11761
       }
     ],
     "mods": [
@@ -758,10 +758,10 @@
         "id": "mod-secret-redactor",
         "name": "secret-redactor",
         "category": "security",
-        "downloadsToday": 1,
-        "downloadsWeek": 18,
-        "downloadsMonth": 87,
-        "downloadsTotal": 125
+        "downloadsToday": 2,
+        "downloadsWeek": 19,
+        "downloadsMonth": 88,
+        "downloadsTotal": 126
       },
       {
         "id": "mod-pet",
@@ -879,73 +879,73 @@
         "id": "skill-frontend-design",
         "name": "frontend-design",
         "category": "creative-design",
-        "downloadsToday": 9,
-        "downloadsWeek": 987,
-        "downloadsMonth": 3982,
-        "downloadsTotal": 52412
+        "downloadsToday": 13,
+        "downloadsWeek": 991,
+        "downloadsMonth": 3986,
+        "downloadsTotal": 52416
       },
       {
         "id": "skill-ui-ux-pro-max",
         "name": "ui-ux-pro-max",
         "category": "creative-design",
-        "downloadsToday": 4,
-        "downloadsWeek": 737,
-        "downloadsMonth": 2900,
-        "downloadsTotal": 30004
+        "downloadsToday": 8,
+        "downloadsWeek": 741,
+        "downloadsMonth": 2904,
+        "downloadsTotal": 30008
       },
       {
         "id": "skill-senior-frontend",
         "name": "senior-frontend",
         "category": "development",
-        "downloadsToday": 1,
-        "downloadsWeek": 519,
-        "downloadsMonth": 2109,
-        "downloadsTotal": 31001
+        "downloadsToday": 3,
+        "downloadsWeek": 521,
+        "downloadsMonth": 2111,
+        "downloadsTotal": 31003
       },
       {
         "id": "skill-code-reviewer",
         "name": "code-reviewer",
         "category": "development",
-        "downloadsToday": 3,
-        "downloadsWeek": 449,
-        "downloadsMonth": 2034,
-        "downloadsTotal": 34104
-      },
-      {
-        "id": "skill-senior-backend",
-        "name": "senior-backend",
-        "category": "development",
-        "downloadsToday": 2,
-        "downloadsWeek": 410,
-        "downloadsMonth": 1680,
-        "downloadsTotal": 26637
+        "downloadsToday": 4,
+        "downloadsWeek": 450,
+        "downloadsMonth": 2035,
+        "downloadsTotal": 34105
       },
       {
         "id": "skill-brainstorming",
         "name": "brainstorming",
         "category": "development",
-        "downloadsToday": 9,
-        "downloadsWeek": 410,
-        "downloadsMonth": 996,
-        "downloadsTotal": 11714
+        "downloadsToday": 12,
+        "downloadsWeek": 413,
+        "downloadsMonth": 999,
+        "downloadsTotal": 11717
+      },
+      {
+        "id": "skill-senior-backend",
+        "name": "senior-backend",
+        "category": "development",
+        "downloadsToday": 4,
+        "downloadsWeek": 412,
+        "downloadsMonth": 1682,
+        "downloadsTotal": 26639
       },
       {
         "id": "skill-senior-architect",
         "name": "senior-architect",
         "category": "development",
-        "downloadsToday": 1,
-        "downloadsWeek": 309,
-        "downloadsMonth": 1288,
-        "downloadsTotal": 21660
+        "downloadsToday": 2,
+        "downloadsWeek": 310,
+        "downloadsMonth": 1289,
+        "downloadsTotal": 21661
       },
       {
         "id": "skill-ui-design-system",
         "name": "ui-design-system",
         "category": "creative-design",
-        "downloadsToday": 1,
-        "downloadsWeek": 307,
-        "downloadsMonth": 1122,
-        "downloadsTotal": 17424
+        "downloadsToday": 3,
+        "downloadsWeek": 309,
+        "downloadsMonth": 1124,
+        "downloadsTotal": 17426
       },
       {
         "id": "agent-frontend-developer",
@@ -959,11 +959,11 @@
       {
         "id": "skill-react-best-practices",
         "name": "react-best-practices",
-        "category": "web-development",
-        "downloadsToday": 4,
-        "downloadsWeek": 304,
-        "downloadsMonth": 1113,
-        "downloadsTotal": 18541
+        "category": "development",
+        "downloadsToday": 6,
+        "downloadsWeek": 306,
+        "downloadsMonth": 1115,
+        "downloadsTotal": 18543
       }
     ]
   },
@@ -1063,7 +1063,7 @@
         24670,
         26128,
         27034,
-        27095
+        27100
       ],
       "settings": [
         113,
@@ -1191,7 +1191,7 @@
         39352,
         41369,
         42578,
-        42649
+        42684
       ],
       "templates": [
         6,
@@ -1287,7 +1287,7 @@
         5586,
         5648,
         5762,
-        5775
+        5776
       ]
     }
   }
