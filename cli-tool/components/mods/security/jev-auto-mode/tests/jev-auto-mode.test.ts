@@ -13,6 +13,8 @@ type World = {
   files: Record<string, string>
   surfaces: number
   label: string
+  // what the engine's own permission check answers for anything but a read
+  engine: 'allow' | 'ask'
   ran: string[]
   logs: string[]
 }
@@ -42,7 +44,13 @@ function fakeEngine(on: On, world: World) {
     world.ran.push(e.tool)
     return { result: 'ran', text: 'ran' } as never
   })
-  on('tool.check', async () => ({ decision: 'ask' as const, reason: 'the engine would ask' }))
+  // Since 2.1.307 the harness runs the permission check inside `$.tool.call`, after the plugin's
+  // tool.call hook, and an ask nobody can answer there is a deny. Reads pass, as in a real session.
+  on('tool.check', async ($, e) =>
+    ['Read', 'Glob', 'Grep'].includes(e.tool) || world.engine === 'allow'
+      ? { decision: 'allow' as const }
+      : { decision: 'ask' as const, reason: 'the engine would ask' },
+  )
   on('command.run', async ($, e) => {
     world.ran.push(`/${e.command}`)
     return { text: `ran /${e.command}` }
@@ -56,10 +64,14 @@ function fakeEngine(on: On, world: World) {
   on('ui.toast', () => ({ value: undefined }))
 }
 
+// what a call comes back with when the engine's check asked and nobody could answer
+const ENGINE_DENIED = 'Permission to use'
+
 const world = (files: Record<string, unknown>, extra: Partial<World> = {}): World => ({
   files: Object.fromEntries(Object.entries(files).map(([k, v]) => [k, typeof v === 'string' ? v : JSON.stringify(v)])),
   surfaces: 1,
   label: 'allow',
+  engine: 'ask',
   ran: [],
   logs: [],
   ...extra,
@@ -94,15 +106,16 @@ describe('tool calls', () => {
     expect(denied.r.deny).toBe('No recursive deletes.')
     expect(w.ran).toEqual([])
 
+    // the engine would ask; the rule's allow is the permission decision, so it runs
     const allowed = await call($, 'Bash', { command: 'ls -la' })
     expect(allowed.r.result).toBe('ran')
-    const check = await $.tool.check({ tool: 'Bash', input: { command: 'ls -la' }, tool_use_id: allowed.tool_use_id })
-    expect(check.decision).toBe('allow')
+    expect(w.ran).toEqual(['Bash'])
 
-    // not covered by any rule and default passthrough: the engine's own answer stands
+    // not covered by any rule and default passthrough: the engine's own ask stands (no one to answer here)
     const other = await call($, 'Bash', { command: 'make' })
-    expect(other.r.result).toBe('ran')
-    expect((await $.tool.check({ tool: 'Bash', input: { command: 'make' }, tool_use_id: other.tool_use_id })).decision).toBe('ask')
+    expect(other.r.deny).toBeUndefined()
+    expect(String(other.r.result)).toContain(ENGINE_DENIED)
+    expect(w.ran).toEqual(['Bash'])
   })
 
   test('the policy file itself is out of reach, even under an allow-everything rule', async ($, on) => {
@@ -129,17 +142,34 @@ describe('tool calls', () => {
     expect((await call($, 'Read', { file_path: 'README.md' })).r.result).toBe('ran')
   })
 
-  test('askWith engine hands the ask to the permission mode', async ($, on) => {
-    const w = world({ [USER_FILE]: { askWith: 'engine', rules: [{ decision: 'ask', bash: 'git push*' }] } })
+  test('askWith engine hands the ask to the engine, over its allow', async ($, on) => {
+    const w = world({ [USER_FILE]: { askWith: 'engine', rules: [{ decision: 'ask', bash: 'git push*' }] } }, { engine: 'allow' })
     fakeEngine(on, w)
     await turn($)
+    // the engine would allow on its own; the rule's ask goes to its dialog, which nobody answers here
     const r = await call($, 'Bash', { command: 'git push origin main' })
-    expect(r.r.result).toBe('ran')
-    expect((await $.tool.check({ tool: 'Bash', input: { command: 'git push origin main' }, tool_use_id: r.tool_use_id })).decision).toBe('ask')
+    expect(r.r.deny).toBeUndefined()
+    expect(String(r.r.result)).toContain(ENGINE_DENIED)
+    expect(w.ran).toEqual([])
+    expect((await call($, 'Bash', { command: 'git status' })).r.result).toBe('ran')
   })
 
+  for (const headless of ['allow', 'deny'] as const) {
+    test(`askWith engine with no one here: headless ${headless} decides`, async ($, on) => {
+      const w = world({ [USER_FILE]: { askWith: 'engine', headless, rules: [{ decision: 'ask', bash: 'git push*' }] } }, { surfaces: 0 })
+      fakeEngine(on, w)
+      await turn($)
+      const r = await call($, 'Bash', { command: 'git push origin main' })
+      if (headless === 'allow') expect(r.r.result).toBe('ran')
+      else {
+        expect(r.r.deny).toContain('headless')
+        expect(w.ran).toEqual([])
+      }
+    })
+  }
+
   test('audit mode logs what it would do and lets everything run', async ($, on) => {
-    const w = world({ [USER_FILE]: { mode: 'audit', rules: [{ decision: 'deny', bash: 'sudo *' }] } })
+    const w = world({ [USER_FILE]: { mode: 'audit', rules: [{ decision: 'deny', bash: 'sudo *' }] } }, { engine: 'allow' })
     fakeEngine(on, w)
     await turn($)
     expect((await call($, 'Bash', { command: 'sudo ls' })).r.result).toBe('ran')

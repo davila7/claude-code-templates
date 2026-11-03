@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-11-02T03:14:19.171153+00:00",
-  "totalJobs": 480,
+  "lastUpdated": "2026-11-03T02:11:42.055564+00:00",
+  "totalJobs": 529,
   "sources": [
     "Anthropic",
     "Ashby",
@@ -10,6 +10,883 @@
     "RemoteOK"
   ],
   "jobs": [
+    {
+      "id": "as-Bevaya-148e370a-e2bd-48fb-a783-6a535088cbe3",
+      "company": "Bevaya",
+      "position": "Senior Software Engineer",
+      "location": "Mexico",
+      "locations": [
+        "Mexico"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "SENIOR SOFTWARE ENGINEER\n\n \n\n\nABOUT THE ROLE\n\nBevaya builds high-reliability, AI-first workflow automation engines for the insurance sector. Our platform orchestrates complex business logic, document processing, and automated decision-making where data integrity, auditability, and execution...",
+      "applyUrl": "https://jobs.ashbyhq.com/Bevaya/148e370a-e2bd-48fb-a783-6a535088cbe3",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/Bevaya/148e370a-e2bd-48fb-a783-6a535088cbe3",
+      "postedAt": "2026-11-02T19:39:27.673+00:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "TypeScript",
+        "Python",
+        "Go",
+        "PostgreSQL",
+        "AWS",
+        "Azure",
+        "Cursor",
+        "Java"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-life360-8927766002",
+      "company": "Life360",
+      "position": "Senior Decision Scientist, Core Experiences",
+      "location": "Remote, USA",
+      "locations": [
+        "Remote, USA"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "About Life360 Life360’s mission is to keep people close to the ones they love. Our category-leading mobile app, Tile tracking devices, and Pet GPS tracker empower members to protect the people, pets, and things they care about most with a range of services, including location sharing, safe driver...",
+      "applyUrl": "https://job-boards.greenhouse.io/life360/jobs/8927766002",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/life360/jobs/8927766002",
+      "postedAt": "2026-11-02T19:05:57-05:00",
+      "tags": [
+        "Claude Code",
+        "Python"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "le-mendix-925a47b7-963d-4bf2-abda-ecb7dca057aa",
+      "company": "Mendix",
+      "position": "Presales Solutions Architect - ICX Channel",
+      "location": "United States",
+      "locations": [
+        "United States"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "Intelligence Center X is Siemens' platform for the agentic enterprise\n \nThe next wave of enterprise software isn't about writing more code — it's about giving organizations the tools to combine trusted data, AI, and applications into systems that can reason and act on their own. Intelligence Center...",
+      "applyUrl": "https://jobs.lever.co/mendix/925a47b7-963d-4bf2-abda-ecb7dca057aa",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/mendix/925a47b7-963d-4bf2-abda-ecb7dca057aa",
+      "postedAt": "2026-11-02T18:54:29.383000+00:00",
+      "tags": [
+        "Claude Code",
+        "AWS",
+        "Cursor",
+        "Copilot",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-50341328",
+      "company": "Fredrin",
+      "position": "GTM Engineer",
+      "location": "REMOTE (US)",
+      "locations": [
+        "REMOTE (US)"
+      ],
+      "remote": true,
+      "salary": "$130k",
+      "description": "Fredrin is the multiplayer software factory: one app where a team and its AI Workers build software together, and Workers running Claude Code or Codex, on the subscription you already pay for, plan, build, test and merge the work. We build Fredrin with Fredrin: over 1,500 PRs merged last month....",
+      "applyUrl": "https://news.ycombinator.com/item?id=50341328",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=50341328",
+      "postedAt": "2026-11-02T18:30:35+00:00",
+      "tags": [
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-earnin-8337123",
+      "company": "EarnIn",
+      "position": "Manager, Software Engineering",
+      "location": "Mountain View, US",
+      "locations": [
+        "Mountain View, US"
+      ],
+      "remote": false,
+      "salary": "$266,793-$326,081,",
+      "description": "ABOUT EARNIN As one of the first pioneers of earned wage access, our passion at EarnIn is building products that deliver real-time financial flexibility for those with the unique needs of living paycheck to paycheck. Our community members access their earnings as they earn them, with options to...",
+      "applyUrl": "https://job-boards.greenhouse.io/earnin/jobs/8337123",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/earnin/jobs/8337123",
+      "postedAt": "2026-11-02T17:42:43-05:00",
+      "tags": [
+        "Claude Code",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-50340134",
+      "company": "Stratirus (a Tennetech company)",
+      "position": "AI Developer + Linux Admin (junior to mid)",
+      "location": "REMOTE (US only, Central Time hours) · No agencies",
+      "locations": [
+        "REMOTE (US only, Central Time hours)",
+        "No agencies"
+      ],
+      "remote": true,
+      "salary": "$65k",
+      "description": "Our optional take-home is a broken Ubuntu server: a service that won't stay up, a nightly report that hasn't gone out in days, and a disk that keeps filling. Fix it, write a script that heals a fresh box, and build a small read-only MCP tool so an AI agent can check on it. 60 to 90 minutes, unpaid,...",
+      "applyUrl": "https://news.ycombinator.com/item?id=50340134",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=50340134",
+      "postedAt": "2026-11-02T17:19:04+00:00",
+      "tags": [
+        "Claude Code",
+        "Docker",
+        "Copilot",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-50339551",
+      "company": "Juro",
+      "position": "AI Engineer (Agentic team)",
+      "location": "London, UK · REMOTE (UK)",
+      "locations": [
+        "London, UK",
+        "REMOTE (UK)"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "Juro is an AI contract automation platform used by in-house legal and business teams. Our Agentic team builds Operator, the agent that works across contracts inside Juro: it answers questions and takes action on legal data. You'd build the tools that let it act across the product, own parts of the...",
+      "applyUrl": "https://news.ycombinator.com/item?id=50339551",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=50339551",
+      "postedAt": "2026-11-02T16:43:55+00:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "TypeScript",
+        "Node.js",
+        "AWS",
+        "Cursor",
+        "MongoDB"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "hn-50339269",
+      "company": "myDataValue",
+      "position": "Founding Product Engineer",
+      "location": "London (Canary Wharf) · HYBRID, 2 days/week in office",
+      "locations": [
+        "London (Canary Wharf)",
+        "HYBRID, 2 days/week in office"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "We build AI agents that run revenue for short-term rental and hotel operators on Booking.com and Airbnb: live prices, promotions and visibility on real portfolios, plus an MCP connector so customers work their accounts from Claude and ChatGPT. Our engineers no longer type most of the code. Claude...",
+      "applyUrl": "https://news.ycombinator.com/item?id=50339269",
+      "source": "HackerNews",
+      "sourceUrl": "https://news.ycombinator.com/item?id=50339269",
+      "postedAt": "2026-11-02T16:28:01+00:00",
+      "tags": [
+        "Claude Code",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-tolmo-f08cb48e-4950-416b-9f75-1eb624a2d9aa",
+      "company": "Tolmo",
+      "position": "Research Engineer, AI Security",
+      "location": "San Francisco",
+      "locations": [
+        "San Francisco"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "ABOUT TOLMO\n\nTolmo is cybersecurity for the age of AI. Coding agents now ship software faster than any human team can review or secure it; 100+ pull requests per engineer per week is no longer an outlier, and attackers are using the same agents to find and exploit weaknesses in days, not months....",
+      "applyUrl": "https://jobs.ashbyhq.com/tolmo/f08cb48e-4950-416b-9f75-1eb624a2d9aa",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/tolmo/f08cb48e-4950-416b-9f75-1eb624a2d9aa",
+      "postedAt": "2026-11-02T15:55:15.172+00:00",
+      "tags": [
+        "Claude Code",
+        "TypeScript",
+        "Python",
+        "Go",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-affirm-8039471003",
+      "company": "Affirm",
+      "position": "Analyst, Early Career (Full Stack)",
+      "location": "New York, New York, United States · San Francisco, California, United States",
+      "locations": [
+        "New York, New York, United States",
+        "San Francisco, California, United States"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "At Affirm, we exist for the moments that matter—giving people a clear, predictable way to pay over time, with no hidden fees, no surprises, and no tradeoffs on what matters most. In our hybrid early career program, you’ll be paired with a tenured Affirmer and have an opportunity to collaborate...",
+      "applyUrl": "https://job-boards.greenhouse.io/affirm/jobs/8039471003",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/affirm/jobs/8039471003",
+      "postedAt": "2026-11-02T15:46:29-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Go",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-chainguard-4726046006",
+      "company": "Chainguard",
+      "position": "Sr. Growth Marketing Manager, AI Discovery",
+      "location": "United States - Remote",
+      "locations": [
+        "United States - Remote"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "Chainguard is the trusted source for open source. By delivering hardened, secure, and production-ready builds of all the open source software engineers and AI agents rely on, Chainguard helps organizations build faster, stay compliant, and eliminate risk. Our customers include Fortune 500...",
+      "applyUrl": "https://job-boards.greenhouse.io/chainguard/jobs/4726046006",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/chainguard/jobs/4726046006",
+      "postedAt": "2026-11-02T15:38:19-05:00",
+      "tags": [
+        "Claude Code",
+        "Kubernetes",
+        "Cursor",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-chainguard-4726048006",
+      "company": "Chainguard",
+      "position": "Senior Growth Operations Manager",
+      "location": "United States - Remote",
+      "locations": [
+        "United States - Remote"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "Chainguard is the trusted source for open source. By delivering hardened, secure, and production-ready builds of all the open source software engineers and AI agents rely on, Chainguard helps organizations build faster, stay compliant, and eliminate risk. Our customers include Fortune 500...",
+      "applyUrl": "https://job-boards.greenhouse.io/chainguard/jobs/4726048006",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/chainguard/jobs/4726048006",
+      "postedAt": "2026-11-02T15:14:45-05:00",
+      "tags": [
+        "Claude Code",
+        "JavaScript",
+        "Python",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-tolmo-3fc8b8ff-2b9d-44b1-b4a1-13d358ea70f5",
+      "company": "Tolmo",
+      "position": "Member of the Technical Staff, Product Software Engineer",
+      "location": "San Francisco",
+      "locations": [
+        "San Francisco"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "ABOUT TOLMO\n\nTolmo is cybersecurity for the age of AI. Coding agents now ship software faster than any human team can review or secure it; 100+ pull requests per engineer per week is no longer an outlier, and attackers are using the same agents to find and exploit weaknesses in days, not months....",
+      "applyUrl": "https://jobs.ashbyhq.com/tolmo/3fc8b8ff-2b9d-44b1-b4a1-13d358ea70f5",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/tolmo/3fc8b8ff-2b9d-44b1-b4a1-13d358ea70f5",
+      "postedAt": "2026-11-02T15:07:29.556+00:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "TypeScript",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-tolmo-026f41ba-9175-4d58-8b4d-c01f0804ddbd",
+      "company": "Tolmo",
+      "position": "Member of the Technical Staff, Security Engineer",
+      "location": "San Francisco",
+      "locations": [
+        "San Francisco"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "ABOUT TOLMO\n\nTolmo is cybersecurity for the age of AI. Coding agents now ship software faster than any human team can review or secure it; 100+ pull requests per engineer per week is no longer an outlier, and attackers are using the same agents to find and exploit weaknesses in days, not months....",
+      "applyUrl": "https://jobs.ashbyhq.com/tolmo/026f41ba-9175-4d58-8b4d-c01f0804ddbd",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/tolmo/026f41ba-9175-4d58-8b4d-c01f0804ddbd",
+      "postedAt": "2026-11-02T15:03:57.182+00:00",
+      "tags": [
+        "Claude Code",
+        "TypeScript",
+        "Python",
+        "Go",
+        "AWS",
+        "GCP",
+        "Azure",
+        "Kubernetes",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-tolmo-83ffdc97-83a5-476a-8d37-3d6fdf8e4eaf",
+      "company": "Tolmo",
+      "position": "Member of the Technical Staff, Software Engineering",
+      "location": "San Francisco",
+      "locations": [
+        "San Francisco"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "ABOUT TOLMO\n\nTolmo is cybersecurity for the age of AI. Coding agents now ship software faster than any human team can review or secure it; 100+ pull requests per engineer per week is no longer an outlier, and attackers are using the same agents to find and exploit weaknesses in days, not months....",
+      "applyUrl": "https://jobs.ashbyhq.com/tolmo/83ffdc97-83a5-476a-8d37-3d6fdf8e4eaf",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/tolmo/83ffdc97-83a5-476a-8d37-3d6fdf8e4eaf",
+      "postedAt": "2026-11-02T15:01:48.647+00:00",
+      "tags": [
+        "Claude Code",
+        "TypeScript",
+        "Go",
+        "PostgreSQL",
+        "AWS",
+        "GCP",
+        "Azure",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-prospectus-4455089009",
+      "company": "PRO-spectus",
+      "position": "Technical Product Owner – Salesforce Health Cloud & AI-Enabled Agile Delivery",
+      "location": "US - Remote",
+      "locations": [
+        "US - Remote"
+      ],
+      "remote": true,
+      "salary": "$115,000 - 140,000,",
+      "description": "We are looking for a Product Owner who wants to shape a product, not administer a backlog. In this role you will own what our development team builds and why, for the Salesforce Health Cloud solutions that power a fast-growing patient services business. You will help shape the roadmap alongside our...",
+      "applyUrl": "https://job-boards.greenhouse.io/prospectus/jobs/4455089009",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/prospectus/jobs/4455089009",
+      "postedAt": "2026-11-02T15:01:04-05:00",
+      "tags": [
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-prospectus-4458547009",
+      "company": "PRO-spectus",
+      "position": "Technical Delivery Manager – Healthcare, Release Management & AI",
+      "location": "US - Remote",
+      "locations": [
+        "US - Remote"
+      ],
+      "remote": true,
+      "salary": "$120,000 - 145,000,",
+      "description": "We are looking for an outcome-oriented, commercially minded Delivery Manager to run the execution and scaling of our patient services hub platforms. You will own the answer to one question: is it going to ship when we said it would? Releases, features, integrations, and fixes - on time, at quality,...",
+      "applyUrl": "https://job-boards.greenhouse.io/prospectus/jobs/4458547009",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/prospectus/jobs/4458547009",
+      "postedAt": "2026-11-02T15:00:34-05:00",
+      "tags": [
+        "Claude Code",
+        "Go"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-fivetran-8017412003",
+      "company": "Fivetran",
+      "position": "Manager Software Engineering",
+      "location": "Oakland, California, United States, AMER",
+      "locations": [
+        "Oakland, California, United States, AMER"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "From Fivetran’s founding until now, our mission has remained the same: to make access to data as simple and reliable as electricity. With Fivetran, customer data arrives in their warehouses, canonical and ready to query, with no engineering or maintenance required. We’re proud that more...",
+      "applyUrl": "https://www.fivetran.com/careers/job?gh_jid=8017412003",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.fivetran.com/careers/job?gh_jid=8017412003",
+      "postedAt": "2026-11-02T14:51:34-05:00",
+      "tags": [
+        "Claude Code",
+        "PostgreSQL",
+        "AWS",
+        "GCP",
+        "Docker",
+        "Kubernetes",
+        "Java"
+      ],
+      "companyIcon": "https://fivetran.com/favicon.ico"
+    },
+    {
+      "id": "gr-fivetran-7859203003",
+      "company": "Fivetran",
+      "position": "Engineering Manager, Metadata",
+      "location": "Oakland, California, United States",
+      "locations": [
+        "Oakland, California, United States"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "From Fivetran’s founding until now, our mission has remained the same: to make access to data as simple and reliable as electricity. With Fivetran, customer data arrives in their warehouses, canonical and ready to query, with no engineering or maintenance required. We’re proud that more...",
+      "applyUrl": "https://www.fivetran.com/careers/job?gh_jid=7859203003",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.fivetran.com/careers/job?gh_jid=7859203003",
+      "postedAt": "2026-11-02T14:51:30-05:00",
+      "tags": [
+        "Claude Code",
+        "Copilot",
+        "GraphQL"
+      ],
+      "companyIcon": "https://fivetran.com/favicon.ico"
+    },
+    {
+      "id": "gr-earnin-8335388",
+      "company": "EarnIn",
+      "position": "Senior Software Engineer",
+      "location": "Vancouver, Canada",
+      "locations": [
+        "Vancouver, Canada"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "ABOUT EARNIN As one of the first pioneers of earned wage access, our passion at EarnIn is building products that deliver real-time financial flexibility for those with the unique needs of living paycheck to paycheck. Our community members access their earnings as they earn them, with options to...",
+      "applyUrl": "https://job-boards.greenhouse.io/earnin/jobs/8335388",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/earnin/jobs/8335388",
+      "postedAt": "2026-11-02T14:42:41-05:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "TypeScript",
+        "Python",
+        "Go",
+        "PostgreSQL",
+        "AWS",
+        "Kubernetes",
+        "Cursor",
+        "Kotlin"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-joinpogo-fe65e8d3-3273-4a0a-97ad-e4f0a1ca89a0",
+      "company": "Joinpogo",
+      "position": "Full Stack Engineer",
+      "location": "United States/Canada",
+      "locations": [
+        "United States/Canada"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "ABOUT YOUR ROLE 👀\n\nAs a Full Stack Engineer, you’ll work on our enterprise AI SaaS product https://joinpogo.ai/ and own meaningful parts of the product end-to-end. This is a hands-on role with real responsibility. Specifically, you will:\n\n - Build and own user-facing product features from idea to...",
+      "applyUrl": "https://jobs.ashbyhq.com/joinpogo/fe65e8d3-3273-4a0a-97ad-e4f0a1ca89a0",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/joinpogo/fe65e8d3-3273-4a0a-97ad-e4f0a1ca89a0",
+      "postedAt": "2026-11-02T14:18:56.302+00:00",
+      "tags": [
+        "Claude Code",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-sonyinteractiveentertainmentglobal-6222405004",
+      "company": "PlayStation Global",
+      "position": "Lead Data Engineer",
+      "location": "United Kingdom, London",
+      "locations": [
+        "United Kingdom, London"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Why Sony Interactive Entertainment? Sony Interactive Entertainment isn’t just the Best Place to Play — it’s also the Best Place to Work. Sony Interactive Entertainment (SIE) is the company behind the PlayStation brand. As a subsidiary of Sony Group Corporation, we’re part of a proud legacy of...",
+      "applyUrl": "https://job-boards.greenhouse.io/sonyinteractiveentertainmentglobal/jobs/6222405004",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/sonyinteractiveentertainmentglobal/jobs/6222405004",
+      "postedAt": "2026-11-02T13:23:59-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Go",
+        "AWS"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-sonyinteractiveentertainmentglobal-6208604004",
+      "company": "PlayStation Global",
+      "position": "Senior Software Engineer - AI & Agentic Architecture",
+      "location": "United States, Aliso Viejo, CA",
+      "locations": [
+        "United States, Aliso Viejo, CA"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Why Sony Interactive Entertainment? Sony Interactive Entertainment isn’t just the Best Place to Play — it’s also the Best Place to Work. Sony Interactive Entertainment (SIE) is the company behind the PlayStation brand. As a subsidiary of Sony Group Corporation, we’re part of a proud legacy of...",
+      "applyUrl": "https://job-boards.greenhouse.io/sonyinteractiveentertainmentglobal/jobs/6208604004",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/sonyinteractiveentertainmentglobal/jobs/6208604004",
+      "postedAt": "2026-11-02T13:23:59-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Rust",
+        "Go",
+        "AWS",
+        "Docker",
+        "Kubernetes",
+        "Java",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-samsara-8261007",
+      "company": "Samsara",
+      "position": "Director, GTM AI Engineering",
+      "location": "Remote - US",
+      "locations": [
+        "Remote - US"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "Who we are Samsara (NYSE: IOT) is the pioneer of the Connected Operations™ Cloud, which is a platform that enables organizations that depend on physical operations to harness Internet of Things (IoT) data to develop actionable insights and improve their operations. At Samsara, we are helping...",
+      "applyUrl": "https://www.samsara.com/company/careers/roles/8261007?gh_jid=8261007",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.samsara.com/company/careers/roles/8261007?gh_jid=8261007",
+      "postedAt": "2026-11-02T13:21:05-05:00",
+      "tags": [
+        "Claude Code",
+        "TypeScript",
+        "Python",
+        "AWS",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-affirm-8045395003",
+      "company": "Affirm",
+      "position": "Staff Machine Learning Engineer (Credit International ML)",
+      "location": "Remote Poland",
+      "locations": [
+        "Remote Poland"
+      ],
+      "remote": true,
+      "salary": "$16,000-$24,000",
+      "description": "At Affirm, we exist for the moments that matter—giving people a clear, predictable way to pay over time, with no hidden fees, no surprises, and no tradeoffs on what matters most. At Affirm, we exist for the moments that matter—giving people a clear, predictable way to pay over time, with no hidden...",
+      "applyUrl": "https://job-boards.greenhouse.io/affirm/jobs/8045395003",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/affirm/jobs/8045395003",
+      "postedAt": "2026-11-02T12:33:51-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-thanx-8161928003",
+      "company": "Thanx",
+      "position": "Senior Product Manager, AI-native platform",
+      "location": "Canada, United States",
+      "locations": [
+        "Canada, United States"
+      ],
+      "remote": false,
+      "salary": "$161,000 - $180,000",
+      "description": "Who Are We? Thanx is a leading loyalty and guest engagement platform for regional and national restaurants. We help brands drive profitable growth by increasing guest frequency, growing digital sales, and reducing reliance on discounts. Most loyalty platforms work for guests who are already loyal....",
+      "applyUrl": "https://job-boards.greenhouse.io/thanx/jobs/8161928003",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/thanx/jobs/8161928003",
+      "postedAt": "2026-11-02T12:23:12-05:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-samsara-8210697",
+      "company": "Samsara",
+      "position": "Sr. Software Engineer II / Tech lead, Agentic Platform (Poland, Remote, B2B)",
+      "location": "Remote - Poland",
+      "locations": [
+        "Remote - Poland"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "Who we are Samsara (NYSE: IOT) is the pioneer of the Connected Operations™ Cloud, which is a platform that enables organizations that depend on physical operations to harness Internet of Things (IoT) data to develop actionable insights and improve their operations. At Samsara, we are helping...",
+      "applyUrl": "https://www.samsara.com/company/careers/roles/8210697?gh_jid=8210697",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.samsara.com/company/careers/roles/8210697?gh_jid=8210697",
+      "postedAt": "2026-11-02T11:30:00-05:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "TypeScript",
+        "Go",
+        "Cursor",
+        "GraphQL",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-dataiku-6239283004",
+      "company": "Dataiku",
+      "position": "Senior Web Developer - Growth Marketing",
+      "location": "United States, New York · United States, Remote",
+      "locations": [
+        "United States, New York",
+        "United States, Remote"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "Dataiku is the Platform for AI Success, the enterprise orchestration layer for building, deploying, and governing AI. In a single environment, teams design and operate analytics, machine learning, and AI agents with the transparency, collaboration, and control enterprises require. Sitting above...",
+      "applyUrl": "https://job-boards.greenhouse.io/dataiku/jobs/6239283004",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/dataiku/jobs/6239283004",
+      "postedAt": "2026-11-02T10:32:19-05:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "Next.js",
+        "TypeScript",
+        "JavaScript"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-dscout-4472803009",
+      "company": "Dscout",
+      "position": "Senior Forward Deployed Engineer (Full-Stack)",
+      "location": "Remote - US",
+      "locations": [
+        "Remote - US"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "At Dscout, we’re building the most flexible and powerful UX research platform on the market—trusted by the world’s top brands in finance (JP Morgan Chase, Intuit, Charles Schwab, PayPal), healthcare (Aya, Headspace), consumer goods (Keen, Verizon, Target, Northface), and tech (Google, Amazon,...",
+      "applyUrl": "https://job-boards.greenhouse.io/dscout/jobs/4472803009",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/dscout/jobs/4472803009",
+      "postedAt": "2026-11-02T09:49:17-05:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "Python",
+        "Cursor",
+        "Swift",
+        "Kotlin"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "le-petdesk-e308da7c-3ecb-417d-baf1-e816d2efc7da",
+      "company": "Petdesk",
+      "position": "Principal Engineer, New Products",
+      "location": "United States",
+      "locations": [
+        "United States"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "About this role:\nThe Principal Engineer, New Products is a senior technical leadership role that owns the system design vision for a new business line. This person sets the architecture, translates business requirements into sound technical decisions, and pulls the pieces and teams together around...",
+      "applyUrl": "https://jobs.lever.co/petdesk/e308da7c-3ecb-417d-baf1-e816d2efc7da",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/petdesk/e308da7c-3ecb-417d-baf1-e816d2efc7da",
+      "postedAt": "2026-11-02T09:30:26.192000+00:00",
+      "tags": [
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-mozilla-8239656",
+      "company": "Mozilla",
+      "position": "Contract Sr Data Analyst (SQL,Telemetry,Browser Engine)",
+      "location": "Remote Canada",
+      "locations": [
+        "Remote Canada"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "The Gecko platform is the core engine of our product experience. To maintain competitiveness and user satisfaction, we must move beyond surface-level metrics to understand the deep correlations between engine performance and real-world user behavior. We currently face challenges with data quality,...",
+      "applyUrl": "https://job-boards.greenhouse.io/mozilla/jobs/8239656",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/mozilla/jobs/8239656",
+      "postedAt": "2026-11-02T08:56:08-05:00",
+      "tags": [
+        "Claude Code",
+        "Rust"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-harvey-21031616-e7b7-420a-a5b6-6c7006e55989",
+      "company": "Harvey",
+      "position": "Technical CX Specialist, EMEA",
+      "location": "Dublin",
+      "locations": [
+        "Dublin"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "WHY HARVEY\n\nAt Harvey, we’re transforming how legal and professional services operate. By combining frontier agentic AI, an enterprise-grade platform, and deep domain expertise, we’re reshaping how critical knowledge work gets done for decades to come.\n\nThis is a rare chance to help build a...",
+      "applyUrl": "https://jobs.ashbyhq.com/harvey/21031616-e7b7-420a-a5b6-6c7006e55989",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/harvey/21031616-e7b7-420a-a5b6-6c7006e55989",
+      "postedAt": "2026-11-02T08:39:23.571+00:00",
+      "tags": [
+        "Claude Code",
+        "MCP"
+      ],
+      "companyIcon": "https://harvey.ai/favicon.ico"
+    },
+    {
+      "id": "gr-alphasense-8634067002",
+      "company": "AlphaSense",
+      "position": "AI Security Engineer",
+      "location": "Remote - India",
+      "locations": [
+        "Remote - India"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "About AlphaSense: AlphaSense is the AI platform redefining market intelligence and workflow orchestration, trusted by thousands of leading organizations to drive faster, more confident decisions in business and finance. The platform combines domain-specific AI with a vast content universe of over...",
+      "applyUrl": "https://job-boards.greenhouse.io/alphasense/jobs/8634067002",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/alphasense/jobs/8634067002",
+      "postedAt": "2026-11-02T04:51:44-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "AWS",
+        "GCP",
+        "Azure",
+        "Copilot",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-6sense-8257106",
+      "company": "6sense",
+      "position": "Business Solutions Partner - Enterprise AI",
+      "location": "Costa Rica, Remote",
+      "locations": [
+        "Costa Rica, Remote"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "Our Mission: 6sense's mission is to multiply what matters: growth, retention, and efficiency. We envision a future where companies, teams and people reach their full potential. Our People: People are the heart and soul of 6sense. We serve with passion and purpose. We live by our Being 6sense values...",
+      "applyUrl": "https://boards.greenhouse.io/6sense/jobs/8257106?gh_jid=8257106",
+      "source": "Greenhouse",
+      "sourceUrl": "https://boards.greenhouse.io/6sense/jobs/8257106?gh_jid=8257106",
+      "postedAt": "2026-11-02T03:10:43-05:00",
+      "tags": [
+        "Claude Code",
+        "Copilot"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-gusto-7942791",
+      "company": "Gusto",
+      "position": "Senior Staff Software Engineer - Pricing and Packaging",
+      "location": "San Francisco, CA - Hybrid",
+      "locations": [
+        "San Francisco, CA - Hybrid"
+      ],
+      "remote": false,
+      "salary": "$189,000/yr",
+      "description": "About Gusto At Gusto, we're on a mission to grow the small business economy. We handle the hard stuff — payroll, health insurance, 401(k)s, and HR — so owners can focus on their craft and their customers. With teams in Denver, San Francisco, and New York, we support more than 500,000 small...",
+      "applyUrl": "https://job-boards.greenhouse.io/gusto/jobs/7942791",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/gusto/jobs/7942791",
+      "postedAt": "2026-11-02T03:10:40-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Go",
+        "Copilot",
+        "Java",
+        "Ruby"
+      ],
+      "companyIcon": "https://gusto.com/favicon.ico"
+    },
+    {
+      "id": "anth-5465639008",
+      "company": "Anthropic",
+      "position": "AI Outcomes Manager, Strategic Tech (Spanish-speaking)",
+      "location": "San Francisco, CA · Seattle, WA · New York City, NY · Washington, DC",
+      "locations": [
+        "San Francisco, CA",
+        "Seattle, WA",
+        "New York City, NY",
+        "Washington, DC"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Join Anthropic's Customer Success team in a high-visibility & high-impact role driving AI adoption across a small number of strategic accounts in our Enterprise Tech segment. As our dedicated Outcomes AI Manager for Strategic Tech Customers you’ll be their partner and trusted advisor helping them...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5465639008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5465639008",
+      "postedAt": "2026-11-02T02:24:19-05:00",
+      "tags": [
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "gr-gitlab-8924923002",
+      "company": "GitLab",
+      "position": "Intermediate Data Engineer",
+      "location": "Bangalore, India",
+      "locations": [
+        "Bangalore, India"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "GitLab is the intelligent orchestration platform for DevSecOps. GitLab enables organizations to increase developer productivity, improve operational efficiency, reduce security and compliance risk, and accelerate digital transformation. More than 50 million registered users and more than 50% of the...",
+      "applyUrl": "https://job-boards.greenhouse.io/gitlab/jobs/8924923002",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/gitlab/jobs/8924923002",
+      "postedAt": "2026-11-02T01:44:11-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "GCP",
+        "Docker",
+        "Kubernetes",
+        "MCP"
+      ],
+      "companyIcon": "https://gitlab.com/favicon.ico"
+    },
     {
       "id": "gr-twilio-8009057",
       "company": "Twilio",
@@ -160,6 +1037,93 @@
       "companyIcon": ""
     },
     {
+      "id": "as-3y-health-21a31658-0c58-4e60-b46f-4b668615410f",
+      "company": "3Y Health",
+      "position": "Full Stack Engineer",
+      "location": "Remote - Buenos Aires",
+      "locations": [
+        "Remote - Buenos Aires"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "ABOUT 3Y HEALTH\n\n3Y Health is building the operating system for healthcare practices, an AI-native platform that helps clinicians start, run and grow their practice. We work as a managed services organization (MSO): along with the software, our operations team runs the back office for the clinics...",
+      "applyUrl": "https://jobs.ashbyhq.com/3y-health/21a31658-0c58-4e60-b46f-4b668615410f",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/3y-health/21a31658-0c58-4e60-b46f-4b668615410f",
+      "postedAt": "2026-10-31T01:05:14.461+00:00",
+      "tags": [
+        "Claude Code",
+        "React Native",
+        "React",
+        "Next.js",
+        "TypeScript",
+        "Python",
+        "PostgreSQL",
+        "AWS",
+        "Cursor",
+        "Kotlin"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-3y-health-840b11eb-a696-489f-848b-17d2406e2fed",
+      "company": "3Y Health",
+      "position": "Founding Engineer",
+      "location": "Remote - Buenos Aires",
+      "locations": [
+        "Remote - Buenos Aires"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "ABOUT 3Y HEALTH\n\n3Y Health is building the operating system for healthcare practices, an AI-native platform that helps clinicians start, run and grow their practice. We work as a managed services organization (MSO): along with the software, our operations team runs the back office for the clinics...",
+      "applyUrl": "https://jobs.ashbyhq.com/3y-health/840b11eb-a696-489f-848b-17d2406e2fed",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/3y-health/840b11eb-a696-489f-848b-17d2406e2fed",
+      "postedAt": "2026-10-31T01:05:00.944+00:00",
+      "tags": [
+        "Claude Code",
+        "React Native",
+        "React",
+        "Next.js",
+        "TypeScript",
+        "Python",
+        "PostgreSQL",
+        "AWS",
+        "Cursor",
+        "Kotlin"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-3y-health-be29258b-5ef6-4cae-8bad-108e593632f4",
+      "company": "3Y Health",
+      "position": "AI Product Engineer",
+      "location": "Remote - Buenos Aires",
+      "locations": [
+        "Remote - Buenos Aires"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "ABOUT 3Y HEALTH\n\n3Y Health is building the operating system for healthcare practices, an AI-native platform that helps clinicians start, run and grow their practice. We work as a managed services organization (MSO): along with the software, our operations team runs the back office for the clinics...",
+      "applyUrl": "https://jobs.ashbyhq.com/3y-health/be29258b-5ef6-4cae-8bad-108e593632f4",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/3y-health/be29258b-5ef6-4cae-8bad-108e593632f4",
+      "postedAt": "2026-10-31T01:04:38.113+00:00",
+      "tags": [
+        "Claude Code",
+        "React Native",
+        "React",
+        "Next.js",
+        "TypeScript",
+        "Python",
+        "PostgreSQL",
+        "AWS",
+        "Cursor",
+        "Kotlin"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "as-render-5498e2c2-44d7-4a4b-9bb9-20c0eca92440",
       "company": "Render",
       "position": "Staff Developer Relations Engineer ",
@@ -183,26 +1147,26 @@
       "companyIcon": "https://render.com/favicon.ico"
     },
     {
-      "id": "gr-samsara-8261007",
-      "company": "Samsara",
-      "position": "Director, GTM AI Engineering",
-      "location": "Remote - US",
+      "id": "as-tolmo-edd4fd3d-79a8-459c-969b-e4ad94059c96",
+      "company": "Tolmo",
+      "position": "Founding Solutions Engineer",
+      "location": "San Francisco",
       "locations": [
-        "Remote - US"
+        "San Francisco"
       ],
-      "remote": true,
-      "salary": "",
-      "description": "Who we are Samsara (NYSE: IOT) is the pioneer of the Connected Operations™ Cloud, which is a platform that enables organizations that depend on physical operations to harness Internet of Things (IoT) data to develop actionable insights and improve their operations. At Samsara, we are helping...",
-      "applyUrl": "https://www.samsara.com/company/careers/roles/8261007?gh_jid=8261007",
-      "source": "Greenhouse",
-      "sourceUrl": "https://www.samsara.com/company/careers/roles/8261007?gh_jid=8261007",
-      "postedAt": "2026-10-30T20:37:27-04:00",
+      "remote": false,
+      "salary": "$170K – $280K • Offers Equity",
+      "description": "ABOUT TOLMO\n\nTolmo is cybersecurity for the age of AI. Coding agents now ship software faster than any human team can review or secure it; 100+ pull requests per engineer per week is no longer an outlier, and attackers are using the same agents to find and exploit weaknesses in days, not months....",
+      "applyUrl": "https://jobs.ashbyhq.com/tolmo/edd4fd3d-79a8-459c-969b-e4ad94059c96",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/tolmo/edd4fd3d-79a8-459c-969b-e4ad94059c96",
+      "postedAt": "2026-10-30T23:21:05.045+00:00",
       "tags": [
         "Claude Code",
-        "TypeScript",
-        "Python",
         "AWS",
-        "MCP"
+        "GCP",
+        "Azure",
+        "Cursor"
       ],
       "companyIcon": ""
     },
@@ -296,6 +1260,77 @@
       "companyIcon": ""
     },
     {
+      "id": "gr-thanx-6250103003",
+      "company": "Thanx",
+      "position": "Senior Software Developer",
+      "location": "Remote - Canada",
+      "locations": [
+        "Remote - Canada"
+      ],
+      "remote": true,
+      "salary": "$155,000 - $190,000",
+      "description": "*Remote - Canada* Who Are We? Thanx is a leading loyalty and guest engagement platform for restaurants. Thanx helps regional and national restaurant brands grow customer lifetime value with easy-to-use lifecycle marketing automations and innovative customer loyalty tools focused on access, status,...",
+      "applyUrl": "https://job-boards.greenhouse.io/thanx/jobs/6250103003",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/thanx/jobs/6250103003",
+      "postedAt": "2026-10-30T19:14:25-04:00",
+      "tags": [
+        "Claude Code",
+        "React Native",
+        "React",
+        "TypeScript",
+        "AWS",
+        "Cursor",
+        "Ruby",
+        "Rails",
+        "Django",
+        "Angular"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "le-RyzLabs-73b8c34a-b48d-429c-acf4-0c54a0f79f21",
+      "company": "Ryzlabs",
+      "position": "AI-enabled Accountant",
+      "location": "Argentina",
+      "locations": [
+        "Argentina"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "This is a full-time, remote position from Latin America.\nAbout the Role\nOur client is looking for a hands-on Accountant to own their accounting function end to end, leveraging AI and automation to make processes faster, more accurate, and more efficient than traditional accounting workflows.\nIn...",
+      "applyUrl": "https://jobs.lever.co/RyzLabs/73b8c34a-b48d-429c-acf4-0c54a0f79f21",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/RyzLabs/73b8c34a-b48d-429c-acf4-0c54a0f79f21",
+      "postedAt": "2026-10-30T18:36:16.098000+00:00",
+      "tags": [
+        "Claude Code",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-engine-8041625003",
+      "company": "Engine",
+      "position": "Sr. Business Systems Engineer",
+      "location": "Remote - US",
+      "locations": [
+        "Remote - US"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "About Engine Engine is the AI-native platform for intelligent travel. For a decade, Engine has built the proprietary technology and supply behind modern business travel, serving over 40,000 customers and nearly 2 million travelers, along with leading travel and AI companies that build on Engine's...",
+      "applyUrl": "https://job-boards.greenhouse.io/engine/jobs/8041625003",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/engine/jobs/8041625003",
+      "postedAt": "2026-10-30T18:09:45-04:00",
+      "tags": [
+        "Claude Code",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "gr-singlestore-8338096",
       "company": "SingleStore",
       "position": "Manager, PLG & Agent-led Growth",
@@ -364,43 +1399,19 @@
       "companyIcon": "https://wealthsimple.com/favicon.ico"
     },
     {
-      "id": "gr-affirm-8039471003",
-      "company": "Affirm",
-      "position": "Analyst, Early Career (Full Stack)",
-      "location": "New York, New York, United States · San Francisco, California, United States",
-      "locations": [
-        "New York, New York, United States",
-        "San Francisco, California, United States"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "At Affirm, we exist for the moments that matter—giving people a clear, predictable way to pay over time, with no hidden fees, no surprises, and no tradeoffs on what matters most. In our hybrid early career program, you’ll be paired with a tenured Affirmer and have an opportunity to collaborate...",
-      "applyUrl": "https://job-boards.greenhouse.io/affirm/jobs/8039471003",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/affirm/jobs/8039471003",
-      "postedAt": "2026-10-30T17:15:12-04:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "Go",
-        "Cursor"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-affirm-7822389003",
+      "id": "gr-affirm-7822387003",
       "company": "Affirm",
       "position": "Machine Learning Engineer II (Underwriting ML)",
-      "location": "Remote Canada",
+      "location": "Remote US",
       "locations": [
-        "Remote Canada"
+        "Remote US"
       ],
       "remote": true,
-      "salary": "$133,000 - $183,000",
-      "description": "At Affirm, we exist for the moments that matter—giving people a clear, predictable way to pay over time, with no hidden fees, no surprises, and no tradeoffs on what matters most. Affirm is reinventing credit to make it more honest and friendly, giving consumers the flexibility to buy now and pay...",
-      "applyUrl": "https://job-boards.greenhouse.io/affirm/jobs/7822389003",
+      "salary": "$165,000 - $225,000",
+      "description": "At Affirm, we exist for the moments that matter—giving people a clear, predictable way to pay over time, with no hidden fees, no surprises, and no tradeoffs on what matters most. On the Underwriting ML team, you’ll build and improve machine learning systems that make real-time transaction...",
+      "applyUrl": "https://job-boards.greenhouse.io/affirm/jobs/7822387003",
       "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/affirm/jobs/7822389003",
+      "sourceUrl": "https://job-boards.greenhouse.io/affirm/jobs/7822387003",
       "postedAt": "2026-10-30T17:15:12-04:00",
       "tags": [
         "Claude Code",
@@ -480,28 +1491,6 @@
         "Kubernetes",
         "Kotlin",
         "MySQL"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-affirm-8045395003",
-      "company": "Affirm",
-      "position": "Staff Machine Learning Engineer (Credit International ML)",
-      "location": "Remote Poland",
-      "locations": [
-        "Remote Poland"
-      ],
-      "remote": true,
-      "salary": "$48,000-$72,000",
-      "description": "At Affirm, we exist for the moments that matter—giving people a clear, predictable way to pay over time, with no hidden fees, no surprises, and no tradeoffs on what matters most. We are looking for a Staff Machine Learning Engineer to be the technical leader building high-quality production-grade...",
-      "applyUrl": "https://job-boards.greenhouse.io/affirm/jobs/8045395003",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/affirm/jobs/8045395003",
-      "postedAt": "2026-10-30T17:15:12-04:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "Cursor"
       ],
       "companyIcon": ""
     },
@@ -606,26 +1595,24 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-fivetran-7865037003",
-      "company": "Fivetran",
-      "position": "Engineering Manager, Metadata",
-      "location": "Toronto, Ontario, Canada",
+      "id": "gr-acuitymd-6239875004",
+      "company": "AcuityMD",
+      "position": "Senior Platform Product Manager",
+      "location": "Boston or Remote",
       "locations": [
-        "Toronto, Ontario, Canada"
+        "Boston or Remote"
       ],
-      "remote": false,
-      "salary": "",
-      "description": "From Fivetran’s founding until now, our mission has remained the same: to make access to data as simple and reliable as electricity. With Fivetran, customer data arrives in their warehouses, canonical and ready to query, with no engineering or maintenance required. We’re proud that more...",
-      "applyUrl": "https://www.fivetran.com/careers/job?gh_jid=7865037003",
+      "remote": true,
+      "salary": "$175,000-$215,000",
+      "description": "Senior Platform Product Manager AcuityMD is the AI platform for MedTech trusted by over 500 MedTech companies – including 16 of the top 20. Commercial leaders use AcuityMD to identify target markets, surface top opportunities, and grow their business. By combining real-world healthcare data with...",
+      "applyUrl": "https://job-boards.greenhouse.io/acuitymd/jobs/6239875004",
       "source": "Greenhouse",
-      "sourceUrl": "https://www.fivetran.com/careers/job?gh_jid=7865037003",
-      "postedAt": "2026-10-30T16:17:07-04:00",
+      "sourceUrl": "https://job-boards.greenhouse.io/acuitymd/jobs/6239875004",
+      "postedAt": "2026-10-30T16:07:34-04:00",
       "tags": [
-        "Claude Code",
-        "Copilot",
-        "GraphQL"
+        "Claude Code"
       ],
-      "companyIcon": "https://fivetran.com/favicon.ico"
+      "companyIcon": ""
     },
     {
       "id": "gr-gitlab-8922013002",
@@ -801,27 +1788,6 @@
         "Claude Code"
       ],
       "companyIcon": "https://figma.com/favicon.ico"
-    },
-    {
-      "id": "gr-6sense-8257106",
-      "company": "6sense",
-      "position": "Business Solutions Partner - Enterprise AI",
-      "location": "Costa Rica, Remote",
-      "locations": [
-        "Costa Rica, Remote"
-      ],
-      "remote": true,
-      "salary": "",
-      "description": "Our Mission: 6sense's mission is to multiply what matters: growth, retention, and efficiency. We envision a future where companies, teams and people reach their full potential. Our People: People are the heart and soul of 6sense. We serve with passion and purpose. We live by our Being 6sense values...",
-      "applyUrl": "https://boards.greenhouse.io/6sense/jobs/8257106?gh_jid=8257106",
-      "source": "Greenhouse",
-      "sourceUrl": "https://boards.greenhouse.io/6sense/jobs/8257106?gh_jid=8257106",
-      "postedAt": "2026-10-30T13:34:50-04:00",
-      "tags": [
-        "Claude Code",
-        "Copilot"
-      ],
-      "companyIcon": ""
     },
     {
       "id": "gr-6sense-8238331",
@@ -1243,35 +2209,6 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-earnin-8335388",
-      "company": "EarnIn",
-      "position": "Senior Software Engineer",
-      "location": "Vancouver, Canada",
-      "locations": [
-        "Vancouver, Canada"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "About EarnIn As one of the first pioneers of earned wage access, our passion at EarnIn is building products that deliver real-time financial flexibility for those with the unique needs of living paycheck to paycheck. Our community members access their earnings as they earn them, with options to...",
-      "applyUrl": "https://job-boards.greenhouse.io/earnin/jobs/8335388",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/earnin/jobs/8335388",
-      "postedAt": "2026-10-30T11:23:22-04:00",
-      "tags": [
-        "Claude Code",
-        "React",
-        "TypeScript",
-        "Python",
-        "Go",
-        "PostgreSQL",
-        "AWS",
-        "Kubernetes",
-        "Cursor",
-        "Kotlin"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "gr-samsara-7917475",
       "company": "Samsara",
       "position": "Senior AI Data & Analytics Engineer II",
@@ -1361,78 +2298,6 @@
       "companyIcon": "https://sierra.ai/favicon.ico"
     },
     {
-      "id": "gr-coinbase-7652048",
-      "company": "Coinbase",
-      "position": "Senior Enterprise Engineer - Salesforce Platform (EAA - STP)",
-      "location": "Remote - USA",
-      "locations": [
-        "Remote - USA"
-      ],
-      "remote": true,
-      "salary": "",
-      "description": "Ready to do the most impactful work of your career? At Coinbase , we are uncompromising on our mission to increase economic freedom. The bar is high, the environment is intense, and we like it that way. This isn't a place for complacency, it’s a place to be pushed past your perceived limits. If...",
-      "applyUrl": "https://www.coinbase.com/careers/positions/7652048?gh_jid=7652048",
-      "source": "Greenhouse",
-      "sourceUrl": "https://www.coinbase.com/careers/positions/7652048?gh_jid=7652048",
-      "postedAt": "2026-10-30T10:22:33-04:00",
-      "tags": [
-        "Claude Code",
-        "Cursor"
-      ],
-      "companyIcon": "https://coinbase.com/favicon.ico"
-    },
-    {
-      "id": "gr-sonyinteractiveentertainmentglobal-6222405004",
-      "company": "PlayStation Global",
-      "position": "Lead Data Engineer",
-      "location": "United Kingdom, London",
-      "locations": [
-        "United Kingdom, London"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "Why Sony Interactive Entertainment? Sony Interactive Entertainment isn’t just the Best Place to Play — it’s also the Best Place to Work. Sony Interactive Entertainment (SIE) is the company behind the PlayStation brand. As a subsidiary of Sony Group Corporation, we’re part of a proud legacy of...",
-      "applyUrl": "https://job-boards.greenhouse.io/sonyinteractiveentertainmentglobal/jobs/6222405004",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/sonyinteractiveentertainmentglobal/jobs/6222405004",
-      "postedAt": "2026-10-30T10:12:57-04:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "Go",
-        "AWS"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-sonyinteractiveentertainmentglobal-6208604004",
-      "company": "PlayStation Global",
-      "position": "Senior Software Engineer - AI & Agentic Architecture",
-      "location": "United States, Aliso Viejo, CA",
-      "locations": [
-        "United States, Aliso Viejo, CA"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "Why Sony Interactive Entertainment? Sony Interactive Entertainment isn’t just the Best Place to Play — it’s also the Best Place to Work. Sony Interactive Entertainment (SIE) is the company behind the PlayStation brand. As a subsidiary of Sony Group Corporation, we’re part of a proud legacy of...",
-      "applyUrl": "https://job-boards.greenhouse.io/sonyinteractiveentertainmentglobal/jobs/6208604004",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/sonyinteractiveentertainmentglobal/jobs/6208604004",
-      "postedAt": "2026-10-30T10:04:55-04:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "Rust",
-        "Go",
-        "AWS",
-        "Docker",
-        "Kubernetes",
-        "Java",
-        "MCP"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "gr-gusto-8144140",
       "company": "Gusto",
       "position": "Staff Software Engineer, Unified Services Platform",
@@ -1498,57 +2363,6 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-alphasense-8634067002",
-      "company": "AlphaSense",
-      "position": "AI Security Engineer",
-      "location": "Remote - India",
-      "locations": [
-        "Remote - India"
-      ],
-      "remote": true,
-      "salary": "",
-      "description": "About AlphaSense: AlphaSense is the AI platform redefining market intelligence and workflow orchestration, trusted by thousands of leading organizations to drive faster, more confident decisions in business and finance. The platform combines domain-specific AI with a vast content universe of over...",
-      "applyUrl": "https://job-boards.greenhouse.io/alphasense/jobs/8634067002",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/alphasense/jobs/8634067002",
-      "postedAt": "2026-10-30T09:47:34-04:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "AWS",
-        "GCP",
-        "Azure",
-        "Copilot",
-        "MCP"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-gusto-7942791",
-      "company": "Gusto",
-      "position": "Senior Staff Software Engineer - Pricing and Packaging",
-      "location": "San Francisco, CA - Hybrid",
-      "locations": [
-        "San Francisco, CA - Hybrid"
-      ],
-      "remote": false,
-      "salary": "$189,000/yr",
-      "description": "About Gusto At Gusto, we're on a mission to grow the small business economy. We handle the hard stuff — payroll, health insurance, 401(k)s, and HR — so owners can focus on their craft and their customers. With teams in Denver, San Francisco, and New York, we support more than 500,000 small...",
-      "applyUrl": "https://job-boards.greenhouse.io/gusto/jobs/7942791",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/gusto/jobs/7942791",
-      "postedAt": "2026-10-30T09:45:24-04:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "Go",
-        "Copilot",
-        "Java",
-        "Ruby"
-      ],
-      "companyIcon": "https://gusto.com/favicon.ico"
-    },
-    {
       "id": "gr-gusto-7905578",
       "company": "Gusto",
       "position": "IT Internal Controls",
@@ -1569,31 +2383,6 @@
         "Claude Code"
       ],
       "companyIcon": "https://gusto.com/favicon.ico"
-    },
-    {
-      "id": "gr-dataiku-6239283004",
-      "company": "Dataiku",
-      "position": "Senior Web Developer - Growth Marketing",
-      "location": "United States, New York · United States, Remote",
-      "locations": [
-        "United States, New York",
-        "United States, Remote"
-      ],
-      "remote": true,
-      "salary": "",
-      "description": "Dataiku is the Platform for AI Success, the enterprise orchestration layer for building, deploying, and governing AI. In a single environment, teams design and operate analytics, machine learning, and AI agents with the transparency, collaboration, and control enterprises require. Sitting above...",
-      "applyUrl": "https://job-boards.greenhouse.io/dataiku/jobs/6239283004",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/dataiku/jobs/6239283004",
-      "postedAt": "2026-10-30T09:43:57-04:00",
-      "tags": [
-        "Claude Code",
-        "React",
-        "Next.js",
-        "TypeScript",
-        "JavaScript"
-      ],
-      "companyIcon": ""
     },
     {
       "id": "gr-gusto-7656216",
@@ -1738,32 +2527,6 @@
       "companyIcon": "https://fivetran.com/favicon.ico"
     },
     {
-      "id": "gr-fivetran-8017412003",
-      "company": "Fivetran",
-      "position": "Manager Software Engineering",
-      "location": "Oakland, California, United States, AMER",
-      "locations": [
-        "Oakland, California, United States, AMER"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "From Fivetran’s founding until now, our mission has remained the same: to make access to data as simple and reliable as electricity. With Fivetran, customer data arrives in their warehouses, canonical and ready to query, with no engineering or maintenance required. We’re proud that more...",
-      "applyUrl": "https://www.fivetran.com/careers/job?gh_jid=8017412003",
-      "source": "Greenhouse",
-      "sourceUrl": "https://www.fivetran.com/careers/job?gh_jid=8017412003",
-      "postedAt": "2026-10-30T08:55:39-04:00",
-      "tags": [
-        "Claude Code",
-        "PostgreSQL",
-        "AWS",
-        "GCP",
-        "Docker",
-        "Kubernetes",
-        "Java"
-      ],
-      "companyIcon": "https://fivetran.com/favicon.ico"
-    },
-    {
       "id": "gr-fivetran-8007249003",
       "company": "Fivetran",
       "position": "Senior Software Engineer",
@@ -1857,19 +2620,19 @@
       "companyIcon": "https://fivetran.com/favicon.ico"
     },
     {
-      "id": "gr-fivetran-8017186003",
+      "id": "gr-fivetran-8003725003",
       "company": "Fivetran",
       "position": "Senior Software Engineer - Orchestration",
-      "location": "USA - Austin (dbt)",
+      "location": "Oakland, California, United States",
       "locations": [
-        "USA - Austin (dbt)"
+        "Oakland, California, United States"
       ],
       "remote": false,
       "salary": "",
       "description": "From Fivetran’s founding until now, our mission has remained the same: to make access to data as simple and reliable as electricity. With Fivetran, customer data arrives in their warehouses, canonical and ready to query, with no engineering or maintenance required. We’re proud that more...",
-      "applyUrl": "https://www.fivetran.com/careers/job?gh_jid=8017186003",
+      "applyUrl": "https://www.fivetran.com/careers/job?gh_jid=8003725003",
       "source": "Greenhouse",
-      "sourceUrl": "https://www.fivetran.com/careers/job?gh_jid=8017186003",
+      "sourceUrl": "https://www.fivetran.com/careers/job?gh_jid=8003725003",
       "postedAt": "2026-10-30T08:53:34-04:00",
       "tags": [
         "Claude Code",
@@ -2112,27 +2875,6 @@
       "companyIcon": ""
     },
     {
-      "id": "as-harvey-21031616-e7b7-420a-a5b6-6c7006e55989",
-      "company": "Harvey",
-      "position": "Technical CX Specialist, EMEA",
-      "location": "Dublin",
-      "locations": [
-        "Dublin"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "WHY HARVEY\n\nAt Harvey, we’re transforming how legal and professional services operate. By combining frontier agentic AI, an enterprise-grade platform, and deep domain expertise, we’re reshaping how critical knowledge work gets done for decades to come.\n\nThis is a rare chance to help build a...",
-      "applyUrl": "https://jobs.ashbyhq.com/harvey/21031616-e7b7-420a-a5b6-6c7006e55989",
-      "source": "Ashby",
-      "sourceUrl": "https://jobs.ashbyhq.com/harvey/21031616-e7b7-420a-a5b6-6c7006e55989",
-      "postedAt": "2026-10-29T17:19:04.756+00:00",
-      "tags": [
-        "Claude Code",
-        "MCP"
-      ],
-      "companyIcon": "https://harvey.ai/favicon.ico"
-    },
-    {
       "id": "gr-lyft-8883515002",
       "company": "Lyft",
       "position": "Software Engineer, Supply Platform",
@@ -2206,31 +2948,6 @@
         "TypeScript",
         "JavaScript",
         "Cursor"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-dscout-4472803009",
-      "company": "Dscout",
-      "position": "Senior Forward Deployed Engineer (Full-Stack)",
-      "location": "Remote - US",
-      "locations": [
-        "Remote - US"
-      ],
-      "remote": true,
-      "salary": "",
-      "description": "At Dscout, we’re building the most flexible and powerful UX research platform on the market—trusted by the world’s top brands in finance (JP Morgan Chase, Intuit, Charles Schwab, PayPal), healthcare (Aya, Headspace), consumer goods (Keen, Verizon, Target, Northface), and tech (Google, Amazon,...",
-      "applyUrl": "https://job-boards.greenhouse.io/dscout/jobs/4472803009",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/dscout/jobs/4472803009",
-      "postedAt": "2026-10-29T16:29:24-04:00",
-      "tags": [
-        "Claude Code",
-        "React",
-        "Python",
-        "Cursor",
-        "Swift",
-        "Kotlin"
       ],
       "companyIcon": ""
     },
@@ -2458,6 +3175,50 @@
       "companyIcon": "https://lyft.com/favicon.ico"
     },
     {
+      "id": "gr-codeandtheory-8923226002",
+      "company": "Code and Theory",
+      "position": "Lead Engineer Technology (Data Engineering) (India)",
+      "location": "Bengaluru, Karnataka, India",
+      "locations": [
+        "Bengaluru, Karnataka, India"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "The Lead Data Engineer will own the design, build, and delivery of core components of our data platform and lead a pod of engineers working on them. You will help shape how Code and Theory collects, models, and activates data, powering analytics, predictive models, and generative AI across the...",
+      "applyUrl": "https://www.codeandtheory.com/careers/8923226002?gh_jid=8923226002",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.codeandtheory.com/careers/8923226002?gh_jid=8923226002",
+      "postedAt": "2026-10-29T11:00:16-04:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-codeandtheory-8923218002",
+      "company": "Code and Theory",
+      "position": "Director, Technology (Data Engineering) (India)",
+      "location": "Bengaluru, Karnataka, India",
+      "locations": [
+        "Bengaluru, Karnataka, India"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "The Technical Director, Data Engineering will own the vision, architecture, and delivery of our data platform and the engineering organization behind it. You will set the technical direction for how Code and Theory collects, models, and activates data, powering analytics, predictive models, and...",
+      "applyUrl": "https://www.codeandtheory.com/careers/8923218002?gh_jid=8923218002",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.codeandtheory.com/careers/8923218002?gh_jid=8923218002",
+      "postedAt": "2026-10-29T10:56:11-04:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "gr-stripe-8155390",
       "company": "Stripe",
       "position": "Design Program Manager, Research Operations",
@@ -2592,19 +3353,19 @@
       "companyIcon": "https://stripe.com/favicon.ico"
     },
     {
-      "id": "gr-stripe-8245230",
+      "id": "gr-stripe-7813411",
       "company": "Stripe",
       "position": "Strategy and Analytics Business Partner",
-      "location": "Bangalore",
+      "location": "Bengaluru",
       "locations": [
-        "Bangalore"
+        "Bengaluru"
       ],
       "remote": false,
       "salary": "",
       "description": "Who we are About Stripe Stripe is a financial infrastructure platform for businesses. Millions of companies - from the world’s largest enterprises to the most ambitious startups - use Stripe to accept payments, grow their revenue, and accelerate new business opportunities. Our mission is to...",
-      "applyUrl": "https://stripe.com/jobs/search?gh_jid=8245230",
+      "applyUrl": "https://stripe.com/jobs/search?gh_jid=7813411",
       "source": "Greenhouse",
-      "sourceUrl": "https://stripe.com/jobs/search?gh_jid=8245230",
+      "sourceUrl": "https://stripe.com/jobs/search?gh_jid=7813411",
       "postedAt": "2026-10-29T10:42:09-04:00",
       "tags": [
         "Claude Code"
@@ -2633,6 +3394,32 @@
         "MCP"
       ],
       "companyIcon": "https://elastic.co/favicon.ico"
+    },
+    {
+      "id": "gr-codeandtheory-8743647002",
+      "company": "Code and Theory",
+      "position": "Adobe Multi-Solution Architect, AEP/CDP (US)",
+      "location": "New York, New York, United States · Remote",
+      "locations": [
+        "New York, New York, United States",
+        "Remote"
+      ],
+      "remote": true,
+      "salary": "$150,000 – $215,000",
+      "description": "The Adobe Multi-Solution Architect (MSA) will play a vital role in the architecture design, configuration, testing and deployment of Adobe solutions, including Experience Platform, Real Time CDP, Experience Manager, Edge Delivery Services, Launch, Analytics, Target, Workfront, Fusion. You will work...",
+      "applyUrl": "https://www.codeandtheory.com/careers/8743647002?gh_jid=8743647002",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.codeandtheory.com/careers/8743647002?gh_jid=8743647002",
+      "postedAt": "2026-10-29T09:32:29-04:00",
+      "tags": [
+        "Claude Code",
+        "Next.js",
+        "TypeScript",
+        "Python",
+        "Cursor",
+        "Java"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "as-Easygenerator-7e605a51-4b83-4b29-9db0-1c6b67625119",
@@ -2671,6 +3458,31 @@
       "postedAt": "2026-10-29T08:51:42.479+00:00",
       "tags": [
         "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-codeandtheory-8611774002",
+      "company": "Code and Theory",
+      "position": "Multi-Solution Architect (India)",
+      "location": "Bengaluru, Karnataka, India",
+      "locations": [
+        "Bengaluru, Karnataka, India"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "WHAT YOU'LL DO Design and implement solutions to resolve Marketing or Care based challenges using the Adobe Experience Cloud solutions Assessing/auditing existing client digital ecosystems and recommend optimizations based on communicated client objectives, proven past successes and industry best...",
+      "applyUrl": "https://www.codeandtheory.com/careers/8611774002?gh_jid=8611774002",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.codeandtheory.com/careers/8611774002?gh_jid=8611774002",
+      "postedAt": "2026-10-29T07:50:05-04:00",
+      "tags": [
+        "Claude Code",
+        "Next.js",
+        "TypeScript",
+        "Python",
+        "Cursor",
+        "Java"
       ],
       "companyIcon": ""
     },
@@ -2956,32 +3768,6 @@
       "tags": [
         "Claude Code",
         "Python"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-life360-8801341002",
-      "company": "Life360",
-      "position": "Senior Backend Engineer II, AI Native, Vertical Experiences",
-      "location": "Remote, USA",
-      "locations": [
-        "Remote, USA"
-      ],
-      "remote": true,
-      "salary": "",
-      "description": "About Life360 Life360's mission is to keep people close to the ones they love. Our category-leading mobile app, Tile tracking devices, and Pet GPS tracker empower members to protect the people, pets, and things they care about most with a range of services, including location sharing, safe driver...",
-      "applyUrl": "https://job-boards.greenhouse.io/life360/jobs/8801341002",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/life360/jobs/8801341002",
-      "postedAt": "2026-10-28T19:35:08-04:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "Go",
-        "AWS",
-        "Cursor",
-        "Copilot",
-        "Java"
       ],
       "companyIcon": ""
     },
@@ -3391,6 +4177,64 @@
         "Cursor"
       ],
       "companyIcon": "https://docker.com/favicon.ico"
+    },
+    {
+      "id": "as-3y-health-56a60a91-0f80-497d-8e6a-ff51e559f8fc",
+      "company": "3Y Health",
+      "position": "Member of Technical Staff - Product Engineering, AI",
+      "location": "Remote – Montevideo",
+      "locations": [
+        "Remote – Montevideo"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "MEMBER OF TECHNICAL STAFF - PRODUCT ENGINEER, AI\n\n3Y Health · Remote, Uruguay · Full-time, Contractor\n\n\n\n\nABOUT 3Y HEALTH\n\n3Y Health is building the operating system for healthcare practices, an AI-native platform that helps clinicians start, run and grow their practice. We work as a managed...",
+      "applyUrl": "https://jobs.ashbyhq.com/3y-health/56a60a91-0f80-497d-8e6a-ff51e559f8fc",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/3y-health/56a60a91-0f80-497d-8e6a-ff51e559f8fc",
+      "postedAt": "2026-10-27T19:51:08.890+00:00",
+      "tags": [
+        "Claude Code",
+        "React Native",
+        "React",
+        "Next.js",
+        "TypeScript",
+        "Python",
+        "PostgreSQL",
+        "AWS",
+        "Cursor",
+        "Kotlin"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-3y-health-b1d8585e-29ad-4cf8-b5db-4f35ffd4b9ec",
+      "company": "3Y Health",
+      "position": "Member of Technical Staff",
+      "location": "Remote - Buenos Aires",
+      "locations": [
+        "Remote - Buenos Aires"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "ABOUT 3Y HEALTH\n\n3Y Health is building the operating system for healthcare practices, an AI-native platform that helps clinicians start, run and grow their practice. We work as a managed services organization (MSO): along with the software, our operations team runs the back office for the clinics...",
+      "applyUrl": "https://jobs.ashbyhq.com/3y-health/b1d8585e-29ad-4cf8-b5db-4f35ffd4b9ec",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/3y-health/b1d8585e-29ad-4cf8-b5db-4f35ffd4b9ec",
+      "postedAt": "2026-10-27T19:37:58.252+00:00",
+      "tags": [
+        "Claude Code",
+        "React Native",
+        "React",
+        "Next.js",
+        "TypeScript",
+        "Python",
+        "PostgreSQL",
+        "AWS",
+        "Cursor",
+        "Kotlin"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "as-opusclip-6906926b-eb37-4b68-ad17-5383fbda7818",
@@ -3945,27 +4789,6 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-mozilla-8324482",
-      "company": "Mozilla",
-      "position": "Contract Sr Data Analyst (SQL,Telemetry,Browser Engine)",
-      "location": "Remote Germany",
-      "locations": [
-        "Remote Germany"
-      ],
-      "remote": true,
-      "salary": "",
-      "description": "The Gecko platform is the core engine of our product experience. To maintain competitiveness and user satisfaction, we must move beyond surface-level metrics to understand the deep correlations between engine performance and real-world user behavior. We currently face challenges with data quality,...",
-      "applyUrl": "https://job-boards.greenhouse.io/mozilla/jobs/8324482",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/mozilla/jobs/8324482",
-      "postedAt": "2026-10-26T09:47:35-04:00",
-      "tags": [
-        "Claude Code",
-        "Rust"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "rok-remote-senior-software-engineer-latam-wagmo-1137572",
       "company": "Wagmo",
       "position": "Senior Software Engineer LATAM",
@@ -4066,27 +4889,6 @@
         "AWS",
         "Docker",
         "Cursor"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-prospectus-4458547009",
-      "company": "PRO-spectus",
-      "position": "Technical Delivery Manager – Healthcare, Release Management & AI",
-      "location": "US - Remote",
-      "locations": [
-        "US - Remote"
-      ],
-      "remote": true,
-      "salary": "$120,000 - 145,000,",
-      "description": "We are looking for an outcome-oriented, commercially minded Delivery Manager to run the execution and scaling of our patient services hub platforms. You will own the answer to one question: is it going to ship when we said it would? Releases, features, integrations, and fixes - on time, at quality,...",
-      "applyUrl": "https://job-boards.greenhouse.io/prospectus/jobs/4458547009",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/prospectus/jobs/4458547009",
-      "postedAt": "2026-10-23T19:50:23-04:00",
-      "tags": [
-        "Claude Code",
-        "Go"
       ],
       "companyIcon": ""
     },
@@ -4664,6 +5466,75 @@
       "companyIcon": ""
     },
     {
+      "id": "gr-alixpartners-8035494003",
+      "company": "AlixPartners",
+      "position": "Staff Platform Engineer, Senior Vice President",
+      "location": "United States",
+      "locations": [
+        "United States"
+      ],
+      "remote": false,
+      "salary": "$175,000/year",
+      "description": "Staff Platform Engineer — Senior Vice President At AlixPartners, we solve the most complex and critical challenges by moving quickly from analysis to action when it really matters; creating value that has a lasting impact on companies, their people, and the communities they serve. We hold ourselves...",
+      "applyUrl": "https://www.alixpartners.com/careers/8035494003?gh_jid=8035494003",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.alixpartners.com/careers/8035494003?gh_jid=8035494003",
+      "postedAt": "2026-10-22T13:14:06-04:00",
+      "tags": [
+        "Claude Code",
+        "TypeScript",
+        "Python",
+        "Go",
+        "AWS",
+        "GCP",
+        "Azure",
+        "Kubernetes",
+        "Copilot"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-joinpogo-f1ce7a4b-ad61-48d7-afc7-0088da404b81",
+      "company": "Joinpogo",
+      "position": "GTM Engineer",
+      "location": "United States/Canada",
+      "locations": [
+        "United States/Canada"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "ABOUT YOUR ROLE 👀\n\nAs the first GTM Engineer at Pogo, you'll partner with our Growth, Sales, Design, and Engineering teams to build AI-powered systems that compound revenue. You'll work on our enterprise AI SaaS product https://joinpogo.ai/ as both a builder and an operator: shipping code that...",
+      "applyUrl": "https://jobs.ashbyhq.com/joinpogo/f1ce7a4b-ad61-48d7-afc7-0088da404b81",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/joinpogo/f1ce7a4b-ad61-48d7-afc7-0088da404b81",
+      "postedAt": "2026-10-22T12:22:42.410+00:00",
+      "tags": [
+        "Claude Code",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-engine-7733982003",
+      "company": "Engine",
+      "position": "Growth Marketing Lead, Spend",
+      "location": "Remote - US",
+      "locations": [
+        "Remote - US"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "About Engine Engine is the AI-native platform for intelligent travel. For a decade, Engine has built the proprietary technology and supply behind modern business travel, serving over 40,000 customers and nearly 2 million travelers, along with leading travel and AI companies that build on Engine's...",
+      "applyUrl": "https://job-boards.greenhouse.io/engine/jobs/7733982003",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/engine/jobs/7733982003",
+      "postedAt": "2026-10-22T10:22:42-04:00",
+      "tags": [
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "anth-4986159008",
       "company": "Anthropic",
       "position": "AI Outcomes Manager, GSI",
@@ -4857,31 +5728,39 @@
       "companyIcon": "https://pinecone.io/favicon.ico"
     },
     {
-      "id": "as-Bevaya-a15399bb-fde2-4221-9999-ae3895beb113",
-      "company": "Bevaya",
-      "position": "Senior Software Engineer",
-      "location": "Phillippines Office",
+      "id": "as-ScribdInc-469270ab-5517-400a-884d-afc85a3821b3",
+      "company": "Scribdinc",
+      "position": "Staff Backend Engineer (Payments and Billing)",
+      "location": "San Francisco · Toronto · Los Angeles · Denver · Chicago · New York City · Vancouver · Seattle · Austin · Boston · Dalla",
       "locations": [
-        "Phillippines Office"
+        "San Francisco",
+        "Toronto",
+        "Los Angeles",
+        "Denver",
+        "Chicago",
+        "New York City",
+        "Vancouver",
+        "Seattle",
+        "Austin",
+        "Boston",
+        "Dallas"
       ],
       "remote": false,
       "salary": "",
-      "description": "SENIOR SOFTWARE ENGINEER\n\n\n\n\nABOUT THE ROLE\n\nBevaya builds high-reliability, AI-first workflow automation engines for the insurance sector. Our platform orchestrates complex business logic, document processing, and automated decision-making where data integrity, auditability, and execution...",
-      "applyUrl": "https://jobs.ashbyhq.com/Bevaya/a15399bb-fde2-4221-9999-ae3895beb113",
+      "description": "Scribd, Inc. is on a mission to advance human understanding. Our four products — Scribd®, Slideshare®, Everand™, and Fable — help billions of people across the globe move beyond access and into insight, application, and expertise.\n\n\n\n\nCULTURE AT SCRIBD, INC.\n\nWe support a culture where our...",
+      "applyUrl": "https://jobs.ashbyhq.com/ScribdInc/469270ab-5517-400a-884d-afc85a3821b3",
       "source": "Ashby",
-      "sourceUrl": "https://jobs.ashbyhq.com/Bevaya/a15399bb-fde2-4221-9999-ae3895beb113",
-      "postedAt": "2026-10-21T19:28:45.060+00:00",
+      "sourceUrl": "https://jobs.ashbyhq.com/ScribdInc/469270ab-5517-400a-884d-afc85a3821b3",
+      "postedAt": "2026-10-21T19:36:14.384+00:00",
       "tags": [
         "Claude Code",
-        "React",
-        "TypeScript",
         "Python",
         "Go",
         "PostgreSQL",
-        "AWS",
-        "Azure",
-        "Cursor",
-        "Java"
+        "Java",
+        "Ruby",
+        "MySQL",
+        "MCP"
       ],
       "companyIcon": ""
     },
@@ -5552,26 +6431,6 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
-      "id": "gr-prospectus-4455089009",
-      "company": "PRO-spectus",
-      "position": "Technical Product Owner – Salesforce Health Cloud & AI-Enabled Agile Delivery",
-      "location": "US - Remote",
-      "locations": [
-        "US - Remote"
-      ],
-      "remote": true,
-      "salary": "$115,000 - 140,000,",
-      "description": "We are looking for a Product Owner who wants to shape a product, not administer a backlog. In this role you will own what our development team builds and why, for the Salesforce Health Cloud solutions that power a fast-growing patient services business. You will help shape the roadmap alongside our...",
-      "applyUrl": "https://job-boards.greenhouse.io/prospectus/jobs/4455089009",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/prospectus/jobs/4455089009",
-      "postedAt": "2026-10-19T17:08:53-04:00",
-      "tags": [
-        "Claude Code"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "as-miro-d98285e4-6f0a-48ab-a30d-66869d81e200",
       "company": "Miro",
       "position": "Forward Deployed Consultant, Manufacturing",
@@ -5982,6 +6841,31 @@
       "companyIcon": ""
     },
     {
+      "id": "le-RyzLabs-34d126be-b8fa-4291-8bc4-924031455850",
+      "company": "Ryzlabs",
+      "position": "AI-First Frontend Software Engineer",
+      "location": "Argentina",
+      "locations": [
+        "Argentina"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "We're looking for an AI-First Frontend Software Engineer who combines strong frontend engineering skills with exceptional attention to design and user experience. This is an opportunity to help build AI-powered products, focusing on crafting intuitive, polished, and delightful user experiences.\nThe...",
+      "applyUrl": "https://jobs.lever.co/RyzLabs/34d126be-b8fa-4291-8bc4-924031455850",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/RyzLabs/34d126be-b8fa-4291-8bc4-924031455850",
+      "postedAt": "2026-10-16T13:28:02.547000+00:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "TypeScript",
+        "JavaScript",
+        "Cursor",
+        "Copilot"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "gr-stateaffairs-4009196009",
       "company": "State Affairs",
       "position": "Software Engineer ",
@@ -6175,6 +7059,30 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
+      "id": "gr-medialabaiinc-4453352009",
+      "company": "MediaLab.AI Inc.",
+      "position": "Backend Engineer, Kik (Contractor)",
+      "location": "LATAM (Mexico or Argentina)",
+      "locations": [
+        "LATAM (Mexico or Argentina)"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Your Role at MediaLab MediaLab Engineering supports a number of applications across multiple business verticals which have been acquired through a careful selection process to integrate with its internal Ad platform that processes billions of impressions a month. Kik, our messaging brand carrying...",
+      "applyUrl": "https://job-boards.greenhouse.io/medialabaiinc/jobs/4453352009",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/medialabaiinc/jobs/4453352009",
+      "postedAt": "2026-10-15T18:34:59-04:00",
+      "tags": [
+        "Claude Code",
+        "GCP",
+        "Docker",
+        "Kubernetes",
+        "Java"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "anth-5453550008",
       "company": "Anthropic",
       "position": "Technical Program Manager, SOX Compliance",
@@ -6344,6 +7252,34 @@
         "Docker"
       ],
       "companyIcon": "https://warp.dev/favicon.ico"
+    },
+    {
+      "id": "le-hypebeast-c3c702ab-3880-4ae5-81ce-557ea16fe119",
+      "company": "Hypebeast",
+      "position": "Senior Software Engineer",
+      "location": "Hong Kong",
+      "locations": [
+        "Hong Kong"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": " Responsibilities: Own the end-to-end delivery of full-stack features, from requirements clarification and technical design through implementation, testing, deployment, and post-release support. Work directly with product, operations, and app engineering teams to translate business needs into...",
+      "applyUrl": "https://jobs.lever.co/hypebeast/c3c702ab-3880-4ae5-81ce-557ea16fe119",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/hypebeast/c3c702ab-3880-4ae5-81ce-557ea16fe119",
+      "postedAt": "2026-10-15T04:04:25.746000+00:00",
+      "tags": [
+        "Claude Code",
+        "TypeScript",
+        "Python",
+        "Node.js",
+        "AWS",
+        "Docker",
+        "Copilot",
+        "Vue.js",
+        "MySQL"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "le-atomcomputing-3378aa55-86c5-449f-b3e9-0ebb73d8ee0b",
@@ -6660,6 +7596,36 @@
         "Claude Code",
         "Cursor",
         "Copilot"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-codeandtheory-8815828002",
+      "company": "Code and Theory",
+      "position": "Lead Engineer, Full Stack (US)",
+      "location": "Austin, Texas, United States · New York, New York, United States",
+      "locations": [
+        "Austin, Texas, United States",
+        "New York, New York, United States"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Code and Theory is seeking a full-stack lead engineer to help build The Machine, our agentic operating system for marketing. This is a senior, hands-on role, setting technical direction, developing the team, and staying in the code building, the AI-native digital platforms, and user experiences...",
+      "applyUrl": "https://www.codeandtheory.com/careers/8815828002?gh_jid=8815828002",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.codeandtheory.com/careers/8815828002?gh_jid=8815828002",
+      "postedAt": "2026-10-14T10:19:07-04:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "Next.js",
+        "Python",
+        "Node.js",
+        "AWS",
+        "GCP",
+        "Azure",
+        "Kubernetes",
+        "Cursor"
       ],
       "companyIcon": ""
     },
@@ -7207,6 +8173,108 @@
       "companyIcon": ""
     },
     {
+      "id": "gr-codeandtheory-8606150002",
+      "company": "Code and Theory",
+      "position": "Adobe Multi-Solution Architect, AEM/EDS (US)",
+      "location": "New York, New York, United States · Remote",
+      "locations": [
+        "New York, New York, United States",
+        "Remote"
+      ],
+      "remote": true,
+      "salary": "$150,000 – $225,000",
+      "description": "The Adobe Multi-Solution Architect (MSA) will play a vital role in the architecture design, configuration, testing and deployment of Adobe solutions, including Experience Manager, Edge Delivery Services, Real Time CDP, Launch, Analytics, Target, Experience Platform, Workfront, Fusion. You will work...",
+      "applyUrl": "https://www.codeandtheory.com/careers/8606150002?gh_jid=8606150002",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.codeandtheory.com/careers/8606150002?gh_jid=8606150002",
+      "postedAt": "2026-10-12T13:56:23-04:00",
+      "tags": [
+        "Claude Code",
+        "Next.js",
+        "TypeScript",
+        "Python",
+        "Cursor",
+        "Java"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-codeandtheory-8743650002",
+      "company": "Code and Theory",
+      "position": "Adobe Multi-Solution Architect, Firefly/GenStudio (US)",
+      "location": "New York, New York, United States · Remote",
+      "locations": [
+        "New York, New York, United States",
+        "Remote"
+      ],
+      "remote": true,
+      "salary": "$150,000 – $225,000",
+      "description": "The Adobe Multi-Solution Architect (MSA) will play a vital role in the architecture design, configuration, testing and deployment of Adobe solutions, including Firefly, GenStudio, Experience Manager, Edge Delivery Services, Real Time CDP, Launch, Analytics, Target, Experience Platform, Workfront,...",
+      "applyUrl": "https://www.codeandtheory.com/careers/8743650002?gh_jid=8743650002",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.codeandtheory.com/careers/8743650002?gh_jid=8743650002",
+      "postedAt": "2026-10-12T13:56:23-04:00",
+      "tags": [
+        "Claude Code",
+        "Next.js",
+        "TypeScript",
+        "Python",
+        "Cursor",
+        "Java"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-codeandtheory-8743616002",
+      "company": "Code and Theory",
+      "position": "Adobe Multi-Solution Architect, Workfront/Fusion (US)",
+      "location": "New York, New York, United States · Remote",
+      "locations": [
+        "New York, New York, United States",
+        "Remote"
+      ],
+      "remote": true,
+      "salary": "$150,000 – $225,000",
+      "description": "The Adobe Multi-Solution Architect (MSA) will play a vital role in the architecture design, configuration, testing and deployment of Adobe solutions, including Workfront, Fusion, Real Time CDP, Launch, Analytics, Target and Experience Manager, Experience Platform, and Edge Delivery Services. You...",
+      "applyUrl": "https://www.codeandtheory.com/careers/8743616002?gh_jid=8743616002",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.codeandtheory.com/careers/8743616002?gh_jid=8743616002",
+      "postedAt": "2026-10-12T13:56:23-04:00",
+      "tags": [
+        "Claude Code",
+        "Next.js",
+        "TypeScript",
+        "Python",
+        "Cursor",
+        "Java"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-codeandtheory-8733846002",
+      "company": "Code and Theory",
+      "position": "Director, Creative Technology (US)",
+      "location": "New York, New York, United States · Remote",
+      "locations": [
+        "New York, New York, United States",
+        "Remote"
+      ],
+      "remote": true,
+      "salary": "$160,000 – $225,000",
+      "description": "We are seeking a Creative Technologist specializing in creating scalable AI-assisted creative workflows, 3D scene automation, motion graphics pipelines, and solving our clients most pressing content scalability challenges. Operating at the exact intersection of production engineering and visual...",
+      "applyUrl": "https://www.codeandtheory.com/careers/8733846002?gh_jid=8733846002",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.codeandtheory.com/careers/8733846002?gh_jid=8733846002",
+      "postedAt": "2026-10-12T13:56:23-04:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Cursor",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "gr-bitwarden-8005324003",
       "company": "Bitwarden",
       "position": "Lead Software Engineer (Provider/Business Unit Portals)",
@@ -7306,6 +8374,32 @@
         "Cursor"
       ],
       "companyIcon": "https://notion.so/favicon.ico"
+    },
+    {
+      "id": "as-netboxlabs-a9d87cf1-d769-4138-9ba8-8726df1481d3",
+      "company": "Netboxlabs",
+      "position": "Staff Software Engineer, Tech Lead - NetBox Delivery",
+      "location": "US East Coast Remote",
+      "locations": [
+        "US East Coast Remote"
+      ],
+      "remote": true,
+      "salary": "$110K – $240K • Offers Equity • Offers Bonus • Multiple Ranges",
+      "description": "NetBox Labs is seeking a Staff Software Engineer and Tech Lead for NetBox Delivery, a new team in our Applications group.\n\nNetBox is a product that reaches people in a few ways: our open source community runs NetBox OSS; commercial customers use NetBox Cloud (SaaS) or NetBox Enterprise...",
+      "applyUrl": "https://jobs.ashbyhq.com/netboxlabs/a9d87cf1-d769-4138-9ba8-8726df1481d3",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/netboxlabs/a9d87cf1-d769-4138-9ba8-8726df1481d3",
+      "postedAt": "2026-10-09T15:07:13.817+00:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Rust",
+        "PostgreSQL",
+        "AWS",
+        "Kubernetes",
+        "Django"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "le-provectus-ce930027-43a2-4b4c-af03-ea3edb8f7581",
@@ -7423,6 +8517,30 @@
         "JavaScript",
         "Cursor",
         "Copilot"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "le-saviynt-7212a803-65f8-46f6-adf6-f1c36ad2a629",
+      "company": "Saviynt",
+      "position": "Principal Software Engineer (Java/J2ee)",
+      "location": "Bengaluru, India",
+      "locations": [
+        "Bengaluru, India"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Saviynt's AI-powered identity platform manages and governs human and non-human access to all of an organization's applications, data, and business processes. Customers trust Saviynt to safeguard their digital assets, drive operational efficiency, and reduce compliance costs. Built for the AI age,...",
+      "applyUrl": "https://jobs.lever.co/saviynt/7212a803-65f8-46f6-adf6-f1c36ad2a629",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/saviynt/7212a803-65f8-46f6-adf6-f1c36ad2a629",
+      "postedAt": "2026-10-09T04:59:04.645000+00:00",
+      "tags": [
+        "Claude Code",
+        "JavaScript",
+        "Cursor",
+        "Copilot",
+        "Java"
       ],
       "companyIcon": ""
     },
@@ -7934,6 +9052,31 @@
       "companyIcon": ""
     },
     {
+      "id": "gr-acuitymd-6212199004",
+      "company": "AcuityMD",
+      "position": "Senior Software Engineer, Applications",
+      "location": "Boston or Remote",
+      "locations": [
+        "Boston or Remote"
+      ],
+      "remote": true,
+      "salary": "155k-215k",
+      "description": "Senior Software Engineer, Applications AcuityMD is the AI platform for MedTech trusted by over 500 MedTech companies – including 16 of the top 20. Commercial leaders use AcuityMD to identify target markets, surface top opportunities, and grow their business. By combining real-world healthcare data...",
+      "applyUrl": "https://job-boards.greenhouse.io/acuitymd/jobs/6212199004",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/acuitymd/jobs/6212199004",
+      "postedAt": "2026-10-02T12:37:03-04:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "Python",
+        "Node.js",
+        "PostgreSQL",
+        "GraphQL"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "hn-49931746",
       "company": "Search Atlas",
       "position": "Product Engineer (Product Manager role, not a Full-stack role)",
@@ -7955,6 +9098,38 @@
         "PostgreSQL",
         "Cursor",
         "Django"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "le-mendix-501e1e65-9cf5-473a-b7ec-5bcd756a935e",
+      "company": "Mendix",
+      "position": "Intelligence Center X Principal - EMEA",
+      "location": "Rotterdam · London · Amsterdam · Munich · Berlin · Erlangen · Frankfurt · Stuttgart · France",
+      "locations": [
+        "Rotterdam",
+        "London",
+        "Amsterdam",
+        "Munich",
+        "Berlin",
+        "Erlangen",
+        "Frankfurt",
+        "Stuttgart",
+        "France"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Lead our most strategic enterprise agentic AI engagements, and set the standard for how Intelligence Center X is brought to customers.\nAbout Intelligence Center X\nIntelligence Center X (ICX) is Siemens' industrial AI platform. ICX combines Siemens' own core graph, ontology, machine learning and...",
+      "applyUrl": "https://jobs.lever.co/mendix/501e1e65-9cf5-473a-b7ec-5bcd756a935e",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/mendix/501e1e65-9cf5-473a-b7ec-5bcd756a935e",
+      "postedAt": "2026-10-02T09:43:38.187000+00:00",
+      "tags": [
+        "Claude Code",
+        "AWS",
+        "Cursor",
+        "Copilot",
+        "MCP"
       ],
       "companyIcon": ""
     },
@@ -8264,6 +9439,79 @@
       "companyIcon": "https://snyk.io/favicon.ico"
     },
     {
+      "id": "le-mendix-6062844f-b2a5-4b3c-915b-18d508a675e8",
+      "company": "Mendix",
+      "position": "Intelligence Center X Engineering Manager - Americas",
+      "location": "United States",
+      "locations": [
+        "United States"
+      ],
+      "remote": false,
+      "salary": "$197,300-$394,600",
+      "description": "Bring Intelligence Center X to life for leading companies, through business-relevant enterprise agentic AI use cases.\nBuild and lead the team that brings Intelligence Center X to life for leading companies across the Americas, through business-relevant enterprise agentic AI use cases.\nAbout...",
+      "applyUrl": "https://jobs.lever.co/mendix/6062844f-b2a5-4b3c-915b-18d508a675e8",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/mendix/6062844f-b2a5-4b3c-915b-18d508a675e8",
+      "postedAt": "2026-09-30T17:42:28.194000+00:00",
+      "tags": [
+        "Claude Code",
+        "AWS",
+        "Cursor",
+        "Copilot",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "le-mendix-cd55ab39-b30a-4b90-8881-52b8811c9dcf",
+      "company": "Mendix",
+      "position": "Intelligence Center X Engineer - Americas",
+      "location": "United States",
+      "locations": [
+        "United States"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Bring Intelligence Center X to life for leading companies, through business-relevant enterprise agentic AI use cases.\n \nAbout Intelligence Center X\nIntelligence Center X (ICX) is Siemens' industrial AI platform. ICX combines Siemens' own core graph, ontology, machine learning and agentic AI...",
+      "applyUrl": "https://jobs.lever.co/mendix/cd55ab39-b30a-4b90-8881-52b8811c9dcf",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/mendix/cd55ab39-b30a-4b90-8881-52b8811c9dcf",
+      "postedAt": "2026-09-30T17:40:21.845000+00:00",
+      "tags": [
+        "Claude Code",
+        "AWS",
+        "Cursor",
+        "Copilot",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "le-mendix-91b5c524-e36b-4e5e-9d1c-f42854fbf638",
+      "company": "Mendix",
+      "position": "Intelligence Center X Principal - Americas",
+      "location": "Boston, MA · United States",
+      "locations": [
+        "Boston, MA",
+        "United States"
+      ],
+      "remote": false,
+      "salary": "$197,300-$394,600",
+      "description": "Lead our most strategic enterprise agentic AI engagements, and set the standard for how Intelligence Center X is brought to customers.\nAbout Intelligence Center X\nIntelligence Center X (ICX) is Siemens' industrial AI platform. ICX combines Siemens' own core graph, ontology, machine learning and...",
+      "applyUrl": "https://jobs.lever.co/mendix/91b5c524-e36b-4e5e-9d1c-f42854fbf638",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/mendix/91b5c524-e36b-4e5e-9d1c-f42854fbf638",
+      "postedAt": "2026-09-30T16:41:40.308000+00:00",
+      "tags": [
+        "Claude Code",
+        "AWS",
+        "Cursor",
+        "Copilot",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "anth-5146298008",
       "company": "Anthropic",
       "position": "Staff+ Software Engineer, Billing Platform",
@@ -8285,6 +9533,39 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "le-mendix-3be1cbcf-1ab4-4309-a764-2c336d1f7f37",
+      "company": "Mendix",
+      "position": "Intelligence Center X Engineer - EMEA",
+      "location": "Rotterdam · London · Frankfurt · Munich · Nuremberg · Stuttgart · Cologne · Paris · France · Nordics or CEE",
+      "locations": [
+        "Rotterdam",
+        "London",
+        "Frankfurt",
+        "Munich",
+        "Nuremberg",
+        "Stuttgart",
+        "Cologne",
+        "Paris",
+        "France",
+        "Nordics or CEE"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Bring Intelligence Center X to life for leading companies, through business-relevant enterprise agentic AI use cases.\nAbout Intelligence Center X\nIntelligence Center X (ICX) is Siemens' industrial AI platform. ICX combines Siemens' own core graph, ontology, machine learning and agentic AI...",
+      "applyUrl": "https://jobs.lever.co/mendix/3be1cbcf-1ab4-4309-a764-2c336d1f7f37",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/mendix/3be1cbcf-1ab4-4309-a764-2c336d1f7f37",
+      "postedAt": "2026-09-30T12:11:49.329000+00:00",
+      "tags": [
+        "Claude Code",
+        "AWS",
+        "Cursor",
+        "Copilot",
+        "MCP"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "anth-5439830008",
@@ -8332,29 +9613,35 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-schonfeld-7957507",
-      "company": "Schonfeld ",
-      "position": "Software Engineer - Fundamental Equities",
-      "location": "New York, New York, United States",
+      "id": "le-mendix-9698a6c7-fde6-4517-be27-833f6528cc89",
+      "company": "Mendix",
+      "position": "Intelligence Center X Engineering Manager - EMEA",
+      "location": "Rotterdam · London · Berlin · Cologne · Frankfurt · Hamburg · Hannover · Leipzig · Munich · Nuremberg · Stuttgart",
       "locations": [
-        "New York, New York, United States"
+        "Rotterdam",
+        "London",
+        "Berlin",
+        "Cologne",
+        "Frankfurt",
+        "Hamburg",
+        "Hannover",
+        "Leipzig",
+        "Munich",
+        "Nuremberg",
+        "Stuttgart"
       ],
       "remote": false,
-      "salary": "$150k",
-      "description": "The Role We are looking for a Software Engineer to join the Fundamental Equity COO team, embedded directly within the business rather than in a central technology function. You will work alongside quant researchers and COO management to build backend services, data pipelines, and internal APIs that...",
-      "applyUrl": "https://job-boards.greenhouse.io/schonfeld/jobs/7957507",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/schonfeld/jobs/7957507",
-      "postedAt": "2026-09-30T11:04:07-04:00",
+      "salary": "",
+      "description": "Build and lead the team that brings Intelligence Center X to life for leading companies across the EMEA, through business-relevant enterprise agentic AI use cases.\nAbout Intelligence Center X\nIntelligence Center X (ICX) is Siemens' industrial AI platform. ICX combines Siemens' own core graph,...",
+      "applyUrl": "https://jobs.lever.co/mendix/9698a6c7-fde6-4517-be27-833f6528cc89",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/mendix/9698a6c7-fde6-4517-be27-833f6528cc89",
+      "postedAt": "2026-09-30T10:10:37.389000+00:00",
       "tags": [
         "Claude Code",
-        "React",
-        "Python",
-        "PostgreSQL",
         "AWS",
-        "Docker",
-        "Kubernetes",
         "Cursor",
+        "Copilot",
         "MCP"
       ],
       "companyIcon": ""
@@ -8381,19 +9668,19 @@
       "companyIcon": "https://intercom.com/favicon.ico"
     },
     {
-      "id": "gr-tailscale-4721714005",
+      "id": "gr-tailscale-4721713005",
       "company": "Tailscale",
       "position": "Software Engineer, Strategic Projects",
-      "location": "Remote (United States)",
+      "location": "Remote (Canada)",
       "locations": [
-        "Remote (United States)"
+        "Remote (Canada)"
       ],
       "remote": true,
       "salary": "",
       "description": "Thank you for considering Tailscale. If this job description resonates with you, please apply. Frequently cited statistics show that people who identify with historically marginalized groups are likely to apply to jobs only if they meet 100% of the qualifications. We encourage you to help us break...",
-      "applyUrl": "https://job-boards.greenhouse.io/tailscale/jobs/4721714005",
+      "applyUrl": "https://job-boards.greenhouse.io/tailscale/jobs/4721713005",
       "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/tailscale/jobs/4721714005",
+      "sourceUrl": "https://job-boards.greenhouse.io/tailscale/jobs/4721713005",
       "postedAt": "2026-09-29T20:38:27-04:00",
       "tags": [
         "Claude Code",
@@ -8555,6 +9842,32 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "gr-engine-7994750003",
+      "company": "Engine",
+      "position": "Staff Software Engineer",
+      "location": "Remote - US",
+      "locations": [
+        "Remote - US"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "About Engine Engine is the AI-native platform for intelligent travel. For a decade, Engine has built the proprietary technology and supply behind modern business travel, serving over 40,000 customers and nearly 2 million travelers, along with leading travel and AI companies that build on Engine's...",
+      "applyUrl": "https://job-boards.greenhouse.io/engine/jobs/7994750003",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/engine/jobs/7994750003",
+      "postedAt": "2026-09-28T14:04:23-04:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "TypeScript",
+        "Node.js",
+        "AWS",
+        "Cursor",
+        "Kotlin"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "anth-5382518008",
@@ -8965,6 +10278,31 @@
       "companyIcon": ""
     },
     {
+      "id": "gr-acuitymd-5755363004",
+      "company": "AcuityMD",
+      "position": "Senior or Staff Software Engineer, Infrastructure ",
+      "location": "Boston or Remote",
+      "locations": [
+        "Boston or Remote"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "Senior or Staff Software Engineer, Infrastructure AcuityMD is the AI platform for MedTech trusted by over 500 MedTech companies – including 16 of the top 20. Commercial leaders use AcuityMD to identify target markets, surface top opportunities, and grow their business. By combining real-world...",
+      "applyUrl": "https://job-boards.greenhouse.io/acuitymd/jobs/5755363004",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/acuitymd/jobs/5755363004",
+      "postedAt": "2026-09-22T12:39:41-04:00",
+      "tags": [
+        "Claude Code",
+        "TypeScript",
+        "JavaScript",
+        "Python",
+        "Go",
+        "Kubernetes"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "as-Crusoe-a47eea20-0f86-4d60-ab86-4e4f9ad9abc7",
       "company": "Crusoe",
       "position": "Senior Director, Analytics & Data Science",
@@ -9060,6 +10398,31 @@
         "Cursor"
       ],
       "companyIcon": "https://decagon.ai/favicon.ico"
+    },
+    {
+      "id": "as-netboxlabs-f8093bde-80b6-47b7-b01e-eaa2cd42e272",
+      "company": "Netboxlabs",
+      "position": "Staff Software Backend Engineer, Tech Lead - Foundations",
+      "location": "US Remote · UK, Remote",
+      "locations": [
+        "US Remote",
+        "UK, Remote"
+      ],
+      "remote": true,
+      "salary": "$220K – $240K • Offers Equity • Offers Bonus • Multiple Ranges",
+      "description": "ABOUT NETBOX LABS\n\nAt NetBox Labs, our mission is to make it easier to build and manage complex networks and infrastructure. We provide the leading network infrastructure management platform used by enterprises, data centers, and network practitioners worldwide.\n\n\n\n\nWHY THIS ROLE, WHY...",
+      "applyUrl": "https://jobs.ashbyhq.com/netboxlabs/f8093bde-80b6-47b7-b01e-eaa2cd42e272",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/netboxlabs/f8093bde-80b6-47b7-b01e-eaa2cd42e272",
+      "postedAt": "2026-09-21T18:44:15.437+00:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "PostgreSQL",
+        "Kubernetes",
+        "Redis"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "gr-intercom-8172406",
@@ -9467,27 +10830,6 @@
         "Cursor"
       ],
       "companyIcon": "https://harvey.ai/favicon.ico"
-    },
-    {
-      "id": "as-ramp-fddcfe54-6fd2-4091-bf9c-346f35606cc9",
-      "company": "Ramp",
-      "position": "Director, Strategic Finance",
-      "location": "New York, NY (HQ) · San Francisco, CA",
-      "locations": [
-        "New York, NY (HQ)",
-        "San Francisco, CA"
-      ],
-      "remote": false,
-      "salary": "$280K – $385K • Offers Equity",
-      "description": "ABOUT RAMP\n\nRamp is building the smart infrastructure for finance teams, embedded in the transaction flow of every dollar a business spends. We automate how over $275B in annualized spend flows in and out of 85,000+ companies: authorizing payments, flagging risk, categorizing spend, and closing...",
-      "applyUrl": "https://jobs.ashbyhq.com/ramp/fddcfe54-6fd2-4091-bf9c-346f35606cc9",
-      "source": "Ashby",
-      "sourceUrl": "https://jobs.ashbyhq.com/ramp/fddcfe54-6fd2-4091-bf9c-346f35606cc9",
-      "postedAt": "2026-09-08T19:47:11.721+00:00",
-      "tags": [
-        "Claude Code"
-      ],
-      "companyIcon": "https://ramp.com/favicon.ico"
     },
     {
       "id": "as-lightsage-06e781bf-5949-417e-9256-4af8fe737f13",
@@ -10581,6 +11923,41 @@
       "companyIcon": "https://clickup.com/favicon.ico"
     },
     {
+      "id": "as-ScribdInc-ab6eba49-d919-4fab-a20c-58d8e92adf61",
+      "company": "Scribdinc",
+      "position": "Staff Software Engineer, Core Infrastructure",
+      "location": "San Francisco · Toronto · Los Angeles · Denver · Chicago · New York City · Vancouver · Seattle · Austin · Boston · Dalla",
+      "locations": [
+        "San Francisco",
+        "Toronto",
+        "Los Angeles",
+        "Denver",
+        "Chicago",
+        "New York City",
+        "Vancouver",
+        "Seattle",
+        "Austin",
+        "Boston",
+        "Dallas"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Scribd, Inc. is on a mission to advance human understanding. Our four products — Scribd®, Slideshare®, Everand™, and Fable — help billions of people across the globe move beyond access and into insight, application, and expertise.\n\n\n\n\nCULTURE AT SCRIBD, INC.\n\nWe support a culture where our...",
+      "applyUrl": "https://jobs.ashbyhq.com/ScribdInc/ab6eba49-d919-4fab-a20c-58d8e92adf61",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/ScribdInc/ab6eba49-d919-4fab-a20c-58d8e92adf61",
+      "postedAt": "2026-08-18T18:24:38.846+00:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Rust",
+        "PostgreSQL",
+        "AWS",
+        "MySQL"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "le-sonarsource-eb2bc6a6-1f41-4b9d-8d21-0a2788f56bf8",
       "company": "Sonarsource",
       "position": "Site Reliability Engineering Lead",
@@ -10631,58 +12008,6 @@
         "MySQL"
       ],
       "companyIcon": "https://notion.so/favicon.ico"
-    },
-    {
-      "id": "hn-49291876",
-      "company": "Alaffia Health",
-      "position": "Principal Engineer (TypeScript)",
-      "location": "NYC (Hybrid)",
-      "locations": [
-        "NYC (Hybrid)"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "Alaffia Health is a Series B healthtech company in NYC fixing a real, expensive problem: US health plans lose billions every year to improper payments and administrative waste in claims processing. We combine clinicians with AI to catch billing errors before they get paid out. Just raised $55M in...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49291876",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49291876",
-      "postedAt": "2026-08-13T21:06:43+00:00",
-      "tags": [
-        "Claude Code",
-        "React",
-        "TypeScript",
-        "Node.js",
-        "PostgreSQL",
-        "AWS",
-        "GraphQL"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "as-openhands-80bfc775-3197-407d-8742-ccb5ddae8709",
-      "company": "OpenHands",
-      "position": "Forward Deployed Engineer",
-      "location": "Remote · United States",
-      "locations": [
-        "Remote",
-        "United States"
-      ],
-      "remote": true,
-      "salary": "$175K – $240K • Offers Equity • Offers Bonus",
-      "description": "WHO WE ARE\n\nWe're building OpenHands, an open-source AI platform that helps engineering teams accelerate development, automate workflows, and bring AI-assisted coding into production environments.\n\nAs a Forward-Deployed Engineer (Post Sales), you'll work directly with customers to deploy OpenHands,...",
-      "applyUrl": "https://jobs.ashbyhq.com/openhands/80bfc775-3197-407d-8742-ccb5ddae8709",
-      "source": "Ashby",
-      "sourceUrl": "https://jobs.ashbyhq.com/openhands/80bfc775-3197-407d-8742-ccb5ddae8709",
-      "postedAt": "2026-08-13T15:20:19.114+00:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "Kubernetes",
-        "Cursor",
-        "Copilot",
-        "MCP"
-      ],
-      "companyIcon": "https://all-hands.dev/favicon.ico"
     },
     {
       "id": "as-ramp-4745807e-82f4-4b1a-857c-dc8dadc73076",
@@ -10788,186 +12113,6 @@
       "companyIcon": ""
     },
     {
-      "id": "hn-49215237",
-      "company": "Deepline",
-      "position": "Founding Full-stack Engineers and Forward Deployed Engineers",
-      "location": "NYC (ONSITE)",
-      "locations": [
-        "NYC (ONSITE)"
-      ],
-      "remote": false,
-      "salary": "$160k–$230k",
-      "description": "User interfaces are dead. Knowledge workers will exclusively work through agent interfaces like Claude Code/Cowork. We've built the interface layer to enable that. One API that unifies hundreds of data providers, workflows, and data infrastructure to agents like Claude Code. This is GTM as code —...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49215237",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49215237",
-      "postedAt": "2026-08-07T19:32:31+00:00",
-      "tags": [
-        "Claude Code",
-        "Next.js",
-        "TypeScript",
-        "Python",
-        "PostgreSQL"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-49206998",
-      "company": "Talonic",
-      "position": "Staff Site Reliability Engineer (founding)",
-      "location": "Berlin, Germany",
-      "locations": [
-        "Berlin, Germany"
-      ],
-      "remote": false,
-      "salary": "€80–90k",
-      "description": "We do enterprise document ingestion — capture a document once into a canonical field registry, then project it to any schema, no re-extraction. Stack: AWS, Docker, Railway. We've never had a dedicated reliability owner and it's starting to show. You'd be the first: SLOs and an error-budget policy...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49206998",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49206998",
-      "postedAt": "2026-08-07T07:24:31+00:00",
-      "tags": [
-        "Claude Code",
-        "AWS",
-        "Docker"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-49200756",
-      "company": "Aeqium",
-      "position": "Product Engineer",
-      "location": "San Francisco (SF)",
-      "locations": [
-        "San Francisco (SF)"
-      ],
-      "remote": false,
-      "salary": "$110k-$170k",
-      "description": "** PLEASE NOTE: We CANNOT provide visa sponsorship, transfers, or OPT/STEM extensions of any kind. Applicants must already be authorized to work in the US permanently. ** Aeqium is building an AI-powered compensation planning platform (backed by top VCs). We replace messy spreadsheets with...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49200756",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49200756",
-      "postedAt": "2026-08-06T18:53:25+00:00",
-      "tags": [
-        "Claude Code",
-        "Copilot"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-49199157",
-      "company": "DoubleVerify (DV Scibids)",
-      "position": "Sr. Data Engineer I",
-      "location": "ONSITE/HYBRID - New York, NY (3x/week)",
-      "locations": [
-        "ONSITE/HYBRID - New York, NY (3x/week)"
-      ],
-      "remote": false,
-      "salary": "$89K–$178K",
-      "description": "DV Scibids is the AI-powered digital campaign activation arm of DoubleVerify — the market standard for digital media measurement trusted by hundreds of Fortune 500 brands. Our Data Engineering team owns the critical integrations and data flows that connect Scibids' optimization engine to the...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49199157",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49199157",
-      "postedAt": "2026-08-06T16:47:25+00:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "Rust",
-        "GCP",
-        "Docker",
-        "Cursor",
-        "Java"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-49169017",
-      "company": "Portless",
-      "position": "AI Engineer",
-      "location": "REMOTE (North America only)",
-      "locations": [
-        "REMOTE (North America only)"
-      ],
-      "remote": true,
-      "salary": "$180K-$230K",
-      "description": "Founding AI engineer seat. AI adoption at Portless today is basic (decks, spreadsheets, call summaries, a bit of vibe-coded dashboards) — no real end-to-end agentic workflows yet. You'll build the AI infrastructure: shipping high-impact agentic workflows yourself, and building reusable \"Lego...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49169017",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49169017",
-      "postedAt": "2026-08-04T13:52:34+00:00",
-      "tags": [
-        "Claude Code",
-        "TypeScript",
-        "Python",
-        "Cursor",
-        "MCP"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-49165622",
-      "company": "Viteus",
-      "position": "Full-Stack Engineer",
-      "location": "Remote",
-      "locations": [],
-      "remote": true,
-      "salary": "",
-      "description": "Viteus is Alteus's production support service for AI-built applications, delivered in partnership with vitX. We work with enterprises and scale-ups across APAC to audit, refactor, and support AI-built apps in production. When we win client engagements, we match contractors from the network onto...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49165622",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49165622",
-      "postedAt": "2026-08-04T08:04:08+00:00",
-      "tags": [
-        "Claude Code",
-        "Cursor",
-        "Copilot",
-        "MCP"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-49163658",
-      "company": "pganalyze",
-      "position": "Marketing Manager",
-      "location": "REMOTE (US)",
-      "locations": [
-        "REMOTE (US)"
-      ],
-      "remote": true,
-      "salary": "",
-      "description": "At pganalyze, we build observability and automation tools for optimizing the performance of Postgres databases. Our product helps customers such as Auto Trader, Notion and Robinhood to understand complex Postgres problems and solve performance issues. We are bootstrapped, profitable, with over 500...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49163658",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49163658",
-      "postedAt": "2026-08-04T02:09:55+00:00",
-      "tags": [
-        "Claude Code",
-        "PostgreSQL"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "hn-49157129",
-      "company": "Checkly",
-      "position": "Senior Sales Engineer, Sales Engineer",
-      "location": "Remote (Europe / US Eastern Time zone)",
-      "locations": [
-        "Remote (Europe / US Eastern Time zone)"
-      ],
-      "remote": true,
-      "salary": "",
-      "description": "Checkly is the active reliability layer for developers and agents — we unify testing, synthetic monitoring, and observability into a single AI-native workflow, so engineering teams (and the agents shipping alongside them) can catch issues before customers do. We're hiring two roles on our Sales...",
-      "applyUrl": "https://news.ycombinator.com/item?id=49157129",
-      "source": "HackerNews",
-      "sourceUrl": "https://news.ycombinator.com/item?id=49157129",
-      "postedAt": "2026-08-03T15:31:37+00:00",
-      "tags": [
-        "Claude Code",
-        "Node.js"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "as-glia-42aa65ae-8e98-4669-9862-50441efaee3d",
       "company": "Glia",
       "position": "Senior Security Engineer (Team Lead)",
@@ -11062,27 +12207,6 @@
         "Copilot"
       ],
       "companyIcon": ""
-    },
-    {
-      "id": "as-wealthsimple-b0271319-e7bc-4a4e-94ea-a6cffb23d6f2",
-      "company": "Wealthsimple",
-      "position": "Manager Software Development, Observability Platform",
-      "location": "Remote (Canada)",
-      "locations": [
-        "Remote (Canada)"
-      ],
-      "remote": true,
-      "salary": "",
-      "description": "BUILD SOMETHING PEOPLE LOVE\n\nWealthsimple is Canada’s leading financial innovator. The company offers a full suite of simple, sophisticated financial products across managed investing, do-it-yourself trading, cryptocurrency, tax filing, spending and saving. Wealthsimple currently serves more than 4...",
-      "applyUrl": "https://jobs.ashbyhq.com/wealthsimple/b0271319-e7bc-4a4e-94ea-a6cffb23d6f2",
-      "source": "Ashby",
-      "sourceUrl": "https://jobs.ashbyhq.com/wealthsimple/b0271319-e7bc-4a4e-94ea-a6cffb23d6f2",
-      "postedAt": "2026-07-23T19:33:28.763+00:00",
-      "tags": [
-        "Claude Code",
-        "MCP"
-      ],
-      "companyIcon": "https://wealthsimple.com/favicon.ico"
     },
     {
       "id": "as-sierra-85e1d0f9-e0d5-4a82-9b30-fa4372e32872",
@@ -11279,6 +12403,114 @@
       "companyIcon": "https://cohere.com/favicon.ico"
     },
     {
+      "id": "le-saviynt-de5d318f-9c22-4366-b64d-2d44ddf4b88f",
+      "company": "Saviynt",
+      "position": "Associate Principal Software Engineer, Cloud & Edge Backend",
+      "location": "Milpitas, California · Vancouver",
+      "locations": [
+        "Milpitas, California",
+        "Vancouver"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Saviynt's AI-powered identity platform manages and governs human and non-human access to all of an organization's applications, data, and business processes. Customers trust Saviynt to safeguard their digital assets, drive operational efficiency, and reduce compliance costs. Built for the AI age,...",
+      "applyUrl": "https://jobs.lever.co/saviynt/de5d318f-9c22-4366-b64d-2d44ddf4b88f",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/saviynt/de5d318f-9c22-4366-b64d-2d44ddf4b88f",
+      "postedAt": "2026-06-29T22:26:55.575000+00:00",
+      "tags": [
+        "Claude Code",
+        "Go",
+        "PostgreSQL",
+        "Docker",
+        "Kubernetes",
+        "Cursor",
+        "Copilot",
+        "Redis",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "le-saviynt-8a5b0999-d866-4482-b5c0-fa82eb2c49bc",
+      "company": "Saviynt",
+      "position": "Principal Software Engineer, Platform Engineering & Edge Infrastructure",
+      "location": "Milpitas, California · Vancouver",
+      "locations": [
+        "Milpitas, California",
+        "Vancouver"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Saviynt's AI-powered identity platform manages and governs human and non-human access to all of an organization's applications, data, and business processes. Customers trust Saviynt to safeguard their digital assets, drive operational efficiency, and reduce compliance costs. Built for the AI age,...",
+      "applyUrl": "https://jobs.lever.co/saviynt/8a5b0999-d866-4482-b5c0-fa82eb2c49bc",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/saviynt/8a5b0999-d866-4482-b5c0-fa82eb2c49bc",
+      "postedAt": "2026-06-29T22:22:29.250000+00:00",
+      "tags": [
+        "Claude Code",
+        "Kubernetes",
+        "Cursor",
+        "Copilot",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "le-saviynt-1c7dcf57-4c0d-4d02-8bf2-3d092d47aff7",
+      "company": "Saviynt",
+      "position": "Principal Software Engineer, Endpoint Platform",
+      "location": "Milpitas, California · Vancouver",
+      "locations": [
+        "Milpitas, California",
+        "Vancouver"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Saviynt's AI-powered identity platform manages and governs human and non-human access to all of an organization's applications, data, and business processes. Customers trust Saviynt to safeguard their digital assets, drive operational efficiency, and reduce compliance costs. Built for the AI age,...",
+      "applyUrl": "https://jobs.lever.co/saviynt/1c7dcf57-4c0d-4d02-8bf2-3d092d47aff7",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/saviynt/1c7dcf57-4c0d-4d02-8bf2-3d092d47aff7",
+      "postedAt": "2026-06-29T22:20:25.770000+00:00",
+      "tags": [
+        "Claude Code",
+        "Rust",
+        "Cursor",
+        "Copilot",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "le-saviynt-1e521506-d72e-4b94-8b9c-248253b03230",
+      "company": "Saviynt",
+      "position": "Principal Software Engineer, Cloud & Edge Backend",
+      "location": "Milpitas, California · Vancouver",
+      "locations": [
+        "Milpitas, California",
+        "Vancouver"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Saviynt's AI-powered identity platform manages and governs human and non-human access to all of an organization's applications, data, and business processes. Customers trust Saviynt to safeguard their digital assets, drive operational efficiency, and reduce compliance costs. Built for the AI age,...",
+      "applyUrl": "https://jobs.lever.co/saviynt/1e521506-d72e-4b94-8b9c-248253b03230",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/saviynt/1e521506-d72e-4b94-8b9c-248253b03230",
+      "postedAt": "2026-06-29T22:17:55.962000+00:00",
+      "tags": [
+        "Claude Code",
+        "Go",
+        "PostgreSQL",
+        "Docker",
+        "Kubernetes",
+        "Cursor",
+        "Copilot",
+        "Redis",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "as-ramp-cf3516f6-4d6b-4872-831f-c8ef4a3078ee",
       "company": "Ramp",
       "position": "Product Manager | Vendor Intelligence & Marketplace",
@@ -11299,6 +12531,33 @@
         "Cursor"
       ],
       "companyIcon": "https://ramp.com/favicon.ico"
+    },
+    {
+      "id": "le-mendix-8ae7a9a1-3e2a-4532-b6ee-40af55e4012d",
+      "company": "Mendix",
+      "position": "Senior Mendix Engineer",
+      "location": "Munich",
+      "locations": [
+        "Munich"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Mendix – the leading low-code agentic enterprise platform: \nThe Mendix Platform uses visual modeling to abstract long-form coding out of agent & application development. Our customers use Mendix to create and deploy better software for the enterprise, faster. Mendix enables collaboration between...",
+      "applyUrl": "https://jobs.lever.co/mendix/8ae7a9a1-3e2a-4532-b6ee-40af55e4012d",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/mendix/8ae7a9a1-3e2a-4532-b6ee-40af55e4012d",
+      "postedAt": "2026-06-11T11:29:49.240000+00:00",
+      "tags": [
+        "Claude Code",
+        "TypeScript",
+        "JavaScript",
+        "Python",
+        "AWS",
+        "Azure",
+        "Java",
+        "MCP"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "gr-brex-8463702002",
@@ -11466,6 +12725,35 @@
         "Cursor"
       ],
       "companyIcon": "https://baseten.co/favicon.ico"
+    },
+    {
+      "id": "gr-thanx-7610242003",
+      "company": "Thanx",
+      "position": "Software Developer",
+      "location": "Remote - Brazil & Argentina",
+      "locations": [
+        "Remote - Brazil & Argentina"
+      ],
+      "remote": true,
+      "salary": "$65,000–$80,000",
+      "description": "** Remote - Brazil & Argentina** Who Are We? Thanx is a leading loyalty and guest engagement platform for restaurants. Thanx helps regional and national restaurant brands grow customer lifetime value with easy-to-use lifecycle marketing automations and innovative customer loyalty tools focused on...",
+      "applyUrl": "https://job-boards.greenhouse.io/thanx/jobs/7610242003",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/thanx/jobs/7610242003",
+      "postedAt": "2026-04-14T19:21:22-04:00",
+      "tags": [
+        "Claude Code",
+        "React Native",
+        "React",
+        "TypeScript",
+        "AWS",
+        "Cursor",
+        "Ruby",
+        "Rails",
+        "Django",
+        "Angular"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "as-coderabbit-92b33382-63f5-48bd-be54-b7640fd1ab45",
