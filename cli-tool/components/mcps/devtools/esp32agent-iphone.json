@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "esp32agent": {
+      "description": "Let Claude see and operate a real iPhone through an ESP32-S3 board that mirrors the screen over AirPlay and acts as a USB mouse and keyboard (AssistiveTouch), reached over Bluetooth. Look at the screen, tap, swipe and type in any app. No jailbreak.",
+      "command": "npx",
+      "args": [
+        "-y",
+        "esp32agent",
+        "mcp"
+      ]
+    }
+  }
+}
