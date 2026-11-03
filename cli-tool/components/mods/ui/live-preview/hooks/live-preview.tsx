@@ -151,7 +151,9 @@ export const register: Register = (on, options) => {
   on('tool.call', async ($, e, next) => {
     const r = await next(e)
     const path = editedPath(e.tool, (e as { input?: unknown }).input ?? e)
-    if (path && isWatched(path, watch)) { view.dirty = true; view.editsSince++ }
+    // Only an edit that ran changes the page: a denied or failed one does not.
+    const ran = r.deny === undefined && r.isError !== true
+    if (ran && path && isWatched(path, watch)) { view.dirty = true; view.editsSince++ }
     return r
   })
 

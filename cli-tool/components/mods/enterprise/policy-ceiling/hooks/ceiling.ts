@@ -47,7 +47,7 @@ export function rulesFrom(layers: readonly Layer[]): Rules | undefined {
   if (!o) return undefined
   const days = typeof o.maxCleanupPeriodDays === 'number' && o.maxCleanupPeriodDays > 0 ? o.maxCleanupPeriodDays : undefined
   const effort = typeof o.maxEffort === 'string' && (EFFORTS as readonly string[]).includes(o.maxEffort) ? (o.maxEffort as Effort) : undefined
-  return {
+  const rules: Rules = {
     maxCleanupPeriodDays: days,
     deniedModels: list(o.deniedModels),
     fallbackModel: typeof o.fallbackModel === 'string' && o.fallbackModel.trim() ? o.fallbackModel.trim() : undefined,
@@ -55,6 +55,10 @@ export function rulesFrom(layers: readonly Layer[]): Rules | undefined {
     forbiddenModes: list(o.forbiddenModes),
     requireSandbox: o.requireSandbox === true,
   }
+  // Options left at their defaults set no ceiling: report that, not an empty pane.
+  const active = rules.maxCleanupPeriodDays !== undefined || rules.deniedModels.length > 0 || rules.maxEffort !== undefined
+    || rules.forbiddenModes.length > 0 || rules.requireSandbox
+  return active ? rules : undefined
 }
 
 const show = (v: unknown) => (v === undefined ? '—' : typeof v === 'string' ? v : JSON.stringify(v))

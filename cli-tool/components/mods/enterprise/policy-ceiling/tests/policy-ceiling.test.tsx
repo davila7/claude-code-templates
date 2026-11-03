@@ -13,6 +13,7 @@ describe('rules', () => {
     const fromUser: Layer = { source: 'user', settings: { pluginConfigs: { 'policy-ceiling': { options: { maxCleanupPeriodDays: 999 } } } } }
     expect(rulesFrom([fromUser])).toBe(undefined)
     expect(rulesFrom([fromUser, policy({ maxCleanupPeriodDays: 30 })])?.maxCleanupPeriodDays).toBe(30)
+    expect(rulesFrom([policy({ maxCleanupPeriodDays: 0, deniedModels: '', requireSandbox: false })])).toBe(undefined)
   })
 
   test('an unknown effort is ignored', () => {
