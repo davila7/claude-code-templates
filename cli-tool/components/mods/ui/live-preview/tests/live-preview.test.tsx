@@ -25,7 +25,10 @@ function engine(on: On, w: { argv: string[][] }, exit = 0, mtime?: number) {
   })
   on('fs.read', () => ({ value: { base64: PNG } }))
   on('fs.write', () => ({ value: undefined }))
-  on('fs.stat', () => ({ value: { kind: 'file', size: 70, mtimeMs: mtime ?? Date.now(), isLink: false } }))
+  // Each stat is a newer file unless the test pins mtime: two stats in the same
+  // millisecond would otherwise read as "Chrome did not write it".
+  let clock = Date.now()
+  on('fs.stat', () => ({ value: { kind: 'file', size: 70, mtimeMs: mtime ?? ++clock, isLink: false } }))
   on('tool.call', () => ({ result: {} }))
   on('turn.complete', () => ({ text: '' }))
 }
