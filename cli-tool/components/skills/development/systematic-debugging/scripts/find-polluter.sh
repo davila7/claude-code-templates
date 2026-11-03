@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # Runs test files one by one to find which test creates unwanted files/state.
+# Exit codes: 0 no polluter, 1 polluter found, 2 usage/setup error,
+# 3 no polluter but some test files failed (incomplete result).
 # Run it from the project root (it searches the current directory for tests).
 # Usage: ./find-polluter.sh <file_or_dir_to_check> <test_pattern>
 # Example: ./find-polluter.sh 'packages/core/.git' 'src/**/*.test.ts'
@@ -39,6 +41,12 @@ fi
 echo "Found $TOTAL test files"
 echo ""
 
+if [ "$TOTAL" -eq 0 ]; then
+  echo "❌ No test files match '$TEST_PATTERN' (searched from $(pwd))."
+  echo "   Check the pattern and run this from the project root."
+  exit 2
+fi
+
 if [ -e "$POLLUTION_CHECK" ]; then
   echo "❌ $POLLUTION_CHECK exists before any test ran, so this run cannot tell"
   echo "   which test creates it. Check what it is first. If it is leftover test"
@@ -47,25 +55,24 @@ if [ -e "$POLLUTION_CHECK" ]; then
 fi
 
 COUNT=0
+FAILED=0
 while IFS= read -r TEST_FILE; do
   [ -n "$TEST_FILE" ] || continue
   COUNT=$((COUNT + 1))
-
-  # Skip if pollution already exists
-  if [ -e "$POLLUTION_CHECK" ]; then
-    echo "⚠️  Pollution already exists before test $COUNT/$TOTAL"
-    echo "   Skipping: $TEST_FILE"
-    continue
-  fi
-
   echo "[$COUNT/$TOTAL] Testing: $TEST_FILE"
 
-  # Run the test
-  # TEST_CMD is intentionally word-split into command + arguments
+  # TEST_CMD is intentionally word-split into command + arguments.
+  # A failing test is fine (polluters often fail too), but count it, and stop
+  # if the runner itself is missing.
+  STATUS=0
   # shellcheck disable=SC2086
-  $TEST_CMD "$TEST_FILE" > /dev/null 2>&1 || true
+  $TEST_CMD "$TEST_FILE" > /dev/null 2>&1 || STATUS=$?
+  if [ "$STATUS" -eq 127 ] || [ "$STATUS" -eq 126 ]; then
+    echo "❌ Could not run '$TEST_CMD' (exit $STATUS). Set TEST_CMD to your test runner."
+    exit 2
+  fi
+  [ "$STATUS" -eq 0 ] || FAILED=$((FAILED + 1))
 
-  # Check if pollution appeared
   if [ -e "$POLLUTION_CHECK" ]; then
     echo ""
     echo "🎯 FOUND POLLUTER!"
@@ -76,12 +83,18 @@ while IFS= read -r TEST_FILE; do
     ls -la "$POLLUTION_CHECK"
     echo ""
     echo "To investigate:"
-    echo "  $TEST_CMD $TEST_FILE    # Run just this test"
-    echo "  cat $TEST_FILE         # Review test code"
+    printf '  %s %q    # Run just this test\n' "$TEST_CMD" "$TEST_FILE"
+    printf '  cat -- %q    # Review test code\n' "$TEST_FILE"
     exit 1
   fi
 done <<< "$TEST_FILES"
 
 echo ""
-echo "✅ No polluter found - all tests clean!"
+if [ "$FAILED" -gt 0 ]; then
+  echo "⚠️  No polluter found, but $FAILED of $TOTAL test files exited with an error."
+  echo "   A test that fails early may never reach the code that pollutes, so this"
+  echo "   result is incomplete. Run one of them with: $TEST_CMD <file>"
+  exit 3
+fi
+echo "✅ No polluter found: all $TOTAL test files ran cleanly."
 exit 0

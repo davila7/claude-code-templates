@@ -172,9 +172,10 @@ dependent or external (a flaky network, a third-party outage):
 2. Add proper handling: retry with backoff, a timeout, a clear error message.
 3. Add logging so the next occurrence leaves evidence.
 
-Be suspicious of this conclusion: most "no root cause" findings are an
-investigation that stopped early. Flaky tests in particular are usually
-race conditions; see `references/condition-based-waiting.md`.
+Be suspicious of this conclusion: before accepting it, ask what you have
+not checked yet, because an investigation that stopped early looks the
+same from the inside. For flaky tests, check for race conditions first;
+see `references/condition-based-waiting.md`.
 
 ## Reporting back
 
