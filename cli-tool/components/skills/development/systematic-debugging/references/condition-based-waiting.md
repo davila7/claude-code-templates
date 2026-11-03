@@ -40,7 +40,7 @@ const result = getResult();
 expect(result).toBeDefined();
 
 // ✅ AFTER: Waiting for condition
-await waitFor(() => getResult() !== undefined);
+await waitFor(() => getResult() !== undefined, 'result');
 const result = getResult();
 expect(result).toBeDefined();
 ```
@@ -49,11 +49,11 @@ expect(result).toBeDefined();
 
 | Scenario | Pattern |
 |----------|---------|
-| Wait for event | `waitFor(() => events.find(e => e.type === 'DONE'))` |
-| Wait for state | `waitFor(() => machine.state === 'ready')` |
-| Wait for count | `waitFor(() => items.length >= 5)` |
-| Wait for file | `waitFor(() => fs.existsSync(path))` |
-| Complex condition | `waitFor(() => obj.ready && obj.value > 10)` |
+| Wait for event | `waitFor(() => events.find(e => e.type === 'DONE'), 'DONE event')` |
+| Wait for state | `waitFor(() => machine.state === 'ready', 'ready state')` |
+| Wait for count | `waitFor(() => items.length >= 5, '5 items')` |
+| Wait for file | `waitFor(() => fs.existsSync(path), 'file')` |
+| Complex condition | `waitFor(() => obj.ready && obj.value > 10, 'ready with value > 10')` |
 
 ## Implementation
 
@@ -71,7 +71,7 @@ async function waitFor<T>(
     if (result) return result;
 
     if (Date.now() - startTime > timeoutMs) {
-      throw new Error(`Timeout waiting for ${description} after ${timeoutMs}ms`);
+      throw new Error('Timeout waiting for ' + description + ' after ' + timeoutMs + 'ms');
     }
 
     await new Promise(r => setTimeout(r, 10)); // Poll every 10ms
@@ -79,14 +79,14 @@ async function waitFor<T>(
 }
 ```
 
-See `condition-based-waiting-example.ts` in this directory for complete implementation with domain-specific helpers (`waitForEvent`, `waitForEventCount`, `waitForEventMatch`) from actual debugging session.
+See `condition-based-waiting-example.ts` (next to this file) for a complete implementation with domain-specific helpers (`waitForEvent`, `waitForEventCount`, `waitForEventMatch`) from an actual debugging session. It imports types from that project, so treat it as a reference to adapt, not code to run; the generic `waitFor` above is the part to copy.
 
 ## Common Mistakes
 
 **❌ Polling too fast:** `setTimeout(check, 1)` - wastes CPU
 **✅ Fix:** Poll every 10ms
 
-**❌ No timeout:** Loop forever if condition never met
+**❌ No timeout:** Polling never ends if the condition never holds
 **✅ Fix:** Always include timeout with clear error
 
 **❌ Stale data:** Cache state before loop
