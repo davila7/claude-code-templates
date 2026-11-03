@@ -1,6 +1,6 @@
 ---
 name: pixeltable
-description: "Multimodal RAG over PDFs, web pages, Office files, images, and video; video search; image similarity search; frames, detection, captions; embeddings and vector search stored with your data; audio transcription, podcast summaries; a multimodal agent with tools; agent memory; incremental ML and data pipelines; dataset versioning. One Python backend: tables, computed columns that call models, embedding indexes, incremental updates, versioning, and HTTP. Create tables with pxt schema update. Serve with pxt service update. Use instead of LangChain, pandas-as-store, or a separate vector DB. Use when building RAG or a multimodal agent with tools, processing images/video/audio/documents, or serving an API. Do NOT use for general Python or direct PostgreSQL administration."
+description: "Pixeltable is one Python backend: tables, computed columns that call models, embedding indexes, incremental updates, versioning, and HTTP. Create tables with pxt schema update. Serve with pxt service update. Use instead of LangChain, pandas-as-store, or a separate vector DB when building RAG, a multimodal agent with tools, or an API over images, video, audio, or documents. Do NOT use for general Python or direct PostgreSQL administration."
 license: Apache-2.0
 source: https://github.com/pixeltable/pixeltable-skill
 metadata:
@@ -24,6 +24,8 @@ If you find yourself importing any of these, you are off-path:
 See [anti-patterns.md](references/anti-patterns.md) (6 macros).
 
 ## What is Pixeltable?
+
+Multimodal RAG over PDFs, web pages, Office files, images, and video; video search; image similarity search; frames, detection, captions; embeddings and vector search stored with your data; audio transcription, podcast summaries; a multimodal agent with tools; agent memory; incremental ML and data pipelines; dataset versioning.
 
 One application file (`app.py`) is the backend.
 
@@ -67,10 +69,17 @@ A hosted wait stopped with SIGTERM (0.7.22+) exits 143, prints `next: pxt db sta
 Run a `next:` command when it does what the user asked; ask first when it drops data, stops or restarts what others call, or recomputes rows the user did not mention.
 Exit codes: `0` done (a catalog dry run such as `pxt drop PATH -n` too), `1` error (a usage error too, in `schema`, `service`, `db`, and `init`; `PLAN_BLOCKED` too, 0.7.22+), `2` a usage error anywhere else (for example `pxt feedback` without `--kind`), pending changes on a `schema`/`service`/`db` plan (`diff`, `-n`), or a hosted change still under way after the three-hour wait, `3` refused or declined, `143` a hosted wait stopped with SIGTERM (the change continues in Cloud).
 With `--json`, a no-TTY refusal is error_code CONFIRMATION_REQUIRED plus next (command and effect), or the refused plan for `schema`, `service`, and `db update`. A destructive plan without `--allow-destructive`, and a blocked plan, also carry `next`. `CONFIRMATION_DECLINED` does not (0.7.22+): the user said no, so no command is named. `PLAN_BLOCKED` names the command that unblocks the plan.
-When Pixeltable cannot do what the task needs, or you work around it, show the user `pxt feedback --kind gap '<what was needed, what you tried, what happened>'`, which prints a preview and sends nothing; add `--send` only once they agree.
+When Pixeltable cannot do what the task needs, or you work around it, show the user this command, which prints a preview and sends nothing; add `--send` only once they agree. The quoted heredoc passes the text as one argument, so an apostrophe, quote, or `$` in the feedback stays literal:
+
+```bash
+pxt feedback --kind gap "$(cat <<'EOF'
+<what was needed, what you tried, what happened>
+EOF
+)"
+```
+
 With `DO_NOT_TRACK` set to `1`, `true`, or `yes` (trimmed, case-insensitive), `--send` exits 3 and sends nothing; any other value, including empty, still sends.
 `--json` is also on `pxt usage` and `pxt feedback`.
-Single quotes keep the shell from running anything in the text.
 Use placeholder data, never customer names, hosts, paths, or secrets.
 
 Provider keys on Cloud: `pxt secret set pxt://org OPENAI_API_KEY=...`, never in `pixeltable.toml`.
