@@ -97,6 +97,8 @@ jobs:
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
+          # The lockfile `npm ci` installed from (the triggering commit).
+          lock=$(git rev-parse HEAD:cli-tool/package-lock.json)
 
           for attempt in 1 2 3 4 5; do
             git fetch origin main
@@ -104,11 +106,23 @@ jobs:
             # Drop untracked output a previous attempt wrote (e.g. for a
             # component that main has since removed).
             git clean -fdq -- $DATA_PATHS
+            # Keep the generator's Node dependencies in step with the main it
+            # now runs on.
+            if [ "$(git rev-parse HEAD:cli-tool/package-lock.json)" != "$lock" ]; then
+              (cd cli-tool && npm ci --ignore-scripts)
+              lock=$(git rev-parse HEAD:cli-tool/package-lock.json)
+            fi
             python scripts/generate_components_json.py --skip-downloads
 
             git add -A -- $DATA_PATHS
             if git diff --cached --quiet -- $DATA_PATHS; then
               echo "No changes in the generated data."
+              # On a retry, main may already hold this run's catalog: a push
+              # can update the remote and still exit nonzero. Deploy anyway; a
+              # redundant deploy of main is harmless, a skipped one is not.
+              if [ "$attempt" -gt 1 ]; then
+                echo "changed=true" >> "$GITHUB_OUTPUT"
+              fi
               exit 0
             fi
             git diff --cached --stat -- $DATA_PATHS
