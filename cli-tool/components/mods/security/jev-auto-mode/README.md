@@ -32,7 +32,7 @@ For every tool call, in this order:
 4. **The verdict.**
    - `deny`: the call is refused, and the model reads the rule's `reason`.
    - `allow`: the call runs *without* the engine's prompt. A deny from your settings (`permissions.deny`) or from plan mode still stands.
-   - `ask`: with `askWith: "mod"`, the mod shows you an Allow / Deny dialog, and dismissing it denies. With `askWith: "engine"`, the question goes to your permission mode. In `claude -p` no one can answer, so `headless` decides (default `deny`).
+   - `ask`: with `askWith: "mod"`, the mod shows you an Allow / Deny dialog, and dismissing it denies. With `askWith: "engine"`, the question goes to Claude Code's own permission dialog (since Claude Code 2.1.304 an ask from a hook is always put to you; the auto-mode classifier does not answer it). In `claude -p` no one can answer, so `headless` decides on both paths (default `deny`).
 
 Slash commands and skills you type are checked against the rules only: you typed them, so there is nothing to judge. A skill's prompt is also checked when it expands (typed, through the Skill tool, or preloaded into a subagent). A deny rule replaces the prompt with a notice, so a blocked skill cannot reach a subagent through its definition either. An ask rule asks there too, unless the Skill call or the typed `/skill` was just approved, so you're never asked twice.
 
@@ -80,7 +80,7 @@ A repository you clone cannot use its own file to open things up. Both files are
 {
   "mode": "enforce",            // "audit": log what it would do, block nothing
   "default": "jev",             // allow | ask | deny | passthrough | jev
-  "askWith": "mod",             // "mod": the mod's dialog · "engine": your permission mode
+  "askWith": "mod",             // "mod": the mod's dialog · "engine": Claude Code's permission dialog
   "headless": "deny",           // what an ask becomes in claude -p
   "trustProjectAllow": false,   // user file only
   "opaqueShell": "ask",         // floor for `$X …`, eval, source: ask | deny | allow
@@ -180,4 +180,4 @@ claude plugin test .claude/skills/jev-auto-mode
 
 The tests cover glob and shell parsing, rule precedence, the project-file trust model, self-protection and the judge's thresholds. Through the engine they also check that tool calls are denied, allowed past the engine prompt or handed to the engine's ask, the headless and audit paths, typed commands and skill prompts.
 
-**Requirements.** Mods are on by default in Claude Code 2.1.287+. Written and tested on 2.1.282 against the 2.1.278 declarations. Typed against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
+**Requirements.** Mods are on by default in Claude Code 2.1.287+. Written on 2.1.282 against the 2.1.278 declarations; the tests need 2.1.307+, where `claude plugin test` runs the permission check inside a tool call (checked on 2.1.317). Typed against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
