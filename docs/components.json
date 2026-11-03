@@ -83006,6 +83006,82 @@
       }
     },
     {
+      "name": "policy-ceiling",
+      "path": "enterprise/policy-ceiling",
+      "category": "enterprise",
+      "type": "mod",
+      "description": "Makes an organization's managed limits act as ceilings and floors over each person's settings (retention, model, effort, permission mode, sandbox) instead of fixed values, and shows in /policy what each layer asked and what the session runs with.",
+      "author": "claude-code-templates",
+      "repo": "https://github.com/davila7/claude-code-templates",
+      "version": "0.1.0",
+      "license": "MIT",
+      "keywords": [
+        "mod",
+        "function-hooks",
+        "enterprise",
+        "managed-settings",
+        "policy"
+      ],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "modules": [
+        "policy-ceiling.tsx"
+      ],
+      "userConfig": {
+        "maxCleanupPeriodDays": {
+          "type": "number",
+          "title": "Max transcript retention (days)",
+          "description": "Ceiling for cleanupPeriodDays. 0 means no ceiling. Read from managed settings only.",
+          "default": 0
+        },
+        "deniedModels": {
+          "type": "string",
+          "title": "Denied models",
+          "description": "Comma-separated model names or aliases a person may not pick, e.g. opus[1m]; also cleared from the ANTHROPIC_*_MODEL environment variables. Read from managed settings only.",
+          "default": ""
+        },
+        "fallbackModel": {
+          "type": "string",
+          "title": "Fallback model",
+          "description": "Model used when the requested one is denied. Empty means Claude Code's default. Read from managed settings only.",
+          "default": ""
+        },
+        "maxEffort": {
+          "type": "string",
+          "title": "Max effort",
+          "description": "Ceiling for effortLevel (top-level and per model): low, medium, high, xhigh or max. Empty means no ceiling. Read from managed settings only.",
+          "default": ""
+        },
+        "forbiddenModes": {
+          "type": "string",
+          "title": "Forbidden permission modes",
+          "description": "Comma-separated permissions.defaultMode values that fall back to default, e.g. bypassPermissions,acceptEdits. Read from managed settings only.",
+          "default": ""
+        },
+        "requireSandbox": {
+          "type": "boolean",
+          "title": "Require sandbox",
+          "description": "Floor: sandbox.enabled is always true and sandbox.allowUnsandboxedCommands false. Read from managed settings only.",
+          "default": false
+        }
+      },
+      "references": [
+        ".claude-plugin/plugin.json",
+        "hooks/ceiling.ts",
+        "hooks/hooks.json",
+        "hooks/policy-ceiling.tsx",
+        "tests/policy-ceiling.test.tsx",
+        "types/index.d.ts"
+      ]
+    },
+    {
       "name": "2048",
       "path": "games/2048",
       "category": "games",
@@ -86616,6 +86692,81 @@
       }
     },
     {
+      "name": "human-gate",
+      "path": "security/human-gate",
+      "category": "security",
+      "type": "mod",
+      "description": "Holds irreversible tool calls (deploy, publish, push to main, money, outbound messages, destructive SQL) for a person, so auto mode and allow rules cannot approve them, and lets read-only calls through without a prompt.",
+      "author": "claude-code-templates",
+      "repo": "https://github.com/davila7/claude-code-templates",
+      "version": "0.1.0",
+      "license": "MIT",
+      "keywords": [
+        "mod",
+        "function-hooks",
+        "security",
+        "permissions",
+        "auto-mode"
+      ],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "modules": [
+        "human-gate.ts"
+      ],
+      "userConfig": {
+        "categories": {
+          "type": "string",
+          "title": "Categories",
+          "description": "Comma-separated categories held for a person: deploy, publish, push-main, money, outbound, data. Empty means all.",
+          "default": ""
+        },
+        "protectedBranches": {
+          "type": "string",
+          "title": "Protected branches",
+          "description": "Comma-separated branch names a push to is held. Empty means main, master, production, prod, release.",
+          "default": ""
+        },
+        "extraCommands": {
+          "type": "string",
+          "title": "Extra Bash patterns",
+          "description": "Comma-separated regex sources; a Bash command segment matching one is held, e.g. \\bansible-playbook\\b",
+          "default": ""
+        },
+        "extraTools": {
+          "type": "string",
+          "title": "Extra tool patterns",
+          "description": "Comma-separated regex sources on tool names, e.g. ^mcp__linear__save_issue$",
+          "default": ""
+        },
+        "readOnlyFastLane": {
+          "type": "boolean",
+          "title": "Read-only fast lane",
+          "description": "Allow calls the tool marks read-only without a prompt (a deny or ask rule in settings still wins).",
+          "default": true
+        },
+        "trustMcpReadOnly": {
+          "type": "boolean",
+          "title": "Trust MCP read-only",
+          "description": "Include MCP tools in the fast lane. Off by default: an MCP tool's read-only flag is its server's word.",
+          "default": false
+        }
+      },
+      "references": [
+        ".claude-plugin/plugin.json",
+        "hooks/hooks.json",
+        "hooks/human-gate.ts",
+        "hooks/rules.ts",
+        "tests/human-gate.test.ts"
+      ]
+    },
+    {
       "name": "jev-auto-mode",
       "path": "security/jev-auto-mode",
       "category": "security",
@@ -87711,6 +87862,70 @@
       }
     },
     {
+      "name": "live-preview",
+      "path": "ui/live-preview",
+      "category": "ui",
+      "type": "mod",
+      "description": "A pane with a real screenshot of your dev server, taken again after every turn in which Claude edits a frontend file, with a phone-sized view and a button that adds the capture to your prompt.",
+      "author": "claude-code-templates",
+      "repo": "https://github.com/davila7/claude-code-templates",
+      "version": "0.1.0",
+      "license": "MIT",
+      "keywords": [
+        "mod",
+        "function-hooks",
+        "ui",
+        "pane",
+        "frontend",
+        "screenshot"
+      ],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "modules": [
+        "live-preview.tsx"
+      ],
+      "userConfig": {
+        "url": {
+          "type": "string",
+          "title": "Dev server URL",
+          "description": "Page to capture, http or https. /preview <url> changes it for the session.",
+          "default": "http://localhost:3000"
+        },
+        "browser": {
+          "type": "string",
+          "title": "Browser",
+          "description": "Chrome, Chromium or Edge executable. Empty tries google-chrome, chromium, microsoft-edge on PATH and the standard macOS app locations.",
+          "default": ""
+        },
+        "browserArgs": {
+          "type": "string",
+          "title": "Extra browser arguments",
+          "description": "Comma-separated extra flags, e.g. --no-sandbox in a root container.",
+          "default": ""
+        },
+        "watch": {
+          "type": "string",
+          "title": "Watched extensions",
+          "description": "Comma-separated file extensions whose edits trigger a new capture. Empty means the usual frontend set.",
+          "default": ""
+        }
+      },
+      "references": [
+        ".claude-plugin/plugin.json",
+        "hooks/capture.ts",
+        "hooks/hooks.json",
+        "hooks/live-preview.tsx",
+        "tests/live-preview.test.tsx"
+      ]
+    },
+    {
       "name": "spooky-season",
       "path": "ui/spooky-season",
       "category": "ui",
@@ -88070,9 +88285,9 @@
       "description": "Common project template",
       "files": [
         "README.md",
+        "CLAUDE.md",
         ".claude/commands/project-setup.md",
-        ".claude/commands/git-workflow.md",
-        "CLAUDE.md"
+        ".claude/commands/git-workflow.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=common --yes",
       "downloads": 0
@@ -88086,10 +88301,10 @@
       "language": "python",
       "description": "Django-App with Python",
       "files": [
-        ".claude/commands/admin.md",
-        ".claude/commands/views.md",
+        "CLAUDE.md",
         ".claude/commands/django-model.md",
-        "CLAUDE.md"
+        ".claude/commands/admin.md",
+        ".claude/commands/views.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=django-app --yes",
       "downloads": 0
@@ -88103,12 +88318,12 @@
       "language": "python",
       "description": "Fastapi-App with Python",
       "files": [
-        ".claude/commands/deployment.md",
+        "CLAUDE.md",
         ".claude/commands/auth.md",
+        ".claude/commands/testing.md",
         ".claude/commands/database.md",
         ".claude/commands/api-endpoints.md",
-        ".claude/commands/testing.md",
-        "CLAUDE.md"
+        ".claude/commands/deployment.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=fastapi-app --yes",
       "downloads": 0
@@ -88122,13 +88337,13 @@
       "language": "python",
       "description": "Flask-App with Python",
       "files": [
-        ".claude/commands/deployment.md",
-        ".claude/commands/flask-route.md",
-        ".claude/commands/blueprint.md",
-        ".claude/commands/app-factory.md",
-        ".claude/commands/database.md",
+        "CLAUDE.md",
         ".claude/commands/testing.md",
-        "CLAUDE.md"
+        ".claude/commands/flask-route.md",
+        ".claude/commands/database.md",
+        ".claude/commands/deployment.md",
+        ".claude/commands/blueprint.md",
+        ".claude/commands/app-factory.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=flask-app --yes",
       "downloads": 0
@@ -88155,15 +88370,15 @@
       "description": "Javascript-Typescript project template",
       "files": [
         "README.md",
+        "CLAUDE.md",
         ".claude/settings.json",
-        ".claude/commands/refactor.md",
-        ".claude/commands/npm-scripts.md",
-        ".claude/commands/typescript-migrate.md",
-        ".claude/commands/lint.md",
         ".claude/commands/test.md",
-        ".claude/commands/debug.md",
         ".claude/commands/api-endpoint.md",
-        "CLAUDE.md"
+        ".claude/commands/npm-scripts.md",
+        ".claude/commands/lint.md",
+        ".claude/commands/debug.md",
+        ".claude/commands/typescript-migrate.md",
+        ".claude/commands/refactor.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=javascript-typescript --yes",
       "downloads": 0
@@ -88177,11 +88392,11 @@
       "language": "javascript-typescript",
       "description": "Node-Api with Javascript-Typescript",
       "files": [
-        ".claude/commands/database.md",
-        ".claude/commands/middleware.md",
-        ".claude/commands/route.md",
+        "CLAUDE.md",
         ".claude/commands/api-endpoint.md",
-        "CLAUDE.md"
+        ".claude/commands/database.md",
+        ".claude/commands/route.md",
+        ".claude/commands/middleware.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=node-api --yes",
       "downloads": 0
@@ -88194,10 +88409,10 @@
       "category": "languages",
       "description": "Python project template",
       "files": [
+        "CLAUDE.md",
         ".claude/settings.json",
-        ".claude/commands/lint.md",
         ".claude/commands/test.md",
-        "CLAUDE.md"
+        ".claude/commands/lint.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=python --yes",
       "downloads": 0
@@ -88211,8 +88426,8 @@
       "language": "ruby",
       "description": "Rails-App with Ruby",
       "files": [
-        ".claude/commands/authentication.md",
-        "CLAUDE.md"
+        "CLAUDE.md",
+        ".claude/commands/authentication.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=rails-app --yes",
       "downloads": 0
@@ -88226,10 +88441,10 @@
       "language": "javascript-typescript",
       "description": "React-App with Javascript-Typescript",
       "files": [
-        ".claude/commands/state-management.md",
+        "CLAUDE.md",
         ".claude/commands/hooks.md",
-        ".claude/commands/component.md",
-        "CLAUDE.md"
+        ".claude/commands/state-management.md",
+        ".claude/commands/component.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=react-app --yes",
       "downloads": 0
@@ -88242,10 +88457,10 @@
       "category": "languages",
       "description": "Ruby project template",
       "files": [
+        "CLAUDE.md",
         ".claude/settings.json",
-        ".claude/commands/model.md",
         ".claude/commands/test.md",
-        "CLAUDE.md"
+        ".claude/commands/model.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=ruby --yes",
       "downloads": 0
@@ -88272,8 +88487,8 @@
       "language": "javascript-typescript",
       "description": "Vue-App with Javascript-Typescript",
       "files": [
-        ".claude/commands/components.md",
-        ".claude/commands/composables.md"
+        ".claude/commands/composables.md",
+        ".claude/commands/components.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=vue-app --yes",
       "downloads": 0

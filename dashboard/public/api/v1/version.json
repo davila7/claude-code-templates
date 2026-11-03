@@ -1,8 +1,8 @@
 {
   "schemaVersion": "1.0.0",
-  "generatedAt": "2026-11-03T01:19:43Z",
-  "sha256": "e6b197a98b948f9a63f51e51c13a91fab9c7a9badcf3d5e4ee6d5f6bb3e659fe",
-  "count": 1917,
+  "generatedAt": "2026-11-03T01:59:17Z",
+  "sha256": "4ff3ede9363fc6d91a50a572e4b9e02f337616c2819bb08ecc8c30c83e867351",
+  "count": 1920,
   "counts": {
     "agents": 422,
     "commands": 288,
@@ -11,7 +11,7 @@
     "hooks": 63,
     "skills": 892,
     "loops": 18,
-    "mods": 47
+    "mods": 50
   },
   "catalog": "https://www.aitmpl.com/api/v1/catalog.json",
   "docs": "https://www.aitmpl.com/developers/catalog-api"

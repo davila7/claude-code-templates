@@ -1,0 +1,57 @@
+{
+  "name": "policy-ceiling",
+  "version": "0.1.0",
+  "description": "Makes an organization's managed limits act as ceilings and floors over each person's settings (retention, model, effort, permission mode, sandbox) instead of fixed values, and shows in /policy what each layer asked and what the session runs with.",
+  "author": {
+    "name": "claude-code-templates",
+    "url": "https://www.aitmpl.com"
+  },
+  "repository": "https://github.com/davila7/claude-code-templates",
+  "license": "MIT",
+  "keywords": [
+    "mod",
+    "function-hooks",
+    "enterprise",
+    "managed-settings",
+    "policy"
+  ],
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "maxCleanupPeriodDays": {
+      "type": "number",
+      "title": "Max transcript retention (days)",
+      "description": "Ceiling for cleanupPeriodDays. 0 means no ceiling. Read from managed settings only.",
+      "default": 0
+    },
+    "deniedModels": {
+      "type": "string",
+      "title": "Denied models",
+      "description": "Comma-separated model names or aliases a person may not pick, e.g. opus[1m]; also cleared from the ANTHROPIC_*_MODEL environment variables. Read from managed settings only.",
+      "default": ""
+    },
+    "fallbackModel": {
+      "type": "string",
+      "title": "Fallback model",
+      "description": "Model used when the requested one is denied. Empty means Claude Code's default. Read from managed settings only.",
+      "default": ""
+    },
+    "maxEffort": {
+      "type": "string",
+      "title": "Max effort",
+      "description": "Ceiling for effortLevel (top-level and per model): low, medium, high, xhigh or max. Empty means no ceiling. Read from managed settings only.",
+      "default": ""
+    },
+    "forbiddenModes": {
+      "type": "string",
+      "title": "Forbidden permission modes",
+      "description": "Comma-separated permissions.defaultMode values that fall back to default, e.g. bypassPermissions,acceptEdits. Read from managed settings only.",
+      "default": ""
+    },
+    "requireSandbox": {
+      "type": "boolean",
+      "title": "Require sandbox",
+      "description": "Floor: sandbox.enabled is always true and sandbox.allowUnsandboxedCommands false. Read from managed settings only.",
+      "default": false
+    }
+  }
+}
