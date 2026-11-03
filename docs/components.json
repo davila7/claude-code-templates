@@ -83079,7 +83079,28 @@
         "hooks/policy-ceiling.tsx",
         "tests/policy-ceiling.test.tsx",
         "types/index.d.ts"
-      ]
+      ],
+      "skillspector": {
+        "score": 7,
+        "severity": "LOW",
+        "recommendation": "CAUTION",
+        "issueCount": 1,
+        "analysis": "partial",
+        "findings": [
+          {
+            "id": "RP1",
+            "category": "MCP Rug Pull",
+            "severity": "MEDIUM",
+            "title": "npx commands without a version suffix (e.g. @1.0.0) create a rug-pull risk if the upstream server is compromised and publishes a malicious update.",
+            "file": "README.md",
+            "line": 46,
+            "count": 1
+          }
+        ],
+        "hash": "789ab49b17bb35fb",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-03T03:21:38Z"
+      }
     },
     {
       "name": "2048",
@@ -86764,7 +86785,37 @@
         "hooks/human-gate.ts",
         "hooks/rules.ts",
         "tests/human-gate.test.ts"
-      ]
+      ],
+      "skillspector": {
+        "score": 29,
+        "severity": "MEDIUM",
+        "recommendation": "CAUTION",
+        "issueCount": 2,
+        "analysis": "partial",
+        "findings": [
+          {
+            "id": "AS1",
+            "category": "Agent Snooping",
+            "severity": "HIGH",
+            "title": "Agent Config Directory Access",
+            "file": "README.md",
+            "line": 29,
+            "count": 1
+          },
+          {
+            "id": "RP1",
+            "category": "MCP Rug Pull",
+            "severity": "MEDIUM",
+            "title": "npx commands without a version suffix (e.g. @1.0.0) create a rug-pull risk if the upstream server is compromised and publishes a malicious update.",
+            "file": "README.md",
+            "line": 9,
+            "count": 1
+          }
+        ],
+        "hash": "ae1f491e27f7bf33",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-03T03:21:38Z"
+      }
     },
     {
       "name": "jev-auto-mode",
@@ -87923,7 +87974,55 @@
         "hooks/hooks.json",
         "hooks/live-preview.tsx",
         "tests/live-preview.test.tsx"
-      ]
+      ],
+      "skillspector": {
+        "score": 56,
+        "severity": "HIGH",
+        "recommendation": "DO_NOT_INSTALL",
+        "issueCount": 4,
+        "analysis": "partial",
+        "findings": [
+          {
+            "id": "AS1",
+            "category": "Agent Snooping",
+            "severity": "HIGH",
+            "title": "Agent Config Directory Access",
+            "file": "README.md",
+            "line": 37,
+            "count": 1
+          },
+          {
+            "id": "PE3",
+            "category": "Privilege Escalation",
+            "severity": "HIGH",
+            "title": "Credential Access",
+            "file": "tests/live-preview.test.tsx",
+            "line": 52,
+            "count": 1
+          },
+          {
+            "id": "RP1",
+            "category": "MCP Rug Pull",
+            "severity": "MEDIUM",
+            "title": "npx commands without a version suffix (e.g. @1.0.0) create a rug-pull risk if the upstream server is compromised and publishes a malicious update.",
+            "file": "README.md",
+            "line": 6,
+            "count": 1
+          },
+          {
+            "id": "LP3",
+            "category": "MCP Least Privilege",
+            "severity": "MEDIUM",
+            "title": "Without declared permissions the skill's intent is opaque and cannot be validated.",
+            "file": "SKILL.md",
+            "line": 1,
+            "count": 1
+          }
+        ],
+        "hash": "80dfccf36523d6f3",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-03T03:21:38Z"
+      }
     },
     {
       "name": "spooky-season",
@@ -88285,9 +88384,9 @@
       "description": "Common project template",
       "files": [
         "README.md",
-        "CLAUDE.md",
         ".claude/commands/project-setup.md",
-        ".claude/commands/git-workflow.md"
+        ".claude/commands/git-workflow.md",
+        "CLAUDE.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=common --yes",
       "downloads": 0
@@ -88301,10 +88400,10 @@
       "language": "python",
       "description": "Django-App with Python",
       "files": [
-        "CLAUDE.md",
-        ".claude/commands/django-model.md",
         ".claude/commands/admin.md",
-        ".claude/commands/views.md"
+        ".claude/commands/views.md",
+        ".claude/commands/django-model.md",
+        "CLAUDE.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=django-app --yes",
       "downloads": 0
@@ -88318,12 +88417,12 @@
       "language": "python",
       "description": "Fastapi-App with Python",
       "files": [
-        "CLAUDE.md",
+        ".claude/commands/deployment.md",
         ".claude/commands/auth.md",
-        ".claude/commands/testing.md",
         ".claude/commands/database.md",
         ".claude/commands/api-endpoints.md",
-        ".claude/commands/deployment.md"
+        ".claude/commands/testing.md",
+        "CLAUDE.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=fastapi-app --yes",
       "downloads": 0
@@ -88337,13 +88436,13 @@
       "language": "python",
       "description": "Flask-App with Python",
       "files": [
-        "CLAUDE.md",
-        ".claude/commands/testing.md",
-        ".claude/commands/flask-route.md",
-        ".claude/commands/database.md",
         ".claude/commands/deployment.md",
+        ".claude/commands/flask-route.md",
         ".claude/commands/blueprint.md",
-        ".claude/commands/app-factory.md"
+        ".claude/commands/app-factory.md",
+        ".claude/commands/database.md",
+        ".claude/commands/testing.md",
+        "CLAUDE.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=flask-app --yes",
       "downloads": 0
@@ -88370,15 +88469,15 @@
       "description": "Javascript-Typescript project template",
       "files": [
         "README.md",
-        "CLAUDE.md",
         ".claude/settings.json",
-        ".claude/commands/test.md",
-        ".claude/commands/api-endpoint.md",
+        ".claude/commands/refactor.md",
         ".claude/commands/npm-scripts.md",
-        ".claude/commands/lint.md",
-        ".claude/commands/debug.md",
         ".claude/commands/typescript-migrate.md",
-        ".claude/commands/refactor.md"
+        ".claude/commands/lint.md",
+        ".claude/commands/test.md",
+        ".claude/commands/debug.md",
+        ".claude/commands/api-endpoint.md",
+        "CLAUDE.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=javascript-typescript --yes",
       "downloads": 0
@@ -88392,11 +88491,11 @@
       "language": "javascript-typescript",
       "description": "Node-Api with Javascript-Typescript",
       "files": [
-        "CLAUDE.md",
-        ".claude/commands/api-endpoint.md",
         ".claude/commands/database.md",
+        ".claude/commands/middleware.md",
         ".claude/commands/route.md",
-        ".claude/commands/middleware.md"
+        ".claude/commands/api-endpoint.md",
+        "CLAUDE.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=node-api --yes",
       "downloads": 0
@@ -88409,10 +88508,10 @@
       "category": "languages",
       "description": "Python project template",
       "files": [
-        "CLAUDE.md",
         ".claude/settings.json",
+        ".claude/commands/lint.md",
         ".claude/commands/test.md",
-        ".claude/commands/lint.md"
+        "CLAUDE.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=python --yes",
       "downloads": 0
@@ -88426,8 +88525,8 @@
       "language": "ruby",
       "description": "Rails-App with Ruby",
       "files": [
-        "CLAUDE.md",
-        ".claude/commands/authentication.md"
+        ".claude/commands/authentication.md",
+        "CLAUDE.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=rails-app --yes",
       "downloads": 0
@@ -88441,10 +88540,10 @@
       "language": "javascript-typescript",
       "description": "React-App with Javascript-Typescript",
       "files": [
-        "CLAUDE.md",
-        ".claude/commands/hooks.md",
         ".claude/commands/state-management.md",
-        ".claude/commands/component.md"
+        ".claude/commands/hooks.md",
+        ".claude/commands/component.md",
+        "CLAUDE.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=react-app --yes",
       "downloads": 0
@@ -88457,10 +88556,10 @@
       "category": "languages",
       "description": "Ruby project template",
       "files": [
-        "CLAUDE.md",
         ".claude/settings.json",
+        ".claude/commands/model.md",
         ".claude/commands/test.md",
-        ".claude/commands/model.md"
+        "CLAUDE.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=ruby --yes",
       "downloads": 0
@@ -88487,8 +88586,8 @@
       "language": "javascript-typescript",
       "description": "Vue-App with Javascript-Typescript",
       "files": [
-        ".claude/commands/composables.md",
-        ".claude/commands/components.md"
+        ".claude/commands/components.md",
+        ".claude/commands/composables.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=vue-app --yes",
       "downloads": 0
