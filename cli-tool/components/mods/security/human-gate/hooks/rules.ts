@@ -36,9 +36,46 @@ const BASH_RULES: readonly BashRule[] = [
 ]
 
 const DESTRUCTIVE_SQL_RE = /\b(?:DROP|TRUNCATE|ALTER)\s+(?:TABLE|DATABASE|SCHEMA|ROLE|USER)\b|\bDELETE\s+FROM\b(?![^;]*\bWHERE\b)|\bUPDATE\s+(?:ONLY\s+)?[\w."]+(?:\s+(?:AS\s+)?(?!SET\b)\w+)?\s+SET\b(?![^;]*\bWHERE\b)/i
-/** SQL with its string literals and comments blanked, so `SET bio = 'WHERE'` or `-- WHERE` is not read as a filter. */
+/**
+ * SQL reduced to its code, so the `WHERE` check sees only real clauses: string
+ * literals (`'…'`, `$tag$…$tag$`) and comments (`--`, `#`, `/* … *\/`) become
+ * spaces, quoted identifiers (`"…"`, `` `…` ``) keep their quotes with `x`
+ * inside, and a MySQL executable comment (`/*! … *\/`) keeps its body, since
+ * MySQL runs it. Blanking `#` also blanks Postgres's XOR operator; that only
+ * ever hides a `WHERE`, which holds the call (fails closed).
+ */
 export function sqlCode(sql: string): string {
-  return sql.replace(/'(?:[^']|'')*(?:'|$)|\$(\w*)\$[\s\S]*?(?:\$\1\$|$)|--[^\n]*|\/\*[\s\S]*?(?:\*\/|$)/g, m => ' '.repeat(m.length))
+  let out = ''
+  let i = 0
+  const blank = (n: number) => { out += ' '.repeat(n); i += n }
+  while (i < sql.length) {
+    const c = sql[i]
+    const two = sql.slice(i, i + 2)
+    if (c === "'") {
+      let j = i + 1
+      while (j < sql.length && !(sql[j] === "'" && sql[j + 1] !== "'")) j += sql[j] === "'" ? 2 : 1
+      blank(Math.min(j + 1, sql.length) - i)
+    } else if (c === '"' || c === '`') {
+      const end = sql.indexOf(c, i + 1)
+      const stop = end < 0 ? sql.length : end + 1
+      out += c + 'x'.repeat(Math.max(0, stop - i - 2)) + (end < 0 ? '' : c)
+      i = stop
+    } else if (two === '--' || c === '#') {
+      const end = sql.indexOf('\n', i)
+      blank((end < 0 ? sql.length : end) - i)
+    } else if (two === '/*') {
+      const end = sql.indexOf('*/', i + 2)
+      const stop = end < 0 ? sql.length : end + 2
+      if (sql[i + 2] === '!') { out += '   ' + sql.slice(i + 3, end < 0 ? sql.length : end) + (end < 0 ? '' : '  '); i = stop }
+      else blank(stop - i)
+    } else if (c === '$') {
+      const m = /^\$(\w*)\$/.exec(sql.slice(i))
+      if (!m) { out += c; i++; continue }
+      const end = sql.indexOf(m[0], i + m[0].length)
+      blank((end < 0 ? sql.length : end + m[0].length) - i)
+    } else { out += c; i++ }
+  }
+  return out
 }
 
 function destructiveSql(sql: string): boolean {
