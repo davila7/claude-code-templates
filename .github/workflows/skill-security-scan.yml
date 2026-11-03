@@ -1,10 +1,11 @@
 name: Skill Security Scan
 
 # Runs SkillSpector (NVIDIA, Apache-2.0) static analysis on skill components
-# changed in a PR. Posts a report comment and blocks the PR if a changed
-# skill scores HIGH/CRITICAL (risk score > 50) and its score rose compared
-# with the merge base (a new skill counts as 0). Skills that already scored
-# that high on main can be edited without being blocked for old findings.
+# changed in a PR. Adds a job summary for every PR and a report comment for
+# same-repository PRs. Blocks the PR if a changed skill scores HIGH/CRITICAL
+# (risk score > 50) and its score rose compared with the merge base (a new
+# skill counts as 0). Skills that already scored that high on main can be
+# edited without being blocked for old findings.
 
 on:
   pull_request:
@@ -68,34 +69,82 @@ jobs:
           sarif_file: skillspector.sarif
           category: skillspector
 
-      - name: Comment PR with results
+      - name: Add report to job summary
         if: always()
         uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');
             const reportPath = 'skillspector-report.md';
+
             if (!fs.existsSync(reportPath)) {
               console.log('No SkillSpector report found.');
               return;
             }
-            const body = fs.readFileSync(reportPath, 'utf8');
-            const marker = '<!-- skillspector-report:v1 -->';
-            const { owner, repo } = context.repo;
-            const issue_number = context.issue.number;
 
-            const existing = await github.paginate(
-              github.rest.issues.listComments,
-              { owner, repo, issue_number, per_page: 100 }
-            );
-            const prev = existing.find(c => c.body && c.body.includes(marker));
-            if (prev) {
+            const body = fs.readFileSync(reportPath, 'utf8');
+            const summaryLimit = 1024 * 1024;
+            const truncationNotice = '\n\n> Report truncated to fit the 1 MiB GitHub Actions job summary limit. See the workflow artifact for the full report.\n';
+            let summaryBody = body;
+
+            if (Buffer.byteLength(body, 'utf8') > summaryLimit) {
+              const bytes = Buffer.from(body, 'utf8');
+              const prefixLimit = summaryLimit - Buffer.byteLength(truncationNotice, 'utf8');
+              let end = prefixLimit;
+
+              // Back off byte-by-byte so truncation never splits a UTF-8 character.
+              while (end > 0) {
+                try {
+                  summaryBody = new TextDecoder('utf-8', { fatal: true })
+                    .decode(bytes.subarray(0, end));
+                  break;
+                } catch {
+                  end -= 1;
+                }
+              }
+
+              summaryBody += truncationNotice;
+            }
+
+            await core.summary.addRaw(summaryBody).write();
+
+      - name: Comment PR with results
+        if: github.event_name == 'pull_request' && always() && github.event.pull_request.head.repo.full_name == github.repository
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const fs = require('fs');
+            const reportPath = 'skillspector-report.md';
+            const marker = '<!-- skillspector-report:v1 -->';
+
+            if (!fs.existsSync(reportPath)) {
+              console.log('No SkillSpector report found.');
+              return;
+            }
+
+            const body = fs.readFileSync(reportPath, 'utf8');
+            const { owner, repo } = context.repo;
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner,
+              repo,
+              issue_number: context.issue.number,
+              per_page: 100,
+            });
+            const existing = comments.find(comment => comment.body?.includes(marker));
+
+            if (existing) {
               await github.rest.issues.updateComment({
-                owner, repo, comment_id: prev.id, body,
+                owner,
+                repo,
+                comment_id: existing.id,
+                body,
               });
             } else {
               await github.rest.issues.createComment({
-                owner, repo, issue_number, body,
+                owner,
+                repo,
+                issue_number: context.issue.number,
+                body,
               });
             }
 
