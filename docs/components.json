@@ -27246,6 +27246,38 @@
       }
     },
     {
+      "name": "solidping",
+      "path": "devtools/solidping.json",
+      "category": "devtools",
+      "type": "mcp",
+      "description": "SolidPing uptime monitoring: list and create checks across 40+ check types (HTTP, DNS, TCP, SSL, databases, queues, heartbeats), read results and incidents, diagnose a failing check, and manage status pages. Streamable HTTP, OAuth sign-in in the browser. Hosted with a free tier, or self-hosted at https://<your-host>/api/v1/mcp.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "hash": "fd9abed7d8be435d",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-03T18:06:46Z"
+      }
+    },
+    {
       "name": "stripe",
       "path": "devtools/stripe.json",
       "category": "devtools",
@@ -27955,6 +27987,38 @@
         "hash": "fabd59d67da5bc0e",
         "version": "2.12.0",
         "scannedAt": "2026-10-17T20:36:45Z"
+      }
+    },
+    {
+      "name": "seo-aeo-geo",
+      "path": "marketing/seo-aeo-geo.json",
+      "category": "marketing",
+      "type": "mcp",
+      "description": "Remote MCP server that audits a public page for Google and AI search (ChatGPT, Claude, Perplexity): robots.txt rules per AI crawler, CDN and firewall blocks seen by OAI-SearchBot, Claude-SearchBot and PerplexityBot, and text visible without JavaScript. Returns a ranked fix pack with where each fix lives in the codebase and how to verify it. Free preview, no account or API key.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "hash": "bcc00700e964388c",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-03T18:06:46Z"
       }
     },
     {
@@ -45755,6 +45819,39 @@
         "hash": "d847fb1c9405b728",
         "version": "2.12.0",
         "scannedAt": "2026-10-17T20:36:45Z"
+      }
+    },
+    {
+      "name": "healthcare-job-search",
+      "path": "career/healthcare-job-search",
+      "category": "career",
+      "type": "skill",
+      "description": "Find open US healthcare jobs (nursing, CNA, allied health, therapy, imaging, pharmacy, physicians and more) and the hourly pay employers post, using CareJobs.Now's free MCP server or its public JSON endpoints. Use when someone asks for healthcare or nursing jobs in a US place, what a healthcare job pays, or which hospitals are hiring.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "MIT",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [],
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "CAUTION",
+        "issueCount": 0,
+        "analysis": "partial",
+        "findings": [],
+        "hash": "e8ca6e0ff9b4359d",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-03T18:06:46Z"
       }
     },
     {
@@ -65319,6 +65416,51 @@
       }
     },
     {
+      "name": "chisle",
+      "path": "productivity/chisle",
+      "category": "productivity",
+      "type": "skill",
+      "description": "Maximum-efficiency dev mode: terse zero-fluff prose + YAGNI/ladder-first code. Use when user says \"chisle mode\", \"activate chisle\", \"chislify\", \"be efficient\", \"be minimal\", \"no fluff\", \"yagni\", or invokes /chisle. Deactivate: \"stop chisle\" / \"normal mode\".",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "LICENSE.txt"
+      ],
+      "skillspector": {
+        "score": 7,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 1,
+        "analysis": "complete",
+        "findings": [
+          {
+            "id": "RP1",
+            "category": "MCP Rug Pull",
+            "severity": "MEDIUM",
+            "title": "npx commands without a version suffix (e.g. @1.0.0) create a rug-pull risk if the upstream server is compromised and publishes a malicious update.",
+            "file": "SKILL.md",
+            "line": 79,
+            "count": 1
+          }
+        ],
+        "hash": "4c6ce079d3b754cb",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-03T18:06:46Z"
+      }
+    },
+    {
       "name": "claude-code-sessions",
       "path": "productivity/claude-code-sessions",
       "category": "productivity",
@@ -65923,6 +66065,51 @@
         "hash": "8c7256c9dfdfb147",
         "version": "2.12.0",
         "scannedAt": "2026-10-17T20:36:45Z"
+      }
+    },
+    {
+      "name": "five-whys",
+      "path": "productivity/five-whys",
+      "category": "productivity",
+      "type": "skill",
+      "description": "Use for the 5 Whys, or when the user wants the root cause of a failure: \"why did this happen?\", \"this keeps breaking\", \"write the postmortem\", \"find the real cause\". Asks why repeatedly with evidence at each step, then sets countermeasures. Skip for one-off typos or when the cause is already proven.",
+      "author": "ysskrishna",
+      "repo": "",
+      "version": "2026.10.5",
+      "license": "MIT",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "references/example.md"
+      ],
+      "skillspector": {
+        "score": 7,
+        "severity": "LOW",
+        "recommendation": "CAUTION",
+        "issueCount": 1,
+        "analysis": "partial",
+        "findings": [
+          {
+            "id": "EA2",
+            "category": "Excessive Agency",
+            "severity": "MEDIUM",
+            "title": "Autonomous Decision Making",
+            "file": "SKILL.md",
+            "line": 60,
+            "count": 1
+          }
+        ],
+        "hash": "0d8aad0708202426",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-03T18:06:46Z"
       }
     },
     {
@@ -66812,6 +66999,41 @@
       }
     },
     {
+      "name": "pre-mortem",
+      "path": "productivity/pre-mortem",
+      "category": "productivity",
+      "type": "skill",
+      "description": "Use for a pre-mortem, or before committing to a plan, launch or migration: \"what could go wrong?\", \"stress test this plan\", \"how might this fail?\", \"risks before we ship\". Assumes failure, lists causes, ranks them and sets mitigations. Skip for explaining a failure that already happened.",
+      "author": "ysskrishna",
+      "repo": "",
+      "version": "2026.10.5",
+      "license": "MIT",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "references/example.md"
+      ],
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "CAUTION",
+        "issueCount": 0,
+        "analysis": "partial",
+        "findings": [],
+        "hash": "07b5667bf8e33e06",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-03T18:06:46Z"
+      }
+    },
+    {
       "name": "raffle-winner-picker",
       "path": "productivity/raffle-winner-picker",
       "category": "productivity",
@@ -67300,6 +67522,76 @@
         "hash": "5e0e874f2684d651",
         "version": "2.12.0",
         "scannedAt": "2026-10-17T20:36:45Z"
+      }
+    },
+    {
+      "name": "thinking-method-selector",
+      "path": "productivity/thinking-method-selector",
+      "category": "productivity",
+      "type": "skill",
+      "description": "Use when the user describes a problem, decision or stuck situation but names no method: \"how should I approach this?\", \"help me think this through\", \"we can't decide\", \"where do I start?\". Picks the best-fit thinking method and runs it. Skip for plain execution tasks or when a method is named.",
+      "author": "ysskrishna",
+      "repo": "",
+      "version": "2026.10.5",
+      "license": "MIT",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "references/example.md"
+      ],
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "CAUTION",
+        "issueCount": 0,
+        "analysis": "partial",
+        "findings": [],
+        "hash": "f5bb54fddd98eb7b",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-03T18:06:46Z"
+      }
+    },
+    {
+      "name": "tradeoff-analysis",
+      "path": "productivity/tradeoff-analysis",
+      "category": "productivity",
+      "type": "skill",
+      "description": "Use for tradeoff analysis, or when the user must pick between concrete options: \"A or B?\", \"which library should we use?\", \"build vs buy\", \"compare these approaches\". Scores options on weighted criteria, tests sensitivity and reversibility. Skip for open ideation or single-option reviews.",
+      "author": "ysskrishna",
+      "repo": "",
+      "version": "2026.10.5",
+      "license": "MIT",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "references/example.md"
+      ],
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "CAUTION",
+        "issueCount": 0,
+        "analysis": "partial",
+        "findings": [],
+        "hash": "71e4e39388e0adc0",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-03T18:06:46Z"
       }
     },
     {
