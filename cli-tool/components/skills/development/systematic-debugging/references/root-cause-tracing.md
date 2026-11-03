@@ -101,7 +101,7 @@ If something appears during tests but you don't know which test:
 Run `scripts/find-polluter.sh` from this skill against your project. Run it from the project root, because it searches the current directory for test files; it runs them one by one (set `TEST_CMD` if your runner is not `npm test`):
 
 ```bash
-bash .claude/skills/systematic-debugging/scripts/find-polluter.sh '.git' 'src/**/*.test.ts'
+bash .claude/skills/systematic-debugging/scripts/find-polluter.sh 'packages/core/.git' 'src/**/*.test.ts'
 ```
 
 Runs tests one-by-one, stops at first polluter. See script for usage.

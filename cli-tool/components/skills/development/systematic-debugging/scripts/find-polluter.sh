@@ -2,7 +2,7 @@
 # Runs test files one by one to find which test creates unwanted files/state.
 # Run it from the project root (it searches the current directory for tests).
 # Usage: ./find-polluter.sh <file_or_dir_to_check> <test_pattern>
-# Example: ./find-polluter.sh '.git' 'src/**/*.test.ts'
+# Example: ./find-polluter.sh 'packages/core/.git' 'src/**/*.test.ts'
 # The test runner defaults to `npm test <file>`; override it with TEST_CMD,
 # e.g. TEST_CMD="yarn test" or TEST_CMD="python -m pytest -q".
 
@@ -10,7 +10,7 @@ set -e
 
 if [ $# -ne 2 ]; then
   echo "Usage: $0 <file_to_check> <test_pattern>"
-  echo "Example: $0 '.git' 'src/**/*.test.ts'"
+  echo "Example: $0 'packages/core/.git' 'src/**/*.test.ts'"
   exit 1
 fi
 
@@ -40,7 +40,9 @@ echo "Found $TOTAL test files"
 echo ""
 
 if [ -e "$POLLUTION_CHECK" ]; then
-  echo "❌ $POLLUTION_CHECK already exists. Remove it first, then rerun."
+  echo "❌ $POLLUTION_CHECK exists before any test ran, so this run cannot tell"
+  echo "   which test creates it. Check what it is first. If it is leftover test"
+  echo "   output (not part of the project), move it aside and rerun."
   exit 2
 fi
 

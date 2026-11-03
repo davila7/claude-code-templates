@@ -56,7 +56,9 @@ Before attempting ANY fix:
 3. **Check what changed.** `git diff`, recent commits, new dependencies,
    config and environment differences. If there is a known-good commit and
    a command that shows the bug, let git find the culprit:
-   `git bisect start <bad> <good> && git bisect run <repro-command>`.
+   `git bisect start <bad> <good> && git bisect run <repro-command>`,
+   then `git bisect reset` to return to your branch before you change
+   anything.
 
 4. **Gather evidence across component boundaries.** When the system has
    layers (CI → build → deploy, UI → API → database, CLI → config → child
@@ -194,5 +196,5 @@ When you finish, tell the user in a few lines:
 - `scripts/find-polluter.sh`: run test files one by one to find which
   test creates an unwanted file or state. Run it from the project root
   with the path to this skill's copy, for example
-  `bash .claude/skills/systematic-debugging/scripts/find-polluter.sh .git 'src/**/*.test.ts'`
+  `bash .claude/skills/systematic-debugging/scripts/find-polluter.sh packages/core/.git 'src/**/*.test.ts'`
   (`TEST_CMD` sets the runner; default `npm test`).
