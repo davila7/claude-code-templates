@@ -3,6 +3,7 @@ import { TYPE_CONFIG } from '../lib/icons';
 import TypeIcon from './TypeIcon';
 import { fetchSearchIndex, type SearchIndexEntry } from '../lib/data';
 import { fetchActiveAds, findSponsoredIndex, type ActiveAd } from '../lib/ads';
+import { componentPath } from '../lib/component-url';
 
 type SearchResult = SearchIndexEntry & { sponsored?: boolean };
 
@@ -205,7 +206,7 @@ export default function SearchModal() {
 
   function navigate(component: SearchIndexEntry) {
     closeModal();
-    window.location.href = `/component/${component.type}/${cleanPath(component.path ?? component.name)}`;
+    window.location.href = componentPath(component.type, component.path ?? component.name);
   }
 
   // Scroll selected into view

@@ -4,6 +4,7 @@ import { TYPE_CONFIG } from '../lib/icons';
 import TypeIcon from './TypeIcon';
 import SendToRepoModal from './SendToRepoModal';
 import type { Collection, CollectionItem } from '../lib/types';
+import { componentPath } from '../lib/component-url';
 
 // ── Auth hook ────────────────────────────────────────────────────────────
 function useGlobalAuth() {
@@ -275,7 +276,7 @@ function ProjectTreeNode({
       >
         {fileIcon}
         <a
-          href={`/component/${node.item!.component_type}/${cleanPath(node.item!.component_path)}`}
+          href={componentPath(node.item!.component_type, cleanPath(node.item!.component_path))}
           className="truncate flex-1 hover:underline"
           style={{ color: node.color }}
         >
@@ -392,7 +393,7 @@ function MainContentTree({
           <span className="text-[var(--color-text-tertiary)] select-none">{prefix}{connector}</span>
           {node.item ? (
             <a
-              href={`/component/${node.item.component_type}/${cleanPath(node.item.component_path)}`}
+              href={componentPath(node.item.component_type, cleanPath(node.item.component_path))}
               className="hover:underline"
               style={{ color: node.color ?? 'var(--color-text-secondary)' }}
             >
@@ -961,7 +962,7 @@ export default function MyComponentsView() {
                           </div>
                           <div className="min-w-0 flex-1">
                             <a
-                              href={`/component/${item.component_type}/${cleanPath(item.component_path)}`}
+                              href={componentPath(item.component_type, cleanPath(item.component_path))}
                               className="text-[13px] font-medium text-[var(--color-text-primary)] hover:text-white transition-colors line-clamp-1"
                             >
                               {formatName(item.component_name)}
