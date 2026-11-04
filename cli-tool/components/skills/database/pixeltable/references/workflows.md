@@ -75,7 +75,13 @@ The other way round also works: define the `fastapi.FastAPI` object in `app.py` 
 - `add_insert_route`: POST from model columns. `uploadfile_inputs` for files. Persists the row. A file column is `uploadfile_inputs` or `inputs`, not both.
 - `add_compute_route`: same request shape as insert, but `Table.compute()`: no row stored
 - `add_update_route`: POST matches the row by primary key, so the request body carries the primary-key column (`uuid` in the example above) even though `inputs` does not list it. No `match_columns`
-- `add_query_route`: wraps `@pxt.query`. Response shape follows the query (0.7.22+): multi-row is `{ "rows": [...] }` (or a JSON array of values when selecting a single unnamed expression); a query that aggregates without `group_by()` or ends in a literal `limit(1)` is single-row and returns the row (or the value). 0 rows is a 404. The old more-than-one-row 409 is gone. `one_row=` is gone. `return_fileresponse=True` requires a single-row query and returns the one media column as a file
+- `add_query_route`: wraps `@pxt.query`. Since 0.7.22 the response shape follows the query. A multi-row query returns an object with a `rows` array:
+
+  ```json
+  { "rows": [] }
+  ```
+
+  Selecting a single unnamed expression returns a JSON array of those values instead. A query that aggregates without `group_by()`, or that ends in a literal `limit(1)`, is single-row and returns that row, or the bare value. Zero rows is a 404. The old more-than-one-row 409 is gone. `one_row=` is gone. `return_fileresponse=True` requires a single-row query and returns the one media column as a file
 - `add_delete_route`: POST delete by primary key, or by a nonempty `match_columns=` list
 - `@ingest.insert_route(...)`, `update_route`, `compute_route`: decorator forms taking the same table, `path`, `inputs` and `outputs`. The function takes each `outputs` column as a keyword-only, annotated parameter (media arrive as URL strings) and returns a `pydantic.BaseModel`, which becomes the response body. Reshape a response this way rather than in a hand-written endpoint.
 - `export_sql=SqlExport(db_connect=..., table=...)` (`from pixeltable.serving import SqlExport`) on insert, update, and compute routes writes each response row to an existing SQL table after Pixeltable commits.
@@ -87,7 +93,14 @@ Media columns in JSON are URLs under `{prefix}/_pxt/media/...` (this file: `/api
 
 A computed column that raises during an insert or update route fails the request and stores nothing. The error body's `detail` is `{"error_code", "message", "retryable"}`, plus `retry_after` when present; a `Retry-After` header is sent with every error that has a `retry_after` (0.7.22+). A failed job's `error_detail` has the same shape; retry when `detail.retryable` is true. After a schema change, routes answer 409 until `pxt service update ... -f` restarts the service.
 
-Frontend types: `curl -fsS "$URL/openapi.json" -o openapi.json`, then `npx openapi-typescript openapi.json -o src/pixeltable.d.ts`. Each column in a route's `outputs` becomes a typed field, and the job-polling route is in the schema. Regenerate after changing routes. A hosted service needs its Cloud key in an `X-api-key` header, so call it from your app server, never from browser code.
+Frontend types: fetch the OpenAPI document, then generate types.
+
+```bash
+curl -fsS "$URL/openapi.json" -o openapi.json
+npx openapi-typescript openapi.json -o src/pixeltable.d.ts
+```
+
+Each column in a route's `outputs` becomes a typed field, and the job-polling route is in the schema. Regenerate after changing routes. A hosted service needs its Cloud key in an `X-api-key` header, so call it from your app server, never from browser code.
 
 No HTTP: apply, then insert from Python. [Self-hosting](https://docs.pixeltable.com/howto/deployment/overview).
 
