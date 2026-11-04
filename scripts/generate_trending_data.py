@@ -158,8 +158,14 @@ def main():
             'Content-Type': 'application/json'
         }
         
+        # The anon key can only read these columns (database/migrations/
+        # 003_supabase_enable_rls.sql). Never request ip_address or user_agent:
+        # they are not granted, so select=* fails with 401.
+        columns = ("id,component_type,component_name,category,download_timestamp,"
+                   "country,client_agent,client_entrypoint,client_is_tty")
+
         # Get total count first
-        count_url = f"{supabase_url}/rest/v1/component_downloads"
+        count_url = f"{supabase_url}/rest/v1/component_downloads?select=id"
         count_headers = {**headers, 'Prefer': 'count=exact'}
         count_response = requests.head(count_url, headers=count_headers)
         
@@ -182,7 +188,8 @@ def main():
         while True:
             page_num += 1
 
-            api_url = f"{supabase_url}/rest/v1/component_downloads?id=gt.{last_id}&order=id.asc&limit={page_size}"
+            api_url = (f"{supabase_url}/rest/v1/component_downloads?select={columns}"
+                       f"&id=gt.{last_id}&order=id.asc&limit={page_size}")
 
             response = fetch_with_retry(api_url, headers, max_retries=5, timeout=60)
 
@@ -342,7 +349,6 @@ def process_downloads_data(downloads):
     
     # Debug: Show sample of downloads and date ranges
     print(f"🔍 Processing {len(downloads)} downloads...")
-    print(f"📄 Sample download record: {downloads[0] if downloads else 'None'}")
     print(f"📅 Date ranges being used:")
     print(f"   • now: {now}")
     print(f"   • today_start: {today_start}")
