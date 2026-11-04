@@ -7,6 +7,9 @@ const PANE = 'thinking'
 const TITLE = 'Thinking'
 const TURNS_KEPT = 25
 const THOUGHT_MAX = 40000
+// Turns that draw their contents unasked; older ones fold to their headers,
+// so a long session doesn't lay out every kept thought on each redraw.
+const TURNS_OPEN = 3
 
 // Bump the shape tag when Tree changes: it declines what an older version stored.
 const treeAtom = atom({ plugin: 'thinking-pane', key: 'tree' } as const, { turns: [], agents: {} }, { shape: 'tree-1' })
@@ -129,6 +132,19 @@ function styled(text: string): Seg[] {
   }
   if (at < text.length) out.push(...paths(text.slice(at), false))
   return out
+}
+
+// A thought's styled runs, kept while its text is unchanged: a redraw only
+// parses the thought still streaming.
+const styledCache = new Map<string, { length: number; segs: Seg[] }>()
+
+function styledOnce(id: string, text: string): Seg[] {
+  const hit = styledCache.get(id)
+  if (hit && hit.length === text.length) return hit.segs
+  const segs = styled(text.trim())
+  if (styledCache.size > 2000) styledCache.clear()
+  styledCache.set(id, { length: text.length, segs })
+  return segs
 }
 
 function clone<T>(value: T): T {
@@ -487,7 +503,7 @@ export const register: Register = on => {
       <Box flexDirection="column">
         <Text color={C.time}>{hms(th.at)}</Text>
         <Text>
-          {styled(th.text.trim()).map(seg =>
+          {styledOnce(th.id, th.text).map(seg =>
             seg.kind === 'plain' && !seg.bold ? (
               seg.text
             ) : (
@@ -527,7 +543,7 @@ export const register: Register = on => {
       )
     }
 
-    const turnView = (turn: Turn, isLatest: boolean) => {
+    const turnView = (turn: Turn, isLatest: boolean, isRecent: boolean) => {
       const thoughts = turn.items.filter((item): item is Thought => item.kind === 'thought')
       const agents = turn.items
         .filter(item => item.kind === 'agent')
@@ -543,26 +559,29 @@ export const register: Register = on => {
       const lastThought = thoughts[thoughts.length - 1]
 
       const promptKey = 'prompt-' + turn.id
-      const promptOpen = toggled[promptKey] ?? true
+      const promptOpen = toggled[promptKey] ?? isRecent
       const fullKey = promptKey + '-full'
       const promptFull = toggled[fullKey] ?? false
       const prompt = turn.prompt.trim()
       const togglePrompt = () => update($, toggledAtom, map => ({ ...map, [promptKey]: !promptOpen }))
       const toggleFull = () => update($, toggledAtom, map => ({ ...map, [fullKey]: !promptFull }))
       const mainKey = 'main-' + turn.id
-      const mainOpen = toggled[mainKey] ?? true
+      const mainOpen = toggled[mainKey] ?? isRecent
       const toggleMain = () => update($, toggledAtom, map => ({ ...map, [mainKey]: !mainOpen }))
 
       return (
         <Box flexDirection="column" gap={1}>
           {prompt ? (
             <Box flexDirection="column" borderStyle="round" borderColor={C.prompt} paddingX={1}>
-              <Button key={promptKey} plain onPress={togglePrompt}>
-                <Text color={C.dim}>{promptOpen ? '▾ ' : '▸ '}</Text>
-                <Text color={C.prompt} bold>
-                  user
-                </Text>
-              </Button>
+              <Box flexDirection="row" justifyContent="space-between">
+                <Button key={promptKey} plain onPress={togglePrompt}>
+                  <Text color={C.dim}>{promptOpen ? '▾ ' : '▸ '}</Text>
+                  <Text color={C.prompt} bold>
+                    user
+                  </Text>
+                </Button>
+                {promptOpen ? null : <Text color={C.time}>{hms(turn.startedAt)}</Text>}
+              </Box>
               {promptOpen ? <Text color={C.time}>{hms(turn.startedAt)}</Text> : null}
               {promptOpen ? (
                 <Button key={promptKey + '-text'} plain onPress={toggleFull}>
@@ -667,7 +686,7 @@ export const register: Register = on => {
             {t.turns.length === 0 ? (
               <Text color={C.dim}>Nothing yet. Claude's thinking shows up here as it streams.</Text>
             ) : null}
-            {t.turns.map(turn => turnView(turn, turn === latest))}
+            {t.turns.map((turn, i) => turnView(turn, turn === latest, i >= t.turns.length - TURNS_OPEN))}
           </Box>
         )}
       </Box>

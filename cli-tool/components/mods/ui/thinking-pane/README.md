@@ -1,6 +1,6 @@
 # thinking-pane
 
-Vendored from https://github.com/Sallvainian/claude-code-mods at commit 5f29d5c (version 0.3.2, MIT). I'm the author.
+Vendored from https://github.com/Sallvainian/claude-code-mods at commit 21b746e (version 0.3.3, MIT). I'm the author.
 
 A pane beside the transcript that shows Claude's thinking as it streams, so you don't have to expand a turn and scroll past the tool calls to find it.
 
@@ -20,7 +20,7 @@ The pane docks on the right in the fullscreen layout (`/tui fullscreen`) with a 
 
 ## Access
 
-It reads the thinking chunks of each model step, your prompts, and subagent starts and finishes. It keeps the last 25 turns in the session's plugin state only: nothing is written to disk, and it makes no network calls, runs no processes and changes no tool calls.
+It reads the thinking chunks of each model step, your prompts, and subagent starts and finishes. It keeps the last 25 turns in the session's plugin state only, and draws the contents of the newest 3; older turns fold to their headers, which open them again. Nothing is written to disk, and it makes no network calls, runs no processes and changes no tool calls.
 
 ## Install
 

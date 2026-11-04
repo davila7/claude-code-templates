@@ -159,3 +159,32 @@ test('a long prompt shows its first lines; its text opens the rest', async ($, o
   expect(await ui.find({ type: 'Text', text: /the end$/ })).toBeDefined()
   await ui.unmount()
 })
+
+test('only the newest three turns draw their contents; an older one opens on request', async ($, on) => {
+  const clock = mock.clock(on, { now: Date.UTC(2026, 10, 3, 14, 2, 7) })
+  engine(on, { main: ['Thinking about it.'] })
+
+  await $.session.start({ cwd: '/', surface: 'terminal', isInteractive: true })
+  for (const n of [1, 2, 3, 4, 5]) {
+    await $.turn.start({ turnId: 't' + n, text: 'prompt number ' + n })
+    await drain($.turn.step({ turnId: 't' + n, index: 0, model: 'm', messageCount: 1 }))
+    await $.turn.complete({ turnId: 't' + n, answer: '', durationMs: 1000, isAborted: false, reason: 'answer' })
+    await clock.advance(1000)
+  }
+
+  const ui = await $.ui.mount({ ...PANE, surface: 'terminal' })
+  // t1 and t2 fold to their headers; t3 to t5 stay open.
+  expect(await ui.find({ type: 'Text', text: /^prompt number 1$/ })).toBeUndefined()
+  expect(await ui.find({ type: 'Text', text: /^prompt number 2$/ })).toBeUndefined()
+  expect(await ui.find({ type: 'Text', text: /^prompt number 3$/ })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: /^prompt number 5$/ })).toBeDefined()
+  expect((await ui.findAll({ type: 'Text', text: /^Thinking about it\.$/ })).length).toBe(3)
+
+  // An old turn's prompt and thinking open from their headers.
+  await ui.press({ key: 'prompt-t1' })
+  await ui.press({ key: 'main-t1' })
+  await clock.advance(200)
+  expect(await ui.find({ type: 'Text', text: /^prompt number 1$/ })).toBeDefined()
+  expect((await ui.findAll({ type: 'Text', text: /^Thinking about it\.$/ })).length).toBe(4)
+  await ui.unmount()
+})
