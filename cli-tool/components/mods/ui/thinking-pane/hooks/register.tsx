@@ -390,6 +390,7 @@ export const register: Register = on => {
       work = { turns: [], agents: {} }
       follow = true
       lastView = undefined
+      await update($, pageAtom, () => [])
       flush($)
     }
     return next(e)

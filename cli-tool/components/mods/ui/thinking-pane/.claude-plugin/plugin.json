@@ -1,6 +1,6 @@
 {
   "name": "thinking-pane",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "license": "MIT",
   "author": { "name": "Sallvainian", "url": "https://github.com/Sallvainian" },
   "description": "Shows Claude's thinking live in a side pane, with a page for each subagent",

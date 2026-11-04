@@ -1,6 +1,6 @@
 # thinking-pane
 
-Vendored from https://github.com/Sallvainian/claude-code-mods at commit f50fe2d (version 0.3.4, MIT). I'm the author.
+Vendored from https://github.com/Sallvainian/claude-code-mods at commit e45ef0a (version 0.3.5, MIT). I'm the author.
 
 A pane beside the transcript that shows Claude's thinking as it streams, so you don't have to expand a turn and scroll past the tool calls to find it.
 
