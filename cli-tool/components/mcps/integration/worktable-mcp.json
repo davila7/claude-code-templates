@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "worktable": {
+      "description": "Create and revise shared docs, interactive HTML Docs, drawings, structured records, comments, and threads. Connect to Worktable Cloud and sign in with OAuth. Docs: https://docs.worktable.dev/start/connect-your-agent",
+      "type": "http",
+      "url": "https://app.worktable.cloud/api/mcp"
+    }
+  }
+}
