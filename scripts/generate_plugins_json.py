@@ -68,6 +68,7 @@ REPOS = [
     ("curviate/curviate-plugin", "https://curviate.com/"),
     ("firecrawl/firecrawl-claude-plugin", "https://www.firecrawl.dev/integrations/claude-code?utm_source=claude-code-templates&utm_medium=integration"),
     ("annavetech/kumi", "https://docs.annave.tech/kumi/"),
+    ("OceanTokenAI/oceantoken-plugins", "https://oceantoken.ai/integrations#claude-code-plugin"),
 ]
 
 DESCRIPTION_OVERRIDES = {
