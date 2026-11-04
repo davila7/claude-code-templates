@@ -88,6 +88,56 @@ function gitBlobSha(buffer) {
     .digest('hex');
 }
 
+const ERROR_MESSAGE_MAX = 200;
+
+function header(response, name) {
+  const h = response.headers;
+  if (!h) return null;
+  return typeof h.get === 'function' ? h.get(name) : (h[name] ?? null);
+}
+
+/**
+ * The `message` field of a GitHub JSON error body, flattened and trimmed.
+ * Only that field is ever shown: never headers or the raw body.
+ */
+async function githubErrorMessage(response) {
+  try {
+    const data = JSON.parse(await response.text());
+    if (!data || typeof data.message !== 'string') return '';
+    const msg = data.message.replace(/\s+/g, ' ').trim();
+    return msg.length > ERROR_MESSAGE_MAX ? `${msg.slice(0, ERROR_MESSAGE_MAX - 1)}…` : msg;
+  } catch {
+    return '';
+  }
+}
+
+/**
+ * Turn a failed GitHub response into an Error. Only 429, or 403 with
+ * x-ratelimit-remaining "0" (primary limit) or a "rate limit" message /
+ * retry-after (secondary limit), is reported as a rate limit; any other 403 is
+ * an access refusal (private repo, blocked by a proxy or an org policy...).
+ * Returns null for statuses the caller handles itself.
+ */
+async function githubError(response, target) {
+  const { status } = response;
+  if (status !== 403 && status !== 429) return null;
+  const message = await githubErrorMessage(response);
+  const remaining = header(response, 'x-ratelimit-remaining');
+  const retryAfter = header(response, 'retry-after');
+  if (status === 429 || remaining === '0' || retryAfter || /rate limit/i.test(message)) {
+    let when = 'Try again later.';
+    const reset = Number(header(response, 'x-ratelimit-reset'));
+    const retry = Number(retryAfter);
+    if (remaining === '0' && Number.isFinite(reset) && reset > 0) {
+      when = `It resets at ${new Date(reset * 1000).toLocaleTimeString()}.`;
+    } else if (Number.isFinite(retry) && retry > 0) {
+      when = `Try again in ${Math.ceil(retry)} seconds.`;
+    }
+    return new Error(`GitHub API rate limit reached. ${when}`);
+  }
+  return new Error(`GitHub refused access to ${target} (HTTP 403)${message ? `: ${message}` : ''}`);
+}
+
 /**
  * Fetch the catalog's source.json for a skill. Returns the validated manifest,
  * or null when the skill is a regular (in-repo) skill.
@@ -98,7 +148,9 @@ async function fetchExternalManifest(skillName, fetchImpl = fetch) {
     headers: { 'User-Agent': 'claude-code-templates' }
   });
   if (response.status === 404) return null;
-  if (!response.ok) throw new Error(`Could not read source.json (HTTP ${response.status})`);
+  if (!response.ok) {
+    throw (await githubError(response, 'the catalog')) || new Error(`Could not read source.json (HTTP ${response.status})`);
+  }
   let parsed;
   try {
     parsed = JSON.parse(await response.text());
@@ -125,10 +177,9 @@ async function listSkillTree(manifest, fetchImpl = fetch) {
     response = await fetchImpl(`https://api.github.com/repos/${repo}/git/trees/${commit}?recursive=1`, { headers: GITHUB_HEADERS });
     prefix = `${skillPath}/`;
   }
-  if (response.status === 403 || response.status === 429) {
-    throw new Error('GitHub API rate limit reached. Try again later.');
-  }
   if (!response.ok) {
+    const err = await githubError(response, repo);
+    if (err) throw err;
     throw new Error(`Could not read ${repo}@${commit.slice(0, 7)} (HTTP ${response.status}). The commit or repository may no longer exist.`);
   }
   const data = await response.json();
@@ -165,7 +216,9 @@ async function downloadExternalSkill(manifest, fetchImpl = fetch) {
   for (const file of files) {
     const url = base + file.path.split('/').map(encodeURIComponent).join('/');
     const response = await fetchImpl(url, { headers: { 'User-Agent': 'claude-code-templates' } });
-    if (!response.ok) throw new Error(`Could not download ${file.path} (HTTP ${response.status})`);
+    if (!response.ok) {
+      throw (await githubError(response, manifest.repo)) || new Error(`Could not download ${file.path} (HTTP ${response.status})`);
+    }
     const content = Buffer.from(await response.arrayBuffer());
     if (gitBlobSha(content) !== file.sha) {
       throw new Error(`${file.path} does not match the pinned commit (blob sha mismatch)`);
