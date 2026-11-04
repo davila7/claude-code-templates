@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "pathista": {
+      "description": "Run your own multi-step workflows in Claude Code one step at a time: the agent gets only the current step and the ways on, while the position, notes and todos stay in your Pathista account, so a run continues in a later session. Loops and branches included. Remote server, nothing to install. Needs a Pathista account: Claude Code asks you to sign in (OAuth) on first use.",
+      "type": "http",
+      "url": "https://pathista.com/mcp"
+    }
+  }
+}
