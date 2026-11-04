@@ -5,8 +5,11 @@
       "command": "npx",
       "args": [
         "-y",
-        "log10x-mcp@latest"
-      ]
+        "log10x-mcp@1.30.78"
+      ],
+      "env": {
+        "LOG10X_MANIFEST_DISABLED": "1"
+      }
     }
   }
 }
