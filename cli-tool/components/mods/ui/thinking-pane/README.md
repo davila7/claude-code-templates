@@ -1,6 +1,6 @@
 # thinking-pane
 
-Vendored from https://github.com/Sallvainian/claude-code-mods at commit 21b746e (version 0.3.3, MIT). I'm the author.
+Vendored from https://github.com/Sallvainian/claude-code-mods at commit f50fe2d (version 0.3.4, MIT). I'm the author.
 
 A pane beside the transcript that shows Claude's thinking as it streams, so you don't have to expand a turn and scroll past the tool calls to find it.
 
@@ -28,10 +28,18 @@ It reads the thinking chunks of each model step, your prompts, and subagent star
 npx claude-code-templates --mod ui/thinking-pane
 ```
 
-Needs Claude Code 2.1.287 or later; built and tested on 2.1.317 on macOS. Or install it from the upstream marketplace:
+Needs Claude Code 2.1.287 or later; built and tested on 2.1.317 on macOS. Or install it from the upstream marketplace, in the terminal:
 
+```bash
+claude plugin marketplace add Sallvainian/claude-code-mods
+claude plugin install thinking-pane@claude-code-mods
 ```
-/plugin install thinking-pane --marketplace Sallvainian/claude-code-mods
+
+Or inside a Claude Code session:
+
+```text
+/plugin marketplace add Sallvainian/claude-code-mods
+/plugin install thinking-pane@claude-code-mods
 ```
 
 Tests: `claude plugin test .` runs `tests/pane.test.tsx`.

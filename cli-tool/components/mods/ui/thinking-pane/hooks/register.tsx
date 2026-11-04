@@ -85,12 +85,25 @@ function clip(text: string, max: number): string {
 type Seg = { text: string; kind: 'plain' | 'code' | 'path'; bold: boolean }
 
 const EXT = 'tsx?|jsx?|mjs|cjs|json|jsonc|md|mdx|py|rs|go|rb|java|kt|swift|c|h|cpp|hpp|cs|sh|zsh|bash|fish|toml|ya?ml|ini|conf|cfg|env|css|scss|html|xml|svg|txt|log|lock|sql|vue|svelte|lua|nix|plist'
-// Something with a slash in it, or a bare file name with a known extension.
-const PATHISH = new RegExp('(?:~|\\.{1,2})?(?:/?[\\w.@+-]+)+/[\\w.@+-]*|\\b[\\w-]+(?:\\.[\\w-]+)*\\.(?:' + EXT + ')\\b', 'g')
+// A URL (matched so it is skipped whole), something with a slash in it, or a
+// bare file name with a known extension. Every repeated part of a path ends at
+// its own slash and a match starts only at a word's first character, so a long
+// word without a slash (a hash, a base64 run) is read once, never backtracked
+// through: the old `(?:/?[\w.@+-]+)+/` took exponential time on one.
+const PATHISH = new RegExp(
+  '(?<![\\w.@+~-])(?:' +
+    '[a-z][a-z0-9+.-]*://\\S*' +
+    '|(?:~|\\.{1,2})?/(?:[\\w.@+-]+/)*[\\w.@+-]*' +
+    '|[\\w.@+-]+/(?:[\\w.@+-]+/)*[\\w.@+-]*' +
+    '|[\\w-]+(?:\\.[\\w-]+)*\\.(?:' + EXT + ')(?![\\w-])' +
+    ')',
+  'gi',
+)
+const URL_START = /^[a-z][a-z0-9+.-]*:\/\//i
 const HAS_EXT = new RegExp('\\.(?:' + EXT + ')$')
 
 function isPath(text: string): boolean {
-  if (/^[a-z][a-z0-9+.-]*:\/\//i.test(text)) return false
+  if (URL_START.test(text)) return false
   if (/^(?:~\/|\.{1,2}\/|\/[\w.@+-])/.test(text)) return true
   if (HAS_EXT.test(text)) return true
   return (text.match(/\//g) ?? []).length >= 2
@@ -103,10 +116,9 @@ function paths(text: string, bold: boolean): Seg[] {
   for (const m of text.matchAll(PATHISH)) {
     const start = m.index ?? 0
     // A sentence's own punctuation is not part of the path.
-    const raw = m[0].replace(/[.,;:!?]+$/, '')
-    // Skip a URL's tail, which PATHISH would otherwise pick up.
-    const before = text.slice(Math.max(0, start - 8), start)
-    if (!raw || /[a-z]:\/?\/?$/i.test(before) || !isPath(raw)) continue
+    const raw = m[0].replace(/[.,;:!?)\]]+$/, '')
+    // A URL stays plain text, whole.
+    if (!raw || URL_START.test(raw) || !isPath(raw)) continue
     if (start > at) out.push({ text: text.slice(at, start), kind: 'plain', bold })
     out.push({ text: raw, kind: 'path', bold })
     at = start + raw.length
@@ -136,14 +148,14 @@ function styled(text: string): Seg[] {
 
 // A thought's styled runs, kept while its text is unchanged: a redraw only
 // parses the thought still streaming.
-const styledCache = new Map<string, { length: number; segs: Seg[] }>()
+const styledCache = new Map<string, { text: string; segs: Seg[] }>()
 
 function styledOnce(id: string, text: string): Seg[] {
   const hit = styledCache.get(id)
-  if (hit && hit.length === text.length) return hit.segs
+  if (hit && hit.text === text) return hit.segs
   const segs = styled(text.trim())
   if (styledCache.size > 2000) styledCache.clear()
-  styledCache.set(id, { length: text.length, segs })
+  styledCache.set(id, { text, segs })
   return segs
 }
 
@@ -309,7 +321,8 @@ async function addThinking(
     thought = { kind: 'thought', id, at, text: '' }
     items.push(thought)
   }
-  if (thought.text.length < THOUGHT_MAX) thought.text += text
+  // Only what fits: one large chunk never takes a thought past the cap.
+  if (thought.text.length < THOUGHT_MAX) thought.text += text.slice(0, THOUGHT_MAX - thought.text.length)
   flush($)
   if (agentId) startTicker($)
 }
@@ -326,6 +339,9 @@ async function recordSpawn(
   // Its thinking may have arrived first and been parked under main.
   const seen = t.agents[id]
   if (seen) removeRef(t, id)
+  // A parent whose own spawn is not recorded yet (a child started fast) gets a
+  // placeholder, so the child lands under it; the parent's record moves it later.
+  if (parent && !t.agents[parent]) ensureAgent(t, parent, at)
   t.agents[id] = {
     id,
     type,
@@ -366,8 +382,14 @@ export const register: Register = on => {
   })
 
   on('session.end', async ($, e, next) => {
-    if (e.reason === 'clear') {
+    ticker?.cancel()
+    ticker = null
+    // A /clear or a resume goes on in this process as another conversation,
+    // with no session.start: the pane starts over rather than show this one's.
+    if (e.reason === 'clear' || e.reason === 'resume') {
       work = { turns: [], agents: {} }
+      follow = true
+      lastView = undefined
       flush($)
     }
     return next(e)
@@ -471,7 +493,10 @@ export const register: Register = on => {
       lastView = viewed
       const next = viewed ? chainTo(t, viewed) : []
       page = next
-      void update($, pageAtom, () => next).catch(() => {})
+      // State is refused while drawing: write it just after, so the next draw keeps it.
+      $.clock.after(0, () => {
+        void update($, pageAtom, () => next).catch(() => {})
+      })
     }
 
     // A page whose agent is gone (trimmed, cleared) falls back to the part that is left.

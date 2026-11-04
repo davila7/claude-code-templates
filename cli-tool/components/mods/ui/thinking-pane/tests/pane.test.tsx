@@ -21,6 +21,7 @@ function engine(on: On, thinking: Record<string, string[]>) {
   on('ui.open', () => ({ value: { isPlaced: true } }))
   on('ui.scroll', () => ({}))
   on('session.start', (_, e) => ({ cwd: e.cwd }))
+  on('session.end', (_, e) => ({ sessionId: e.sessionId }))
   on('turn.start', (_, e) => ({ turnId: e.turnId }))
   on('turn.complete', (_, e) => ({ text: e.answer }))
   on('agent.spawn', () => ({ model: 'claude-haiku-5-5', agentId: 'explore-1' }))
@@ -187,4 +188,50 @@ test('only the newest three turns draw their contents; an older one opens on req
   expect(await ui.find({ type: 'Text', text: /^prompt number 1$/ })).toBeDefined()
   expect((await ui.findAll({ type: 'Text', text: /^Thinking about it\.$/ })).length).toBe(4)
   await ui.unmount()
+})
+
+test('a long hash renders at once and plain; a URL is not a path', async ($, on) => {
+  const clock = mock.clock(on, { now: Date.UTC(2026, 10, 3, 14, 2, 7) })
+  const hash = 'c5d038d0291a5e11564d103d02f7351c3ce56752'
+  engine(on, { main: ['Pushed ' + hash + ' and ' + 'q'.repeat(5000) + ', see https://github.com/a/b/c for src/x.ts'] })
+
+  await $.session.start({ cwd: '/', surface: 'terminal', isInteractive: true })
+  await $.turn.start({ turnId: 't1', text: 'go' })
+  const started = Date.now()
+  await drain($.turn.step({ turnId: 't1', index: 0, model: 'm', messageCount: 1 }))
+  await clock.advance(200)
+  const ui = await $.ui.mount({ ...PANE, surface: 'terminal' })
+  expect(Date.now() - started).toBeLessThan(2000)
+  expect((await ui.find({ type: 'Text', text: /^src\/x\.ts$/ }))?.props.color).toBe('#f9e2af')
+  expect(await ui.find({ type: 'Text', text: /^\/a\/b\/c$/ })).toBeUndefined()
+  expect(await ui.find({ type: 'Text', text: /^github\.com\/a\/b\/c$/ })).toBeUndefined()
+  await ui.unmount()
+})
+
+test('the page of a viewed transcript stays open on later redraws; a resume starts the pane over', async ($, on) => {
+  const clock = mock.clock(on, { now: Date.UTC(2026, 10, 3, 14, 2, 7) })
+  engine(on, { main: ['Main thinks.'], 'explore-1': ['Explore thinks.'] })
+
+  await $.session.start({ cwd: '/', surface: 'terminal', isInteractive: true })
+  await $.turn.start({ turnId: 't1', text: 'go' })
+  await drain($.turn.step({ turnId: 't1', index: 0, model: 'm', messageCount: 1 }))
+  await $.agent.spawn({ prompt: 'p', description: 'look', subagentType: 'Explore', tool_use_id: 'tu1', provider: { plugin: 'engine', tier: 'core' }, parentModel: 'm', background: false, fork: false })
+  await $.turn.start({ turnId: 's1', text: 'p', agentId: 'explore-1' })
+  await clock.advance(200)
+
+  const ui = await $.ui.mount({ ...PANE, surface: 'terminal', props: { ...PANE.props, view: { agentId: 'explore-1' } } })
+  await clock.advance(200)
+  // More thinking redraws the pane; it stays on the agent's page.
+  await drain($.turn.step({ turnId: 's1', index: 0, model: 'm', messageCount: 1, agentId: 'explore-1' }))
+  await clock.advance(200)
+  expect(await ui.find({ type: 'Text', text: /Explore thinks\./ })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: /Main thinks\./ })).toBeUndefined()
+  await ui.unmount()
+
+  await $.session.end({ reason: 'resume', sessionId: 'old', resume: { sessionId: 'old' } as never })
+  await clock.advance(200)
+  const after = await $.ui.mount({ ...PANE, surface: 'terminal' })
+  expect(await after.find({ type: 'Text', text: /Main thinks\./ })).toBeUndefined()
+  expect(await after.find({ type: 'Text', text: /Nothing yet/ })).toBeDefined()
+  await after.unmount()
 })
