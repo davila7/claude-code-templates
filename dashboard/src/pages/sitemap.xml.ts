@@ -13,19 +13,26 @@ interface UrlOpts {
   lastmod?: string;
 }
 
+// lastmod only where a real date exists (the component's last commit):
+// Google ignores lastmod altogether when every URL claims to change daily.
 function buildUrl(loc: string, opts: UrlOpts = {}): string {
-  const today = new Date().toISOString().split('T')[0];
-  const {
-    priority = '0.5',
-    changefreq = 'weekly',
-    lastmod = today,
-  } = opts;
+  const { priority = '0.5', changefreq = 'weekly', lastmod } = opts;
   return `  <url>
     <loc>${SITE}${loc}</loc>
-    <lastmod>${lastmod}</lastmod>
-    <changefreq>${changefreq}</changefreq>
+${lastmod ? `    <lastmod>${lastmod}</lastmod>\n` : ''}    <changefreq>${changefreq}</changefreq>
     <priority>${priority}</priority>
   </url>`;
+}
+
+// Date of the component's last commit, from its content file (written by
+// scripts/generate_components_json.py).
+function lastCommitDate(type: string, slug: string): string | undefined {
+  const meta = safeReadJson<{ meta?: { lastCommit?: { date?: string } } }>(
+    path.join('component-content', type, `${slug}.json`),
+    {}
+  );
+  const date = meta.meta?.lastCommit?.date;
+  return date ? date.slice(0, 10) : undefined;
 }
 
 function safeReadJson<T>(relPath: string, fallback: T): T {
@@ -47,15 +54,15 @@ export const GET: APIRoute = () => {
   const urls: string[] = [];
 
   urls.push(buildUrl('/', { priority: '1.0', changefreq: 'daily' }));
-  urls.push(buildUrl('/plugins', { priority: '0.9', changefreq: 'weekly' }));
-  urls.push(buildUrl('/trending', { priority: '0.8', changefreq: 'daily' }));
-  urls.push(buildUrl('/jobs', { priority: '0.6', changefreq: 'weekly' }));
-  urls.push(buildUrl('/about', { priority: '0.5', changefreq: 'monthly' }));
-  urls.push(buildUrl('/privacy', { priority: '0.3', changefreq: 'yearly' }));
-  urls.push(buildUrl('/developers/catalog-api', { priority: '0.4', changefreq: 'monthly' }));
+  urls.push(buildUrl('/plugins/', { priority: '0.9', changefreq: 'weekly' }));
+  urls.push(buildUrl('/trending/', { priority: '0.8', changefreq: 'daily' }));
+  urls.push(buildUrl('/jobs/', { priority: '0.6', changefreq: 'weekly' }));
+  urls.push(buildUrl('/about/', { priority: '0.5', changefreq: 'monthly' }));
+  urls.push(buildUrl('/privacy/', { priority: '0.3', changefreq: 'yearly' }));
+  urls.push(buildUrl('/developers/catalog-api/', { priority: '0.4', changefreq: 'monthly' }));
 
-  for (const type of ['agents', 'commands', 'skills', 'mcps', 'hooks', 'settings', 'mods']) {
-    urls.push(buildUrl(`/${type}`, { priority: '0.9', changefreq: 'daily' }));
+  for (const type of ['agents', 'commands', 'skills', 'mcps', 'hooks', 'settings', 'mods', 'loops']) {
+    urls.push(buildUrl(`/${type}/`, { priority: '0.9', changefreq: 'daily' }));
   }
 
   for (const item of FEATURED_ITEMS) {
@@ -64,18 +71,18 @@ export const GET: APIRoute = () => {
 
   for (const plugin of plugins) {
     if (plugin.slug) {
-      urls.push(buildUrl(`/plugins/${plugin.slug}`, { priority: '0.7', changefreq: 'weekly' }));
+      urls.push(buildUrl(`/plugins/${plugin.slug}/`, { priority: '0.7', changefreq: 'weekly' }));
     }
   }
 
-  const COMPONENT_TYPES = ['agents', 'commands', 'skills', 'mcps', 'hooks', 'settings', 'mods'];
+  const COMPONENT_TYPES = ['agents', 'commands', 'skills', 'mcps', 'hooks', 'settings', 'mods', 'loops'];
   for (const type of COMPONENT_TYPES) {
     const items = components[type];
     if (!Array.isArray(items)) continue;
     for (const c of items) {
       if (!c.path) continue;
       const slug = c.path.replace(/\.(md|json)$/, '');
-      urls.push(buildUrl(`/component/${type}/${slug}`, { priority: '0.6', changefreq: 'monthly' }));
+      urls.push(buildUrl(`/component/${type}/${slug}`, { priority: '0.6', changefreq: 'monthly', lastmod: lastCommitDate(type, slug) }));
     }
   }
 
