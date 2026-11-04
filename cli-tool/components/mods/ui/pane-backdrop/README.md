@@ -16,10 +16,18 @@ It hooks `ui.open` and nothing else. When a pane opens without a `backgroundColo
 npx claude-code-templates --mod ui/pane-backdrop
 ```
 
-Needs Claude Code 2.1.287 or later; built on 2.1.317 on macOS. Or install it from the upstream marketplace:
+Needs Claude Code 2.1.287 or later; built on 2.1.317 on macOS. Or install it from the upstream marketplace, in the terminal:
 
+```bash
+claude plugin marketplace add Sallvainian/claude-code-mods
+claude plugin install pane-backdrop@claude-code-mods
 ```
-/plugin install pane-backdrop --marketplace Sallvainian/claude-code-mods
+
+Or inside a Claude Code session:
+
+```text
+/plugin marketplace add Sallvainian/claude-code-mods
+/plugin install pane-backdrop@claude-code-mods
 ```
 
 ## License
