@@ -71,36 +71,17 @@ class ConversationAnalyzer {
     const conversations = [];
 
     try {
-      // Search for .jsonl files recursively in all subdirectories
-      const findJsonlFiles = async (dir) => {
-        const files = [];
-        const items = await fs.readdir(dir);
+      const projectsDir = path.join(this.claudeDir, 'projects');
+      const jsonlFiles = await this.findConversationFiles(projectsDir);
+      console.log(chalk.gray(`Found ${jsonlFiles.length} conversation files in ${projectsDir}`));
 
-        for (const item of items) {
-          const itemPath = path.join(dir, item);
-          const stats = await fs.stat(itemPath);
-
-          if (stats.isDirectory()) {
-            // Recursively search subdirectories
-            const subFiles = await findJsonlFiles(itemPath);
-            files.push(...subFiles);
-          } else if (item.endsWith('.jsonl')) {
-            files.push(itemPath);
-          }
-        }
-
-        return files;
-      };
-
-      const jsonlFiles = await findJsonlFiles(this.claudeDir);
-      console.log(`🔥 ConversationAnalyzer found ${jsonlFiles.length} JSONL files in ${this.claudeDir}`);
-      
 
       for (const filePath of jsonlFiles) {
-        const stats = await this.getFileStats(filePath);
         const filename = path.basename(filePath);
 
         try {
+          const stats = await this.getFileStats(filePath);
+
           // Extract project name from path
           const projectFromPath = await this.extractProjectFromPath(filePath);
 
@@ -154,36 +135,95 @@ class ConversationAnalyzer {
    * @returns {Promise<Array>} Array of project objects
    */
   async loadActiveProjects() {
+    // Claude Code keeps one directory per project under ~/.claude/projects
+    // (named after the project path). The other ~/.claude directories
+    // (debug, todos, plugins, ...) are not projects.
+    const projectsDir = path.join(this.claudeDir, 'projects');
     const projects = [];
 
+    let entries;
     try {
-      const files = await fs.readdir(this.claudeDir);
+      entries = await fs.readdir(projectsDir);
+    } catch (error) {
+      if (error.code !== 'ENOENT') {
+        console.error(chalk.red('Error loading projects:'), error.message);
+      }
+      return [];
+    }
 
-      for (const file of files) {
-        const filePath = path.join(this.claudeDir, file);
-        const stats = await fs.stat(filePath);
+    for (const name of entries) {
+      if (name.startsWith('.')) continue;
+      const projectPath = path.join(projectsDir, name);
+      try {
+        const stats = await fs.stat(projectPath);
+        if (!stats.isDirectory()) continue;
 
-        if (stats.isDirectory() && !file.startsWith('.')) {
-          const projectPath = filePath;
-          const todoFiles = await this.findTodoFiles(projectPath);
+        const todoFiles = await this.findTodoFiles(projectPath);
+        projects.push({
+          name,
+          path: projectPath,
+          lastActivity: stats.mtime,
+          todoFiles: todoFiles.length,
+          status: this.determineProjectStatus(stats.mtime),
+        });
+      } catch {
+        // Dangling symlink or unreadable entry: skip it, keep the rest.
+      }
+    }
 
-          const project = {
-            name: file,
-            path: projectPath,
-            lastActivity: stats.mtime,
-            todoFiles: todoFiles.length,
-            status: this.determineProjectStatus(stats.mtime),
-          };
+    return projects.sort((a, b) => b.lastActivity - a.lastActivity);
+  }
 
-          projects.push(project);
+  /**
+   * Every .jsonl transcript under a directory, recursively.
+   *
+   * One bad entry must not hide every conversation: a dangling symlink
+   * (Claude Code leaves ~/.claude/debug/latest pointing at a deleted log) or
+   * an unreadable directory is skipped. Symlinked directories are followed
+   * once (by real path), so a link loop cannot recurse forever.
+   * @param {string} dir - Directory to scan (normally ~/.claude/projects)
+   * @param {Set<string>} [visited] - Real paths already scanned
+   * @returns {Promise<string[]>} Paths of the .jsonl files found
+   */
+  async findConversationFiles(dir, visited = new Set()) {
+    let realDir;
+    let entries;
+    try {
+      realDir = await fs.realpath(dir);
+      if (visited.has(realDir)) return [];
+      visited.add(realDir);
+      entries = await fs.readdir(dir, { withFileTypes: true });
+    } catch (error) {
+      if (error.code !== 'ENOENT') {
+        console.warn(chalk.yellow(`Warning: could not read ${dir}: ${error.message}`));
+      }
+      return [];
+    }
+
+    const files = [];
+    for (const entry of entries) {
+      const entryPath = path.join(dir, entry.name);
+      let isDirectory = entry.isDirectory();
+      let isFile = entry.isFile();
+
+      if (entry.isSymbolicLink()) {
+        try {
+          const target = await fs.stat(entryPath);
+          isDirectory = target.isDirectory();
+          isFile = target.isFile();
+        } catch {
+          continue; // dangling symlink
         }
       }
 
-      return projects.sort((a, b) => b.lastActivity - a.lastActivity);
-    } catch (error) {
-      console.error(chalk.red('Error loading projects:'), error.message);
-      return [];
+      if (isDirectory) {
+        files.push(...await this.findConversationFiles(entryPath, visited));
+      } else if (isFile && entry.name.endsWith('.jsonl')) {
+        files.push(entryPath);
+      }
     }
+
+    return files;
   }
 
   /**

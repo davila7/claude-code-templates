@@ -1,4 +1,5 @@
 import os
+import re
 import json
 import shutil
 import requests
@@ -9,6 +10,7 @@ from dotenv import load_dotenv
 from pathlib import Path
 from generate_trending_data import fetch_with_retry
 from skillspector_catalog import attach_skillspector
+import external_skills
 from catalog_api_v1 import write_catalog_api_v1
 
 # Load environment variables
@@ -407,6 +409,102 @@ def scan_directory_recursively(directory_path, relative_to_path=None):
     
     return files_list
 
+# Language per extension for the component page's language bar; the same map
+# as dashboard/scripts/generate-og-images.mjs, so the share card and the page agree.
+LANGUAGE_BY_EXT = {
+    '.md': 'Markdown', '.ts': 'TypeScript', '.tsx': 'TypeScript', '.js': 'JavaScript', '.mjs': 'JavaScript',
+    '.json': 'JSON', '.py': 'Python', '.sh': 'Shell', '.txt': 'Text', '.yaml': 'YAML', '.yml': 'YAML',
+}
+
+def git_component_history(components_base_path):
+    """
+    One `git log` pass over the components tree. Returns {repo path: {'last': commit, 'added': date}}
+    keyed by every changed file and by every skill/mod directory, or None when the history is not
+    there (a shallow clone), so the caller can keep the previous values instead of wrong ones.
+    """
+    try:
+        shallow = subprocess.run(['git', 'rev-parse', '--is-shallow-repository'],
+                                 capture_output=True, text=True, check=True).stdout.strip()
+        if shallow == 'true':
+            print("Warning: shallow clone, keeping the previous git metadata of each component")
+            return None
+        log = subprocess.run(
+            ['git', 'log', '--no-renames', '--format=%x01%H%x09%aI%x09%an%x09%s', '--name-only', '--', components_base_path],
+            capture_output=True, text=True, check=True).stdout
+    except (OSError, subprocess.CalledProcessError) as e:
+        print(f"Warning: could not read git history: {e}")
+        return None
+
+    history = {}
+    for block in log.split('\x01')[1:]:
+        header, _, names = block.partition('\n')
+        sha, date, author, subject = (header.split('\t', 3) + ['', '', '', ''])[:4]
+        commit = {'sha': sha, 'date': date, 'author': author, 'subject': subject}
+        keys = set()
+        for name in names.split('\n'):
+            if not name:
+                continue
+            keys.add(name)
+            parts = name.split('/')
+            if len(parts) > 5 and parts[2] in ('skills', 'mods'):
+                keys.add('/'.join(parts[:5]))
+        # Newest first: the first commit seen is the last change, the last one seen is the oldest.
+        for key in keys:
+            entry = history.setdefault(key, {'last': commit})
+            entry['added'] = date
+    return history
+
+def component_file_stats(root):
+    """Files of a component on disk with their size, line count and language, plus bytes per language."""
+    if os.path.isdir(root):
+        rels = sorted(scan_directory_recursively(root, root))
+        paths = [(rel, os.path.join(root, rel)) for rel in rels]
+    elif os.path.isfile(root):
+        paths = [(os.path.basename(root), root)]
+    else:
+        return [], []
+    files = []
+    language_bytes = defaultdict(int)
+    for rel, full in paths:
+        try:
+            size = os.path.getsize(full)
+            with open(full, 'rb') as f:
+                data = f.read()
+        except OSError:
+            continue
+        lines = None if b'\0' in data else data.count(b'\n') + (1 if data and not data.endswith(b'\n') else 0)
+        files.append({'path': rel, 'bytes': size, 'lines': lines})
+        # Licence texts would dominate small components, as on the share card.
+        if not os.path.basename(rel).startswith('LICENSE'):
+            language_bytes[LANGUAGE_BY_EXT.get(os.path.splitext(rel)[1].lower(), 'Other')] += size
+    languages = [{'name': n, 'bytes': b} for n, b in sorted(language_bytes.items(), key=lambda x: -x[1])]
+    return files, languages
+
+def component_page_meta(components_base_path, ctype, component, history, previous):
+    """The `meta` block of a component's content file: files, languages and its git history."""
+    repo_path = f"{components_base_path}/{ctype}/{component['path']}"
+    stats_root = repo_path
+    # External skills: list the files the CLI installs (upstream, pinned commit), not the source.json.
+    if ctype == 'skills' and os.path.isdir(repo_path) and external_skills.is_external(Path(repo_path)):
+        try:
+            stats_root = str(external_skills.local_dir(Path(repo_path)))
+        except (OSError, ValueError) as e:
+            print(f"   Warning: could not materialize external skill {component['path']}: {e}")
+    files, languages = component_file_stats(stats_root)
+    meta = {'files': files, 'languages': languages}
+    if history is None:
+        for key in ('lastCommit', 'addedAt'):
+            if previous.get(key):
+                meta[key] = previous[key]
+    elif repo_path in history:
+        entry = history[repo_path]
+        last = dict(entry['last'])
+        pr = re.search(r'\(#(\d+)\)\s*$', last['subject'])
+        last['pr'] = int(pr.group(1)) if pr else None
+        meta['lastCommit'] = last
+        meta['addedAt'] = entry['added']
+    return meta
+
 def generate_components_json(skip_downloads=False, skip_skillspector=False, skillspector_only=None):
     """
     Scans the cli-tool/components and cli-tool/templates directories and generates a components.json file
@@ -448,8 +546,23 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
                     for skill_dir in os.listdir(category_path):
                         skill_dir_path = os.path.join(category_path, skill_dir)
                         if os.path.isdir(skill_dir_path):
+                            # External skill: source.json points at a pinned commit of
+                            # another repo; read the files from the local checkout of it.
+                            source = None
+                            skill_root = skill_dir_path
+                            if external_skills.is_external(Path(skill_dir_path)):
+                                manifest = external_skills.read_manifest(Path(skill_dir_path))
+                                skill_root = str(external_skills.local_dir(Path(skill_dir_path)))
+                                source = {
+                                    'repo': manifest['repo'],
+                                    'path': manifest['path'],
+                                    'commit': manifest['commit'],
+                                    'license': manifest['license'],
+                                    'url': external_skills.source_url(manifest),
+                                    'requires': manifest['requires'],
+                                }
                             # Look for SKILL.md inside the skill directory
-                            skill_file_path = os.path.join(skill_dir_path, 'SKILL.md')
+                            skill_file_path = os.path.join(skill_root, 'SKILL.md')
                             if os.path.isfile(skill_file_path):
                                 name = skill_dir  # Use directory name as skill name
 
@@ -494,10 +607,15 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
 
                                 # Collect reference files (all files except SKILL.md)
                                 references = []
-                                for ref_file in scan_directory_recursively(skill_dir_path, skill_dir_path):
+                                for ref_file in scan_directory_recursively(skill_root, skill_root):
                                     if ref_file != 'SKILL.md':
                                         references.append(ref_file)
                                 references.sort()
+
+                                if source:
+                                    author = manifest.get('author') or author
+                                    license_field = manifest['license']
+                                    repo = f"https://github.com/{manifest['repo']}"
 
                                 # Path includes category for proper organization
                                 component = {
@@ -516,6 +634,17 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
                                     'security': security,
                                     'references': references
                                 }
+                                if source:
+                                    component['source'] = source
+                                    # The site cannot read these files from this repo, so
+                                    # they ride in the content file (like mods).
+                                    component['files'] = {}
+                                    for rel in ['SKILL.md'] + references:
+                                        try:
+                                            with open(os.path.join(skill_root, rel), 'r', encoding='utf-8') as f:
+                                                component['files'][rel] = f.read()
+                                        except (UnicodeDecodeError, OSError):
+                                            pass
                                 components_data[component_type].append(component)
                                 print(f"  Processed skill: {category}/{name}")
             continue  # Skip the normal file scanning for skills
@@ -912,6 +1041,7 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
     # 1. Write per-component content files directly to dashboard/public/component-content/
     os.makedirs(dashboard_content_dir, exist_ok=True)
     written_content_count = 0
+    git_history = git_component_history(components_base_path)
     for ctype in content_bearing_types:
         for component in components_data.get(ctype, []):
             raw_content = component.get('content', '')
@@ -925,6 +1055,15 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
             if component.get('files'):
                 # Mods: the whole plugin (every text file) rides in the content file
                 content_payload['files'] = component['files']
+            previous_meta = {}
+            if git_history is None:
+                try:
+                    with open(content_file_path, 'r', encoding='utf-8') as f:
+                        previous_meta = json.load(f).get('meta') or {}
+                except (OSError, ValueError):
+                    pass
+            # Shown on the component page: file list, language bar, last commit and date added.
+            content_payload['meta'] = component_page_meta(components_base_path, ctype, component, git_history, previous_meta)
             try:
                 with open(content_file_path, 'w', encoding='utf-8') as f:
                     json.dump(content_payload, f, ensure_ascii=False)

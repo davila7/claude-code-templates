@@ -25,6 +25,7 @@ jobs:
         docs/components.json
         docs/trending-data.json
         docs/claude-jobs.json
+        docs/claude-jobs-discovered-boards.json
         dashboard/public/components.json
         dashboard/public/counts.json
         dashboard/public/search-index.json
@@ -39,6 +40,10 @@ jobs:
         uses: actions/checkout@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          # Full history (trees only) for each component's last commit and
+          # date added on its page; a shallow clone keeps the previous values.
+          fetch-depth: 0
+          filter: blob:none
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -93,6 +98,10 @@ jobs:
 
       - name: Generate claude-jobs.json
         run: python scripts/generate_claude_jobs.py
+        env:
+          # Optional: Firecrawl Search discovers more job boards (~24
+          # credits a run). Without it the step still scans every known board.
+          FIRECRAWL_API_KEY: ${{ secrets.FIRECRAWL_API_KEY }}
 
       - name: Copy data to dashboard
         run: |
@@ -124,7 +133,7 @@ jobs:
           git config --local user.name "github-actions[bot]"
           fresh="$RUNNER_TEMP/fresh-data"
           mkdir -p "$fresh"
-          cp docs/components.json docs/trending-data.json docs/claude-jobs.json "$fresh/"
+          cp docs/components.json docs/trending-data.json docs/claude-jobs.json docs/claude-jobs-discovered-boards.json "$fresh/"
 
           for attempt in 1 2 3 4 5; do
             git fetch origin main
@@ -135,6 +144,7 @@ jobs:
             cp "$fresh/trending-data.json" dashboard/public/trending-data.json
             cp "$fresh/claude-jobs.json" docs/claude-jobs.json
             cp "$fresh/claude-jobs.json" dashboard/public/claude-jobs.json
+            cp "$fresh/claude-jobs-discovered-boards.json" docs/claude-jobs-discovered-boards.json
 
             git add -A -- $DATA_PATHS
             if git diff --cached --quiet -- $DATA_PATHS; then

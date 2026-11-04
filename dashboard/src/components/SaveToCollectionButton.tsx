@@ -36,9 +36,25 @@ interface Props {
   componentPath: string;
   componentName: string;
   componentCategory?: string;
+  /** 'icon': hover-revealed icon on grid cards. 'button': labelled button on the component page. */
+  variant?: 'icon' | 'button';
 }
 
-function SaveButton({ componentType, componentPath, componentName, componentCategory }: Props) {
+const BOOKMARK_PATH = 'M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z';
+const PAGE_BUTTON = 'inline-flex h-10 md:h-9 items-center justify-center gap-1.5 px-3 rounded-md border border-[var(--color-border)] bg-[var(--color-surface-1)] text-[14px] md:text-[13px] font-medium text-[var(--color-text-primary)] hover:bg-[var(--color-surface-2)] transition-colors';
+
+function PageSaveButton({ saved, onClick, title, buttonRef }: { saved: boolean; onClick?: (e: React.MouseEvent) => void; title: string; buttonRef?: React.Ref<HTMLButtonElement> }) {
+  return (
+    <button ref={buttonRef} onClick={onClick} className={`${PAGE_BUTTON} w-full md:w-auto`} title={title} disabled={!onClick}>
+      <svg className={`w-4 h-4 ${saved ? 'text-[var(--color-accent)]' : 'text-[var(--color-text-secondary)]'}`} fill={saved ? 'currentColor' : 'none'} viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+        <path strokeLinecap="round" strokeLinejoin="round" d={BOOKMARK_PATH} />
+      </svg>
+      {saved ? 'Saved' : 'Save'}
+    </button>
+  );
+}
+
+function SaveButton({ componentType, componentPath, componentName, componentCategory, variant = 'icon' }: Props) {
   const { isSignedIn, isLoaded, getToken } = useGlobalAuth();
   const [open, setOpen] = useState(false);
   const [collections, setCollections] = useState<Collection[]>([]);
@@ -184,12 +200,16 @@ function SaveButton({ componentType, componentPath, componentName, componentCate
     }
   }
 
-  if (!isLoaded) return null;
+  // The page button keeps its place while Clerk loads, so the header does not shift.
+  if (!isLoaded) return variant === 'button' ? <PageSaveButton saved={false} title="Save to collection" /> : null;
 
   const isSaved = savedIn.size > 0;
 
   // Not signed in - open Clerk modal via global instance
   if (!isSignedIn) {
+    if (variant === 'button') {
+      return <PageSaveButton saved={false} title="Sign in to save" onClick={(e) => { e.stopPropagation(); (window as any).Clerk?.openSignIn?.(); }} />;
+    }
     return (
       <button
         onClick={(e) => { e.stopPropagation(); (window as any).Clerk?.openSignIn?.(); }}
@@ -205,6 +225,9 @@ function SaveButton({ componentType, componentPath, componentName, componentCate
 
   return (
     <div className="relative" ref={dropdownRef}>
+      {variant === 'button' ? (
+        <PageSaveButton saved={isSaved} title={isSaved ? 'Saved to collection' : 'Save to collection'} onClick={handleToggle} buttonRef={buttonRef} />
+      ) : (
       <button
         ref={buttonRef}
         onClick={handleToggle}
@@ -219,9 +242,10 @@ function SaveButton({ componentType, componentPath, componentName, componentCate
           <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
         </svg>
       </button>
+      )}
 
       {open && (
-        <div className="absolute right-0 top-full mt-1 w-56 bg-[var(--color-surface-1)] border border-[var(--color-border)] rounded-lg shadow-xl z-[9999] py-1">
+        <div className={`absolute ${variant === 'button' ? 'left-0 md:left-auto md:right-0' : 'right-0'} top-full mt-1 w-56 bg-[var(--color-surface-1)] border border-[var(--color-border)] rounded-lg shadow-xl z-[9999] py-1`}>
           {loading ? (
             <div className="px-3 py-4 text-center">
               <div className="w-4 h-4 border-2 border-[var(--color-text-tertiary)] border-t-transparent rounded-full animate-spin mx-auto" />
@@ -271,7 +295,7 @@ function SaveButton({ componentType, componentPath, componentName, componentCate
                     onKeyDown={(e) => { if (e.key === 'Enter') handleCreate(); }}
                     onClick={(e) => e.stopPropagation()}
                     placeholder="New collection..."
-                    className="flex-1 bg-transparent border-none text-[12px] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] px-1 py-1 outline-none"
+                    className="flex-1 bg-transparent border-none text-[16px] md:text-[12px] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] px-1 py-1 outline-none"
                     maxLength={100}
                   />
                   <button

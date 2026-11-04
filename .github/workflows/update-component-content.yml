@@ -14,6 +14,7 @@ on:
       - 'cli-tool/components/**'
       - 'cli-tool/templates/**'
       - 'scripts/generate_components_json.py'
+      - 'scripts/external_skills.py'
   workflow_dispatch:
 
 permissions:
@@ -29,8 +30,11 @@ jobs:
   update-content:
     runs-on: ubuntu-latest
     # The daily cron's own commits touch only generated files, which are not
-    # in `paths`, so this job never re-triggers itself.
-    if: github.actor != 'github-actions[bot]'
+    # in `paths`, so this job never re-triggers itself. A workflow_dispatch is
+    # always allowed: pr-automerge.yml dispatches this job with GITHUB_TOKEN
+    # (actor github-actions[bot]) after an automerge, and skipping that run
+    # left the merged component off the catalog.
+    if: github.event_name == 'workflow_dispatch' || github.actor != 'github-actions[bot]'
 
     env:
       DATA_PATHS: >-
@@ -47,6 +51,10 @@ jobs:
         uses: actions/checkout@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          # Full history (trees only) for each component's last commit and
+          # date added on its page; a shallow clone keeps the previous values.
+          fetch-depth: 0
+          filter: blob:none
 
       - name: Set up Python
         uses: actions/setup-python@v6

@@ -15,20 +15,24 @@
 # Interactive setup (recommended)
 npx claude-code-templates@latest
 
-# Real-time analytics dashboard
+# Real-time analytics dashboard (http://localhost:3333)
 npx claude-code-templates@latest --analytics
+
+# Browse your conversations (http://localhost:9876)
+npx claude-code-templates@latest --chats
 
 # System health check
 npx claude-code-templates@latest --health-check
 ```
+
+Both dashboards listen on 127.0.0.1 only. The flags removed in 1.31.0 (`--plugins`, `--sandbox`, `--tunnel`, `--create-agent` and others) print what replaced them; see the [CHANGELOG](https://github.com/davila7/claude-code-templates/blob/main/CHANGELOG.md).
 
 ## ✨ Core Features
 
 - **📋 Smart Project Setup** - Auto-detect and configure any project with framework-specific commands
 - **📊 Real-time Analytics** - Monitor Claude Code sessions with live state detection and performance metrics
 - **🔍 Health Check** - Comprehensive system validation with actionable recommendations
-- **🧩 Individual Components** - Install specialized agents, commands, and MCPs individually
-- **🌍 Global Agents** - Create AI agents accessible from anywhere using Claude Code SDK
+- **🧩 Individual Components** - Install agents, commands, MCPs, settings, hooks, skills, loops and mods individually
 
 ## 🎯 What You Get
 
@@ -50,51 +54,6 @@ npx claude-code-templates@latest --health-check
 | **Common** | Universal configurations | ✅ Ready |
 | **Go** | Gin, Echo, Fiber | 🚧 Coming Soon |
 | **Rust** | Axum, Warp, Actix | 🚧 Coming Soon |
-
-## 🌍 Global Agents (Claude Code SDK Integration)
-
-Create AI agents that can be executed from anywhere using the Claude Code SDK:
-
-```bash
-# Create a global agent (one-time setup)
-npx claude-code-templates@latest --create-agent customer-support
-
-# Use the agent from anywhere
-customer-support "Help me with ticket #12345"
-sre-logs "Analyze error patterns in app.log"  
-code-reviewer "Review this PR for security issues"
-```
-
-### Available Global Agents
-
-| Agent | Usage | Description |
-|-------|-------|-------------|
-| `customer-support` | `customer-support "query"` | AI customer support specialist |
-| `api-security-audit` | `api-security-audit "analyze endpoints"` | Security auditing for APIs |
-| `react-performance-optimization` | `react-performance-optimization "optimize components"` | React performance expert |
-| `database-optimization` | `database-optimization "improve queries"` | Database performance tuning |
-
-### Global Agent Management
-
-```bash
-# List installed global agents
-npx claude-code-templates@latest --list-agents
-
-# Update an agent to latest version
-npx claude-code-templates@latest --update-agent customer-support
-
-# Remove an agent
-npx claude-code-templates@latest --remove-agent customer-support
-```
-
-### How It Works
-
-1. **Download Agent**: Fetches the latest agent from GitHub
-2. **Generate Executable**: Creates a Node.js script that calls Claude Code SDK
-3. **Add to PATH**: Makes the agent available globally in your shell
-4. **Ready to Use**: Execute `agent-name "your prompt"` from any directory
-
-The agents use the Claude Code SDK internally to provide specialized AI assistance with domain-specific knowledge and best practices.
 
 ## 🎨 Skills (Anthropic Format)
 
