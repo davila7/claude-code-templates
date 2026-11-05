@@ -23,7 +23,9 @@ export const SUPPORT_PROGRAMS: SupportProgram[] = [
     description: "NVIDIA's program for companies building with AI. Claude Code Templates was accepted in November 2026.",
     url: 'https://www.nvidia.com/en-us/startups/',
     linkLabel: 'nvidia.com/startups',
-    footerLabel: 'NVIDIA Inception',
+    // Official NVIDIA green, not recolored (NVIDIA brand guidelines).
+    icon: 'https://cdn.simpleicons.org/nvidia/76B900',
+    footerLabel: 'NVIDIA',
   },
   {
     org: 'Anthropic',
