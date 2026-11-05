@@ -34,6 +34,8 @@ export const SUPPORT_PROGRAMS: SupportProgram[] = [
     description: 'Z.ai, the team behind the GLM models, sponsored Claude Code Templates and helped keep it running.',
     url: 'https://z.ai',
     linkLabel: 'z.ai',
+    // Official mark from z.ai (z-cdn.chatglm.cn/z-ai/static/logo.svg), vendored so the page doesn't hotlink it.
+    icon: '/supporters/zai.svg',
   },
   {
     org: 'Anthropic',
