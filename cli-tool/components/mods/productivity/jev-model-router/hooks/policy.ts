@@ -454,7 +454,7 @@ function reported(value: number | null): string {
 
 /**
  * The one-time line that says the router is alive, which backend answers it,
- * and which of the three switches are on.
+ * and which of the switches are on.
  *
  * Without this, a router that loaded and a router that never loaded are told
  * apart only by the absence of later lines, which is not evidence of anything.
@@ -462,7 +462,7 @@ function reported(value: number | null): string {
 export function describeSetup(
   provider: Provider | null,
   url: string,
-  switches: { subagentModel: boolean; mainEffort: boolean; mainModel: boolean },
+  switches: { subagentModel: boolean; subagentEffort?: boolean; mainEffort: boolean; mainModel: boolean },
   // `provider: "builtin"` is a choice, not a missing key. Reporting it as a
   // credential problem sends someone hunting for a key they meant to omit.
   builtinByChoice = false,
@@ -474,6 +474,7 @@ export function describeSetup(
       : 'the built-in classifier, no key set'
   const on = [
     switches.subagentModel && 'subagent model',
+    switches.subagentEffort && 'subagent effort',
     switches.mainEffort && 'main effort',
     switches.mainModel && 'main model',
   ].filter(Boolean)
