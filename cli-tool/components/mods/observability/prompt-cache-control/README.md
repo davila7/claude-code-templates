@@ -66,6 +66,8 @@ It fires at 90% of the cache lifetime (about 54 minutes) only when all of these 
 
 The mod reads only those two keys from `~/.claude.json` (or `$CLAUDE_CONFIG_DIR/.claude.json`); without the cached flag it shows no idle countdown. `/cache` shows a line saying whether it is armed and, if not, why (for example `not rolled out to this account (mode off)` or `waits for 200k tokens; the prompt is 80k`). Two settings in the catalog set it up: `environment/idle-compaction-early` (from 100K) and `environment/idle-compaction-off`.
 
+For user settings and the default global-config location, `~` comes from `HOME`, falling back to `USERPROFILE` when `HOME` is empty or unavailable (as on Windows). Local and project settings keep their existing priority; `CLAUDE_CONFIG_DIR` still overrides only the global-config location.
+
 ## What it hooks
 
 - `turn.step`: reads each main-loop request's usage (subagents have their own prefixes and are left out)
