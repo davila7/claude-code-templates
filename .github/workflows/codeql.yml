@@ -33,7 +33,7 @@ jobs:
         language: [javascript-typescript, python, actions]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v4
