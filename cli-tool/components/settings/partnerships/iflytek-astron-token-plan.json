@@ -1,0 +1,13 @@
+{
+  "description": "iFlytek Astron Token Plan - Configure Claude Code to use Spark-X2.5 through the Anthropic-compatible endpoint of iFlytek Astron MaaS (讯飞星辰 MaaS). Spark-X2.5 has a 256K context window on the Token Plan; other models on the plan (GLM, DeepSeek, Kimi, Qwen, MiniMax) can be selected by changing the model IDs. Requires a Token Plan API key from https://maas.xfyun.cn/tokenPlan/subscription",
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://maas-token-api.cn-huabei-1.xf-yun.com/anthropic",
+    "ANTHROPIC_AUTH_TOKEN": "YOUR-ASTRON-TOKEN-PLAN-API-KEY",
+    "ANTHROPIC_MODEL": "spark-x2.5",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "spark-x2.5",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "spark-x2.5",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "spark-x2.5",
+    "API_TIMEOUT_MS": "600000",
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1"
+  }
+}
