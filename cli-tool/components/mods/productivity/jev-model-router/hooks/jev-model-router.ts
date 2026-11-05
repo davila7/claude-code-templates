@@ -46,6 +46,7 @@ import {
   DEFAULT_BASE_URL,
   DEFAULT_MODEL,
   describeDecision,
+  describeRefusal,
   describeSetup,
   describeStatus,
   endpoint,
@@ -174,7 +175,7 @@ export const register: Register = (on, options) => {
           $.clock.sleep(timeoutMs),
         ])
         if (response && response.ok) decision = readDecision(response.text)
-        else if (response) $.ui.log(`[jev-model-router] ${active} responded ${response.status}`)
+        else if (response) $.ui.log(`[jev-model-router] ${describeRefusal(active, response.status, response.text)}`)
         else $.ui.log(`[jev-model-router] classification passed ${timeoutMs}ms; leaving the turn alone`)
       } catch (error) {
         $.ui.log(`[jev-model-router] classification failed: ${String(error)}`)
@@ -295,7 +296,7 @@ export const register: Register = (on, options) => {
           $.clock.sleep(timeoutMs),
         ])
         if (response && response.ok) decision = readDecision(response.text)
-        else if (response) $.ui.log(`[jev-model-router] ${active} responded ${response.status}`)
+        else if (response) $.ui.log(`[jev-model-router] ${describeRefusal(active, response.status, response.text)}`)
         else $.ui.log(`[jev-model-router] classification passed ${timeoutMs}ms; leaving the subagent alone`)
       } catch (error) {
         $.ui.log(`[jev-model-router] classification failed: ${String(error)}`)
