@@ -1,9 +1,9 @@
 {
   "mcpServers": {
     "smstunnel": {
-      "description": "Send texts (SMS) and sign-in codes from your own Android phone and your own number, check whether they went out, and read replies. Needs Node.js 20 or newer, the SMSTunnel app from Google Play on the phone, and SMSTUNNEL_API_KEY set in your environment (a key from dashboard.smstunnel.io: Apps → Add an app).",
+      "description": "Send texts (SMS) and sign-in codes from your own Android phone and your own number, check whether they went out, and read replies. Free plan: 25 texts a day and 500 a month; paid plans from $9 a month. SMSTunnel charges no per-text fee: each text goes out from your phone's SIM at your mobile plan's rates. Needs Node.js 20 or newer, the SMSTunnel app from Google Play on the phone, and SMSTUNNEL_API_KEY set in your environment (a key from dashboard.smstunnel.io: Apps → Add an app).",
       "command": "npx",
-      "args": ["-y", "@narcisbodea/smstunnel-mcp"],
+      "args": ["-y", "@narcisbodea/smstunnel-mcp@1.1.0"],
       "env": {
         "SMSTUNNEL_API_KEY": "${SMSTUNNEL_API_KEY}"
       }
