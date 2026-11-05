@@ -111,6 +111,25 @@ const TEMPLATES_CONFIG = {
     comingSoon: true,
     files: [
     ]
+  },
+  'csharp': {
+    name: 'C#/.NET Core',
+    description: 'Optimized for C# and .NET Core Web Api development with modern tooling',
+    files: [
+      { source: 'csharp/CLAUDE.md', destination: 'CLAUDE.md' },
+      { source: 'csharp/.claude', destination: '.claude' },
+      { source: 'csharp/.claude/settings.json', destination: '.claude/settings.json' },
+      { source: 'csharp/.mcp.json', destination: '.mcp.json' }
+    ],
+    frameworks: {
+      'aspnet-core-api': {
+        name: 'ASP.NET Core Web API',
+        additionalFiles: [
+          { source: 'csharp/examples/aspnet-core-api/.claude/commands', destination: '.claude/commands' },
+          { source: 'csharp/examples/aspnet-core-api/CLAUDE.md', destination: 'CLAUDE.md' }
+        ]
+      }
+    }
   }
 };
 

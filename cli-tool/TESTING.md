@@ -38,6 +38,7 @@ npm run test:detailed
 npm run test:react    # Test React setup
 npm run test:vue      # Test Vue setup  
 npm run test:node     # Test Node.js setup
+npm run test:csharp   # Test C#/.NET Core setup
 
 # Full test suite
 npm run test:all
@@ -55,6 +56,7 @@ make test-detailed    # Comprehensive tests
 make test-react       # React scenario
 make test-vue         # Vue scenario
 make test-node        # Node.js scenario
+make test-csharp      # C#/.NET Core scenario
 
 # Interactive testing (manual)
 make test-interactive
@@ -102,8 +104,8 @@ node bin/create-claude-config.js --dry-run --language javascript-typescript --fr
 
 - ✅ **Command Variants**: All CLI aliases work
 - ✅ **Help & Version**: Basic commands respond correctly
-- ✅ **Language Support**: JavaScript/TypeScript, Common, Python, Rust, Go
-- ✅ **Framework Support**: React, Vue, Angular, Node.js, None
+- ✅ **Language Support**: JavaScript/TypeScript, Common, Python, C#/.NET Core, Rust, Go
+- ✅ **Framework Support**: React, Vue, Angular, Node.js, ASP.NET Core Web API, None
 - ✅ **File Creation**: CLAUDE.md, .claude directory, settings.json
 - ✅ **Framework Commands**: Framework-specific commands are created
 - ✅ **Dry Run Mode**: Preview mode works without creating files
@@ -130,6 +132,16 @@ node bin/create-claude-config.js --dry-run --language javascript-typescript --fr
 - API endpoint creation
 - Middleware helpers
 - Database integration
+
+**C#/.NET Core:**
+- ASP.NET Core Web API setup
+- Entity Framework migrations commands
+- NuGet package management and security scanning
+- Swagger/OpenAPI documentation generation
+- Docker containerization support
+- Azure deployment automation
+- Performance profiling and memory analysis
+- Code quality analysis with Roslyn analyzers
 
 ## Pre-Publish Checklist
 

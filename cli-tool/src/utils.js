@@ -118,6 +118,71 @@ async function detectProject(targetDir) {
     detectedLanguages.push('go');
   }
   
+  // Check for C#/.NET Core files
+  const csharpFiles = await findFilesByExtension(targetDir, ['.cs']);
+  const csprojFiles = await findFilesByExtension(targetDir, ['.csproj']);
+  const slnFiles = await findFilesByExtension(targetDir, ['.sln']);
+  
+  if (csharpFiles.length > 0 || csprojFiles.length > 0 || slnFiles.length > 0) {
+    detectedLanguages.push('csharp');
+    
+    // Check for .NET Core frameworks
+    for (const csprojFile of csprojFiles) {
+      try {
+        const csprojContent = await fs.readFile(csprojFile, 'utf-8');
+        
+        // Check for ASP.NET Core Web API
+        if (csprojContent.includes('Microsoft.AspNetCore') || 
+            csprojContent.includes('Microsoft.AspNetCore.App') ||
+            csprojContent.includes('Swashbuckle.AspNetCore')) {
+          detectedFrameworks.push('aspnet-core-api');
+        }
+        
+        // Check for Blazor
+        if (csprojContent.includes('Microsoft.AspNetCore.Components') ||
+            csprojContent.includes('Microsoft.AspNetCore.Components.WebAssembly')) {
+          detectedFrameworks.push('blazor');
+        }
+        
+        // Check for Entity Framework
+        if (csprojContent.includes('Microsoft.EntityFrameworkCore')) {
+          // This could indicate an API with database access
+          if (!detectedFrameworks.includes('aspnet-core-api') && 
+              csprojContent.includes('Microsoft.AspNetCore')) {
+            detectedFrameworks.push('aspnet-core-api');
+          }
+        }
+      } catch (error) {
+        console.warn(`Could not parse ${csprojFile}`);
+      }
+    }
+    
+    // Check for Program.cs with ASP.NET Core patterns
+    const programCsPath = path.join(targetDir, 'Program.cs');
+    if (await fs.pathExists(programCsPath)) {
+      try {
+        const programContent = await fs.readFile(programCsPath, 'utf-8');
+        if (programContent.includes('UseSwagger') || 
+            programContent.includes('AddControllers') ||
+            programContent.includes('WebApplication.CreateBuilder')) {
+          if (!detectedFrameworks.includes('aspnet-core-api')) {
+            detectedFrameworks.push('aspnet-core-api');
+          }
+        }
+      } catch (error) {
+        console.warn('Could not parse Program.cs');
+      }
+    }
+    
+    // Check for Controllers directory (typical ASP.NET Core structure)
+    const controllersPath = path.join(targetDir, 'Controllers');
+    if (await fs.pathExists(controllersPath)) {
+      if (!detectedFrameworks.includes('aspnet-core-api')) {
+        detectedFrameworks.push('aspnet-core-api');
+      }
+    }
+  }
+  
   return {
     detectedLanguage: detectedLanguages[0] || null,
     detectedFramework: detectedFrameworks[0] || null,
@@ -198,7 +263,9 @@ async function getProjectSummary(targetDir) {
     'package.json', 'tsconfig.json', 'webpack.config.js', 'vite.config.js',
     'requirements.txt', 'setup.py', 'pyproject.toml', 'Pipfile',
     'Gemfile', 'Gemfile.lock', 'Rakefile', 'config.ru',
-    'Cargo.toml', 'go.mod', '.gitignore', 'README.md'
+    'Cargo.toml', 'go.mod', 
+    '*.csproj', '*.sln', 'Program.cs', 'Startup.cs', 'appsettings.json',
+    '.gitignore', 'README.md'
   ];
   
   for (const configFile of configFiles) {

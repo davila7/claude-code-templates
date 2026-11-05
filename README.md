@@ -90,9 +90,6 @@ npx claude-code-templates@latest --mcp database/postgresql-integration --yes
 npx claude-code-templates@latest --mod security/secret-redactor --yes
 npx claude-code-templates@latest --loop engineering/docs-sweep-loop --yes  # also installs the components the loop uses
 ```
-
-## What You Get
-
 | Component | Description | Examples |
 |-----------|-------------|----------|
 | **🎨 Skills** (890+) | Reusable capabilities with progressive disclosure | PDF processing, frontend design, code review |
