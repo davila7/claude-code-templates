@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/davila7/claude-code-templates/security/advisories/new
+    about: Please report vulnerabilities privately. Do not open a public issue (see SECURITY.md).
+  - name: Ask a question
+    url: https://github.com/davila7/claude-code-templates/discussions
+    about: Questions about using the CLI or a component go to Discussions.

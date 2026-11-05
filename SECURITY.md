@@ -12,11 +12,33 @@ The security of our CLI tool and the templates it generates is our top priority.
 
 If you discover a security vulnerability in Claude Code Templates, please report it to us in one of the following ways:
 
+### GitHub Security Advisories (preferred)
+Use [Report a vulnerability](https://github.com/davila7/claude-code-templates/security/advisories/new). It keeps the report private, lets us work on the fix with you in a private fork, and gives you credit when the advisory is published.
+
 ### Email
 Send details of the vulnerability to [dan.avila7@gmail.com](mailto:dan.avila7@gmail.com) with the subject line "SECURITY: Claude Code Templates Vulnerability Report"
 
-### GitHub Security Advisories
-You can also report vulnerabilities through [GitHub Security Advisories](https://github.com/davila7/claude-code-templates/security/advisories/new) for this repository.
+Please do not open a public issue, pull request or discussion for a vulnerability.
+
+## Supported Versions
+
+Only the latest minor release of the `claude-code-templates` npm package receives security fixes. Fixes ship as a new release, and `npx claude-code-templates@latest` always runs it. Components in the catalog are fixed in place on `main`; reinstall a component to get the fixed version.
+
+| Version | Supported |
+|---------|-----------|
+| Latest minor (see [npm](https://www.npmjs.com/package/claude-code-templates)) | Yes |
+| Older releases | No |
+
+## What Happens After You Report
+
+| Step | Target |
+|------|--------|
+| Acknowledge the report | 3 business days |
+| Triage: confirm, ask for details, or explain why it is not a vulnerability | 7 days |
+| Fix released, or a plan with a date shared with you | 30 days (90 days at most for complex issues) |
+| Advisory published with a CVE and credit to you | When the fixed release is on npm |
+
+We keep the report private until the fix is released. If we miss one of these targets, you are welcome to send a reminder by email. Duplicates of an already reported issue are credited to the first reporter.
 
 ## What to Include in Your Report
 
