@@ -1,0 +1,52 @@
+---
+import DashboardLayout from '../layouts/DashboardLayout.astro';
+import TopBar from '../components/TopBar.astro';
+import SearchModal from '../components/SearchModal.tsx';
+import { SUPPORT_PROGRAMS } from '../lib/supporters';
+
+export const prerender = true;
+---
+
+<DashboardLayout
+  title="Supporters | aitmpl.com"
+  description="The open source and startup programs that support Claude Code Templates (aitmpl.com) with infrastructure, credits and security tooling."
+>
+  <TopBar />
+  <section class="max-w-4xl px-6 py-10">
+    <h1 class="text-2xl font-bold text-[var(--color-text-primary)] mb-2">Supporters</h1>
+    <p class="text-[14px] leading-relaxed text-[var(--color-text-secondary)] max-w-2xl mb-8">
+      Claude Code Templates is maintained by one person and its community. These programs cover part of what it costs
+      to run: hosting, databases, model access and security tooling. None of them pays for placement, and none of them
+      changes how components are ranked, searched or recommended.
+    </p>
+
+    <ul class="grid gap-3 sm:grid-cols-2">
+      {SUPPORT_PROGRAMS.map((p) => (
+        <li class="rounded-lg border border-[var(--color-border)] bg-[var(--color-card-bg)] p-4 flex flex-col">
+          <div class="flex items-center gap-2.5 mb-2">
+            {p.icon ? (
+              <img src={p.icon} alt="" class:list={['h-5 w-5', p.monochrome && 'oss-icon']} loading="lazy" />
+            ) : (
+              <span aria-hidden="true" class="h-5 w-5 rounded bg-[var(--color-surface-3)] inline-flex items-center justify-center text-[10px] font-semibold text-[var(--color-text-secondary)]">
+                {p.org.slice(0, 1)}
+              </span>
+            )}
+            <span class="text-[14px] font-semibold text-[var(--color-text-primary)]">{p.program}</span>
+          </div>
+          <p class="font-ui-mono text-[10px] uppercase tracking-[0.1em] text-[var(--color-text-tertiary)] mb-2">{p.kind}</p>
+          <p class="text-[13px] leading-relaxed text-[var(--color-text-secondary)] mb-3 flex-1">{p.description}</p>
+          <a href={p.url} target="_blank" rel="noopener noreferrer"
+            class="text-[12px] text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors self-start">
+            {p.linkLabel} ↗
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    <p class="text-[12px] text-[var(--color-text-tertiary)] mt-8 max-w-2xl">
+      Want to support the project? See <a class="underline hover:text-[var(--color-text-primary)]" href="https://github.com/sponsors/davila7">GitHub Sponsors</a>
+      or write to <a class="underline hover:text-[var(--color-text-primary)]" href="mailto:dan.avila7@gmail.com">dan.avila7@gmail.com</a>.
+    </p>
+  </section>
+  <SearchModal client:idle />
+</DashboardLayout>
