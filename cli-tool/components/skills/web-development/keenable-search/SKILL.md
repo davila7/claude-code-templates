@@ -64,7 +64,7 @@ if [ "$http_code" != "200" ]; then
   cat "$body" >&2
   exit 1
 fi
-jq -r '.results[] | select(.url) | "- \(.title): \(.url)\n  \(((if (.snippet // "") != "" then .snippet else (.description // "") end)[:500]))"' < "$body"
+jq -r '.results[] | select((.url // "") != "") | "- \(.title): \(.url)\n  \(((if (.snippet // "") != "" then .snippet else (.description // "") end)[:500]))"' < "$body"
 ```
 
 ## Best Practices
