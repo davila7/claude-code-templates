@@ -1,5 +1,5 @@
 // Programs that support the project. Shown on /supporters and (footerLabel) in the site footer.
-// Only list programs the project has actually joined.
+// Only list programs and sponsors the project actually has.
 export interface SupportProgram {
   org: string;
   program: string;
@@ -26,6 +26,14 @@ export const SUPPORT_PROGRAMS: SupportProgram[] = [
     // Official NVIDIA green, not recolored (NVIDIA brand guidelines).
     icon: 'https://cdn.simpleicons.org/nvidia/76B900',
     footerLabel: 'NVIDIA',
+  },
+  {
+    org: 'Z.ai',
+    program: 'Z.ai',
+    kind: 'Sponsor',
+    description: 'Z.ai, the team behind the GLM models, sponsored Claude Code Templates and helped keep it running.',
+    url: 'https://z.ai',
+    linkLabel: 'z.ai',
   },
   {
     org: 'Anthropic',
