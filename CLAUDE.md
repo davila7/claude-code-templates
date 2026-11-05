@@ -250,7 +250,7 @@ Two GitHub Actions drive it, both via the batch orchestrator
   **blocks** the check if any changed skill scores HIGH/CRITICAL (risk score
   > 50). Uploads an aggregated SARIF to the Security tab.
 - **`.github/workflows/skill-security-scan-all.yml`** (weekly + manual) — scans
-  all skills, reports to the run summary and SARIF, and **never blocks**.
+  all skills, reports to the run summary and a SARIF artifact, and **never blocks**. Since 2026-11-05 it no longer uploads that SARIF to code scanning (~5,000 catalog findings buried our own alerts); it uploads an empty SARIF under `skillspector-full` to keep those closed. CodeQL (`codeql.yml`, advanced setup) scans only cli-tool/src|bin, cli-tool/analytics-ui/src, dashboard/src, scripts, cloudflare-workers and workflows, never the catalog.
 - **`.github/workflows/component-skillspector-scan.yml`** (PR) — the other
   types (agents, commands, hooks, MCPs, settings, loops, sandboxes, mods)
   changed in the PR, via `scripts/skillspector_components_pr.py`, which reuses
