@@ -1,11 +1,11 @@
 {
   "mcpServers": {
     "asobeast": {
-      "description": "Official MCP server for AsoBeast, an open-source App Store Optimization tool for the App Store and Google Play. Read daily keyword ranks to position 200, keyword popularity and difficulty, competitors and their listing changes, reviews, audits and the ASO to-do list. 37 read tools; a token with the write scope adds 7 tools that track keywords and manage competitors. Create the token under Integrations in AsoBeast (https://asobeast.com/mcp). On a self-hosted instance, use https://your-host/api/backend/mcp as the URL.",
+      "description": "Official MCP server for AsoBeast, an open-source App Store Optimization tool for the App Store and Google Play. Read daily keyword ranks to position 200, keyword popularity and difficulty, competitors and their listing changes, reviews, audits and the ASO to-do list. 37 read tools; a token with the write scope adds 7 tools that track keywords and manage competitors. The hosted app.asobeast.com is paid: Indie is $10/month and Ultimate $99/month, with a 7-day free trial that needs a card and can be cancelled any time. Self-hosting the AGPL-3.0 release is free. Create the token under Integrations in AsoBeast (https://asobeast.com/mcp) and export it as ASOBEAST_API_TOKEN. On a self-hosted instance, use https://your-host/api/backend/mcp as the URL.",
       "type": "http",
       "url": "https://app.asobeast.com/api/backend/mcp",
       "headers": {
-        "Authorization": "Bearer your_api_token"
+        "Authorization": "Bearer ${ASOBEAST_API_TOKEN}"
       }
     }
   }
