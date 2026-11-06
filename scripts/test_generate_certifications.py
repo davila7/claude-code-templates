@@ -82,6 +82,14 @@ class HelpersTest(unittest.TestCase):
         self.assertEqual(g.title_rules(src, "Build with Next.js"), {"categories": ["Frontend"]})
         self.assertEqual(g.title_rules(src, "Other"), {})
 
+    def test_url_slug_keeps_ids_stable_across_renames(self):
+        self.assertEqual(g.url_slug("https://vercel.com/academy/ai-sdk", "https://vercel.com/academy"), "ai-sdk")
+        self.assertIsNone(g.url_slug("https://cursor.com/learn", "https://cursor.com/learn/"))
+
+    def test_invalid_fetched_items_do_not_count(self):
+        self.assertTrue(g.is_valid_fetched(fetched("acme-ok", "https://x.test/ok"), VOCAB))
+        self.assertFalse(g.is_valid_fetched(fetched("acme-bad", "https://x.test/b", categories=["CI/CD"]), VOCAB))
+
     def test_clean_url_drops_tracking(self):
         self.assertEqual(g.clean_url("https://learn.microsoft.com/a/?WT.mc_id=api_CatalogApi"), "https://learn.microsoft.com/a/")
 

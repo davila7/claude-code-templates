@@ -180,6 +180,14 @@ def first_sentences(text, limit=280):
     return cut[: end + 1] if end > 80 else cut.rsplit(" ", 1)[0] + "…"
 
 
+def url_slug(url, page_url):
+    """Last path segment of an entry's link, so its id survives a title change.
+    None when the entry is the catalog page itself (single-course sources)."""
+    if url.rstrip("/") == page_url.rstrip("/"):
+        return None
+    return urlparse(url).path.rstrip("/").rsplit("/", 1)[-1] or None
+
+
 def clean_url(url):
     """Drop tracking query strings (Microsoft adds ?WT.mc_id=api_CatalogApi)."""
     p = urlparse(url)
@@ -286,7 +294,7 @@ def fetch_firecrawl(source, api_key):
             base_item(
                 source,
                 **title_rules(source, title),
-                id=item_id(source["provider"], title),
+                id=item_id(source["provider"], url_slug(url, source["url"]) or title),
                 kind=source["kind"],
                 title=title,
                 description=first_sentences((raw.get("description") or title).strip()),
@@ -309,6 +317,14 @@ MIN_KEPT_SHARE = 0.6
 # ---------------------------------------------------------------------------
 # Merge
 # ---------------------------------------------------------------------------
+
+def is_valid_fetched(item, vocab):
+    """Contract check before the shrink guard counts an entry (dates are set at merge)."""
+    errors = validate_item({**item, "addedAt": today(), "verifiedAt": today()}, vocab)
+    if errors:
+        print(f"  [drop] {item.get('id')}: {', '.join(errors)}")
+    return not errors
+
 
 def merge(data, fetched, ok_sources, vocab, labels, providers):
     """fetched: {source_id: [items]} for the sources that answered (ok_sources)."""
@@ -376,7 +392,7 @@ def main(argv=None):
             # then keep the previous entries rather than drop most of a catalog.
             for attempt in (1, 2):
                 try:
-                    items = FETCHERS[source["type"]](source, api_key)
+                    items = [i for i in FETCHERS[source["type"]](source, api_key) if is_valid_fetched(i, vocab)]
                 except Exception as e:  # network, HTTP 402 (no credits), bad JSON
                     print(f"  [warn] {source['id']} failed: {getattr(e, 'code', e)}")
                     items = None
