@@ -110,13 +110,18 @@ where that is safe: a local fixture, sandbox or test database, never a
 service that sends messages, charges money or touches shared data.
 
 ```typescript
+// Vitest syntax; in Jest use jest.mock / jest.fn / jest.requireActual.
+
 // ❌ The mock swallows the config write that duplicate detection reads
 vi.mock('ToolCatalog', () => ({
   discoverAndCacheTools: vi.fn().mockResolvedValue(undefined)
 }));
 
 // ✅ Mock only the slow server startup; the config write stays real
-vi.mock('MCPServerManager');
+vi.mock('MCPServerManager', async (importOriginal) => {
+  const actual = await importOriginal();
+  return { ...actual, startServer: vi.fn() };
+});
 ```
 
 **Make doubles specific.** When arguments, call counts, or ordering are

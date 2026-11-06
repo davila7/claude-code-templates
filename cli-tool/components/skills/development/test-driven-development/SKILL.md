@@ -122,7 +122,8 @@ Vague name, tests mock not code
 
 ### Verify RED - Watch It Fail
 
-**MANDATORY. Never skip.**
+**MANDATORY. Never skip.** `npm test` here and below is an example: use the
+project's own test command (or the runner you picked above).
 
 ```bash
 npm test path/to/test.test.ts
