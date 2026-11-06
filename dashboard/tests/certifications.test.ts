@@ -35,6 +35,7 @@ test('formatPrice', () => {
   assert.equal(formatPrice(null), 'Free');
   assert.equal(formatPrice({ amount: 0, currency: 'USD' }), 'Free');
   assert.equal(formatPrice({ amount: 50, currency: 'EUR' }), 'EUR 50');
+  assert.equal(formatPrice(undefined), 'See price');
 });
 
 test('sortItems puts Entry before Advanced for the same provider', () => {
@@ -50,16 +51,19 @@ test('validateItem rejects values outside the controlled vocabularies', () => {
   assert.ok(errors.includes('role must be one of ROLES'));
 });
 
+// Filter semantics are checked on the hand-written entries, which the pipeline never changes.
+const manual = data.items.filter((i) => i.source === 'manual');
+
 test('filterItems combines facets with AND and values inside a facet with OR', () => {
-  assert.equal(filterItems(data.items, '', { role: ['Architect', 'Developer'] }).length, 3);
-  assert.equal(filterItems(data.items, '', { role: ['Architect'], level: ['Advanced'] }).length, 1);
-  assert.equal(filterItems(data.items, 'mcp', {}).length, 2);
+  assert.equal(filterItems(manual, '', { role: ['Architect', 'Developer'] }).length, 3);
+  assert.equal(filterItems(manual, '', { role: ['Architect'], level: ['Advanced'] }).length, 1);
+  assert.equal(filterItems(manual, 'mcp', {}).length, 2);
 });
 
 test('facetCounts ignores the facet being counted', () => {
-  const roles = facetCounts(data.items, '', { role: ['Architect'] }, 'role');
+  const roles = facetCounts(manual, '', { role: ['Architect'] }, 'role');
   assert.deepEqual(roles.find((r) => r.value === 'Developer'), { value: 'Developer', count: 1 });
-  const levels = facetCounts(data.items, '', { role: ['Architect'] }, 'level');
+  const levels = facetCounts(manual, '', { role: ['Architect'] }, 'level');
   assert.deepEqual(levels.find((l) => l.value === 'Entry'), { value: 'Entry', count: 1 });
 });
 
@@ -81,4 +85,14 @@ test('price sort keeps currencies apart', () => {
   const p = (id: string, amount: number, currency: string) => ({ ...data.items[0], id, price: { amount, currency } });
   const order = sortBy([p('jpy', 1000, 'JPY'), p('usd-hi', 200, 'USD'), p('usd-lo', 100, 'USD')], 'price-asc').map((i) => i.id);
   assert.deepEqual(order, ['usd-lo', 'usd-hi', 'jpy']);
+});
+
+test('items without a published price stay out of the price facet and sort last', () => {
+  const [a, b] = data.items;
+  const unknown = { ...a, id: 'no-price', price: undefined };
+  const free = { ...b, id: 'free', price: null };
+  const prices = facetCounts([unknown, free], '', {}, 'price');
+  assert.deepEqual(prices, [{ value: 'free', count: 1 }]);
+  assert.deepEqual(sortBy([unknown, free, a], 'price-desc').map((i) => i.id), [a.id, 'free', 'no-price']);
+  assert.deepEqual(sortBy([unknown, free, a], 'price-asc').map((i) => i.id), ['free', a.id, 'no-price']);
 });
