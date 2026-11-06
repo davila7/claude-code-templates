@@ -1,4 +1,4 @@
-// Data contract for /certifications (dashboard/public/claude-certifications.json).
+// Data contract for /certifications (dashboard/public/certifications.json).
 // Entries are curated by hand today (`source: "manual"`). A future pipeline
 // (like scripts/generate_claude_jobs.py for /jobs) may add entries with
 // another `source`; it must keep manual entries and only refresh its own.
@@ -12,7 +12,8 @@ export interface LearningItem {
   title: string;
   provider: string;
   platform?: string;
-  track?: string;
+  /** Provider-neutral area shown as a filter, e.g. Development, Architecture, Business. */
+  category?: string;
   level?: string;
   audience?: string;
   description: string;
@@ -25,16 +26,24 @@ export interface LearningItem {
   format?: string;
   credential?: string;
   eligibility: Eligibility;
+  /** Who qualifies when eligibility is not public, in the provider's own terms. */
+  eligibilityNote?: string;
   topics: string[];
   source: string;
   addedAt: string;
   verifiedAt: string;
 }
 
+/** Keyed by LearningItem.provider. */
+export interface ProviderInfo {
+  icon?: string;
+}
+
 export interface CertificationsData {
   schemaVersion: number;
   lastUpdated: string;
   sources: string[];
+  providers: Record<string, ProviderInfo>;
   items: LearningItem[];
 }
 
@@ -50,20 +59,33 @@ export function formatPrice(price: LearningItem['price']): string {
   return `${symbol}${price.amount}`;
 }
 
-/** Track order follows the first appearance in the file; inside a track, Foundations before Professional. */
+/** Category order follows the first appearance in the file; inside a category, Foundations before Professional. */
 export function sortItems(items: LearningItem[]): LearningItem[] {
-  const trackIndex = new Map<string, number>();
+  const categoryIndex = new Map<string, number>();
   items.forEach((i) => {
-    const t = i.track ?? '';
-    if (!trackIndex.has(t)) trackIndex.set(t, trackIndex.size);
+    const c = i.category ?? '';
+    if (!categoryIndex.has(c)) categoryIndex.set(c, categoryIndex.size);
   });
   return [...items].sort(
     (a, b) =>
       (a.kind === b.kind ? 0 : a.kind === 'certification' ? -1 : 1) ||
-      trackIndex.get(a.track ?? '')! - trackIndex.get(b.track ?? '')! ||
+      categoryIndex.get(a.category ?? '')! - categoryIndex.get(b.category ?? '')! ||
       (LEVEL_ORDER[a.level ?? ''] ?? 9) - (LEVEL_ORDER[b.level ?? ''] ?? 9) ||
       a.title.localeCompare(b.title),
   );
+}
+
+export async function fetchCertifications(): Promise<CertificationsData> {
+  const r = await fetch('/certifications.json');
+  const d: CertificationsData = await r.json();
+  return { ...d, items: sortItems(d.items.filter((i) => isHttpUrl(i.url))) };
+}
+
+/** Returns the problems in one provider entry; an empty list means it is valid. */
+export function validateProvider(info: ProviderInfo): string[] {
+  const errors: string[] = [];
+  if (info.icon !== undefined && !isHttpUrl(info.icon)) errors.push('icon must be https');
+  return errors;
 }
 
 /** Returns the problems in one entry; an empty list means it is valid. */
