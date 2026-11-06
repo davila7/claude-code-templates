@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "scrapingbee": {
+      "description": "ScrapingBee MCP server — fetch any web page as text, markdown, HTML or a screenshot with JavaScript rendering and anti-bot handling done for you, extract structured data by describing the fields in plain English, and get JSON results from Google search, Amazon products and pricing, Walmart, YouTube metadata and subtitles, ChatGPT and Gemini. Get an API key at https://app.scrapingbee.com/account/register.",
+      "type": "http",
+      "url": "https://mcp.scrapingbee.com/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_SCRAPINGBEE_API_KEY"
+      }
+    }
+  }
+}
