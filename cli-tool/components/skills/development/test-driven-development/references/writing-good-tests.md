@@ -42,7 +42,9 @@ expect(buildSearchQuery({ tag: 'urgent' })).toBe('tag:"urgent"');
 a constant's value, exact message wording, private structure — it fires
 on redesign and sleeps through bugs. Test the behavior that depends on
 the decision: not `expect(MAX_RETRIES).toBe(5)` but "a failing call is
-retried 5 times and the 6th attempt never happens."
+retried 5 times and the 6th attempt never happens." Exception: when the
+exact value is a public contract (a documented API field, CLI output or
+error message that users or scripts depend on), assert it exactly.
 
 **Behavior, not text.** Asserting that a script, skill, or config
 contains an exact line proves only that the source is the source. Run
@@ -103,7 +105,9 @@ mock?"
 **Mock at the right level.** Learn every side effect of the real method
 before replacing it; mock the slow or external operation and keep what
 the test depends on real. When unsure, run the test against the real
-implementation first and observe what actually needs to happen.
+implementation first and observe what actually needs to happen, but only
+where that is safe: a local fixture, sandbox or test database, never a
+service that sends messages, charges money or touches shared data.
 
 ```typescript
 // ❌ The mock swallows the config write that duplicate detection reads
