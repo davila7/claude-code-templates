@@ -3,7 +3,7 @@
     "bulkpublish": {
       "description": "Hosted MCP server for scheduling and publishing social media posts to 15 platforms (X, LinkedIn, Instagram, TikTok, and more). Sign in with your BulkPublish account through the MCP client's OAuth flow. Docs: https://www.bulkpublish.com/integrations/mcp-server/",
       "type": "http",
-      "url": "https://mcp.bulkpublish.com/mcp/full"
+      "url": "https://mcp.bulkpublish.com/mcp"
     }
   }
 }
