@@ -34014,7 +34014,7 @@
       "path": "quality-gates/tdd-gate.json",
       "category": "quality-gates",
       "type": "hook",
-      "description": "Test-Driven Development enforcement hook. Blocks editing production code files (.cs, .py, .ts, .go, .rs, .rb, .php, .java, .kt, .swift, .dart) unless a corresponding test file exists. Forces the TDD workflow: write tests first, then implement. Automatically skips config files, migrations, DTOs, test files themselves, and infrastructure files. Looks for test files with common naming patterns (MyClassTest.ext, my-class.test.ext, my_class_test.ext, test_my_class.ext). Inspired by pm-workspace's Spec-Driven Development methodology.",
+      "description": "Enforces the red-green cycle of the test-driven-development skill. Blocks edits to production code (including shell writes such as `cat >`, `tee` and `sed -i`) until a test has been changed and a test run has failed in this session. After the change, it keeps Claude from finishing until the whole test suite has passed. Test files, docs and config are never blocked. Pairs with the skill development/test-driven-development: the skill teaches the cycle, the hook makes skipping it hard. Per-session state lives in the temp directory; the user can turn the gate off for a project by creating .claude/tdd-gate.off. Requires jq. Originally based on pm-workspace's tdd-gate (MIT).",
       "author": "",
       "repo": "",
       "version": "",
@@ -34036,9 +34036,9 @@
         "issueCount": 0,
         "analysis": "complete",
         "findings": [],
-        "hash": "b208df3d89d75742",
+        "hash": "b0bd441c7d086bbb",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-06T02:17:21Z"
       }
     },
     {
@@ -60298,9 +60298,9 @@
         "issueCount": 0,
         "analysis": "partial",
         "findings": [],
-        "hash": "94581b984c1ce299",
+        "hash": "25c15e018850cf97",
         "version": "2.12.0",
-        "scannedAt": "2026-11-06T01:10:59Z"
+        "scannedAt": "2026-11-06T02:17:21Z"
       }
     },
     {
