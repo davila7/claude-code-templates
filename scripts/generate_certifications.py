@@ -186,6 +186,21 @@ def clean_url(url):
     return f"{p.scheme}://{p.netloc}{p.path}"
 
 
+RULE_FIELDS = ("categories", "level", "role")
+
+
+def title_rules(source, title):
+    """Fields set by the source's `rules`: for each field, the first rule whose
+    `match` regex hits the title and that sets it wins."""
+    out = {}
+    for rule in source.get("rules", []):
+        if re.search(rule["match"], title, re.I):
+            for f in RULE_FIELDS:
+                if f in rule and f not in out:
+                    out[f] = rule[f]
+    return out
+
+
 def base_item(source, **fields):
     item = {
         "provider": source["provider"],
@@ -199,7 +214,7 @@ def base_item(source, **fields):
             item[key] = source[key]
     if "price" in source:  # null = free; absent = not published
         item["price"] = source["price"]
-    item.update({k: v for k, v in fields.items() if v is not None})
+    item.update({k: list(v) if isinstance(v, list) else v for k, v in fields.items() if v is not None})
     return item
 
 
@@ -259,7 +274,9 @@ def fetch_firecrawl(source, api_key):
         if urlparse(url).netloc != host or not pattern.match(url):
             print(f"  [skip] {source['id']}: {url} does not match the source's URL pattern")
             continue
-        if not title or title.lower() not in markdown:
+        # Either the title or the link must be on the page: catalogs often show a
+        # short name ("Agentic AI") for an entry whose full title is longer.
+        if not title or (title.lower() not in markdown and url.lower() not in markdown):
             print(f"  [skip] {source['id']}: '{title}' is not on the page (extraction guess)")
             continue
         if url in seen:
@@ -268,6 +285,7 @@ def fetch_firecrawl(source, api_key):
         items.append(
             base_item(
                 source,
+                **title_rules(source, title),
                 id=item_id(source["provider"], title),
                 kind=source["kind"],
                 title=title,

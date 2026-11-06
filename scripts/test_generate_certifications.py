@@ -72,6 +72,16 @@ class HelpersTest(unittest.TestCase):
         self.assertEqual(g.item_id("GitHub", "github-copilot"), "github-copilot")
         self.assertEqual(g.item_id("GitHub", "agentic-ai-developer"), "github-agentic-ai-developer")
 
+    def test_title_rules_first_match_per_field(self):
+        src = {"rules": [
+            {"match": "agent", "categories": ["AI & Agents"]},
+            {"match": "next\\.js", "categories": ["Frontend"]},
+            {"match": "professional", "level": "Advanced"},
+        ]}
+        self.assertEqual(g.title_rules(src, "Agents with Next.js Professional"), {"categories": ["AI & Agents"], "level": "Advanced"})
+        self.assertEqual(g.title_rules(src, "Build with Next.js"), {"categories": ["Frontend"]})
+        self.assertEqual(g.title_rules(src, "Other"), {})
+
     def test_clean_url_drops_tracking(self):
         self.assertEqual(g.clean_url("https://learn.microsoft.com/a/?WT.mc_id=api_CatalogApi"), "https://learn.microsoft.com/a/")
 
