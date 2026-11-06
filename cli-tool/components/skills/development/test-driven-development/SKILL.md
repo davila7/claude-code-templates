@@ -1,6 +1,6 @@
 ---
 name: test-driven-development
-description: "You MUST use this before writing or changing any production code, including one-line fixes and when the user is in a hurry: a new feature, a bug fix, a refactor, a behavior change. Write the failing test first, run it and watch it fail for the right reason, write the minimal code that passes, then run the whole test suite before saying it is done. Not for throwaway prototypes, generated code or configuration-only changes."
+description: "You MUST use this before writing or changing any production code, including one-line fixes and when the user is in a hurry: a new feature, a bug fix, a refactor, a behavior change. Write the failing test first, run it and watch it fail for the right reason, write the minimal code that passes, then run the whole test suite before saying it is done. Skip it only for throwaway prototypes, generated code or configuration-only changes, and only with the user's OK."
 license: MIT
 metadata:
   author: Jesse Vincent (obra/superpowers), adapted by claude-code-templates
@@ -142,7 +142,7 @@ Write simplest code to pass the test.
 
 <Good>
 ```typescript
-async function retryOperation<T>(fn: () => Promise<T>): Promise<T> {
+async function retryOperation<T>(fn: () => T | Promise<T>): Promise<T> {
   for (let i = 0; i < 3; i++) {
     try {
       return await fn();
@@ -194,10 +194,10 @@ Confirm:
 **"Other tests" means the project's suite, not just your file.** A
 green run of the test you wrote is not a green suite. Before you call
 the change done, run the project's test command (bare `pytest`,
-`npm test`, `cargo test` — whatever the repo uses) even when your task
-named only one test file. A scope statement in your task bounds the
+`npm test`, `cargo test` — whatever the repo uses) even when the request
+named only one test file. The scope of the request bounds the
 deliverable, not your verification. Any failure that run shows —
-including one you didn't cause — goes in your report by name; a red
+including one you didn't cause — goes in your final message by name; a red
 test you watched scroll past and didn't mention is a report falsified
 by omission.
 

@@ -93,7 +93,7 @@ expect(screen.getByRole('navigation')).toBeInTheDocument();
 expect(screen.getByTestId('sidebar-mock')).toBeInTheDocument();
 ```
 
-**The user's correction:** "Are we testing the behavior of a
+**Ask yourself:** "Am I testing the behavior of a
 mock?"
 
 **Mock at the right level.** Learn every side effect of the real method
@@ -129,7 +129,7 @@ class own this resource's lifecycle? Wrong answers → test utility.
 **Prefer real components over complex mocks.** When mock setup outgrows
 the test logic, mocks miss methods the real components have, or tests
 break when the mock changes, switch to an integration test with real
-components. **The user's question:** "Do we need to be using a
+components. **Ask yourself:** "Do I need a
 mock here?"
 
 ### Gate Function
@@ -174,7 +174,7 @@ test as tautological.
 |-------------|-----|
 | Write any test | Name the break it catches — a bug, not a decision |
 | Build an expected value | Derive it by hand; never with the code under test |
-| Test a script or document | Run it / pressure-test its consumer; never grep its text |
+| Test a script or document | Run it, or run the agent that reads it and check what it does; never grep its text |
 | Reach for a dependency test | Test your boundary contract, not their documented mechanics |
 | Want to assert on a mocked element | Test the real component, or unmock it |
 | Are about to mock a method | Learn its side effects; mock the slow/external level |
