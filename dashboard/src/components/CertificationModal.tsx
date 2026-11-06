@@ -102,7 +102,7 @@ export default function CertificationModal({ item, provider, signedIn, loaded, o
           <div className="min-w-0 flex-1">
             <h2 id="certification-modal-title" className="text-[15px] font-semibold leading-snug text-[var(--color-text-primary)]">{item.title}</h2>
             <p className="mt-0.5 text-[12px] text-[var(--color-text-tertiary)]">
-              {[item.provider, item.category, item.level].filter(Boolean).join(' · ')}
+              {[item.provider, ...item.categories, item.level].filter(Boolean).join(' · ')}
             </p>
           </div>
           <button

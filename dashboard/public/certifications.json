@@ -16,7 +16,9 @@
       "title": "Claude Certified Associate – Foundations",
       "provider": "Anthropic",
       "platform": "Skilljar",
-      "category": "Business",
+      "categories": [
+        "Business"
+      ],
       "level": "Foundations",
       "audience": "Consultants, sellers and delivery leads who guide customers toward the right Claude use cases and set engagements up for success.",
       "description": "Validates that you can operate Claude with professional discipline, turning everyday business problems into reliable Claude workflows you can stand behind.",
@@ -46,7 +48,9 @@
       "title": "Claude Certified Developer – Foundations",
       "provider": "Anthropic",
       "platform": "Skilljar",
-      "category": "Development",
+      "categories": [
+        "Development"
+      ],
       "level": "Foundations",
       "audience": "Engineers who build with the Claude API, Claude Code and Model Context Protocol, from first integration to production agents.",
       "description": "Validates that you can build production-grade applications, agents and workflows on Claude, and make the engineering decisions that keep code reliable when real users depend on it.",
@@ -78,7 +82,9 @@
       "title": "Claude Certified Architect – Foundations",
       "provider": "Anthropic",
       "platform": "Skilljar",
-      "category": "Architecture",
+      "categories": [
+        "Architecture"
+      ],
       "level": "Foundations",
       "audience": "Partners who design Claude solutions end to end: deployment platforms, agentic architectures, evaluation, cost and safety.",
       "description": "Validates that you can make informed decisions about tradeoffs when implementing real-world solutions with Claude, across Claude Code, the Claude Agent SDK, the Claude API and Model Context Protocol.",
@@ -109,7 +115,9 @@
       "title": "Claude Certified Architect – Professional",
       "provider": "Anthropic",
       "platform": "Skilljar",
-      "category": "Architecture",
+      "categories": [
+        "Architecture"
+      ],
       "level": "Professional",
       "audience": "Partners who design Claude solutions end to end: deployment platforms, agentic architectures, evaluation, cost and safety.",
       "description": "Validates that you can design, integrate and govern production-grade Claude systems end to end, and defend those design decisions to the stakeholders who fund and approve them.",

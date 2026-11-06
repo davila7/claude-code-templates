@@ -12,8 +12,8 @@ export interface LearningItem {
   title: string;
   provider: string;
   platform?: string;
-  /** Provider-neutral area shown as a filter, e.g. Development, Architecture, Business. */
-  category?: string;
+  /** Provider-neutral areas, free text. A new value becomes a filter option on its own. */
+  categories: string[];
   level?: string;
   audience?: string;
   description: string;
@@ -63,16 +63,76 @@ export function formatPrice(price: LearningItem['price']): string {
 export function sortItems(items: LearningItem[]): LearningItem[] {
   const categoryIndex = new Map<string, number>();
   items.forEach((i) => {
-    const c = i.category ?? '';
+    const c = i.categories[0] ?? '';
     if (!categoryIndex.has(c)) categoryIndex.set(c, categoryIndex.size);
   });
   return [...items].sort(
     (a, b) =>
       (a.kind === b.kind ? 0 : a.kind === 'certification' ? -1 : 1) ||
-      categoryIndex.get(a.category ?? '')! - categoryIndex.get(b.category ?? '')! ||
+      categoryIndex.get(a.categories[0] ?? '')! - categoryIndex.get(b.categories[0] ?? '')! ||
       (LEVEL_ORDER[a.level ?? ''] ?? 9) - (LEVEL_ORDER[b.level ?? ''] ?? 9) ||
       a.title.localeCompare(b.title),
   );
+}
+
+// Filter options are always derived from the catalog, never listed in the UI.
+export type FacetKey = 'provider' | 'categories' | 'level' | 'kind';
+export type FacetSelection = Record<FacetKey, string[]>;
+export interface FacetOption {
+  value: string;
+  count: number;
+}
+
+export const EMPTY_SELECTION: FacetSelection = { provider: [], categories: [], level: [], kind: [] };
+
+function facetValues(item: LearningItem, key: FacetKey): string[] {
+  if (key === 'categories') return item.categories;
+  const value = item[key];
+  return value ? [value] : [];
+}
+
+/** Every word must appear somewhere in the entry. */
+export function matchesQuery(item: LearningItem, query: string): boolean {
+  const words = query.toLowerCase().split(/\s+/).filter(Boolean);
+  if (words.length === 0) return true;
+  const text = [item.title, item.provider, item.level, item.audience, item.description, ...item.categories, ...item.topics]
+    .join(' ')
+    .toLowerCase();
+  return words.every((w) => text.includes(w));
+}
+
+/** Values inside one facet widen the results (OR); different facets narrow them (AND). */
+export function matchesSelection(item: LearningItem, selection: FacetSelection, ignore?: FacetKey): boolean {
+  return (Object.keys(selection) as FacetKey[]).every((key) => {
+    if (key === ignore || selection[key].length === 0) return true;
+    return facetValues(item, key).some((v) => selection[key].includes(v));
+  });
+}
+
+/**
+ * The options of one facet, with how many results each would give. A facet's
+ * own selection does not count, so picking one value never hides the others.
+ * Options with no results are dropped unless selected.
+ */
+export function facetOptions(items: LearningItem[], key: FacetKey, selection: FacetSelection, query = ''): FacetOption[] {
+  const counts = new Map<string, number>();
+  for (const value of selection[key]) counts.set(value, 0);
+  for (const item of items) {
+    if (!matchesQuery(item, query) || !matchesSelection(item, selection, key)) continue;
+    for (const value of facetValues(item, key)) counts.set(value, (counts.get(value) ?? 0) + 1);
+  }
+  return [...counts]
+    .map(([value, count]) => ({ value, count }))
+    .sort((a, b) =>
+      key === 'level'
+        ? (LEVEL_ORDER[a.value] ?? 9) - (LEVEL_ORDER[b.value] ?? 9) || a.value.localeCompare(b.value)
+        : b.count - a.count || a.value.localeCompare(b.value),
+    );
+}
+
+/** A facet with a single value in the whole catalog filters nothing, so it is not shown. */
+export function isUsefulFacet(items: LearningItem[], key: FacetKey): boolean {
+  return new Set(items.flatMap((i) => facetValues(i, key))).size > 1;
 }
 
 export async function fetchCertifications(): Promise<CertificationsData> {
@@ -101,6 +161,7 @@ export function validateItem(item: Partial<LearningItem>): string[] {
     if (item[f] !== undefined && !isHttpUrl(item[f])) errors.push(`${f} must be https`);
   }
   if (item.eligibility !== 'public' && item.eligibility !== 'partners') errors.push('eligibility must be public or partners');
+  if (!Array.isArray(item.categories) || item.categories.length === 0 || item.categories.some((c) => typeof c !== 'string' || !c)) errors.push('categories must be a non-empty array of strings');
   if (!Array.isArray(item.topics) || item.topics.some((t) => typeof t !== 'string' || !t)) errors.push('topics must be an array of strings');
   if (item.price && (typeof item.price.amount !== 'number' || !item.price.currency)) errors.push('price needs amount and currency');
   for (const f of ['addedAt', 'verifiedAt'] as const) {

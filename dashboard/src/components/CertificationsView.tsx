@@ -1,20 +1,33 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import CertificationModal, { LockIcon } from './CertificationModal';
 import CompanyLogo from './CompanyLogo';
+import FacetFilter from './FacetFilter';
 import { useGlobalAuth } from '../lib/use-global-auth';
 import {
+  EMPTY_SELECTION,
+  facetOptions,
   fetchCertifications,
   formatPrice,
+  isUsefulFacet,
+  matchesQuery,
+  matchesSelection,
   type CertificationsData,
+  type FacetKey,
+  type FacetSelection,
   type LearningItem,
   type ProviderInfo,
 } from '../lib/certifications';
 
-const KIND_LABEL: Record<string, string> = { certification: 'Certifications', course: 'Courses' };
+const KIND_LABEL: Record<string, string> = { certification: 'Certification', course: 'Course' };
+const FACETS: { key: FacetKey; label: string }[] = [
+  { key: 'categories', label: 'Category' },
+  { key: 'provider', label: 'Provider' },
+  { key: 'level', label: 'Level' },
+  { key: 'kind', label: 'Type' },
+];
+const MAX_CARD_CATEGORIES = 2;
 
-function unique(values: (string | undefined)[]): string[] {
-  return Array.from(new Set(values.filter(Boolean) as string[]));
-}
+const tagClass = 'text-[10px] font-medium bg-[var(--color-surface-3)] text-[var(--color-text-secondary)] px-1.5 py-0.5 rounded border border-[var(--color-border)]';
 
 function CertificationCard({ item, provider, onOpen }: { item: LearningItem; provider?: ProviderInfo; onOpen: () => void }) {
   return (
@@ -30,12 +43,13 @@ function CertificationCard({ item, provider, onOpen }: { item: LearningItem; pro
         <h2 className="text-[13px] font-semibold leading-snug text-[var(--color-text-primary)] group-hover:text-[var(--color-accent)] transition-colors line-clamp-2">{item.title}</h2>
         <p className="mt-0.5 text-[11px] text-[var(--color-text-tertiary)] truncate">{item.provider}</p>
         <div className="mt-2 flex items-center gap-1 flex-wrap">
-          {item.category && (
-            <span className="text-[10px] font-medium bg-[var(--color-surface-3)] text-[var(--color-text-secondary)] px-1.5 py-0.5 rounded border border-[var(--color-border)]">{item.category}</span>
+          {item.categories.slice(0, MAX_CARD_CATEGORIES).map((c) => (
+            <span key={c} className={tagClass}>{c}</span>
+          ))}
+          {item.categories.length > MAX_CARD_CATEGORIES && (
+            <span className={tagClass}>+{item.categories.length - MAX_CARD_CATEGORIES}</span>
           )}
-          {item.level && (
-            <span className="text-[10px] font-medium bg-[var(--color-surface-3)] text-[var(--color-text-secondary)] px-1.5 py-0.5 rounded border border-[var(--color-border)]">{item.level}</span>
-          )}
+          {item.level && <span className={tagClass}>{item.level}</span>}
           <span className="text-[10px] font-medium bg-[var(--color-accent-light)] text-[var(--color-accent)] px-1.5 py-0.5 rounded border border-[var(--color-border)] tabular-nums">
             {formatPrice(item.price)}
           </span>
@@ -48,10 +62,8 @@ function CertificationCard({ item, provider, onOpen }: { item: LearningItem; pro
 export default function CertificationsView() {
   const [data, setData] = useState<CertificationsData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [provider, setProvider] = useState<string>('all');
-  const [kind, setKind] = useState<string>('all');
-  const [category, setCategory] = useState<string>('all');
-  const [level, setLevel] = useState<string>('all');
+  const [query, setQuery] = useState('');
+  const [selection, setSelection] = useState<FacetSelection>(EMPTY_SELECTION);
   const [selected, setSelected] = useState<LearningItem | null>(null);
   const close = useCallback(() => setSelected(null), []);
   const { isSignedIn, isLoaded } = useGlobalAuth();
@@ -64,21 +76,22 @@ export default function CertificationsView() {
   }, []);
 
   const items = data?.items ?? [];
-  const providers = useMemo(() => unique(items.map((i) => i.provider)), [items]);
-  const kinds = useMemo(() => unique(items.map((i) => i.kind)), [items]);
-  const categories = useMemo(() => unique(items.map((i) => i.category)), [items]);
-  const levels = useMemo(() => unique(items.map((i) => i.level)), [items]);
+  const facets = useMemo(() => FACETS.filter((f) => isUsefulFacet(items, f.key)), [items]);
   const visible = useMemo(
-    () =>
-      items.filter(
-        (i) =>
-          (provider === 'all' || i.provider === provider) &&
-          (kind === 'all' || i.kind === kind) &&
-          (category === 'all' || i.category === category) &&
-          (level === 'all' || i.level === level),
-      ),
-    [items, provider, kind, category, level],
+    () => items.filter((i) => matchesQuery(i, query) && matchesSelection(i, selection)),
+    [items, query, selection],
   );
+  const hasFilters = query.trim() !== '' || FACETS.some((f) => selection[f.key].length > 0);
+  const clearAll = () => {
+    setQuery('');
+    setSelection(EMPTY_SELECTION);
+  };
+  const toggle = (key: FacetKey, value: string) =>
+    setSelection((prev) => ({
+      ...prev,
+      [key]: prev[key].includes(value) ? prev[key].filter((v) => v !== value) : [...prev[key], value],
+    }));
+  const optionLabel = (key: FacetKey, value: string) => (key === 'kind' ? KIND_LABEL[value] ?? value : value);
 
   if (loading) {
     return (
@@ -99,21 +112,6 @@ export default function CertificationsView() {
   }
 
   const showGate = isLoaded && !isSignedIn;
-  const chip = (active: boolean) =>
-    `px-3 py-1.5 rounded-md text-[12px] font-medium transition-colors ${
-      active
-        ? 'bg-[var(--color-surface-3)] text-[var(--color-text-primary)] shadow-sm'
-        : 'text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)]'
-    }`;
-  const group = (options: string[], value: string, onChange: (v: string) => void, allLabel: string, label: (o: string) => string = (o) => o) => (
-    <div className="flex items-center gap-1 bg-[var(--color-surface-2)] rounded-lg p-0.5">
-      {['all', ...options].map((o) => (
-        <button key={o} onClick={() => onChange(o)} className={chip(value === o)}>
-          {o === 'all' ? allLabel : label(o)}
-        </button>
-      ))}
-    </div>
-  );
 
   return (
     <div className="max-w-6xl">
@@ -141,14 +139,61 @@ export default function CertificationsView() {
         </div>
       )}
 
-      <div className="px-6 py-4 flex flex-wrap items-center gap-2">
-        {group(providers, provider, setProvider, 'All providers')}
-        {kinds.length > 1 && group(kinds, kind, setKind, 'All types', (k) => KIND_LABEL[k] ?? k)}
-        {group(categories, category, setCategory, 'All categories')}
-        {group(levels, level, setLevel, 'All levels')}
-        <span className="ml-auto text-[12px] text-[var(--color-text-tertiary)]">
-          {visible.length} of {data.items.length}
-        </span>
+      <div className="px-6 pt-4 pb-3 space-y-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="relative flex-1 min-w-[200px] max-w-sm">
+            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--color-text-tertiary)] pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+              <circle cx="11" cy="11" r="8" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35" />
+            </svg>
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search certifications..."
+              aria-label="Search certifications and courses"
+              className="w-full bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg text-[12px] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] pl-8 pr-3 py-1.5 focus:outline-none focus:border-[var(--color-border-hover)]"
+            />
+          </div>
+          {facets.map((f) => (
+            <FacetFilter
+              key={f.key}
+              label={f.label}
+              options={facetOptions(items, f.key, selection, query)}
+              selected={selection[f.key]}
+              onToggle={(value) => toggle(f.key, value)}
+              onClear={() => setSelection((prev) => ({ ...prev, [f.key]: [] }))}
+              optionLabel={(value) => optionLabel(f.key, value)}
+              optionIcon={f.key === 'provider' ? (value) => (
+                <CompanyLogo company={value} icon={data.providers[value]?.icon} imgClassName="w-3.5 h-3.5 object-contain" initialClassName="text-[9px] font-bold text-[var(--color-text-tertiary)]" />
+              ) : undefined}
+            />
+          ))}
+          <span className="ml-auto text-[12px] text-[var(--color-text-tertiary)] tabular-nums">
+            {visible.length} {visible.length === 1 ? 'result' : 'results'}
+          </span>
+        </div>
+
+        {hasFilters && (
+          <div className="flex flex-wrap items-center gap-1.5">
+            {FACETS.flatMap((f) =>
+              selection[f.key].map((value) => (
+                <button
+                  key={`${f.key}:${value}`}
+                  onClick={() => toggle(f.key, value)}
+                  aria-label={`Remove filter ${optionLabel(f.key, value)}`}
+                  className="inline-flex items-center gap-1 rounded-md border border-[var(--color-border)] bg-[var(--color-surface-2)] px-2 py-0.5 text-[11px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-border-hover)] transition-colors"
+                >
+                  {optionLabel(f.key, value)}
+                  <span aria-hidden="true">×</span>
+                </button>
+              )),
+            )}
+            <button onClick={clearAll} className="px-1 text-[11px] text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] transition-colors">
+              Clear all
+            </button>
+          </div>
+        )}
       </div>
 
       {visible.length > 0 ? (
@@ -158,7 +203,7 @@ export default function CertificationsView() {
           ))}
         </div>
       ) : (
-        <p className="px-6 pb-10 pt-6 text-center text-[13px] text-[var(--color-text-tertiary)]">Nothing matches these filters.</p>
+        <p className="px-6 pb-10 pt-6 text-center text-[13px] text-[var(--color-text-tertiary)]">Nothing matches your search and filters.</p>
       )}
 
       {selected && (
