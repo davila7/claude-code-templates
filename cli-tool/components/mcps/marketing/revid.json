@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "revid": {
+      "description": "Official Revid remote MCP server (www.revid.ai/api/mcp): research what goes viral on TikTok, YouTube, Instagram and X, make finished short-form videos with voice, captions, music and AI footage from a prompt, script, article or upload, then publish or schedule them to your connected accounts. 30 tools. Requires a Revid account and uses OAuth: after installing, run /mcp in Claude Code to sign in. Headless clients can send a Revid API key as a Bearer token instead.",
+      "type": "http",
+      "url": "https://www.revid.ai/api/mcp"
+    }
+  }
+}
