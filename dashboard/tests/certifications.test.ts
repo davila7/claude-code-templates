@@ -41,3 +41,8 @@ test('sortItems keeps Foundations before Professional inside a category', () => 
   const titles = sortItems(data.items).map((i) => `${i.category}/${i.level}`);
   assert.ok(titles.indexOf('Architecture/Foundations') < titles.indexOf('Architecture/Professional'));
 });
+
+test('validateItem rejects topics that are not strings', () => {
+  const bad = { ...data.items[0], topics: [{}] as unknown as string[] };
+  assert.ok(validateItem(bad).includes('topics must be an array of strings'));
+});
