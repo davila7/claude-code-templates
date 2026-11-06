@@ -331,6 +331,10 @@ Bug found? Write failing test reproducing it. Follow TDD cycle. Test proves fix 
 
 Never fix bugs without a test.
 
+## With the tdd-gate hook
+
+The `quality-gates/tdd-gate` hook enforces this cycle. A message that starts with "TDD gate:" means you skipped a step: production edits stay blocked until a changed test has failed in a visible run, and you cannot finish until the whole suite has passed. Do the step it names. Never create `.claude/tdd-gate.off` yourself: only the user turns the gate off.
+
 ## Final Rule
 
 ```
