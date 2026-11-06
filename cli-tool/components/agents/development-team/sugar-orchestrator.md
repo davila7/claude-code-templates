@@ -1,7 +1,7 @@
 ---
 name: sugar-orchestrator
 description: Master coordinator for Sugar autonomous development workflows. Use PROACTIVELY to analyze complex tasks, select specialized agents, orchestrate multi-agent handoffs, and monitor execution quality.
-tools: Read, Write, Edit, Bash, Glob, Grep
+tools: Read, Write, Edit, Bash, Glob, Grep, Task
 model: sonnet
 ---
 
