@@ -89,14 +89,14 @@ The lines that settle each question in `claude --debug`: `Found N plugins`, `Rea
 
 ```bash
 # Single component
-npx claude-code-templates@latest --agent frontend-developer
-npx claude-code-templates@latest --command setup-testing
+npx claude-code-templates@latest --agent development-team/frontend-developer
+npx claude-code-templates@latest --command testing/generate-tests
 npx claude-code-templates@latest --hook automation/simple-notifications
 npx claude-code-templates@latest --loop engineering/docs-sweep-loop  # also installs the loop's referenced components
 npx claude-code-templates@latest --mod security/secret-redactor          # Claude Mod: plugin at .claude/skills/secret-redactor/
 
 # Batch installation
-npx claude-code-templates@latest --agent security-auditor --command security-audit --setting read-only-mode
+npx claude-code-templates@latest --agent security/security-auditor --command security/security-audit --setting permissions/read-only-mode
 
 # Interactive mode
 npx claude-code-templates@latest
