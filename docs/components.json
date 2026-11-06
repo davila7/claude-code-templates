@@ -60272,11 +60272,11 @@
       "path": "development/test-driven-development",
       "category": "development",
       "type": "skill",
-      "description": "Use when implementing any feature or bugfix, before writing implementation code",
-      "author": "",
+      "description": "You MUST use this before writing or changing any production code, including one-line fixes and when the user is in a hurry: a new feature, a bug fix, a refactor, a behavior change. Write the failing test first, run it and watch it fail for the right reason, write the minimal code that passes, then run the whole test suite before saying it is done. Skip it only for throwaway prototypes, generated code or configuration-only changes, and only with the user's OK.",
+      "author": "Jesse Vincent (obra/superpowers), adapted by claude-code-templates",
       "repo": "",
-      "version": "",
-      "license": "",
+      "version": "2.0.0",
+      "license": "MIT",
       "keywords": [],
       "downloads": 802,
       "security": {
@@ -60288,7 +60288,8 @@
         "lastValidated": null
       },
       "references": [
-        "testing-anti-patterns.md"
+        "LICENSE",
+        "references/writing-good-tests.md"
       ],
       "skillspector": {
         "score": 0,
@@ -60297,9 +60298,9 @@
         "issueCount": 0,
         "analysis": "partial",
         "findings": [],
-        "hash": "b078532e190983b8",
+        "hash": "94581b984c1ce299",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-06T01:10:59Z"
       }
     },
     {
