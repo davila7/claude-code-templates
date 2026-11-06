@@ -12,9 +12,12 @@ export interface LearningItem {
   title: string;
   provider: string;
   platform?: string;
-  /** Provider-neutral area shown as a filter, e.g. Development, Architecture, Business. */
-  category?: string;
-  level?: string;
+  /** Subject areas, each one of CATEGORIES (one or more). Provider-neutral so filters keep working as providers are added. */
+  categories: Category[];
+  /** Who it is for, one of ROLES. */
+  role?: Role;
+  /** Normalized difficulty, one of LEVELS. The provider's own tier name stays in the title. */
+  level?: Level;
   audience?: string;
   description: string;
   url: string;
@@ -47,7 +50,88 @@ export interface CertificationsData {
   items: LearningItem[];
 }
 
-export const LEVEL_ORDER: Record<string, number> = { Foundations: 0, Professional: 1, Advanced: 2 };
+// Controlled vocabularies. New entries (by hand or from a pipeline) must use
+// these values, so the same subject never splits into two filter options
+// ("CI/CD" vs "DevOps"). Add a value here when a new area really appears.
+export const CATEGORIES = [
+  'AI & Agents',
+  'Cloud & Infrastructure',
+  'DevOps & CI/CD',
+  'Security',
+  'Frontend',
+  'Backend',
+  'Mobile',
+  'Data & Analytics',
+  'Databases',
+  'Testing & QA',
+  'Business',
+] as const;
+export type Category = (typeof CATEGORIES)[number];
+
+export const ROLES = ['Developer', 'Architect', 'DevOps', 'Security', 'Data', 'Business'] as const;
+export type Role = (typeof ROLES)[number];
+
+export const LEVELS = ['Entry', 'Intermediate', 'Advanced'] as const;
+export type Level = (typeof LEVELS)[number];
+
+export const LEVEL_ORDER: Record<string, number> = Object.fromEntries(LEVELS.map((l, i) => [l, i]));
+
+export type PriceBand = 'free' | 'paid';
+export function priceBand(item: LearningItem): PriceBand {
+  return !item.price || item.price.amount === 0 ? 'free' : 'paid';
+}
+
+/** Facets the page filters on. Each maps an item to the value(s) it matches. */
+export const FACETS = {
+  category: (i: LearningItem) => i.categories,
+  provider: (i: LearningItem) => [i.provider],
+  kind: (i: LearningItem) => [i.kind],
+  level: (i: LearningItem) => (i.level ? [i.level] : []),
+  role: (i: LearningItem) => (i.role ? [i.role] : []),
+  price: (i: LearningItem) => [priceBand(i)],
+} satisfies Record<string, (i: LearningItem) => string[]>;
+export type FacetKey = keyof typeof FACETS;
+export type Selection = Partial<Record<FacetKey, string[]>>;
+
+export function matchesQuery(item: LearningItem, query: string): boolean {
+  const q = query.trim().toLowerCase();
+  if (!q) return true;
+  return [item.title, item.provider, ...item.categories, item.role, item.level, ...item.topics]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase()
+    .includes(q);
+}
+
+/** Items matching the query and every selected facet, optionally ignoring one facet (for its own counts). */
+export function filterItems(items: LearningItem[], query: string, sel: Selection, ignore?: FacetKey): LearningItem[] {
+  return items.filter(
+    (i) =>
+      matchesQuery(i, query) &&
+      (Object.keys(sel) as FacetKey[]).every((k) => {
+        const chosen = sel[k];
+        if (k === ignore || !chosen || chosen.length === 0) return true;
+        return FACETS[k](i).some((v) => chosen.includes(v));
+      }),
+  );
+}
+
+/** Option counts for one facet, given the other active filters, most common first. */
+export function facetCounts(items: LearningItem[], query: string, sel: Selection, facet: FacetKey): { value: string; count: number }[] {
+  const counts = new Map<string, number>();
+  for (const i of items) for (const v of FACETS[facet](i)) counts.set(v, 0);
+  for (const i of filterItems(items, query, sel, facet)) for (const v of FACETS[facet](i)) counts.set(v, (counts.get(v) ?? 0) + 1);
+  return [...counts].map(([value, count]) => ({ value, count })).sort((a, b) => b.count - a.count || a.value.localeCompare(b.value));
+}
+
+export type SortKey = 'recommended' | 'price-asc' | 'price-desc' | 'newest';
+export function sortBy(items: LearningItem[], key: SortKey): LearningItem[] {
+  const amount = (i: LearningItem) => i.price?.amount ?? 0;
+  if (key === 'price-asc') return [...items].sort((a, b) => amount(a) - amount(b));
+  if (key === 'price-desc') return [...items].sort((a, b) => amount(b) - amount(a));
+  if (key === 'newest') return [...items].sort((a, b) => b.addedAt.localeCompare(a.addedAt));
+  return items;
+}
 
 export function isHttpUrl(url: unknown): url is string {
   return typeof url === 'string' && /^https:\/\/[^\s]+$/i.test(url);
@@ -59,17 +143,12 @@ export function formatPrice(price: LearningItem['price']): string {
   return `${symbol}${price.amount}`;
 }
 
-/** Category order follows the first appearance in the file; inside a category, Foundations before Professional. */
+/** Default order: certifications before courses, then provider, then level, then title. */
 export function sortItems(items: LearningItem[]): LearningItem[] {
-  const categoryIndex = new Map<string, number>();
-  items.forEach((i) => {
-    const c = i.category ?? '';
-    if (!categoryIndex.has(c)) categoryIndex.set(c, categoryIndex.size);
-  });
   return [...items].sort(
     (a, b) =>
       (a.kind === b.kind ? 0 : a.kind === 'certification' ? -1 : 1) ||
-      categoryIndex.get(a.category ?? '')! - categoryIndex.get(b.category ?? '')! ||
+      a.provider.localeCompare(b.provider) ||
       (LEVEL_ORDER[a.level ?? ''] ?? 9) - (LEVEL_ORDER[b.level ?? ''] ?? 9) ||
       a.title.localeCompare(b.title),
   );
@@ -100,6 +179,10 @@ export function validateItem(item: Partial<LearningItem>): string[] {
   for (const f of ['prepUrl', 'examGuideUrl'] as const) {
     if (item[f] !== undefined && !isHttpUrl(item[f])) errors.push(`${f} must be https`);
   }
+  if (!Array.isArray(item.categories) || item.categories.length === 0 || item.categories.some((c) => !(CATEGORIES as readonly string[]).includes(c)))
+    errors.push('categories must be a non-empty list of CATEGORIES');
+  if (item.role !== undefined && !(ROLES as readonly string[]).includes(item.role)) errors.push('role must be one of ROLES');
+  if (item.level !== undefined && !(LEVELS as readonly string[]).includes(item.level)) errors.push('level must be one of LEVELS');
   if (item.eligibility !== 'public' && item.eligibility !== 'partners') errors.push('eligibility must be public or partners');
   if (!Array.isArray(item.topics) || item.topics.some((t) => typeof t !== 'string' || !t)) errors.push('topics must be an array of strings');
   if (item.price && (typeof item.price.amount !== 'number' || !item.price.currency)) errors.push('price needs amount and currency');
