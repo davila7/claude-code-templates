@@ -1,0 +1,18 @@
+---
+import DashboardLayout from '../layouts/DashboardLayout.astro';
+import TopBar from '../components/TopBar.astro';
+import CertificationsView from '../components/CertificationsView.tsx';
+import SearchModal from '../components/SearchModal.tsx';
+import CartSidebar from '../components/CartSidebar.tsx';
+export const prerender = true;
+---
+
+<DashboardLayout
+  title="Claude Certifications & Courses | Claude Code Templates"
+  description="Official Claude certifications and courses in one place: Claude Certified Associate, Developer and Architect, with prices, prep courses and exam guides."
+>
+  <TopBar />
+  <CertificationsView client:load />
+  <SearchModal client:idle />
+  <CartSidebar client:idle />
+</DashboardLayout>
