@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useGlobalAuth } from '../lib/use-global-auth';
 import {
   formatPrice,
   isHttpUrl,
@@ -9,28 +10,6 @@ import {
 
 // Same sign-in gate as /jobs (JobsView.tsx): the list is public, opening a
 // certification or course needs an aitmpl.com account.
-function useGlobalAuth() {
-  const [state, setState] = useState({ isSignedIn: false, isLoaded: false });
-  useEffect(() => {
-    function check() {
-      const clerk = (window as any).Clerk;
-      if (clerk?.loaded) {
-        const signedIn = !!clerk.user;
-        setState((prev) =>
-          prev.isLoaded && prev.isSignedIn === signedIn ? prev : { isSignedIn: signedIn, isLoaded: true },
-        );
-      }
-    }
-    check();
-    const interval = setInterval(check, 500);
-    window.addEventListener('clerk:session', check);
-    return () => {
-      clearInterval(interval);
-      window.removeEventListener('clerk:session', check);
-    };
-  }, []);
-  return state;
-}
 
 const KIND_LABEL: Record<string, string> = { certification: 'Certifications', course: 'Courses' };
 
