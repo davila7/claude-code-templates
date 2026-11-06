@@ -1,3 +1,9 @@
+---
+allowed-tools: Read, Bash, Glob
+argument-hint: "[title] [--urgent] [--type <type>] [--priority <1-5>]"
+description: Create a Sugar task with full business and technical context for autonomous execution
+---
+
 # /sugar-task
 
 Create comprehensive Sugar tasks with rich business and technical context for autonomous development.
@@ -107,7 +113,7 @@ The agent should:
 **User:** `/sugar-task Fix login timeout after 5 minutes`
 
 **Agent Response:**
-"I'll create a bug fix task for the login timeout issue. This seems straightforward - I'll set priority to 4 (high) since it affects user experience."
+I'll create a bug fix task for the login timeout issue. This seems straightforward - I'll set priority to 4 (high) since it affects user experience."
 
 ```bash
 sugar add "Fix login timeout after 5 minutes" --type bug_fix --priority 4
@@ -118,13 +124,13 @@ sugar add "Fix login timeout after 5 minutes" --type bug_fix --priority 4
 This task is now in your queue. You can:
 - View status: /sugar-status
 - Start execution: /sugar-run --dry-run --once (test first)
-- View details: sugar view task-abc123"
+- View details: sugar view task-abc123
 
 ### Example 2: Complex Feature
 **User:** `/sugar-task Build real-time notification system`
 
 **Agent Response:**
-"This is a substantial feature. Let me ask a few questions to build comprehensive context:
+This is a substantial feature. Let me ask a few questions to build comprehensive context:
 
 1. What types of notifications do you need? (email, push, in-app, SMS?)
 2. What should trigger notifications?
@@ -177,10 +183,10 @@ Next steps:
 **User:** `/sugar-task Critical SQL injection in user search --urgent`
 
 **Agent Response:**
-"🚨 Creating urgent security task with priority 5. This will be prioritized for immediate execution."
+🚨 Creating urgent security task with priority 5. This will be prioritized for immediate execution."
 
 ```bash
-sugar add "Critical SQL injection vulnerability in user search" --type bug_fix --urgent --description '{
+sugar add "Critical SQL injection vulnerability in user search" --type bug_fix --urgent --json --description '{
   "context": "SQL injection vulnerability discovered in user search endpoint",
   "technical_requirements": [
     "Replace string concatenation with parameterized queries",

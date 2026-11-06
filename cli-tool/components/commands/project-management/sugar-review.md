@@ -1,3 +1,9 @@
+---
+allowed-tools: Read, Bash
+argument-hint: "[--priority <1-5>] [--type <type>] [--limit <n>]"
+description: Review and prioritize the Sugar task queue before autonomous execution
+---
+
 # /sugar-review
 
 Interactive task queue review and prioritization for efficient work management.
@@ -88,17 +94,17 @@ Found 15 pending tasks
 **Agent presents full queue, then offers:**
 
 "Would you like to:
-1. **Execute urgent tasks** - Run `/sugar-run --once` for priority 5 items
+1. **Execute the top task** - Run `/sugar-run --once` to process the highest-priority task (repeat for each urgent item)
 2. **Review specific task** - View details with `sugar view TASK_ID`
 3. **Update priorities** - Adjust based on current needs
 4. **Clean up old tasks** - Remove stale items
-5. **View by type** - Filter to specific category"
+5. **View by type** - Filter to specific category
 
 ### Example 2: Priority Focus
 **User:** `/sugar-review --priority 5`
 
 **Agent Response:**
-"Focusing on urgent (priority 5) tasks...
+Focusing on urgent (priority 5) tasks...
 
 🔴 3 Urgent Tasks Requiring Immediate Attention
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -125,17 +131,16 @@ Found 15 pending tasks
 /sugar-run --once
 ```
 
-These tasks will be processed in order. Monitor progress:
+Each `/sugar-run --once` invocation processes the highest-priority pending task; repeat it for the remaining urgent tasks. Monitor progress:
 ```bash
 tail -f .sugar/sugar.log
 ```
-"
 
 ### Example 3: Workload Analysis
 **User:** `/sugar-review` (with insights analysis)
 
 **Agent Response:**
-"Queue Analysis Complete - Here's what I found:
+Queue Analysis Complete - Here's what I found:
 
 📊 Workload Distribution
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -175,7 +180,6 @@ tail -f .sugar/sugar.log
 2. Review stale tasks: `sugar view task-98`, `sugar view task-102`
 3. Add agent assignments to complex features
 4. Consider scheduling refactoring sprint
-"
 
 ## Integration with Claude Code
 

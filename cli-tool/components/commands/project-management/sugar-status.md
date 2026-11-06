@@ -1,3 +1,9 @@
+---
+allowed-tools: Read, Bash
+argument-hint: "[--detailed] [--tasks <n>]"
+description: Show Sugar system status, queue statistics and health recommendations
+---
+
 # /sugar-status
 
 View real-time Sugar system status, task queue, and execution metrics with actionable insights.
@@ -24,7 +30,7 @@ Includes configuration details, failed tasks, active task progress, and system h
 ```
 /sugar-status --tasks 20
 ```
-Shows more or fewer recent tasks (default: 10).
+Shows more or fewer recent tasks (default: 5).
 
 ## Implementation
 
@@ -144,7 +150,7 @@ When invoked, the agent will:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ⚙️  System: Active ✅
-📋 Total Tasks: 32
+📋 Total Tasks: 31
    ⏳ Pending: 8
    ⚡ Active: 1
    ✅ Completed: 22
@@ -173,7 +179,6 @@ Your Sugar system is running smoothly:
 - Continue current autonomous execution
 - Consider using `/sugar-task` to add new work
 - Review completed tasks for quality
-"
 
 ### Example 2: Needs Attention
 **User:** `/sugar-status`
@@ -233,7 +238,6 @@ Issues detected:
    - Increase max_concurrent_work in config for faster processing
    - Review and prioritize pending tasks with `/sugar-review`
    - Remove obsolete tasks to clean up queue
-"
 
 ### Example 3: Troubleshooting with Detailed View
 **User:** `/sugar-status --detailed`
@@ -251,7 +255,7 @@ Issues detected:
    Dry Run Mode: OFF
 
 📊 Task Statistics:
-   Total: 67 tasks (all-time)
+   Total: 67 tasks (current queue)
    ⏳ Pending: 15
    ⚡ Active: 1
    ✅ Completed: 48
@@ -327,10 +331,9 @@ Your system is performing well overall. Minor attention items:
 - Discovery sources creating good mix of work
 
 **Suggested Actions:**
-1. Review failed tasks when convenient: `/sugar-review --status failed`
-2. Rotate logs: `sugar logs --rotate` or manually archive
+1. Review failed tasks when convenient: `sugar list --status failed`
+2. Rotate logs by archiving `.sugar/sugar.log` manually, then restarting
 3. System is healthy - continue current operation
-"
 
 ## Integration with Claude Code
 

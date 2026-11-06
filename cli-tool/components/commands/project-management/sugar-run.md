@@ -1,3 +1,9 @@
+---
+allowed-tools: Read, Bash
+argument-hint: "[--validate | --dry-run | --once]"
+description: Start Sugar autonomous execution, or validate and dry-run the configuration first
+---
+
 # /sugar-run
 
 Start Sugar's autonomous execution mode with safety validation and monitoring guidance.
@@ -86,7 +92,7 @@ Always emphasize:
 **User:** `/sugar-run`
 
 **Agent Response:**
-"Let's start Sugar's autonomous mode safely. Since this appears to be your first time (or a fresh start), I'll guide you through the recommended validation sequence.
+Let's start Sugar's autonomous mode safely. Since this appears to be your first time (or a fresh start), I'll guide you through the recommended validation sequence.
 
 **Step 1: Validate Configuration**
 
@@ -141,13 +147,13 @@ This will:
 - Run tests
 - Update task status
 
-Proceed? (The agent would wait for confirmation)"
+Proceed? (The agent would wait for confirmation)
 
 ### Example 2: Quick Execution
 **User:** `/sugar-run --once`
 
 **Agent Response:**
-"Starting single cycle execution...
+Starting single cycle execution...
 
 ```bash
 sugar run --once
@@ -186,13 +192,12 @@ The database connection leak has been fixed. Changes include:
 3. View task: `sugar view task-124`
 4. Continue execution: `/sugar-run --once` for next task
 5. Or start continuous mode: `/sugar-run`
-"
 
 ### Example 3: Production Autonomous Mode
-**User:** `/sugar-run --validate` then confirms to start continuous mode
+**User:** `/sugar-run --validate`, then `/sugar-run --dry-run`, then `/sugar-run --once`, then confirms to start continuous mode
 
 **Agent Response:**
-"Configuration validated successfully. Starting continuous autonomous mode...
+Configuration validated successfully. Starting continuous autonomous mode...
 
 ```bash
 # Starting in background with logging
@@ -231,8 +236,8 @@ sugar status
 # View active tasks
 sugar list --status active
 
-# Stop gracefully
-kill $(cat .sugar/sugar.pid)
+# Stop gracefully (sugar identifies its own process; --force for immediate)
+sugar stop
 ```
 
 **Important:**
@@ -249,13 +254,12 @@ kill $(cat .sugar/sugar.pid)
 - Any errors or issues
 
 Your autonomous development system is now running! 🚀
-"
 
 ### Example 4: Troubleshooting
 **User:** `/sugar-run` but validation fails
 
 **Agent Response:**
-"Let me validate your configuration first...
+Let me validate your configuration first...
 
 ```bash
 sugar run --validate
@@ -295,7 +299,7 @@ which claude
 # If not found, verify installation
 # Then update config with correct path:
 vim .sugar/config.yaml
-# Set: claude.command: \"/path/to/claude\"
+# Set: claude.command: "/path/to/claude"
 ```
 
 **2. Empty Task Queue** ⚠️
@@ -304,7 +308,7 @@ No tasks available for execution.
 Fix:
 ```bash
 # Create tasks manually
-/sugar-task \"Your task description\"
+/sugar-task "Your task description"
 
 # Or discover work automatically
 /sugar-analyze
@@ -317,14 +321,13 @@ Recommendation:
 ```bash
 git init
 git add .
-git commit -m \"Initial commit before autonomous execution\"
+git commit -m "Initial commit before autonomous execution"
 ```
 
 **Next Steps:**
 1. Fix critical issues (Claude CLI, task queue)
 2. Run validation again: `/sugar-run --validate`
 3. When all checks pass, start with dry-run: `/sugar-run --dry-run --once`
-"
 
 ## Integration with Claude Code
 
