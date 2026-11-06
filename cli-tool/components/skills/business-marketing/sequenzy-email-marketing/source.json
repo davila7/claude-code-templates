@@ -1,0 +1,11 @@
+{
+  "repo": "Sequenzy/skills",
+  "path": "skills/sequenzy-email-marketing",
+  "commit": "a28b9f1461d3483abbafdd7b404c49fe800c4d32",
+  "license": "MIT",
+  "author": "Sequenzy",
+  "include": [
+    "SKILL.md",
+    "references"
+  ]
+}
