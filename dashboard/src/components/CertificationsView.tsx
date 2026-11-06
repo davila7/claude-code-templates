@@ -39,6 +39,8 @@ const SORTS: { key: SortKey; label: string }[] = [
   { key: 'price-desc', label: 'Price: high to low' },
 ];
 const SEARCHABLE = 8;
+const MENU_WIDTH = 256;
+const GUTTER = 16;
 
 const label = (facet: FacetKey, value: string) => VALUE_LABEL[facet]?.[value] ?? value;
 
@@ -91,16 +93,23 @@ function FacetDropdown({
   const [open, setOpen] = useState(false);
   const [find, setFind] = useState('');
   const ref = useRef<HTMLDivElement>(null);
-  const [alignRight, setAlignRight] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const [offset, setOffset] = useState(0);
 
   useEffect(() => {
     if (!open) return;
-    const r = ref.current?.getBoundingClientRect();
-    if (r) setAlignRight(r.left + 256 > window.innerWidth - 16);
+    // Shift left only as much as the menu needs to stay inside both screen edges.
+    const left = ref.current?.getBoundingClientRect().left ?? 0;
+    const overflow = left + MENU_WIDTH + GUTTER - window.innerWidth;
+    setOffset(overflow > 0 ? -Math.min(overflow, Math.max(0, left - GUTTER)) : 0);
     const onDown = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
     };
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false);
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      setOpen(false);
+      buttonRef.current?.focus();
+    };
     document.addEventListener('mousedown', onDown);
     document.addEventListener('keydown', onKey);
     return () => {
@@ -117,10 +126,10 @@ function FacetDropdown({
   return (
     <div ref={ref} className="relative">
       <button
+        ref={buttonRef}
         type="button"
         onClick={() => setOpen(!open)}
         aria-expanded={open}
-        aria-haspopup="listbox"
         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[12px] font-medium transition-colors ${
           active
             ? 'bg-[var(--color-accent-light)] border-[var(--color-accent)] text-[var(--color-accent)]'
@@ -135,9 +144,9 @@ function FacetDropdown({
       </button>
       {open && (
         <div
-          className={`absolute z-30 mt-1 w-64 max-w-[calc(100vw-2rem)] rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-1)] shadow-lg p-1.5 ${alignRight ? 'right-0' : 'left-0'}`}
-          role="listbox"
-          aria-multiselectable="true"
+          style={{ width: MENU_WIDTH, left: offset }}
+          className="absolute z-30 mt-1 max-w-[calc(100vw-2rem)] rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-1)] shadow-lg p-1.5"
+          role="group"
           aria-label={title}
         >
           {options.length > SEARCHABLE && (

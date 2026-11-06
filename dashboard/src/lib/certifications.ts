@@ -120,15 +120,23 @@ export function filterItems(items: LearningItem[], query: string, sel: Selection
 export function facetCounts(items: LearningItem[], query: string, sel: Selection, facet: FacetKey): { value: string; count: number }[] {
   const counts = new Map<string, number>();
   for (const i of items) for (const v of FACETS[facet](i)) counts.set(v, 0);
-  for (const i of filterItems(items, query, sel, facet)) for (const v of FACETS[facet](i)) counts.set(v, (counts.get(v) ?? 0) + 1);
-  return [...counts].map(([value, count]) => ({ value, count })).sort((a, b) => b.count - a.count || a.value.localeCompare(b.value));
+  for (const i of filterItems(items, query, sel, facet)) for (const v of new Set(FACETS[facet](i))) counts.set(v, (counts.get(v) ?? 0) + 1);
+  const options = [...counts].map(([value, count]) => ({ value, count }));
+  // Levels keep their natural order; other facets list the most common first.
+  if (facet === 'level') return options.sort((a, b) => (LEVEL_ORDER[a.value] ?? 9) - (LEVEL_ORDER[b.value] ?? 9));
+  return options.sort((a, b) => b.count - a.count || a.value.localeCompare(b.value));
 }
 
 export type SortKey = 'recommended' | 'price-asc' | 'price-desc' | 'newest';
 export function sortBy(items: LearningItem[], key: SortKey): LearningItem[] {
+  // Amounts in different currencies are not comparable: group by currency
+  // (USD first), then order by amount inside each group. Free counts as USD 0.
   const amount = (i: LearningItem) => i.price?.amount ?? 0;
-  if (key === 'price-asc') return [...items].sort((a, b) => amount(a) - amount(b));
-  if (key === 'price-desc') return [...items].sort((a, b) => amount(b) - amount(a));
+  const currency = (i: LearningItem) => (i.price?.amount ? i.price.currency : 'USD');
+  const group = (a: LearningItem, b: LearningItem) =>
+    currency(a) === currency(b) ? 0 : currency(a) === 'USD' ? -1 : currency(b) === 'USD' ? 1 : currency(a).localeCompare(currency(b));
+  if (key === 'price-asc') return [...items].sort((a, b) => group(a, b) || amount(a) - amount(b));
+  if (key === 'price-desc') return [...items].sort((a, b) => group(a, b) || amount(b) - amount(a));
   if (key === 'newest') return [...items].sort((a, b) => b.addedAt.localeCompare(a.addedAt));
   return items;
 }
@@ -181,6 +189,7 @@ export function validateItem(item: Partial<LearningItem>): string[] {
   }
   if (!Array.isArray(item.categories) || item.categories.length === 0 || item.categories.some((c) => !(CATEGORIES as readonly string[]).includes(c)))
     errors.push('categories must be a non-empty list of CATEGORIES');
+  else if (new Set(item.categories).size !== item.categories.length) errors.push('categories must not repeat');
   if (item.role !== undefined && !(ROLES as readonly string[]).includes(item.role)) errors.push('role must be one of ROLES');
   if (item.level !== undefined && !(LEVELS as readonly string[]).includes(item.level)) errors.push('level must be one of LEVELS');
   if (item.eligibility !== 'public' && item.eligibility !== 'partners') errors.push('eligibility must be public or partners');

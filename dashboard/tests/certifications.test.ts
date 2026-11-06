@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { facetCounts, filterItems, formatPrice, sortItems, validateItem, validateProvider, type CertificationsData } from '../src/lib/certifications.ts';
+import { facetCounts, sortBy, filterItems, formatPrice, sortItems, validateItem, validateProvider, type CertificationsData } from '../src/lib/certifications.ts';
 
 const data: CertificationsData = JSON.parse(
   readFileSync(new URL('../public/certifications.json', import.meta.url), 'utf8'),
@@ -38,7 +38,7 @@ test('formatPrice', () => {
 });
 
 test('sortItems puts Entry before Advanced for the same provider', () => {
-  const levels = sortItems(data.items).map((i) => i.level);
+  const levels = sortItems(data.items.filter((i) => i.provider === 'Anthropic' && i.kind === 'certification')).map((i) => i.level);
   assert.ok(levels.lastIndexOf('Entry') < levels.indexOf('Advanced'));
 });
 
@@ -66,4 +66,19 @@ test('facetCounts ignores the facet being counted', () => {
 test('validateItem rejects topics that are not strings', () => {
   const bad = { ...data.items[0], topics: [{}] as unknown as string[] };
   assert.ok(validateItem(bad).includes('topics must be an array of strings'));
+});
+
+test('facetCounts counts an item once per value, and lists levels in their natural order', () => {
+  const item = { ...data.items[0], categories: ['Security', 'Security'] as never };
+  assert.deepEqual(facetCounts([item], '', {}, 'category'), [{ value: 'Security', count: 1 }]);
+  assert.ok(validateItem(item).includes('categories must not repeat'));
+  const adv = { ...data.items[0], id: 'adv', level: 'Advanced' as const };
+  const levels = facetCounts([adv, adv, { ...data.items[0], level: 'Entry' }], '', {}, 'level').map((l) => l.value);
+  assert.deepEqual(levels, ['Entry', 'Advanced']);
+});
+
+test('price sort keeps currencies apart', () => {
+  const p = (id: string, amount: number, currency: string) => ({ ...data.items[0], id, price: { amount, currency } });
+  const order = sortBy([p('jpy', 1000, 'JPY'), p('usd-hi', 200, 'USD'), p('usd-lo', 100, 'USD')], 'price-asc').map((i) => i.id);
+  assert.deepEqual(order, ['usd-lo', 'usd-hi', 'jpy']);
 });
