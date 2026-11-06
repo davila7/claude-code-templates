@@ -16,8 +16,8 @@
       "title": "Claude Certified Associate – Foundations",
       "provider": "Anthropic",
       "platform": "Skilljar",
-      "category": "Business",
-      "level": "Foundations",
+      "role": "Business",
+      "level": "Entry",
       "audience": "Consultants, sellers and delivery leads who guide customers toward the right Claude use cases and set engagements up for success.",
       "description": "Validates that you can operate Claude with professional discipline, turning everyday business problems into reliable Claude workflows you can stand behind.",
       "url": "https://anthropic-partners.skilljar.com/claude-certified-associate-foundations-certification",
@@ -38,7 +38,10 @@
       ],
       "source": "manual",
       "addedAt": "2026-11-06",
-      "verifiedAt": "2026-11-06"
+      "verifiedAt": "2026-11-06",
+      "categories": [
+        "AI & Agents"
+      ]
     },
     {
       "id": "anthropic-claude-certified-developer-foundations",
@@ -46,8 +49,8 @@
       "title": "Claude Certified Developer – Foundations",
       "provider": "Anthropic",
       "platform": "Skilljar",
-      "category": "Development",
-      "level": "Foundations",
+      "role": "Developer",
+      "level": "Entry",
       "audience": "Engineers who build with the Claude API, Claude Code and Model Context Protocol, from first integration to production agents.",
       "description": "Validates that you can build production-grade applications, agents and workflows on Claude, and make the engineering decisions that keep code reliable when real users depend on it.",
       "url": "https://anthropic-partners.skilljar.com/claude-certified-developer-foundations-certification",
@@ -70,7 +73,10 @@
       ],
       "source": "manual",
       "addedAt": "2026-11-06",
-      "verifiedAt": "2026-11-06"
+      "verifiedAt": "2026-11-06",
+      "categories": [
+        "AI & Agents"
+      ]
     },
     {
       "id": "anthropic-claude-certified-architect-foundations",
@@ -78,8 +84,8 @@
       "title": "Claude Certified Architect – Foundations",
       "provider": "Anthropic",
       "platform": "Skilljar",
-      "category": "Architecture",
-      "level": "Foundations",
+      "role": "Architect",
+      "level": "Entry",
       "audience": "Partners who design Claude solutions end to end: deployment platforms, agentic architectures, evaluation, cost and safety.",
       "description": "Validates that you can make informed decisions about tradeoffs when implementing real-world solutions with Claude, across Claude Code, the Claude Agent SDK, the Claude API and Model Context Protocol.",
       "url": "https://anthropic-partners.skilljar.com/claude-certified-architect-foundations-certification",
@@ -101,7 +107,10 @@
       ],
       "source": "manual",
       "addedAt": "2026-11-06",
-      "verifiedAt": "2026-11-06"
+      "verifiedAt": "2026-11-06",
+      "categories": [
+        "AI & Agents"
+      ]
     },
     {
       "id": "anthropic-claude-certified-architect-professional",
@@ -109,8 +118,8 @@
       "title": "Claude Certified Architect – Professional",
       "provider": "Anthropic",
       "platform": "Skilljar",
-      "category": "Architecture",
-      "level": "Professional",
+      "role": "Architect",
+      "level": "Advanced",
       "audience": "Partners who design Claude solutions end to end: deployment platforms, agentic architectures, evaluation, cost and safety.",
       "description": "Validates that you can design, integrate and govern production-grade Claude systems end to end, and defend those design decisions to the stakeholders who fund and approve them.",
       "url": "https://anthropic-partners.skilljar.com/claude-certified-architect-professional-certification",
@@ -132,7 +141,10 @@
       ],
       "source": "manual",
       "addedAt": "2026-11-06",
-      "verifiedAt": "2026-11-06"
+      "verifiedAt": "2026-11-06",
+      "categories": [
+        "AI & Agents"
+      ]
     }
   ]
 }
