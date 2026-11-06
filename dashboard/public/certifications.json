@@ -1,7 +1,14 @@
 {
   "schemaVersion": 1,
   "lastUpdated": "2026-11-06T00:00:00Z",
-  "sources": ["Anthropic Partner Academy"],
+  "sources": [
+    "Anthropic Partner Academy"
+  ],
+  "providers": {
+    "Anthropic": {
+      "icon": "https://www.anthropic.com/favicon.ico"
+    }
+  },
   "items": [
     {
       "id": "anthropic-claude-certified-associate-foundations",
@@ -9,7 +16,7 @@
       "title": "Claude Certified Associate – Foundations",
       "provider": "Anthropic",
       "platform": "Skilljar",
-      "track": "Associate",
+      "category": "Business",
       "level": "Foundations",
       "audience": "Consultants, sellers and delivery leads who guide customers toward the right Claude use cases and set engagements up for success.",
       "description": "Validates that you can operate Claude with professional discipline, turning everyday business problems into reliable Claude workflows you can stand behind.",
@@ -17,11 +24,18 @@
       "prepUrl": "https://anthropic-partners.skilljar.com/path/claude-certified-associate-foundations",
       "prepCourses": 8,
       "examGuideUrl": "https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542847%2FClaude+Certified+Associate+%E2%80%93+Foundations+Exam+Guide.pdf",
-      "price": { "amount": 99, "currency": "USD" },
+      "price": {
+        "amount": 99,
+        "currency": "USD"
+      },
       "format": "Proctored exam (Pearson VUE)",
       "credential": "Credly badge, valid 12 months",
       "eligibility": "partners",
-      "topics": ["Claude use cases", "Business workflows"],
+      "eligibilityNote": "Claude Partner Network members",
+      "topics": [
+        "Claude use cases",
+        "Business workflows"
+      ],
       "source": "manual",
       "addedAt": "2026-11-06",
       "verifiedAt": "2026-11-06"
@@ -32,7 +46,7 @@
       "title": "Claude Certified Developer – Foundations",
       "provider": "Anthropic",
       "platform": "Skilljar",
-      "track": "Developer",
+      "category": "Development",
       "level": "Foundations",
       "audience": "Engineers who build with the Claude API, Claude Code and Model Context Protocol, from first integration to production agents.",
       "description": "Validates that you can build production-grade applications, agents and workflows on Claude, and make the engineering decisions that keep code reliable when real users depend on it.",
@@ -40,11 +54,20 @@
       "prepUrl": "https://anthropic-partners.skilljar.com/path/claude-certified-developer-foundations",
       "prepCourses": 5,
       "examGuideUrl": "https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542875%2FClaude+Certified+Developer+%E2%80%93+Foundations+Exam+Guide.pdf",
-      "price": { "amount": 125, "currency": "USD" },
+      "price": {
+        "amount": 125,
+        "currency": "USD"
+      },
       "format": "Proctored exam (Pearson VUE)",
       "credential": "Credly badge, valid 12 months",
       "eligibility": "partners",
-      "topics": ["Claude API", "Claude Code", "MCP", "Agents"],
+      "eligibilityNote": "Claude Partner Network members",
+      "topics": [
+        "Claude API",
+        "Claude Code",
+        "MCP",
+        "Agents"
+      ],
       "source": "manual",
       "addedAt": "2026-11-06",
       "verifiedAt": "2026-11-06"
@@ -55,18 +78,27 @@
       "title": "Claude Certified Architect – Foundations",
       "provider": "Anthropic",
       "platform": "Skilljar",
-      "track": "Architect",
+      "category": "Architecture",
       "level": "Foundations",
       "audience": "Partners who design Claude solutions end to end: deployment platforms, agentic architectures, evaluation, cost and safety.",
       "description": "Validates that you can make informed decisions about tradeoffs when implementing real-world solutions with Claude, across Claude Code, the Claude Agent SDK, the Claude API and Model Context Protocol.",
       "url": "https://anthropic-partners.skilljar.com/claude-certified-architect-foundations-certification",
       "prepUrl": "https://anthropic-partners.skilljar.com/page/claude-certified-architect-foundations-prep-courses",
       "examGuideUrl": "https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542750%2FClaude+Certified+Architect+%E2%80%93+Foundations+Exam+Guide.pdf",
-      "price": { "amount": 125, "currency": "USD" },
+      "price": {
+        "amount": 125,
+        "currency": "USD"
+      },
       "format": "Proctored exam (Pearson VUE)",
       "credential": "Credly badge, valid 12 months",
       "eligibility": "partners",
-      "topics": ["Claude Code", "Claude Agent SDK", "Claude API", "MCP"],
+      "eligibilityNote": "Claude Partner Network members",
+      "topics": [
+        "Claude Code",
+        "Claude Agent SDK",
+        "Claude API",
+        "MCP"
+      ],
       "source": "manual",
       "addedAt": "2026-11-06",
       "verifiedAt": "2026-11-06"
@@ -77,7 +109,7 @@
       "title": "Claude Certified Architect – Professional",
       "provider": "Anthropic",
       "platform": "Skilljar",
-      "track": "Architect",
+      "category": "Architecture",
       "level": "Professional",
       "audience": "Partners who design Claude solutions end to end: deployment platforms, agentic architectures, evaluation, cost and safety.",
       "description": "Validates that you can design, integrate and govern production-grade Claude systems end to end, and defend those design decisions to the stakeholders who fund and approve them.",
@@ -85,11 +117,19 @@
       "prepUrl": "https://anthropic-partners.skilljar.com/path/claude-certified-architect-professional",
       "prepCourses": 5,
       "examGuideUrl": "https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542810%2FClaude+Certified+Architect+%E2%80%93+Professional+Exam+Guide.pdf",
-      "price": { "amount": 175, "currency": "USD" },
+      "price": {
+        "amount": 175,
+        "currency": "USD"
+      },
       "format": "Proctored exam (Pearson VUE)",
       "credential": "Credly badge, valid 12 months",
       "eligibility": "partners",
-      "topics": ["Architecture", "Governance", "Production systems"],
+      "eligibilityNote": "Claude Partner Network members",
+      "topics": [
+        "Architecture",
+        "Governance",
+        "Production systems"
+      ],
       "source": "manual",
       "addedAt": "2026-11-06",
       "verifiedAt": "2026-11-06"
