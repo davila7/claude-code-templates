@@ -50,6 +50,7 @@ export const GET: APIRoute = () => {
   urls.push(buildUrl('/plugins', { priority: '0.9', changefreq: 'weekly' }));
   urls.push(buildUrl('/trending', { priority: '0.8', changefreq: 'daily' }));
   urls.push(buildUrl('/jobs', { priority: '0.6', changefreq: 'weekly' }));
+  urls.push(buildUrl('/certifications', { priority: '0.6', changefreq: 'weekly' }));
   urls.push(buildUrl('/about', { priority: '0.5', changefreq: 'monthly' }));
   urls.push(buildUrl('/supporters', { priority: '0.4', changefreq: 'monthly' }));
   urls.push(buildUrl('/privacy', { priority: '0.3', changefreq: 'yearly' }));
