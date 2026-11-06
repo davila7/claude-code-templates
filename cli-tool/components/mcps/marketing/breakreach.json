@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "breakreach": {
+      "description": "Breakreach - schedule and publish social media posts on 19 networks (Instagram, TikTok, X, LinkedIn, YouTube and 14 more), reply to comments and DMs, and read post analytics. Hosted remote server with OAuth sign-in: run /mcp in Claude Code after installing. A Breakreach plan or 7-day trial is needed to publish (https://www.breakreach.com/agents/claude-code).",
+      "type": "http",
+      "url": "https://api.breakreach.com/mcp"
+    }
+  }
+}
