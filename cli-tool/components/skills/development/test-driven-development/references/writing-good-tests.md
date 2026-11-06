@@ -80,10 +80,14 @@ BEFORE writing the test body:
 
 ## Principle 2: Exercise the Real Thing
 
-**The mock earns no assertions.** A mock assertion passes when the mock
-is present and fails when it is absent — it says nothing about the
-component. Assert the real component's behavior; if the mock is what you
-are checking, unmock it or delete the assertion.
+**The mock itself earns no assertions.** Asserting that a mock exists,
+or that it returned its own canned value, passes when the mock is present
+and fails when it is absent — it says nothing about the component. Assert
+the real component's behavior. What your code *sends* to an external
+dependency (the request, the payload, the arguments, the call count and
+order when they matter) is your boundary
+contract and can be asserted on the mock; if the mock's presence is what
+you are checking, unmock it or delete the assertion.
 
 ```typescript
 // ✅ Real behavior

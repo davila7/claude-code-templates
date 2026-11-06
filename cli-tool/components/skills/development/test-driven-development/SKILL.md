@@ -34,8 +34,9 @@ Write the test first. Watch it fail. Write minimal code to pass.
 Thinking "skip TDD just this once"? Stop. That's rationalization.
 
 **No test setup in the project?** Use the smallest runner the stack already
-ships (`node --test`, `pytest`, `go test`, `cargo test`), put the test next
-to the existing code's conventions, and tell the user you added it.
+ships (`node --test`, `python -m unittest`, `go test`, `cargo test`), put the
+test next to the existing code's conventions, and tell the user you added
+it. Installing a runner such as `pytest` is a new dependency: ask first.
 
 ## The Iron Law
 
