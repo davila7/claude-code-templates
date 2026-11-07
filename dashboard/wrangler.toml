@@ -13,6 +13,8 @@ PUBLIC_GITHUB_CLIENT_ID = "Ov23li3KjfA4cuLi5c0k"
 # PUBLIC_ADS_ENABLED = "true"
 # WebMCP catalog tools (src/lib/webmcp.ts); set to "false" to disable:
 PUBLIC_WEBMCP_ENABLED = "true"
+# Google Analytics 4 on every page (DashboardLayout.astro); leave unset to load no analytics:
+PUBLIC_GA_MEASUREMENT_ID = "G-YWW6FV2SGN"
 
 # Secrets are set via Cloudflare Dashboard or `wrangler secret put`:
 # CLERK_SECRET_KEY

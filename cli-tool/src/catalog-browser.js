@@ -308,7 +308,7 @@ async function browseCatalog({ version: cliVersion, targetDir }) {
 
 /** The one-line command that repeats an install, for sharing or scripts. */
 function equivalentCommand(options) {
-  const flags = ['agent', 'command', 'mcp', 'setting', 'hook', 'skill', 'loop', 'mod']
+  const flags = ['agent', 'command', 'mcp', 'setting', 'hook', 'skill', 'loop', 'mod', 'plugin']
     .filter(f => options[f])
     .map(f => `--${f} ${options[f]}`);
   return `npx claude-code-templates@latest ${flags.join(' ')}`;

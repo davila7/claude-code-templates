@@ -1,5 +1,9 @@
 # Claude Code Sandbox Components
 
+> **Removed from the CLI in 1.31.0.** `npx claude-code-templates@latest --sandbox ...` now prints a removal notice.
+> The launchers stay here as reference. The commands below still work with the last version that had them:
+> `npx claude-code-templates@1.30.0 --sandbox ...`.
+
 Execute Claude Code in isolated cloud environments for secure code generation and development.
 
 ## Available Sandbox Providers

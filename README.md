@@ -103,46 +103,41 @@ npx claude-code-templates@latest --loop engineering/docs-sweep-loop --yes  # als
 | **🪝 Hooks** (60+) | Automation triggers | Conventional commits, blocking direct pushes |
 | **🧩 Mods** (45+) | Plugins that change Claude Code's own interface and behavior (Claude Code 2.1.287+) | Secret redaction, protected paths, terminal games |
 | **🔁 Loops** (18) | Autonomous workflows with a goal, an interval and a stop condition | Docs sweep, build-test-fix, adversarial review |
-| **📦 Sandboxes** (11) | Run Claude Code in an isolated environment | E2B, Cloudflare, Docker |
+| **📦 Sandboxes** (11) | Launchers that run Claude Code in an isolated environment, kept in [`cli-tool/components/sandbox/`](cli-tool/components/sandbox/) (the CLI's `--sandbox` was removed in 1.31.0) | E2B, Cloudflare, Docker |
 | **🗂️ Templates** (14) | Complete project configurations | Language and framework setups |
 
 Current counts are in [`dashboard/public/counts.json`](dashboard/public/counts.json).
 
 ## 🛠️ Additional Tools
 
-Beyond the template catalog, Claude Code Templates includes powerful development tools:
+Beyond the template catalog, the CLI includes three local tools. The two dashboards listen on 127.0.0.1 only and answer only to `localhost`, because they serve your conversation history.
 
 ### 📊 Claude Code Analytics
-Monitor your AI-powered development sessions in real-time with live state detection and performance metrics.
+Monitor your Claude Code sessions in real time with live state detection and usage metrics, at http://localhost:3333.
 
 ```bash
 npx claude-code-templates@latest --analytics
 ```
 
-### 💬 Conversation Monitor
-Mobile-optimized interface to view Claude responses in real time, with optional remote access through a Cloudflare Tunnel.
+### 💬 Conversation Browser
+Read and search your Claude Code conversations in a mobile-friendly web UI, at http://localhost:9876.
 
 ```bash
-# Local access
 npx claude-code-templates@latest --chats
-
-# Remote access via Cloudflare Tunnel
-npx claude-code-templates@latest --chats --tunnel
 ```
 
+To open it from another device, forward the port over SSH (`ssh -L 9876:localhost:9876 <host>`); the public `--tunnel` option was removed in 1.31.0.
+
 ### 🔍 Health Check
-Comprehensive diagnostics to ensure your Claude Code installation is optimized.
+Diagnostics for your Claude Code installation and project setup (`--health`, `--check` and `--verify` are aliases).
 
 ```bash
 npx claude-code-templates@latest --health-check
 ```
 
-### 🔌 Plugin Dashboard
-View marketplaces, installed plugins, and manage permissions from a unified interface.
+### Removed in 1.31.0
 
-```bash
-npx claude-code-templates@latest --plugins
-```
+`--plugins`, `--skills-manager`, `--command-stats`, `--hook-stats`, `--mcp-stats`, `--agents`, `--chats-mobile`, `--teams`, `--2025`, `--studio`, `--sandbox`, `--tunnel`, `--create-agent`, `--list-agents`, `--update-agent`, `--remove-agent` and `--clone-session` were removed. Running one prints what replaced it. To see what is installed in each scope (plugins, skills, commands, hooks, MCPs), use the [stack viewer mod](https://www.aitmpl.com/component/mods/ui/stack-viewer): `npx claude-code-templates@latest --mod ui/stack-viewer`, then `/stack` in Claude Code. See the [CHANGELOG](CHANGELOG.md) for details.
 
 ## 📖 Documentation
 

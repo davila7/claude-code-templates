@@ -1,4 +1,5 @@
 ---
+import { SUPPORT_PROGRAMS } from '../lib/supporters';
 import Sidebar from '../components/Sidebar.astro';
 import ClerkIsland from '../components/ClerkIsland.tsx';
 import '../styles/global.css';
@@ -20,6 +21,8 @@ const {
 const ogImageSized = ogImage.startsWith('/og/');
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+// Google Analytics 4 measurement ID (wrangler.toml [vars]); unset = no analytics.
+const gaId = import.meta.env.PUBLIC_GA_MEASUREMENT_ID ?? '';
 const ogImageURL = new URL(ogImage, Astro.site).href;
 
 const schemaData = JSON.stringify({
@@ -49,7 +52,7 @@ const schemaData = JSON.stringify({
       "contactPoint": {
         "@type": "ContactPoint",
         "contactType": "technical support",
-        "email": "dan.avila7@gmail.com",
+        "email": "daniel@aitmpl.com",
         "url": "https://github.com/davila7/claude-code-templates/issues",
         "availableLanguage": ["English", "Spanish"]
       }
@@ -99,6 +102,18 @@ const schemaData = JSON.stringify({
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    {gaId && (
+      <>
+        <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}></script>
+        <script is:inline define:vars={{ gaId }}>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', gaId);
+        </script>
+      </>
+    )}
+
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
   </head>
   <body class="bg-[var(--color-surface-0)] text-[var(--color-text-primary)] antialiased transition-colors duration-200 overflow-x-hidden">
@@ -143,21 +158,16 @@ const schemaData = JSON.stringify({
             <a href="/developers/catalog-api" class="hover:text-[var(--color-text-primary)] transition-colors">API</a>
             <a href="https://github.com/davila7/claude-code-templates" class="hover:text-[var(--color-text-primary)] transition-colors">GitHub</a>
           </nav>
-          <p class="mb-3">Supported by the open source programs of</p>
+          <p class="mb-3">Supported by</p>
           <div class="flex items-center justify-center gap-6 flex-wrap">
-            <a href="https://vercel.com/open-source-program" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 hover:text-[var(--color-text-primary)] transition-colors">
-              <img src="https://cdn.simpleicons.org/vercel/ffffff" alt="Vercel" class="h-5 w-5 oss-icon" />
-              <span>Vercel</span>
-            </a>
-            <a href="https://neon.tech/open-source" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 hover:text-[var(--color-text-primary)] transition-colors">
-              <img src="https://neon.tech/favicon/favicon.svg" alt="Neon" class="h-5 w-5" />
-              <span>Neon</span>
-            </a>
-            <a href="https://claude.com/contact-sales/claude-for-oss" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 hover:text-[var(--color-text-primary)] transition-colors">
-              <img src="https://cdn.simpleicons.org/anthropic/ffffff" alt="Claude" class="h-5 w-5 oss-icon" />
-              <span>Claude</span>
-            </a>
+            {SUPPORT_PROGRAMS.filter((p) => p.footerLabel).map((p) => (
+              <a href={p.url} target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 hover:text-[var(--color-text-primary)] transition-colors">
+                {p.icon && <img src={p.icon} alt="" class:list={['h-5 w-5', p.monochrome && 'oss-icon']} />}
+                <span>{p.footerLabel}</span>
+              </a>
+            ))}
           </div>
+          <p class="mt-3 text-[12px]"><a href="/supporters" class="underline hover:text-[var(--color-text-primary)] transition-colors">All supporters</a></p>
         </footer>
       </main>
     </div>

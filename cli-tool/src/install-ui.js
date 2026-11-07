@@ -31,7 +31,8 @@ const TYPES = {
   hook:    { icon: unicodeOr('↯', '!'), label: 'hook',    color: chalk.hex('#FACC15') },
   skill:   { icon: unicodeOr('✦', '+'), label: 'skill',   color: chalk.hex('#4ADE80') },
   loop:    { icon: unicodeOr('↻', '@'), label: 'loop',    color: chalk.hex('#FB923C') },
-  mod:     { icon: unicodeOr('◈', '&'), label: 'mod',     color: chalk.hex('#FCA5A5') }
+  mod:     { icon: unicodeOr('◈', '&'), label: 'mod',     color: chalk.hex('#FCA5A5') },
+  plugin:  { icon: unicodeOr('▣', '='), label: 'plugin',  color: chalk.hex('#FDE68A') }
 };
 
 const WRITES = {
@@ -42,7 +43,8 @@ const WRITES = {
   hook: 'settings',
   skill: '.claude/skills/',
   loop: '.claude/loops/ + referenced',
-  mod: '.claude/skills/'
+  mod: '.claude/skills/',
+  plugin: 'settings + ~/.claude/plugins/'
 };
 
 const LOCATIONS = [
@@ -300,10 +302,12 @@ function createInstallUI({ version, targetDir }) {
     const failed = results.length - installed;
     const seconds = ((Date.now() - startedAt) / 1000).toFixed(1);
     const failedItems = items.filter((_, i) => !results[i].ok);
+    // Flags an item needs to be retried as it was asked (e.g. a plugin's --scope), once each.
+    const retryFlags = [...new Set(failedItems.map(item => item.retryFlags).filter(Boolean))].map(f => ` ${f}`).join('');
 
     if (!interactive) {
       line(`Installed ${installed} of ${results.length} · ${failed} failed · ${seconds}s`);
-      for (const item of failedItems) line(`Retry: npx claude-code-templates@latest --${item.type} ${item.name}`);
+      for (const item of failedItems) line(`Retry: npx claude-code-templates@latest --${item.type} ${item.name}${item.retryFlags ? ` ${item.retryFlags}` : ''}`);
       return;
     }
 
@@ -315,7 +319,7 @@ function createInstallUI({ version, targetDir }) {
     } else {
       const color = installed > 0 ? chalk.yellow : chalk.red;
       line(`${color(S_BAR_END)}  ${color.bold(`Installed ${installed} of ${results.length}`)} ${chalk.gray('·')} ${chalk.red(`${failed} failed`)} ${chalk.gray(`· ${seconds}s`)}`);
-      const retry = failedItems.map(item => `--${item.type} ${item.name}`).join(' ');
+      const retry = failedItems.map(item => `--${item.type} ${item.name}`).join(' ') + retryFlags;
       line(`   ${chalk.gray(failedItems.length === 1 ? 'Retry the failed one:' : 'Retry the failed ones:')} ${chalk.cyan(`npx claude-code-templates@latest ${retry}`)}`);
     }
     line('');

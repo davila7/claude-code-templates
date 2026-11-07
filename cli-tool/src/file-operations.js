@@ -601,8 +601,8 @@ async function copyTemplateFiles(templateConfig, targetDir, options = {}) {
 
 async function runPostInstallationValidation(targetDir, templateConfig) {
   const inquirer = require('inquirer');
-  const { spawn } = require('child_process');
-  
+  const { spawnClaude } = require('./claude-launcher');
+
   console.log(chalk.cyan('\n🔍 Post-Installation Validation'));
   console.log(chalk.gray('Claude Code can now review the installed configuration to ensure everything is properly set up.'));
   
@@ -626,12 +626,9 @@ async function runPostInstallationValidation(targetDir, templateConfig) {
     // Prepare validation prompt for Claude
     const validationPrompt = createValidationPrompt(templateConfig);
     
-    // Run claude command with validation prompt as a task
-    // Escape quotes in the prompt and create proper shell command
-    const escapedPrompt = validationPrompt.replace(/"/g, '\\"');
-    const claudeCommand = `claude "${escapedPrompt}"`;
-    
-    const claudeProcess = spawn('sh', ['-c', claudeCommand], {
+    // The prompt is one argument, never shell syntax (see claude-launcher.js);
+    // `sh -c` also did not exist on Windows.
+    const claudeProcess = spawnClaude([validationPrompt], {
       cwd: targetDir,
       stdio: 'inherit'
     });

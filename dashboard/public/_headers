@@ -29,6 +29,14 @@
   Access-Control-Allow-Origin: *
   Access-Control-Allow-Methods: GET
 
+# The aitmpl Claude Code marketplace (claude plugin marketplace add
+# https://www.aitmpl.com/marketplace.json), generated from cli-tool/components/plugins/
+/marketplace.json
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: public, max-age=300, stale-while-revalidate=3600
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET
+
 /plugins.json
   Cache-Control: public, max-age=86400, stale-while-revalidate=3600
   Access-Control-Allow-Origin: *
@@ -66,6 +74,12 @@
   Cache-Control: public, max-age=86400, stale-while-revalidate=3600
   Access-Control-Allow-Origin: *
   Access-Control-Allow-Methods: GET
+
+# FLOSS/fund provenance check (funding.json at the repo root). The file has no
+# extension, so without this Pages would serve it as application/octet-stream.
+/.well-known/funding-manifest-urls
+  Content-Type: text/plain; charset=utf-8
+  Cache-Control: public, max-age=3600
 
 # Astro hashed assets — immutable forever (hash changes on content change)
 /_astro/*
