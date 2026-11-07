@@ -1035,3 +1035,8 @@ html.light .stat-today-active {
     transition: none !important;
   }
 }
+
+/* Dark logo glyphs (GitHub) disappear on dark surfaces: invert them unless the theme is light. */
+html:not(.light) .logo-invert-dark {
+  filter: invert(1);
+}

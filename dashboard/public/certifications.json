@@ -15,7 +15,8 @@
       "icon": "https://www.anthropic.com/favicon.ico"
     },
     "GitHub": {
-      "icon": "https://github.com/favicon.ico"
+      "icon": "https://github.com/favicon.ico",
+      "invertOnDark": true
     },
     "Cursor": {
       "icon": "https://cursor.com/favicon.ico"

@@ -23,7 +23,6 @@ import {
 const FACET_ORDER: { key: FacetKey; label: string }[] = [
   { key: 'category', label: 'Category' },
   { key: 'provider', label: 'Provider' },
-  { key: 'kind', label: 'Type' },
   { key: 'level', label: 'Level' },
   { key: 'role', label: 'Role' },
   { key: 'price', label: 'Price' },
@@ -38,6 +37,15 @@ const SORTS: { key: SortKey; label: string }[] = [
   { key: 'price-asc', label: 'Price: low to high' },
   { key: 'price-desc', label: 'Price: high to low' },
 ];
+// Certifications and courses are different things (an exam with a credential
+// vs. learning material), so each gets its own tab instead of a Type filter.
+type Tab = 'certification' | 'course';
+const TABS: { key: Tab; label: string; hash: string }[] = [
+  { key: 'certification', label: 'Certifications', hash: '' },
+  { key: 'course', label: 'Courses', hash: '#courses' },
+];
+const tabFromHash = (): Tab => (typeof window !== 'undefined' && window.location.hash === '#courses' ? 'course' : 'certification');
+
 const SEARCHABLE = 8;
 const MENU_WIDTH = 256;
 const GUTTER = 16;
@@ -52,7 +60,7 @@ function CertificationCard({ item, provider, onOpen }: { item: LearningItem; pro
       className="w-full text-left flex items-start gap-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-card-bg)] p-3 hover:border-[var(--color-accent)] hover:bg-[var(--color-card-hover)] transition-all group"
     >
       <div className="w-8 h-8 rounded shrink-0 bg-[var(--color-surface-2)] border border-[var(--color-border)] flex items-center justify-center overflow-hidden">
-        <CompanyLogo company={item.provider} icon={provider?.icon} imgClassName="w-4 h-4 object-contain" initialClassName="text-[11px] font-bold text-[var(--color-text-tertiary)]" />
+        <CompanyLogo company={item.provider} icon={provider?.icon} invertOnDark={provider?.invertOnDark} imgClassName="w-4 h-4 object-contain" initialClassName="text-[11px] font-bold text-[var(--color-text-tertiary)]" />
       </div>
       <div className="min-w-0 flex-1">
         <h2 className="text-[13px] font-semibold leading-snug text-[var(--color-text-primary)] group-hover:text-[var(--color-accent)] transition-colors line-clamp-2">{item.title}</h2>
@@ -169,7 +177,7 @@ function FacetDropdown({
                     <input type="checkbox" checked={checked} onChange={() => onToggle(o.value)} className="accent-[var(--color-accent)] w-3.5 h-3.5 shrink-0" />
                     {facet === 'provider' && (
                       <span className="w-4 h-4 shrink-0 flex items-center justify-center overflow-hidden">
-                        <CompanyLogo company={o.value} icon={providers[o.value]?.icon} imgClassName="w-3.5 h-3.5 object-contain" initialClassName="text-[9px] font-bold text-[var(--color-text-tertiary)]" />
+                        <CompanyLogo company={o.value} icon={providers[o.value]?.icon} invertOnDark={providers[o.value]?.invertOnDark} imgClassName="w-3.5 h-3.5 object-contain" initialClassName="text-[9px] font-bold text-[var(--color-text-tertiary)]" />
                       </span>
                     )}
                     <span className={`flex-1 truncate ${checked ? 'text-[var(--color-text-primary)] font-medium' : 'text-[var(--color-text-secondary)]'}`}>{label(facet, o.value)}</span>
@@ -193,6 +201,7 @@ export default function CertificationsView() {
   const [selection, setSelection] = useState<Selection>({});
   const [sort, setSort] = useState<SortKey>('recommended');
   const [selected, setSelected] = useState<LearningItem | null>(null);
+  const [tab, setTab] = useState<Tab>('certification');
   const close = useCallback(() => setSelected(null), []);
   const { isSignedIn, isLoaded } = useGlobalAuth();
 
@@ -203,7 +212,23 @@ export default function CertificationsView() {
       .finally(() => setLoading(false));
   }, []);
 
-  const items = data?.items ?? [];
+  useEffect(() => {
+    const sync = () => setTab(tabFromHash());
+    sync();
+    window.addEventListener('hashchange', sync);
+    return () => window.removeEventListener('hashchange', sync);
+  }, []);
+
+  const all = data?.items ?? [];
+  const items = useMemo(() => all.filter((i) => i.kind === tab), [all, tab]);
+  const tabCount = (k: Tab) => all.filter((i) => i.kind === k).length;
+  const switchTab = (next: Tab) => {
+    if (next === tab) return;
+    setTab(next);
+    setSelection({});
+    const { hash } = TABS.find((t) => t.key === next)!;
+    history.replaceState(null, '', `${window.location.pathname}${window.location.search}${hash}`);
+  };
   const facets = useMemo(
     () =>
       FACET_ORDER.filter(({ key }) => new Set(items.flatMap(FACETS[key])).size > 1 || (selection[key]?.length ?? 0) > 0).map((f) => ({
@@ -256,6 +281,29 @@ export default function CertificationsView() {
           Certifications and courses for developers, in one place.
           We list them; registration and payment happen on the provider's site.
         </p>
+      </div>
+
+      <div role="tablist" aria-label="Certifications or courses" className="px-4 sm:px-6 mt-3 flex items-center gap-1 border-b border-[var(--color-border)]">
+        {TABS.map((t) => {
+          const on = t.key === tab;
+          return (
+            <button
+              key={t.key}
+              type="button"
+              role="tab"
+              aria-selected={on}
+              onClick={() => switchTab(t.key)}
+              className={`-mb-px px-3 py-2 text-[13px] font-medium border-b-2 transition-colors ${
+                on
+                  ? 'border-[var(--color-accent)] text-[var(--color-text-primary)]'
+                  : 'border-transparent text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)]'
+              }`}
+            >
+              {t.label}
+              <span className="ml-1.5 text-[11px] tabular-nums text-[var(--color-text-tertiary)]">{tabCount(t.key)}</span>
+            </button>
+          );
+        })}
       </div>
 
       {showGate && (
