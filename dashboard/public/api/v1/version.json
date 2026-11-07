@@ -1,12 +1,12 @@
 {
   "schemaVersion": "1.1.0",
-  "generatedAt": "2026-11-07T20:16:53Z",
-  "sha256": "4949a07a68872d3bd0cb8946dae7e7e32ef07b394d00ac8528c4ddd4162cbc6b",
-  "count": 1955,
+  "generatedAt": "2026-11-07T22:29:17Z",
+  "sha256": "4a9b434a33a0a26f2dafa60ad2c53ceb67136effdecd8caecc271bb248206a55",
+  "count": 1957,
   "counts": {
     "agents": 422,
     "commands": 288,
-    "mcps": 117,
+    "mcps": 119,
     "settings": 79,
     "hooks": 63,
     "skills": 918,
