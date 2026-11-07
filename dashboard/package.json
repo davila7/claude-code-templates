@@ -18,22 +18,22 @@
     "@astrojs/react": "^4.4.2",
     "@clerk/backend": "^3.0.1",
     "@clerk/clerk-react": "^5.60.1",
-    "@neondatabase/serverless": "^1.0.2",
-    "@supabase/supabase-js": "^2.100.1",
-    "@tailwindcss/vite": "^4.2.2",
-    "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.2.3",
+    "@neondatabase/serverless": "^1.2.0",
+    "@supabase/supabase-js": "^2.118.0",
+    "@tailwindcss/vite": "^4.3.4",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "astro": "^5.17.2",
     "gpt-tokenizer": "^3.4.0",
     "marked": "^17.0.4",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
     "tailwindcss": "^4.1.18",
     "xss": "1.0.17"
   },
   "devDependencies": {
     "@resvg/resvg-js": "^2.6.2",
-    "geist": "^1.7.2",
-    "satori": "^0.47.1"
+    "geist": "^1.9.0",
+    "satori": "^0.63.2"
   }
 }
