@@ -89388,8 +89388,8 @@
       "language": "javascript-typescript",
       "description": "Angular-App with Javascript-Typescript",
       "files": [
-        ".claude/commands/services.md",
-        ".claude/commands/components.md"
+        ".claude/commands/components.md",
+        ".claude/commands/services.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=angular-app --yes",
       "downloads": 0
@@ -89404,8 +89404,8 @@
       "files": [
         ".claude/commands/git-workflow.md",
         ".claude/commands/project-setup.md",
-        "README.md",
-        "CLAUDE.md"
+        "CLAUDE.md",
+        "README.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=common --yes",
       "downloads": 0
@@ -89419,9 +89419,9 @@
       "language": "python",
       "description": "Django-App with Python",
       "files": [
-        ".claude/commands/views.md",
         ".claude/commands/admin.md",
         ".claude/commands/django-model.md",
+        ".claude/commands/views.md",
         "CLAUDE.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=django-app --yes",
@@ -89436,11 +89436,11 @@
       "language": "python",
       "description": "Fastapi-App with Python",
       "files": [
+        ".claude/commands/api-endpoints.md",
+        ".claude/commands/auth.md",
         ".claude/commands/database.md",
         ".claude/commands/deployment.md",
-        ".claude/commands/api-endpoints.md",
         ".claude/commands/testing.md",
-        ".claude/commands/auth.md",
         "CLAUDE.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=fastapi-app --yes",
@@ -89455,11 +89455,11 @@
       "language": "python",
       "description": "Flask-App with Python",
       "files": [
-        ".claude/commands/database.md",
-        ".claude/commands/blueprint.md",
-        ".claude/commands/flask-route.md",
-        ".claude/commands/deployment.md",
         ".claude/commands/app-factory.md",
+        ".claude/commands/blueprint.md",
+        ".claude/commands/database.md",
+        ".claude/commands/deployment.md",
+        ".claude/commands/flask-route.md",
         ".claude/commands/testing.md",
         "CLAUDE.md"
       ],
@@ -89487,16 +89487,16 @@
       "category": "languages",
       "description": "Javascript-Typescript project template",
       "files": [
-        ".claude/settings.json",
-        ".claude/commands/npm-scripts.md",
-        ".claude/commands/typescript-migrate.md",
-        ".claude/commands/refactor.md",
-        ".claude/commands/test.md",
-        ".claude/commands/lint.md",
         ".claude/commands/api-endpoint.md",
         ".claude/commands/debug.md",
-        "README.md",
-        "CLAUDE.md"
+        ".claude/commands/lint.md",
+        ".claude/commands/npm-scripts.md",
+        ".claude/commands/refactor.md",
+        ".claude/commands/test.md",
+        ".claude/commands/typescript-migrate.md",
+        ".claude/settings.json",
+        "CLAUDE.md",
+        "README.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=javascript-typescript --yes",
       "downloads": 0
@@ -89510,9 +89510,9 @@
       "language": "javascript-typescript",
       "description": "Node-Api with Javascript-Typescript",
       "files": [
+        ".claude/commands/api-endpoint.md",
         ".claude/commands/database.md",
         ".claude/commands/middleware.md",
-        ".claude/commands/api-endpoint.md",
         ".claude/commands/route.md",
         "CLAUDE.md"
       ],
@@ -89527,9 +89527,9 @@
       "category": "languages",
       "description": "Python project template",
       "files": [
-        ".claude/settings.json",
-        ".claude/commands/test.md",
         ".claude/commands/lint.md",
+        ".claude/commands/test.md",
+        ".claude/settings.json",
         "CLAUDE.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=python --yes",
@@ -89559,9 +89559,9 @@
       "language": "javascript-typescript",
       "description": "React-App with Javascript-Typescript",
       "files": [
+        ".claude/commands/component.md",
         ".claude/commands/hooks.md",
         ".claude/commands/state-management.md",
-        ".claude/commands/component.md",
         "CLAUDE.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=react-app --yes",
@@ -89575,9 +89575,9 @@
       "category": "languages",
       "description": "Ruby project template",
       "files": [
-        ".claude/settings.json",
         ".claude/commands/model.md",
         ".claude/commands/test.md",
+        ".claude/settings.json",
         "CLAUDE.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=ruby --yes",
@@ -89605,14 +89605,109 @@
       "language": "javascript-typescript",
       "description": "Vue-App with Javascript-Typescript",
       "files": [
-        ".claude/commands/composables.md",
-        ".claude/commands/components.md"
+        ".claude/commands/components.md",
+        ".claude/commands/composables.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=vue-app --yes",
       "downloads": 0
     }
   ],
-  "plugins": [],
+  "plugins": [
+    {
+      "name": "champion-kit",
+      "path": "productivity/champion-kit",
+      "category": "productivity",
+      "type": "plugin",
+      "description": "Help Claude Code champions run hackathons and office hours, find patterns worth sharing, help teammates climb the steps of AI adoption, and write a maturity report.",
+      "author": "Anthropic",
+      "repo": "https://github.com/anthropics/claude-plugins-official",
+      "version": "0.5.0",
+      "license": "Apache-2.0",
+      "keywords": [
+        "champions",
+        "adoption",
+        "enablement",
+        "onboarding",
+        "claude-code"
+      ],
+      "installCommand": "npx claude-code-templates@latest --plugin productivity/champion-kit",
+      "downloads": 0,
+      "references": [
+        ".claude-plugin/icon.png",
+        ".claude-plugin/plugin.json",
+        "LICENSE",
+        "agents/repo-scout.md",
+        "skills/climb/SKILL.md",
+        "skills/faq/SKILL.md",
+        "skills/hackathon/SKILL.md",
+        "skills/maturity/SKILL.md",
+        "skills/maturity/report-template.html",
+        "skills/office-hours/SKILL.md",
+        "skills/patterns/SKILL.md",
+        "skills/routines/SKILL.md"
+      ],
+      "contains": {
+        "skills": [
+          "climb",
+          "faq",
+          "hackathon",
+          "maturity",
+          "office-hours",
+          "patterns",
+          "routines"
+        ],
+        "agents": [
+          "repo-scout"
+        ]
+      },
+      "source": {
+        "repo": "anthropics/claude-plugins-official",
+        "path": "plugins/champion-kit",
+        "commit": "0412be76f50ab4f4f8abff3753efa9269fbbca5b",
+        "license": "Apache-2.0",
+        "url": "https://github.com/anthropics/claude-plugins-official/tree/0412be76f50ab4f4f8abff3753efa9269fbbca5b/plugins/champion-kit"
+      },
+      "skillspector": {
+        "score": 31,
+        "severity": "MEDIUM",
+        "recommendation": "CAUTION",
+        "issueCount": 3,
+        "analysis": "complete",
+        "findings": [
+          {
+            "id": "P2",
+            "category": "Prompt Injection",
+            "severity": "HIGH",
+            "title": "Hidden Instructions",
+            "file": "skills/maturity/report-template.html",
+            "line": 8,
+            "count": 1
+          },
+          {
+            "id": "EA1",
+            "category": "Excessive Agency",
+            "severity": "MEDIUM",
+            "title": "Unrestricted Tool Access",
+            "file": "README.md",
+            "line": 5,
+            "count": 1
+          },
+          {
+            "id": "RA2",
+            "category": "Rogue Agent",
+            "severity": "MEDIUM",
+            "title": "Session Persistence",
+            "file": "agents/repo-scout.md",
+            "line": 9,
+            "count": 1
+          }
+        ],
+        "hash": "76a58c767003402b",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-07T01:28:44Z"
+      }
+    }
+  ],
   "componentsMarketplace": {
     "agents": [
       {

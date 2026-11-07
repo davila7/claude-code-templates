@@ -70,7 +70,7 @@ export const GET: APIRoute = () => {
     }
   }
 
-  const COMPONENT_TYPES = ['agents', 'commands', 'skills', 'mcps', 'hooks', 'settings', 'mods'];
+  const COMPONENT_TYPES = ['agents', 'commands', 'skills', 'mcps', 'hooks', 'settings', 'mods', 'plugins'];
   for (const type of COMPONENT_TYPES) {
     const items = components[type];
     if (!Array.isArray(items)) continue;

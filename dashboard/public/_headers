@@ -29,6 +29,14 @@
   Access-Control-Allow-Origin: *
   Access-Control-Allow-Methods: GET
 
+# The aitmpl Claude Code marketplace (claude plugin marketplace add
+# https://www.aitmpl.com/marketplace.json), generated from cli-tool/components/plugins/
+/marketplace.json
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: public, max-age=300, stale-while-revalidate=3600
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET
+
 /plugins.json
   Cache-Control: public, max-age=86400, stale-while-revalidate=3600
   Access-Control-Allow-Origin: *

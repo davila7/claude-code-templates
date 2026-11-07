@@ -307,6 +307,7 @@ export function getInstallCommand(component: Component): string {
     skill: '--skill',
     loop: '--loop',
     mod: '--mod',
+    plugin: '--plugin',
     template: '--template',
   };
   const flag = typeFlag[component.type] ?? '--agent';

@@ -50,7 +50,7 @@ SCRIPT_EXTS = (".py", ".sh", ".js", ".mjs", ".ts", ".ps1")
 
 SKIP_PARTS = {"node_modules", ".git", "__pycache__"}
 
-SCANNED_TYPES = ("agents", "commands", "mcps", "settings", "hooks", "sandbox", "skills", "loops", "mods")
+SCANNED_TYPES = ("agents", "commands", "mcps", "settings", "hooks", "sandbox", "skills", "loops", "mods", "plugins")
 
 
 def skillspector_version() -> str | None:
@@ -69,9 +69,9 @@ def skillspector_version() -> str | None:
 def source_files(component_type: str, component: dict) -> tuple[Path, list[Path]]:
     """Return (base dir, files) that make up a component on disk."""
     base = COMPONENTS_ROOT / component_type
-    if component_type in ("skills", "mods"):
+    if component_type in ("skills", "mods", "plugins"):
         root = base / component["path"]
-        if component_type == "skills" and external_skills.is_external(root):
+        if component_type in ("skills", "plugins") and external_skills.is_external(root):
             # Scanned at its pinned commit, so the hash only moves with the commit.
             root = external_skills.local_dir(root)
         files = sorted(
@@ -113,6 +113,9 @@ def stage(component_type: str, component: dict, root: Path, files: list[Path], t
     """
     if component_type == "skills":
         return root, 0
+    if component_type == "plugins":
+        # A whole catalog plugin: SkillSpector needs a SKILL.md at the root.
+        return external_skills.stage_plugin_for_scan(root, tmp, component["name"]), 0
     target = tmp / component["name"]
     target.mkdir(parents=True)
     if component_type == "mods":
@@ -177,8 +180,9 @@ def scan(component_type: str, component: dict, root: Path, files: list[Path]) ->
     data = json.loads(proc.stdout)
     risk = data.get("risk_assessment") or {}
     # Single-file components were staged as SKILL.md; report the real name.
+    # Skills, mods and plugins are scanned as directories, with their own files.
     staged_main = None
-    if component_type not in ("skills", "mods") and files[0].suffix == ".md":
+    if component_type not in ("skills", "mods", "plugins") and files[0].suffix == ".md":
         staged_main = files[0].name
     issues = sorted(
         data.get("issues") or [],

@@ -1,0 +1,35 @@
+{
+  "name": "aitmpl",
+  "owner": {
+    "name": "aitmpl.com",
+    "url": "https://www.aitmpl.com"
+  },
+  "description": "Claude Code plugins listed on aitmpl.com, each pinned to the commit that was reviewed and scanned.",
+  "plugins": [
+    {
+      "name": "champion-kit",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/anthropics/claude-plugins-official.git",
+        "path": "plugins/champion-kit",
+        "sha": "0412be76f50ab4f4f8abff3753efa9269fbbca5b"
+      },
+      "description": "Help Claude Code champions run hackathons and office hours, find patterns worth sharing, help teammates climb the steps of AI adoption, and write a maturity report.",
+      "author": {
+        "name": "Anthropic",
+        "email": "support@anthropic.com"
+      },
+      "homepage": "https://code.claude.com/docs/en/champion-kit",
+      "keywords": [
+        "champions",
+        "adoption",
+        "enablement",
+        "onboarding",
+        "claude-code"
+      ],
+      "repository": "https://github.com/anthropics/claude-plugins-official",
+      "license": "Apache-2.0",
+      "category": "productivity"
+    }
+  ]
+}

@@ -45,6 +45,7 @@ jobs:
         dashboard/public/components
         dashboard/public/component-content
         dashboard/public/api/v1
+        dashboard/public/marketplace.json
 
     steps:
       - name: Checkout repository

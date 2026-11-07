@@ -6,9 +6,16 @@ import {
   formatDate,
   initials,
   languageShares,
+  pluginContentsSummary,
   topLevelEntries,
   totals,
 } from '../src/lib/component-page.ts';
+
+test('pluginContentsSummary counts each kind in a fixed order, singular for one', () => {
+  assert.equal(pluginContentsSummary({ agents: ['repo-scout'], skills: ['climb', 'faq'] }), '2 skills, 1 agent');
+  assert.equal(pluginContentsSummary({ mcpServers: ['db'], hooks: ['PostToolUse', 'Stop'], skills: [] }), '2 hook events, 1 MCP server');
+  assert.equal(pluginContentsSummary(undefined), '');
+});
 
 const REX = [
   { path: 'SKILL.md', bytes: 8491, lines: 84 },

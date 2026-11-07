@@ -11,8 +11,9 @@ import SkillSpectorReport from '../../../components/SkillSpectorReport.tsx';
 import { TYPE_CONFIG, ICONS } from '../../../lib/icons';
 import { fetchComponents, fetchComponentContentData, getInstallCommand } from '../../../lib/data';
 import type { ComponentPageMeta } from '../../../lib/data';
-import { commitTitle, formatBytes, formatCount, formatDate, initials, languageShares, topLevelEntries, totals } from '../../../lib/component-page';
-import type { Component } from '../../../lib/types';
+import { PLUGIN_KINDS, commitTitle, formatBytes, formatCount, formatDate, initials, languageShares, pluginContentsSummary, topLevelEntries, totals } from '../../../lib/component-page';
+import type { Component, PluginContents } from '../../../lib/types';
+import { AITMPL_MARKETPLACE } from '../../../lib/constants';
 import { jsonForScript } from '../../../lib/sanitize-html';
 
 export const prerender = false;
@@ -145,6 +146,8 @@ if (component) {
     if (!frontmatter[key] && component[key]) frontmatter[key] = component[key]!;
   }
   if (!frontmatter.tags && component.keywords?.length) frontmatter.tags = component.keywords.join(', ');
+  // A plugin's content is its README; the description comes from plugin.json.
+  if (typePlural === 'plugins' && !frontmatter.description && component.description) frontmatter.description = component.description;
 }
 const hasValue = (v?: string) => !!v && v !== '[]' && v !== '""' && v !== "''";
 const chipList = (v: string) => v.replace(/^\[|\]$/g, '').split(/,\s*/).map((x) => x.trim().replace(/^["']|["']$/g, '')).filter(Boolean);
@@ -191,8 +194,11 @@ if (typePlural === 'loops' && frontmatter.components) {
   }
 }
 
-// External skills (source.json): code fetched from the author's repo at a pinned commit.
-const externalSource = typePlural === 'skills' ? component?.source ?? null : null;
+// External skills and catalog plugins (source.json): code in the author's repo at a pinned commit.
+const isPlugin = typePlural === 'plugins';
+const externalSource = typePlural === 'skills' || isPlugin ? component?.source ?? null : null;
+// Mods and plugins show their README.md, skills their SKILL.md.
+const mainFileName = typePlural === 'mods' || isPlugin ? 'README.md' : 'SKILL.md';
 // Skills an external skill calls are installed with it, like a loop's components.
 if (externalSource?.requires?.length) {
   const cfg = TYPE_CONFIG['skills'];
@@ -212,6 +218,25 @@ if (externalSource?.requires?.length) {
 
 // JSON-based types use JsonViewer instead of MarkdownViewer
 const isJsonType = typePlural === 'settings' || typePlural === 'hooks' || typePlural === 'mcps';
+
+// Plugins: what the plugin ships, with the names Claude Code gives them once installed.
+function slugNameFor(c: Component | null) {
+  return c?.name?.replace(/\.(md|json)$/, '') ?? '';
+}
+// How each kind is called once installed; a kind not listed shows its bare name.
+const pluginInvocation: Partial<Record<keyof PluginContents, (name: string) => string>> = {
+  skills: (n) => `/${slugNameFor(component)}:${n}`,
+  commands: (n) => `/${slugNameFor(component)}:${n}`,
+  agents: (n) => `${slugNameFor(component)}:${n}`,
+  mcpServers: (n) => `plugin:${slugNameFor(component)}:${n}`,
+  outputStyles: (n) => `${slugNameFor(component)}:${n}`,
+};
+const pluginKinds = isPlugin
+  ? PLUGIN_KINDS
+    .map((k) => ({ ...k, show: pluginInvocation[k.key] ?? ((n: string) => n), names: component?.contains?.[k.key] ?? [] }))
+    .filter((k) => k.names.length > 0)
+  : [];
+const pluginId = isPlugin ? `${slugNameFor(component)}@${AITMPL_MARKETPLACE.name}` : '';
 
 // Mods: plugin metadata shown in the sidebar (modules hooked, options declared).
 const modModules: string[] = typePlural === 'mods' ? ((component as any)?.modules ?? []) : [];
@@ -259,7 +284,9 @@ const installTarget = typePlural === 'mcps'
   ? 'Merges into .mcp.json'
   : typePlural === 'hooks' || typePlural === 'settings'
     ? 'Merges into the settings file you pick'
-    : targetDir
+    : isPlugin
+      ? `Claude Code installs it to ~/.claude/plugins/cache/${AITMPL_MARKETPLACE.name}/${slugName}/${component?.version || '<version>'}/ and enables ${pluginId} in .claude/settings.json (pass --scope user or local to change that)`
+      : targetDir
       ? (targetDir.endsWith('/') && fileTotals.files > 0 ? `Writes ${formatCount(fileTotals.files, 'file', 'files')} to ${targetDir}` : `Writes ${targetDir}`)
       : '';
 // The command wraps only between its words (each word breaks inside only when it is wider than the box).
@@ -419,6 +446,13 @@ const componentSchema = component
               </div>
               {installTarget && (
                 <p class="mt-2 font-mono text-[12px] text-[var(--color-text-tertiary)] break-words">{installTarget}</p>
+              )}
+              {isPlugin && (
+                <div class="mt-3">
+                  <p class="text-[12px] text-[var(--color-text-tertiary)] mb-1.5">Or inside Claude Code:</p>
+                  <pre class="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-1)] px-3 py-2 font-mono text-[12px] leading-relaxed text-[var(--color-text-primary)] whitespace-pre-wrap [overflow-wrap:anywhere]">{`/plugin marketplace add ${AITMPL_MARKETPLACE.url}\n/plugin install ${pluginId}`}</pre>
+                  <p data-plugin-min-version class="mt-1.5 text-[12px] text-[var(--color-text-tertiary)]">Needs Claude Code {AITMPL_MARKETPLACE.minClaudeCode} or later (<code>claude --version</code>).</p>
+                </div>
               )}
             </section>
 
@@ -606,7 +640,33 @@ const componentSchema = component
 
               {externalSource && (
                 <div class="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-1)] px-4 py-2.5 text-[12px] text-[var(--color-text-secondary)]">
-                  <strong class="text-[var(--color-text-primary)]">External skill.</strong> The files live in <a href={externalSource.url} target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 hover:text-[var(--color-text-primary)]">{externalSource.repo}</a> and the CLI downloads them from commit <code>{externalSource.commit.slice(0, 7)}</code>, the version that was reviewed and scanned here. Newer commits reach this catalog only after a new review. License: {externalSource.license}{component?.author ? `, by ${component.author}` : ''}.
+                  {isPlugin ? (
+                    <Fragment><strong class="text-[var(--color-text-primary)]">Claude Code plugin.</strong> The files live in <a href={externalSource.url} target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 hover:text-[var(--color-text-primary)]">{externalSource.repo}</a>. The <a href={AITMPL_MARKETPLACE.url} target="_blank" rel="noopener" class="underline underline-offset-2 hover:text-[var(--color-text-primary)]">aitmpl marketplace</a> pins it to commit <code>{externalSource.commit.slice(0, 7)}</code>, the version that was reviewed and scanned here, and Claude Code installs exactly that commit. Newer commits reach this catalog only after a new review.</Fragment>
+                  ) : (
+                    <Fragment><strong class="text-[var(--color-text-primary)]">External skill.</strong> The files live in <a href={externalSource.url} target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 hover:text-[var(--color-text-primary)]">{externalSource.repo}</a> and the CLI downloads them from commit <code>{externalSource.commit.slice(0, 7)}</code>, the version that was reviewed and scanned here. Newer commits reach this catalog only after a new review.</Fragment>
+                  )}
+                  {' '}License: {externalSource.license}{component?.author ? `, by ${component.author}` : ''}.
+                </div>
+              )}
+
+              {pluginKinds.length > 0 && (
+                <div class="rounded-lg border border-[var(--color-border)] overflow-hidden">
+                  <div class="px-4 py-2.5 bg-[var(--color-surface-1)] border-b border-[var(--color-border)] text-[13px]">
+                    <span class="font-semibold text-[var(--color-text-primary)]">What it ships</span>
+                    <span class="text-[var(--color-text-secondary)]"> · {pluginContentsSummary(component.contains)}</span>
+                  </div>
+                  <ul>
+                    {pluginKinds.map((k) => (
+                      <li class="border-t first:border-t-0 border-[var(--color-border)] flex gap-2.5 px-4 py-3 md:py-2.5 text-[13.5px]">
+                        <span class="w-24 shrink-0 text-[12px] leading-6 text-[var(--color-text-tertiary)]">{k.label}</span>
+                        <span class="min-w-0 flex flex-wrap gap-1.5">
+                          {k.names.map((n) => (
+                            <code class="px-1.5 py-0.5 rounded bg-[var(--color-surface-1)] border border-[var(--color-border)] font-mono text-[12px] text-[var(--color-text-primary)] [overflow-wrap:anywhere]">{k.show(n)}</code>
+                          ))}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               )}
 
@@ -649,8 +709,15 @@ const componentSchema = component
               <div class="rounded-lg border border-[var(--color-border)] overflow-hidden">
                 <div class="flex items-center gap-2.5 px-4 py-2.5 bg-[var(--color-surface-1)] border-b border-[var(--color-border)] text-[13px]">
                   <svg class="w-4 h-4 text-[var(--color-text-tertiary)]" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5.5 4h8M5.5 8h8M5.5 12h8M2.5 4h.01M2.5 8h.01M2.5 12h.01" /></svg>
-                  <span class="font-semibold text-[var(--color-text-primary)]">{typePlural === 'mods' ? 'README.md' : typePlural === 'skills' ? 'SKILL.md' : component.path.split('/').pop()}</span>
+                  <span class="font-semibold text-[var(--color-text-primary)]">{typePlural === 'mods' || typePlural === 'skills' || isPlugin ? mainFileName : component.path.split('/').pop()}</span>
                 </div>
+                {isPlugin && externalSource?.commit && (
+                  <p data-plugin-readme-note class="px-4 md:px-6 pt-3 text-[13px] md:text-[12.5px] leading-relaxed text-[var(--color-text-tertiary)]">
+                    This is the author's README: its install commands may install another version.{' '}
+                    <code class="font-mono text-[var(--color-text-secondary)]">{pluginId}</code> installs commit{' '}
+                    <code class="font-mono text-[var(--color-text-secondary)]">{externalSource.commit.slice(0, 7)}</code>, the one listed and scanned here.
+                  </p>
+                )}
                 <div class="p-4 md:p-6">
                   {isJsonType ? (
                     <JsonViewer client:load content={component.content || ''} />
@@ -670,8 +737,8 @@ const componentSchema = component
                   skillPath={component.path}
                   references={refs}
                   headings={contentHeadings}
-                  componentType={typePlural === 'mods' ? 'mods' : 'skills'}
-                  mainFile={typePlural === 'mods' ? 'README.md' : 'SKILL.md'}
+                  componentType={typePlural === 'mods' || isPlugin ? typePlural : 'skills'}
+                  mainFile={mainFileName}
                   files={typePlural === 'mods' || externalSource ? modFiles : undefined}
                 />
               </section>

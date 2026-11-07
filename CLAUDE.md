@@ -70,6 +70,7 @@ const API_KEY = process.env.GOOGLE_API_KEY;
 **Mods** (50+) - Claude Mods: plugins whose behaviour lives in a function-hooks module (`register(on, options)` hooking engine events as `($, e, next)` middleware). Anthropic's reference is [anthropics/claude-code/mods](https://github.com/anthropics/claude-code/tree/main/mods) (three built-in mods + `mods/types/claude-code.d.ts`); discussion in [anthropics/claude-code#91870](https://github.com/anthropics/claude-code/issues/91870). Mods are official and on by default in Claude Code >= 2.1.287 ([docs](https://code.claude.com/docs/en/plugins/mods/overview)); 2.1.287+ ignores `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS`, builds 2.1.259–2.1.286 still need it set to `1`; the `$` API may change between releases. Each mod is a complete plugin directory in Anthropic's `mods/` layout: `cli-tool/components/mods/{category}/{name}/` with `.claude-plugin/plugin.json` (name, description, `userConfig` — options are read from user/managed settings `pluginConfigs[name].options`, never project settings), `hooks/hooks.json` (`modules`), any number of hooks-modules under `hooks/` (relative imports allowed), optional `commands/*.md` (slash commands the plugin ships; a `skill.prompt` hook may rewrite their prompt at run time), `types/`, `tests/`, and a `README.md` the site shows. The generator uses README.md as content and ships every text file in the per-component content file (`files`), so the site explorer and the send-to-repo flow have the whole plugin. `--mod` (alias `--function-hook`) downloads the directory recursively (like a skill) and writes it verbatim to `.claude/skills/{name}/`, which Claude Code auto-loads as `{name}@skills-dir` — **only in a trusted project** (see "Debugging a mod that seems silent" below). Third-party mods are vendored as-is with LICENSE + attribution (e.g. `games/cc-arcade`). **Every module must typecheck against `cli-tool/components/mods/types/claude-code.d.ts`** (`cd cli-tool/components/mods && npx -y -p typescript@5 tsc -p tsconfig.json`; CI runs it in `mods-typecheck.yml`). Rules from the engine: import types only from `'claude-code'`, spell `$` as `$.noun.event(...)` at the call site (never pass `$` to a helper), treat `e` as frozen, deny with `{ deny }` without calling `next` (returning `{}` is fail-open). When Anthropic bumps the API, regenerate the d.ts with `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude -p "/plugin-types <dir>"` on a current Claude Code and re-run tsc (the header's first line names the writing version; currently 2.1.316; 2.1.278 added `prompt.attachment` — the per-attachment hook `jev-skill-suggestion` uses to withhold the `skill_listing` system-reminder — and 2.1.283 changed `$.model.complete` from a string and `$.model.fork` from `result | null` to `{ isAnswered, text, usage } | { isAnswered: false, reason }`). Note `/context`'s "Skills" row is estimated from the roster and does not reflect that hook; a mod can ship `commands/*.md` and rewrite their prompt in `skill.prompt` (that is how `/jev-skill-suggestion:setup` hides every skill as `user-invocable-only` while the mod injects the chosen `SKILL.md` itself). Typechecking against the d.ts does not prove an older engine draws a mod: Claude Code 2.1.287 skips the whole `ui.render` of a Button with Text children instead of a `label` string, and the Claude Desktop app may run an older bundled build than your terminal: `ultra-config` drew in a 2.1.301 terminal and stayed empty in Desktop with exactly that skip. Test a pane on the oldest supported engine too: `npm i @anthropic-ai/claude-code@2.1.287` in a scratch folder, then run its `claude plugin test {category}/{name}` from `cli-tool/components/mods`. The early-access banner and Beta badge were removed 2026-10-04 (mods are official). Old URLs (`/function-hooks`, `/component/function-hook/*`) redirect via `dashboard/public/_redirects`.
 **Templates** (14+) - Complete project configurations
 **Skills** (890+) - `SKILL.md` directories under `cli-tool/components/skills/{category}/{name}/` (`--skill`); scanned by SkillSpector (see below)
+**Plugins** (1) - Whole Claude Code plugins (skills, agents, commands, hooks, MCP/LSP servers… in one package) pinned from their authors' repos: `cli-tool/components/plugins/{category}/{name}/source.json` only. Claude Code installs them from our `aitmpl` marketplace (`--plugin`); nothing is copied into `.claude/`. See "Plugins (the aitmpl marketplace)" below
 **Sandbox** (11) - Launchers that run Claude Code in E2B, Cloudflare or Docker sandboxes (`cli-tool/components/sandbox/`). Reference only since CLI 1.31.0: `--sandbox` was removed (it is no longer in the npm package), and the catalog's sandbox entries are its loose files (README, package.json), not installable components
 
 Current per-type counts: `dashboard/public/counts.json`.
@@ -94,6 +95,7 @@ npx claude-code-templates@latest --command setup-testing
 npx claude-code-templates@latest --hook automation/simple-notifications
 npx claude-code-templates@latest --loop engineering/docs-sweep-loop  # also installs the loop's referenced components
 npx claude-code-templates@latest --mod security/secret-redactor          # Claude Mod: plugin at .claude/skills/secret-redactor/
+npx claude-code-templates@latest --plugin productivity/champion-kit      # Claude Code plugin via the aitmpl marketplace; --scope project (default) | user | local
 
 # Batch installation
 npx claude-code-templates@latest --agent security-auditor --command security-audit --setting read-only-mode
@@ -132,7 +134,8 @@ Use the component-reviewer agent to review [component-path]
 
 `scripts/generate_components_json.py` writes `docs/components.json` and the
 split `dashboard/public/` artifacts (`components.json`, `counts.json`,
-`search-index.json`, `components/*.json`, `component-content/**`, `api/v1/**`). These files
+`search-index.json`, `components/*.json`, `component-content/**`, `api/v1/**`,
+`marketplace.json`). These files
 are **generated output, never hand-edited**, and who commits them depends on
 the workflow:
 
@@ -215,6 +218,8 @@ under `path` to keep (must list `SKILL.md`; size limits of 200 files / 5 MB appl
 after filtering) for repos whose skill folder also holds demos or tests. First ones: the 9 `git/` skills from
 `t3dotgg/tstack` (2026-10-26).
 
+- A whole Claude Code plugin is not an external skill: it goes under `plugins/`
+  (next section), and `check` refuses a skill folder whose `path` has no `SKILL.md`.
 - `commit` must be a full 40-hex sha: never a branch or tag, so upstream changes
   reach users only through a PR here that bumps it (the weekly
   `external-skills-outdated.yml` keeps an issue listing newer upstream commits).
@@ -232,6 +237,69 @@ after filtering) for repos whose skill folder also holds demos or tests. First o
   fetches the commit with git into `.cache/external-skills/` (gitignored). The
   generator puts the files in the component's content file (`files`) so the
   site can show them, and `source` on the catalog entry (Catalog API v1.1.0).
+
+#### Plugins (the aitmpl marketplace)
+
+A plugin ships several component kinds at once, so it is never flattened into
+`.claude/skills/` or split by type. aitmpl publishes a Claude Code marketplace
+named `aitmpl` and Claude Code installs plugins from it with its own commands,
+into its own folders (decided 2026-11-07, PR #1429).
+
+- Catalog folder: `cli-tool/components/plugins/{category}/{name}/source.json`,
+  the external-skill manifest without `include`/`requires` (Claude Code installs
+  the whole plugin root, and a plugin declares its own dependencies). `path` is
+  the plugin root (`.claude-plugin/plugin.json`); its `name` must equal the
+  folder name and be unique across `plugins/`; symlinks and submodules are
+  refused. Add one with `python scripts/external_skills.py add OWNER/REPO PATH
+  CATEGORY --plugin`. Upstream changes reach users only through a PR that bumps
+  `commit` (`external-skills-outdated.yml` lists plugins too).
+- `generate_components_json.py` writes `dashboard/public/marketplace.json`
+  (served at https://www.aitmpl.com/marketplace.json; `external_skills.py
+  marketplace` prints it): one entry per plugin with a `git-subdir` source (`url`
+  when the plugin is the repo root, `path` empty) using the full
+  `https://github.com/{repo}.git` URL (the `owner/repo` shorthand can make
+  Claude Code clone over SSH) and `sha` = the pinned commit, plus the
+  plugin.json display fields. It also records what each plugin ships under
+  `contains` (skills, agents, commands, hooks, mcpServers, lspServers, …),
+  resolved the way Claude Code does: manifest `commands`/`agents`/`outputStyles`
+  replace the default folder, `skills` adds to it. Emit no other source type: a
+  Claude Code that does not know an entry's source type rejects the whole
+  marketplace (2.1.68, before `git-subdir`: "plugins.0.source: Invalid input").
+  `url` is older: 2.1.68 installs a `url` entry, and a marketplace mixing both,
+  pinned by `sha`, installs on 2.1.69, 2.1.288 and 2.1.319 (tested 2026-11-07).
+- `--plugin [category/]name [--scope project|user|local]`
+  (`cli-tool/src/plugin-install.js`, CLI after 1.32.1) checks the entry in the
+  live marketplace.json, then runs `claude --version` and refuses a Claude Code
+  older than 2.1.288 (`MIN_CLAUDE_VERSION`, also `AITMPL_MARKETPLACE.minClaudeCode`
+  on the site), before writing anything. Tested 2026-11-07 on old releases:
+  `plugin install --json` came in 2.1.268, `plugin marketplace add|update --json`
+  in 2.1.287 (older ones fail with "unknown option '--json'"), and 2.1.288 fixed
+  `git-subdir` installs that failed or cached an incomplete plugin on git < 2.39.
+  It then spawns `claude plugin marketplace add <url> --scope S --json` and
+  `claude plugin install name@aitmpl --scope S --json` (no shell; every argument
+  must be a plain token; a `not_found` triggers one `claude plugin marketplace
+  update aitmpl` and a retry). Files land in
+  `~/.claude/plugins/cache/aitmpl/{name}/{version}/` (recorded in
+  `~/.claude/plugins/installed_plugins.json`); the scope only picks the settings
+  file that enables it: `.claude/settings.json` (project, default),
+  `.claude/settings.local.json` (local) or `~/.claude/settings.json` (user).
+  Without `claude` on PATH the CLI writes `extraKnownMarketplaces.aitmpl` and
+  `enabledPlugins["name@aitmpl"]` to that file and Claude Code installs it at
+  the next start (project scope only after the trust prompt). Downloads count as
+  type `plugin` + `{category}/{name}`. `CCT_MARKETPLACE_URL` (https,
+  `…/marketplace.json` only) points the CLI at a branch's raw file for testing.
+- Release order: the dashboard deploy (marketplace.json, and the tracking
+  endpoint accepting `plugin`) must be live before the npm release with `--plugin`.
+- Checks: `external_skills.py check` (license, name); `validate_components.py`
+  runs `claude plugin validate` on each plugin and on the generated marketplace
+  (plugin.json and marketplace.json results come under `manifest` in its
+  `--json`, not `contents`); SkillSpector scans the plugin root (with a stub
+  SKILL.md only when the root has none). Catalog API v1 does not list plugins yet.
+- Site: `/component/plugins/{category}/{name}` (README, what it ships, the CLI
+  command and the `/plugin marketplace add` + `/plugin install` pair for inside
+  Claude Code) and the "aitmpl marketplace" section on `/plugins`. The sidebar's
+  Plugins count stays the number of collections in `plugins.json`. First plugin:
+  `productivity/champion-kit` (anthropics/claude-plugins-official, 2026-11-07).
 
 #### Skill Security Scanning (SkillSpector)
 
@@ -601,6 +669,7 @@ npx astro dev --port 4321   # Dashboard + APIs at http://localhost:4321
 - `dashboard/public/search-index.json` — Flat array for `SearchModal.tsx`
 - `dashboard/public/component-content/{type}/{slug}.json` — Full per-component content (incl. markdown body), fetched on demand when a component's detail view or PR flow needs it. Also carries `meta` for the GitHub-style component page: `files` (path, bytes, lines), `languages` (bytes), and `lastCommit` / `addedAt` read from one `git log` pass, which is why both catalog workflows check out full history (`fetch-depth: 0`, `filter: blob:none`); in a shallow clone the generator keeps each file's previous git fields
 - `dashboard/public/trending-data.json` — Trending/download stats
+- `dashboard/public/marketplace.json` — The `aitmpl` Claude Code marketplace built from `cli-tool/components/plugins/` (see "Plugins (the aitmpl marketplace)"); installed copies of Claude Code re-read it on `claude plugin marketplace update`, so treat its entry names as a public contract
 - `dashboard/public/api/v1/` — **Catalog API v1, the public contract** (see below)
 
 All of the above are served as static Cloudflare Pages assets. The catalog

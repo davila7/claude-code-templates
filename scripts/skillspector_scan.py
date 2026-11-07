@@ -46,6 +46,8 @@ import external_skills
 
 # Repo-relative root that holds every skill component.
 SKILLS_ROOT = Path("cli-tool/components/skills")
+# Catalog plugins (plugins/{category}/{name}/source.json) are scanned like skills.
+PLUGINS_ROOT = Path("cli-tool/components/plugins")
 
 # Accepted manifest filenames (case variants seen in the catalog). source.json
 # marks an external skill: its code is fetched from the pinned commit to scan.
@@ -253,6 +255,26 @@ def scan_skill(directory: Path) -> dict:
             result["status"] = "error"
             result["error"] = f"external skill: {e}"[:500]
             return result
+    staging = None
+    if external_skills.is_plugin(target):
+        # A catalog plugin: SkillSpector needs a SKILL.md at the root.
+        staging = tempfile.TemporaryDirectory(prefix="cct-skillspector-")
+        try:
+            target = external_skills.stage_plugin_for_scan(target, Path(staging.name), directory.name)
+        except (external_skills.ManifestError, OSError) as e:
+            # One broken plugin is reported as its own error, never aborts the batch.
+            staging.cleanup()
+            result["status"] = "error"
+            result["error"] = f"plugin: {e}"[:500]
+            return result
+    try:
+        return _run_skillspector(directory, target, result)
+    finally:
+        if staging:
+            staging.cleanup()
+
+
+def _run_skillspector(directory: Path, target: Path, result: dict) -> dict:
     try:
         proc = subprocess.run(
             [
@@ -537,9 +559,9 @@ def main() -> int:
     args = parser.parse_args()
 
     if args.changed:
-        skills = discover_changed_skills(args.base_ref)
+        skills = discover_changed_skills(args.base_ref) + discover_changed_skills(args.base_ref, PLUGINS_ROOT)
     else:
-        skills = discover_all_skills()
+        skills = discover_all_skills() + discover_all_skills(PLUGINS_ROOT)
 
     print(f"Discovered {len(skills)} skill director{'y' if len(skills) == 1 else 'ies'}.")
 
