@@ -1596,6 +1596,12 @@ async function installIndividualPlugin(pluginRef, targetDir, options = {}) {
     trackingService.trackInstallationOutcome('plugin', componentName, 'failure', { errorType, errorMessage, durationMs: Date.now() - startTime, batchId: options.batchId });
     return false;
   };
+  // A batch install captures a step's output and shows only its result row, so
+  // warnings also go to options.pluginNotes, printed after the summary.
+  const warnLater = message => {
+    console.log(chalk.yellow(`⚠️  ${message}`));
+    options.pluginNotes?.push(message);
+  };
 
   const ref = plugins.parsePluginRef(pluginRef);
   if (!ref) {
@@ -1651,11 +1657,16 @@ async function installIndividualPlugin(pluginRef, targetDir, options = {}) {
     if (installPath) options.onWrite?.(installPath);
     console.log(chalk.green(`✅ ${pluginId} installed by Claude Code (${scope} scope)${installPath ? `: ${installPath}` : ''}`));
   } else {
-    console.log(chalk.yellow(`⚠️  The claude command was not found: ${pluginId} is enabled in ${path.relative(targetDir, outcome.file) || outcome.file}, and Claude Code downloads it the next time it starts.`));
+    const where = scope === 'user' ? '' : ' in this folder, once you trust it';
+    const home = require('os').homedir();
+    const inProject = path.relative(targetDir, outcome.file);
+    const shown = !inProject.startsWith('..') && !path.isAbsolute(inProject) ? inProject
+      : outcome.file.startsWith(home + path.sep) ? `~${outcome.file.slice(home.length)}` : outcome.file;
+    warnLater(`The claude command was not found, so ${pluginId} is only enabled in ${shown}: Claude Code downloads it the next time it starts${where}.`);
   }
   const others = await plugins.sameNameElsewhere(ref.name, scope, targetDir);
   if (others.length > 0) {
-    console.log(chalk.yellow(`⚠️  ${others.join(', ')} is enabled too. Claude Code loads both, and only one copy's hooks run: disable one with "claude plugin disable <id>".`));
+    warnLater(`${others.join(', ')} is enabled too. Claude Code loads both, and only one copy's hooks run: disable one with "claude plugin disable <id>".`);
   }
   if (!options.silent) {
     console.log(chalk.gray(`   Manage it in Claude Code with /plugin; update with: claude plugin update ${pluginId}`));
@@ -1966,7 +1977,8 @@ async function installMultipleComponents(options, targetDir) {
       ...components.skills.map(name => ({ type: 'skill', name })),
       ...components.loops.map(name => ({ type: 'loop', name })),
       ...components.mods.map(name => ({ type: 'mod', name })),
-      ...components.plugins.map(name => ({ type: 'plugin', name }))
+      // A retry keeps a non-default --scope, or it would enable the plugin somewhere else.
+      ...components.plugins.map(name => ({ type: 'plugin', name, retryFlags: require('./plugin-install').cliScopeFlag(options.scope) }))
     ];
 
     if (!options.skipHeader) ui.header();
@@ -1995,6 +2007,7 @@ async function installMultipleComponents(options, targetDir) {
 
     // Skills listed here are not installed again as another skill's dependency.
     const installingSkills = new Set(components.skills);
+    const pluginNotes = [];
     const results = [];
     for (const item of items) {
       const result = await ui.runStep(item, onWrite => installers[item.type](item.name, targetDir, {
@@ -2003,6 +2016,7 @@ async function installMultipleComponents(options, targetDir) {
         batchId,
         onWrite,
         installingSkills,
+        pluginNotes,
         ...(usesLocations.has(item.type) ? { sharedInstallLocations } : {})
       }));
       results.push(result);
@@ -2047,6 +2061,7 @@ async function installMultipleComponents(options, targetDir) {
     if (items.some((item, i) => item.type === 'plugin' && results[i].ok)) {
       ui.note('Plugins are managed by Claude Code: /plugin lists them, "claude plugin update <name>@aitmpl" updates one.');
     }
+    for (const message of pluginNotes) ui.note(`Note: ${message}`);
 
     // Note: Individual components are already tracked separately in their installation functions
     

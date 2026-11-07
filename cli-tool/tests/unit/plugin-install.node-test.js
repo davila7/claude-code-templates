@@ -68,6 +68,15 @@ test('scopes: project by default, only the three Claude Code accepts', () => {
   assert.equal(normalizeScope('project;x'), null);
 });
 
+test('a retry repeats a non-default scope, and only a valid one', () => {
+  const { cliScopeFlag } = require('../../src/plugin-install');
+  assert.equal(cliScopeFlag(undefined), '');
+  assert.equal(cliScopeFlag('project'), '');
+  assert.equal(cliScopeFlag('User'), '--scope user');
+  assert.equal(cliScopeFlag('local'), '--scope local');
+  assert.equal(cliScopeFlag('managed; rm -rf ~'), '');
+});
+
 test('fetchMarketplace reads the published file and rejects anything else', async () => {
   const seen = [];
   const data = await fetchMarketplace(async url => { seen.push(url); return jsonResponse(MARKETPLACE); });

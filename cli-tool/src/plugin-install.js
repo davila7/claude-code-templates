@@ -68,6 +68,12 @@ function normalizeScope(scope) {
   return SCOPES.includes(value) ? value : null;
 }
 
+/** The --scope flag this CLI needs to repeat an install ('' for the default or an invalid scope). */
+function cliScopeFlag(scope) {
+  const value = normalizeScope(scope);
+  return value && value !== DEFAULT_SCOPE ? `--scope ${value}` : '';
+}
+
 /** Fetch and sanity-check the aitmpl marketplace. */
 async function fetchMarketplace(fetchImpl = fetch, env = process.env) {
   const response = await fetchImpl(marketplaceUrl(env), { headers: { 'User-Agent': 'claude-code-templates' } });
@@ -275,6 +281,7 @@ module.exports = {
   marketplaceUrl,
   parsePluginRef,
   normalizeScope,
+  cliScopeFlag,
   fetchMarketplace,
   findEntry,
   settingsFile,
