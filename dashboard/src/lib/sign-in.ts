@@ -16,7 +16,7 @@ const APP_MARKERS: Array<[RegExp, string]> = [
   [/\bInstagram\b/, 'Instagram'],
   [/\bThreads\b/, 'Threads'],
   [/\bLinkedInApp\b/, 'LinkedIn'],
-  [/\bmusical_ly\b|\bBytedanceWebview\b|\bTikTok\b/i, 'TikTok'],
+  [/\bmusical_ly|\bBytedanceWebview\b|\bTikTok\b/i, 'TikTok'],
   [/\bSnapchat\b/, 'Snapchat'],
   [/\bPinterest\b/, 'Pinterest'],
   [/\bLine\//, 'LINE'],
@@ -60,8 +60,12 @@ export function externalBrowserUrl(href: string, platform: InAppBrowser['platfor
   return null;
 }
 
-function clerkOpenSignIn() {
-  (window as any).Clerk?.openSignIn?.();
+function clerkOpenSignIn(emailOnly = false) {
+  // In an in-app browser the GitHub/Google buttons would fail, so hide them.
+  const props = emailOnly
+    ? { appearance: { elements: { socialButtonsRoot: { display: 'none' }, dividerRow: { display: 'none' } } } }
+    : undefined;
+  (window as any).Clerk?.openSignIn?.(props);
 }
 
 const DIALOG_ID = 'inapp-signin-dialog';
@@ -145,10 +149,10 @@ function showInAppDialog(info: InAppBrowser) {
 
   const email = document.createElement('button');
   email.type = 'button';
-  email.textContent = 'Sign in with email here';
+  email.textContent = 'Use email and password here';
   email.style.cssText =
     btnBase + 'background:transparent;border:0;color:var(--color-text-secondary,#a3a197);margin:0;';
-  email.addEventListener('click', () => { close(false); clerkOpenSignIn(); });
+  email.addEventListener('click', () => { close(false); clerkOpenSignIn(true); });
   actions.append(email);
 
   card.append(title, body, actions);

@@ -23,6 +23,7 @@ test('detects social in-app browsers', () => {
   assert.equal(detectInAppBrowser(UA.instagram)?.app, 'Instagram');
   assert.equal(detectInAppBrowser(UA.facebook)?.app, 'Facebook');
   assert.equal(detectInAppBrowser(UA.linkedin)?.app, 'LinkedIn');
+  assert.equal(detectInAppBrowser('Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 musical_ly_35.1.0 JsSdk/2.0')?.app, 'TikTok');
 });
 
 test('detects unnamed WebViews', () => {
