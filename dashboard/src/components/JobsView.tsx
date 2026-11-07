@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import CompanyLogo from './CompanyLogo';
+import { openSignIn } from '../lib/sign-in';
 
 interface Job {
   id: string;
@@ -177,7 +178,7 @@ export default function JobsView() {
     }
     if (!isSignedIn) {
       e.preventDefault();
-      (window as any).Clerk?.openSignIn?.();
+      openSignIn();
     }
     // If signed in, let the <a> navigate normally
   }
@@ -246,7 +247,7 @@ export default function JobsView() {
             </p>
           </div>
           <button
-            onClick={() => (window as any).Clerk?.openSignIn?.()}
+            onClick={() => openSignIn()}
             className="px-3 py-1.5 bg-[var(--color-surface-3)] hover:bg-[var(--color-surface-4)] text-[12px] font-medium text-[var(--color-text-primary)] rounded-md transition-colors"
           >
             Sign In
