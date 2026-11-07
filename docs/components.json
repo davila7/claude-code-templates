@@ -27820,6 +27820,38 @@
       }
     },
     {
+      "name": "bulkpublish",
+      "path": "marketing/bulkpublish.json",
+      "category": "marketing",
+      "type": "mcp",
+      "description": "Hosted MCP server for scheduling and publishing social media posts to 15 platforms (X, LinkedIn, Instagram, TikTok, and more). Sign in with your BulkPublish account through the MCP client's OAuth flow. Free tier available (3 channels); paid plans add more channels and posts. Docs: https://www.bulkpublish.com/integrations/mcp-server/",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "hash": "0ceff59f87bcd01c",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-07T20:16:38Z"
+      }
+    },
+    {
       "name": "curviate",
       "path": "marketing/curviate.json",
       "category": "marketing",
@@ -27958,6 +27990,38 @@
       }
     },
     {
+      "name": "google-search-console-crakseo",
+      "path": "marketing/google-search-console-crakseo.json",
+      "category": "marketing",
+      "type": "mcp",
+      "description": "Free Google Search Console MCP with Bing Webmaster Tools by CrakSEO. Ask Claude for your own sites' search queries, clicks, impressions, CTR and average position, inspect URLs in Google, list and submit sitemaps, and read Bing traffic and crawl issues. Every tool is free; sign in with OAuth, then connect your Google and Bing accounts.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "hash": "bbe74c84accb1007",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-07T20:16:38Z"
+      }
+    },
+    {
       "name": "heyreagent",
       "path": "marketing/heyreagent.json",
       "category": "marketing",
@@ -28093,6 +28157,38 @@
         "hash": "bcc00700e964388c",
         "version": "2.12.0",
         "scannedAt": "2026-11-03T18:06:46Z"
+      }
+    },
+    {
+      "name": "seo-mcp-crakseo",
+      "path": "marketing/seo-mcp-crakseo.json",
+      "category": "marketing",
+      "type": "mcp",
+      "description": "SEO MCP by CrakSEO: keyword research with search volume, keyword difficulty and CPC, live Google and Bing SERPs with AI Overview sources, Google rank tracking and competitor keyword gaps, backlinks and referring domains, technical SEO audits with Core Web Vitals, Google Maps rankings and brand mentions in ChatGPT and Perplexity. OAuth sign-in; pay per call from prepaid credits, with the price shown before each call and no subscription.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "hash": "0563a2148aac83f9",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-07T20:16:38Z"
       }
     },
     {
@@ -66716,6 +66812,78 @@
       }
     },
     {
+      "name": "forget",
+      "path": "productivity/forget",
+      "category": "productivity",
+      "type": "skill",
+      "description": "Delete selected durable memories from agentmemory after showing them and getting explicit confirmation. Use when the user says \"forget this\", \"delete memory\", \"remove that note\", or wants to scrub specific data for privacy.",
+      "author": "Rohit Ghumare",
+      "repo": "https://github.com/rohitg00/agentmemory",
+      "version": "",
+      "license": "Apache-2.0",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "EXAMPLES.md",
+        "TROUBLESHOOTING.md"
+      ],
+      "source": {
+        "repo": "rohitg00/agentmemory",
+        "path": "plugin/skills/forget",
+        "commit": "0da38f1d5067a479a6e5c4653de342ba43ca22b2",
+        "license": "Apache-2.0",
+        "url": "https://github.com/rohitg00/agentmemory/tree/0da38f1d5067a479a6e5c4653de342ba43ca22b2/plugin/skills/forget",
+        "requires": []
+      },
+      "skillspector": {
+        "score": 43,
+        "severity": "MEDIUM",
+        "recommendation": "CAUTION",
+        "issueCount": 3,
+        "analysis": "complete",
+        "findings": [
+          {
+            "id": "MP3",
+            "category": "Memory Poisoning",
+            "severity": "HIGH",
+            "title": "Memory Manipulation",
+            "file": "SKILL.md",
+            "line": 3,
+            "count": 1
+          },
+          {
+            "id": "P2",
+            "category": "Prompt Injection",
+            "severity": "HIGH",
+            "title": "Hidden Instructions",
+            "file": "TROUBLESHOOTING.md",
+            "line": 1,
+            "count": 1
+          },
+          {
+            "id": "RA2",
+            "category": "Rogue Agent",
+            "severity": "MEDIUM",
+            "title": "Session Persistence",
+            "file": "TROUBLESHOOTING.md",
+            "line": 35,
+            "count": 1
+          }
+        ],
+        "hash": "a992f9a6e27df98c",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-07T20:16:38Z"
+      }
+    },
+    {
       "name": "game-changing-features",
       "path": "productivity/game-changing-features",
       "category": "productivity",
@@ -66748,6 +66916,69 @@
         "hash": "684dd3bf87bcd59d",
         "version": "2.12.0",
         "scannedAt": "2026-10-17T20:36:45Z"
+      }
+    },
+    {
+      "name": "handoff",
+      "path": "productivity/handoff",
+      "category": "productivity",
+      "type": "skill",
+      "description": "Resume the most recent agent session for the current working directory, leading with any unanswered question. Use when the user says \"where were we\", \"resume\", \"handoff\", \"pick up where I left off\", or starts a session with no fresh context.",
+      "author": "Rohit Ghumare",
+      "repo": "https://github.com/rohitg00/agentmemory",
+      "version": "",
+      "license": "Apache-2.0",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "EXAMPLES.md",
+        "TROUBLESHOOTING.md"
+      ],
+      "source": {
+        "repo": "rohitg00/agentmemory",
+        "path": "plugin/skills/handoff",
+        "commit": "0da38f1d5067a479a6e5c4653de342ba43ca22b2",
+        "license": "Apache-2.0",
+        "url": "https://github.com/rohitg00/agentmemory/tree/0da38f1d5067a479a6e5c4653de342ba43ca22b2/plugin/skills/handoff",
+        "requires": []
+      },
+      "skillspector": {
+        "score": 23,
+        "severity": "MEDIUM",
+        "recommendation": "CAUTION",
+        "issueCount": 2,
+        "analysis": "complete",
+        "findings": [
+          {
+            "id": "P2",
+            "category": "Prompt Injection",
+            "severity": "HIGH",
+            "title": "Hidden Instructions",
+            "file": "TROUBLESHOOTING.md",
+            "line": 1,
+            "count": 1
+          },
+          {
+            "id": "RA2",
+            "category": "Rogue Agent",
+            "severity": "MEDIUM",
+            "title": "Session Persistence",
+            "file": "TROUBLESHOOTING.md",
+            "line": 35,
+            "count": 1
+          }
+        ],
+        "hash": "9bf511c7f066a5e4",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-07T20:16:38Z"
       }
     },
     {
@@ -66878,6 +67109,68 @@
         "hash": "2fdb818a7f1e5f7c",
         "version": "2.12.0",
         "scannedAt": "2026-10-17T20:36:45Z"
+      }
+    },
+    {
+      "name": "lesson",
+      "path": "productivity/lesson",
+      "category": "productivity",
+      "type": "skill",
+      "description": "Save a correction or hard-won rule as a confidence-weighted lesson that resurfaces before similar work. Use when the user corrects your approach, says \"learn this\", \"always\" or \"never do X\", or you notice yourself repeating a past mistake.",
+      "author": "Rohit Ghumare",
+      "repo": "https://github.com/rohitg00/agentmemory",
+      "version": "",
+      "license": "Apache-2.0",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "TROUBLESHOOTING.md"
+      ],
+      "source": {
+        "repo": "rohitg00/agentmemory",
+        "path": "plugin/skills/lesson",
+        "commit": "0da38f1d5067a479a6e5c4653de342ba43ca22b2",
+        "license": "Apache-2.0",
+        "url": "https://github.com/rohitg00/agentmemory/tree/0da38f1d5067a479a6e5c4653de342ba43ca22b2/plugin/skills/lesson",
+        "requires": []
+      },
+      "skillspector": {
+        "score": 23,
+        "severity": "MEDIUM",
+        "recommendation": "CAUTION",
+        "issueCount": 2,
+        "analysis": "complete",
+        "findings": [
+          {
+            "id": "P2",
+            "category": "Prompt Injection",
+            "severity": "HIGH",
+            "title": "Hidden Instructions",
+            "file": "TROUBLESHOOTING.md",
+            "line": 1,
+            "count": 1
+          },
+          {
+            "id": "RA2",
+            "category": "Rogue Agent",
+            "severity": "MEDIUM",
+            "title": "Session Persistence",
+            "file": "TROUBLESHOOTING.md",
+            "line": 35,
+            "count": 1
+          }
+        ],
+        "hash": "e90c8d4b820b27bc",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-07T20:16:38Z"
       }
     },
     {
@@ -67021,6 +67314,68 @@
         "hash": "2dfb07da2d99ba53",
         "version": "2.12.0",
         "scannedAt": "2026-10-17T20:36:45Z"
+      }
+    },
+    {
+      "name": "memory-discipline",
+      "path": "productivity/memory-discipline",
+      "category": "productivity",
+      "type": "skill",
+      "description": "The session loop that makes agentmemory pay off, recall before starting work, save at decision points, learn from corrections. Use when starting a nontrivial task, after settling a decision or debugging a gotcha, or whenever deciding if something belongs in memory.",
+      "author": "Rohit Ghumare",
+      "repo": "https://github.com/rohitg00/agentmemory",
+      "version": "",
+      "license": "Apache-2.0",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "TROUBLESHOOTING.md"
+      ],
+      "source": {
+        "repo": "rohitg00/agentmemory",
+        "path": "plugin/skills/memory-discipline",
+        "commit": "0da38f1d5067a479a6e5c4653de342ba43ca22b2",
+        "license": "Apache-2.0",
+        "url": "https://github.com/rohitg00/agentmemory/tree/0da38f1d5067a479a6e5c4653de342ba43ca22b2/plugin/skills/memory-discipline",
+        "requires": []
+      },
+      "skillspector": {
+        "score": 23,
+        "severity": "MEDIUM",
+        "recommendation": "CAUTION",
+        "issueCount": 2,
+        "analysis": "partial",
+        "findings": [
+          {
+            "id": "P2",
+            "category": "Prompt Injection",
+            "severity": "HIGH",
+            "title": "Hidden Instructions",
+            "file": "TROUBLESHOOTING.md",
+            "line": 1,
+            "count": 1
+          },
+          {
+            "id": "RA2",
+            "category": "Rogue Agent",
+            "severity": "MEDIUM",
+            "title": "Session Persistence",
+            "file": "TROUBLESHOOTING.md",
+            "line": 35,
+            "count": 1
+          }
+        ],
+        "hash": "c6cad73148c5ac0b",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-07T20:16:38Z"
       }
     },
     {
@@ -67670,6 +68025,132 @@
       }
     },
     {
+      "name": "recall",
+      "path": "productivity/recall",
+      "category": "productivity",
+      "type": "skill",
+      "description": "Search agentmemory for past observations, sessions, and learnings about a topic using hybrid BM25 plus vector plus graph search. Use when the user says \"recall\", \"what did we do about\", \"did we ever\", \"have we seen\", or needs context from past sessions.",
+      "author": "Rohit Ghumare",
+      "repo": "https://github.com/rohitg00/agentmemory",
+      "version": "",
+      "license": "Apache-2.0",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "EXAMPLES.md",
+        "TROUBLESHOOTING.md"
+      ],
+      "source": {
+        "repo": "rohitg00/agentmemory",
+        "path": "plugin/skills/recall",
+        "commit": "0da38f1d5067a479a6e5c4653de342ba43ca22b2",
+        "license": "Apache-2.0",
+        "url": "https://github.com/rohitg00/agentmemory/tree/0da38f1d5067a479a6e5c4653de342ba43ca22b2/plugin/skills/recall",
+        "requires": []
+      },
+      "skillspector": {
+        "score": 23,
+        "severity": "MEDIUM",
+        "recommendation": "CAUTION",
+        "issueCount": 2,
+        "analysis": "complete",
+        "findings": [
+          {
+            "id": "P2",
+            "category": "Prompt Injection",
+            "severity": "HIGH",
+            "title": "Hidden Instructions",
+            "file": "TROUBLESHOOTING.md",
+            "line": 1,
+            "count": 1
+          },
+          {
+            "id": "RA2",
+            "category": "Rogue Agent",
+            "severity": "MEDIUM",
+            "title": "Session Persistence",
+            "file": "TROUBLESHOOTING.md",
+            "line": 35,
+            "count": 1
+          }
+        ],
+        "hash": "b090673618e4f2e2",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-07T20:16:38Z"
+      }
+    },
+    {
+      "name": "recap",
+      "path": "productivity/recap",
+      "category": "productivity",
+      "type": "skill",
+      "description": "Summarize the last N agent sessions for the current project, grouped by date, with highlight observations per session. Use when the user asks \"recap\", \"what have we been doing\", \"today\", \"this week\", or wants a rollup of recent work.",
+      "author": "Rohit Ghumare",
+      "repo": "https://github.com/rohitg00/agentmemory",
+      "version": "",
+      "license": "Apache-2.0",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "EXAMPLES.md",
+        "TROUBLESHOOTING.md"
+      ],
+      "source": {
+        "repo": "rohitg00/agentmemory",
+        "path": "plugin/skills/recap",
+        "commit": "0da38f1d5067a479a6e5c4653de342ba43ca22b2",
+        "license": "Apache-2.0",
+        "url": "https://github.com/rohitg00/agentmemory/tree/0da38f1d5067a479a6e5c4653de342ba43ca22b2/plugin/skills/recap",
+        "requires": []
+      },
+      "skillspector": {
+        "score": 23,
+        "severity": "MEDIUM",
+        "recommendation": "CAUTION",
+        "issueCount": 2,
+        "analysis": "complete",
+        "findings": [
+          {
+            "id": "P2",
+            "category": "Prompt Injection",
+            "severity": "HIGH",
+            "title": "Hidden Instructions",
+            "file": "TROUBLESHOOTING.md",
+            "line": 1,
+            "count": 1
+          },
+          {
+            "id": "RA2",
+            "category": "Rogue Agent",
+            "severity": "MEDIUM",
+            "title": "Session Persistence",
+            "file": "TROUBLESHOOTING.md",
+            "line": 35,
+            "count": 1
+          }
+        ],
+        "hash": "cc9da5d07a0ad89d",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-07T20:16:38Z"
+      }
+    },
+    {
       "name": "reducing-entropy",
       "path": "productivity/reducing-entropy",
       "category": "productivity",
@@ -67707,6 +68188,69 @@
         "hash": "254078d72d86d815",
         "version": "2.12.0",
         "scannedAt": "2026-10-17T20:36:45Z"
+      }
+    },
+    {
+      "name": "remember",
+      "path": "productivity/remember",
+      "category": "productivity",
+      "type": "skill",
+      "description": "Save an insight, decision, or learning to agentmemory's long-term storage with searchable concept tags. Use when the user says \"remember this\", \"save this\", \"note that\", \"don't forget\", or wants to preserve knowledge for future sessions.",
+      "author": "Rohit Ghumare",
+      "repo": "https://github.com/rohitg00/agentmemory",
+      "version": "",
+      "license": "Apache-2.0",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "EXAMPLES.md",
+        "TROUBLESHOOTING.md"
+      ],
+      "source": {
+        "repo": "rohitg00/agentmemory",
+        "path": "plugin/skills/remember",
+        "commit": "0da38f1d5067a479a6e5c4653de342ba43ca22b2",
+        "license": "Apache-2.0",
+        "url": "https://github.com/rohitg00/agentmemory/tree/0da38f1d5067a479a6e5c4653de342ba43ca22b2/plugin/skills/remember",
+        "requires": []
+      },
+      "skillspector": {
+        "score": 23,
+        "severity": "MEDIUM",
+        "recommendation": "CAUTION",
+        "issueCount": 2,
+        "analysis": "partial",
+        "findings": [
+          {
+            "id": "P2",
+            "category": "Prompt Injection",
+            "severity": "HIGH",
+            "title": "Hidden Instructions",
+            "file": "TROUBLESHOOTING.md",
+            "line": 1,
+            "count": 1
+          },
+          {
+            "id": "RA2",
+            "category": "Rogue Agent",
+            "severity": "MEDIUM",
+            "title": "Session Persistence",
+            "file": "TROUBLESHOOTING.md",
+            "line": 35,
+            "count": 1
+          }
+        ],
+        "hash": "c4aa18703d4efbb8",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-07T20:16:38Z"
       }
     },
     {
@@ -67815,6 +68359,69 @@
         "hash": "d10b5ad7aa340d15",
         "version": "2.12.0",
         "scannedAt": "2026-10-30T21:22:11Z"
+      }
+    },
+    {
+      "name": "session-history",
+      "path": "productivity/session-history",
+      "category": "productivity",
+      "type": "skill",
+      "description": "Show what happened in recent past sessions on this project as a clean timeline. Use when the user asks \"what did we do last time\", \"session history\", \"past sessions\", or wants an overview of previous work.",
+      "author": "Rohit Ghumare",
+      "repo": "https://github.com/rohitg00/agentmemory",
+      "version": "",
+      "license": "Apache-2.0",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "EXAMPLES.md",
+        "TROUBLESHOOTING.md"
+      ],
+      "source": {
+        "repo": "rohitg00/agentmemory",
+        "path": "plugin/skills/session-history",
+        "commit": "0da38f1d5067a479a6e5c4653de342ba43ca22b2",
+        "license": "Apache-2.0",
+        "url": "https://github.com/rohitg00/agentmemory/tree/0da38f1d5067a479a6e5c4653de342ba43ca22b2/plugin/skills/session-history",
+        "requires": []
+      },
+      "skillspector": {
+        "score": 23,
+        "severity": "MEDIUM",
+        "recommendation": "CAUTION",
+        "issueCount": 2,
+        "analysis": "complete",
+        "findings": [
+          {
+            "id": "P2",
+            "category": "Prompt Injection",
+            "severity": "HIGH",
+            "title": "Hidden Instructions",
+            "file": "TROUBLESHOOTING.md",
+            "line": 1,
+            "count": 1
+          },
+          {
+            "id": "RA2",
+            "category": "Rogue Agent",
+            "severity": "MEDIUM",
+            "title": "Session Persistence",
+            "file": "TROUBLESHOOTING.md",
+            "line": 35,
+            "count": 1
+          }
+        ],
+        "hash": "0996f041d2fe5059",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-07T20:16:38Z"
       }
     },
     {
