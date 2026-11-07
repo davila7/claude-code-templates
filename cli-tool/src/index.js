@@ -14,7 +14,7 @@ const { runAnalytics } = require('./analytics');
 const { startChatsMobile } = require('./chats-mobile');
 const { runHealthCheck } = require('./health-check');
 const { trackingService } = require('./tracking-service');
-const { fetchExternalManifest, downloadExternalSkill } = require('./external-skill');
+const { fetchExternalManifest, downloadExternalSkill, isPluginFiles } = require('./external-skill');
 const { createInstallUI } = require('./install-ui');
 const { findRemovedCommands, reportRemovedCommands } = require('./removed-commands');
 const { spawnClaude, claudeCommandLine } = require('./claude-launcher');
@@ -1519,10 +1519,14 @@ async function installExternalSkill(skillName, skillBaseName, manifest, targetDi
     if (!options.silent) console.log(chalk.green(`✓ Downloaded: ${relPath}`));
   }
 
+  const isPlugin = isPluginFiles(files);
   if (!options.silent) {
-    console.log(chalk.green(`✅ Skill "${skillName}" installed successfully!`));
-    console.log(chalk.cyan(`📁 Installed to: ${path.relative(targetDir, path.join(skillDir, 'SKILL.md'))}`));
+    console.log(chalk.green(`✅ ${isPlugin ? 'Plugin' : 'Skill'} "${skillName}" installed successfully!`));
+    console.log(chalk.cyan(`📁 Installed to: ${path.relative(targetDir, isPlugin ? skillDir : path.join(skillDir, 'SKILL.md'))}`));
     console.log(chalk.cyan(`📦 Source: https://github.com/${manifest.repo}/tree/${manifest.commit}${manifest.path ? '/' + manifest.path : ''}`));
+    if (isPlugin) {
+      console.log(chalk.blue(`🧩 Claude Code loads it as the plugin "${skillBaseName}@skills-dir" on the next session (after the workspace trust prompt); its commands start with /${skillBaseName}:`));
+    }
   }
 
   trackingService.trackDownload('skill', skillName, {

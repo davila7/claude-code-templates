@@ -32,6 +32,27 @@ class ValidateManifestTest(unittest.TestCase):
             with self.subTest(include=bad), self.assertRaises(ext.ManifestError):
                 ext.validate_manifest({**BASE, "include": bad})
 
+    def test_include_accepts_plugin_entry(self):
+        self.assertEqual(ext.validate_manifest({**BASE, "include": [".claude-plugin", "skills"]})["include"],
+                         [".claude-plugin", "skills"])
+        with self.assertRaises(ext.ManifestError):
+            ext.validate_manifest({**BASE, "include": ["skills"]})
+
+    def test_is_plugin_and_scan_staging(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            plug = root / "kit"
+            (plug / ".claude-plugin").mkdir(parents=True)
+            (plug / ".claude-plugin/plugin.json").write_text('{"name": "kit", "description": "A kit"}')
+            (plug / "skills/a").mkdir(parents=True)
+            (plug / "skills/a/SKILL.md").write_text("---\nname: a\n---\n")
+            self.assertTrue(ext.is_plugin(plug))
+            staged = ext.stage_plugin_for_scan(plug, root / "stage", "kit")
+            self.assertIn('description: "A kit"', (staged / "SKILL.md").read_text())
+            self.assertTrue((staged / "skills/a/SKILL.md").is_file())
+            self.assertFalse((plug / "SKILL.md").exists())
+            self.assertFalse(ext.is_plugin(staged))
+
     def test_is_included(self):
         inc = ["SKILL.md", "scripts", "docs/contract.md"]
         self.assertTrue(ext.is_included("scripts/run.sh", inc))

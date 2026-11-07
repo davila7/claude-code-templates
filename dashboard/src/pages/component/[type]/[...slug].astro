@@ -193,6 +193,8 @@ if (typePlural === 'loops' && frontmatter.components) {
 
 // External skills (source.json): code fetched from the author's repo at a pinned commit.
 const externalSource = typePlural === 'skills' ? component?.source ?? null : null;
+// A whole external plugin shows its README.md, like a mod.
+const mainFileName = typePlural === 'mods' || externalSource?.kind === 'plugin' ? 'README.md' : 'SKILL.md';
 // Skills an external skill calls are installed with it, like a loop's components.
 if (externalSource?.requires?.length) {
   const cfg = TYPE_CONFIG['skills'];
@@ -649,7 +651,7 @@ const componentSchema = component
               <div class="rounded-lg border border-[var(--color-border)] overflow-hidden">
                 <div class="flex items-center gap-2.5 px-4 py-2.5 bg-[var(--color-surface-1)] border-b border-[var(--color-border)] text-[13px]">
                   <svg class="w-4 h-4 text-[var(--color-text-tertiary)]" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5.5 4h8M5.5 8h8M5.5 12h8M2.5 4h.01M2.5 8h.01M2.5 12h.01" /></svg>
-                  <span class="font-semibold text-[var(--color-text-primary)]">{typePlural === 'mods' ? 'README.md' : typePlural === 'skills' ? 'SKILL.md' : component.path.split('/').pop()}</span>
+                  <span class="font-semibold text-[var(--color-text-primary)]">{typePlural === 'mods' || typePlural === 'skills' ? mainFileName : component.path.split('/').pop()}</span>
                 </div>
                 <div class="p-4 md:p-6">
                   {isJsonType ? (
@@ -671,7 +673,7 @@ const componentSchema = component
                   references={refs}
                   headings={contentHeadings}
                   componentType={typePlural === 'mods' ? 'mods' : 'skills'}
-                  mainFile={typePlural === 'mods' ? 'README.md' : 'SKILL.md'}
+                  mainFile={mainFileName}
                   files={typePlural === 'mods' || externalSource ? modFiles : undefined}
                 />
               </section>

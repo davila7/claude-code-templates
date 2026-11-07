@@ -112,6 +112,9 @@ def stage(component_type: str, component: dict, root: Path, files: list[Path], t
     Markdown file, so findings can be mapped back to source lines.
     """
     if component_type == "skills":
+        if external_skills.is_plugin(root):
+            # A whole external plugin: SkillSpector needs a SKILL.md at the root.
+            return external_skills.stage_plugin_for_scan(root, tmp, component["name"]), 0
         return root, 0
     target = tmp / component["name"]
     target.mkdir(parents=True)

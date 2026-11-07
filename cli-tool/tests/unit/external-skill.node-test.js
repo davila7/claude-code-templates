@@ -119,3 +119,18 @@ test('include keeps only the listed files and folders', async () => {
   assert.deepEqual(Object.keys(files).sort(), ['SKILL.md', 'scripts/pr-wait']);
   assert.ok(!calls.some((u) => u.includes('demo/') || u.includes('scripts-old')), 'excluded files are never downloaded');
 });
+
+test('a whole plugin (.claude-plugin/plugin.json, no SKILL.md) downloads as is', async () => {
+  const { isPluginFiles } = require('../../src/external-skill');
+  const { fetchImpl } = fakeGitHub({
+    '.claude-plugin/plugin.json': { content: '{"name":"babysit-pr"}' },
+    'skills/climb/SKILL.md': { content: '---\nname: climb\n---\n' },
+    'agents/repo-scout.md': { content: '---\nname: repo-scout\n---\n' }
+  });
+  const files = await downloadExternalSkill(manifest, fetchImpl);
+  assert.deepEqual(Object.keys(files).sort(), ['.claude-plugin/plugin.json', 'agents/repo-scout.md', 'skills/climb/SKILL.md']);
+  assert.equal(isPluginFiles(files), true);
+  assert.equal(isPluginFiles({ 'SKILL.md': {} }), false);
+  assert.deepEqual(validateManifest({ ...manifest, include: ['.claude-plugin', 'skills'] }).include, ['.claude-plugin', 'skills']);
+  assert.throws(() => validateManifest({ ...manifest, include: ['skills'] }), /SKILL.md/);
+});

@@ -253,6 +253,19 @@ def scan_skill(directory: Path) -> dict:
             result["status"] = "error"
             result["error"] = f"external skill: {e}"[:500]
             return result
+    staging = None
+    if external_skills.is_plugin(target):
+        # A whole external plugin: SkillSpector needs a SKILL.md at the root.
+        staging = tempfile.TemporaryDirectory(prefix="cct-skillspector-")
+        target = external_skills.stage_plugin_for_scan(target, Path(staging.name), directory.name)
+    try:
+        return _run_skillspector(directory, target, result)
+    finally:
+        if staging:
+            staging.cleanup()
+
+
+def _run_skillspector(directory: Path, target: Path, result: dict) -> dict:
     try:
         proc = subprocess.run(
             [

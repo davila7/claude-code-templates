@@ -15,8 +15,15 @@ SKILL.md (regular skill) or a source.json (external skill), never both:
     }
 
 `include` (optional) keeps only those files/folders under `path`, for repos whose
-skill folder also carries demos, tests or dev tooling. It must list SKILL.md, and
-the size limits apply after filtering.
+skill folder also carries demos, tests or dev tooling. It must list the entry
+point (SKILL.md, or .claude-plugin for a plugin), and the size limits apply after
+filtering.
+
+A whole Claude Code plugin can be listed the same way: `path` then points at the
+plugin root (.claude-plugin/plugin.json, no SKILL.md), whose `name` must equal
+the catalog folder name. The CLI writes it to .claude/skills/{name}/, which
+Claude Code loads as the plugin "{name}@skills-dir", so its namespaced skills
+(/{name}:skill) and agents ({name}:agent) keep working.
 
 The CLI (cli-tool/src/external-skill.js) downloads the files from that commit
 at install time. Everything in this repo that reads a skill folder (the catalog
@@ -59,6 +66,7 @@ ALLOWED_LICENSES = {
 }
 MAX_FILES = 200
 MAX_TOTAL_BYTES = 5 * 1024 * 1024
+PLUGIN_MANIFEST = ".claude-plugin/plugin.json"
 
 
 class ManifestError(ValueError):
@@ -105,8 +113,8 @@ def validate_manifest(data: object) -> dict:
         if not isinstance(raw, list) or not raw or not all(isinstance(p, str) and _safe_rel(p.rstrip("/")) for p in raw):
             raise ManifestError('"include" must be a non-empty list of relative paths')
         include = [p.rstrip("/") for p in raw]
-        if "SKILL.md" not in include:
-            raise ManifestError('"include" must list SKILL.md')
+        if not any(is_included(entry, include) for entry in ("SKILL.md", PLUGIN_MANIFEST)):
+            raise ManifestError('"include" must list SKILL.md (or .claude-plugin for a plugin)')
     return {**data, "path": path.strip("/"), "requires": requires, "include": include}
 
 
@@ -172,8 +180,8 @@ def local_dir(skill_dir: Path) -> Path:
         if not _safe_rel(rel):
             raise ManifestError(f"unsafe path in {repo}: {full}")
         entries.append((rel, sha, mode, int(size)))
-    if not any(rel == "SKILL.md" for rel, *_ in entries):
-        raise ManifestError(f"no SKILL.md in {repo}/{path} at {commit[:7]}")
+    if not any(rel in ("SKILL.md", PLUGIN_MANIFEST) for rel, *_ in entries):
+        raise ManifestError(f"no SKILL.md or {PLUGIN_MANIFEST} in {repo}/{path} at {commit[:7]}")
     if len(entries) > MAX_FILES or sum(e[3] for e in entries) > MAX_TOTAL_BYTES:
         raise ManifestError(f"{repo}/{path} is over the size limit ({MAX_FILES} files / {MAX_TOTAL_BYTES} bytes)")
     shutil.rmtree(dest, ignore_errors=True)
@@ -187,6 +195,31 @@ def local_dir(skill_dir: Path) -> Path:
             out.chmod(0o755)
     done.write_text("")
     return dest
+
+
+def is_plugin(local: Path) -> bool:
+    """True when a materialized external folder is a whole plugin, not a single skill."""
+    return not (local / "SKILL.md").is_file() and (local / PLUGIN_MANIFEST).is_file()
+
+
+def plugin_manifest(local: Path) -> dict:
+    try:
+        data = json.loads((local / PLUGIN_MANIFEST).read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as e:
+        raise ManifestError(f"{PLUGIN_MANIFEST} is not valid JSON: {e}") from e
+    if not isinstance(data, dict):
+        raise ManifestError(f"{PLUGIN_MANIFEST} must be a JSON object")
+    return data
+
+
+def stage_plugin_for_scan(local: Path, tmp: Path, name: str) -> Path:
+    """Copy a plugin into tmp/name with a stub SKILL.md, the layout SkillSpector accepts."""
+    target = tmp / name
+    shutil.copytree(local, target)
+    desc = " ".join(str(plugin_manifest(local).get("description") or name).split())
+    (target / "SKILL.md").write_text(
+        f"---\nname: {name}\ndescription: {json.dumps(desc, ensure_ascii=False)}\n---\n", encoding="utf-8")
+    return target
 
 
 def source_url(m: dict) -> str:
@@ -252,7 +285,11 @@ def check(dirs: list[Path]) -> list[str]:
             for ref in m["requires"]:
                 if ref not in catalog:
                     raise ManifestError(f'"requires" names {ref}, which is not in the catalog')
-            local_dir(d)
+            local = local_dir(d)
+            if is_plugin(local):
+                pname = plugin_manifest(local).get("name")
+                if pname != d.name:
+                    raise ManifestError(f'plugin name {pname!r} must equal the folder name {d.name!r}')
             detected, where = license_at_commit(m)
             if detected is None:
                 raise ManifestError(f"no recognisable license file in {m['repo']} at {m['commit'][:7]}"

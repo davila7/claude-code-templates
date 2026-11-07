@@ -65843,6 +65843,95 @@
       }
     },
     {
+      "name": "champion-kit",
+      "path": "productivity/champion-kit",
+      "category": "productivity",
+      "type": "skill",
+      "description": "Help Claude Code champions run hackathons and office hours, find patterns worth sharing, help teammates climb the steps of AI adoption, and write a maturity report.",
+      "author": "Anthropic",
+      "repo": "https://github.com/anthropics/claude-plugins-official",
+      "version": "0.5.0",
+      "license": "Apache-2.0",
+      "keywords": [
+        "champions",
+        "adoption",
+        "enablement",
+        "onboarding",
+        "claude-code"
+      ],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        ".claude-plugin/icon.png",
+        ".claude-plugin/plugin.json",
+        "LICENSE",
+        "agents/repo-scout.md",
+        "skills/climb/SKILL.md",
+        "skills/faq/SKILL.md",
+        "skills/hackathon/SKILL.md",
+        "skills/maturity/SKILL.md",
+        "skills/maturity/report-template.html",
+        "skills/office-hours/SKILL.md",
+        "skills/patterns/SKILL.md",
+        "skills/routines/SKILL.md"
+      ],
+      "source": {
+        "repo": "anthropics/claude-plugins-official",
+        "path": "plugins/champion-kit",
+        "commit": "0412be76f50ab4f4f8abff3753efa9269fbbca5b",
+        "license": "Apache-2.0",
+        "url": "https://github.com/anthropics/claude-plugins-official/tree/0412be76f50ab4f4f8abff3753efa9269fbbca5b/plugins/champion-kit",
+        "requires": [],
+        "kind": "plugin"
+      },
+      "skillspector": {
+        "score": 31,
+        "severity": "MEDIUM",
+        "recommendation": "CAUTION",
+        "issueCount": 3,
+        "analysis": "complete",
+        "findings": [
+          {
+            "id": "P2",
+            "category": "Prompt Injection",
+            "severity": "HIGH",
+            "title": "Hidden Instructions",
+            "file": "skills/maturity/report-template.html",
+            "line": 8,
+            "count": 1
+          },
+          {
+            "id": "EA1",
+            "category": "Excessive Agency",
+            "severity": "MEDIUM",
+            "title": "Unrestricted Tool Access",
+            "file": "README.md",
+            "line": 5,
+            "count": 1
+          },
+          {
+            "id": "RA2",
+            "category": "Rogue Agent",
+            "severity": "MEDIUM",
+            "title": "Session Persistence",
+            "file": "agents/repo-scout.md",
+            "line": 9,
+            "count": 1
+          }
+        ],
+        "hash": "76a58c767003402b",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-07T00:39:33Z"
+      }
+    },
+    {
       "name": "chisle",
       "path": "productivity/chisle",
       "category": "productivity",
@@ -89402,10 +89491,10 @@
       "category": "languages",
       "description": "Common project template",
       "files": [
-        ".claude/commands/git-workflow.md",
-        ".claude/commands/project-setup.md",
         "README.md",
-        "CLAUDE.md"
+        "CLAUDE.md",
+        ".claude/commands/project-setup.md",
+        ".claude/commands/git-workflow.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=common --yes",
       "downloads": 0
@@ -89419,10 +89508,10 @@
       "language": "python",
       "description": "Django-App with Python",
       "files": [
-        ".claude/commands/views.md",
-        ".claude/commands/admin.md",
+        "CLAUDE.md",
         ".claude/commands/django-model.md",
-        "CLAUDE.md"
+        ".claude/commands/admin.md",
+        ".claude/commands/views.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=django-app --yes",
       "downloads": 0
@@ -89436,12 +89525,12 @@
       "language": "python",
       "description": "Fastapi-App with Python",
       "files": [
-        ".claude/commands/database.md",
-        ".claude/commands/deployment.md",
-        ".claude/commands/api-endpoints.md",
-        ".claude/commands/testing.md",
+        "CLAUDE.md",
         ".claude/commands/auth.md",
-        "CLAUDE.md"
+        ".claude/commands/testing.md",
+        ".claude/commands/database.md",
+        ".claude/commands/api-endpoints.md",
+        ".claude/commands/deployment.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=fastapi-app --yes",
       "downloads": 0
@@ -89455,13 +89544,13 @@
       "language": "python",
       "description": "Flask-App with Python",
       "files": [
-        ".claude/commands/database.md",
-        ".claude/commands/blueprint.md",
-        ".claude/commands/flask-route.md",
-        ".claude/commands/deployment.md",
-        ".claude/commands/app-factory.md",
+        "CLAUDE.md",
         ".claude/commands/testing.md",
-        "CLAUDE.md"
+        ".claude/commands/flask-route.md",
+        ".claude/commands/database.md",
+        ".claude/commands/deployment.md",
+        ".claude/commands/blueprint.md",
+        ".claude/commands/app-factory.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=flask-app --yes",
       "downloads": 0
@@ -89487,16 +89576,16 @@
       "category": "languages",
       "description": "Javascript-Typescript project template",
       "files": [
-        ".claude/settings.json",
-        ".claude/commands/npm-scripts.md",
-        ".claude/commands/typescript-migrate.md",
-        ".claude/commands/refactor.md",
-        ".claude/commands/test.md",
-        ".claude/commands/lint.md",
-        ".claude/commands/api-endpoint.md",
-        ".claude/commands/debug.md",
         "README.md",
-        "CLAUDE.md"
+        "CLAUDE.md",
+        ".claude/settings.json",
+        ".claude/commands/test.md",
+        ".claude/commands/api-endpoint.md",
+        ".claude/commands/npm-scripts.md",
+        ".claude/commands/lint.md",
+        ".claude/commands/debug.md",
+        ".claude/commands/typescript-migrate.md",
+        ".claude/commands/refactor.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=javascript-typescript --yes",
       "downloads": 0
@@ -89510,11 +89599,11 @@
       "language": "javascript-typescript",
       "description": "Node-Api with Javascript-Typescript",
       "files": [
-        ".claude/commands/database.md",
-        ".claude/commands/middleware.md",
+        "CLAUDE.md",
         ".claude/commands/api-endpoint.md",
+        ".claude/commands/database.md",
         ".claude/commands/route.md",
-        "CLAUDE.md"
+        ".claude/commands/middleware.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=node-api --yes",
       "downloads": 0
@@ -89527,10 +89616,10 @@
       "category": "languages",
       "description": "Python project template",
       "files": [
+        "CLAUDE.md",
         ".claude/settings.json",
         ".claude/commands/test.md",
-        ".claude/commands/lint.md",
-        "CLAUDE.md"
+        ".claude/commands/lint.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=python --yes",
       "downloads": 0
@@ -89544,8 +89633,8 @@
       "language": "ruby",
       "description": "Rails-App with Ruby",
       "files": [
-        ".claude/commands/authentication.md",
-        "CLAUDE.md"
+        "CLAUDE.md",
+        ".claude/commands/authentication.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=rails-app --yes",
       "downloads": 0
@@ -89559,10 +89648,10 @@
       "language": "javascript-typescript",
       "description": "React-App with Javascript-Typescript",
       "files": [
+        "CLAUDE.md",
         ".claude/commands/hooks.md",
         ".claude/commands/state-management.md",
-        ".claude/commands/component.md",
-        "CLAUDE.md"
+        ".claude/commands/component.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=react-app --yes",
       "downloads": 0
@@ -89575,10 +89664,10 @@
       "category": "languages",
       "description": "Ruby project template",
       "files": [
+        "CLAUDE.md",
         ".claude/settings.json",
-        ".claude/commands/model.md",
         ".claude/commands/test.md",
-        "CLAUDE.md"
+        ".claude/commands/model.md"
       ],
       "installCommand": "npx claude-code-templates@latest --template=ruby --yes",
       "downloads": 0

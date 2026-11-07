@@ -215,6 +215,15 @@ under `path` to keep (must list `SKILL.md`; size limits of 200 files / 5 MB appl
 after filtering) for repos whose skill folder also holds demos or tests. First ones: the 9 `git/` skills from
 `t3dotgg/tstack` (2026-10-26).
 
+- A whole Claude Code plugin is listed the same way: `path` points at the plugin
+  root (`.claude-plugin/plugin.json`, no `SKILL.md`), whose `name` must equal the
+  catalog folder (`check` enforces it). The CLI writes it to
+  `.claude/skills/{name}/`, which Claude Code loads as `{name}@skills-dir` (trusted
+  project only), so its `/{name}:skill` commands and `{name}:agent` agents keep
+  working. The catalog shows its README.md and sets `source.kind = "plugin"`;
+  SkillSpector scans it with a stub SKILL.md and `validate_components.py` runs
+  `claude plugin validate` on the plugin itself. First one:
+  `productivity/champion-kit` (anthropics/claude-plugins-official, 2026-11-07).
 - `commit` must be a full 40-hex sha: never a branch or tag, so upstream changes
   reach users only through a PR here that bumps it (the weekly
   `external-skills-outdated.yml` keeps an issue listing newer upstream commits).

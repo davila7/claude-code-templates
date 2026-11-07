@@ -24,6 +24,8 @@ export interface ExternalSource {
   license: string;
   url: string;
   requires?: string[];
+  /** "plugin" when path is a whole Claude Code plugin (.claude-plugin/plugin.json, no SKILL.md). */
+  kind?: 'plugin';
 }
 
 export interface SkillSpectorFinding {

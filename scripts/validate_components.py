@@ -77,7 +77,14 @@ def main():
         if changed is None or any(c.startswith(d.relative_to(BASE).as_posix() + "/") for c in changed):
             flat = "skills/" + d.relative_to(BASE / "skills").as_posix().replace("/", "__")
             try:
-                shutil.copytree(external_skills.local_dir(d), plug / flat); mapping[flat] = rel; n += 1
+                local = external_skills.local_dir(d)
+                if external_skills.is_plugin(local):
+                    # A whole plugin is validated as itself, not flattened into the probe.
+                    for c in claude(local, a.strict).get("contents", []):
+                        findings.append({**c, "file": rel})
+                    n += 1
+                    continue
+                shutil.copytree(local, plug / flat); mapping[flat] = rel; n += 1
             except (external_skills.ManifestError, OSError) as e:
                 findings.append({"type": "skill", "file": rel, "errors": [{"message": str(e)}], "warnings": []})
     if n:

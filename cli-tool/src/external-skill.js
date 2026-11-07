@@ -14,6 +14,11 @@
  *                                       for repos whose skill folder also holds demos, tests...)
  *   }
  *
+ * "path" may also point at a whole Claude Code plugin (.claude-plugin/plugin.json
+ * and no SKILL.md). It is written to .claude/skills/{name}/ like a skill, and
+ * Claude Code loads it as the plugin "{name}@skills-dir", so its namespaced
+ * skills and agents keep working.
+ *
  * The files are downloaded from that exact commit and each one is checked
  * against the git blob sha of the tree, so what gets written is byte for byte
  * what SkillSpector scanned when the manifest was merged.
@@ -23,6 +28,7 @@ const crypto = require('crypto');
 const CATALOG_SKILLS_RAW = 'https://raw.githubusercontent.com/davila7/claude-code-templates/main/cli-tool/components/skills';
 const MAX_FILES = 200;
 const MAX_TOTAL_BYTES = 5 * 1024 * 1024;
+const PLUGIN_MANIFEST = '.claude-plugin/plugin.json';
 
 const REPO_RE = /^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})\/[A-Za-z0-9._-]{1,100}$/;
 const COMMIT_RE = /^[0-9a-f]{40}$/;
@@ -63,7 +69,9 @@ function validateManifest(manifest) {
       throw new Error('source.json: "include" must be a non-empty list of relative paths');
     }
     include = manifest.include.map((p) => p.replace(/\/+$/, ''));
-    if (!include.includes('SKILL.md')) throw new Error('source.json: "include" must list SKILL.md');
+    if (!['SKILL.md', PLUGIN_MANIFEST].some((entry) => isIncluded(entry, include))) {
+      throw new Error('source.json: "include" must list SKILL.md (or .claude-plugin for a plugin)');
+    }
   }
   return { ...manifest, path: skillPath.replace(/^\/+|\/+$/g, ''), requires, include };
 }
@@ -153,8 +161,8 @@ async function listSkillTree(manifest, fetchImpl = fetch) {
  */
 async function downloadExternalSkill(manifest, fetchImpl = fetch) {
   const files = await listSkillTree(manifest, fetchImpl);
-  if (!files.some((f) => f.path === 'SKILL.md')) {
-    throw new Error(`No SKILL.md in ${manifest.repo}/${manifest.path} at ${manifest.commit.slice(0, 7)}`);
+  if (!files.some((f) => f.path === 'SKILL.md' || f.path === PLUGIN_MANIFEST)) {
+    throw new Error(`No SKILL.md or ${PLUGIN_MANIFEST} in ${manifest.repo}/${manifest.path} at ${manifest.commit.slice(0, 7)}`);
   }
   if (files.length > MAX_FILES) throw new Error(`Skill has ${files.length} files (limit ${MAX_FILES})`);
   const total = files.reduce((n, f) => n + f.size, 0);
@@ -175,8 +183,15 @@ async function downloadExternalSkill(manifest, fetchImpl = fetch) {
   return out;
 }
 
+/** True when the downloaded files are a whole plugin rather than a single skill. */
+function isPluginFiles(files) {
+  return !('SKILL.md' in files) && PLUGIN_MANIFEST in files;
+}
+
 module.exports = {
   CATALOG_SKILLS_RAW,
+  PLUGIN_MANIFEST,
+  isPluginFiles,
   validateManifest,
   isSafeRelativePath,
   isIncluded,

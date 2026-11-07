@@ -561,8 +561,16 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
                                     'url': external_skills.source_url(manifest),
                                     'requires': manifest['requires'],
                                 }
-                            # Look for SKILL.md inside the skill directory
-                            skill_file_path = os.path.join(skill_root, 'SKILL.md')
+                            # Look for SKILL.md inside the skill directory. An external
+                            # plugin (.claude-plugin/plugin.json, no SKILL.md) shows its
+                            # README.md, and its metadata comes from plugin.json.
+                            main_file = 'SKILL.md'
+                            plugin_meta = None
+                            if source and external_skills.is_plugin(Path(skill_root)):
+                                plugin_meta = external_skills.plugin_manifest(Path(skill_root))
+                                main_file = 'README.md'
+                                source['kind'] = 'plugin'
+                            skill_file_path = os.path.join(skill_root, main_file)
                             if os.path.isfile(skill_file_path):
                                 name = skill_dir  # Use directory name as skill name
 
@@ -590,6 +598,14 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
                                 except Exception as e:
                                     print(f"Warning: Could not read file {skill_file_path}: {e}")
 
+                                if plugin_meta is not None:
+                                    description = str(plugin_meta.get('description') or description)
+                                    version = str(plugin_meta.get('version') or version)
+                                    pk = plugin_meta.get('keywords')
+                                    keywords = [str(k) for k in pk] if isinstance(pk, list) else keywords
+                                    pa = plugin_meta.get('author')
+                                    author = (pa.get('name', '') if isinstance(pa, dict) else str(pa or '')) or author
+
                                 # Look up download count for this skill
                                 download_key = f"{component_type}/{category}/{name}"
                                 downloads = download_stats.get(download_key, 0)
@@ -608,7 +624,7 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
                                 # Collect reference files (all files except SKILL.md)
                                 references = []
                                 for ref_file in scan_directory_recursively(skill_root, skill_root):
-                                    if ref_file != 'SKILL.md':
+                                    if ref_file != main_file:
                                         references.append(ref_file)
                                 references.sort()
 
@@ -639,7 +655,7 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
                                     # The site cannot read these files from this repo, so
                                     # they ride in the content file (like mods).
                                     component['files'] = {}
-                                    for rel in ['SKILL.md'] + references:
+                                    for rel in [main_file] + references:
                                         try:
                                             with open(os.path.join(skill_root, rel), 'r', encoding='utf-8') as f:
                                                 component['files'][rel] = f.read()
