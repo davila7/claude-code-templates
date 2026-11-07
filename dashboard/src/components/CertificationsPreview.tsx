@@ -44,7 +44,7 @@ export default function CertificationsPreview() {
             className="w-full text-left flex items-start gap-2.5 p-2.5 rounded border border-[var(--color-border)] hover:border-[var(--color-accent)] bg-[var(--color-card-bg)] hover:bg-[var(--color-card-hover)] transition-all group"
           >
             <div className="w-6 h-6 rounded shrink-0 bg-[var(--color-surface-2)] border border-[var(--color-border)] flex items-center justify-center overflow-hidden mt-0.5">
-              <CompanyLogo company={item.provider} icon={data.providers[item.provider]?.icon} imgClassName="w-3.5 h-3.5 object-contain" initialClassName="text-[9px] font-bold text-[var(--color-text-tertiary)]" />
+              <CompanyLogo company={item.provider} icon={data.providers[item.provider]?.icon} invertOnDark={data.providers[item.provider]?.invertOnDark} imgClassName="w-3.5 h-3.5 object-contain" initialClassName="text-[9px] font-bold text-[var(--color-text-tertiary)]" />
             </div>
             <div className="min-w-0 flex-1">
               <p className="font-mono text-[10px] font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-accent)] transition-colors line-clamp-2 leading-tight mb-1">
