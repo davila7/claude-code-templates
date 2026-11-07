@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "runapi": {
+      "description": "Unified AI model API with 130+ models for image, video, music, audio, and LLM generation from 18 providers. Browse models, check pricing, create tasks, and call LLM endpoints. Free catalog tools work without an API key.",
+      "command": "npx",
+      "args": ["-y", "@runapi.ai/mcp"]
+    }
+  }
+}
