@@ -27852,6 +27852,48 @@
       }
     },
     {
+      "name": "datacircle",
+      "path": "marketing/datacircle.json",
+      "category": "marketing",
+      "type": "mcp",
+      "description": "A hosted MCP server that finds the best GTM APIs: list every API, see who is best for each, search every plan. Free and open, with no key.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 5,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 1,
+        "analysis": "complete",
+        "findings": [
+          {
+            "id": "E1",
+            "category": "Data Exfiltration",
+            "severity": "MEDIUM",
+            "title": "External Transmission",
+            "file": "datacircle.json",
+            "line": 6,
+            "count": 1
+          }
+        ],
+        "hash": "6f2e46f9ce2befe2",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-07T20:14:17Z"
+      }
+    },
+    {
       "name": "facebook-ads-mcp-server",
       "path": "marketing/facebook-ads-mcp-server.json",
       "category": "marketing",
@@ -27955,6 +27997,38 @@
         "hash": "f04924cdacfefbc4",
         "version": "2.12.0",
         "scannedAt": "2026-10-17T20:36:45Z"
+      }
+    },
+    {
+      "name": "pageree",
+      "path": "marketing/pageree.json",
+      "category": "marketing",
+      "type": "mcp",
+      "description": "Hosted MCP server that lets Claude build, preview and publish landing pages with working lead forms, connect a custom domain, and read section-by-section visitor analytics to improve each page. Nothing goes live until you approve the preview. Sign in with your Pageree account through OAuth; there is no key to paste.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "hash": "1c658c399487e0ea",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-07T20:14:17Z"
       }
     },
     {
@@ -47281,6 +47355,66 @@
         "hash": "ae65e16458055c51",
         "version": "2.12.0",
         "scannedAt": "2026-10-17T20:36:45Z"
+      }
+    },
+    {
+      "name": "illos-library",
+      "path": "creative-design/illos-library",
+      "category": "creative-design",
+      "type": "skill",
+      "description": "Add animated SVG illustrations from Illos.dev to a website or app, for a hero, feature sections, empty states, docs pages, onboarding or status screens. Use when a page needs a picture instead of an empty space, an emoji, stock 3D art or a gradient blob, or when the user asks for illustrations, spot illustrations or empty state art. 65 of them are free for commercial use, with no account and no credit.",
+      "author": "Naved Alam",
+      "repo": "https://github.com/navedux/illos-skills",
+      "version": "",
+      "license": "MIT",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [],
+      "source": {
+        "repo": "navedux/illos-skills",
+        "path": "skills/illos-library",
+        "commit": "699eaa363af6828036a5248793dc0f1dd4cff264",
+        "license": "MIT",
+        "url": "https://github.com/navedux/illos-skills/tree/699eaa363af6828036a5248793dc0f1dd4cff264/skills/illos-library",
+        "requires": []
+      },
+      "skillspector": {
+        "score": 12,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 4,
+        "analysis": "complete",
+        "findings": [
+          {
+            "id": "RP1",
+            "category": "MCP Rug Pull",
+            "severity": "MEDIUM",
+            "title": "MCP server references in the skill manifest without version pinning are a rug-pull risk.",
+            "file": "SKILL.md",
+            "line": 1,
+            "count": 1
+          },
+          {
+            "id": "RP1",
+            "category": "MCP Rug Pull",
+            "severity": "MEDIUM",
+            "title": "npx commands without a version suffix (e.g. @1.0.0) create a rug-pull risk if the upstream server is compromised and publishes a malicious update.",
+            "file": "SKILL.md",
+            "line": 15,
+            "count": 3
+          }
+        ],
+        "hash": "32ad2441332a9f85",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-07T20:14:17Z"
       }
     },
     {
