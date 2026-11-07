@@ -23349,6 +23349,70 @@
     ]
   },
   {
+    "slug": "agent-standup",
+    "name": "Agent Standup",
+    "author": "Atoll92",
+    "description": "Your Claude Code, Codex and Mistral Vibe sessions as a live, animated team call: who is working, who waits on whom, who needs you. VS Code extension, terminal command, desktop app. Runs locally, zero tokens.",
+    "github": "https://github.com/Atoll92/agent-standup",
+    "stars": 323,
+    "type": "marketplace",
+    "tags": [
+      "skills",
+      "hooks"
+    ],
+    "contains": {
+      "plugins": 2,
+      "components": {
+        "skills": 2,
+        "hooks": 1
+      }
+    },
+    "highlights": [
+      "2 plugins in marketplace",
+      "Web UI: https://agent-standup.com"
+    ],
+    "website": "https://agent-standup.com",
+    "marketplace_name": "double-geste",
+    "plugins_list": [
+      {
+        "name": "agent-standup",
+        "description": "Watch the Claude Code, Codex and Mistral Vibe sessions on your computer as a live team call: who is working, who waits on whom, who needs you.",
+        "source": "./plugin",
+        "components": {
+          "skills": 2
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "open",
+              "description": "Open Agent Standup, a local page that shows the Claude Code, Codex, Mistral Vibe and Cowork sessions on this computer as a live team call (who is working, who waits on whom, who needs the user). Use when the user asks to watch, see or follow their agents, sub-agents or sessions, or asks for the standup or the call."
+            },
+            {
+              "name": "status",
+              "description": "Report in one line what the Claude Code, Codex, Mistral Vibe and Cowork sessions on this computer are doing right now (how many are working, how many need the user, whether it is the user's turn). Use when the user asks what their agents or sessions are doing, or whether anything is waiting for them."
+            }
+          ]
+        }
+      },
+      {
+        "name": "agent-standup-band",
+        "description": "A line above your Claude Code prompt when another Claude Code session on this computer needs you (an approval, an answer), and a toast when one finishes its turn. Reads only Claude Code's own session status files; sends nothing.",
+        "source": "./plugin-band",
+        "components": {
+          "hooks": 1
+        },
+        "components_items": {
+          "hooks": [
+            {
+              "name": "hooks",
+              "description": ""
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
     "slug": "firecrawl-claude-plugin",
     "name": "Firecrawl Claude Plugin",
     "author": "firecrawl",
