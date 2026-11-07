@@ -134,6 +134,8 @@ def validate_item(item, vocab):
     cats = item.get("categories")
     if not isinstance(cats, list) or not cats or any(c not in vocab["CATEGORIES"] for c in cats):
         errors.append("categories must be a non-empty list of CATEGORIES")
+    elif len(set(cats)) != len(cats):
+        errors.append("categories must not repeat")
     if "role" in item and item["role"] not in vocab["ROLES"]:
         errors.append("role must be one of ROLES")
     if "level" in item and item["level"] not in vocab["LEVELS"]:
@@ -143,9 +145,10 @@ def validate_item(item, vocab):
     topics = item.get("topics")
     if not isinstance(topics, list) or any(not isinstance(t, str) or not t for t in topics):
         errors.append("topics must be an array of strings")
-    price = item.get("price")
-    if price and (not isinstance(price.get("amount"), (int, float)) or not price.get("currency")):
-        errors.append("price needs amount and currency")
+    if "price" in item and item["price"] is not None:
+        price = item["price"]
+        if not isinstance(price, dict) or not isinstance(price.get("amount"), (int, float)) or not price.get("currency"):
+            errors.append("price must be null or have amount and currency")
     for f in ("addedAt", "verifiedAt"):
         if not DATE.match(item.get(f) or ""):
             errors.append(f"{f} must be YYYY-MM-DD")
@@ -362,20 +365,24 @@ def write_json(path, obj):
         f.write("\n")
 
 
-def main(argv=None):
+def main(argv=None, sources_path=SOURCES_PATH, data_path=DATA_PATH, cache_path=CACHE_PATH):
     ap = argparse.ArgumentParser()
     ap.add_argument("--from-cache", help="merge the entries in this cache file instead of fetching")
     args = ap.parse_args(argv)
 
-    config = json.load(open(SOURCES_PATH, encoding="utf-8"))
+    config = json.load(open(sources_path, encoding="utf-8"))
     vocab = read_vocabularies()
     labels = {s["id"]: s["label"] for s in config["sources"]}
-    data = json.load(open(DATA_PATH, encoding="utf-8"))
+    data = json.load(open(data_path, encoding="utf-8"))
     before = json.dumps(data["items"], sort_keys=True)
 
     if args.from_cache:
         cache = json.load(open(args.from_cache, encoding="utf-8"))
-        fetched, ok = cache["items"], cache["ok"]
+        # Only sources still configured on this checkout: one removed from main
+        # while the fetch ran must not come back from the cache.
+        configured = {src["id"] for src in config["sources"]}
+        ok = [sid for sid in cache["ok"] if sid in configured]
+        fetched = {sid: cache["items"].get(sid, []) for sid in ok}
     else:
         api_key = os.environ.get("FIRECRAWL_API_KEY")
         fetched, ok = {}, []
@@ -405,12 +412,12 @@ def main(argv=None):
                 continue
             print(f"  {source['id']}: {len(items)} entries")
             fetched[source["id"]], ok = items, ok + [source["id"]]
-        write_json(CACHE_PATH, {"ok": ok, "items": fetched})
+        write_json(cache_path, {"ok": ok, "items": fetched})
 
     data = merge(data, fetched, ok, vocab, labels, config.get("providers", {}))
     if json.dumps(data["items"], sort_keys=True) != before:
         data["lastUpdated"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    write_json(DATA_PATH, data)
+    write_json(data_path, data)
     print(f"certifications.json: {len(data['items'])} entries")
     return 0
 

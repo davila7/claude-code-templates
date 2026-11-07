@@ -203,7 +203,8 @@ export function validateItem(item: Partial<LearningItem>): string[] {
   if (item.level !== undefined && !(LEVELS as readonly string[]).includes(item.level)) errors.push('level must be one of LEVELS');
   if (item.eligibility !== 'public' && item.eligibility !== 'partners') errors.push('eligibility must be public or partners');
   if (!Array.isArray(item.topics) || item.topics.some((t) => typeof t !== 'string' || !t)) errors.push('topics must be an array of strings');
-  if (item.price && (typeof item.price.amount !== 'number' || !item.price.currency)) errors.push('price needs amount and currency');
+  if (item.price !== undefined && item.price !== null && (typeof item.price !== 'object' || typeof item.price.amount !== 'number' || !item.price.currency))
+    errors.push('price must be null or have amount and currency');
   for (const f of ['addedAt', 'verifiedAt'] as const) {
     if (!item[f] || !/^\d{4}-\d{2}-\d{2}$/.test(item[f]!)) errors.push(`${f} must be YYYY-MM-DD`);
   }

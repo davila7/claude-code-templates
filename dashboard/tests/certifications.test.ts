@@ -96,3 +96,10 @@ test('items without a published price stay out of the price facet and sort last'
   assert.deepEqual(sortBy([unknown, free, a], 'price-desc').map((i) => i.id), [a.id, 'free', 'no-price']);
   assert.deepEqual(sortBy([unknown, free, a], 'price-asc').map((i) => i.id), ['free', a.id, 'no-price']);
 });
+
+test('validateItem rejects a price that is not null or an amount with a currency', () => {
+  for (const price of [0, 'free', { amount: 5 }]) {
+    assert.ok(validateItem({ ...data.items[0], price: price as never }).includes('price must be null or have amount and currency'), String(price));
+  }
+  assert.deepEqual(validateItem({ ...data.items[0], price: null }), []);
+});

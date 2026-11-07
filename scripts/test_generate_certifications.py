@@ -103,5 +103,60 @@ class HelpersTest(unittest.TestCase):
             self.assertEqual(g.validate_item(item, VOCAB), [], item["id"])
 
 
+class MainRetentionTest(unittest.TestCase):
+    """main() keeps a source's previous entries when a fetch shrinks, fails or is skipped."""
+
+    def setUp(self):
+        import tempfile
+        self.dir = tempfile.mkdtemp()
+        self.sources = os.path.join(self.dir, "sources.json")
+        self.data = os.path.join(self.dir, "data.json")
+        self.cache = os.path.join(self.dir, "cache.json")
+        src = dict(SOURCE, type="fake", url="https://acme.test/")
+        fc = dict(SOURCE, id="fc", label="Fc", type="firecrawl", url="https://acme.test/")
+        with open(self.sources, "w") as f:
+            json.dump({"providers": {"Acme": {}}, "sources": [src, fc]}, f)
+        prev = [fetched(f"acme-{n}", f"https://acme.test/{n}") for n in range(10)]
+        prev_fc = [dict(fetched("acme-fc", "https://acme.test/fc"), source="fc")]
+        with open(self.data, "w") as f:
+            json.dump(data(*prev, *prev_fc), f)
+        self.fetchers = dict(g.FETCHERS)
+        self.env = os.environ.pop("FIRECRAWL_API_KEY", None)
+
+    def tearDown(self):
+        g.FETCHERS.clear()
+        g.FETCHERS.update(self.fetchers)
+        if self.env is not None:
+            os.environ["FIRECRAWL_API_KEY"] = self.env
+
+    @staticmethod
+    def read(path):
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+
+    def run_main(self, fetcher):
+        g.FETCHERS["fake"] = fetcher
+        g.main([], self.sources, self.data, self.cache)
+        items = self.read(self.data)["items"]
+        return {i["id"] for i in items if i["source"] == "src"}, {i["id"] for i in items if i["source"] == "fc"}
+
+    def test_shrunk_fetch_keeps_previous_entries(self):
+        src_ids, fc_ids = self.run_main(lambda s, k: [fetched("acme-0", "https://acme.test/0")])
+        self.assertEqual(len(src_ids), 10)
+        self.assertEqual(fc_ids, {"acme-fc"})  # firecrawl skipped without a key
+        self.assertEqual(self.read(self.cache)["ok"], [])
+
+    def test_raising_fetcher_keeps_previous_entries(self):
+        def boom(s, k):
+            raise RuntimeError("HTTP 402")
+        src_ids, _ = self.run_main(boom)
+        self.assertEqual(len(src_ids), 10)
+
+    def test_full_fetch_replaces_entries(self):
+        new = [fetched(f"acme-new-{n}", f"https://acme.test/new-{n}") for n in range(8)]
+        src_ids, _ = self.run_main(lambda s, k: new)
+        self.assertEqual(src_ids, {i["id"] for i in new})
+
+
 if __name__ == "__main__":
     unittest.main()
