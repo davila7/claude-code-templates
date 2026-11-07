@@ -712,6 +712,13 @@ const componentSchema = component
                   <svg class="w-4 h-4 text-[var(--color-text-tertiary)]" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5.5 4h8M5.5 8h8M5.5 12h8M2.5 4h.01M2.5 8h.01M2.5 12h.01" /></svg>
                   <span class="font-semibold text-[var(--color-text-primary)]">{typePlural === 'mods' || typePlural === 'skills' || isPlugin ? mainFileName : component.path.split('/').pop()}</span>
                 </div>
+                {isPlugin && externalSource?.commit && (
+                  <p data-plugin-readme-note class="px-4 md:px-6 pt-3 text-[13px] md:text-[12.5px] leading-relaxed text-[var(--color-text-tertiary)]">
+                    This is the author's README: its install commands may install another version.{' '}
+                    <code class="font-mono text-[var(--color-text-secondary)]">{pluginId}</code> installs commit{' '}
+                    <code class="font-mono text-[var(--color-text-secondary)]">{externalSource.commit.slice(0, 7)}</code>, the one listed and scanned here.
+                  </p>
+                )}
                 <div class="p-4 md:p-6">
                   {isJsonType ? (
                     <JsonViewer client:load content={component.content || ''} />
