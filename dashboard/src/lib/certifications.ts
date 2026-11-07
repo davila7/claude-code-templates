@@ -24,7 +24,7 @@ export interface LearningItem {
   prepUrl?: string;
   prepCourses?: number;
   examGuideUrl?: string;
-  /** null or absent = free */
+  /** null or amount 0 = free; absent = not published by the provider (shown as "See price"). */
   price?: { amount: number; currency: string } | null;
   format?: string;
   credential?: string;
@@ -77,8 +77,10 @@ export type Level = (typeof LEVELS)[number];
 export const LEVEL_ORDER: Record<string, number> = Object.fromEntries(LEVELS.map((l, i) => [l, i]));
 
 export type PriceBand = 'free' | 'paid';
-export function priceBand(item: LearningItem): PriceBand {
-  return !item.price || item.price.amount === 0 ? 'free' : 'paid';
+/** undefined when the provider publishes no price, so the item is left out of the price facet. */
+export function priceBand(item: LearningItem): PriceBand | undefined {
+  if (item.price === undefined) return undefined;
+  return item.price === null || item.price.amount === 0 ? 'free' : 'paid';
 }
 
 /** Facets the page filters on. Each maps an item to the value(s) it matches. */
@@ -88,7 +90,10 @@ export const FACETS = {
   kind: (i: LearningItem) => [i.kind],
   level: (i: LearningItem) => (i.level ? [i.level] : []),
   role: (i: LearningItem) => (i.role ? [i.role] : []),
-  price: (i: LearningItem) => [priceBand(i)],
+  price: (i: LearningItem) => {
+    const band = priceBand(i);
+    return band ? [band] : [];
+  },
 } satisfies Record<string, (i: LearningItem) => string[]>;
 export type FacetKey = keyof typeof FACETS;
 export type Selection = Partial<Record<FacetKey, string[]>>;
@@ -129,12 +134,15 @@ export function facetCounts(items: LearningItem[], query: string, sel: Selection
 
 export type SortKey = 'recommended' | 'price-asc' | 'price-desc' | 'newest';
 export function sortBy(items: LearningItem[], key: SortKey): LearningItem[] {
-  // Amounts in different currencies are not comparable: group by currency
-  // (USD first), then order by amount inside each group. Free counts as USD 0.
+  // Items without a published price sort last either way. Amounts in different
+  // currencies are not comparable: group by currency (USD first), then order by
+  // amount inside each group. Free counts as USD 0.
+  const unpriced = (i: LearningItem) => (i.price === undefined ? 1 : 0);
   const amount = (i: LearningItem) => i.price?.amount ?? 0;
   const currency = (i: LearningItem) => (i.price?.amount ? i.price.currency : 'USD');
   const group = (a: LearningItem, b: LearningItem) =>
-    currency(a) === currency(b) ? 0 : currency(a) === 'USD' ? -1 : currency(b) === 'USD' ? 1 : currency(a).localeCompare(currency(b));
+    unpriced(a) - unpriced(b) ||
+    (currency(a) === currency(b) ? 0 : currency(a) === 'USD' ? -1 : currency(b) === 'USD' ? 1 : currency(a).localeCompare(currency(b)));
   if (key === 'price-asc') return [...items].sort((a, b) => group(a, b) || amount(a) - amount(b));
   if (key === 'price-desc') return [...items].sort((a, b) => group(a, b) || amount(b) - amount(a));
   if (key === 'newest') return [...items].sort((a, b) => b.addedAt.localeCompare(a.addedAt));
@@ -146,7 +154,8 @@ export function isHttpUrl(url: unknown): url is string {
 }
 
 export function formatPrice(price: LearningItem['price']): string {
-  if (!price || price.amount === 0) return 'Free';
+  if (price === undefined) return 'See price';
+  if (price === null || price.amount === 0) return 'Free';
   const symbol = price.currency === 'USD' ? '$' : `${price.currency} `;
   return `${symbol}${price.amount}`;
 }
@@ -194,7 +203,8 @@ export function validateItem(item: Partial<LearningItem>): string[] {
   if (item.level !== undefined && !(LEVELS as readonly string[]).includes(item.level)) errors.push('level must be one of LEVELS');
   if (item.eligibility !== 'public' && item.eligibility !== 'partners') errors.push('eligibility must be public or partners');
   if (!Array.isArray(item.topics) || item.topics.some((t) => typeof t !== 'string' || !t)) errors.push('topics must be an array of strings');
-  if (item.price && (typeof item.price.amount !== 'number' || !item.price.currency)) errors.push('price needs amount and currency');
+  if (item.price !== undefined && item.price !== null && (typeof item.price !== 'object' || typeof item.price.amount !== 'number' || !item.price.currency))
+    errors.push('price must be null or have amount and currency');
   for (const f of ['addedAt', 'verifiedAt'] as const) {
     if (!item[f] || !/^\d{4}-\d{2}-\d{2}$/.test(item[f]!)) errors.push(`${f} must be YYYY-MM-DD`);
   }

@@ -12,6 +12,10 @@ on:
       # tests/usage-tracking.test.ts checks every event name the CLI sends
       # against the tracking endpoints, so a CLI change must run it too.
       - 'cli-tool/src/**'
+      # The certifications pipeline reads the vocabularies from dashboard/src/lib/certifications.ts.
+      - 'scripts/generate_certifications.py'
+      - 'scripts/certifications_sources.json'
+      - 'scripts/test_generate_certifications.py'
       - '.github/workflows/dashboard-ci.yml'
 
 permissions:
@@ -45,6 +49,9 @@ jobs:
       - name: Unit tests
         run: npm test
         working-directory: dashboard
+
+      - name: Certifications pipeline tests
+        run: python3 -m unittest scripts/test_generate_certifications.py -v
 
       - name: Build
         run: npm run build
