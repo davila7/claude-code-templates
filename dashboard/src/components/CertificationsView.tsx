@@ -212,22 +212,43 @@ export default function CertificationsView() {
       .finally(() => setLoading(false));
   }, []);
 
+  // Each tab starts clean: a search or filter from one tab would usually
+  // match nothing in the other.
+  const applyTab = useCallback((next: Tab) => {
+    setTab((cur) => {
+      if (cur !== next) {
+        setSelection({});
+        setQuery('');
+      }
+      return next;
+    });
+  }, []);
+
   useEffect(() => {
-    const sync = () => setTab(tabFromHash());
+    const sync = () => applyTab(tabFromHash());
     sync();
     window.addEventListener('hashchange', sync);
     return () => window.removeEventListener('hashchange', sync);
-  }, []);
+  }, [applyTab]);
 
   const all = data?.items ?? [];
   const items = useMemo(() => all.filter((i) => i.kind === tab), [all, tab]);
   const tabCount = (k: Tab) => all.filter((i) => i.kind === k).length;
   const switchTab = (next: Tab) => {
     if (next === tab) return;
-    setTab(next);
-    setSelection({});
+    applyTab(next);
     const { hash } = TABS.find((t) => t.key === next)!;
     history.replaceState(null, '', `${window.location.pathname}${window.location.search}${hash}`);
+  };
+  // WAI-ARIA tabs: arrows, Home and End move between tabs and select them.
+  const onTabKey = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    const i = TABS.findIndex((t) => t.key === tab);
+    const to = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: TABS.length - 1 }[e.key];
+    if (to === undefined) return;
+    e.preventDefault();
+    const next = TABS[(to + TABS.length) % TABS.length].key;
+    switchTab(next);
+    document.getElementById(`cert-tab-${next}`)?.focus();
   };
   const facets = useMemo(
     () =>
@@ -291,8 +312,12 @@ export default function CertificationsView() {
               key={t.key}
               type="button"
               role="tab"
+              id={`cert-tab-${t.key}`}
               aria-selected={on}
+              aria-controls="cert-tabpanel"
+              tabIndex={on ? 0 : -1}
               onClick={() => switchTab(t.key)}
+              onKeyDown={onTabKey}
               className={`-mb-px px-3 py-2 text-[13px] font-medium border-b-2 transition-colors ${
                 on
                   ? 'border-[var(--color-accent)] text-[var(--color-text-primary)]'
@@ -306,6 +331,7 @@ export default function CertificationsView() {
         })}
       </div>
 
+      <div role="tabpanel" id="cert-tabpanel" aria-labelledby={`cert-tab-${tab}`}>
       {showGate && (
         <div className="mx-4 sm:mx-6 mt-2 mb-1 border border-[var(--color-border)] bg-[var(--color-accent-light)] rounded-lg px-4 py-3 flex items-center gap-3">
           <span className="text-[var(--color-accent)] shrink-0"><LockIcon className="w-5 h-5" /></span>
@@ -401,6 +427,7 @@ export default function CertificationsView() {
             </p>
           )}
         </div>
+      </div>
       </div>
 
       {selected && (
