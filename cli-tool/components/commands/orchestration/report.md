@@ -1,5 +1,7 @@
 ---
 description: "Generate comprehensive reports on task execution, progress, and metrics."
+allowed-tools: Read, Write, Edit
+argument-hint: "[report-type] [options]"
 ---
 
 # Task Report Command
