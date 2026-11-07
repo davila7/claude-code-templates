@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "agentmemory": {
+      "description": "Persistent memory for coding agents. Saves decisions, lessons and session history and recalls them in later sessions. Runs the @agentmemory/mcp stdio server, which calls a local agentmemory server at http://localhost:3111 (start it with `npx -y @agentmemory/agentmemory`; set AGENTMEMORY_URL to use another address). Memory is stored under ~/.agentmemory on your machine. Nothing is sent to a model provider unless you configure one.",
+      "command": "npx",
+      "args": ["-y", "@agentmemory/mcp"]
+    }
+  }
+}
