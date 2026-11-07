@@ -16,7 +16,7 @@ If you discover a security vulnerability in Claude Code Templates, please report
 Use [Report a vulnerability](https://github.com/davila7/claude-code-templates/security/advisories/new). It keeps the report private, lets us work on the fix with you in a private fork, and gives you credit when the advisory is published.
 
 ### Email
-Send details of the vulnerability to [dan.avila7@gmail.com](mailto:dan.avila7@gmail.com) with the subject line "SECURITY: Claude Code Templates Vulnerability Report"
+Send details of the vulnerability to [daniel@aitmpl.com](mailto:daniel@aitmpl.com) with the subject line "SECURITY: Claude Code Templates Vulnerability Report"
 
 Please do not open a public issue, pull request or discussion for a vulnerability.
 
@@ -71,7 +71,7 @@ When using Claude Code Templates:
 
 - **Maintainer**: Daniel Avila
 - **Website**: [danielavila.me](https://danielavila.me)
-- **Email**: [dan.avila7@gmail.com](mailto:dan.avila7@gmail.com)
+- **Email**: [daniel@aitmpl.com](mailto:daniel@aitmpl.com)
 - **GitHub**: [@davila7](https://github.com/davila7)
 
 ## Legal
