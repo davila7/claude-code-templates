@@ -12618,5 +12618,30 @@
         "pinion"
       ]
     }
+  },
+  {
+    "slug": "agency-os",
+    "name": "Agency Os",
+    "author": "AutomateLab-tech",
+    "description": "Run your work like an AI agency, from a single Notion board. Ships as a Claude Code plugin and an MCP server — runs in Cursor/Cline/any MCP host.",
+    "github": "https://github.com/ratamaha-git/agency-os",
+    "stars": 4,
+    "type": "plugin",
+    "tags": [
+      "skills"
+    ],
+    "contains": {
+      "skills": 1
+    },
+    "highlights": [
+      "Plugin declares: 1 skills",
+      "Web UI: https://automatelab.tech/products/skills-and-plugins/agency-os/"
+    ],
+    "website": "https://automatelab.tech/products/skills-and-plugins/agency-os/",
+    "plugin_manifest": {
+      "skills": [
+        "./skills/agency-os/"
+      ]
+    }
   }
 ]
