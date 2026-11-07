@@ -134,7 +134,11 @@ type Settings = { promptCacheTtl?: unknown; idleCompaction?: unknown; autoCompac
 
 // the settings the mod follows, each from the first settings file that sets it (local over project over user)
 async function readSettings($: EngineInterface): Promise<Settings> {
-  const home = await $.env.get('HOME').catch(() => undefined)
+  async function homeDir($: EngineInterface): Promise<string | undefined> {
+  return (await $.env.get('HOME').catch(() => undefined)) || (await $.env.get('USERPROFILE').catch(() => undefined))
+}
+
+const home = await homeDir($)
   const cwd = await $.session.cwd().catch(() => undefined)
   const files = [cwd && `${cwd}/.claude/settings.local.json`, cwd && `${cwd}/.claude/settings.json`, home && `${home}/.claude/settings.json`]
   const out: Settings = {}
