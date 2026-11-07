@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "rekindle": {
+      "description": "Local session continuity engine for Claude Code. Provides boot reports with orientation scoring, structured end-session capture, and memory search. Run `npx rekindle init` in your project first to create the local database.",
+      "command": "npx",
+      "args": ["-y", "rekindle"]
+    }
+  }
+}
