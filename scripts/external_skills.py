@@ -282,19 +282,35 @@ def _inside(local: Path, rel: str) -> Path | None:
     return p if p == base or base in p.parents else None
 
 
-def _md_names(local: Path, default_dir: str, value: object) -> list[str]:
+_FRONTMATTER_NAME = re.compile(r"\A---\r?\n(?:.*\r?\n)*?name:[ \t]*['\"]?([^'\"\r\n#]+?)['\"]?[ \t]*\r?\n(?:.*\r?\n)*?---", re.M)
+
+
+def _frontmatter_name(path: Path) -> str | None:
+    """The `name:` of a Markdown file's YAML frontmatter, which Claude Code shows for
+    skills and agents instead of the folder or file name."""
+    try:
+        m = _FRONTMATTER_NAME.match(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError):
+        return None
+    return m.group(1).strip() if m else None
+
+
+def _md_names(local: Path, default_dir: str, value: object, use_frontmatter: bool = False) -> list[str]:
     """Names of the Markdown components (commands, agents, output styles) Claude Code loads:
-    the manifest key replaces the default folder; subfolders join with ':'."""
+    the manifest key replaces the default folder; subfolders join with ':'. With
+    use_frontmatter (agents), a frontmatter `name` wins over the path."""
     roots = _component_paths(value) if value is not None else [default_dir]
     names = set(str(k) for k in value) if isinstance(value, dict) else set()
+    def name_of(f: Path, path_name: str) -> str:
+        return (_frontmatter_name(f) if use_frontmatter else None) or path_name
     for rel in roots:
         p = _inside(local, rel)
         if p is None:
             continue
         if p.is_file() and p.suffix == ".md":
-            names.add(p.stem)
+            names.add(name_of(p, p.stem))
         elif p.is_dir():
-            names.update(":".join(f.relative_to(p).with_suffix("").parts) for f in p.rglob("*.md"))
+            names.update(name_of(f, ":".join(f.relative_to(p).with_suffix("").parts)) for f in p.rglob("*.md"))
     return sorted(names)
 
 
@@ -322,14 +338,15 @@ def plugin_inventory(local: Path) -> dict:
         if p is None or not p.is_dir():
             continue
         if p != local.resolve() and (p / "SKILL.md").is_file():
-            skills.add(p.name)
-        skills.update(d.name for d in p.iterdir() if d.is_dir() and (d / "SKILL.md").is_file())
+            skills.add(_frontmatter_name(p / "SKILL.md") or p.name)
+        skills.update(_frontmatter_name(d / "SKILL.md") or d.name
+                      for d in p.iterdir() if d.is_dir() and (d / "SKILL.md").is_file())
     if not skills and "skills" not in meta and (local / "SKILL.md").is_file():
         skills.add(str(meta.get("name") or local.name))  # a single skill at the plugin root
     inv = {
         "skills": sorted(skills),
         "commands": _md_names(local, "commands", meta.get("commands")),
-        "agents": _md_names(local, "agents", meta.get("agents")),
+        "agents": _md_names(local, "agents", meta.get("agents"), use_frontmatter=True),
         "hooks": _json_keys(local / "hooks" / "hooks.json", "hooks"),
         "mcpServers": _json_keys(local / ".mcp.json", "mcpServers"),
         "lspServers": _json_keys(local / ".lsp.json"),

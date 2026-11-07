@@ -90479,24 +90479,24 @@
       ],
       "contains": {
         "skills": [
-          "egm_bootstrap",
-          "egm_brainstorm",
-          "egm_draft",
-          "egm_drift_report",
-          "egm_resolve",
-          "egm_review",
-          "egm_review_loop"
+          "egm-bootstrap",
+          "egm-brainstorm",
+          "egm-draft",
+          "egm-drift-report",
+          "egm-resolve",
+          "egm-review",
+          "egm-review-loop"
         ],
         "agents": [
-          "bootstrap_orchestrator",
-          "codebase_details",
-          "comprehension",
-          "design_critic",
-          "implementation_readiness",
-          "structural",
-          "style",
-          "synthesizer",
-          "zoom_out"
+          "egm-bootstrap-orchestrator",
+          "egm-codebase-details",
+          "egm-comprehension",
+          "egm-design",
+          "egm-implementation-readiness",
+          "egm-structural",
+          "egm-style",
+          "egm-synthesizer",
+          "egm-zoom-out"
         ]
       },
       "source": {
