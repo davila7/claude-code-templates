@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import CompanyLogo from './CompanyLogo';
+import { openSignIn } from '../lib/sign-in';
 
 interface Job {
   id: string;
@@ -82,7 +83,7 @@ export default function JobsPreview({ variant = 'preview' }: Props) {
     if (!isLoaded) { e.preventDefault(); return; }
     if (!isSignedIn) {
       e.preventDefault();
-      (window as any).Clerk?.openSignIn?.();
+      openSignIn();
     }
   }
 

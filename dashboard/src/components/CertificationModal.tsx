@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import CompanyLogo from './CompanyLogo';
 import { formatPrice, isHttpUrl, type LearningItem, type ProviderInfo } from '../lib/certifications';
+import { openSignIn } from '../lib/sign-in';
 
 // Same sign-in gate as /jobs (JobsView.tsx): the details are public, following
 // a link to the provider needs an aitmpl.com account.
@@ -47,7 +48,7 @@ function GatedLink({ href, signedIn, loaded, primary, children }: GatedLinkProps
       onClick={(e) => {
         if (open) return;
         e.preventDefault();
-        if (loaded) (window as any).Clerk?.openSignIn?.();
+        if (loaded) openSignIn();
       }}
       className={`${base} ${look}`}
     >

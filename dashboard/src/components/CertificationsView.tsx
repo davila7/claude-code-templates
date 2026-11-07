@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CertificationModal, { LockIcon } from './CertificationModal';
 import CompanyLogo from './CompanyLogo';
 import { useGlobalAuth } from '../lib/use-global-auth';
+import { openSignIn } from '../lib/sign-in';
 import {
   FACETS,
   facetCounts,
@@ -340,7 +341,7 @@ export default function CertificationsView() {
             <span className="text-[var(--color-text-secondary)]"> to open registration, prep courses and exam guides</span>
           </p>
           <button
-            onClick={() => (window as any).Clerk?.openSignIn?.()}
+            onClick={() => openSignIn()}
             className="px-3 py-1.5 bg-[var(--color-surface-3)] hover:bg-[var(--color-surface-4)] text-[12px] font-medium text-[var(--color-text-primary)] rounded-md transition-colors"
           >
             Sign In
