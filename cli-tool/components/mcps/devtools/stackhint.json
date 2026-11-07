@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "stackhint": {
+      "description": "Read-only advisor that scans your repository (manifests, compose, CI, Terraform, git history) and your Claude Code / Codex setup, then recommends MCP servers, plugins and skills that fit the project, citing the file behind each suggestion. It never installs anything itself: plan_install only shows the exact config change for you to apply.",
+      "command": "npx",
+      "args": ["-y", "github:Protemir/stackhint", "mcp"]
+    }
+  }
+}
