@@ -3,9 +3,11 @@
 
 The validator only understands plugin layouts, and the catalog nests
 components by category, so agents, commands and skills are copied flat into a
-scratch plugin. Hooks and MCP components are single JSON files; each is wrapped
-as hooks/hooks.json or .mcp.json of its own scratch plugin. Mods are validated
-by mods-typecheck.yml; settings and loops have no official validator.
+scratch plugin. A catalog plugin (plugins/, source.json) is validated as
+itself, and the aitmpl marketplace.json built from all of them is validated
+whenever one changes. Hooks and MCP components are single JSON files; each is
+wrapped as hooks/hooks.json or .mcp.json of its own scratch plugin. Mods are
+validated by mods-typecheck.yml; settings and loops have no official validator.
 
 Usage:
   python scripts/validate_components.py                # whole catalog
@@ -30,6 +32,12 @@ def claude(path, strict):
         return json.loads(r.stdout)
     except json.JSONDecodeError:
         return {"contents": [{"file": str(path), "type": "?", "errors": [{"message": (r.stdout + r.stderr)[:300]}], "warnings": []}]}
+
+
+def results(report):
+    """Every result of a validate run: the manifest (plugin.json or marketplace.json)
+    is reported apart from the component files under `contents`."""
+    return ([report["manifest"]] if report.get("manifest") else []) + report.get("contents", [])
 
 
 def new_plugin(tmp):
@@ -71,22 +79,37 @@ def main():
         if changed is None or any(c.startswith(p.parent.relative_to(BASE).as_posix() + "/") for c in changed):
             flat = "skills/" + p.parent.relative_to(BASE / "skills").as_posix().replace("/", "__")
             shutil.copytree(p.parent, plug / flat, symlinks=True); mapping[flat] = rel; n += 1
-    # External skills: source.json + the files at the pinned commit.
+    # External skills and plugins: source.json + the files at the pinned commit.
     for d in external_skills.all_external_dirs():
         rel = (d / "source.json").relative_to(BASE).as_posix()
         if changed is None or any(c.startswith(d.relative_to(BASE).as_posix() + "/") for c in changed):
-            flat = "skills/" + d.relative_to(BASE / "skills").as_posix().replace("/", "__")
+            flat = "skills/" + d.relative_to(BASE).as_posix().split("/", 1)[1].replace("/", "__")
             try:
                 local = external_skills.local_dir(d)
-                if external_skills.is_plugin(local):
+                if external_skills.kind_of(d) == "plugin":
                     # A whole plugin is validated as itself, not flattened into the probe.
-                    for c in claude(local, a.strict).get("contents", []):
+                    for c in results(claude(local, a.strict)):
                         findings.append({**c, "file": rel})
                     n += 1
                     continue
                 shutil.copytree(local, plug / flat); mapping[flat] = rel; n += 1
             except (external_skills.ManifestError, OSError) as e:
-                findings.append({"type": "skill", "file": rel, "errors": [{"message": str(e)}], "warnings": []})
+                findings.append({"type": external_skills.kind_of(d), "file": rel, "errors": [{"message": str(e)}], "warnings": []})
+    # The aitmpl marketplace (dashboard/public/marketplace.json) as the generator
+    # would write it: a bad entry would reach everyone who added the marketplace.
+    plugins = external_skills.plugin_dirs()
+    if plugins and (changed is None or any(c.startswith("plugins/") for c in changed)):
+        rel = "plugins (marketplace.json)"
+        try:
+            mk = work / "marketplace" / ".claude-plugin"
+            mk.mkdir(parents=True)
+            (mk / "marketplace.json").write_text(
+                external_skills.marketplace_json(external_skills.build_marketplace(plugins)))
+            for c in results(claude(mk / "marketplace.json", a.strict)):
+                findings.append({**c, "file": rel})
+            n += 1
+        except (external_skills.ManifestError, OSError) as e:
+            findings.append({"type": "marketplace", "file": rel, "errors": [{"message": str(e)}], "warnings": []})
     if n:
         for c in claude(plug, a.strict).get("contents", []):
             f = Path(c["file"]).relative_to(plug).as_posix()

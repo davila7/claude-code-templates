@@ -31,7 +31,8 @@ const TYPES = {
   hook:    { icon: unicodeOr('↯', '!'), label: 'hook',    color: chalk.hex('#FACC15') },
   skill:   { icon: unicodeOr('✦', '+'), label: 'skill',   color: chalk.hex('#4ADE80') },
   loop:    { icon: unicodeOr('↻', '@'), label: 'loop',    color: chalk.hex('#FB923C') },
-  mod:     { icon: unicodeOr('◈', '&'), label: 'mod',     color: chalk.hex('#FCA5A5') }
+  mod:     { icon: unicodeOr('◈', '&'), label: 'mod',     color: chalk.hex('#FCA5A5') },
+  plugin:  { icon: unicodeOr('▣', '='), label: 'plugin',  color: chalk.hex('#FDE68A') }
 };
 
 const WRITES = {
@@ -42,7 +43,8 @@ const WRITES = {
   hook: 'settings',
   skill: '.claude/skills/',
   loop: '.claude/loops/ + referenced',
-  mod: '.claude/skills/'
+  mod: '.claude/skills/',
+  plugin: 'settings + ~/.claude/plugins/'
 };
 
 const LOCATIONS = [

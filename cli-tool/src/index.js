@@ -14,7 +14,7 @@ const { runAnalytics } = require('./analytics');
 const { startChatsMobile } = require('./chats-mobile');
 const { runHealthCheck } = require('./health-check');
 const { trackingService } = require('./tracking-service');
-const { fetchExternalManifest, downloadExternalSkill, isPluginFiles } = require('./external-skill');
+const { fetchExternalManifest, downloadExternalSkill } = require('./external-skill');
 const { createInstallUI } = require('./install-ui');
 const { findRemovedCommands, reportRemovedCommands } = require('./removed-commands');
 const { spawnClaude, claudeCommandLine } = require('./claude-launcher');
@@ -70,7 +70,7 @@ async function createClaudeConfig(options = {}) {
   }
 
   // Handle multiple components installation (new approach)
-  if (options.agent || options.command || options.mcp || options.setting || options.hook || options.skill || options.loop || options.mod || options.functionHook) {
+  if (options.agent || options.command || options.mcp || options.setting || options.hook || options.skill || options.loop || options.mod || options.functionHook || options.plugin) {
     // If --workflow is used with components, treat it as YAML
     if (options.workflow) {
       options.yaml = options.workflow;
@@ -1519,14 +1519,10 @@ async function installExternalSkill(skillName, skillBaseName, manifest, targetDi
     if (!options.silent) console.log(chalk.green(`✓ Downloaded: ${relPath}`));
   }
 
-  const isPlugin = isPluginFiles(files);
   if (!options.silent) {
-    console.log(chalk.green(`✅ ${isPlugin ? 'Plugin' : 'Skill'} "${skillName}" installed successfully!`));
-    console.log(chalk.cyan(`📁 Installed to: ${path.relative(targetDir, isPlugin ? skillDir : path.join(skillDir, 'SKILL.md'))}`));
+    console.log(chalk.green(`✅ Skill "${skillName}" installed successfully!`));
+    console.log(chalk.cyan(`📁 Installed to: ${path.relative(targetDir, path.join(skillDir, 'SKILL.md'))}`));
     console.log(chalk.cyan(`📦 Source: https://github.com/${manifest.repo}/tree/${manifest.commit}${manifest.path ? '/' + manifest.path : ''}`));
-    if (isPlugin) {
-      console.log(chalk.blue(`🧩 Claude Code loads it as the plugin "${skillBaseName}@skills-dir" on the next session (after the workspace trust prompt); its commands start with /${skillBaseName}:`));
-    }
   }
 
   trackingService.trackDownload('skill', skillName, {
@@ -1580,6 +1576,101 @@ function parseLoopReferencedComponents(loopContent) {
     break;
   }
   return refs;
+}
+
+/**
+ * Install a catalog plugin (--plugin [category/]name, --scope project|user|local).
+ *
+ * A catalog plugin is an entry of the aitmpl Claude Code marketplace
+ * (https://www.aitmpl.com/marketplace.json), pinned to the commit that was
+ * reviewed; src/plugin-install.js has Claude Code install it with its own
+ * `claude plugin marketplace add` + `claude plugin install`, so the files live
+ * in ~/.claude/plugins/cache/aitmpl/{name}/{version}/ and /plugin manages them.
+ */
+async function installIndividualPlugin(pluginRef, targetDir, options = {}) {
+  const plugins = require('./plugin-install');
+  console.log(chalk.blue(`🧩 Installing plugin: ${pluginRef}`));
+  const startTime = Date.now();
+  let componentName = pluginRef;
+  const fail = (errorType, errorMessage) => {
+    trackingService.trackInstallationOutcome('plugin', componentName, 'failure', { errorType, errorMessage, durationMs: Date.now() - startTime, batchId: options.batchId });
+    return false;
+  };
+
+  const ref = plugins.parsePluginRef(pluginRef);
+  if (!ref) {
+    console.log(chalk.red('❌ Invalid plugin name. Expected "name" or "category/name" (lowercase letters, digits, "." and "-"), e.g. champion-kit.'));
+    return fail('invalid_name');
+  }
+  const scope = plugins.normalizeScope(options.scope);
+  if (!scope) {
+    console.log(chalk.red(`❌ Invalid --scope "${options.scope}": use project, user or local.`));
+    return fail('invalid_scope');
+  }
+
+  let entry;
+  try {
+    const found = plugins.findEntry(await plugins.fetchMarketplace(), ref);
+    if (found.error === 'not_found' || found.error === 'wrong_category') {
+      console.log(chalk.red(found.error === 'not_found'
+        ? `❌ Plugin "${ref.name}" not found in the aitmpl marketplace`
+        : `❌ Plugin "${ref.name}" is listed as ${found.entry.category}/${ref.name}, not ${ref.category}/${ref.name}`));
+      console.log(chalk.gray('   Browse plugins at https://www.aitmpl.com/plugins'));
+      return fail('not_found');
+    }
+    if (found.error) {
+      console.log(chalk.red(`❌ The marketplace entry for "${ref.name}" is not pinned to a commit; not installing it`));
+      return fail('invalid_entry');
+    }
+    entry = found.entry;
+  } catch (error) {
+    console.log(chalk.red(`❌ ${error.message}`));
+    return fail('network_error', error.message);
+  }
+  componentName = `${entry.category || ref.category || 'uncategorized'}/${ref.name}`;
+  const pluginId = `${ref.name}@${plugins.MARKETPLACE_NAME}`;
+  console.log(chalk.gray(`📦 ${entry.source.url.replace(/^https:\/\/github\.com\//, '').replace(/\.git$/, '')}@${entry.source.sha.slice(0, 7)}, ${scope} scope`));
+
+  let outcome;
+  try {
+    outcome = await plugins.installWithClaude({ name: ref.name, scope, targetDir });
+    if (outcome.missing) {
+      // No claude command: declare it in settings; Claude Code fetches it on its next start.
+      outcome = await plugins.installWithSettings({ name: ref.name, scope, targetDir });
+    }
+  } catch (error) {
+    console.log(chalk.red(`❌ ${error.message}`));
+    console.log(chalk.gray('   The same install by hand:'));
+    for (const command of plugins.manualCommands(ref.name, scope)) console.log(chalk.gray(`   ${command}`));
+    return fail('install_error', error.message);
+  }
+
+  options.onWrite?.(plugins.settingsFile(scope, targetDir));
+  if (outcome.method === 'claude') {
+    const installPath = await plugins.installedPath(ref.name, scope, targetDir);
+    if (installPath) options.onWrite?.(installPath);
+    console.log(chalk.green(`✅ ${pluginId} installed by Claude Code (${scope} scope)${installPath ? `: ${installPath}` : ''}`));
+  } else {
+    console.log(chalk.yellow(`⚠️  The claude command was not found: ${pluginId} is enabled in ${path.relative(targetDir, outcome.file) || outcome.file}, and Claude Code downloads it the next time it starts.`));
+  }
+  const others = await plugins.sameNameElsewhere(ref.name, scope, targetDir);
+  if (others.length > 0) {
+    console.log(chalk.yellow(`⚠️  ${others.join(', ')} is enabled too. Claude Code loads both, and only one copy's hooks run: disable one with "claude plugin disable <id>".`));
+  }
+  if (!options.silent) {
+    console.log(chalk.gray(`   Manage it in Claude Code with /plugin; update with: claude plugin update ${pluginId}`));
+  }
+
+  trackingService.trackDownload('plugin', componentName, {
+    installation_type: 'individual_plugin',
+    target_directory: path.relative(process.cwd(), targetDir),
+    source: 'marketplace',
+    scope,
+    method: outcome.method,
+    commit: entry.source.sha
+  });
+  trackingService.trackInstallationOutcome('plugin', componentName, 'success', { durationMs: Date.now() - startTime, batchId: options.batchId });
+  return true;
 }
 
 /**
@@ -1807,7 +1898,8 @@ async function installMultipleComponents(options, targetDir) {
       hooks: [],
       skills: [],
       loops: [],
-      mods: []
+      mods: [],
+      plugins: []
     };
     
     // Parse comma-separated values for each component type
@@ -1852,7 +1944,12 @@ async function installMultipleComponents(options, targetDir) {
       components.mods = modInputs.join(',').split(',').map(m => m.trim()).filter(m => m);
     }
 
-    const totalComponents = components.agents.length + components.commands.length + components.mcps.length + components.settings.length + components.hooks.length + components.skills.length + components.loops.length + components.mods.length;
+    if (options.plugin) {
+      const pluginsInput = Array.isArray(options.plugin) ? options.plugin.join(',') : options.plugin;
+      components.plugins = pluginsInput.split(',').map(p => p.trim()).filter(p => p);
+    }
+
+    const totalComponents = components.agents.length + components.commands.length + components.mcps.length + components.settings.length + components.hooks.length + components.skills.length + components.loops.length + components.mods.length + components.plugins.length;
     
     if (totalComponents === 0) {
       console.log(chalk.yellow('⚠️  No components specified to install.'));
@@ -1868,7 +1965,8 @@ async function installMultipleComponents(options, targetDir) {
       ...components.hooks.map(name => ({ type: 'hook', name })),
       ...components.skills.map(name => ({ type: 'skill', name })),
       ...components.loops.map(name => ({ type: 'loop', name })),
-      ...components.mods.map(name => ({ type: 'mod', name }))
+      ...components.mods.map(name => ({ type: 'mod', name })),
+      ...components.plugins.map(name => ({ type: 'plugin', name }))
     ];
 
     if (!options.skipHeader) ui.header();
@@ -1890,7 +1988,8 @@ async function installMultipleComponents(options, targetDir) {
       hook: installIndividualHook,
       skill: installIndividualSkill,
       loop: installIndividualLoop,
-      mod: installIndividualMod
+      mod: installIndividualMod,
+      plugin: installIndividualPlugin
     };
     const usesLocations = new Set(['setting', 'hook', 'loop']);
 
@@ -1944,6 +2043,9 @@ async function installMultipleComponents(options, targetDir) {
 
     if (options.yaml) {
       ui.note('Workflow file created in .claude/workflows/. Use it with Claude Code to run the complete setup.');
+    }
+    if (items.some((item, i) => item.type === 'plugin' && results[i].ok)) {
+      ui.note('Plugins are managed by Claude Code: /plugin lists them, "claude plugin update <name>@aitmpl" updates one.');
     }
 
     // Note: Individual components are already tracked separately in their installation functions

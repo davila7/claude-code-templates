@@ -37,6 +37,8 @@ export const COMPONENT_TYPES = [
   'skill',
   'loop',
   'mod',
+  // CLI after 1.32.1: --plugin (catalog plugins installed through the aitmpl marketplace)
+  'plugin',
   'template',
 ] as const;
 

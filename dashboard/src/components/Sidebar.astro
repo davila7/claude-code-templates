@@ -295,7 +295,14 @@ function isActive(path: string): boolean {
 
   window.addEventListener('popstate', updateSidebarActive);
 
-  // Load component counts directly — no dependency on page components
+  // Load component counts directly — no dependency on page components.
+  // The Plugins entry counts the collections on /plugins (plugins.json), so the
+  // "plugins" in counts.json (this catalog's own plugins) is left out.
+  function applyComponentCounts(counts: Record<string, number>) {
+    const { plugins: _catalogPlugins, ...rest } = counts;
+    applyCounts(rest);
+  }
+
   function applyCounts(counts: Record<string, number>) {
     document.querySelectorAll('.sidebar-nav-count').forEach((el) => {
       const type = (el as HTMLElement).dataset.countType;
@@ -309,7 +316,7 @@ function isActive(path: string): boolean {
   fetch('/counts.json')
     .then((r) => r.json())
     .then((counts: Record<string, number>) => {
-      applyCounts(counts);
+      applyComponentCounts(counts);
     })
     .catch(() => {});
 
@@ -324,7 +331,7 @@ function isActive(path: string): boolean {
 
   // Also listen for counts from React grid (may arrive with more accurate data)
   window.addEventListener('component-counts', ((e: CustomEvent) => {
-    applyCounts(e.detail as Record<string, number>);
+    applyComponentCounts(e.detail as Record<string, number>);
   }) as EventListener);
 
   // Custom tooltip functionality

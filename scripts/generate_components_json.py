@@ -261,8 +261,8 @@ def run_security_validation():
 def previous_download_stats(catalog_path='docs/components.json'):
     """
     The download counts already in the generated catalog, keyed the way
-    fetch_download_stats() keys them (type/category/name, templates/name,
-    plugins/name). Used by --skip-downloads (a content-only regeneration
+    fetch_download_stats() keys them (type/category/name, templates/name).
+    Used by --skip-downloads (a content-only regeneration
     keeps yesterday's counts instead of resetting them to 0, and the daily
     cron brings them up to date) and whenever fetch_download_stats() fails.
     """
@@ -282,8 +282,6 @@ def previous_download_stats(catalog_path='docs/components.json'):
             name = entry.get('name')
             if component_type == 'templates':
                 key = f"templates/{name}"
-            elif component_type == 'plugins':
-                key = f"plugins/{name}"
             else:
                 key = f"{component_type}/{entry.get('category')}/{name}"
             counts[key] = entry['downloads']
@@ -446,7 +444,7 @@ def git_component_history(components_base_path):
                 continue
             keys.add(name)
             parts = name.split('/')
-            if len(parts) > 5 and parts[2] in ('skills', 'mods'):
+            if len(parts) > 5 and parts[2] in ('skills', 'mods', 'plugins'):
                 keys.add('/'.join(parts[:5]))
         # Newest first: the first commit seen is the last change, the last one seen is the oldest.
         for key in keys:
@@ -484,8 +482,8 @@ def component_page_meta(components_base_path, ctype, component, history, previou
     """The `meta` block of a component's content file: files, languages and its git history."""
     repo_path = f"{components_base_path}/{ctype}/{component['path']}"
     stats_root = repo_path
-    # External skills: list the files the CLI installs (upstream, pinned commit), not the source.json.
-    if ctype == 'skills' and os.path.isdir(repo_path) and external_skills.is_external(Path(repo_path)):
+    # External skills and plugins: list the files the CLI installs (upstream, pinned commit), not the source.json.
+    if ctype in ('skills', 'plugins') and os.path.isdir(repo_path) and external_skills.is_external(Path(repo_path)):
         try:
             stats_root = str(external_skills.local_dir(Path(repo_path)))
         except (OSError, ValueError) as e:
@@ -512,7 +510,6 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
     """
     components_base_path = 'cli-tool/components'
     templates_base_path = 'cli-tool/templates'
-    plugins_path = '.claude-plugin/marketplace.json'
     output_path = 'docs/components.json'
     components_data = {'agents': [], 'commands': [], 'mcps': [], 'settings': [], 'hooks': [], 'sandbox': [], 'skills': [], 'loops': [], 'mods': [], 'templates': [], 'plugins': []}
 
@@ -525,7 +522,8 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
     download_stats = None if skip_downloads else fetch_download_stats()
     if download_stats is None:
         download_stats = previous_download_stats(output_path)
-    component_types = ['agents', 'commands', 'mcps', 'settings', 'hooks', 'sandbox', 'skills', 'loops', 'mods']
+    component_types = ['agents', 'commands', 'mcps', 'settings', 'hooks', 'sandbox', 'skills', 'loops', 'mods', 'plugins']
+    marketplace_dirs = []  # catalog plugins that made it into the catalog
 
     print(f"Starting scan of {components_base_path} and {templates_base_path}...")
 
@@ -561,16 +559,8 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
                                     'url': external_skills.source_url(manifest),
                                     'requires': manifest['requires'],
                                 }
-                            # Look for SKILL.md inside the skill directory. An external
-                            # plugin (.claude-plugin/plugin.json, no SKILL.md) shows its
-                            # README.md, and its metadata comes from plugin.json.
-                            main_file = 'SKILL.md'
-                            plugin_meta = None
-                            if source and external_skills.is_plugin(Path(skill_root)):
-                                plugin_meta = external_skills.plugin_manifest(Path(skill_root))
-                                main_file = 'README.md'
-                                source['kind'] = 'plugin'
-                            skill_file_path = os.path.join(skill_root, main_file)
+                            # Look for SKILL.md inside the skill directory
+                            skill_file_path = os.path.join(skill_root, 'SKILL.md')
                             if os.path.isfile(skill_file_path):
                                 name = skill_dir  # Use directory name as skill name
 
@@ -598,14 +588,6 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
                                 except Exception as e:
                                     print(f"Warning: Could not read file {skill_file_path}: {e}")
 
-                                if plugin_meta is not None:
-                                    description = str(plugin_meta.get('description') or description)
-                                    version = str(plugin_meta.get('version') or version)
-                                    pk = plugin_meta.get('keywords')
-                                    keywords = [str(k) for k in pk] if isinstance(pk, list) else keywords
-                                    pa = plugin_meta.get('author')
-                                    author = (pa.get('name', '') if isinstance(pa, dict) else str(pa or '')) or author
-
                                 # Look up download count for this skill
                                 download_key = f"{component_type}/{category}/{name}"
                                 downloads = download_stats.get(download_key, 0)
@@ -624,7 +606,7 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
                                 # Collect reference files (all files except SKILL.md)
                                 references = []
                                 for ref_file in scan_directory_recursively(skill_root, skill_root):
-                                    if ref_file != main_file:
+                                    if ref_file != 'SKILL.md':
                                         references.append(ref_file)
                                 references.sort()
 
@@ -655,7 +637,7 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
                                     # The site cannot read these files from this repo, so
                                     # they ride in the content file (like mods).
                                     component['files'] = {}
-                                    for rel in [main_file] + references:
+                                    for rel in ['SKILL.md'] + references:
                                         try:
                                             with open(os.path.join(skill_root, rel), 'r', encoding='utf-8') as f:
                                                 component['files'][rel] = f.read()
@@ -664,6 +646,75 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
                                 components_data[component_type].append(component)
                                 print(f"  Processed skill: {category}/{name}")
             continue  # Skip the normal file scanning for skills
+
+        # Plugins: cli-tool/components/plugins/{category}/{name}/source.json pins a
+        # whole Claude Code plugin in another repo (same manifest as external
+        # skills). The README is the content; plugin.json gives the metadata and
+        # every text file travels in the content file, like mods. Each plugin
+        # listed here is also an entry of the aitmpl marketplace written below.
+        if component_type == 'plugins':
+            for category in sorted(os.listdir(type_path)):
+                category_path = os.path.join(type_path, category)
+                if not os.path.isdir(category_path):
+                    continue
+                for plugin_dir in sorted(os.listdir(category_path)):
+                    plugin_path = Path(category_path) / plugin_dir
+                    if not external_skills.is_external(plugin_path):
+                        continue
+                    try:
+                        manifest = external_skills.read_manifest(plugin_path)
+                        root = external_skills.local_dir(plugin_path)
+                        meta = external_skills.plugin_manifest(root)
+                        contains = external_skills.plugin_inventory(root)
+                    except (OSError, ValueError) as e:
+                        print(f"Warning: skipping plugin {category}/{plugin_dir}: {e}")
+                        continue
+                    name = plugin_dir
+                    content = ''
+                    readme = root / 'README.md'
+                    if readme.is_file():
+                        content = readme.read_text(encoding='utf-8')
+                    description = str(meta.get('description') or '')
+                    if not content:
+                        content = f"# {name}\n\n{description}\n"
+                    author_field = meta.get('author')
+                    author = (author_field.get('name', '') if isinstance(author_field, dict) else str(author_field or '')) or manifest.get('author', '')
+                    keywords = [str(k) for k in meta.get('keywords') or [] if isinstance(k, (str, int, float))]
+                    references = sorted(r for r in scan_directory_recursively(str(root), str(root)) if r != 'README.md')
+                    files = {'README.md': content}
+                    for rel in references:
+                        try:
+                            files[rel] = (root / rel).read_text(encoding='utf-8')
+                        except (UnicodeDecodeError, OSError):
+                            pass
+                    components_data['plugins'].append({
+                        'name': name,
+                        'path': f"{category}/{name}",
+                        'category': category,
+                        'type': 'plugin',
+                        'content': content,
+                        'description': description,
+                        'author': author,
+                        'repo': f"https://github.com/{manifest['repo']}",
+                        'version': str(meta.get('version') or ''),
+                        'license': manifest['license'],
+                        'keywords': keywords,
+                        'downloads': download_stats.get(f"plugins/{category}/{name}", 0),
+                        'references': references,
+                        'files': files,
+                        # What it ships, by kind (skills, agents, commands, hooks, ...).
+                        'contains': contains,
+                        'source': {
+                            'repo': manifest['repo'],
+                            'path': manifest['path'],
+                            'commit': manifest['commit'],
+                            'license': manifest['license'],
+                            'url': external_skills.source_url(manifest),
+                        },
+                    })
+                    marketplace_dirs.append(plugin_path.resolve())
+                    print(f"  Processed plugin: {category}/{name}")
+            continue
 
         # Mods: one directory per plugin, exactly Anthropic's mods/ layout
         # (.claude-plugin/plugin.json + hooks/hooks.json + hooks/** + optional
@@ -942,92 +993,14 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
         except Exception as e:
             print(f"⚠️ Error reading components metadata from {components_marketplace_path}: {e}")
 
-    # Scan plugins from marketplace.json and store marketplace data
-    marketplace_full_data = None
-    if os.path.isfile(plugins_path):
-        print(f"Scanning for plugins in {plugins_path}...")
-        try:
-            with open(plugins_path, 'r', encoding='utf-8') as f:
-                marketplace_data = json.load(f)
-
-            # Store full marketplace data for inclusion in components.json
-            marketplace_full_data = marketplace_data
-
-            if 'plugins' in marketplace_data:
-                for plugin in marketplace_data['plugins']:
-                    plugin_name = plugin.get('name', '')
-                    plugin_description = plugin.get('description', '')
-                    plugin_version = plugin.get('version', '1.0.0')
-                    plugin_keywords = plugin.get('keywords', [])
-                    plugin_author = plugin.get('author', {}).get('name', '')
-
-                    # Get component lists with file names
-                    commands_list = plugin.get('commands', [])
-                    agents_list = plugin.get('agents', [])
-                    mcps_list = plugin.get('mcpServers', [])
-
-                    # Extract component names with category/folder from file paths
-                    def extract_component_with_category(path):
-                        # Extract category/name from path like "./cli-tool/components/commands/git/feature.md"
-                        # Result should be "git/feature"
-                        parts = path.split('/')
-                        if len(parts) >= 2:
-                            filename = parts[-1].replace('.md', '').replace('.json', '')
-                            category = parts[-2]
-                            return f"{category}/{filename}"
-                        else:
-                            # Fallback to just filename if path structure is unexpected
-                            filename = path.split('/')[-1]
-                            return filename.replace('.md', '').replace('.json', '')
-
-                    commands_names = [extract_component_with_category(cmd) for cmd in commands_list]
-                    agents_names = [extract_component_with_category(agent) for agent in agents_list]
-                    mcps_names = [extract_component_with_category(mcp) for mcp in mcps_list]
-
-                    # Look up download count for this plugin
-                    plugin_download_key = f"plugins/{plugin_name}"
-                    plugin_downloads = download_stats.get(plugin_download_key, 0)
-
-                    # Create plugin entry
-                    plugin_entry = {
-                        'name': plugin_name,
-                        'id': plugin_name,
-                        'type': 'plugin',
-                        'description': plugin_description,
-                        'version': plugin_version,
-                        'keywords': plugin_keywords,
-                        'author': plugin_author,
-                        'commands': len(commands_list),
-                        'agents': len(agents_list),
-                        'mcpServers': len(mcps_list),
-                        'commandsList': commands_names,
-                        'agentsList': agents_names,
-                        'mcpServersList': mcps_names,
-                        'installCommand': f'/plugin install {plugin_name}@claude-code-templates',
-                        'downloads': plugin_downloads
-                    }
-                    components_data['plugins'].append(plugin_entry)
-                    print(f"  Processed plugin: {plugin_name}")
-
-            print(f"✅ Processed {len(components_data['plugins'])} plugins from marketplace.json")
-        except Exception as e:
-            print(f"⚠️ Error reading plugins from {plugins_path}: {e}")
-    else:
-        print(f"Warning: Plugins file not found: {plugins_path}")
-
     # Sort components alphabetically
     for component_type in components_data:
-        if component_type in ['templates', 'plugins']:
-            # Sort templates and plugins by name since they don't have path
+        if component_type == 'templates':
+            # Templates have no path: sort them by name
             components_data[component_type].sort(key=lambda x: x['name'])
         else:
             # Sort other components by path
             components_data[component_type].sort(key=lambda x: x['path'])
-
-    # Add marketplace metadata (root level - our public marketplace)
-    if marketplace_full_data:
-        components_data['marketplace'] = marketplace_full_data
-        print("✅ Added public marketplace metadata to components.json")
 
     # Add components marketplace metadata (Claude Code standard)
     if components_marketplace:
@@ -1052,7 +1025,7 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
                         scan_enabled=not skip_skillspector)
 
     # Component types that carry a 'content' field
-    content_bearing_types = ['agents', 'commands', 'mcps', 'settings', 'hooks', 'sandbox', 'skills', 'loops', 'mods']
+    content_bearing_types = ['agents', 'commands', 'mcps', 'settings', 'hooks', 'sandbox', 'skills', 'loops', 'mods', 'plugins']
 
     # 1. Write per-component content files directly to dashboard/public/component-content/
     os.makedirs(dashboard_content_dir, exist_ok=True)
@@ -1196,6 +1169,17 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
     except Exception as e:
         print(f"Warning: Could not write search-index.json: {e}")
 
+    # marketplace.json — the aitmpl Claude Code marketplace (served at
+    # external_skills.MARKETPLACE_URL), one entry per catalog plugin, pinned to
+    # its reviewed commit. Claude Code reads it on `marketplace add` and on every
+    # update, so like the API below a failure stops the run instead of
+    # publishing a half-built file.
+    marketplace = external_skills.build_marketplace(marketplace_dirs)
+    marketplace_path = os.path.join(dashboard_public_dir, 'marketplace.json')
+    with open(marketplace_path, 'w', encoding='utf-8') as f:
+        f.write(external_skills.marketplace_json(marketplace))
+    print(f"Generated {marketplace_path} ({len(marketplace['plugins'])} plugins).")
+
     # Catalog API v1 (dashboard/public/api/v1/): the versioned contract for
     # external consumers, built from the same index. Unlike the files above it
     # is not best-effort: an output that fails its schema stops the run.
@@ -1205,8 +1189,8 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
     # Log summary (uses original components_data which still has content for accurate counts)
     print("\n--- Generation Summary ---")
     for component_type, components in components_data.items():
-        # Skip marketplace metadata in summary (it's not a component type)
-        if component_type in ['marketplace', 'componentsMarketplace']:
+        # componentsMarketplace is metadata, not a component type
+        if component_type == 'componentsMarketplace':
             continue
 
         print(f"  - Found and processed {len(components)} {component_type}")
@@ -1215,10 +1199,11 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
             frameworks = len([t for t in components if t.get('subtype') == 'framework'])
             print(f"    • {languages} languages, {frameworks} frameworks")
         elif component_type == 'plugins':
-            total_commands = sum(p.get('commands', 0) for p in components)
-            total_agents = sum(p.get('agents', 0) for p in components)
-            total_mcps = sum(p.get('mcpServers', 0) for p in components)
-            print(f"    • {total_commands} commands, {total_agents} agents, {total_mcps} MCPs")
+            kinds = {}
+            for p in components:
+                for kind, names in (p.get('contains') or {}).items():
+                    kinds[kind] = kinds.get(kind, 0) + len(names)
+            print("    • " + (", ".join(f"{n} {k}" for k, n in sorted(kinds.items())) or "empty"))
 
         # Security statistics for components with security metadata
         if component_type not in ['templates', 'plugins']:

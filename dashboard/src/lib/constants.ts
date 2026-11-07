@@ -5,6 +5,13 @@ export const COMPONENTS_JSON_URL =
 
 export const ITEMS_PER_PAGE = 24;
 
+// The aitmpl Claude Code marketplace, generated from cli-tool/components/plugins/
+// (scripts/external_skills.py and cli-tool/src/plugin-install.js use the same values).
+export const AITMPL_MARKETPLACE = {
+  name: 'aitmpl',
+  url: 'https://www.aitmpl.com/marketplace.json',
+} as const;
+
 export const FEATURED_ITEMS: FeaturedItem[] = [
   {
     name: 'Bright Data',

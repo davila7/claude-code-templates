@@ -46,6 +46,28 @@ export function formatCount(n: number, one: string, many: string): string {
   return `${n.toLocaleString('en-US')} ${n === 1 ? one : many}`;
 }
 
+// What a catalog plugin ships (Component.contains), in display order.
+const PLUGIN_KIND_NOUNS: [key: string, one: string, many: string][] = [
+  ['skills', 'skill', 'skills'],
+  ['commands', 'command', 'commands'],
+  ['agents', 'agent', 'agents'],
+  ['hooks', 'hook event', 'hook events'],
+  ['mcpServers', 'MCP server', 'MCP servers'],
+  ['lspServers', 'LSP server', 'LSP servers'],
+  ['outputStyles', 'output style', 'output styles'],
+  ['themes', 'theme', 'themes'],
+  ['monitors', 'monitor', 'monitors'],
+  ['bin', 'executable', 'executables'],
+];
+
+/** "7 skills, 1 agent" from a plugin's contains map; kinds with nothing are left out. */
+export function pluginContentsSummary(contains: Partial<Record<string, string[]>> | undefined): string {
+  return PLUGIN_KIND_NOUNS
+    .filter(([key]) => (contains?.[key]?.length ?? 0) > 0)
+    .map(([key, one, many]) => formatCount(contains![key]!.length, one, many))
+    .join(', ');
+}
+
 export function totals(files: MetaFile[]): { files: number; lines: number; bytes: number } {
   return files.reduce(
     (t, f) => ({ files: t.files + 1, lines: t.lines + (f.lines ?? 0), bytes: t.bytes + f.bytes }),

@@ -15,7 +15,14 @@ export interface Component {
   skillspector?: SkillSpectorResult;
   /** External skills: the code lives in another repo, downloaded from this commit at install time. */
   source?: ExternalSource;
+  /** Plugins: what the plugin ships, by kind; names are shown after the plugin prefix (/{plugin}:{skill}). */
+  contains?: PluginContents;
 }
+
+export type PluginContents = Partial<Record<
+  'skills' | 'commands' | 'agents' | 'hooks' | 'mcpServers' | 'lspServers' | 'outputStyles' | 'themes' | 'bin' | 'monitors',
+  string[]
+>>;
 
 export interface ExternalSource {
   repo: string;
@@ -24,8 +31,6 @@ export interface ExternalSource {
   license: string;
   url: string;
   requires?: string[];
-  /** "plugin" when path is a whole Claude Code plugin (.claude-plugin/plugin.json, no SKILL.md). */
-  kind?: 'plugin';
 }
 
 export interface SkillSpectorFinding {

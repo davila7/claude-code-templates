@@ -11,7 +11,7 @@ const pkg = require('../package.json');
 
 program
   .name('create-claude-config')
-  .description('Install Claude Code components (agents, commands, MCPs, hooks, settings, skills, loops, mods) from aitmpl.com')
+  .description('Install Claude Code components (agents, commands, MCPs, hooks, settings, skills, loops, mods, plugins) from aitmpl.com')
   .version(require('../package.json').version)
   .option('-l, --language <language>', 'specify programming language (deprecated, use --template)')
   .option('-f, --framework <framework>', 'specify framework (deprecated, use --template)')
@@ -35,6 +35,8 @@ program
   .option('--skill <skill>', 'install specific skill component (supports comma-separated values)')
   .option('--loop <loop>', 'install specific loop component and its referenced components (supports comma-separated values)')
   .option('--mod <mod>', 'install specific Claude Mod (function-hooks plugin) as a local plugin (supports comma-separated values)')
+  .option('--plugin <plugin>', 'install a Claude Code plugin from the aitmpl marketplace with Claude Code itself, pinned to its reviewed commit (supports comma-separated values)')
+  .option('--scope <scope>', 'where --plugin enables the plugin: project (.claude/settings.json, default), user (~/.claude/settings.json) or local (.claude/settings.local.json)')
   .addOption(new Option('--function-hook <mod>', 'alias of --mod (kept for older docs)').hideHelp())
   .option('--workflow <workflow>', 'install workflow from hash (#hash) OR workflow YAML (base64 encoded) when used with --agent/--command/--mcp')
   .option('--prompt <prompt>', 'execute the provided prompt in Claude Code after installation');
@@ -47,7 +49,7 @@ program.action(async (options) => {
     // Component installs print their own one-line header (src/install-ui.js),
     // and a removed flag prints only its replacement.
     const isComponentInstall = Boolean(options.agent || options.command || options.mcp || options.setting ||
-                                       options.hook || options.skill || options.loop || options.mod || options.functionHook);
+                                       options.hook || options.skill || options.loop || options.mod || options.functionHook || options.plugin);
     const isQuietCommand = isComponentInstall || findRemovedCommands(options).length > 0;
 
     // No arguments opens the catalog browser, which prints its own header
