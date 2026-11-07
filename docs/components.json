@@ -25872,6 +25872,17 @@
         "errorCount": 0,
         "warningCount": 0,
         "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "hash": "0c9d577a4ed6103d",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-07T22:37:57Z"
       }
     },
     {
@@ -26927,6 +26938,27 @@
         "errorCount": 0,
         "warningCount": 0,
         "lastValidated": null
+      },
+      "skillspector": {
+        "score": 7,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 1,
+        "analysis": "complete",
+        "findings": [
+          {
+            "id": "TR2",
+            "category": "Trigger Abuse",
+            "severity": "MEDIUM",
+            "title": "Shadow Command Trigger",
+            "file": "SKILL.md",
+            "line": 1,
+            "count": 1
+          }
+        ],
+        "hash": "6e9d29d619bc314d",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-07T22:37:57Z"
       }
     },
     {
@@ -30523,6 +30555,17 @@
         "errorCount": 0,
         "warningCount": 0,
         "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "hash": "52915ea98648a279",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-07T22:37:57Z"
       }
     },
     {
