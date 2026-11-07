@@ -123,7 +123,7 @@ class ValidateManifestTest(unittest.TestCase):
             write("skills/my_draft/SKILL.md", "---\nname: my-draft\ndescription: d\n---\nbody\n")
             write("skills/plain/SKILL.md", "no frontmatter\n")
             write("agents/design_critic.md", "---\ndescription: x\nname: \"kit-design\"\n---\n")
-            write("agents/scout.md", "body only\n")
+            write("agents/scout.md", "---\ndescription: s\n---\nname: not-the-name\n---\n")
             write("commands/go.md", "---\nname: ignored\n---\n")
             inv = ext.plugin_inventory(plug)
             self.assertEqual(inv["skills"], ["my-draft", "plain"])

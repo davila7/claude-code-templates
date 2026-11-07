@@ -282,16 +282,18 @@ def _inside(local: Path, rel: str) -> Path | None:
     return p if p == base or base in p.parents else None
 
 
-_FRONTMATTER_NAME = re.compile(r"\A---\r?\n(?:.*\r?\n)*?name:[ \t]*['\"]?([^'\"\r\n#]+?)['\"]?[ \t]*\r?\n(?:.*\r?\n)*?---", re.M)
+_FRONTMATTER = re.compile(r"\A---[ \t]*\r?\n(.*?)^---[ \t]*$", re.S | re.M)
+_NAME_LINE = re.compile(r"^name:[ \t]*['\"]?([^'\"\r\n#]+?)['\"]?[ \t]*$", re.M)
 
 
 def _frontmatter_name(path: Path) -> str | None:
     """The `name:` of a Markdown file's YAML frontmatter, which Claude Code shows for
     skills and agents instead of the folder or file name."""
     try:
-        m = _FRONTMATTER_NAME.match(path.read_text(encoding="utf-8"))
+        block = _FRONTMATTER.match(path.read_text(encoding="utf-8"))
     except (OSError, UnicodeDecodeError):
         return None
+    m = _NAME_LINE.search(block.group(1)) if block else None  # only the first block
     return m.group(1).strip() if m else None
 
 
