@@ -28022,6 +28022,48 @@
       }
     },
     {
+      "name": "anon-li",
+      "path": "productivity/anon-li.json",
+      "category": "productivity",
+      "type": "mcp",
+      "description": "anon.li remote MCP server (streamable HTTP, OAuth). Tools manage email aliases, recipients, end-to-end encrypted file drops and end-to-end encrypted forms. Sign in with an anon.li account (free plan available): after installing, run /mcp in Claude Code to authenticate.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 7,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 1,
+        "analysis": "complete",
+        "findings": [
+          {
+            "id": "TR2",
+            "category": "Trigger Abuse",
+            "severity": "MEDIUM",
+            "title": "Shadow Command Trigger",
+            "file": "SKILL.md",
+            "line": 1,
+            "count": 1
+          }
+        ],
+        "hash": "eae2046457928d56",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-07T20:12:13Z"
+      }
+    },
+    {
       "name": "google-workspace",
       "path": "productivity/google-workspace.json",
       "category": "productivity",
