@@ -1646,6 +1646,7 @@ async function installIndividualPlugin(pluginRef, targetDir, options = {}) {
     }
   } catch (error) {
     console.log(chalk.red(`❌ ${error.message}`));
+    if (error.code === 'claude_too_old') return fail('claude_too_old', error.message);
     console.log(chalk.gray('   The same install by hand:'));
     for (const command of plugins.manualCommands(ref.name, scope)) console.log(chalk.gray(`   ${command}`));
     return fail('install_error', error.message);

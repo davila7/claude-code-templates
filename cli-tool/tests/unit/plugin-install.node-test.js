@@ -7,8 +7,14 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
+// The defaults read process.env: a CCT_MARKETPLACE_URL set in the shell running
+// these tests would change every URL they check.
+delete process.env.CCT_MARKETPLACE_URL;
+
 const {
   MARKETPLACE_URL,
+  MIN_CLAUDE_VERSION,
+  FETCH_TIMEOUT_MS,
   parsePluginRef,
   normalizeScope,
   fetchMarketplace,
@@ -16,6 +22,7 @@ const {
   settingsFile,
   runClaude,
   lastJsonLine,
+  parseClaudeVersion,
   installWithClaude,
   installWithSettings,
   sameNameElsewhere,
@@ -34,8 +41,28 @@ const MARKETPLACE = {
   }]
 };
 
+const tmpdirs = [];
 function tmpdir() {
-  return fs.mkdtempSync(path.join(os.tmpdir(), 'cct-plugin-'));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'cct-plugin-'));
+  tmpdirs.push(dir);
+  return dir;
+}
+test.after(() => {
+  for (const dir of tmpdirs) fs.rmSync(dir, { recursive: true, force: true });
+});
+
+/**
+ * A fake `claude` at a version: answers --version, records every other call
+ * and hands it to handler (default: success).
+ */
+function claudeAt(version, handler = async () => ({ code: 0, stdout: '{"outcome":"ok"}' })) {
+  const calls = [];
+  const run = async (args, opts = {}) => {
+    if (args[0] === '--version') return { code: 0, stdout: `${version} (Claude Code)\n` };
+    calls.push({ args, cwd: opts.cwd });
+    return handler(args, opts);
+  };
+  return { run, calls };
 }
 
 function jsonResponse(body, status = 200) {
@@ -79,11 +106,22 @@ test('a retry repeats a non-default scope, and only a valid one', () => {
 
 test('fetchMarketplace reads the published file and rejects anything else', async () => {
   const seen = [];
-  const data = await fetchMarketplace(async url => { seen.push(url); return jsonResponse(MARKETPLACE); });
-  assert.deepEqual(seen, [MARKETPLACE_URL]);
+  const data = await fetchMarketplace(async (url, opts) => { seen.push({ url, signal: opts.signal }); return jsonResponse(MARKETPLACE); });
+  assert.equal(seen.length, 1);
+  assert.equal(seen[0].url, MARKETPLACE_URL);
+  assert.ok(seen[0].signal instanceof AbortSignal, 'the request has a timeout');
   assert.equal(data.plugins.length, 1);
   await assert.rejects(fetchMarketplace(async () => jsonResponse({}, 503)), /HTTP 503/);
   await assert.rejects(fetchMarketplace(async () => jsonResponse({ name: 'other', plugins: [] })), /unexpected format/);
+});
+
+test('fetchMarketplace gives up on a marketplace that stops answering', async () => {
+  const timeout = () => Object.assign(new Error('The operation was aborted due to timeout'), { name: 'TimeoutError' });
+  const late = new RegExp(`did not answer within ${FETCH_TIMEOUT_MS / 1000} seconds`);
+  await assert.rejects(fetchMarketplace(async () => { throw timeout(); }), late);
+  // A body that stalls after the headers ends the same way.
+  await assert.rejects(fetchMarketplace(async () => ({ ok: true, status: 200, json: async () => { throw timeout(); } })), late);
+  await assert.rejects(fetchMarketplace(async () => { throw new Error('getaddrinfo ENOTFOUND www.aitmpl.com'); }), /ENOTFOUND/);
 });
 
 test('findEntry: by name, category must match, entry must be pinned', () => {
@@ -124,13 +162,17 @@ test('runClaude reports a missing claude', async () => {
   assert.equal(result.missing, true);
 });
 
+test('claude --version is read as [major, minor, patch]', () => {
+  assert.deepEqual(parseClaudeVersion('2.1.319 (Claude Code)\n'), [2, 1, 319]);
+  assert.deepEqual(parseClaudeVersion('1.0.128'), [1, 0, 128]);
+  assert.equal(parseClaudeVersion(''), null);
+  assert.equal(parseClaudeVersion('Claude Code'), null);
+});
+
 test('installWithClaude adds the marketplace, then installs name@aitmpl in that scope', async () => {
-  const calls = [];
-  const run = async (args, opts) => {
-    calls.push({ args, cwd: opts.cwd });
-    if (args[1] === 'marketplace') return { code: 0, stdout: '{"command":"marketplace-add","outcome":"ok"}' };
-    return { code: 0, stdout: '{"command":"install","outcome":"ok","pluginId":"champion-kit@aitmpl","scope":"user"}' };
-  };
+  const { run, calls } = claudeAt('2.1.319', async args => (args[1] === 'marketplace'
+    ? { code: 0, stdout: '{"command":"marketplace-add","outcome":"ok"}' }
+    : { code: 0, stdout: '{"command":"install","outcome":"ok","pluginId":"champion-kit@aitmpl","scope":"user"}' }));
   const out = await installWithClaude({ name: 'champion-kit', scope: 'user', targetDir: '/repo', run });
   assert.equal(out.method, 'claude');
   assert.deepEqual(calls.map(c => c.args), [
@@ -140,25 +182,58 @@ test('installWithClaude adds the marketplace, then installs name@aitmpl in that 
   assert.ok(calls.every(c => c.cwd === '/repo'), 'runs in the target folder, where project scope is written');
 });
 
-test('installWithClaude refreshes a stale marketplace once on not_found', async () => {
+test('installWithClaude refuses a Claude Code older than MIN_CLAUDE_VERSION before changing anything', async () => {
+  assert.equal(MIN_CLAUDE_VERSION, '2.1.288');
+  // 2.1.287 already has --json everywhere, but its git-subdir installs can be
+  // incomplete on git < 2.39; 2.1.200 rejects --json; 2.1.68 cannot read git-subdir.
+  for (const old of ['2.1.287', '2.1.200', '2.1.68', '1.0.128']) {
+    const { run, calls } = claudeAt(old);
+    await assert.rejects(
+      installWithClaude({ name: 'champion-kit', scope: 'project', targetDir: '/repo', run }),
+      error => error.code === 'claude_too_old' &&
+        error.message.includes(`Claude Code ${old} is too old`) && error.message.includes('2.1.288 or later') &&
+        error.message.includes('claude update'),
+      old
+    );
+    assert.deepEqual(calls, [], `${old}: no marketplace or settings change`);
+  }
+  for (const ok of ['2.1.288', '2.1.319', '2.2.0', '3.0.0']) {
+    const { run, calls } = claudeAt(ok);
+    await installWithClaude({ name: 'champion-kit', scope: 'project', targetDir: '/repo', run });
+    assert.equal(calls.length, 2, ok);
+  }
+});
+
+test('a version this CLI cannot read is not a reason to refuse', async () => {
   const calls = [];
-  let installs = 0;
   const run = async args => {
-    calls.push(args.slice(0, 3).join(' '));
+    calls.push(args[0] === '--version' ? '--version' : args.slice(0, 3).join(' '));
+    return args[0] === '--version' ? { code: 0, stdout: 'Claude Code (build 7)\n' } : { code: 0, stdout: '{"outcome":"ok"}' };
+  };
+  await installWithClaude({ name: 'champion-kit', scope: 'project', targetDir: '/repo', run });
+  assert.deepEqual(calls, ['--version', 'plugin marketplace add', 'plugin install champion-kit@aitmpl']);
+  const hung = async args => (args[0] === '--version' ? { code: null, timedOut: true } : { code: 0, stdout: '{}' });
+  await assert.rejects(installWithClaude({ name: 'champion-kit', scope: 'project', targetDir: '/repo', run: hung }), /did not answer/);
+});
+
+test('installWithClaude refreshes a stale marketplace once on not_found', async () => {
+  let installs = 0;
+  const { run, calls } = claudeAt('2.1.319', async args => {
     if (args[1] === 'marketplace') return { code: 0, stdout: '{"outcome":"ok"}' };
     installs += 1;
     return installs === 1
       ? { code: 1, stdout: '{"outcome":"failed","failureCode":"not_found","message":"Plugin \\"champion-kit\\" not found"}' }
       : { code: 0, stdout: '{"outcome":"ok"}' };
-  };
+  });
   await installWithClaude({ name: 'champion-kit', scope: 'project', targetDir: '/repo', run });
-  assert.deepEqual(calls, ['plugin marketplace add', 'plugin install champion-kit@aitmpl', 'plugin marketplace update', 'plugin install champion-kit@aitmpl']);
+  assert.deepEqual(calls.map(c => c.args.slice(0, 3).join(' ')),
+    ['plugin marketplace add', 'plugin install champion-kit@aitmpl', 'plugin marketplace update', 'plugin install champion-kit@aitmpl']);
 });
 
 test('installWithClaude surfaces Claude Code\'s own message', async () => {
-  const run = async args => (args[1] === 'marketplace'
+  const { run } = claudeAt('2.1.319', async args => (args[1] === 'marketplace'
     ? { code: 0, stdout: '{"outcome":"ok"}' }
-    : { code: 1, stdout: '{"outcome":"failed","failureCode":"network","message":"Failed to clone repository"}' });
+    : { code: 1, stdout: '{"outcome":"failed","failureCode":"network","message":"Failed to clone repository"}' }));
   await assert.rejects(installWithClaude({ name: 'champion-kit', scope: 'project', targetDir: '/repo', run }), /Failed to clone repository/);
   const missing = await installWithClaude({ name: 'champion-kit', scope: 'project', targetDir: '/repo', run: async () => ({ missing: true }) });
   assert.deepEqual(missing, { missing: true });

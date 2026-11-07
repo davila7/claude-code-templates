@@ -1,6 +1,8 @@
 // Formatting for the component page's file list, About column and language bar.
 // Pure functions over the `meta` block written by scripts/generate_components_json.py.
 
+import type { PluginContents } from './types';
+
 export interface MetaFile {
   path: string;
   bytes: number;
@@ -46,25 +48,27 @@ export function formatCount(n: number, one: string, many: string): string {
   return `${n.toLocaleString('en-US')} ${n === 1 ? one : many}`;
 }
 
-// What a catalog plugin ships (Component.contains), in display order.
-const PLUGIN_KIND_NOUNS: [key: string, one: string, many: string][] = [
-  ['skills', 'skill', 'skills'],
-  ['commands', 'command', 'commands'],
-  ['agents', 'agent', 'agents'],
-  ['hooks', 'hook event', 'hook events'],
-  ['mcpServers', 'MCP server', 'MCP servers'],
-  ['lspServers', 'LSP server', 'LSP servers'],
-  ['outputStyles', 'output style', 'output styles'],
-  ['themes', 'theme', 'themes'],
-  ['monitors', 'monitor', 'monitors'],
-  ['bin', 'executable', 'executables'],
+// What a catalog plugin ships (Component.contains), in display order. The keys
+// are the ones scripts/external_skills.py plugin_inventory() writes; the summary
+// below and the component page both read this one list.
+export const PLUGIN_KINDS: { key: keyof PluginContents; label: string; one: string; many: string }[] = [
+  { key: 'skills', label: 'Skills', one: 'skill', many: 'skills' },
+  { key: 'commands', label: 'Commands', one: 'command', many: 'commands' },
+  { key: 'agents', label: 'Agents', one: 'agent', many: 'agents' },
+  { key: 'hooks', label: 'Hooks', one: 'hook event', many: 'hook events' },
+  { key: 'mcpServers', label: 'MCP servers', one: 'MCP server', many: 'MCP servers' },
+  { key: 'lspServers', label: 'LSP servers', one: 'LSP server', many: 'LSP servers' },
+  { key: 'outputStyles', label: 'Output styles', one: 'output style', many: 'output styles' },
+  { key: 'themes', label: 'Themes', one: 'theme', many: 'themes' },
+  { key: 'monitors', label: 'Monitors', one: 'monitor', many: 'monitors' },
+  { key: 'bin', label: 'Executables', one: 'executable', many: 'executables' },
 ];
 
 /** "7 skills, 1 agent" from a plugin's contains map; kinds with nothing are left out. */
-export function pluginContentsSummary(contains: Partial<Record<string, string[]>> | undefined): string {
-  return PLUGIN_KIND_NOUNS
-    .filter(([key]) => (contains?.[key]?.length ?? 0) > 0)
-    .map(([key, one, many]) => formatCount(contains![key]!.length, one, many))
+export function pluginContentsSummary(contains: PluginContents | undefined): string {
+  return PLUGIN_KINDS
+    .filter(({ key }) => (contains?.[key]?.length ?? 0) > 0)
+    .map(({ key, one, many }) => formatCount(contains![key]!.length, one, many))
     .join(', ');
 }
 

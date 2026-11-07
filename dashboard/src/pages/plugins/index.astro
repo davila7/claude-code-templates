@@ -24,7 +24,11 @@ try {
 let catalogPlugins: Component[] = [];
 try {
   catalogPlugins = JSON.parse(fs.readFileSync(nodePath.join(process.cwd(), 'public', 'components', 'plugins.json'), 'utf-8'));
-} catch { catalogPlugins = []; }
+} catch (error) {
+  // The generator always writes this file; without it the aitmpl section is left out.
+  console.warn('plugins: could not read public/components/plugins.json', error);
+  catalogPlugins = [];
+}
 ---
 
 <DashboardLayout

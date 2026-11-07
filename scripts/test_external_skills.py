@@ -1,5 +1,6 @@
 import importlib.util
 import json
+import re
 import subprocess
 import tempfile
 import unittest
@@ -109,6 +110,27 @@ class ValidateManifestTest(unittest.TestCase):
             write(".claude-plugin/plugin.json", json.dumps({"name": "kit", "commands": ["./more/x.md"]}))
             write("more/x.md")
             self.assertEqual(ext.plugin_inventory(plug)["commands"], ["x"])
+
+    def test_the_site_lists_every_kind_the_inventory_writes(self):
+        # dashboard/src/lib/component-page.ts PLUGIN_KINDS renders `contains`; a kind
+        # missing there would vanish from the plugin page and its summary.
+        page = (ext.ROOT / "dashboard" / "src" / "lib" / "component-page.ts").read_text(encoding="utf-8")
+        site = re.findall(r"\{ key: '(\w+)'", page[page.index("export const PLUGIN_KINDS"):])
+        with tempfile.TemporaryDirectory() as tmp:
+            plug = Path(tmp) / "kit"
+            def write(rel, text=""):
+                (plug / rel).parent.mkdir(parents=True, exist_ok=True)
+                (plug / rel).write_text(text)
+            write(".claude-plugin/plugin.json", json.dumps({"name": "kit"}))
+            write("skills/a/SKILL.md"); write("commands/c.md"); write("agents/g.md"); write("output-styles/o.md")
+            write("hooks/hooks.json", json.dumps({"hooks": {"Stop": []}}))
+            write(".mcp.json", json.dumps({"mcpServers": {"m": {"command": "m"}}}))
+            write(".lsp.json", json.dumps({"ts": {"command": "ts"}}))
+            write("themes/t.json", "{}"); write("bin/b", "#!/bin/sh\n")
+            write("monitors/monitors.json", json.dumps([{"name": "w"}]))
+            kinds = set(ext.plugin_inventory(plug))
+        self.assertEqual(len(site), len(set(site)), "a kind listed twice")
+        self.assertEqual(set(site), kinds)
 
     def test_is_included(self):
         inc = ["SKILL.md", "scripts", "docs/contract.md"]
@@ -247,6 +269,21 @@ class MarketplaceTest(unittest.TestCase):
         d = self.plugin("dev", "nothing")
         with self.assertRaises(ext.ManifestError):
             ext.local_dir(d)
+
+    def test_a_copy_outside_the_checkout_is_still_a_plugin(self):
+        # skillspector_scan --compare-base extracts the base-ref folder under a
+        # temp dir (git archive keeps the repo-relative path); it was read as a
+        # skill there and failed for want of a SKILL.md.
+        src = self.plugin("dev", "kit")
+        with tempfile.TemporaryDirectory() as other:
+            copy = Path(other) / "cli-tool" / "components" / "plugins" / "dev" / "kit"
+            copy.mkdir(parents=True)
+            (copy / "source.json").write_text((src / "source.json").read_text())
+            self.assertEqual(ext.kind_of(copy), "plugin")
+            out = ext.local_dir(copy)
+            self.assertTrue((out / ".claude-plugin" / "plugin.json").is_file())
+            skill = Path(other) / "cli-tool" / "components" / "skills" / "plugins" / "kit"
+            self.assertEqual(ext.kind_of(skill), "skill", "a skill category named plugins is still a skill")
 
 
 if __name__ == "__main__":

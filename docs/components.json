@@ -89630,6 +89630,7 @@
         "onboarding",
         "claude-code"
       ],
+      "installCommand": "npx claude-code-templates@latest --plugin productivity/champion-kit",
       "downloads": 0,
       "references": [
         ".claude-plugin/icon.png",

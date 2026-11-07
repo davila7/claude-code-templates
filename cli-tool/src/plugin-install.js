@@ -22,6 +22,13 @@
  * (extraKnownMarketplaces.aitmpl and enabledPlugins["<name>@aitmpl"]) are
  * written directly; Claude Code adds the marketplace and fetches the plugin the
  * next time it starts (for a project, once the folder is trusted).
+ *
+ * The claude command must be MIN_CLAUDE_VERSION or later (checked first, before
+ * anything is written). Tested against each release: 2.1.68 rejects the whole
+ * marketplace (git-subdir sources came in 2.1.69), --json came to `plugin
+ * install` in 2.1.268 and to `plugin marketplace add|update` in 2.1.287, and
+ * 2.1.288 fixed git-subdir installs that failed or cached an incomplete plugin
+ * on git older than 2.39.
  */
 
 const os = require('os');
@@ -35,7 +42,10 @@ const MARKETPLACE_NAME = 'aitmpl';
 const MARKETPLACE_URL = 'https://www.aitmpl.com/marketplace.json';
 const SCOPES = ['project', 'user', 'local'];
 const DEFAULT_SCOPE = 'project';
+const MIN_CLAUDE_VERSION = '2.1.288';
 const INSTALL_TIMEOUT_MS = 5 * 60 * 1000;
+const VERSION_TIMEOUT_MS = 30 * 1000;
+const FETCH_TIMEOUT_MS = 15 * 1000;
 
 // "name" or "category/name", as on the site; the marketplace itself is flat.
 const PLUGIN_REF_RE = /^(?:([a-z0-9][a-z0-9-]*)\/)?([a-z0-9][a-z0-9.-]{0,63})$/;
@@ -75,14 +85,30 @@ function cliScopeFlag(scope) {
   return value && value !== DEFAULT_SCOPE ? `--scope ${value}` : '';
 }
 
-/** Fetch and sanity-check the aitmpl marketplace. */
+function isTimeout(error) {
+  return Boolean(error) && (error.name === 'TimeoutError' || error.name === 'AbortError');
+}
+
+/** Fetch and sanity-check the aitmpl marketplace (FETCH_TIMEOUT_MS for the whole read). */
 async function fetchMarketplace(fetchImpl = fetch, env = process.env) {
-  const response = await fetchImpl(marketplaceUrl(env), { headers: { 'User-Agent': 'claude-code-templates' } });
+  const url = marketplaceUrl(env);
+  const timedOut = () => new Error(`The aitmpl marketplace did not answer within ${FETCH_TIMEOUT_MS / 1000} seconds (${url})`);
+  let response;
+  try {
+    response = await fetchImpl(url, {
+      headers: { 'User-Agent': 'claude-code-templates' },
+      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS)
+    });
+  } catch (error) {
+    throw isTimeout(error) ? timedOut() : error;
+  }
   if (!response.ok) throw new Error(`Could not read the aitmpl marketplace (HTTP ${response.status})`);
   let data;
   try {
     data = await response.json();
-  } catch {
+  } catch (error) {
+    // The signal also covers the body, so a stalled download ends here.
+    if (isTimeout(error)) throw timedOut();
     throw new Error('The aitmpl marketplace is not valid JSON');
   }
   if (!data || data.name !== MARKETPLACE_NAME || !Array.isArray(data.plugins)) {
@@ -177,13 +203,38 @@ function failureText(result, fallback) {
   return text || fallback;
 }
 
+/** [major, minor, patch] from `claude --version` output ("2.1.319 (Claude Code)"), or null. */
+function parseClaudeVersion(text) {
+  const match = /^\s*v?(\d+)\.(\d+)\.(\d+)/.exec(String(text || ''));
+  return match ? match.slice(1, 4).map(Number) : null;
+}
+
+function isOlderVersion(version, minimum) {
+  for (let i = 0; i < 3; i += 1) {
+    if (version[i] !== minimum[i]) return version[i] < minimum[i];
+  }
+  return false;
+}
+
 /**
  * Install with the claude CLI. Returns { method: 'claude', result } on success,
  * { missing: true } when claude is not installed, or throws with Claude Code's
- * own message.
+ * own message (code 'claude_too_old' when it is older than MIN_CLAUDE_VERSION).
  */
 async function installWithClaude({ name, scope, targetDir, run = runClaude, env = process.env }) {
   const pluginId = `${name}@${MARKETPLACE_NAME}`;
+  const probe = await run(['--version'], { cwd: targetDir, timeoutMs: VERSION_TIMEOUT_MS });
+  if (probe.missing) return { missing: true };
+  if (probe.timedOut) throw new Error(`claude --version did not answer within ${VERSION_TIMEOUT_MS / 1000} seconds`);
+  // Output this CLI cannot read is not a reason to refuse: newer builds may print more.
+  const version = parseClaudeVersion(probe.stdout);
+  if (version && isOlderVersion(version, parseClaudeVersion(MIN_CLAUDE_VERSION))) {
+    throw Object.assign(new Error(
+      `Claude Code ${version.join('.')} is too old to install plugins from the aitmpl marketplace: ` +
+      `it needs ${MIN_CLAUDE_VERSION} or later. Update it with "claude update", then run this again.`
+    ), { code: 'claude_too_old' });
+  }
+
   const add = await run(['plugin', 'marketplace', 'add', marketplaceUrl(env), '--scope', scope, '--json'], { cwd: targetDir });
   if (add.missing) return { missing: true };
   if (add.code !== 0) throw new Error(failureText(add, 'claude plugin marketplace add failed'));
@@ -284,6 +335,8 @@ module.exports = {
   MARKETPLACE_URL,
   SCOPES,
   DEFAULT_SCOPE,
+  MIN_CLAUDE_VERSION,
+  FETCH_TIMEOUT_MS,
   marketplaceUrl,
   parsePluginRef,
   normalizeScope,
@@ -293,6 +346,7 @@ module.exports = {
   settingsFile,
   runClaude,
   lastJsonLine,
+  parseClaudeVersion,
   installWithClaude,
   installWithSettings,
   sameNameElsewhere,

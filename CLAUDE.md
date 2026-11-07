@@ -261,11 +261,19 @@ into its own folders (decided 2026-11-07, PR #1429).
   plugin.json display fields. It also records what each plugin ships under
   `contains` (skills, agents, commands, hooks, mcpServers, lspServers, …),
   resolved the way Claude Code does: manifest `commands`/`agents`/`outputStyles`
-  replace the default folder, `skills` adds to it.
+  replace the default folder, `skills` adds to it. Keep every entry `git-subdir`:
+  a Claude Code that does not know an entry's source type rejects the whole
+  marketplace (2.1.68, before `git-subdir`: "plugins.0.source: Invalid input").
 - `--plugin [category/]name [--scope project|user|local]`
   (`cli-tool/src/plugin-install.js`, CLI after 1.32.1) checks the entry in the
-  live marketplace.json, then spawns `claude plugin marketplace add <url> --scope
-  S` and `claude plugin install name@aitmpl --scope S` (no shell; every argument
+  live marketplace.json, then runs `claude --version` and refuses a Claude Code
+  older than 2.1.288 (`MIN_CLAUDE_VERSION`, also `AITMPL_MARKETPLACE.minClaudeCode`
+  on the site), before writing anything. Tested 2026-11-07 on old releases:
+  `plugin install --json` came in 2.1.268, `plugin marketplace add|update --json`
+  in 2.1.287 (older ones fail with "unknown option '--json'"), and 2.1.288 fixed
+  `git-subdir` installs that failed or cached an incomplete plugin on git < 2.39.
+  It then spawns `claude plugin marketplace add <url> --scope S --json` and
+  `claude plugin install name@aitmpl --scope S --json` (no shell; every argument
   must be a plain token; a `not_found` triggers one `claude plugin marketplace
   update aitmpl` and a retry). Files land in
   `~/.claude/plugins/cache/aitmpl/{name}/{version}/` (recorded in

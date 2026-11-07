@@ -180,8 +180,9 @@ def scan(component_type: str, component: dict, root: Path, files: list[Path]) ->
     data = json.loads(proc.stdout)
     risk = data.get("risk_assessment") or {}
     # Single-file components were staged as SKILL.md; report the real name.
+    # Skills, mods and plugins are scanned as directories, with their own files.
     staged_main = None
-    if component_type not in ("skills", "mods") and files[0].suffix == ".md":
+    if component_type not in ("skills", "mods", "plugins") and files[0].suffix == ".md":
         staged_main = files[0].name
     issues = sorted(
         data.get("issues") or [],

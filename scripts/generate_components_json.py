@@ -701,6 +701,8 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
                         'version': str(meta.get('version') or ''),
                         'license': manifest['license'],
                         'keywords': keywords,
+                        # Read by the legacy docs/ grid (docs/js/index-events.js) for every plugin card.
+                        'installCommand': f'npx claude-code-templates@latest --plugin {category}/{name}',
                         'downloads': download_stats.get(f"plugins/{category}/{name}", 0),
                         'references': references,
                         'files': files,

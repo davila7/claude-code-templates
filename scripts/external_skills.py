@@ -104,8 +104,13 @@ def _safe_rel(p: str, allow_empty: bool = False) -> bool:
 
 
 def kind_of(folder: Path) -> str:
-    """'plugin' for a catalog folder under plugins/, else 'skill'."""
-    return "plugin" if PLUGINS_ROOT in Path(folder).resolve().parents else "skill"
+    """'plugin' for a catalog folder plugins/{category}/{name}, else 'skill'.
+
+    Read from the catalog layout, not from where this checkout is: the PR scan
+    extracts the base-ref copy of a folder under a temp dir, and that copy must
+    get the same kind."""
+    parts = Path(folder).resolve().parts
+    return "plugin" if len(parts) >= 3 and parts[-3] == PLUGINS_ROOT.name else "skill"
 
 
 def validate_manifest(data: object, kind: str = "skill") -> dict:
