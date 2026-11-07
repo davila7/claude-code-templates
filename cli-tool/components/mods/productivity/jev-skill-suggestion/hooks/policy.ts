@@ -403,8 +403,38 @@ function yesNo(provider: Provider, instructions: string): Record<string, unknown
   return { type: provider === 'typesafe' ? 'noul' : 'boolean', instructions }
 }
 
-/** The first request's `questions`: the ranking and the gate. */
-export function wideQuestions(provider: Provider, skills: readonly Skill[]): Record<string, unknown> {
+/**
+ * The most options one `choice` may carry. TypeSafe's `/v1/systemone` refuses
+ * more with `400 {"detail":"Too many choices. Must have at most 255 choices."}`,
+ * and a few installed plugins are enough to pass it, since `$.command.list()`
+ * counts plugin commands too. The Gateway documents no limit; the same split
+ * is used there.
+ */
+export const MAX_CHOICES = 255
+
+/**
+ * The catalog in as few parts as fit in one `choice` each, of near-equal size
+ * so that no part is a handful of leftovers. A catalog that fits is a single
+ * part, and the first request is the same as it always was.
+ */
+export function rankingParts<T>(items: readonly T[], max = MAX_CHOICES): T[][] {
+  const count = Math.max(1, Math.ceil(items.length / max))
+  const size = Math.ceil(items.length / count)
+  const parts: T[][] = []
+  for (let start = 0; start < items.length; start += size) parts.push(items.slice(start, start + size))
+  return parts
+}
+
+/**
+ * The first request's `questions`: the ranking and the gate. A catalog split
+ * into parts asks the gate with the first part only: it is about the request,
+ * not about any skill, so one answer is enough.
+ */
+export function wideQuestions(
+  provider: Provider,
+  skills: readonly Skill[],
+  withGate = true,
+): Record<string, unknown> {
   const criteria: Record<string, string> = {}
   for (const skill of skills) criteria[skill.name] = skill.description || `A skill named ${skill.name}.`
   const questions: Record<string, unknown> = {
@@ -415,10 +445,31 @@ export function wideQuestions(provider: Provider, skills: readonly Skill[]): Rec
       criteria,
     },
   }
+  if (!withGate) return questions
   for (const [key, text] of Object.entries(GATE_QUESTIONS)) {
     questions[`gate::${key}`] = yesNo(provider, text)
   }
   return questions
+}
+
+/**
+ * One first-request answer from the answers of the parts, in part order.
+ * Without the first part, which carried the gate, there is no answer. Each
+ * part's probabilities sum to one over that part alone, so they do not compare
+ * across parts: the ranking takes every part's first before any part's second,
+ * the surer one first among equals. The shortlist then opens with each part's
+ * best, and the second request, which reads them side by side, settles it. A
+ * later part that did not answer is left out of the ranking.
+ */
+export function mergeWide(parts: readonly (Wide | null)[]): Wide | null {
+  const first = parts[0]
+  if (!first) return null
+  if (parts.length === 1) return first
+  const ranked = parts
+    .flatMap((part) => part?.ranked.map((entry, place) => ({ entry, place })) ?? [])
+    .sort((a, b) => a.place - b.place || (b.entry.probability ?? 0) - (a.entry.probability ?? 0))
+    .map(({ entry }) => entry)
+  return { ranked, gate: first.gate, gateValues: first.gateValues }
 }
 
 /** The second request's `questions`: the shortlist re-read, one `fits` each. */
@@ -714,6 +765,16 @@ export function describeSetup(
       : 'the built-in classifier, no key set'
   const listing = hideListing ? 'withholding the skill listing' : 'leaving the skill listing in place'
   return `ready on ${backend}; ${listing}`
+}
+
+/**
+ * A non-2xx for the log, with the start of the response body: the backend's
+ * reason is there (`Too many choices`), and the status alone does not say it.
+ */
+export function describeFailure(provider: Provider, status: number, what: string, body: string): string {
+  const text = body.replace(/\s+/g, ' ').trim()
+  const reason = text.length > 200 ? `${text.slice(0, 200)}…` : text
+  return `${provider} responded ${status} to the ${what}${reason ? `: ${reason}` : ''}`
 }
 
 /** What the first request answered: the gate and the top of the ranking. */
