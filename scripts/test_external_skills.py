@@ -57,6 +57,31 @@ class ValidateManifestTest(unittest.TestCase):
             staged = ext.stage_plugin_for_scan(plug, root / "stage2", "kit")
             self.assertIn("root skill", (staged / "SKILL.md").read_text())
 
+    def test_pr_scan_reports_a_plugin_it_cannot_stage(self):
+        import sys
+        sys.path.insert(0, str(MODULE_PATH.parent))
+        try:
+            import skillspector_scan
+        finally:
+            sys.path.pop(0)
+        with tempfile.TemporaryDirectory() as tmp:
+            plug = Path(tmp) / "kit"
+            (plug / ".claude-plugin").mkdir(parents=True)
+            (plug / ".claude-plugin/plugin.json").write_text('{"name": ')
+            result = skillspector_scan.scan_skill(plug)  # returns before running skillspector
+        self.assertEqual(result["status"], "error")
+        self.assertIn("plugin.json", result["error"])
+
+    def test_unreadable_plugin_json_is_a_manifest_error(self):
+        # Upstream content: bad JSON or another encoding is reported per plugin, never a crash.
+        with tempfile.TemporaryDirectory() as tmp:
+            plug = Path(tmp)
+            (plug / ".claude-plugin").mkdir()
+            for raw in (b'{"name": ', '{"name": "kit"}'.encode("utf-16"), b"[1]"):
+                (plug / ".claude-plugin/plugin.json").write_bytes(raw)
+                with self.subTest(raw=raw[:12]), self.assertRaises(ext.ManifestError):
+                    ext.plugin_manifest(plug)
+
     def test_plugin_inventory(self):
         with tempfile.TemporaryDirectory() as tmp:
             plug = Path(tmp) / "kit"

@@ -241,8 +241,8 @@ def is_plugin(local: Path) -> bool:
 def plugin_manifest(local: Path) -> dict:
     try:
         data = json.loads((local / PLUGIN_MANIFEST).read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as e:
-        raise ManifestError(f"{PLUGIN_MANIFEST} is not valid JSON: {e}") from e
+    except (OSError, ValueError) as e:  # ValueError covers JSONDecodeError and UnicodeDecodeError
+        raise ManifestError(f"{PLUGIN_MANIFEST} is not valid UTF-8 JSON: {e}") from e
     if not isinstance(data, dict):
         raise ManifestError(f"{PLUGIN_MANIFEST} must be a JSON object")
     return data

@@ -26,7 +26,8 @@
 
 const os = require('os');
 const path = require('path');
-const fs = require('fs-extra');
+// Built-ins only: the root test job (version-sync.yml) runs without npm install.
+const fs = require('fs/promises');
 const { spawnClaude } = require('./claude-launcher');
 
 // Same values as scripts/external_skills.py and dashboard/src/lib/constants.ts.
@@ -200,8 +201,13 @@ async function installWithClaude({ name, scope, targetDir, run = runClaude, env 
 
 /** Read a settings file; a missing file is {}, an unreadable one throws (never overwritten). */
 async function readSettings(file) {
-  if (!(await fs.pathExists(file))) return {};
-  const text = await fs.readFile(file, 'utf8');
+  let text;
+  try {
+    text = await fs.readFile(file, 'utf8');
+  } catch (error) {
+    if (error.code === 'ENOENT') return {};
+    throw error;
+  }
   if (!text.trim()) return {};
   let data;
   try {
@@ -230,7 +236,7 @@ async function installWithSettings({ name, scope, targetDir, env = process.env }
     [MARKETPLACE_NAME]: known[MARKETPLACE_NAME] || { source: { source: 'url', url: marketplaceUrl(env) } }
   };
   settings.enabledPlugins = { ...enabled, [`${name}@${MARKETPLACE_NAME}`]: true };
-  await fs.ensureDir(path.dirname(file));
+  await fs.mkdir(path.dirname(file), { recursive: true });
   await fs.writeFile(file, JSON.stringify(settings, null, 2) + '\n');
   return { method: 'settings', file };
 }
@@ -253,7 +259,7 @@ async function sameNameElsewhere(name, scope, targetDir, env = process.env) {
 /** Where Claude Code put the plugin's files, from installed_plugins.json (best effort). */
 async function installedPath(name, scope, targetDir, env = process.env) {
   try {
-    const record = await fs.readJson(path.join(claudeConfigDir(env), 'plugins', 'installed_plugins.json'));
+    const record = JSON.parse(await fs.readFile(path.join(claudeConfigDir(env), 'plugins', 'installed_plugins.json'), 'utf8'));
     const installs = (record.plugins || {})[`${name}@${MARKETPLACE_NAME}`] || [];
     const project = path.resolve(targetDir);
     const match = installs.find(i => i.scope === scope && (scope === 'user' || path.resolve(i.projectPath || '') === project))

@@ -672,8 +672,10 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
                     name = plugin_dir
                     content = ''
                     readme = root / 'README.md'
-                    if readme.is_file():
-                        content = readme.read_text(encoding='utf-8')
+                    try:
+                        content = readme.read_text(encoding='utf-8') if readme.is_file() else ''
+                    except (OSError, UnicodeDecodeError):
+                        content = ''  # falls back to the description below
                     description = str(meta.get('description') or '')
                     if not content:
                         content = f"# {name}\n\n{description}\n"
@@ -931,7 +933,7 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
                     'subtype': 'language',
                     'category': 'languages',
                     'description': f'{language_dir.title()} project template',
-                    'files': language_files,
+                    'files': sorted(language_files),  # os.listdir order differs per filesystem
                     'installCommand': f'npx claude-code-templates@latest --template={language_dir} --yes',
                     'downloads': template_downloads
                 }
@@ -973,7 +975,7 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
                                 'category': 'frameworks',
                                 'language': language_dir,
                                 'description': f'{framework_dir.title()} with {language_dir.title()}',
-                                'files': framework_files,
+                                'files': sorted(framework_files),  # os.listdir order differs per filesystem
                                 'installCommand': f'npx claude-code-templates@latest --template={framework_dir} --yes',
                                 'downloads': framework_downloads
                             }

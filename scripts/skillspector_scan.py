@@ -259,7 +259,14 @@ def scan_skill(directory: Path) -> dict:
     if external_skills.is_plugin(target):
         # A catalog plugin: SkillSpector needs a SKILL.md at the root.
         staging = tempfile.TemporaryDirectory(prefix="cct-skillspector-")
-        target = external_skills.stage_plugin_for_scan(target, Path(staging.name), directory.name)
+        try:
+            target = external_skills.stage_plugin_for_scan(target, Path(staging.name), directory.name)
+        except (external_skills.ManifestError, OSError) as e:
+            # One broken plugin is reported as its own error, never aborts the batch.
+            staging.cleanup()
+            result["status"] = "error"
+            result["error"] = f"plugin: {e}"[:500]
+            return result
     try:
         return _run_skillspector(directory, target, result)
     finally:
