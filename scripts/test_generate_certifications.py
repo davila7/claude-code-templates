@@ -98,7 +98,7 @@ class HelpersTest(unittest.TestCase):
         self.assertEqual(VOCAB["LEVELS"], ["Entry", "Intermediate", "Advanced"])
 
     def test_current_data_passes_the_python_contract(self):
-        d = json.load(open(g.DATA_PATH, encoding="utf-8"))
+        d = g.read_json(g.DATA_PATH)
         for item in d["items"]:
             self.assertEqual(g.validate_item(item, VOCAB), [], item["id"])
 

@@ -365,19 +365,24 @@ def write_json(path, obj):
         f.write("\n")
 
 
+def read_json(path):
+    with open(path, encoding="utf-8") as f:
+        return json.load(f)
+
+
 def main(argv=None, sources_path=SOURCES_PATH, data_path=DATA_PATH, cache_path=CACHE_PATH):
     ap = argparse.ArgumentParser()
     ap.add_argument("--from-cache", help="merge the entries in this cache file instead of fetching")
     args = ap.parse_args(argv)
 
-    config = json.load(open(sources_path, encoding="utf-8"))
+    config = read_json(sources_path)
     vocab = read_vocabularies()
     labels = {s["id"]: s["label"] for s in config["sources"]}
-    data = json.load(open(data_path, encoding="utf-8"))
+    data = read_json(data_path)
     before = json.dumps(data["items"], sort_keys=True)
 
     if args.from_cache:
-        cache = json.load(open(args.from_cache, encoding="utf-8"))
+        cache = read_json(args.from_cache)
         # Only sources still configured on this checkout: one removed from main
         # while the fetch ran must not come back from the cache.
         configured = {src["id"] for src in config["sources"]}

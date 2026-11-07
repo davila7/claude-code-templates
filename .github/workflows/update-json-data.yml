@@ -12,6 +12,12 @@ permissions:
   # to start deploy.yml once the refreshed data is pushed
   actions: write
 
+# One run at a time: each run resets to main and re-merges its own fetch cache,
+# so two overlapping runs could overwrite each other's results. Queue, don't cancel.
+concurrency:
+  group: update-json-data
+  cancel-in-progress: false
+
 jobs:
   update-json:
     runs-on: ubuntu-latest
