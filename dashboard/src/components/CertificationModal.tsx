@@ -97,7 +97,7 @@ export default function CertificationModal({ item, provider, signedIn, loaded, o
       >
         <div className="flex items-start gap-3">
           <div className="w-9 h-9 rounded shrink-0 bg-[var(--color-surface-2)] border border-[var(--color-border)] flex items-center justify-center overflow-hidden">
-            <CompanyLogo company={item.provider} icon={provider?.icon} imgClassName="w-5 h-5 object-contain" initialClassName="text-[12px] font-bold text-[var(--color-text-tertiary)]" />
+            <CompanyLogo company={item.provider} icon={provider?.icon} invertOnDark={provider?.invertOnDark} imgClassName="w-5 h-5 object-contain" initialClassName="text-[12px] font-bold text-[var(--color-text-tertiary)]" />
           </div>
           <div className="min-w-0 flex-1">
             <h2 id="certification-modal-title" className="text-[15px] font-semibold leading-snug text-[var(--color-text-primary)]">{item.title}</h2>

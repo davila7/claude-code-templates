@@ -40,6 +40,8 @@ export interface LearningItem {
 /** Keyed by LearningItem.provider. */
 export interface ProviderInfo {
   icon?: string;
+  /** The icon is a dark glyph on a transparent background (e.g. GitHub's): invert it in dark mode. */
+  invertOnDark?: boolean;
 }
 
 export interface CertificationsData {
@@ -181,6 +183,7 @@ export async function fetchCertifications(): Promise<CertificationsData> {
 export function validateProvider(info: ProviderInfo): string[] {
   const errors: string[] = [];
   if (info.icon !== undefined && !isHttpUrl(info.icon)) errors.push('icon must be https');
+  if (info.invertOnDark !== undefined && typeof info.invertOnDark !== 'boolean') errors.push('invertOnDark must be a boolean');
   return errors;
 }
 
