@@ -255,15 +255,18 @@ into its own folders (decided 2026-11-07, PR #1429).
   `commit` (`external-skills-outdated.yml` lists plugins too).
 - `generate_components_json.py` writes `dashboard/public/marketplace.json`
   (served at https://www.aitmpl.com/marketplace.json; `external_skills.py
-  marketplace` prints it): one entry per plugin with a `git-subdir` source using
-  the full `https://github.com/{repo}.git` URL (the `owner/repo` shorthand can
-  make Claude Code clone over SSH) and `sha` = the pinned commit, plus the
+  marketplace` prints it): one entry per plugin with a `git-subdir` source (`url`
+  when the plugin is the repo root, `path` empty) using the full
+  `https://github.com/{repo}.git` URL (the `owner/repo` shorthand can make
+  Claude Code clone over SSH) and `sha` = the pinned commit, plus the
   plugin.json display fields. It also records what each plugin ships under
   `contains` (skills, agents, commands, hooks, mcpServers, lspServers, …),
   resolved the way Claude Code does: manifest `commands`/`agents`/`outputStyles`
-  replace the default folder, `skills` adds to it. Keep every entry `git-subdir`:
-  a Claude Code that does not know an entry's source type rejects the whole
+  replace the default folder, `skills` adds to it. Emit no other source type: a
+  Claude Code that does not know an entry's source type rejects the whole
   marketplace (2.1.68, before `git-subdir`: "plugins.0.source: Invalid input").
+  `url` is older: 2.1.68 installs a `url` entry, and a marketplace mixing both,
+  pinned by `sha`, installs on 2.1.69, 2.1.288 and 2.1.319 (tested 2026-11-07).
 - `--plugin [category/]name [--scope project|user|local]`
   (`cli-tool/src/plugin-install.js`, CLI after 1.32.1) checks the entry in the
   live marketplace.json, then runs `claude --version` and refuses a Claude Code

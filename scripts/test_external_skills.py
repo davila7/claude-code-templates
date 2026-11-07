@@ -253,6 +253,27 @@ class MarketplaceTest(unittest.TestCase):
         self.assertEqual(e["author"], {"name": "Someone"})
         self.assertNotIn("description", e)
 
+    def test_a_plugin_at_the_repo_root_gets_a_url_source(self):
+        # git-subdir needs a subfolder; `url` is older than git-subdir, so every Claude Code
+        # that reads this marketplace reads both. No other source type may appear.
+        root = Path(self.tmp.name)
+        work = root / "work-solo"
+        (work / ".claude-plugin").mkdir(parents=True)
+        (work / ".claude-plugin/plugin.json").write_text('{"name": "solo", "description": "Solo"}')
+        git("init", "-q", cwd=work)
+        git("-c", "user.email=t@t", "-c", "user.name=t", "add", "-A", cwd=work)
+        git("-c", "user.email=t@t", "-c", "user.name=t", "commit", "-qm", "x", cwd=work)
+        commit = git("rev-parse", "HEAD", cwd=work)
+        git("clone", "-q", "--bare", str(work), str(ext.CACHE_ROOT / "git" / "owner__solo"), cwd=root)
+        solo = ext.PLUGINS_ROOT / "dev" / "solo"
+        solo.mkdir(parents=True)
+        (solo / "source.json").write_text(json.dumps({"repo": "owner/solo", "path": "", "commit": commit, "license": "MIT"}))
+        e = ext.marketplace_entry(solo)
+        self.assertEqual(e["source"], {"source": "url", "url": "https://github.com/owner/solo.git", "sha": commit})
+        self.assertEqual(e["description"], "Solo")
+        m = ext.build_marketplace([solo, self.plugin("dev", "kit")])
+        self.assertEqual(sorted(p["source"]["source"] for p in m["plugins"]), ["git-subdir", "url"])
+
     def test_build_marketplace_sorted_by_name(self):
         dirs = [self.plugin("z", "kit"), self.plugin("a", "bare")]
         m = ext.build_marketplace(dirs)

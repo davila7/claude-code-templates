@@ -31,7 +31,8 @@ and a plugin declares its own dependencies. The folder name must equal the
 plugin's `name` and be unique across plugins/. Nothing copies plugin files into a
 project: build_marketplace() turns the manifests into the `aitmpl` Claude Code
 marketplace (dashboard/public/marketplace.json, served at MARKETPLACE_URL), each
-entry a git-subdir source pinned to the reviewed commit, and Claude Code installs
+entry a git-subdir source (url for a plugin at the repo root) pinned to the
+reviewed commit, and Claude Code installs
 from it into ~/.claude/plugins/cache/aitmpl/{name}/{version}/.
 
 Usage:
