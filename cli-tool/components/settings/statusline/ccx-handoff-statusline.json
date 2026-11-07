@@ -1,0 +1,7 @@
+{
+  "description": "Status line for people who move a task between Claude Code and Codex with ccx (macOS). Shows the model, how much of Claude's and Codex's current 5-hour window is used, and whether this conversation is linked to a Codex thread and has progress Codex hasn't picked up yet. Suggests /to-codex when Claude is above 90%. Claude's usage comes from Claude Code's own rate_limits when present; Codex's usage and the link state come from the local `ccx usage --json` and `ccx info --json` commands (2-second timeout each, no network, nothing written). Without ccx it shows the model and an install hint. Requires ccx: https://github.com/aaronwong1999/ccx",
+  "statusLine": {
+    "type": "command",
+    "command": "python3 .claude/scripts/ccx-handoff-statusline.py"
+  }
+}
