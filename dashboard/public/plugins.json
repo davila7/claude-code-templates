@@ -23597,5 +23597,227 @@
         "cohesivity-local"
       ]
     }
+  },
+  {
+    "slug": "glidezo-skills",
+    "name": "Skills",
+    "author": "glidezo",
+    "description": "Free video and image skills for Claude Code, Codex and Cursor. Render on your computer with HyperFrames.",
+    "github": "https://github.com/glidezo/skills",
+    "stars": 0,
+    "type": "marketplace",
+    "tags": [
+      "skills"
+    ],
+    "contains": {
+      "plugins": 9,
+      "components": {
+        "skills": 9
+      }
+    },
+    "highlights": [
+      "9 plugins in marketplace"
+    ],
+    "website": "https://glidezo.com/",
+    "marketplace_name": "glidezo",
+    "plugins_list": [
+      {
+        "name": "launch-video",
+        "description": "Product launch or promo video (MP4) from a name, features with screenshots and a call to action.",
+        "source": "./",
+        "tags": [
+          "video",
+          "launch video",
+          "promo",
+          "hyperframes"
+        ],
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "launch-video",
+              "description": ""
+            }
+          ]
+        }
+      },
+      {
+        "name": "kinetic-type-title",
+        "description": "Kinetic typography title clip (MP4) from one line of text.",
+        "source": "./",
+        "tags": [
+          "video",
+          "kinetic typography",
+          "title",
+          "hyperframes"
+        ],
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "kinetic-type-title",
+              "description": ""
+            }
+          ]
+        }
+      },
+      {
+        "name": "animated-captions",
+        "description": "Word-by-word animated captions burned into a talking video, transcribed on your computer.",
+        "source": "./",
+        "tags": [
+          "video",
+          "captions",
+          "subtitles",
+          "hyperframes"
+        ],
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "animated-captions",
+              "description": ""
+            }
+          ]
+        }
+      },
+      {
+        "name": "logo-reveal",
+        "description": "Logo reveal intro or end card (MP4) from a logo file, brand name and tagline.",
+        "source": "./",
+        "tags": [
+          "video",
+          "logo reveal",
+          "intro",
+          "hyperframes"
+        ],
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "logo-reveal",
+              "description": ""
+            }
+          ]
+        }
+      },
+      {
+        "name": "data-chart-video",
+        "description": "Animated bar or line chart video (MP4) from labels and numbers.",
+        "source": "./",
+        "tags": [
+          "video",
+          "chart",
+          "data",
+          "hyperframes"
+        ],
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "data-chart-video",
+              "description": ""
+            }
+          ]
+        }
+      },
+      {
+        "name": "device-mockup-promo",
+        "description": "Promo video (MP4) of your app or site in a phone or laptop, from screenshots.",
+        "source": "./",
+        "tags": [
+          "video",
+          "mockup",
+          "app promo",
+          "hyperframes"
+        ],
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "device-mockup-promo",
+              "description": ""
+            }
+          ]
+        }
+      },
+      {
+        "name": "real-estate-slideshow-maker",
+        "description": "Real estate listing slideshow video (MP4) from photos, price, address and agent details.",
+        "source": "./",
+        "tags": [
+          "video",
+          "real estate",
+          "slideshow",
+          "hyperframes"
+        ],
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "real-estate-slideshow-maker",
+              "description": ""
+            }
+          ]
+        }
+      },
+      {
+        "name": "og-image",
+        "description": "Open Graph link preview card (1200x630 PNG) with a title that fits itself.",
+        "source": "./",
+        "tags": [
+          "image",
+          "og image",
+          "social card",
+          "hyperframes"
+        ],
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "og-image",
+              "description": ""
+            }
+          ]
+        }
+      },
+      {
+        "name": "youtube-thumbnail",
+        "description": "YouTube thumbnail (1280x720 PNG, under 2 MB) with a headline, badge and subject cut-out.",
+        "source": "./",
+        "tags": [
+          "image",
+          "youtube thumbnail",
+          "hyperframes"
+        ],
+        "components": {
+          "skills": 1
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "youtube-thumbnail",
+              "description": ""
+            }
+          ]
+        }
+      }
+    ]
   }
 ]

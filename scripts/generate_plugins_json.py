@@ -68,6 +68,7 @@ REPOS = [
     ("curviate/curviate-plugin", "https://curviate.com/"),
     ("firecrawl/firecrawl-claude-plugin", "https://www.firecrawl.dev/integrations/claude-code?utm_source=claude-code-templates&utm_medium=integration"),
     ("annavetech/kumi", "https://docs.annave.tech/kumi/"),
+    ("glidezo/skills", "https://glidezo.com/"),
 ]
 
 DESCRIPTION_OVERRIDES = {
@@ -511,6 +512,36 @@ def build_highlights(marketplace, plugin_json, repo_type, repo_info):
     return highlights[:3]  # Max 3
 
 
+def base_slug(repo_full):
+    """The slug a repo gets on its own: its lowercased name, owner-prefixed for common names."""
+    owner, name = repo_full.split("/")
+    slug = name.lower()
+    # Avoid collisions by prepending owner for common names
+    if slug in ("claude-skills", "awesome-claude-skills", "awesome-claude-code-plugins"):
+        slug = f"{owner.lower()}-{slug}"
+    return slug
+
+
+def reserve_slugs(repos):
+    """Assign every repo's slug from the full REPOS list, before any fetch, so a failed fetch
+    can't hand its slug (and /plugins/<slug> URL) to another repo. On a collision the earlier
+    entry keeps the plain slug, a later one gets its owner prefixed, then -2, -3... if still taken."""
+    slugs = {}
+    taken = set()
+    for repo_full, _website in repos:
+        slug = base_slug(repo_full)
+        if slug in taken:
+            prefixed = f"{repo_full.split('/')[0].lower()}-{slug}"
+            slug = prefixed
+            n = 2
+            while slug in taken:
+                slug = f"{prefixed}-{n}"
+                n += 1
+        taken.add(slug)
+        slugs[repo_full] = slug
+    return slugs
+
+
 def process_repo(repo_full, website_override=None):
     """Process a single repo and return its plugin data."""
     owner, name = repo_full.split("/")
@@ -603,11 +634,8 @@ def process_repo(repo_full, website_override=None):
     else:
         display_name = repo_display.replace("-", " ").title()
 
-    # 11. Slug
-    slug = name.lower()
-    # Avoid collisions by prepending owner for common names
-    if slug in ("claude-skills", "awesome-claude-skills", "awesome-claude-code-plugins"):
-        slug = f"{owner.lower()}-{slug}"
+    # 11. Slug (main() replaces it with the one reserved from the full REPOS list)
+    slug = base_slug(repo_full)
 
     # 12. Website
     website = website_override or repo_info.get("homepage") or None
@@ -709,10 +737,14 @@ def main():
     results = []
     errors = []
 
+    # Two repos with the same name (e.g. Airtable/skills and glidezo/skills) would share a
+    # /plugins/<slug> page; slugs are reserved up front so fetch failures can't move them.
+    slugs = reserve_slugs(REPOS)
     for repo_full, website in REPOS:
         try:
             data = process_repo(repo_full, website)
             if data:
+                data["slug"] = slugs[repo_full]
                 results.append(data)
             else:
                 errors.append(repo_full)
