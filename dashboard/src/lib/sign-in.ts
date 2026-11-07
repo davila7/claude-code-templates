@@ -62,9 +62,11 @@ function clerkOpenSignIn() {
 }
 
 const DIALOG_ID = 'inapp-signin-dialog';
+let closeActiveDialog: ((restoreFocus?: boolean) => void) | null = null;
 
 function showInAppDialog(info: InAppBrowser) {
-  document.getElementById(DIALOG_ID)?.remove();
+  // Close a previous dialog through its own close() so its keydown listener goes too.
+  closeActiveDialog?.(false);
 
   const appName = info.app === 'this app' ? "this app's browser" : `${info.app}'s browser`;
   const browserName = info.platform === 'ios' ? 'Safari' : info.platform === 'android' ? 'Chrome' : 'your browser';
@@ -143,21 +145,33 @@ function showInAppDialog(info: InAppBrowser) {
   email.textContent = 'Sign in with email here';
   email.style.cssText =
     btnBase + 'background:transparent;border:0;color:var(--color-text-secondary,#a3a197);margin:0;';
-  email.addEventListener('click', () => { close(); clerkOpenSignIn(); });
+  email.addEventListener('click', () => { close(false); clerkOpenSignIn(); });
   actions.append(email);
 
   card.append(title, body, actions);
   overlay.append(card);
 
   const prevFocus = document.activeElement as HTMLElement | null;
-  function close() {
+  function close(restoreFocus = true) {
     overlay.remove();
-    document.removeEventListener('keydown', onKey);
-    prevFocus?.focus?.();
+    document.removeEventListener('keydown', onKey, true);
+    if (closeActiveDialog === close) closeActiveDialog = null;
+    if (restoreFocus) prevFocus?.focus?.();
   }
-  function onKey(e: KeyboardEvent) { if (e.key === 'Escape') close(); }
+  function onKey(e: KeyboardEvent) {
+    if (e.key === 'Escape') { e.stopPropagation(); close(); return; }
+    if (e.key !== 'Tab') return;
+    // Keep Tab inside the dialog.
+    const items = Array.from(actions.querySelectorAll<HTMLElement>('a,button'));
+    if (!items.length) return;
+    const first = items[0], last = items[items.length - 1];
+    const active = document.activeElement as HTMLElement | null;
+    if (e.shiftKey && (active === first || !overlay.contains(active))) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && (active === last || !overlay.contains(active))) { e.preventDefault(); first.focus(); }
+  }
   overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
-  document.addEventListener('keydown', onKey);
+  document.addEventListener('keydown', onKey, true);
+  closeActiveDialog = close;
 
   document.body.append(overlay);
   (actions.firstElementChild as HTMLElement | null)?.focus();
