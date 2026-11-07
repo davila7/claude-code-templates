@@ -28,10 +28,13 @@ test('detects social in-app browsers', () => {
 test('detects unnamed WebViews', () => {
   assert.deepEqual(detectInAppBrowser(UA.genericIosWebView), { app: 'this app', platform: 'ios' });
   assert.deepEqual(detectInAppBrowser(UA.genericAndroidWebView), { app: 'this app', platform: 'android' });
+  const ipadDesktopWebView = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)';
+  assert.deepEqual(detectInAppBrowser(ipadDesktopWebView), { app: 'this app', platform: 'other' });
 });
 
 test('leaves real browsers alone', () => {
-  for (const ua of [UA.safariIos, UA.chromeIos, UA.chromeAndroid, UA.desktopChrome, UA.desktopSafari, '']) {
+  for (const ua of [UA.safariIos, UA.chromeIos, UA.chromeAndroid, UA.desktopChrome, UA.desktopSafari,
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:132.0) Gecko/20100101 Firefox/132.0', '']) {
     assert.equal(detectInAppBrowser(ua), null, ua);
   }
 });

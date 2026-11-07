@@ -37,6 +37,9 @@ export function detectInAppBrowser(ua: string): InAppBrowser | null {
   // (FxiOS) and Edge (EdgiOS) all send.
   if (android && /;\s*wv\)/.test(ua)) return { app: 'this app', platform };
   if (ios && /AppleWebKit/.test(ua) && !/\bSafari\//.test(ua)) return { app: 'this app', platform };
+  // Desktop-class iPadOS WebViews (and macOS WKWebViews) report "Macintosh":
+  // same missing Safari token, but no x-safari-https link we can rely on.
+  if (/\bMacintosh\b/.test(ua) && /AppleWebKit/.test(ua) && !/\bSafari\//.test(ua)) return { app: 'this app', platform: 'other' };
   return null;
 }
 
