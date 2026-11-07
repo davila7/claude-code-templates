@@ -38,7 +38,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Build scanner image
         run: docker build --progress=plain -f .oss-scanner/Dockerfile -t oss-scanner-cct .
