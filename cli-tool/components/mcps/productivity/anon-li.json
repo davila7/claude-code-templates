@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "anon-li": {
+      "description": "anon.li remote MCP server (streamable HTTP, OAuth). Tools manage email aliases, recipients, end-to-end encrypted file drops and end-to-end encrypted forms. Sign in with an anon.li account (free plan available): after installing, run /mcp in Claude Code to authenticate.",
+      "type": "http",
+      "url": "https://anon.li/api/mcp"
+    }
+  }
+}
