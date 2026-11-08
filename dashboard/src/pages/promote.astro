@@ -1,0 +1,166 @@
+---
+import DashboardLayout from '../layouts/DashboardLayout.astro';
+import SearchModal from '../components/SearchModal.tsx';
+import CartSidebar from '../components/CartSidebar.tsx';
+
+// Step 1 of the "Promote your component" wizard. This page is informational
+// only: no payment logic, no auth. Selection and checkout happen on the
+// private ads service (PROMOTE_URL), which keeps Stripe out of this repo.
+export const prerender = true;
+
+const PROMOTE_URL = 'https://admin.aitmpl.com/promote';
+const SLOT_URL = 'https://admin.aitmpl.com/api/ads/slot';
+
+const TIERS = [
+  { label: '30 days', price: '$99', perDay: '$3.30/day' },
+  { label: '3 months', price: '$269', perDay: '$2.99/day', note: 'save 9%' },
+  { label: '6 months', price: '$499', perDay: '$2.77/day', note: 'save 16%' },
+  { label: '12 months', price: '$899', perDay: '$2.46/day', note: 'save 24%' },
+];
+
+const PROMISES = [
+  {
+    title: 'A labeled Sponsored slot',
+    body: 'Your component appears in a slot marked "Sponsored" above the Cmd+K search results and above the component grid. It also keeps its normal place in the results: nothing else is reordered, and categories, search ranking and recommendations do not change.',
+  },
+  {
+    title: 'Protected from third-party edits',
+    body: 'While promoted, pull requests from other people that touch its files wait until the placement ends. Security fixes are the only exception.',
+  },
+  {
+    title: 'Reviewed, then live',
+    body: 'After payment your component goes through the same review as any other component (up to 72 hours). The paid days start when it is approved. If it is rejected, the payment is refunded in full.',
+  },
+];
+---
+
+<DashboardLayout
+  title="Promote your component | Claude Code Templates"
+  description="Show your Claude Code agent, command, skill, hook, MCP or setting in the labeled sponsored slot on aitmpl.com. One slot, from $99 for 30 days."
+>
+  <div class="max-w-3xl mx-auto px-6 py-8">
+    <a
+      href="/"
+      class="inline-flex items-center gap-1.5 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors mb-6"
+    >
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+      </svg>
+      Back to Components
+    </a>
+
+    <div class="mb-8 pb-6 border-b border-[var(--color-border)]">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="terminal-prompt text-[13px]">★</span>
+        <span class="font-ui-mono text-[11px] font-bold uppercase tracking-wide text-[var(--color-text-secondary)]">Step 1 of 3 · How it works</span>
+      </div>
+      <h1 class="text-2xl font-bold text-[var(--color-text-primary)] mb-2">Promote your component</h1>
+      <p class="text-[14px] text-[var(--color-text-secondary)] leading-relaxed">
+        There is a single sponsored slot on aitmpl.com. Buy it and your component is shown, labeled as sponsored, above the search results and the component grid.
+      </p>
+    </div>
+
+    {/* Slot status (filled client-side, fails open to "available") */}
+    <div
+      id="slot-status"
+      class="mb-8 rounded-md border border-[var(--color-border)] bg-[var(--color-surface-1)] px-4 py-3 flex items-center gap-3"
+      data-state="loading"
+    >
+      <span id="slot-dot" class="w-2 h-2 rounded-full bg-[var(--color-text-tertiary)] shrink-0"></span>
+      <p id="slot-text" class="font-ui-mono text-[12px] text-[var(--color-text-secondary)]">Checking slot availability…</p>
+    </div>
+
+    <h2 class="font-ui-mono text-[13px] font-bold uppercase tracking-wide text-[var(--color-text-primary)] mb-4">What you get</h2>
+    <ol class="space-y-3 mb-10">
+      {PROMISES.map((p, i) => (
+        <li class="flex gap-4 p-4 rounded-md border border-[var(--color-border)] bg-[var(--color-card-bg)]">
+          <span class="font-ui-mono text-[13px] font-bold text-[var(--color-accent)] shrink-0 w-6">{String(i + 1).padStart(2, '0')}</span>
+          <div class="min-w-0">
+            <p class="font-ui-mono text-[13px] font-bold text-[var(--color-text-primary)] mb-1">{p.title}</p>
+            <p class="text-[13px] text-[var(--color-text-secondary)] leading-[1.6]">{p.body}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+
+    <h2 class="font-ui-mono text-[13px] font-bold uppercase tracking-wide text-[var(--color-text-primary)] mb-4">Pricing</h2>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-10">
+      {TIERS.map((t) => (
+        <div class="p-4 rounded-md border border-[var(--color-border)] bg-[var(--color-card-bg)]">
+          <p class="font-ui-mono text-[12px] text-[var(--color-text-secondary)] mb-1">{t.label}</p>
+          <p class="text-xl font-bold text-[var(--color-text-primary)]">{t.price}</p>
+          <p class="font-ui-mono text-[11px] text-[var(--color-text-tertiary)] mt-1">{t.perDay}</p>
+          {t.note && (
+            <span class="inline-block mt-2 font-ui-mono text-[10px] font-medium px-2 py-0.5 rounded border border-[var(--color-success)]/40 bg-[var(--color-success-bg)] text-[var(--color-success)]">{t.note}</span>
+          )}
+        </div>
+      ))}
+    </div>
+
+    <div class="rounded-md border border-[var(--color-border)] bg-[var(--color-surface-1)] p-5">
+      <p class="text-[13px] text-[var(--color-text-secondary)] leading-relaxed mb-4">
+        Next you will sign in, pick the component you want to promote (it must already be published on aitmpl.com), choose a duration and pay with a card through Stripe. Placements are non-transferable. If the review rejects your component, the payment is refunded in full.
+      </p>
+      <div class="flex flex-wrap items-center gap-3">
+        <a
+          id="continue-btn"
+          href={PROMOTE_URL}
+          class="inline-flex items-center gap-2 font-ui-mono text-[13px] font-bold px-4 py-2 rounded-md bg-[var(--color-accent)] text-[var(--color-surface-1)] hover:bg-[var(--color-accent-hover)] transition-colors"
+        >
+          Continue to step 2 →
+        </a>
+        <a href="mailto:daniel.avila@aitmpl.com?subject=Promote%20a%20component" class="font-ui-mono text-[12px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">
+          Questions? Email us
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <SearchModal client:idle />
+  <CartSidebar client:idle />
+
+  <script is:inline define:vars={{ SLOT_URL }}>
+    // Ask the private ads service whether the single slot is taken. Any
+    // failure (network, CORS, old deployment without this route) falls back
+    // to "available" so the page never blocks on the ads backend.
+    (async function () {
+      var box = document.getElementById('slot-status');
+      var dot = document.getElementById('slot-dot');
+      var text = document.getElementById('slot-text');
+      var btn = document.getElementById('continue-btn');
+      if (!box || !dot || !text || !btn) return;
+
+      function setAvailable() {
+        box.dataset.state = 'available';
+        dot.className = 'w-2 h-2 rounded-full bg-[var(--color-success)] shrink-0';
+        text.textContent = 'Slot available right now.';
+      }
+
+      try {
+        var ctrl = new AbortController();
+        var timer = setTimeout(function () { ctrl.abort(); }, 4000);
+        var res = await fetch(SLOT_URL, { signal: ctrl.signal });
+        clearTimeout(timer);
+        if (!res.ok) return setAvailable();
+        var data = await res.json();
+        if (!data || !data.occupied) return setAvailable();
+
+        var until = data.occupied_until ? new Date(data.occupied_until) : null;
+        var when = until && !isNaN(until.getTime())
+          ? until.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+          : 'soon';
+        box.dataset.state = 'occupied';
+        dot.className = 'w-2 h-2 rounded-full bg-[var(--color-accent)] shrink-0';
+        text.textContent = data.reason === 'pending'
+          ? 'Someone is checking out right now. Try again in a few minutes.'
+          : data.reason === 'review'
+            ? 'A purchase is in review. The slot opens again by ' + when + ' at the latest.'
+            : 'Slot occupied until ' + when + '. You can come back then.';
+        btn.textContent = 'Slot occupied · view current placement';
+        btn.setAttribute('href', '/');
+      } catch (e) {
+        setAvailable();
+      }
+    })();
+  </script>
+</DashboardLayout>

@@ -1,0 +1,120 @@
+name: Promoted Component Lock
+
+# CCT Ads: while a component holds the sponsored slot on aitmpl.com, PRs from
+# other people that modify its files are not accepted without the maintainer
+# noticing. This check fails such a PR. Exemptions: the repo owner, and PRs
+# carrying the `security-fix` label (only people with triage rights can add
+# labels), so a security fix is never blocked by a placement.
+#
+# Runs on pull_request_target so the workflow definition always comes from the
+# base branch: a fork cannot edit this file to pass the check. It never checks
+# out or runs the PR's code; it only reads the PR's file list via the API.
+#
+# The list of active placements comes from the public, read-only
+# GET https://www.aitmpl.com/api/ads/active (no auth, no payment data). While
+# PUBLIC_ADS_ENABLED is off on the dashboard it returns an empty list, so this
+# check is a no-op. Any error reaching the endpoint also passes (fail open):
+# the ads backend must never block unrelated contributions.
+
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize, labeled, unlabeled]
+    paths:
+      - 'cli-tool/components/**'
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  lock:
+    name: Promoted component is not modified
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check changed files against active placements
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const pr = context.payload.pull_request;
+
+            // Maintainer PRs (repo owner) are exempt: they are the ones who
+            // fix or refund a placement.
+            if (pr.user.login.toLowerCase() === owner.toLowerCase()) {
+              core.info(`PR author ${pr.user.login} is the repo owner, skipping.`);
+              return;
+            }
+
+            if ((pr.labels ?? []).some((l) => l.name === 'security-fix')) {
+              core.info('PR has the security-fix label, skipping.');
+              return;
+            }
+
+            let ads = [];
+            try {
+              const ctrl = new AbortController();
+              const timer = setTimeout(() => ctrl.abort(), 8000);
+              const res = await fetch('https://www.aitmpl.com/api/ads/active', { signal: ctrl.signal });
+              clearTimeout(timer);
+              if (!res.ok) throw new Error(`HTTP ${res.status}`);
+              const body = await res.json();
+              ads = Array.isArray(body?.ads) ? body.ads : [];
+            } catch (err) {
+              core.warning(`Could not fetch active placements (${err.message}); passing.`);
+              return;
+            }
+
+            const now = Date.now();
+            const live = ads.filter((ad) => {
+              const end = Date.parse(ad.ends_at);
+              return Number.isNaN(end) || end > now;
+            });
+            if (live.length === 0) {
+              core.info('No active placement, nothing to lock.');
+              return;
+            }
+
+            // Map a placement to the repo files it protects. component_type
+            // is plural (contract with the ads service); component_path is
+            // relative to cli-tool/components/<type>/. Skills are directories;
+            // every other type is a file plus any sibling with the same stem
+            // (hooks ship a .sh/.py next to the .json, function hooks a .ts).
+            function lockPrefixes(ad) {
+              const base = `cli-tool/components/${ad.component_type}/${ad.component_path}`;
+              if (ad.component_type === 'skills') return [base.replace(/\/$/, '') + '/'];
+              return [base.replace(/\.[^./]+$/, '')];
+            }
+
+            const locks = live.flatMap((ad) =>
+              lockPrefixes(ad).map((prefix) => ({ prefix, ad }))
+            );
+
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner, repo, pull_number: pr.number, per_page: 100,
+            });
+
+            const hits = [];
+            for (const f of files) {
+              for (const { prefix, ad } of locks) {
+                const isDir = prefix.endsWith('/');
+                const match = isDir
+                  ? f.filename.startsWith(prefix)
+                  : f.filename === prefix || f.filename.startsWith(prefix + '.');
+                if (match) hits.push({ file: f.filename, ad });
+              }
+            }
+
+            if (hits.length === 0) {
+              core.info('No promoted component touched.');
+              return;
+            }
+
+            for (const { file, ad } of hits) {
+              const until = ad.ends_at ? new Date(ad.ends_at).toISOString().slice(0, 10) : 'unknown';
+              core.error(
+                `${file} belongs to "${ad.component_name}", which holds the sponsored slot on aitmpl.com until ${until}.`
+              );
+            }
+            core.setFailed(
+              `This PR modifies a promoted component. Changes from other contributors to a promoted component wait until its placement ends (see https://www.aitmpl.com/promote). Remove those changes or wait for the placement to expire. Security fixes: a maintainer adds the security-fix label and this check passes.`
+            );

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { TYPE_CONFIG } from '../lib/icons';
 import TypeIcon from './TypeIcon';
 import { fetchSearchIndex, type SearchIndexEntry } from '../lib/data';
-import { fetchActiveAds, findSponsoredIndex, type ActiveAd } from '../lib/ads';
+import { fetchActiveAds, findSponsored, type ActiveAd } from '../lib/ads';
 import { componentPath } from '../lib/component-url';
 
 type SearchResult = SearchIndexEntry & { sponsored?: boolean };
@@ -155,19 +155,13 @@ export default function SearchModal() {
 
     const top: SearchResult[] = matched.slice(0, 20);
 
-    // Sponsored placement: first matching active ad jumps to position 0.
-    // The ad stays inside `results`, so keyboard navigation and
-    // scroll-into-view keep working untouched.
-    const adIdx = findSponsoredIndex(ads, matched);
-    if (adIdx !== -1) {
-      const sponsored: SearchResult = { ...matched[adIdx], sponsored: true };
-      const inTop = top.findIndex((c) => c.path === sponsored.path && c.type === sponsored.type);
-      if (inTop !== -1) top.splice(inTop, 1);
-      else if (top.length >= 20) top.pop();
-      top.unshift(sponsored);
-    }
-
-    return top;
+    // Sponsored placement: an extra, labeled row above the organic top 20
+    // when an active ad's component matches the query. The organic results
+    // are never reordered or trimmed (project invariant): the component also
+    // keeps its own place in them. The row lives inside `results`, so
+    // keyboard navigation and scroll-into-view keep working.
+    const match = findSponsored(ads, matched);
+    return match ? [{ ...match, sponsored: true }, ...top] : top;
   }, [data, ads, query]);
 
   // Keyboard navigation: reset on new queries; when the same query's results
@@ -186,7 +180,9 @@ export default function SearchModal() {
     setSelectedIndex((i) => {
       const selected = prev[i];
       if (!selected) return 0;
-      const newIndex = results.findIndex((r) => r.path === selected.path && r.type === selected.type);
+      const newIndex = results.findIndex(
+        (r) => r.path === selected.path && r.type === selected.type && !!r.sponsored === !!selected.sponsored
+      );
       return newIndex === -1 ? 0 : newIndex;
     });
   }, [query, results]);
@@ -286,7 +282,7 @@ export default function SearchModal() {
 
             return (
               <button
-                key={component.path ?? `${component.name}-${i}`}
+                key={`${component.sponsored ? 'sponsored:' : ''}${component.path ?? `${component.name}-${i}`}`}
                 onClick={() => navigate(component)}
                 className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors ${
                   component.sponsored

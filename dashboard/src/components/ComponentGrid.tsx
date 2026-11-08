@@ -4,7 +4,7 @@ import { TYPE_CONFIG } from '../lib/icons';
 import { ITEMS_PER_PAGE } from '../lib/constants';
 import { fetchComponentsByType } from '../lib/data';
 import SkillSpectorBadge from './SkillSpectorBadge';
-import { fetchActiveAds, findSponsoredIndex, type ActiveAd } from '../lib/ads';
+import { fetchActiveAds, findSponsored, type ActiveAd } from '../lib/ads';
 import SaveToCollectionButton from './SaveToCollectionButton';
 import { componentPath } from '../lib/component-url';
 
@@ -163,22 +163,21 @@ export default function ComponentGrid({ initialType }: Props) {
     if (sortBy === 'downloads') sorted.sort((a, b) => (b.downloads ?? 0) - (a.downloads ?? 0));
     else if (sortBy === 'name') sorted.sort((a, b) => a.name.localeCompare(b.name));
 
-    // Sponsored placement: if an active ad's component survived the current
-    // filters, pin it to the top of page 1 (reorder only — counts and
-    // pagination stay untouched).
-    const adIdx = findSponsoredIndex(ads, sorted);
-    if (adIdx > 0) {
-      const [sponsored] = sorted.splice(adIdx, 1);
-      sorted.unshift({ ...sponsored, sponsored: true });
-    } else if (adIdx === 0) {
-      sorted[0] = { ...sorted[0], sponsored: true };
-    }
-
     return sorted;
-  }, [typeComponents, category, selectedCategories, search, sortBy, minDownloads, ads]);
+  }, [typeComponents, category, selectedCategories, search, sortBy, minDownloads]);
+
+  // Sponsored placement: an extra, labeled card above page 1 when an active
+  // ad's component survived the current filters. The organic list above is
+  // never reordered (project invariant): the component also keeps its own
+  // place in it, and counts and pagination ignore the sponsored card.
+  const sponsoredCard = useMemo<GridComponent | null>(() => {
+    const match = findSponsored(ads, filtered);
+    return match ? { ...match, sponsored: true } : null;
+  }, [ads, filtered]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
   const paged = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
+  const displayed = page === 1 && sponsoredCard ? [sponsoredCard, ...paged] : paged;
 
   useEffect(() => { setPage(1); }, [category, search, activeType, selectedCategories, minDownloads]);
 
@@ -578,7 +577,7 @@ export default function ComponentGrid({ initialType }: Props) {
         ? "grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4 sm:gap-5 px-4 sm:px-6 pb-6"
         : "flex flex-col gap-4 px-4 sm:px-6 pb-6"
       }>
-        {paged.map((component, idx) => {
+        {displayed.map((component, idx) => {
           const inCart = isInCart(component.path, component.type);
           const config = TYPE_CONFIG[activeType];
 
@@ -586,7 +585,7 @@ export default function ComponentGrid({ initialType }: Props) {
             // List View
             return (
               <div
-                key={component.path ?? component.name}
+                key={`${component.sponsored ? 'sponsored:' : ''}${component.path ?? component.name}`}
                 className={`group relative flex items-center gap-5 p-4 rounded-md bg-[var(--color-card-bg)] border hover:bg-[var(--color-card-hover)] transition-all duration-150 cursor-pointer animate-fade-in-up ${
                   component.sponsored
                     ? 'border-[var(--color-primary-500)] ring-1 ring-[var(--color-primary-500)]/40'
@@ -615,7 +614,7 @@ export default function ComponentGrid({ initialType }: Props) {
                 {/* Info */}
                 <div className="flex-1 min-w-0">
                   <h3 className="font-mono text-[14px] font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-accent)] transition-colors mb-1">
-                    <a href={componentPath(component.type, component.path ?? component.name)} onClick={(e) => e.stopPropagation()}>
+                    <a href={componentPath(component.type, component.path ?? component.name)} rel={component.sponsored ? 'sponsored' : undefined} onClick={(e) => e.stopPropagation()}>
                       {formatName(component.name)}
                     </a>
                   </h3>
@@ -682,7 +681,7 @@ export default function ComponentGrid({ initialType }: Props) {
           // Grid View — terminal style
           return (
             <div
-              key={component.path ?? component.name}
+              key={`${component.sponsored ? 'sponsored:' : ''}${component.path ?? component.name}`}
               className={`group relative flex items-start gap-4 p-5 rounded-md bg-[var(--color-card-bg)] border hover:bg-[var(--color-card-hover)] transition-all duration-150 cursor-pointer animate-fade-in-up ${
                 component.sponsored
                   ? 'border-[var(--color-primary-500)] ring-1 ring-[var(--color-primary-500)]/40'
@@ -711,7 +710,7 @@ export default function ComponentGrid({ initialType }: Props) {
               {/* Info */}
               <div className="min-w-0 flex-1">
                 <h3 className="font-mono text-[14px] font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-accent)] transition-colors leading-tight mb-1.5">
-                  <a href={componentPath(component.type, component.path ?? component.name)} onClick={(e) => e.stopPropagation()}>
+                  <a href={componentPath(component.type, component.path ?? component.name)} rel={component.sponsored ? 'sponsored' : undefined} onClick={(e) => e.stopPropagation()}>
                     {formatName(component.name)}
                   </a>
                 </h3>
