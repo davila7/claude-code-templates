@@ -49849,6 +49849,49 @@
       }
     },
     {
+      "name": "readonly-sql-guard",
+      "path": "database/readonly-sql-guard",
+      "category": "database",
+      "type": "skill",
+      "description": "Make an agent's database access provably read-only. Use when an agent runs caller-supplied SQL against a production/ERP/analytics database (a \"query\" MCP tool, text-to-SQL, an admin console), or when reviewing DB-access code for write/DDL/side-effect/transaction-escape risks. Checks what a statement CALLS, not just its shape.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [],
+      "skillspector": {
+        "score": 22,
+        "severity": "MEDIUM",
+        "recommendation": "CAUTION",
+        "issueCount": 2,
+        "analysis": "complete",
+        "findings": [
+          {
+            "id": "PE3",
+            "category": "Privilege Escalation",
+            "severity": "HIGH",
+            "title": "Credential Access",
+            "file": "SKILL.md",
+            "line": 18,
+            "count": 2
+          }
+        ],
+        "hash": "b2b0a79fc276210c",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-08T16:31:36Z"
+      }
+    },
+    {
       "name": "sql-pro",
       "path": "database/sql-pro",
       "category": "database",
@@ -73170,7 +73213,7 @@
             "id": "LP1",
             "category": "MCP Least Privilege",
             "severity": "HIGH",
-            "title": "Code capability 'network' detected in scripts/verify_citations.py but not covered by declared permissions.",
+            "title": "The skill uses 'network' capability that is not listed in its permissions. This may indicate deceptive intent or missing permission declarations.",
             "file": "scripts/verify_citations.py",
             "line": 1,
             "count": 1
@@ -73194,9 +73237,9 @@
             "count": 1
           }
         ],
-        "hash": "db7d4edb9098afe5",
+        "hash": "663de37da8a3736d",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-08T16:31:36Z"
       }
     },
     {
