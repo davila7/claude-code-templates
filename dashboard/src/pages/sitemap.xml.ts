@@ -13,14 +13,25 @@ interface UrlOpts {
   lastmod?: string;
 }
 
+// Paths come from files on disk and the catalog: escape them so a file name
+// can never inject markup into the XML.
+function xmlEscape(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+}
+
 // lastmod only where a real date exists (the component's last commit):
 // Google ignores lastmod altogether when every URL claims to change daily.
 function buildUrl(loc: string, opts: UrlOpts = {}): string {
   const { priority = '0.5', changefreq = 'weekly', lastmod } = opts;
   return `  <url>
-    <loc>${SITE}${loc}</loc>
-${lastmod ? `    <lastmod>${lastmod}</lastmod>\n` : ''}    <changefreq>${changefreq}</changefreq>
-    <priority>${priority}</priority>
+    <loc>${xmlEscape(SITE + loc)}</loc>
+${lastmod ? `    <lastmod>${xmlEscape(lastmod)}</lastmod>\n` : ''}    <changefreq>${xmlEscape(changefreq)}</changefreq>
+    <priority>${xmlEscape(priority)}</priority>
   </url>`;
 }
 
