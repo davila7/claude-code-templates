@@ -3,6 +3,8 @@
 
 User-agent: *
 Allow: /
+# Catalog API v1 is public, read-only data for agents (see /llms.txt); the rest of /api/ is not.
+Allow: /api/v1/
 Disallow: /api/
 Disallow: /github-callback
 Disallow: /my-components
