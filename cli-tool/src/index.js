@@ -15,6 +15,9 @@ const { startChatsMobile } = require('./chats-mobile');
 const { runHealthCheck } = require('./health-check');
 const { trackingService } = require('./tracking-service');
 const { fetchExternalManifest, downloadExternalSkill } = require('./external-skill');
+const { fetchModFiles } = require('./component-content');
+const { unsafeTarget, unsafeTargetMessage } = require('./target-guard');
+const { resolveItems, runSearch, stackCommand } = require('./catalog-lookup');
 const { createInstallUI } = require('./install-ui');
 const { findRemovedCommands, reportRemovedCommands } = require('./removed-commands');
 const { spawnClaude, claudeCommandLine } = require('./claude-launcher');
@@ -41,7 +44,7 @@ function replacePythonCommands(config) {
 }
 
 async function runCatalogBrowser(options, targetDir) {
-  const { browseCatalog, equivalentCommand, printNonInteractiveHelp } = require('./catalog-browser');
+  const { browseCatalog, printNonInteractiveHelp } = require('./catalog-browser');
   const version = require('../package.json').version;
   const interactive = Boolean(process.stdout.isTTY && process.stdin.isTTY) && !process.env.CI;
   if (!interactive) {
@@ -55,7 +58,29 @@ async function runCatalogBrowser(options, targetDir) {
     return;
   }
   console.log(chalk.gray('│'));
-  await installMultipleComponents({ ...selection, skipHeader: true, repeatCommand: equivalentCommand(selection) }, targetDir);
+  await installMultipleComponents({ ...selection, skipHeader: true }, targetDir);
+}
+
+const INSTALL_FLAGS = ['agent', 'command', 'mcp', 'setting', 'hook', 'skill', 'loop', 'mod', 'plugin'];
+
+/** Every component named on the command line, as [{ type, name }] in flag order. */
+function requestedItems(options) {
+  const items = [];
+  for (const type of INSTALL_FLAGS) {
+    // --function-hook is kept as an alias of --mod
+    const values = type === 'mod' ? [options.mod, options.functionHook] : [options[type]];
+    const names = values.filter(v => typeof v === 'string' || Array.isArray(v)).flat().join(',')
+      .split(',').map(n => n.trim()).filter(Boolean);
+    for (const name of names) items.push({ type, name });
+  }
+  return items;
+}
+
+/** No arguments in a terminal: the catalog browser, which installs what is picked. */
+function isBareInteractiveRun(options) {
+  const anyOption = ['search', 'workflow', 'analytics', 'chats', 'healthCheck', 'health', 'check', 'verify', 'yes', 'language', 'framework', 'template', 'dryRun', 'setupFromMenu']
+    .some(key => options[key] !== undefined && options[key] !== false);
+  return !anyOption && Boolean(process.stdout.isTTY && process.stdin.isTTY) && !process.env.CI;
 }
 
 async function createClaudeConfig(options = {}) {
@@ -67,6 +92,34 @@ async function createClaudeConfig(options = {}) {
     await reportRemovedCommands(removedCommands);
     process.exitCode = 1;
     return;
+  }
+
+  // --search "<words>": top matches with their page and install command; writes nothing.
+  if (options.search !== undefined) {
+    const shown = await runSearch(options.search === true ? '' : options.search);
+    // The words are never sent, only that a search ran and how many results it showed.
+    trackingService.trackCommandExecution('search', { results: shown });
+    return;
+  }
+
+  const requested = requestedItems(options);
+  const isComponentInstall = requested.length > 0 || Boolean(options.agent || options.command || options.mcp || options.setting || options.hook || options.skill || options.loop || options.mod || options.functionHook || options.plugin);
+  // A user-scope plugin install writes nothing into this folder, so it may run from anywhere.
+  const onlyUserPlugins = requested.length > 0 && options.scope === 'user' && requested.every(i => i.type === 'plugin');
+  const isTemplateSetup = !options.dryRun && Boolean(options.yes || options.language || options.framework || options.template);
+  const writesHere = (isComponentInstall && !onlyUserPlugins) || Boolean(options.workflow) || isTemplateSetup || isBareInteractiveRun(options);
+  if (writesHere) {
+    const unsafe = unsafeTarget(targetDir);
+    if (unsafe) {
+      for (const l of unsafeTargetMessage(unsafe)) console.log(chalk.red(l));
+      if (isComponentInstall) {
+        for (const { type, name } of requested) {
+          trackingService.trackInstallationOutcome(type, name, 'failure', { errorType: 'unsafe_directory', errorMessage: unsafe.reason });
+        }
+      }
+      process.exitCode = 1;
+      return;
+    }
   }
 
   // Handle multiple components installation (new approach)
@@ -1480,7 +1533,7 @@ async function installIndividualSkill(skillName, targetDir, options) {
     trackingService.trackDownload('skill', skillName, {
       installation_type: 'individual_skill',
       target_directory: path.relative(process.cwd(), targetDir),
-      source: 'github_main',
+      source,
       total_files: Object.keys(downloadedFiles).length
     });
     trackingService.trackInstallationOutcome('skill', skillName, 'success', { durationMs: Date.now() - startTime, batchId: options.batchId });
@@ -1690,6 +1743,48 @@ async function installIndividualPlugin(pluginRef, targetDir, options = {}) {
  * every component it references (agents, skills, hooks, commands, settings, mcps).
  */
 /**
+ * A mod's directory through the GitHub contents API (the 1.32 path, now the
+ * fallback when aitmpl.com's copy is missing or does not match meta.files).
+ * Returns { files } or { notFound: true }; throws on other errors.
+ */
+async function downloadModFromGitHub(modName) {
+  const githubApiUrl = `https://api.github.com/repos/davila7/claude-code-templates/contents/cli-tool/components/mods/${modName}`;
+  console.log(chalk.gray(`📥 Downloading from GitHub (main branch)...`));
+  const files = {};
+  let notFound = false;
+
+  async function downloadDirectory(apiUrl, relativePath = '') {
+    const response = await fetch(apiUrl, {
+      headers: { 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'claude-code-templates' }
+    });
+    if (!response.ok) {
+      if (response.status === 404 && !relativePath) { notFound = true; return; }
+      const limited = (response.status === 403 || response.status === 429) && response.headers.get('x-ratelimit-remaining') === '0';
+      throw new Error(limited
+        ? 'GitHub API rate limit reached (60 requests/hour without a token); try again later'
+        : `HTTP ${response.status}: ${response.statusText} (${relativePath || '/'})`);
+    }
+    const contents = await response.json();
+    for (const item of contents) {
+      const itemPath = relativePath ? `${relativePath}/${item.name}` : item.name;
+      // Plugin files only: no path tricks, no hidden dirs other than .claude-plugin.
+      if (item.name.includes('..') || (item.name.startsWith('.') && item.name !== '.claude-plugin')) continue;
+      if (item.type === 'file') {
+        const fileResponse = await fetch(item.download_url);
+        if (!fileResponse.ok) throw new Error(`Could not download ${itemPath} (HTTP ${fileResponse.status})`);
+        files[itemPath] = await fileResponse.text();
+        console.log(chalk.green(`✓ ${itemPath}`));
+      } else if (item.type === 'dir') {
+        await downloadDirectory(item.url, itemPath);
+      }
+    }
+  }
+
+  await downloadDirectory(githubApiUrl);
+  return notFound ? { notFound: true } : { files };
+}
+
+/**
  * Install a Claude Mod as a local Claude Code plugin.
  *
  * A mod is a plugin whose behaviour lives in a function-hooks module
@@ -1701,7 +1796,7 @@ async function installIndividualPlugin(pluginRef, targetDir, options = {}) {
  * .claude-plugin/plugin.json (name, description, userConfig, ...),
  * hooks/hooks.json ("modules"), the hooks-modules under hooks/ (any number of
  * files, relative imports allowed), and optional types/, tests/ and README.md.
- * We download the whole directory (like a skill) and write it verbatim to
+ * We download the whole directory and write it verbatim to
  * .claude/skills/{name}/, which Claude Code auto-loads as "{name}@skills-dir"
  * once the workspace is trusted.
  */
@@ -1715,43 +1810,26 @@ async function installIndividualMod(modName, targetDir, options = {}) {
       throw new Error('Invalid mod name. Expected "category/name" (letters, digits and hyphens only), e.g. security/secret-redactor.');
     }
     const baseName = modName.split('/').pop();
-    const githubApiUrl = `https://api.github.com/repos/davila7/claude-code-templates/contents/cli-tool/components/mods/${modName}`;
-    console.log(chalk.gray(`📥 Downloading from GitHub (main branch)...`));
 
-    const downloadedFiles = {};
-    let notFound = false;
-
-    // Recursive download of the plugin directory (same approach as skills).
-    async function downloadDirectory(apiUrl, relativePath = '') {
-      const response = await fetch(apiUrl, {
-        headers: { 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'claude-code-templates' }
-      });
-      if (!response.ok) {
-        if (response.status === 404 && !relativePath) { notFound = true; return; }
-        throw new Error(`HTTP ${response.status}: ${response.statusText} (${relativePath || '/'})`);
+    // aitmpl.com's content file first (one request, no GitHub rate limit),
+    // checked against its meta.files; the GitHub contents API as the fallback.
+    let downloadedFiles = {};
+    let source = 'aitmpl_content';
+    const fromSite = await fetchModFiles(modName);
+    if (fromSite.files) {
+      downloadedFiles = fromSite.files;
+      console.log(chalk.gray(`📥 Downloaded from aitmpl.com (${Object.keys(downloadedFiles).length} files, checked against meta.files)`));
+    } else {
+      source = 'github_main';
+      if (!fromSite.notFound) console.log(chalk.gray(`   aitmpl.com copy not usable (${fromSite.error}), using GitHub`));
+      const fromGitHub = await downloadModFromGitHub(modName);
+      if (fromGitHub.notFound) {
+        console.log(chalk.red(`❌ Mod "${modName}" not found`));
+        console.log(chalk.gray('   Browse available mods at https://www.aitmpl.com/mods'));
+        trackingService.trackInstallationOutcome('mod', modName, 'failure', { errorType: 'not_found', durationMs: Date.now() - startTime, batchId: options.batchId });
+        return false;
       }
-      const contents = await response.json();
-      for (const item of contents) {
-        const itemPath = relativePath ? `${relativePath}/${item.name}` : item.name;
-        // Plugin files only: no path tricks, no hidden dirs other than .claude-plugin.
-        if (item.name.includes('..') || (item.name.startsWith('.') && item.name !== '.claude-plugin')) continue;
-        if (item.type === 'file') {
-          const fileResponse = await fetch(item.download_url);
-          if (!fileResponse.ok) throw new Error(`Could not download ${itemPath} (HTTP ${fileResponse.status})`);
-          downloadedFiles[itemPath] = await fileResponse.text();
-          console.log(chalk.green(`✓ ${itemPath}`));
-        } else if (item.type === 'dir') {
-          await downloadDirectory(item.url, itemPath);
-        }
-      }
-    }
-
-    await downloadDirectory(githubApiUrl);
-    if (notFound) {
-      console.log(chalk.red(`❌ Mod "${modName}" not found`));
-      console.log(chalk.gray('   Browse available mods at https://www.aitmpl.com/mods'));
-      trackingService.trackInstallationOutcome('mod', modName, 'failure', { errorType: 'not_found', durationMs: Date.now() - startTime, batchId: options.batchId });
-      return false;
+      downloadedFiles = fromGitHub.files;
     }
 
     // A mod is a plugin: the manifest and hooks/hooks.json must be there, and
@@ -1796,7 +1874,7 @@ async function installIndividualMod(modName, targetDir, options = {}) {
     trackingService.trackDownload('mod', modName, {
       installation_type: 'individual_mod',
       target_directory: path.relative(process.cwd(), targetDir),
-      source: 'github_main',
+      source,
       total_files: Object.keys(downloadedFiles).length
     });
     trackingService.trackInstallationOutcome('mod', modName, 'success', { durationMs: Date.now() - startTime, batchId: options.batchId });
@@ -1982,6 +2060,11 @@ async function installMultipleComponents(options, targetDir) {
       ...components.plugins.map(name => ({ type: 'plugin', name, retryFlags: require('./plugin-install').cliScopeFlag(options.scope) }))
     ];
 
+    // Short names ("--agent frontend-developer") become catalog paths when
+    // exactly one component has that name; the others get suggestions for the
+    // summary. Best effort: without the catalog the names stay as typed.
+    await resolveItems(items);
+
     if (!options.skipHeader) ui.header();
     ui.plan(items);
 
@@ -2007,7 +2090,7 @@ async function installMultipleComponents(options, targetDir) {
     const usesLocations = new Set(['setting', 'hook', 'loop']);
 
     // Skills listed here are not installed again as another skill's dependency.
-    const installingSkills = new Set(components.skills);
+    const installingSkills = new Set(items.filter(i => i.type === 'skill').map(i => i.name));
     const pluginNotes = [];
     const results = [];
     for (const item of items) {
@@ -2053,7 +2136,7 @@ async function installMultipleComponents(options, targetDir) {
       }
     }
     
-    ui.summary(results, items, { repeatCommand: options.repeatCommand });
+    ui.summary(results, items);
     if (successfullyInstalled === 0) return;
 
     if (options.yaml) {
@@ -2104,8 +2187,8 @@ async function showAvailableAgents() {
   });
   
   console.log(chalk.blue('Examples:'));
-  console.log(chalk.gray('  cct --agent api-security-audit'));
-  console.log(chalk.gray('  cct --agent deep-research-team/academic-researcher'));
+  console.log(chalk.gray('  npx claude-code-templates@latest --agent api-security-audit'));
+  console.log(chalk.gray('  npx claude-code-templates@latest --agent deep-research-team/academic-researcher'));
   console.log('');
 }
 

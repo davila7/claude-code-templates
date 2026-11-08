@@ -132,16 +132,18 @@ function createInstallUI({ version, targetDir }) {
   function plan(items) {
     nameWidth = Math.max(9, ...items.map(i => i.name.length)) + 2;
     const noun = items.length === 1 ? 'component' : 'components';
+    // A short name the catalog resolved says what it became.
+    const from = item => (item.requested ? ` (from "${item.requested}")` : '');
     if (!interactive) {
       line(`Plan: ${items.length} ${noun}`);
-      for (const item of items) line(`  ${item.type.padEnd(8)} ${item.name}`);
+      for (const item of items) line(`  ${item.type.padEnd(8)} ${item.name}${from(item)}`);
       return;
     }
     line(`${ORANGE_LIGHT(S_STEP_SUBMIT)}  ${chalk.bold('Plan')} ${chalk.gray(`· ${items.length} ${noun}`)}`);
     railLine();
     railLine(chalk.gray(`${'TYPE'.padEnd(10)} ${'COMPONENT'.padEnd(nameWidth)} WRITES`));
     for (const item of items) {
-      railLine(`${typeCell(item.type)}  ${chalk.bold(item.name.padEnd(nameWidth))} ${chalk.gray(WRITES[item.type])}`);
+      railLine(`${typeCell(item.type)}  ${chalk.bold(item.name.padEnd(nameWidth))} ${chalk.gray(WRITES[item.type])}${chalk.gray(from(item))}`);
     }
     railLine();
   }
@@ -297,17 +299,49 @@ function createInstallUI({ version, targetDir }) {
     return { ok, files, detail };
   }
 
-  function summary(results, items, { repeatCommand } = {}) {
+  /**
+   * The lines after the result rows, the same in both modes so an agent that
+   * reads the output can relay them: each installed component's page, the
+   * command for the whole stack, and for each failure a command that can work
+   * (a "did you mean" path, a --search, or the same install again).
+   */
+  function followUps(results, items) {
+    const { stackCommand } = require('./catalog-lookup');
+    const okItems = items.filter((_, i) => results[i].ok);
+    const failedItems = items.filter((_, i) => !results[i].ok);
+    const out = [];
+    for (const item of okItems) if (item.page) out.push(['Page', item.page]);
+    if (okItems.length >= 2) out.push(['Stack', stackCommand(okItems)]);
+
+    const retry = [];
+    for (const item of failedItems) {
+      if (item.suggestions && item.suggestions.length > 0) {
+        out.push(['Did you mean', item.suggestions[0].command]);
+        for (const s of item.suggestions.slice(1)) out.push(['', s.command]);
+      } else if (item.notInCatalog) {
+        const words = item.name.split('/').pop().replace(/[^a-z0-9]+/gi, ' ').trim();
+        out.push(['Search', `npx claude-code-templates@latest --search "${words}"`]);
+      } else {
+        retry.push(item);
+      }
+    }
+    if (retry.length > 0) {
+      const flags = [...new Set(retry.map(item => item.retryFlags).filter(Boolean))].map(f => ` ${f}`).join('');
+      out.push(['Retry', `npx claude-code-templates@latest ${retry.map(item => `--${item.type} ${item.name}`).join(' ')}${flags}`]);
+    }
+    return out;
+  }
+
+  function summary(results, items) {
     const installed = results.filter(r => r.ok).length;
     const failed = results.length - installed;
     const seconds = ((Date.now() - startedAt) / 1000).toFixed(1);
-    const failedItems = items.filter((_, i) => !results[i].ok);
-    // Flags an item needs to be retried as it was asked (e.g. a plugin's --scope), once each.
-    const retryFlags = [...new Set(failedItems.map(item => item.retryFlags).filter(Boolean))].map(f => ` ${f}`).join('');
+    const extra = followUps(results, items);
+    const width = Math.max(0, ...extra.map(([label]) => label.length)) + 1;
 
     if (!interactive) {
       line(`Installed ${installed} of ${results.length} · ${failed} failed · ${seconds}s`);
-      for (const item of failedItems) line(`Retry: npx claude-code-templates@latest --${item.type} ${item.name}${item.retryFlags ? ` ${item.retryFlags}` : ''}`);
+      for (const [label, value] of extra) line(`${label ? `${label}:` : ''}${' '.repeat(width - label.length)} ${value}`);
       return;
     }
 
@@ -315,12 +349,12 @@ function createInstallUI({ version, targetDir }) {
     if (failed === 0) {
       line(`${chalk.green(S_BAR_END)}  ${chalk.green.bold(`Installed ${installed} of ${results.length}`)} ${chalk.gray(`· 0 failed · ${seconds}s`)}`);
       line(`   ${chalk.gray('Next:')} run ${chalk.cyan('claude')} in this folder to use them.`);
-      if (repeatCommand) line(`   ${chalk.gray('Same install elsewhere:')} ${chalk.cyan(repeatCommand)}`);
     } else {
       const color = installed > 0 ? chalk.yellow : chalk.red;
       line(`${color(S_BAR_END)}  ${color.bold(`Installed ${installed} of ${results.length}`)} ${chalk.gray('·')} ${chalk.red(`${failed} failed`)} ${chalk.gray(`· ${seconds}s`)}`);
-      const retry = failedItems.map(item => `--${item.type} ${item.name}`).join(' ') + retryFlags;
-      line(`   ${chalk.gray(failedItems.length === 1 ? 'Retry the failed one:' : 'Retry the failed ones:')} ${chalk.cyan(`npx claude-code-templates@latest ${retry}`)}`);
+    }
+    for (const [label, value] of extra) {
+      line(`   ${chalk.gray(`${label ? `${label}:` : ''}${' '.repeat(width - label.length)}`)} ${chalk.cyan(value)}`);
     }
     line('');
   }

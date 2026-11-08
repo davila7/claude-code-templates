@@ -15,6 +15,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   URLs show as verified in the
   [listing](https://dir.floss.fund/view/project/@github.com/davila7/claude-code-templates).
 
+## [1.33.0] - Unreleased
+
+### Changed
+- **Mods download from aitmpl.com** (`--mod`): one request to
+  `www.aitmpl.com/component-content/mods/{category}/{name}.json`, accepted only
+  when its files match `meta.files` exactly (same paths, same sizes in bytes).
+  The GitHub contents API, whose anonymous rate limit caused 85% of failed mod
+  installs, is now the fallback, and its rate-limit error says so. The
+  component-content shape is now a CLI contract (`cli-tool/src/component-content.js`).
+- **Short names resolve** through Catalog API v1: `--agent frontend-developer`
+  installs `development-team/frontend-developer` when exactly one agent has
+  that name. A name that matches several or none installs nothing new and the
+  summary prints `Did you mean:` commands (or a `--search` command) instead of
+  repeating the failing one.
+- **After an install** the CLI prints each installed component's page
+  (`utm_source=cli&utm_medium=install`) and, for two or more, a `Stack:` line
+  with the one command that installs them all. Plain lines in a fixed order, so
+  an agent running the CLI can relay them.
+- Help examples printed `cct --agent ...`; they now print
+  `npx claude-code-templates@latest --agent ...`. The no-terminal help lists
+  `--plugin` and `--search`.
+
+### Added
+- **`--search "<words>"`**: up to 5 components matching every word, ranked by
+  text match (never by downloads), each with its page and install command.
+  Counted as a `search` command event with the number of results, never the words.
+- **System-folder guard**: refuses to install into `C:\Windows` (and anything
+  under it) or the root of a drive, writes nothing, and says which folder to
+  open instead. About 18% of failed installs were EPERM in
+  `C:\Windows\System32`.
+
 ## [1.31.0] - 2026-11-02
 
 Includes the changes prepared as 1.30.1 (#1334), which was never published to npm.
