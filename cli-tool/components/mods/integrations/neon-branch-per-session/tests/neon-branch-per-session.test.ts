@@ -161,6 +161,7 @@ describe('the session branch', () => {
     expect(said).toContain('DATABASE_URL is not set')
     expect(said).toContain('your organization manages DATABASE_URL')
     expect(said).not.toContain('points at it')
+    expect((await run($, '')).text).toContain('DATABASE_URL not set')
     expect((await run($, 'delete')).text).toContain('could not be unset')
   })
 

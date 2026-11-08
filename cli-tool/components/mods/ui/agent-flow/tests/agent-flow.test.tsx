@@ -98,11 +98,18 @@ describe('flow.ts', () => {
     expect(b.status).toBe('running')
     expect(b.parentId).toBe('a')
     expect(b.prompt).toContain('auth tokens')
+    expect(b.answer).toBeUndefined()
+    expect(b.durationMs).toBeUndefined()
+    spawned(flow, spawn('gone', undefined, { prompt: 'Keep going.', resumed: true }), 3)
+    expect(flow.nodes.get('gone')?.prompt).toBe('(resumed) Keep going.')
     expect(flow.order.filter(id => id === 'b').length).toBe(1)
 
     spawned(flow, spawn('mate', undefined, { background: true }), 4)
     synced(flow, [{ id: 'mate', status: 'idle', type: 'Explore', description: 'task mate' }])
     expect(flow.nodes.get('mate')?.status).toBe('done')
+    // an idle teammate is not trimmed away as finished
+    trimmed(flow, 0)
+    expect(flow.nodes.has('mate')).toBe(true)
     synced(flow, [{ id: 'b', status: 'waiting', type: 'Explore', description: 'task b' }])
     expect(flow.nodes.get('b')?.status).toBe('running')
     stepped(flow, 'mate', usage(10), 5)
