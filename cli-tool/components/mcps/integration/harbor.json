@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "harbor": {
+      "description": "Your team's decisions from Slack, PRs and docs, served to Claude Code per task, with which rules each answer cited. Record what a session learned for the team; a workspace setting decides what waits for a person. Remote server, OAuth sign-in; needs a Harbor account (early access, waitlist at gethrbr.com).",
+      "type": "http",
+      "url": "https://mcp.gethrbr.com/mcp"
+    }
+  }
+}
