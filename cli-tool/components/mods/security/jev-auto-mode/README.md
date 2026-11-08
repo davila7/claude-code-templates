@@ -31,12 +31,14 @@ For every tool call, in this order:
 3. **Default.** When nothing matched, `default` decides: `allow`, `ask`, `deny`, `passthrough` (the engine's normal permission flow), or `jev` (the judge, below).
 4. **The verdict.**
    - `deny`: the call is refused, and the model reads the rule's `reason`.
-   - `allow`: the call runs *without* the engine's prompt. A deny from your settings (`permissions.deny`) or from plan mode still stands.
+   - `allow`: the call runs *without* the engine's prompt. A deny from your settings (`permissions.deny`) or from plan mode still stands, and so does an organization's `ask` ceiling (below).
    - `ask`: with `askWith: "mod"`, the mod shows you an Allow / Deny dialog, and dismissing it denies. With `askWith: "engine"`, the question goes to Claude Code's own permission dialog (since Claude Code 2.1.304 an ask from a hook is always put to you; the auto-mode classifier does not answer it). In `claude -p` no one can answer, so `headless` decides on both paths (default `deny`).
 
 Slash commands and skills you type are checked against the rules only: you typed them, so there is nothing to judge. A skill's prompt is also checked when it expands (typed, through the Skill tool, or preloaded into a subagent). A deny rule replaces the prompt with a notice, so a blocked skill cannot reach a subagent through its definition either. An ask rule asks there too, unless the Skill call or the typed `/skill` was just approved, so you're never asked twice.
 
-**If the mod itself fails, it denies.** The engine skips a hook that throws, which would let the call through unchecked. So an internal error denies the tool call, refuses the typed command, or withholds the skill, and says why. A policy file that can't be re-read leaves the last good policy in force rather than an empty one.
+**If the mod itself fails, it denies.** The engine skips a hook that throws, which would let the call through unchecked. So an internal error denies the tool call, refuses the typed command, or withholds the skill, and says why. A hook that runs past its budget is caught too (a `.catch` on `tool.call`, `tool.check` and `command.run`): the call is denied, the permission check falls back to asking, the command is not run. A policy file that can't be re-read leaves the last good policy in force rather than an empty one.
+
+An organization's `ask` ceiling on a connector tool (Claude Code 2.1.290+) is never lifted: an allow rule or a judge's allow leaves the engine's own approval prompt in place for that tool.
 
 **Inputs over 20,000 characters are asked about.** Matching is synchronous, so the rules don't match past that length, and the judge never sees a half-shown command. For the same reason, a regex whose repeated group itself repeats (`(a+)+`) is refused when the file loads.
 
