@@ -4,7 +4,7 @@
 // (Clerk's listener fires).
 
 import { collectionsApi } from './collections-api';
-import { takePendingAction, type PendingAction } from './pending-action';
+import { dropExpiredPendingAction, takePendingAction, type PendingAction } from './pending-action';
 import { COLLECTIONS_CHANGED_EVENT, myComponentsUrl, saveComponent, type CollectionsChangedDetail } from './save-component';
 import { showToast } from './toast';
 
@@ -14,6 +14,7 @@ let running = false;
 export function startPendingActionResume(): void {
   if (started || typeof window === 'undefined') return;
   started = true;
+  dropExpiredPendingAction();
 
   const tryRun = () => {
     const clerk = (window as any).Clerk;

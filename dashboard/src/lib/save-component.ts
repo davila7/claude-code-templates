@@ -25,13 +25,30 @@ export function findSavedIn(collections: Collection[], item: Pick<SaveItem, 'typ
   );
 }
 
-export async function saveComponent(
+// Saves run one at a time across every button on the page and the resumed
+// action: two quick first saves would otherwise both see "no collections" and
+// create two "My components".
+let queue: Promise<unknown> = Promise.resolve();
+
+export function saveComponent(
   api: CollectionsClient,
   token: string,
   item: SaveItem,
   known?: Collection[],
 ): Promise<{ status: SaveStatus; collection: Collection }> {
-  const collections = known ?? (await api.list(token));
+  const run = queue.then(() => saveNow(api, token, item, known));
+  queue = run.catch(() => {});
+  return run;
+}
+
+async function saveNow(
+  api: CollectionsClient,
+  token: string,
+  item: SaveItem,
+  known?: Collection[],
+): Promise<{ status: SaveStatus; collection: Collection }> {
+  // An empty list may be stale (another save may have just created one), so re-read it.
+  const collections = known?.length ? known : await api.list(token);
   const existing = findSavedIn(collections, item);
   if (existing) return { status: 'already', collection: existing };
 

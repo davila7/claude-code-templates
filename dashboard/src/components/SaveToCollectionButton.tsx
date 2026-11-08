@@ -143,12 +143,17 @@ function SaveButton({ componentType, componentPath, componentName, componentCate
         if (!token) return;
         setCreating(true);
         try {
-          const { collection } = await saveComponent(collectionsApi, token, item, cols);
-          window.location.assign(myComponentsUrl(collection.id));
+          const { status, collection } = await saveComponent(collectionsApi, token, item, cols);
+          if (status === 'first') {
+            window.location.assign(myComponentsUrl(collection.id));
+            return;
+          }
+          // Another save created the first collection meanwhile: show the picker.
+          await loadCollections();
         } catch (err) {
           console.error('Failed to create the first collection:', err);
-          setCreating(false);
         }
+        setCreating(false);
       }
     } else {
       setOpen(false);

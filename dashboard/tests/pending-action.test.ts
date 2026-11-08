@@ -113,3 +113,25 @@ test('later saves add to the first collection, never twice', async () => {
   assert.equal(r.collection.id, 'b');
   assert.deepEqual(two.calls, ['list']);
 });
+
+test('dropExpiredPendingAction keeps a live entry and deletes an old one', async () => {
+  const { dropExpiredPendingAction } = await import('../src/lib/pending-action.ts');
+  const s = memoryStore();
+  setPendingAction(save, s, 0);
+  dropExpiredPendingAction(s, 1000);
+  assert.equal(s.raw.size, 1);
+  dropExpiredPendingAction(s, PENDING_ACTION_TTL_MS + 1);
+  assert.equal(s.raw.size, 0);
+  s.setItem(PENDING_ACTION_KEY, 'garbage');
+  dropExpiredPendingAction(s, 0);
+  assert.equal(s.raw.size, 0);
+});
+
+test('concurrent first saves create one collection', async () => {
+  const { api, calls } = fakeApi([]);
+  const other = { type: 'agents', path: 'x/other', name: 'other' };
+  const [a, b] = await Promise.all([saveComponent(api, 't', item, []), saveComponent(api, 't', other, [])]);
+  assert.equal(a.status, 'first');
+  assert.equal(b.status, 'added');
+  assert.equal(calls.filter((c) => c.startsWith('create:')).length, 1);
+});
