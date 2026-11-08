@@ -90280,7 +90280,7 @@
         ".claude/commands/components.md",
         ".claude/commands/services.md"
       ],
-      "installCommand": "npx claude-code-templates@latest --template=javascript-typescript --framework=angular --yes",
+      "installCommand": "npx claude-code-templates@latest --template=angular-app --yes",
       "downloads": 0
     },
     {
@@ -90313,7 +90313,7 @@
         ".claude/commands/views.md",
         "CLAUDE.md"
       ],
-      "installCommand": "npx claude-code-templates@latest --template=python --framework=django --yes",
+      "installCommand": "npx claude-code-templates@latest --template=django-app --yes",
       "downloads": 0
     },
     {
@@ -90332,7 +90332,7 @@
         ".claude/commands/testing.md",
         "CLAUDE.md"
       ],
-      "installCommand": "npx claude-code-templates@latest --template=python --framework=fastapi --yes",
+      "installCommand": "npx claude-code-templates@latest --template=fastapi-app --yes",
       "downloads": 0
     },
     {
@@ -90352,7 +90352,7 @@
         ".claude/commands/testing.md",
         "CLAUDE.md"
       ],
-      "installCommand": "npx claude-code-templates@latest --template=python --framework=flask --yes",
+      "installCommand": "npx claude-code-templates@latest --template=flask-app --yes",
       "downloads": 0
     },
     {
@@ -90405,7 +90405,7 @@
         ".claude/commands/route.md",
         "CLAUDE.md"
       ],
-      "installCommand": "npx claude-code-templates@latest --template=javascript-typescript --framework=node --yes",
+      "installCommand": "npx claude-code-templates@latest --template=node-api --yes",
       "downloads": 0
     },
     {
@@ -90436,7 +90436,7 @@
         ".claude/commands/authentication.md",
         "CLAUDE.md"
       ],
-      "installCommand": "npx claude-code-templates@latest --template=ruby --framework=rails --yes",
+      "installCommand": "npx claude-code-templates@latest --template=rails-app --yes",
       "downloads": 0
     },
     {
@@ -90453,7 +90453,7 @@
         ".claude/commands/state-management.md",
         "CLAUDE.md"
       ],
-      "installCommand": "npx claude-code-templates@latest --template=javascript-typescript --framework=react --yes",
+      "installCommand": "npx claude-code-templates@latest --template=react-app --yes",
       "downloads": 0
     },
     {
@@ -90497,7 +90497,7 @@
         ".claude/commands/components.md",
         ".claude/commands/composables.md"
       ],
-      "installCommand": "npx claude-code-templates@latest --template=javascript-typescript --framework=vue --yes",
+      "installCommand": "npx claude-code-templates@latest --template=vue-app --yes",
       "downloads": 0
     }
   ],

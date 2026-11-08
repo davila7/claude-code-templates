@@ -32,8 +32,6 @@ let pageMeta: ComponentPageMeta | null = null;
 let siblings: Component[] = [];
 // Loops that install this component (content file `usedByLoops`), also for "Next step".
 let usedByLoops: Component[] = [];
-// Templates: the file the content comes from (CLAUDE.md, or README.md for the coming-soon ones).
-let templateMainFile = 'CLAUDE.md';
 
 try {
   const data = await fetchComponents();
@@ -69,7 +67,6 @@ try {
     component = { ...component, content: contentData.content };
     modFiles = contentData.files ?? {};
     pageMeta = contentData.meta ?? null;
-    if (contentData.mainFile) templateMainFile = contentData.mainFile;
     const loopPaths = new Set(contentData.usedByLoops ?? []);
     usedByLoops = loopPaths.size
       ? (data.loops ?? []).filter((l) => loopPaths.has(l.path.replace(/\.md$/, '')))
@@ -166,14 +163,10 @@ const ABOUT_FIELDS: { key: string; label: string; kind?: 'chips' | 'code' }[] = 
 const title = component ? formatName(component.name) : 'Component Not Found';
 const headingName = component ? displayName(component.name) : '';
 const typePlural = type?.endsWith('s') ? type : (type + 's');
-// Templates are not a grid type (no TYPE_CONFIG entry, no list page), but their pages exist.
-const isTemplate = typePlural === 'templates';
-// Head tags (title, description, JSON-LD) read this one, so templates keep their current head.
-const seoConfig = TYPE_CONFIG[typePlural ?? 'agents'];
-const config = TYPE_CONFIG[typePlural ?? 'agents'] ?? (isTemplate ? { label: 'Templates', singular: 'template' } as typeof TYPE_CONFIG[string] : undefined);
+const config = TYPE_CONFIG[typePlural ?? 'agents'];
 const installCmd = component ? getInstallCommand(component) : '';
 // Social preview rendered at build time by scripts/generate-og-images.mjs.
-const ogImage = component && config && !isTemplate
+const ogImage = component && config
   ? encodeURI(`/og/${typePlural}/${component.path?.replace(/\.(md|json)$/, '') ?? component.name}.png`)
   : undefined;
 const frontmatter = component ? parseFrontmatter(component.content, typePlural ?? '') : {};
@@ -308,14 +301,7 @@ const lastCommit = pageMeta?.lastCommit;
 // The explorer (Files tab) exists for multi-file components; single files show in Overview only.
 const hasExplorer = refs.length > 0;
 const REPO_URL = 'https://github.com/davila7/claude-code-templates';
-const templateDir = isTemplate && component
-  ? ((component as any).subtype === 'framework' ? `${(component as any).language}/examples/${component.name}` : component.name)
-  : '';
-const sourceUrl = externalSource
-  ? externalSource.url
-  : isTemplate
-    ? `${REPO_URL}/tree/main/cli-tool/templates/${templateDir}`
-    : component ? `${REPO_URL}/${hasExplorer ? 'tree' : 'blob'}/main/cli-tool/components/${typePlural}/${component.path}` : '';
+const sourceUrl = externalSource ? externalSource.url : component ? `${REPO_URL}/${hasExplorer ? 'tree' : 'blob'}/main/cli-tool/components/${typePlural}/${component.path}` : '';
 // Where the CLI writes it (cli-tool/src/index.js); other types show no line.
 const INSTALL_TARGET: Record<string, string> = {
   agents: `.claude/agents/${slugName}.md`,
@@ -329,8 +315,6 @@ const installTarget = typePlural === 'mcps'
   ? 'Merges into .mcp.json'
   : typePlural === 'hooks' || typePlural === 'settings'
     ? 'Merges into the settings file you pick'
-    : isTemplate
-      ? 'Writes CLAUDE.md and .claude/ (commands, settings) to the project'
     : isPlugin
       ? `Claude Code installs it to ~/.claude/plugins/cache/${AITMPL_MARKETPLACE.name}/${slugName}/${component?.version || '<version>'}/ and enables ${pluginId} in .claude/settings.json (pass --scope user or local to change that)`
       : targetDir
@@ -339,13 +323,13 @@ const installTarget = typePlural === 'mcps'
 // The command wraps only between its words (each word breaks inside only when it is wider than the box).
 const cmdParts = installCmd.split(' ');
 // Agent descriptions often carry escaped newlines and <example> tags from their frontmatter.
-const aboutDescription = (frontmatter.description ?? (isTemplate ? component?.description : '') ?? '').replace(/\\n/g, ' ').replace(/<\/?[a-z]+>/gi, ' ').replace(/\s+/g, ' ').trim();
+const aboutDescription = (frontmatter.description ?? '').replace(/\\n/g, ' ').replace(/<\/?[a-z]+>/gi, ' ').replace(/\s+/g, ' ').trim();
 const fileOpen = (file: string) => (hasExplorer ? file : '');
 const typeLabel = typePlural === 'mcps' ? 'MCP' : (config?.singular ?? typePlural ?? '').replace(/^./, (c) => c.toUpperCase());
 
 const seoDescription = frontmatter.description
   ? frontmatter.description.slice(0, 155)
-  : `${title} is a ${seoConfig?.label?.toLowerCase() ?? 'component'} for Claude Code. Install with a single npx command.`;
+  : `${title} is a ${config?.label?.toLowerCase() ?? 'component'} for Claude Code. Install with a single npx command.`;
 
 const canonicalPath = `/component/${typePlural}/${component?.path?.replace(/\.(md|json)$/, '') ?? ''}`;
 
@@ -372,7 +356,7 @@ const componentSchema = component
             {
               '@type': 'ListItem',
               position: 2,
-              name: seoConfig?.label ?? typePlural,
+              name: config?.label ?? typePlural,
               item: `https://www.aitmpl.com/${typePlural}`,
             },
             {
@@ -389,10 +373,10 @@ const componentSchema = component
 ---
 
 <DashboardLayout
-  title={`${title} — ${seoConfig?.label ?? 'Component'} for Claude Code | Claude Code Templates`}
+  title={`${title} — ${config?.label ?? 'Component'} for Claude Code | Claude Code Templates`}
   description={seoDescription}
   ogImage={ogImage}
-  ogImageAlt={component && seoConfig ? `${title}, a Claude Code ${seoConfig.singular}` : undefined}
+  ogImageAlt={component && config ? `${title}, a Claude Code ${config.singular}` : undefined}
 >
   {componentSchema && (
     <script type="application/ld+json" set:html={jsonForScript(componentSchema)} />
@@ -438,8 +422,7 @@ const componentSchema = component
               <span class="inline-flex items-center rounded-full border border-[var(--color-border)] px-2.5 text-[12px] leading-[22px] font-medium text-[var(--color-text-secondary)]">{typeLabel}</span>
             </span>
           </nav>
-          {/* Templates have no path: the stack and collections cannot hold them. */}
-          {!isTemplate && <div class="hidden md:flex items-center gap-2 shrink-0">
+          <div class="hidden md:flex items-center gap-2 shrink-0">
             <SaveToCollectionButton
               client:idle
               variant="button"
@@ -456,7 +439,7 @@ const componentSchema = component
               category={component.category ?? ''}
               description={component.description ?? ''}
             />
-          </div>}
+          </div>
         </header>
 
         <div class="mt-6 md:mt-0 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-x-8">
@@ -504,7 +487,7 @@ const componentSchema = component
               )}
             </section>
 
-            {!isTemplate && <div class="grid grid-cols-2 gap-2 md:hidden">
+            <div class="grid grid-cols-2 gap-2 md:hidden">
               <SaveToCollectionButton
                 client:idle
                 variant="button"
@@ -521,7 +504,7 @@ const componentSchema = component
                 category={component.category ?? ''}
                 description={component.description ?? ''}
               />
-            </div>}
+            </div>
 
             <section aria-labelledby="about-h" class="hidden lg:block border-t border-[var(--color-border)] pt-5">
               <h2 id="about-h" class="text-[14px] font-semibold text-[var(--color-text-primary)] mb-2">About</h2>
@@ -757,7 +740,7 @@ const componentSchema = component
               <div class="rounded-lg border border-[var(--color-border)] overflow-hidden">
                 <div class="flex items-center gap-2.5 px-4 py-2.5 bg-[var(--color-surface-1)] border-b border-[var(--color-border)] text-[13px]">
                   <svg class="w-4 h-4 text-[var(--color-text-tertiary)]" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5.5 4h8M5.5 8h8M5.5 12h8M2.5 4h.01M2.5 8h.01M2.5 12h.01" /></svg>
-                  <span class="font-semibold text-[var(--color-text-primary)]">{typePlural === 'mods' || typePlural === 'skills' || isPlugin ? mainFileName : isTemplate ? templateMainFile : (component.path ?? component.name).split('/').pop()}</span>
+                  <span class="font-semibold text-[var(--color-text-primary)]">{typePlural === 'mods' || typePlural === 'skills' || isPlugin ? mainFileName : component.path.split('/').pop()}</span>
                 </div>
                 {isPlugin && externalSource?.commit && (
                   <p data-plugin-readme-note class="px-4 md:px-6 pt-3 text-[13px] md:text-[12.5px] leading-relaxed text-[var(--color-text-tertiary)]">
@@ -845,7 +828,7 @@ const componentSchema = component
                       <svg data-done-icon class="w-3.5 h-3.5 text-[var(--color-accent)]" style="display:none" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m3.5 8.5 3 3 6-7" /></svg>
                     </button>
                   </div>
-                  {c.path && cType !== 'templates' && (
+                  {c.path && (
                     <AddToStackButton
                       client:visible
                       typePlural={cType}
