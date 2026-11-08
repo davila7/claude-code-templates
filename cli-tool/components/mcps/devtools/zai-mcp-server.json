@@ -6,7 +6,7 @@
       "command": "npx",
       "args": [
         "-y",
-        "@z_ai/mcp-server"
+        "@z_ai/mcp-server@0.1.6"
       ],
       "env": {
         "Z_AI_API_KEY": "your_api_key",

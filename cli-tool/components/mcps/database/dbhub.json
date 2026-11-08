@@ -5,7 +5,7 @@
       "command": "npx",
       "args": [
         "-y",
-        "@bytebase/dbhub@latest"
+        "@bytebase/dbhub@1.6.0"
       ],
       "env": {
         "DATABASE_DSN": "<your-database-dsn>"

@@ -22,6 +22,8 @@ on:
       - 'scripts/validate_components.py'
       - 'scripts/external_skills.py'
       - 'scripts/test_external_skills.py'
+      - 'scripts/mcp_versions.py'
+      - 'scripts/test_mcp_versions.py'
       - '.github/workflows/component-validate.yml'
   schedule:
     - cron: '0 6 * * 1'
@@ -72,6 +74,20 @@ jobs:
             python3 scripts/external_skills.py check $(cat external.txt)
           else
             python3 scripts/external_skills.py check
+          fi
+
+      # MCP servers start with npx/uvx/pipx on every Claude Code start, so each
+      # package must be pinned to an exact version (scripts/mcp_versions.py).
+      - name: Check MCP package pins
+        if: success() || failure()
+        run: |
+          python3 -m unittest scripts/test_mcp_versions.py
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            git diff --name-only --diff-filter=d "origin/${{ github.base_ref }}...HEAD" -- 'cli-tool/components/mcps/**/*.json' > mcps.txt
+            if [ ! -s mcps.txt ]; then echo "no MCP changed"; exit 0; fi
+            python3 scripts/mcp_versions.py check --github $(cat mcps.txt)
+          else
+            python3 scripts/mcp_versions.py check --github
           fi
 
       - name: Upload report
