@@ -26142,6 +26142,38 @@
       }
     },
     {
+      "name": "deja-vu",
+      "path": "devtools/deja-vu.json",
+      "category": "devtools",
+      "type": "mcp",
+      "description": "Searches the session history your coding agents already wrote to disk, including sessions from before it was installed: Claude Code, Codex, Cursor and forty more. One deja tool answers in modes such as recall (past sessions), fix (how an error was solved before) and blame (which session wrote a line). Local index, no LLM, no embeddings, no API key.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "hash": "596a721a309aa3af",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-08T16:26:19Z"
+      }
+    },
+    {
       "name": "devplan-mcp",
       "path": "devtools/devplan-mcp.json",
       "category": "devtools",
