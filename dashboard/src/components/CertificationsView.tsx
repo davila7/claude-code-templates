@@ -341,7 +341,7 @@ export default function CertificationsView() {
             <span className="text-[var(--color-text-secondary)]"> to open registration, prep courses and exam guides</span>
           </p>
           <button
-            onClick={() => openSignIn()}
+            onClick={() => openSignIn('course')}
             className="px-3 py-1.5 bg-[var(--color-surface-3)] hover:bg-[var(--color-surface-4)] text-[12px] font-medium text-[var(--color-text-primary)] rounded-md transition-colors"
           >
             Sign In

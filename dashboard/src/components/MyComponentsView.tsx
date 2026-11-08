@@ -646,7 +646,7 @@ export default function MyComponentsView() {
           Sign in to create collections and organize the components you use most.
         </p>
         <button
-          onClick={() => openSignIn()}
+          onClick={() => openSignIn('collection')}
           className="px-5 py-2.5 bg-white text-black rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
         >
           Sign In

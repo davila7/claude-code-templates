@@ -217,7 +217,7 @@ export default function AuthButton() {
 
   return (
     <button
-      onClick={() => openSignIn()}
+      onClick={() => openSignIn('sidebar')}
       className="flex items-center gap-2.5 px-2.5 py-[6px] rounded-md text-[13px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-2)] transition-colors w-full"
     >
       <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">

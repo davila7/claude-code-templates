@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { collectionsApi } from '../lib/collections-api';
 import type { Collection } from '../lib/types';
 import { openSignIn } from '../lib/sign-in';
+import { componentRef, track } from '../lib/analytics';
 import { COLLECTIONS_CHANGED_EVENT, myComponentsUrl, saveComponent, whenSavesSettled, type CollectionsChangedDetail } from '../lib/save-component';
 
 // Hook that reads auth state from Clerk's global instance (window.Clerk)
@@ -131,9 +132,17 @@ function SaveButton({ componentType, componentPath, componentName, componentCate
     return () => { card.style.zIndex = ''; card.style.position = ''; };
   }, [open]);
 
+  // Signed out: the save waits in sessionStorage and runs after sign-in
+  // (lib/resume-pending-action.ts).
+  function signInToSave() {
+    track('save_click', { ...componentRef(componentType, componentPath), signed_in: false });
+    openSignIn({ kind: 'save', ...item });
+  }
+
   async function handleToggle(e: React.MouseEvent) {
     e.stopPropagation();
     if (!open) {
+      track('save_click', { ...componentRef(componentType, componentPath), signed_in: true });
       setOpen(true);
       const cols = await loadCollections();
       // First save: no collection to pick yet, so create "My components" with
@@ -244,11 +253,11 @@ function SaveButton({ componentType, componentPath, componentName, componentCate
   // Not signed in - open Clerk modal via global instance
   if (!isSignedIn) {
     if (variant === 'button') {
-      return <PageSaveButton saved={false} title="Sign in to save" onClick={(e) => { e.stopPropagation(); openSignIn({ kind: 'save', ...item }); }} />;
+      return <PageSaveButton saved={false} title="Sign in to save" onClick={(e) => { e.stopPropagation(); signInToSave(); }} />;
     }
     return (
       <button
-        onClick={(e) => { e.stopPropagation(); openSignIn({ kind: 'save', ...item }); }}
+        onClick={(e) => { e.stopPropagation(); signInToSave(); }}
         className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5 text-[var(--color-text-tertiary)] opacity-0 group-hover:opacity-100 hover:text-white hover:bg-white/10 transition-all"
         title="Sign in to save"
       >

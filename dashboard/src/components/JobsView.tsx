@@ -179,7 +179,7 @@ export default function JobsView() {
     if (!isSignedIn) {
       e.preventDefault();
       const url = safeUrl(job.applyUrl);
-      openSignIn(url !== '#' ? { kind: 'open-link', source: 'job', title: `${job.position} at ${job.company}`, url } : undefined);
+      openSignIn(url !== '#' ? { kind: 'open-link', source: 'job', title: `${job.position} at ${job.company}`, url } : 'job');
     }
     // If signed in, let the <a> navigate normally
   }
@@ -248,7 +248,7 @@ export default function JobsView() {
             </p>
           </div>
           <button
-            onClick={() => openSignIn()}
+            onClick={() => openSignIn('job')}
             className="px-3 py-1.5 bg-[var(--color-surface-3)] hover:bg-[var(--color-surface-4)] text-[12px] font-medium text-[var(--color-text-primary)] rounded-md transition-colors"
           >
             Sign In

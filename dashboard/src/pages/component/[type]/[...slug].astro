@@ -452,7 +452,7 @@ const componentSchema = component
               {(component.downloads ?? 0) > 0 && `${formatCount(component.downloads ?? 0, 'download', 'downloads')} · `}
               {metaFiles.length > 0 && `${formatCount(fileTotals.files, 'file', 'files')} · ${formatBytes(fileTotals.bytes)} · `}
               {pageMeta?.addedAt && `${formatDate(pageMeta.addedAt)} · `}
-              <a href={sourceUrl} target="_blank" rel="noopener noreferrer" class="text-[var(--color-accent)] whitespace-nowrap">Source ↗</a>
+              <a href={sourceUrl} data-outbound="source" target="_blank" rel="noopener noreferrer" class="text-[var(--color-accent)] whitespace-nowrap">Source ↗</a>
             </p>
 
             <section aria-labelledby="install-h">
@@ -467,6 +467,8 @@ const componentSchema = component
                   id="copyBtn"
                   type="button"
                   data-cmd={installCmd}
+                  data-component-type={typePlural}
+                  data-component-path={component.path}
                   aria-label="Copy install command"
                   class="inline-flex items-center justify-center gap-1.5 h-11 md:h-9 min-w-[84px] lg:min-w-0 px-3 lg:px-2.5 rounded-md bg-[var(--color-accent)] text-[var(--color-surface-0)] text-[14px] md:text-[13px] font-semibold hover:bg-[var(--color-accent-hover)] transition-colors shrink-0"
                 >
@@ -524,7 +526,7 @@ const componentSchema = component
                   <li>Added {formatDate(pageMeta.addedAt)}</li>
                 )}
                 <li>
-                  <a href={sourceUrl} target="_blank" rel="noopener noreferrer" class="text-[var(--color-accent)] hover:underline underline-offset-4">View source on GitHub</a>
+                  <a href={sourceUrl} data-outbound="source" target="_blank" rel="noopener noreferrer" class="text-[var(--color-accent)] hover:underline underline-offset-4">View source on GitHub</a>
                 </li>
               </ul>
               {aboutRows.length > 0 && (
@@ -612,7 +614,7 @@ const componentSchema = component
                     {formatCount(fileTotals.files, 'file', 'files')} · {formatCount(fileTotals.lines, 'line', 'lines')} · {formatBytes(fileTotals.bytes)}
                   </span>
                   <span class="flex-1"></span>
-                  <a href={sourceUrl} target="_blank" rel="noopener noreferrer" class="inline-flex h-9 items-center gap-1.5 px-3 rounded-md border border-[var(--color-border)] bg-[var(--color-surface-1)] text-[13px] font-medium text-[var(--color-text-primary)] hover:bg-[var(--color-surface-2)] transition-colors">
+                  <a href={sourceUrl} data-outbound="source" target="_blank" rel="noopener noreferrer" class="inline-flex h-9 items-center gap-1.5 px-3 rounded-md border border-[var(--color-border)] bg-[var(--color-surface-1)] text-[13px] font-medium text-[var(--color-text-primary)] hover:bg-[var(--color-surface-2)] transition-colors">
                     View on GitHub
                     <svg class="w-3 h-3" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M9 2.5h4.5V7M13.5 2.5 7 9M12 10v3.5H2.5V4H6" /></svg>
                   </a>
@@ -627,10 +629,10 @@ const componentSchema = component
                       <span class="font-semibold text-[var(--color-text-primary)] shrink-0">{lastCommit.author}</span>
                       <span class="hidden md:block min-w-0 flex-1 truncate text-[var(--color-text-secondary)]">{commitTitle(lastCommit.subject)}</span>
                       {lastCommit.pr && (
-                        <a href={`${REPO_URL}/pull/${lastCommit.pr}`} target="_blank" rel="noopener noreferrer" class="shrink-0 text-[var(--color-accent)] hover:underline underline-offset-4">#{lastCommit.pr}</a>
+                        <a href={`${REPO_URL}/pull/${lastCommit.pr}`} data-outbound="pull_request" target="_blank" rel="noopener noreferrer" class="shrink-0 text-[var(--color-accent)] hover:underline underline-offset-4">#{lastCommit.pr}</a>
                       )}
                       <span class="flex-1 md:hidden"></span>
-                      <a href={`${REPO_URL}/commit/${lastCommit.sha}`} target="_blank" rel="noopener noreferrer" class="shrink-0 text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)]">
+                      <a href={`${REPO_URL}/commit/${lastCommit.sha}`} data-outbound="commit" target="_blank" rel="noopener noreferrer" class="shrink-0 text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)]">
                         <span class="hidden md:inline font-mono text-[12px] mr-2">{lastCommit.sha.slice(0, 7)}</span>{formatDate(lastCommit.date)}
                       </a>
                     </div>
@@ -672,9 +674,9 @@ const componentSchema = component
               {externalSource && (
                 <div class="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-1)] px-4 py-2.5 text-[12px] text-[var(--color-text-secondary)]">
                   {isPlugin ? (
-                    <Fragment><strong class="text-[var(--color-text-primary)]">Claude Code plugin.</strong> The files live in <a href={externalSource.url} target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 hover:text-[var(--color-text-primary)]">{externalSource.repo}</a>. The <a href={AITMPL_MARKETPLACE.url} target="_blank" rel="noopener" class="underline underline-offset-2 hover:text-[var(--color-text-primary)]">aitmpl marketplace</a> pins it to commit <code>{externalSource.commit.slice(0, 7)}</code>, the version that was reviewed and scanned here, and Claude Code installs exactly that commit. Newer commits reach this catalog only after a new review.</Fragment>
+                    <Fragment><strong class="text-[var(--color-text-primary)]">Claude Code plugin.</strong> The files live in <a href={externalSource.url} data-outbound="source" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 hover:text-[var(--color-text-primary)]">{externalSource.repo}</a>. The <a href={AITMPL_MARKETPLACE.url} target="_blank" rel="noopener" class="underline underline-offset-2 hover:text-[var(--color-text-primary)]">aitmpl marketplace</a> pins it to commit <code>{externalSource.commit.slice(0, 7)}</code>, the version that was reviewed and scanned here, and Claude Code installs exactly that commit. Newer commits reach this catalog only after a new review.</Fragment>
                   ) : (
-                    <Fragment><strong class="text-[var(--color-text-primary)]">External skill.</strong> The files live in <a href={externalSource.url} target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 hover:text-[var(--color-text-primary)]">{externalSource.repo}</a> and the CLI downloads them from commit <code>{externalSource.commit.slice(0, 7)}</code>, the version that was reviewed and scanned here. Newer commits reach this catalog only after a new review.</Fragment>
+                    <Fragment><strong class="text-[var(--color-text-primary)]">External skill.</strong> The files live in <a href={externalSource.url} data-outbound="source" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 hover:text-[var(--color-text-primary)]">{externalSource.repo}</a> and the CLI downloads them from commit <code>{externalSource.commit.slice(0, 7)}</code>, the version that was reviewed and scanned here. Newer commits reach this catalog only after a new review.</Fragment>
                   )}
                   {' '}License: {externalSource.license}{component?.author ? `, by ${component.author}` : ''}.
                 </div>
@@ -998,4 +1000,40 @@ const componentSchema = component
       });
     }
   })();
+</script>
+
+<script>
+  // GA4 events (lib/analytics.ts): the page view of a component, copies of its
+  // install command, clicks to its source on GitHub, and clicks in the blocks
+  // that suggest other components.
+  import { componentRef, componentRefFromUrl, isRelatedBlock, track } from '../../../lib/analytics';
+
+  const copyBtn = document.getElementById('copyBtn');
+  const type = copyBtn?.dataset.componentType;
+  const path = copyBtn?.dataset.componentPath;
+  if (copyBtn && type && path) {
+    const ref = componentRef(type, path);
+    track('view_component', ref);
+    copyBtn.addEventListener('click', () => track('copy_install_command', { ...ref, source: 'component_page' }));
+    document.querySelectorAll<HTMLAnchorElement>('a[data-outbound]').forEach((a) => {
+      const link = a.dataset.outbound;
+      if (link !== 'source' && link !== 'commit' && link !== 'pull_request') return;
+      a.addEventListener('click', () => track('outbound_github', { ...ref, link }));
+    });
+    // A suggested component: a link with data-related="<block>" and its canonical
+    // href, or a copy button with data-related, data-cmd and data-component-*.
+    // Delegated, so blocks rendered later count too.
+    document.addEventListener('click', (e) => {
+      const el = (e.target as Element | null)?.closest?.('a[data-related], button[data-related][data-cmd]');
+      if (!(el instanceof HTMLElement)) return;
+      const block = el.dataset.related;
+      if (!isRelatedBlock(block)) return;
+      if (el instanceof HTMLAnchorElement) {
+        const target = componentRefFromUrl(el.href);
+        if (target) track('related_click', { ...ref, block, target_type: target.component_type, target_path: target.component_path });
+      } else if (el.dataset.componentType && el.dataset.componentPath) {
+        track('copy_install_command', { ...componentRef(el.dataset.componentType, el.dataset.componentPath), source: 'related' });
+      }
+    });
+  }
 </script>

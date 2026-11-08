@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { componentRef, track } from '../lib/analytics';
 
 // "Add to stack" on the component page. Same cart as the grid cards
 // (localStorage 'claudeCodeCart' + 'cart-updated'), so CartSidebar picks it up.
@@ -12,6 +13,9 @@ interface Props {
   path: string;
   category: string;
   description: string;
+  // Where the button sits, for the add_to_stack event: the page's own button
+  // or a card in a block that suggests other components.
+  source?: 'component_page' | 'related';
 }
 
 function readCart(): CartState {
@@ -22,7 +26,7 @@ function readCart(): CartState {
   }
 }
 
-export default function AddToStackButton({ typePlural, name, path, category, description }: Props) {
+export default function AddToStackButton({ typePlural, name, path, category, description, source = 'component_page' }: Props) {
   const [inStack, setInStack] = useState(false);
 
   useEffect(() => {
@@ -46,6 +50,7 @@ export default function AddToStackButton({ typePlural, name, path, category, des
       localStorage.setItem('claudeCodeCart', JSON.stringify(next));
     } catch { /* private mode: the event still updates this page */ }
     window.dispatchEvent(new CustomEvent('cart-updated', { detail: next }));
+    if (!inStack) track('add_to_stack', { ...componentRef(typePlural, path), source });
   }
 
   return (

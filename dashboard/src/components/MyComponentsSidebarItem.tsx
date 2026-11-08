@@ -62,7 +62,7 @@ export function NavContent({ isActive }: { isActive: boolean }) {
 
   return (
     <button
-      onClick={() => openSignIn()}
+      onClick={() => openSignIn('sidebar')}
       data-tooltip="My Components"
       className="flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-2)] hover:shadow-sm transition-all duration-150 group w-full text-left"
     >

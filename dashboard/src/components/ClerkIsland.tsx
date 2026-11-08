@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
-import { ClerkProvider } from '@clerk/clerk-react';
+import { ClerkProvider, useAuth } from '@clerk/clerk-react';
 import { startPendingActionResume } from '../lib/resume-pending-action';
+import { takeSignInOrigin, track } from '../lib/analytics';
 
 const clerkKey = import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY;
 
@@ -27,6 +28,19 @@ const localization = {
   },
 };
 
+// Sends sign_in_complete once a sign-in opened with openSignIn() ends, in this
+// page or after the OAuth redirect back to it (the origin waits in
+// sessionStorage, see lib/analytics.ts).
+function SignInCompleteTracker() {
+  const { isLoaded, isSignedIn } = useAuth();
+  useEffect(() => {
+    if (!isLoaded || !isSignedIn) return;
+    const origin = takeSignInOrigin();
+    if (origin) track('sign_in_complete', { origin });
+  }, [isLoaded, isSignedIn]);
+  return null;
+}
+
 export default function ClerkIsland() {
   useEffect(() => {
     if (clerkKey) startPendingActionResume();
@@ -36,6 +50,7 @@ export default function ClerkIsland() {
   return (
     <ClerkProvider publishableKey={clerkKey} localization={localization}>
       <span />
+      <SignInCompleteTracker />
     </ClerkProvider>
   );
 }

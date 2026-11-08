@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import type { Component } from '../lib/types';
 import { TYPE_CONFIG } from '../lib/icons';
 import { ITEMS_PER_PAGE } from '../lib/constants';
@@ -6,7 +6,8 @@ import { fetchComponentsByType } from '../lib/data';
 import SkillSpectorBadge from './SkillSpectorBadge';
 import { fetchActiveAds, findSponsoredIndex, type ActiveAd } from '../lib/ads';
 import SaveToCollectionButton from './SaveToCollectionButton';
-import { componentPath } from '../lib/component-url';
+import { componentRef, track } from '../lib/analytics';
+import { componentPath, pluralType } from '../lib/component-url';
 
 type GridComponent = Component & { sponsored?: boolean };
 
@@ -182,6 +183,18 @@ export default function ComponentGrid({ initialType }: Props) {
 
   useEffect(() => { setPage(1); }, [category, search, activeType, selectedCategories, minDownloads]);
 
+  // One 'search' event per settled query (1 s without typing), with the number
+  // of results only, never the text.
+  const filteredCount = useRef(0);
+  filteredCount.current = filtered.length;
+  useEffect(() => {
+    if (!search.trim()) return;
+    const timer = setTimeout(() => {
+      track('search', { results_count: filteredCount.current, scope: 'grid', component_type: pluralType(activeType) });
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [search, activeType]);
+
   // Sidebar counts come from /counts.json (see Sidebar.astro); the grid no
   // longer loads every type, so it can't (and doesn't need to) emit them.
 
@@ -251,6 +264,14 @@ export default function ComponentGrid({ initialType }: Props) {
       return next;
     });
   }, []);
+
+  // A card adds or removes one component; only an add is an analytics event.
+  const addOrRemove = (component: Component) => {
+    if (!isInCart(component.path, component.type)) {
+      track('add_to_stack', { ...componentRef(component.type, component.path), source: 'grid' });
+    }
+    toggleCart(component);
+  };
 
   const pageInStack = paged.length > 0 && paged.every((comp) => isInCart(comp.path, comp.type));
 
@@ -656,7 +677,7 @@ export default function ComponentGrid({ initialType }: Props) {
                     componentCategory={component.category}
                   />
                   <button
-                    onClick={(e) => { e.stopPropagation(); toggleCart(component); }}
+                    onClick={(e) => { e.stopPropagation(); addOrRemove(component); }}
                     className={`w-8 h-8 rounded flex items-center justify-center transition-all duration-150 ${
                       inCart
                         ? 'bg-[var(--color-accent)] text-white border border-[var(--color-accent)]'
@@ -750,7 +771,7 @@ export default function ComponentGrid({ initialType }: Props) {
                   componentCategory={component.category}
                 />
                 <button
-                  onClick={(e) => { e.stopPropagation(); toggleCart(component); }}
+                  onClick={(e) => { e.stopPropagation(); addOrRemove(component); }}
                   className={`w-8 h-8 rounded flex items-center justify-center transition-all duration-150 ${
                     inCart
                       ? 'bg-[var(--color-accent)] text-white border border-[var(--color-accent)]'

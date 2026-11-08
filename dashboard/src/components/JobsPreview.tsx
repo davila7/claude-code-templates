@@ -84,7 +84,7 @@ export default function JobsPreview({ variant = 'preview' }: Props) {
     if (!isSignedIn) {
       e.preventDefault();
       const url = safeUrl(job.applyUrl);
-      openSignIn(url !== '#' ? { kind: 'open-link', source: 'job', title: `${job.position} at ${job.company}`, url } : undefined);
+      openSignIn(url !== '#' ? { kind: 'open-link', source: 'job', title: `${job.position} at ${job.company}`, url } : 'job');
     }
   }
 
