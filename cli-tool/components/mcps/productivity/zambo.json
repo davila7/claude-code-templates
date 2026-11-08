@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "zambo": {
+      "description": "Zambo is the verifiable work layer for AI: 153 tools behind one remote MCP endpoint, memory and handover that carry work across AIs, and a verifiable AER-1 receipt for every job. No account or API key needed. Free tier: 20 calls and 1 wrap-up free every day, and picking up in another AI is always free. Day Pass $0.99 for unlimited use for 24 hours.",
+      "type": "http",
+      "url": "https://zambo.dev/mcp"
+    }
+  }
+}
