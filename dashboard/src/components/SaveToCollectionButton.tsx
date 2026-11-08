@@ -3,7 +3,7 @@ import { collectionsApi } from '../lib/collections-api';
 import type { Collection } from '../lib/types';
 import { openSignIn } from '../lib/sign-in';
 import { componentRef, track } from '../lib/analytics';
-import { COLLECTIONS_CHANGED_EVENT, myComponentsUrl, saveComponent, type CollectionsChangedDetail } from '../lib/save-component';
+import { COLLECTIONS_CHANGED_EVENT, myComponentsUrl, saveComponent, whenSavesSettled, type CollectionsChangedDetail } from '../lib/save-component';
 
 // Hook that reads auth state from Clerk's global instance (window.Clerk)
 // Works without needing a ClerkProvider in the same React tree
@@ -152,12 +152,18 @@ function SaveButton({ componentType, componentPath, componentName, componentCate
         if (!token) return;
         setCreating(true);
         try {
-          const { collection } = await saveComponent(collectionsApi, token, item, cols);
-          window.location.assign(myComponentsUrl(collection.id));
+          const { status, collection } = await saveComponent(collectionsApi, token, item, cols);
+          if (status === 'first') {
+            await whenSavesSettled();
+            window.location.assign(myComponentsUrl(collection.id));
+            return;
+          }
+          // Another save created the first collection meanwhile: show the picker.
+          await loadCollections();
         } catch (err) {
           console.error('Failed to create the first collection:', err);
-          setCreating(false);
         }
+        setCreating(false);
       }
     } else {
       setOpen(false);

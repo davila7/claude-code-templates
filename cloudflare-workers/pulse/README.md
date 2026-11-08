@@ -1,6 +1,6 @@
 # Pulse — Weekly KPI Report (Cloudflare Worker)
 
-Collects metrics from GitHub, Discord, Supabase, Vercel, and Google Analytics every Sunday at 14:00 UTC and sends a consolidated report via Telegram.
+Collects metrics from GitHub, Supabase, Vercel, and Google Analytics every Sunday at 14:00 UTC and sends a consolidated report via Telegram.
 
 ## Setup
 
@@ -26,10 +26,6 @@ wrangler secret put GITHUB_TOKEN          # PAT with public_repo scope
 # Supabase
 wrangler secret put SUPABASE_URL          # https://xxx.supabase.co
 wrangler secret put SUPABASE_SERVICE_ROLE_KEY
-
-# Discord
-wrangler secret put DISCORD_BOT_TOKEN
-wrangler secret put DISCORD_GUILD_ID
 
 # Vercel
 wrangler secret put VERCEL_TOKEN          # Personal access token
@@ -95,11 +91,6 @@ npm run test             # Test cron trigger locally
 ├ Forks: 156 (+8)
 ├ Issues: 12 open (3 new, 2 closed)
 └ PRs: 5 opened, 4 merged
-
-💬 DISCORD
-├ Members: 890 (+23)
-├ Active: ~145
-└ Messages: 312
 
 📦 DOWNLOADS
 ├ Total: 45,678 (+1,234)

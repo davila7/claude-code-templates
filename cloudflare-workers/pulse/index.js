@@ -1,7 +1,7 @@
 /**
  * Cloudflare Worker: Pulse — Weekly KPI Report
  *
- * Collects metrics from GitHub, Discord, Supabase, npm, and Google Analytics,
+ * Collects metrics from GitHub, Supabase, npm, and Google Analytics,
  * then sends a consolidated report via Telegram every Sunday at 14:00 UTC.
  *
  * All source collectors are in this single file (no npm dependencies).
@@ -16,7 +16,6 @@ import { reportError, checkIn } from './sentry.js';
 const REPO = 'davila7/claude-code-templates';
 const NPM_PACKAGE = 'claude-code-templates';
 const GITHUB_API = 'https://api.github.com';
-const DISCORD_API = 'https://discord.com/api/v10';
 const NPM_API = 'https://api.npmjs.org';
 const GA4_API = 'https://analyticsdata.googleapis.com/v1beta';
 const TELEGRAM_API = 'https://api.telegram.org';
@@ -53,7 +52,7 @@ export default {
         status: 'running',
         worker: 'pulse-weekly-report',
         schedule: 'Sundays 14:00 UTC',
-        sources: ['github', 'discord', 'downloads', 'returning', 'npm', 'analytics']
+        sources: ['github', 'downloads', 'returning', 'npm', 'analytics']
       });
     }
 
@@ -76,7 +75,6 @@ async function runReport(env, opts = {}) {
   if (onlySource) {
     const collectors = {
       github: collectGitHub,
-      discord: collectDiscord,
       downloads: collectDownloads,
       returning: collectReturning,
       npm: collectNpm,
@@ -88,14 +86,13 @@ async function runReport(env, opts = {}) {
     }
     results[onlySource] = await collector(env);
   } else {
-    const [github, discord, downloads, returning, npm] = await Promise.all([
+    const [github, downloads, returning, npm] = await Promise.all([
       collectGitHub(env),
-      collectDiscord(env),
       collectDownloads(env),
       collectReturning(env),
       collectNpm(env)
     ]);
-    results = { github, discord, downloads, returning, npm };
+    results = { github, downloads, returning, npm };
   }
 
   // Report any failed collectors to Sentry (they still degrade gracefully
@@ -210,77 +207,6 @@ async function collectGitHub(env) {
     };
   } catch (error) {
     console.error('GitHub source error:', error.message);
-    return { error: error.message };
-  }
-}
-
-// ─── Source: Discord ─────────────────────────────────────────────────────────
-
-async function collectDiscord(env) {
-  try {
-    if (!env.DISCORD_BOT_TOKEN || !env.DISCORD_GUILD_ID) {
-      return { error: 'DISCORD_BOT_TOKEN or DISCORD_GUILD_ID not configured' };
-    }
-
-    const headers = {
-      Authorization: `Bot ${env.DISCORD_BOT_TOKEN}`,
-      'Content-Type': 'application/json'
-    };
-    const guildId = env.DISCORD_GUILD_ID;
-
-    // Fetch guild info with approximate counts
-    const guild = await fetchJSON(
-      `${DISCORD_API}/guilds/${guildId}?with_counts=true`,
-      { headers }
-    );
-
-    const totalMembers = guild.approximate_member_count || 0;
-    const activeMembers = guild.approximate_presence_count || 0;
-
-    // Estimate new members this week from audit log
-    let newMembersWeek = null;
-    try {
-      const since = weekAgo();
-      const auditRes = await fetchJSON(
-        `${DISCORD_API}/guilds/${guildId}/audit-logs?action_type=1&limit=100`,
-        { headers }
-      );
-      const entries = auditRes.audit_log_entries || [];
-      newMembersWeek = entries.filter(e => {
-        const timestamp = Number(BigInt(e.id) >> 22n) + 1420070400000;
-        return timestamp >= since.getTime();
-      }).length;
-    } catch { /* Audit log access may not be available */ }
-
-    // Count messages in last 7 days across text channels
-    let messagesWeek = null;
-    try {
-      const channels = await fetchJSON(
-        `${DISCORD_API}/guilds/${guildId}/channels`,
-        { headers }
-      );
-      const textChannels = channels.filter(c => c.type === 0);
-
-      const since = weekAgo();
-      const sinceSnowflake = String((BigInt(since.getTime()) - 1420070400000n) << 22n);
-
-      let total = 0;
-      // Sample up to 10 channels to avoid rate limits
-      for (const ch of textChannels.slice(0, 10)) {
-        try {
-          const msgs = await fetchJSON(
-            `${DISCORD_API}/channels/${ch.id}/messages?after=${sinceSnowflake}&limit=100`,
-            { headers }
-          );
-          total += msgs.length;
-        } catch { /* Channel may not be accessible */ }
-      }
-      messagesWeek = total;
-    } catch { /* ignore */ }
-
-    return { totalMembers, activeMembers, newMembersWeek, messagesWeek };
-  } catch (error) {
-    console.error('Discord source error:', error.message);
     return { error: error.message };
   }
 }
@@ -731,19 +657,6 @@ function formatReport(results) {
       `├ Forks: ${fmt(g.forks)}${fmtDelta(g.forksWeek)}`,
       `├ Issues: ${fmt(g.openIssues)} open (${fmt(g.issuesOpenedWeek)} new, ${fmt(g.issuesClosedWeek)} closed)`,
       `└ PRs: ${fmt(g.prsOpenedWeek)} opened, ${fmt(g.prsMergedWeek)} merged`
-    ].join('\n'));
-  }
-
-  // Discord
-  if (results.discord?.error) {
-    sections.push(`DISCORD\n└ Unavailable: ${results.discord.error}`);
-  } else if (results.discord) {
-    const d = results.discord;
-    sections.push([
-      `DISCORD`,
-      `├ Members: ${fmt(d.totalMembers)}${fmtDelta(d.newMembersWeek)}`,
-      `├ Active: ~${fmt(d.activeMembers)}`,
-      `└ Messages: ${fmt(d.messagesWeek)}`
     ].join('\n'));
   }
 

@@ -68,3 +68,9 @@ test('jsonForScript cannot close the script tag', () => {
   assert.doesNotMatch(out, /<\/script|<img/i);
   assert.deepEqual(JSON.parse(out), { description: '</script><img src=x onerror=alert(1)>' });
 });
+
+test('demoteH1 turns raw h1 tags into h2 and leaves the rest', async () => {
+  const { demoteH1 } = await import('../src/lib/sanitize-html.ts');
+  assert.equal(demoteH1('<h1 align="center">X</h1><h2>Y</h2><H1>Z</H1>'), '<h2 align="center">X</h2><h2>Y</h2><h2>Z</h2>');
+  assert.equal(demoteH1('<h10>a</h10><header>b</header>'), '<h10>a</h10><header>b</header>');
+});

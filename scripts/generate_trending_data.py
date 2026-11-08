@@ -50,6 +50,12 @@ TYPE_ALIASES = {
 }
 
 
+# The columns process_downloads_data reads. The anon role may SELECT only these
+# (ip_address and user_agent are PII and not granted), so `select=*` is denied.
+DOWNLOAD_COLUMNS = ("id,component_type,component_name,category,country,download_timestamp,"
+                    "client_agent,client_entrypoint,client_is_tty")
+
+
 def canonical_type(component_type):
     """Collapse the spellings of a component_type to one key.
 
@@ -159,7 +165,7 @@ def main():
         }
         
         # Get total count first
-        count_url = f"{supabase_url}/rest/v1/component_downloads"
+        count_url = f"{supabase_url}/rest/v1/component_downloads?select=id"
         count_headers = {**headers, 'Prefer': 'count=exact'}
         count_response = requests.head(count_url, headers=count_headers)
         
@@ -182,7 +188,8 @@ def main():
         while True:
             page_num += 1
 
-            api_url = f"{supabase_url}/rest/v1/component_downloads?id=gt.{last_id}&order=id.asc&limit={page_size}"
+            api_url = (f"{supabase_url}/rest/v1/component_downloads?select={DOWNLOAD_COLUMNS}"
+                       f"&id=gt.{last_id}&order=id.asc&limit={page_size}")
 
             response = fetch_with_retry(api_url, headers, max_retries=5, timeout=60)
 

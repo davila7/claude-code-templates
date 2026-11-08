@@ -79,8 +79,9 @@ export const prerender = true;
       collections you create, including whether you made a collection public. Your name and email are held by Clerk, which also
       keeps a record of your sign-in sessions (device type, browser and approximate location).
       When you click Save, a job or a course before signing in, that one action (the component, or the link to open) is
-      kept in your browser's session storage for up to 30 minutes so it can be completed after you sign in. It is never
-      sent to us and is deleted as soon as it runs or the tab closes.
+      kept in your browser's session storage so it can be completed after you sign in. It is never sent to us. It is
+      deleted when it runs, when you close the tab, or on the first page you open after 30 minutes; after 30 minutes it
+      is never run.
     </p>
 
     <h2>Sending components to a GitHub repository</h2>

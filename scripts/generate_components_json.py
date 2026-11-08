@@ -503,6 +503,30 @@ def component_page_meta(components_base_path, ctype, component, history, previou
         meta['addedAt'] = entry['added']
     return meta
 
+def loops_by_component(loops):
+    """{'{type plural}/{path without extension}': [loop path without extension, ...]} from each
+    loop's `components: [type:path, ...]` frontmatter (the same tokens the loop page parses)."""
+    out = defaultdict(list)
+    for loop in loops:
+        match = re.match(r'^---\s*\n([\s\S]*?)\n---', loop.get('content', ''))
+        if not match:
+            continue
+        line = re.search(r'^components\s*:\s*\[(.*)\]\s*$', match.group(1), re.M)
+        if not line:
+            continue
+        loop_path = re.sub(r'\.md$', '', loop['path'])
+        for token in line.group(1).split(','):
+            token = token.strip().strip('"\'')
+            ref_type, sep, ref_path = token.partition(':')
+            if not sep or not ref_type.strip() or not ref_path.strip():
+                continue
+            ref_type = ref_type.strip()
+            plural = ref_type if ref_type.endswith('s') else ref_type + 's'
+            key = f"{plural}/{re.sub(r'[.](md|json)$', '', ref_path.strip())}"
+            if loop_path not in out[key]:
+                out[key].append(loop_path)
+    return {k: sorted(v) for k, v in out.items()}
+
 def generate_components_json(skip_downloads=False, skip_skillspector=False, skillspector_only=None):
     """
     Scans the cli-tool/components and cli-tool/templates directories and generates a components.json file
@@ -1035,6 +1059,7 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
     os.makedirs(dashboard_content_dir, exist_ok=True)
     written_content_count = 0
     git_history = git_component_history(components_base_path)
+    used_by_loops = loops_by_component(components_data.get('loops', []))
     for ctype in content_bearing_types:
         for component in components_data.get(ctype, []):
             raw_content = component.get('content', '')
@@ -1057,6 +1082,10 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
                     pass
             # Shown on the component page: file list, language bar, last commit and date added.
             content_payload['meta'] = component_page_meta(components_base_path, ctype, component, git_history, previous_meta)
+            # Loops that install this component, for the page's "Next step" block.
+            loops = used_by_loops.get(f"{ctype}/{slug}")
+            if loops:
+                content_payload['usedByLoops'] = loops
             try:
                 with open(content_file_path, 'w', encoding='utf-8') as f:
                     json.dump(content_payload, f, ensure_ascii=False)

@@ -64,3 +64,12 @@ export function jsonForScript(value: unknown): string {
     .replace(/>/g, '\\u003e')
     .replace(/&/g, '\\u0026');
 }
+
+/**
+ * A component page has one <h1>, its name. Raw <h1> tags written in a document
+ * (READMEs with `<h1 align="center">`) become <h2>; markdown `#` headings are
+ * already rendered one level down by the viewers' heading renderer.
+ */
+export function demoteH1(html: string): string {
+  return html.replace(/<(\/?)h1(?=[\s>])/gi, '<$1h2');
+}

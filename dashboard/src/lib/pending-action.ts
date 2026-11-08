@@ -87,3 +87,17 @@ export function takePendingAction(store = sessionStore(), now = Date.now()): Pen
     return null;
   }
 }
+
+// Deletes an entry older than the TTL (or unreadable) and keeps a live one.
+// Run on every page load, so a signed-out visitor's entry doesn't outlive 30 minutes by much.
+export function dropExpiredPendingAction(store = sessionStore(), now = Date.now()): void {
+  try {
+    const raw = store?.getItem(PENDING_ACTION_KEY);
+    if (!raw) return;
+    let at = NaN;
+    try { at = JSON.parse(raw)?.at; } catch { /* unreadable */ }
+    if (!(typeof at === 'number' && now - at >= 0 && now - at <= PENDING_ACTION_TTL_MS)) store?.removeItem(PENDING_ACTION_KEY);
+  } catch {
+    /* ignore */
+  }
+}
