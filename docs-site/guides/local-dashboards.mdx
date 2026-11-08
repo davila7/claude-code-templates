@@ -1,0 +1,36 @@
+---
+title: "Local dashboards and health check"
+description: "Analytics, a conversation browser and a setup health check for Claude Code, run locally by the CLI."
+---
+
+These tools read the Claude Code data on your own machine (`~/.claude/projects`) and never upload it.
+
+## Analytics
+
+```bash
+npx claude-code-templates@latest --analytics
+```
+
+Opens `http://localhost:3333`: sessions, token usage, and activity over time.
+
+## Conversation browser
+
+```bash
+npx claude-code-templates@latest --chats
+```
+
+Opens `http://localhost:9876` to read and search past conversations.
+
+Both servers listen on 127.0.0.1 only and reject requests from other sites (foreign `Host` or `Origin` headers), so another web page cannot read your history. To open one from another machine, forward the port over SSH:
+
+```bash
+ssh -L 3333:localhost:3333 your-server
+```
+
+## Health check
+
+```bash
+npx claude-code-templates@latest --health-check
+```
+
+Checks your Node.js version (18+), the Claude Code install and authentication, and your settings files, and prints what to fix.

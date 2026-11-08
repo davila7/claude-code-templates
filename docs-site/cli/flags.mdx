@@ -1,0 +1,25 @@
+---
+title: "CLI flags"
+description: "Every flag of npx claude-code-templates, generated from the CLI's own --help."
+---
+
+import CliFlags from "/snippets/cli-flags.mdx";
+
+```bash
+npx claude-code-templates@latest [flags]
+```
+
+With no flags, in a terminal, the CLI opens the catalog browser. Without a terminal it prints a short usage text and exits with code 0, so agents and CI never hang waiting for input.
+
+<CliFlags />
+
+## Notes
+
+- **Paths.** Every install flag takes `category/name`, the path shown on the component's page. Separate several with commas: `--agent security/security-auditor,development-team/backend-architect`.
+- **Combining.** Install flags combine in one run: one plan, one location prompt for settings and hooks.
+- **`--yes`.** Skips every prompt. Settings and hooks go to `.claude/settings.local.json`.
+- **`--prompt`.** After installing, starts `claude` with that prompt as a single argument (never through a shell). Without a terminal it prints the command to run instead.
+- **`--analytics`, `--chats`, `--health-check`.** Local tools, see [Local dashboards](/guides/local-dashboards).
+- **Removed flags.** Seventeen flags were removed in 1.31.0 and now print their replacement. See [Removed in 1.31.0](/cli/removed-in-1-31).
+
+This table is generated from `--help` by `docs-site/scripts/generate_snippets.py`, and CI fails when it falls behind the code. Check yours with `npx claude-code-templates@latest --version`.

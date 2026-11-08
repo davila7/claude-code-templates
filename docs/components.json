@@ -25854,6 +25854,38 @@
       }
     },
     {
+      "name": "aitmpl-docs",
+      "path": "devtools/aitmpl-docs.json",
+      "category": "devtools",
+      "type": "mcp",
+      "description": "Official search MCP server of the Claude Code Templates docs (docs.aitmpl.com, hosted by Mintlify): lets Claude Code search and read the CLI, component and catalog documentation before installing or writing components. Remote, no sign-in required. Every tool is read-only except the feedback tool, which sends a report about a wrong or outdated page to the docs team.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "hash": "0c9d577a4ed6103d",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-07T22:37:57Z"
+      }
+    },
+    {
       "name": "android-mcp",
       "path": "devtools/android-mcp.json",
       "category": "devtools",
@@ -26885,6 +26917,48 @@
         "hash": "a4b421cd826c4702",
         "version": "2.12.0",
         "scannedAt": "2026-10-17T20:36:45Z"
+      }
+    },
+    {
+      "name": "mintlify-admin",
+      "path": "devtools/mintlify-admin.json",
+      "category": "devtools",
+      "type": "mcp",
+      "description": "Official Mintlify admin MCP server (mcp.mintlify.com): edit pages, restructure navigation, update docs.json, open pull requests, publish, manage automations and project settings of your Mintlify docs, across the projects your OAuth grant covers (specific projects or your whole organization). Requires a Mintlify account and uses OAuth: after installing, run /mcp in Claude Code to sign in; the session inherits your dashboard role. It has write access: edits to the deploy branch stay unpublished until publish (in projects with auto publish and in bases they are committed at once), edits to other branches go to a pull request (publish can also merge it), and settings and automation changes apply to the live project immediately. Pair with the setting permissions/mintlify-mcp-confirm-writes to approve publishing, deletes and project-setting changes.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 7,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 1,
+        "analysis": "complete",
+        "findings": [
+          {
+            "id": "TR2",
+            "category": "Trigger Abuse",
+            "severity": "MEDIUM",
+            "title": "Shadow Command Trigger",
+            "file": "SKILL.md",
+            "line": 1,
+            "count": 1
+          }
+        ],
+        "hash": "6e9d29d619bc314d",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-07T22:37:57Z"
       }
     },
     {
@@ -30460,6 +30534,38 @@
         "hash": "2d5e5b22281ee270",
         "version": "2.12.0",
         "scannedAt": "2026-10-17T20:36:45Z"
+      }
+    },
+    {
+      "name": "mintlify-mcp-confirm-writes",
+      "path": "permissions/mintlify-mcp-confirm-writes.json",
+      "category": "permissions",
+      "type": "setting",
+      "description": "Ask before Claude runs a Mintlify admin MCP tool that publishes, merges, deletes or has site-wide effect: publish (which can also merge the pull request), discard, delete_node, move_node (renames page paths), update_config (theme, redirects, SEO, integrations), approving or publishing review requests, and every project-management write (deployment settings, custom domain, Git source, authentication, automations and their pull requests, members). Page edits, comments and reads still run freely: they stay unpublished until publish, except in projects with auto publish and in bases, where Mintlify commits them to the deploy branch at once (add ask rules for edit_page and write_page there). Ask rules win over allow rules, so this holds even if mcp__mintlify-admin is allowed. Only covers a server named 'mintlify-admin' (as installed by --mcp devtools/mintlify-admin).",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "hash": "52915ea98648a279",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-07T22:37:57Z"
       }
     },
     {
@@ -90561,7 +90667,7 @@
         ],
         "hash": "4a25c9f34f94c264",
         "version": "2.12.0",
-        "scannedAt": "2026-11-07T21:25:14Z"
+        "scannedAt": "2026-11-08T01:58:47Z"
       }
     },
     {

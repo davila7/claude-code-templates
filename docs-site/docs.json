@@ -1,0 +1,175 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "aspen",
+  "name": "Claude Code Templates",
+  "description": "Install agents, commands, skills, hooks, MCP servers, settings, loops, mods and plugins for Claude Code from the aitmpl.com catalog.",
+  "colors": {
+    "primary": "#d57455",
+    "light": "#e38d6e",
+    "dark": "#b35c3e"
+  },
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg",
+    "href": "https://www.aitmpl.com"
+  },
+  "favicon": "/favicon.svg",
+  "appearance": {
+    "default": "dark"
+  },
+  "background": {
+    "color": {
+      "light": "#ffffff",
+      "dark": "#0b0b0a"
+    }
+  },
+  "fonts": {
+    "family": "Geist"
+  },
+  "navbar": {
+    "links": [
+      { "label": "Catalog", "href": "https://www.aitmpl.com" },
+      { "label": "Trending", "href": "https://www.aitmpl.com/trending" },
+      { "label": "Blog", "href": "https://www.aitmpl.com/blog" }
+    ],
+    "primary": {
+      "type": "github",
+      "href": "https://github.com/davila7/claude-code-templates"
+    }
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get started",
+            "pages": ["introduction", "quickstart", "installation", "troubleshooting"]
+          },
+          {
+            "group": "Components",
+            "pages": [
+              "components/overview",
+              "components/agents",
+              "components/commands",
+              "components/skills",
+              "components/hooks",
+              "components/mcps",
+              "components/settings",
+              "components/loops",
+              "components/mods",
+              "components/plugins",
+              "components/templates"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": ["guides/stacks", "guides/local-dashboards", "guides/security"]
+          }
+        ]
+      },
+      {
+        "tab": "CLI reference",
+        "groups": [
+          {
+            "group": "CLI",
+            "pages": ["cli/flags", "cli/environment-variables", "cli/removed-in-1-31"]
+          }
+        ]
+      },
+      {
+        "tab": "Developers",
+        "groups": [
+          {
+            "group": "Data and integrations",
+            "pages": ["developers/catalog-api", "developers/download-tracking", "developers/ai-tools"]
+          }
+        ]
+      },
+      {
+        "tab": "Contributing",
+        "groups": [
+          {
+            "group": "Contributing",
+            "pages": [
+              "contributing/adding-components",
+              "contributing/mods",
+              "contributing/external-skills",
+              "contributing/docs"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/davila7/claude-code-templates",
+      "website": "https://www.aitmpl.com"
+    },
+    "links": [
+      {
+        "header": "aitmpl.com",
+        "items": [
+          { "label": "Catalog", "href": "https://www.aitmpl.com" },
+          { "label": "About", "href": "https://www.aitmpl.com/about" },
+          { "label": "Supporters", "href": "https://www.aitmpl.com/supporters" }
+        ]
+      }
+    ]
+  },
+  "seo": {
+    "metatags": {
+      "og:image": "https://www.aitmpl.com/og/site.png",
+      "twitter:card": "summary_large_image"
+    }
+  },
+  "contextual": {
+    "options": ["copy", "view", "claude", "chatgpt", "mcp", "cursor", "vscode"]
+  },
+  "redirects": [
+    { "source": "/guides/installing-components", "destination": "/installation" },
+    { "source": "/guides/batch-installation", "destination": "/guides/stacks" },
+    { "source": "/guides/interactive-mode", "destination": "/quickstart" },
+    { "source": "/guides/workflows", "destination": "/guides/stacks" },
+    { "source": "/guides/global-agents", "destination": "/cli/removed-in-1-31" },
+    { "source": "/concepts/components", "destination": "/components/overview" },
+    { "source": "/concepts/agents", "destination": "/components/agents" },
+    { "source": "/concepts/commands", "destination": "/components/commands" },
+    { "source": "/concepts/mcps", "destination": "/components/mcps" },
+    { "source": "/concepts/hooks", "destination": "/components/hooks" },
+    { "source": "/concepts/settings", "destination": "/components/settings" },
+    { "source": "/concepts/templates", "destination": "/components/templates" },
+    { "source": "/tools/analytics-dashboard", "destination": "/guides/local-dashboards" },
+    { "source": "/tools/conversation-monitor", "destination": "/guides/local-dashboards" },
+    { "source": "/tools/health-check", "destination": "/guides/local-dashboards" },
+    { "source": "/tools/plugin-dashboard", "destination": "/cli/removed-in-1-31" },
+    { "source": "/tools/stats-tools", "destination": "/cli/removed-in-1-31" },
+    { "source": "/advanced/sandbox-execution", "destination": "/cli/removed-in-1-31" },
+    { "source": "/advanced/session-sharing", "destination": "/cli/removed-in-1-31" },
+    { "source": "/advanced/remote-access", "destination": "/cli/removed-in-1-31" },
+    { "source": "/advanced/creating-components", "destination": "/contributing/adding-components" },
+    { "source": "/categories/development-team", "destination": "https://www.aitmpl.com/agents/" },
+    { "source": "/categories/security", "destination": "https://www.aitmpl.com/agents/" },
+    { "source": "/categories/database", "destination": "https://www.aitmpl.com/agents/" },
+    { "source": "/categories/devops-infrastructure", "destination": "https://www.aitmpl.com/agents/" },
+    { "source": "/categories/testing", "destination": "https://www.aitmpl.com/agents/" },
+    { "source": "/cli/overview", "destination": "/cli/flags" },
+    { "source": "/cli/install-component", "destination": "/installation" },
+    { "source": "/cli/create-agent", "destination": "/cli/removed-in-1-31" },
+    { "source": "/cli/list-agents", "destination": "/cli/removed-in-1-31" },
+    { "source": "/cli/analytics", "destination": "/guides/local-dashboards" },
+    { "source": "/cli/health-check", "destination": "/guides/local-dashboards" },
+    { "source": "/cli/configuration", "destination": "/installation" },
+    { "source": "/api/overview", "destination": "/developers/catalog-api" },
+    { "source": "/api/track-download", "destination": "/developers/download-tracking" },
+    { "source": "/api/discord-integration", "destination": "/developers/catalog-api" },
+    { "source": "/api/claude-code-check", "destination": "/developers/catalog-api" },
+    { "source": "/contributing/getting-started", "destination": "/contributing/adding-components" },
+    { "source": "/contributing/component-guidelines", "destination": "/contributing/adding-components" },
+    { "source": "/contributing/testing", "destination": "/contributing/adding-components" },
+    { "source": "/contributing/architecture", "destination": "/contributing/docs" },
+    { "source": "/contributing/publishing", "destination": "/contributing/docs" },
+    { "source": "/contributing/code-standards", "destination": "/contributing/adding-components" }
+  ]
+}
