@@ -85164,7 +85164,7 @@
             "id": "RP1",
             "category": "MCP Rug Pull",
             "severity": "MEDIUM",
-            "title": "Docker image referenced without tag or digest: 'docker run --rm'.",
+            "title": "Docker image references without a specific tag (:latest is implicit) or digest (@sha256:...) can be silently replaced by a malicious image.",
             "file": "hooks/games/typing.ts",
             "line": 13,
             "count": 1
@@ -85173,7 +85173,7 @@
             "id": "RP1",
             "category": "MCP Rug Pull",
             "severity": "MEDIUM",
-            "title": "MCP server referenced without pinned version: 'npx claude-code-templates'.",
+            "title": "npx commands without a version suffix (e.g. @1.0.0) create a rug-pull risk if the upstream server is compromised and publishes a malicious update.",
             "file": "README.md",
             "line": 3,
             "count": 1
@@ -85182,7 +85182,7 @@
             "id": "RP1",
             "category": "MCP Rug Pull",
             "severity": "MEDIUM",
-            "title": "MCP server referenced without pinned version: 'npx vitest'.",
+            "title": "npx commands without a version suffix (e.g. @1.0.0) create a rug-pull risk if the upstream server is compromised and publishes a malicious update.",
             "file": "tests/invaders-pet.test.ts",
             "line": 45,
             "count": 1
@@ -85197,9 +85197,9 @@
             "count": 1
           }
         ],
-        "hash": "3313993c293b2a29",
+        "hash": "d6c54ffa5a9f77aa",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-08T02:51:53Z"
       }
     },
     {
@@ -86053,25 +86053,34 @@
         "tests/defense.test.ts"
       ],
       "skillspector": {
-        "score": 7,
+        "score": 15,
         "severity": "LOW",
         "recommendation": "CAUTION",
-        "issueCount": 1,
+        "issueCount": 2,
         "analysis": "partial",
         "findings": [
+          {
+            "id": "AS3",
+            "category": "Agent Snooping",
+            "severity": "MEDIUM",
+            "title": "Skill Enumeration",
+            "file": "README.md",
+            "line": 33,
+            "count": 1
+          },
           {
             "id": "RP1",
             "category": "MCP Rug Pull",
             "severity": "MEDIUM",
-            "title": "MCP server referenced without pinned version: 'npx claude-code-templates'.",
+            "title": "npx commands without a version suffix (e.g. @1.0.0) create a rug-pull risk if the upstream server is compromised and publishes a malicious update.",
             "file": "README.md",
             "line": 29,
             "count": 1
           }
         ],
-        "hash": "fd3d8a8f84edfa9c",
+        "hash": "932556df9b184dfd",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-08T02:51:53Z"
       }
     },
     {
@@ -86286,9 +86295,9 @@
             "count": 1
           }
         ],
-        "hash": "84a6f689c4449cac",
+        "hash": "8b3d1780a08c0e31",
         "version": "2.12.0",
-        "scannedAt": "2026-10-18T03:18:42Z"
+        "scannedAt": "2026-11-08T02:51:53Z"
       }
     },
     {
@@ -88828,7 +88837,7 @@
         "score": 100,
         "severity": "CRITICAL",
         "recommendation": "DO_NOT_INSTALL",
-        "issueCount": 76,
+        "issueCount": 78,
         "analysis": "partial",
         "findings": [
           {
@@ -88877,9 +88886,9 @@
             "count": 1
           }
         ],
-        "hash": "4d79f074dad648e6",
+        "hash": "831c40014fbbae04",
         "version": "2.12.0",
-        "scannedAt": "2026-11-03T02:14:29Z"
+        "scannedAt": "2026-11-08T02:51:53Z"
       }
     },
     {
@@ -89314,7 +89323,7 @@
         "score": 100,
         "severity": "CRITICAL",
         "recommendation": "DO_NOT_INSTALL",
-        "issueCount": 90,
+        "issueCount": 91,
         "analysis": "partial",
         "findings": [
           {
@@ -89363,9 +89372,9 @@
             "count": 1
           }
         ],
-        "hash": "5a57ebd269b354d8",
+        "hash": "28433e824ae2659d",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-08T02:51:53Z"
       }
     },
     {
@@ -89693,10 +89702,10 @@
         "tests/agent-flow.test.tsx"
       ],
       "skillspector": {
-        "score": 36,
+        "score": 45,
         "severity": "MEDIUM",
         "recommendation": "CAUTION",
-        "issueCount": 3,
+        "issueCount": 4,
         "analysis": "partial",
         "findings": [
           {
@@ -89709,10 +89718,19 @@
             "count": 1
           },
           {
+            "id": "AS3",
+            "category": "Agent Snooping",
+            "severity": "MEDIUM",
+            "title": "Skill Enumeration",
+            "file": "README.md",
+            "line": 87,
+            "count": 1
+          },
+          {
             "id": "RP1",
             "category": "MCP Rug Pull",
             "severity": "MEDIUM",
-            "title": "MCP server referenced without pinned version: 'npx claude-code-templates'.",
+            "title": "npx commands without a version suffix (e.g. @1.0.0) create a rug-pull risk if the upstream server is compromised and publishes a malicious update.",
             "file": "README.md",
             "line": 83,
             "count": 1
@@ -89721,15 +89739,15 @@
             "id": "LP3",
             "category": "MCP Least Privilege",
             "severity": "MEDIUM",
-            "title": "Skill declares no tool scope ('permissions' or 'allowed-tools') but code capabilities were detected: network.",
+            "title": "Without declared permissions the skill's intent is opaque and cannot be validated.",
             "file": "SKILL.md",
             "line": 1,
             "count": 1
           }
         ],
-        "hash": "7fb2b637c328f78f",
+        "hash": "e35e93c8811a4faa",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:30:55Z"
+        "scannedAt": "2026-11-08T02:51:53Z"
       }
     },
     {
@@ -90236,17 +90254,26 @@
         "tests/turn-inspector.test.tsx"
       ],
       "skillspector": {
-        "score": 14,
-        "severity": "LOW",
+        "score": 22,
+        "severity": "MEDIUM",
         "recommendation": "CAUTION",
-        "issueCount": 2,
+        "issueCount": 3,
         "analysis": "partial",
         "findings": [
+          {
+            "id": "AS3",
+            "category": "Agent Snooping",
+            "severity": "MEDIUM",
+            "title": "Skill Enumeration",
+            "file": "README.md",
+            "line": 85,
+            "count": 1
+          },
           {
             "id": "RP1",
             "category": "MCP Rug Pull",
             "severity": "MEDIUM",
-            "title": "MCP server referenced without pinned version: 'npx claude-code-templates'.",
+            "title": "npx commands without a version suffix (e.g. @1.0.0) create a rug-pull risk if the upstream server is compromised and publishes a malicious update.",
             "file": "README.md",
             "line": 82,
             "count": 1
@@ -90255,15 +90282,15 @@
             "id": "LP3",
             "category": "MCP Least Privilege",
             "severity": "MEDIUM",
-            "title": "Skill declares no tool scope ('permissions' or 'allowed-tools') but code capabilities were detected: network.",
+            "title": "Without declared permissions the skill's intent is opaque and cannot be validated.",
             "file": "SKILL.md",
             "line": 1,
             "count": 1
           }
         ],
-        "hash": "499e526bb683ddac",
+        "hash": "28a8d2cf26dc1c8c",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:30:55Z"
+        "scannedAt": "2026-11-08T02:51:53Z"
       }
     }
   ],
