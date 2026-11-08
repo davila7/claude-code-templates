@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "lastUpdated": "2026-11-07T03:09:40Z",
+  "lastUpdated": "2026-11-08T09:55:43Z",
   "sources": [
     "Anthropic Academy",
     "Anthropic Partner Academy",
@@ -167,63 +167,6 @@
       "categories": [
         "AI & Agents"
       ]
-    },
-    {
-      "provider": "GitHub",
-      "categories": [
-        "AI & Agents"
-      ],
-      "eligibility": "public",
-      "topics": [],
-      "source": "microsoft-learn-github",
-      "id": "github-copilot",
-      "kind": "certification",
-      "title": "GitHub Copilot",
-      "description": "Candidates for this exam should possess expertise in using GitHub Copilot to improve software development productivity, quality, and security. This includes responsible AI use, prompt engineering, Copilot features across various plans, and privacy safeguards.",
-      "url": "https://learn.microsoft.com/en-us/credentials/certifications/github-copilot/",
-      "level": "Intermediate",
-      "role": "Developer",
-      "platform": "Microsoft Learn",
-      "addedAt": "2026-11-06",
-      "verifiedAt": "2026-11-07"
-    },
-    {
-      "provider": "GitHub",
-      "categories": [
-        "AI & Agents"
-      ],
-      "eligibility": "public",
-      "topics": [],
-      "source": "microsoft-learn-github",
-      "id": "github-agentic-ai-developer",
-      "kind": "certification",
-      "title": "GitHub Certified: Agentic AI Developer",
-      "description": "You should have subject matter expertise in operating, integrating, supervising, and governing AI agents inside production-grade SDLC workflows and development environments, ensuring reliability, safety, and velocity using GitHub as the system of record and control plane.",
-      "url": "https://learn.microsoft.com/en-us/credentials/certifications/agentic-ai-developer/",
-      "level": "Intermediate",
-      "role": "Developer",
-      "platform": "Microsoft Learn",
-      "addedAt": "2026-11-06",
-      "verifiedAt": "2026-11-07"
-    },
-    {
-      "provider": "GitHub",
-      "categories": [
-        "AI & Agents"
-      ],
-      "eligibility": "public",
-      "topics": [],
-      "source": "microsoft-learn-github",
-      "id": "github-agentic-ai-business-professional",
-      "kind": "certification",
-      "title": "GitHub Certified: Agentic AI Business Professional (beta)",
-      "description": "As a candidate for this certification, you are in business professional roles including, but not limited to, product manager, program manager, technical project manager, and business analyst.",
-      "url": "https://learn.microsoft.com/en-us/credentials/certifications/agentic-ai-business-professional/",
-      "level": "Intermediate",
-      "role": "Business",
-      "platform": "Microsoft Learn",
-      "addedAt": "2026-11-06",
-      "verifiedAt": "2026-11-07"
     },
     {
       "provider": "Anthropic",
@@ -1681,6 +1624,63 @@
       "url": "https://www.nvidia.com/en-us/learn/certification/openusd-development-professional",
       "addedAt": "2026-11-06",
       "verifiedAt": "2026-11-07"
+    },
+    {
+      "provider": "GitHub",
+      "categories": [
+        "AI & Agents"
+      ],
+      "eligibility": "public",
+      "topics": [],
+      "source": "microsoft-learn-github",
+      "id": "github-copilot",
+      "kind": "certification",
+      "title": "GitHub Copilot",
+      "description": "Candidates for this exam should possess expertise in using GitHub Copilot to improve software development productivity, quality, and security. This includes responsible AI use, prompt engineering, Copilot features across various plans, and privacy safeguards.",
+      "url": "https://learn.microsoft.com/en-us/credentials/certifications/github-copilot/",
+      "level": "Intermediate",
+      "role": "Developer",
+      "platform": "Microsoft Learn",
+      "addedAt": "2026-11-06",
+      "verifiedAt": "2026-11-08"
+    },
+    {
+      "provider": "GitHub",
+      "categories": [
+        "AI & Agents"
+      ],
+      "eligibility": "public",
+      "topics": [],
+      "source": "microsoft-learn-github",
+      "id": "github-agentic-ai-developer",
+      "kind": "certification",
+      "title": "GitHub Certified: Agentic AI Developer",
+      "description": "You should have subject matter expertise in operating, integrating, supervising, and governing AI agents inside production-grade SDLC workflows and development environments, ensuring reliability, safety, and velocity using GitHub as the system of record and control plane.",
+      "url": "https://learn.microsoft.com/en-us/credentials/certifications/agentic-ai-developer/",
+      "level": "Intermediate",
+      "role": "Developer",
+      "platform": "Microsoft Learn",
+      "addedAt": "2026-11-06",
+      "verifiedAt": "2026-11-08"
+    },
+    {
+      "provider": "GitHub",
+      "categories": [
+        "AI & Agents"
+      ],
+      "eligibility": "public",
+      "topics": [],
+      "source": "microsoft-learn-github",
+      "id": "github-agentic-ai-business-professional",
+      "kind": "certification",
+      "title": "GitHub Certified: Agentic AI Business Professional (beta)",
+      "description": "As a candidate for this certification, you are in business professional roles including, but not limited to, product manager, program manager, technical project manager, and business analyst.",
+      "url": "https://learn.microsoft.com/en-us/credentials/certifications/agentic-ai-business-professional/",
+      "level": "Intermediate",
+      "role": "Business",
+      "platform": "Microsoft Learn",
+      "addedAt": "2026-11-06",
+      "verifiedAt": "2026-11-08"
     }
   ]
 }

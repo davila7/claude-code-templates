@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-11-07T03:07:52.278438+00:00",
+  "lastUpdated": "2026-11-08T09:55:34.599715+00:00",
   "totalJobs": 719,
   "sources": [
     "Anthropic",
@@ -10,6 +10,112 @@
     "RemoteOK"
   ],
   "jobs": [
+    {
+      "id": "gr-deliveroo-8205846",
+      "company": "Deliveroo ",
+      "position": "Senior Software Engineer, GenAI Platform",
+      "location": "London, United Kingdom - Deliveroo",
+      "locations": [
+        "London, United Kingdom - Deliveroo"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Our Global Structure Deliveroo is now part of DoorDash, bringing together teams with even greater reach, scale, and ambition. Depending on your role, you may collaborate with teammates, systems, and leaders across DoorDash and Wolt. Together, we’re unlocking new possibilities as one global team....",
+      "applyUrl": "https://job-boards.greenhouse.io/deliveroo/jobs/8205846",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/deliveroo/jobs/8205846",
+      "postedAt": "2026-11-08T04:45:38-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "AWS",
+        "GCP",
+        "Kubernetes",
+        "Cursor",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-hook-8922828002",
+      "company": "Hook",
+      "position": "Principal Engineer  -- Full-Stack TypeScript (Node.js, React, Cloud)",
+      "location": "Remote",
+      "locations": [
+        "Remote"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "WHO WE ARE We're Hook, an award-winning creative content agency. With a collaborative, maker-centric team, and an emphasis on production-led design, we make ads, campaigns, and experiences that drive growth for the world's most innovative brands. Our mission is to integrate creative and production...",
+      "applyUrl": "https://job-boards.greenhouse.io/hook/jobs/8922828002",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/hook/jobs/8922828002",
+      "postedAt": "2026-11-07T15:53:15-05:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "Next.js",
+        "TypeScript",
+        "JavaScript",
+        "Python",
+        "Node.js",
+        "PostgreSQL",
+        "AWS",
+        "GCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "anth-5444482008",
+      "company": "Anthropic",
+      "position": "Manager, Applied AI Architecture, Enterprise Tech",
+      "location": "San Francisco, CA",
+      "locations": [
+        "San Francisco, CA"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "As the manager of the Solutions Architect team within Applied AI Enterprise Tech at Anthropic, you will drive the adoption of frontier AI in partnership with the rest of the go to market organization. Our Enterprise Tech customers are some of the world's most sophisticated technology companies,...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5444482008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5444482008",
+      "postedAt": "2026-11-07T12:22:35-05:00",
+      "tags": [
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "le-provectus-92ccf747-e1a2-48b8-b0b5-9f8503480dc5",
+      "company": "Provectus",
+      "position": "Junior AI/ML Engineer (GenAI, AWS)",
+      "location": "Ukraine · Spain · Serbia · Yerevan · Poland",
+      "locations": [
+        "Ukraine",
+        "Spain",
+        "Serbia",
+        "Yerevan",
+        "Poland"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "Provectus is an AWS Premier Partner and an Anthropic Strategic Partner, working at the frontier of applied AI. We help enterprises turn Claude, agentic systems, and their own data into measurable business outcomes — through bespoke applications, managed services, and advisory engagements. With...",
+      "applyUrl": "https://jobs.lever.co/provectus/92ccf747-e1a2-48b8-b0b5-9f8503480dc5",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/provectus/92ccf747-e1a2-48b8-b0b5-9f8503480dc5",
+      "postedAt": "2026-11-07T09:09:12.931000+00:00",
+      "tags": [
+        "Claude Code",
+        "TypeScript",
+        "Python",
+        "Rust",
+        "Go",
+        "AWS",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "as-Superhuman%20Platform%20Inc-9f17378e-635a-4d92-9941-e38363afab4f",
       "company": "Superhuman%20Platform%20Inc",
@@ -59,32 +165,6 @@
         "Go",
         "Cursor",
         "Copilot"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-deliveroo-8205846",
-      "company": "Deliveroo ",
-      "position": "Senior Software Engineer, GenAI Platform",
-      "location": "London, United Kingdom - Deliveroo",
-      "locations": [
-        "London, United Kingdom - Deliveroo"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "Our Global Structure Deliveroo is now part of DoorDash, bringing together teams with even greater reach, scale, and ambition. Depending on your role, you may collaborate with teammates, systems, and leaders across DoorDash and Wolt. Together, we’re unlocking new possibilities as one global team....",
-      "applyUrl": "https://job-boards.greenhouse.io/deliveroo/jobs/8205846",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/deliveroo/jobs/8205846",
-      "postedAt": "2026-11-06T21:47:38-05:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "AWS",
-        "GCP",
-        "Kubernetes",
-        "Cursor",
-        "MCP"
       ],
       "companyIcon": ""
     },
@@ -2665,20 +2745,19 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-mongodb-7392902",
+      "id": "gr-mongodb-7590735",
       "company": "MongoDB",
       "position": "Senior Software Engineer, Forward Deployed AI Engineer",
-      "location": "Cork, Ireland · Dublin, Ireland",
+      "location": "Ireland",
       "locations": [
-        "Cork, Ireland",
-        "Dublin, Ireland"
+        "Ireland"
       ],
       "remote": false,
       "salary": "",
       "description": "MongoDB is looking for an outstanding person to join our newly created Forward Deployed Engineering team and take on a key role in our extended R&D organization. Forward Deployed Engineering is linking the work of teams engaged on application modernization roles with our Product and Engineering...",
-      "applyUrl": "https://www.mongodb.com/careers/job/?gh_jid=7392902",
+      "applyUrl": "https://www.mongodb.com/careers/job/?gh_jid=7590735",
       "source": "Greenhouse",
-      "sourceUrl": "https://www.mongodb.com/careers/job/?gh_jid=7392902",
+      "sourceUrl": "https://www.mongodb.com/careers/job/?gh_jid=7590735",
       "postedAt": "2026-11-05T05:24:25-05:00",
       "tags": [
         "Claude Code",
@@ -6631,19 +6710,19 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-samsara-8281489",
+      "id": "gr-samsara-8281479",
       "company": "Samsara",
       "position": "Senior AI Data & Analytics Engineer II",
-      "location": "Remote - Austin",
+      "location": "Remote - NYC",
       "locations": [
-        "Remote - Austin"
+        "Remote - NYC"
       ],
       "remote": true,
       "salary": "",
       "description": "Who we are Samsara (NYSE: IOT) is the pioneer of the Connected Operations™ Cloud, which is a platform that enables organizations that depend on physical operations to harness Internet of Things (IoT) data to develop actionable insights and improve their operations. At Samsara, we are helping...",
-      "applyUrl": "https://www.samsara.com/company/careers/roles/8281489?gh_jid=8281489",
+      "applyUrl": "https://www.samsara.com/company/careers/roles/8281479?gh_jid=8281479",
       "source": "Greenhouse",
-      "sourceUrl": "https://www.samsara.com/company/careers/roles/8281489?gh_jid=8281489",
+      "sourceUrl": "https://www.samsara.com/company/careers/roles/8281479?gh_jid=8281479",
       "postedAt": "2026-10-30T11:22:26-04:00",
       "tags": [
         "Claude Code",
@@ -8129,35 +8208,6 @@
         "Cursor",
         "Copilot",
         "Java"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-hook-8922828002",
-      "company": "Hook",
-      "position": "Principal Engineer  -- Full-Stack TypeScript (Node.js, React, Cloud)",
-      "location": "Remote",
-      "locations": [
-        "Remote"
-      ],
-      "remote": true,
-      "salary": "",
-      "description": "WHO WE ARE We're Hook, an award-winning creative content agency. With a collaborative, maker-centric team, and an emphasis on production-led design, we make ads, campaigns, and experiences that drive growth for the world's most innovative brands. Our mission is to integrate creative and production...",
-      "applyUrl": "https://job-boards.greenhouse.io/hook/jobs/8922828002",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/hook/jobs/8922828002",
-      "postedAt": "2026-10-28T18:58:08-04:00",
-      "tags": [
-        "Claude Code",
-        "React",
-        "Next.js",
-        "TypeScript",
-        "JavaScript",
-        "Python",
-        "Node.js",
-        "PostgreSQL",
-        "AWS",
-        "GCP"
       ],
       "companyIcon": ""
     },
@@ -12440,27 +12490,6 @@
       "companyIcon": ""
     },
     {
-      "id": "anth-5444482008",
-      "company": "Anthropic",
-      "position": "Manager, Applied AI Architecture, Enterprise Tech",
-      "location": "San Francisco, CA",
-      "locations": [
-        "San Francisco, CA"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "As the manager of the Solutions Architect team within Applied AI Enterprise Tech at Anthropic, you will drive the adoption of frontier AI in partnership with the rest of the go to market organization. Our Enterprise Tech customers are some of the world's most sophisticated technology companies,...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5444482008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5444482008",
-      "postedAt": "2026-10-13T13:11:31-04:00",
-      "tags": [
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
       "id": "gr-asana-7964388",
       "company": "Asana",
       "position": "Staff Software Engineer, AI Developer Experience",
@@ -13017,36 +13046,6 @@
         "AWS",
         "Kubernetes",
         "Django"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "le-provectus-ce930027-43a2-4b4c-af03-ea3edb8f7581",
-      "company": "Provectus",
-      "position": "Junior AI/ML Engineer (GenAI, AWS)",
-      "location": "Ukraine · Spain · Serbia · Yerevan · Poland",
-      "locations": [
-        "Ukraine",
-        "Spain",
-        "Serbia",
-        "Yerevan",
-        "Poland"
-      ],
-      "remote": true,
-      "salary": "",
-      "description": "Provectus is an AWS Premier Partner and an Anthropic Strategic Partner, working at the frontier of applied AI. We help enterprises turn Claude, agentic systems, and their own data into measurable business outcomes — through bespoke applications, managed services, and advisory engagements. With...",
-      "applyUrl": "https://jobs.lever.co/provectus/ce930027-43a2-4b4c-af03-ea3edb8f7581",
-      "source": "Lever",
-      "sourceUrl": "https://jobs.lever.co/provectus/ce930027-43a2-4b4c-af03-ea3edb8f7581",
-      "postedAt": "2026-10-09T13:28:30.652000+00:00",
-      "tags": [
-        "Claude Code",
-        "TypeScript",
-        "Python",
-        "Rust",
-        "Go",
-        "AWS",
-        "MCP"
       ],
       "companyIcon": ""
     },
@@ -15368,19 +15367,19 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-babylist-6103791004",
+      "id": "gr-babylist-5678188004",
       "company": "Babylist",
       "position": "Staff Software Engineer",
-      "location": "United States",
+      "location": "Canada",
       "locations": [
-        "United States"
+        "Canada"
       ],
       "remote": false,
       "salary": "",
       "description": "What The Role Is As a Staff Engineer at Babylist, you own some of our hardest domains and decide where they go. Millions of families depend on what we build. Agents write most of the code now. So the hard part is yours: what to build, how it should work and whether what shipped was right. You're...",
-      "applyUrl": "https://job-boards.greenhouse.io/babylist/jobs/6103791004",
+      "applyUrl": "https://job-boards.greenhouse.io/babylist/jobs/5678188004",
       "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/babylist/jobs/6103791004",
+      "sourceUrl": "https://job-boards.greenhouse.io/babylist/jobs/5678188004",
       "postedAt": "2026-09-03T17:15:06-04:00",
       "tags": [
         "Claude Code",
