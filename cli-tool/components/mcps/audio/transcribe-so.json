@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "transcribe-so": {
+      "description": "Remote MCP server for transcribe.so. Transcribe audio and video from YouTube, podcast and file links, find who said what and when, ask questions with cited answers, and export subtitles. Sign in with OAuth in the browser or send an Authorization: Bearer API key.",
+      "type": "http",
+      "url": "https://transcribe.so/mcp"
+    }
+  }
+}
