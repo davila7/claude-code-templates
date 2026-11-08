@@ -25,7 +25,7 @@ const only = new Set(opt('only', 'web,api,cli').split(','));
 const cliVersion = opt('cli-version', 'latest');
 
 const TYPES = [
-  // [catalog file, singular used in /component/{singular}/...]
+  // [catalog file and canonical /component/{plural}/... segment, legacy singular segment]
   ['agents', 'agent'],
   ['commands', 'command'],
   ['mcps', 'mcp'],
@@ -131,13 +131,19 @@ async function web() {
     // The most downloaded component is the one people actually open
     const top = [...list].sort((a, b) => (b.downloads || 0) - (a.downloads || 0))[0];
     const slug = top.path.replace(/\.(md|json)$/, '');
-    await check('web', `component page /component/${singular}/${slug}`, async () => {
-      const path = `/component/${singular}/${slug}`;
+    await check('web', `component page /component/${plural}/${slug}`, async () => {
+      const path = `/component/${plural}/${slug}`;
       const { res, body } = await get(path);
       assert(res.status === 200, `HTTP ${res.status}`);
       assertComponentPage(path, body);
       assertSecurityHeaders(res);
       return `HTTP 200, ${body.length} bytes`;
+    });
+    await check('web', `/component/${singular}/${slug} 301s to the plural URL`, async () => {
+      const { res } = await get(`/component/${singular}/${slug}`);
+      const location = res.headers.get('location') || '';
+      assert(res.status === 301 && location.endsWith(`/component/${plural}/${slug}`), `HTTP ${res.status} -> ${location}`);
+      return 'HTTP 301';
     });
     await check('web', `component-content for ${plural}/${top.name}`, async () => {
       const data = await getJson(`/component-content/${plural}/${slug}.json`);
@@ -159,7 +165,7 @@ async function web() {
   });
 
   // Pages that exercise the markdown sanitizer on content known to carry HTML
-  for (const path of ['/component/agent/data-ai/prompt-builder', '/component/skill/creative-design/marp-slide', '/component/skill/creative-design/remotion-best-practices']) {
+  for (const path of ['/component/agents/data-ai/prompt-builder', '/component/skills/creative-design/marp-slide', '/component/skills/creative-design/remotion-best-practices']) {
     await check('web', `sanitized markdown renders ${path}`, async () => {
       const { res, body } = await get(path);
       assert(res.status === 200, `HTTP ${res.status}`);
