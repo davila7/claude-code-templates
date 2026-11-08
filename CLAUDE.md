@@ -410,7 +410,8 @@ API endpoints live as Astro API routes in `dashboard/src/pages/api/`:
 - Used by CLI on every installation
 - Database: Supabase (component_downloads table, project `supabase-fuchsia-village-cct`)
 - **Agent vs human (CLI >= 1.32.0, live 2026-11-03):** the CLI also sends `agent`, `entrypoint` and `isTty` from `cli-tool/src/agent-detection.js` (`AI_AGENT`, `CLAUDECODE`, Cursor/Codex/Gemini/Copilot/OpenCode/Replit/Devin markers, following `@vercel/detect-agent`; `CLAUDE_CODE_ENTRYPOINT`; `process.stdout.isTTY`). The endpoint clamps them (`dashboard/src/lib/api/download-client-signals.ts`: unknown agent → `other`, entrypoint must be a ≤32-char slug) and stores `client_agent`, `client_entrypoint`, `client_is_tty` (`database/migrations/004_supabase_download_client_signals.sql`, applied). Read a row as: `client_is_tty IS NULL` = older CLI (unknown), `client_agent` set = AI agent, else `client_is_tty` true = person in a terminal, false = script/pipe. Never send the other variables Claude Code exports (account email, account id, session id). Self-reported and spoofable, a person's `!` command inside Claude Code counts as `claude`, and `CI=true` runs are not tracked at all, so the split is a statistic, never a sponsor-billed metric. The Rust CLI does not send it. A new agent name goes in both `KNOWN_AGENTS` lists (CLI and endpoint; `dashboard/tests/download-client-signals.test.ts` fails if they differ). Shown on `/trending#agents` from `trending-data.json` `clientSplit`.
-- Querying `component_downloads` by `created_at` over REST times out (statement timeout, 1.7M+ rows): filter by `id` ranges instead, or use the Supabase MCP `execute_sql` for one-off reads
+- Querying `component_downloads` by `created_at` over REST times out (statement timeout, 1.7M+ rows): filter by `id` ranges or by `download_timestamp` (indexed) instead, or use the Supabase MCP `execute_sql` for one-off reads
+- **Returning installers (the traction plan's north star):** `SELECT * FROM public.weekly_returning_installers(p_weeks, p_until)` (`database/migrations/005_weekly_returning_installers.sql`, applied by hand like 003/004) returns, per ISO week in UTC, active, returning (any of the 8 previous weeks) and new installers, the agent/person/script split and the return of each week's new installers. An installer is an IPv4 address or an IPv6 /64, after dropping IP-days with more than 50 rows. Report these numbers only with this definition; pulse shows them every Sunday
 
 **`/api/claude-code-check`**
 - Monitors Claude Code releases
@@ -461,7 +462,7 @@ Monitored https://code.claude.com/docs hourly with Telegram notifications. **Del
 
 ### pulse (Weekly KPI Report)
 
-Collects metrics from GitHub, Discord, Supabase, npm, and Google Analytics every Sunday at 14:00 UTC and sends a consolidated report via Telegram.
+Collects metrics from GitHub, Discord, Supabase, npm, and Google Analytics every Sunday at 14:00 UTC and sends a consolidated report via Telegram. The `RETURNING INSTALLERS` section calls the Supabase function `weekly_returning_installers()` (see API Architecture), so migration 005 must exist before a deploy. The GA4 collector runs only with `?source=analytics`, and its two secrets were not set as of 2026-11-08.
 
 **Architecture:** Single `index.js` file (no npm dependencies at runtime). All source collectors, formatter, and Telegram sender in one file.
 
