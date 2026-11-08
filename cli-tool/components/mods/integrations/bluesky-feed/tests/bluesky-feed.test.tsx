@@ -220,7 +220,7 @@ describe('the pane', () => {
     expect(w.calls).toEqual([])
   })
 
-  test('desktop draws the field; mobile reads only', { options: OPTIONS }, async ($, on) => {
+  test('desktop draws the field; mobile always shows the timeline', { options: OPTIONS }, async ($, on) => {
     const w = world()
     fakeEngine(on, w)
     await start($)
@@ -229,8 +229,9 @@ describe('the pane', () => {
     expect(await desk.find({ key: 'compose:0' })).toBeDefined()
     expect(await desk.find({ key: 'like:cid2' })).toBeDefined()
     await desk.unmount()
+    // The mod draws the field wherever the surface resolves an Input ('Input' in els). Mobile had none
+    // through Claude Code 2.1.316 and has one in 2.1.319, so only the timeline is asserted there.
     const phone = await mount($, 'mobile')
-    expect(await phone.find({ key: 'compose:0' })).toBeUndefined()
     expect(await phone.find({ type: 'Text', text: /Ana 2/ })).toBeDefined()
     await phone.unmount()
   })
