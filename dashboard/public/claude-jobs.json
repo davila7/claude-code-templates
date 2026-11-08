@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-11-07T03:07:52.278438+00:00",
-  "totalJobs": 719,
+  "lastUpdated": "2026-11-08T03:04:51.205811+00:00",
+  "totalJobs": 747,
   "sources": [
     "Anthropic",
     "Ashby",
@@ -10,6 +10,112 @@
     "RemoteOK"
   ],
   "jobs": [
+    {
+      "id": "gr-deliveroo-8205846",
+      "company": "Deliveroo ",
+      "position": "Senior Software Engineer, GenAI Platform",
+      "location": "London, United Kingdom - Deliveroo",
+      "locations": [
+        "London, United Kingdom - Deliveroo"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Our Global Structure Deliveroo is now part of DoorDash, bringing together teams with even greater reach, scale, and ambition. Depending on your role, you may collaborate with teammates, systems, and leaders across DoorDash and Wolt. Together, we’re unlocking new possibilities as one global team....",
+      "applyUrl": "https://job-boards.greenhouse.io/deliveroo/jobs/8205846",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/deliveroo/jobs/8205846",
+      "postedAt": "2026-11-07T21:48:05-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "AWS",
+        "GCP",
+        "Kubernetes",
+        "Cursor",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-hook-8922828002",
+      "company": "Hook",
+      "position": "Principal Engineer  -- Full-Stack TypeScript (Node.js, React, Cloud)",
+      "location": "Remote",
+      "locations": [
+        "Remote"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "WHO WE ARE We're Hook, an award-winning creative content agency. With a collaborative, maker-centric team, and an emphasis on production-led design, we make ads, campaigns, and experiences that drive growth for the world's most innovative brands. Our mission is to integrate creative and production...",
+      "applyUrl": "https://job-boards.greenhouse.io/hook/jobs/8922828002",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/hook/jobs/8922828002",
+      "postedAt": "2026-11-07T15:53:15-05:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "Next.js",
+        "TypeScript",
+        "JavaScript",
+        "Python",
+        "Node.js",
+        "PostgreSQL",
+        "AWS",
+        "GCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "anth-5444482008",
+      "company": "Anthropic",
+      "position": "Manager, Applied AI Architecture, Enterprise Tech",
+      "location": "San Francisco, CA",
+      "locations": [
+        "San Francisco, CA"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "As the manager of the Solutions Architect team within Applied AI Enterprise Tech at Anthropic, you will drive the adoption of frontier AI in partnership with the rest of the go to market organization. Our Enterprise Tech customers are some of the world's most sophisticated technology companies,...",
+      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5444482008",
+      "source": "Anthropic",
+      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5444482008",
+      "postedAt": "2026-11-07T12:22:35-05:00",
+      "tags": [
+        "Claude Code",
+        "Anthropic"
+      ],
+      "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "le-provectus-92ccf747-e1a2-48b8-b0b5-9f8503480dc5",
+      "company": "Provectus",
+      "position": "Junior AI/ML Engineer (GenAI, AWS)",
+      "location": "Ukraine · Spain · Serbia · Yerevan · Poland",
+      "locations": [
+        "Ukraine",
+        "Spain",
+        "Serbia",
+        "Yerevan",
+        "Poland"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "Provectus is an AWS Premier Partner and an Anthropic Strategic Partner, working at the frontier of applied AI. We help enterprises turn Claude, agentic systems, and their own data into measurable business outcomes — through bespoke applications, managed services, and advisory engagements. With...",
+      "applyUrl": "https://jobs.lever.co/provectus/92ccf747-e1a2-48b8-b0b5-9f8503480dc5",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/provectus/92ccf747-e1a2-48b8-b0b5-9f8503480dc5",
+      "postedAt": "2026-11-07T09:09:12.931000+00:00",
+      "tags": [
+        "Claude Code",
+        "TypeScript",
+        "Python",
+        "Rust",
+        "Go",
+        "AWS",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "as-Superhuman%20Platform%20Inc-9f17378e-635a-4d92-9941-e38363afab4f",
       "company": "Superhuman Platform Inc",
@@ -63,28 +169,24 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-deliveroo-8205846",
-      "company": "Deliveroo ",
-      "position": "Senior Software Engineer, GenAI Platform",
-      "location": "London, United Kingdom - Deliveroo",
+      "id": "le-bounteous-0cfae060-b8b9-4926-8d13-166e37c267e6",
+      "company": "Bounteous",
+      "position": "Principal Architect",
+      "location": "United States",
       "locations": [
-        "London, United Kingdom - Deliveroo"
+        "United States"
       ],
-      "remote": false,
+      "remote": true,
       "salary": "",
-      "description": "Our Global Structure Deliveroo is now part of DoorDash, bringing together teams with even greater reach, scale, and ambition. Depending on your role, you may collaborate with teammates, systems, and leaders across DoorDash and Wolt. Together, we’re unlocking new possibilities as one global team....",
-      "applyUrl": "https://job-boards.greenhouse.io/deliveroo/jobs/8205846",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/deliveroo/jobs/8205846",
-      "postedAt": "2026-11-06T21:47:38-05:00",
+      "description": "Bounteous is a global AI Services firm where agentic engineering and human experience converge to deliver transformative business outcomes for the enterprise. We help organizations design, build, and scale AI-driven products, platforms, and processes. With more than 5,000 team members worldwide,...",
+      "applyUrl": "https://jobs.lever.co/bounteous/0cfae060-b8b9-4926-8d13-166e37c267e6",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/bounteous/0cfae060-b8b9-4926-8d13-166e37c267e6",
+      "postedAt": "2026-11-06T21:49:14.088000+00:00",
       "tags": [
         "Claude Code",
-        "Python",
-        "AWS",
-        "GCP",
-        "Kubernetes",
-        "Cursor",
-        "MCP"
+        "React",
+        "Python"
       ],
       "companyIcon": ""
     },
@@ -466,6 +568,31 @@
         "Claude Code",
         "AWS",
         "Cursor",
+        "Copilot"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-auldwhiteconstructors-5471502008",
+      "company": "Auld & White Constructors",
+      "position": "Software Developer",
+      "location": "Jacksonville, FL",
+      "locations": [
+        "Jacksonville, FL"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Do you enjoy turning real business problems into working software and seeing your solutions used every day? At Auld & White Constructors , technology helps our teams work faster and smarter. As our Software Developer , you’ll build the custom applications, automations, and AI-enabled tools that...",
+      "applyUrl": "https://job-boards.greenhouse.io/auldwhiteconstructors/jobs/5471502008",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/auldwhiteconstructors/jobs/5471502008",
+      "postedAt": "2026-11-06T16:43:03-05:00",
+      "tags": [
+        "Claude Code",
+        "TypeScript",
+        "JavaScript",
+        "Python",
+        "Azure",
         "Copilot"
       ],
       "companyIcon": ""
@@ -1329,6 +1456,74 @@
       "companyIcon": ""
     },
     {
+      "id": "gr-axon-7748930003",
+      "company": "Axon",
+      "position": "Senior Firmware Engineer I",
+      "location": "Seattle, Washington, United States",
+      "locations": [
+        "Seattle, Washington, United States"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Join Axon and be a Force for Good. At Axon, we’re on a mission to Protect Life. We’re explorers, pursuing society’s most critical safety and justice issues with our ecosystem of devices and cloud software. Like our products, we work better together. We connect with candor and care, seeking out...",
+      "applyUrl": "https://job-boards.greenhouse.io/axon/jobs/7748930003",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/axon/jobs/7748930003",
+      "postedAt": "2026-11-06T11:07:47-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Rust",
+        "Go",
+        "Cursor",
+        "Copilot"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-axon-7981676003",
+      "company": "Axon",
+      "position": "Senior FPGA & Firmware Engineer - SDR",
+      "location": "Scottsdale, Arizona, United States",
+      "locations": [
+        "Scottsdale, Arizona, United States"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Join Axon and be a Force for Good. At Axon, we’re on a mission to Protect Life. We’re explorers, pursuing society’s most critical safety and justice issues with our ecosystem of devices and cloud software. Like our products, we work better together. We connect with candor and care, seeking out...",
+      "applyUrl": "https://job-boards.greenhouse.io/axon/jobs/7981676003",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/axon/jobs/7981676003",
+      "postedAt": "2026-11-06T11:07:47-05:00",
+      "tags": [
+        "Claude Code",
+        "Cursor",
+        "Copilot"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-axon-8030785003",
+      "company": "Axon",
+      "position": "Sr. Technical Animator, VR",
+      "location": "Washington, United States",
+      "locations": [
+        "Washington, United States"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Join Axon and be a Force for Good. At Axon, we’re on a mission to Protect Life. We’re explorers, pursuing society’s most critical safety and justice issues with our ecosystem of devices and cloud software. Like our products, we work better together. We connect with candor and care, seeking out...",
+      "applyUrl": "https://job-boards.greenhouse.io/axon/jobs/8030785003",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/axon/jobs/8030785003",
+      "postedAt": "2026-11-06T11:07:47-05:00",
+      "tags": [
+        "Claude Code",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "gr-sonyinteractiveentertainmentglobal-6251398004",
       "company": "PlayStation Global",
       "position": "Lead Software Engineer - Data",
@@ -1348,6 +1543,33 @@
         "Python",
         "Go",
         "AWS"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-opswat-4751786005",
+      "company": "OPSWAT",
+      "position": "Senior AI Engineer, Marketing",
+      "location": "EMEA",
+      "locations": [
+        "EMEA"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "OPSWAT , a global leader in IT, OT , and ICS critical infrastructure cybersecurity, delivers an end-to-end platform that gives public and private sector organizations and enterprises the critical advantage needed to protect their complex networks, secure their devices, and ensure compliance. Over...",
+      "applyUrl": "https://www.opswat.com/jobs/4751786005?gh_jid=4751786005",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.opswat.com/jobs/4751786005?gh_jid=4751786005",
+      "postedAt": "2026-11-06T08:34:36-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "PostgreSQL",
+        "AWS",
+        "Azure",
+        "Cursor",
+        "Copilot",
+        "MCP"
       ],
       "companyIcon": ""
     },
@@ -1803,6 +2025,27 @@
       "companyIcon": ""
     },
     {
+      "id": "gr-globalityinc-8932507002",
+      "company": "Globality, Inc.",
+      "position": "AI Product Manager",
+      "location": "Palo Alto, CA",
+      "locations": [
+        "Palo Alto, CA"
+      ],
+      "remote": false,
+      "salary": "$150,000 - $250,000",
+      "description": "Globality is the autonomous sourcing platform to manage the entire intake to award process. At Globality, we build agentic technology that transforms how global enterprises source goods and services — autonomously, at scale, and without the inefficiencies that have defined procurement for decades....",
+      "applyUrl": "https://job-boards.greenhouse.io/globalityinc/jobs/8932507002",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/globalityinc/jobs/8932507002",
+      "postedAt": "2026-11-05T19:34:24-05:00",
+      "tags": [
+        "Claude Code",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "gr-vercel-6210353004",
       "company": "Vercel",
       "position": "Product Manager, Software Factory",
@@ -2223,6 +2466,29 @@
       "companyIcon": "https://mixpanel.com/favicon.ico"
     },
     {
+      "id": "gr-crexi-4751623005",
+      "company": "Crexi",
+      "position": "GTM Automation Engineer",
+      "location": "Los Angeles",
+      "locations": [
+        "Los Angeles"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "About Crexi Commercial real estate is one of the largest asset classes on earth and one of the last to go digital. Deals still get done over email threads, PDFs, and relationships nobody can search for. Crexi is the exchange betting that doesn't have to be true anymore: we're building the platform...",
+      "applyUrl": "https://job-boards.greenhouse.io/crexi/jobs/4751623005",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/crexi/jobs/4751623005",
+      "postedAt": "2026-11-05T13:56:55-05:00",
+      "tags": [
+        "Claude Code",
+        "TypeScript",
+        "Python",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "gr-machinifyinc-4482533009",
       "company": "Machinify",
       "position": "Analyst, AI Enablement & Value Creation",
@@ -2242,6 +2508,28 @@
         "JavaScript",
         "Python",
         "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-celonis-7683444003",
+      "company": "Celonis",
+      "position": "Senior/ Lead Data & AI Consultant",
+      "location": "Madrid, Spain",
+      "locations": [
+        "Madrid, Spain"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Celonis is the trusted platform to industrialize Enterprise AI. At our core is the Celonis Context Model — which combines process data, business knowledge, and intelligence into a living digital twin of the enterprise that AI can actually understand, turning AI's operational blind spots into...",
+      "applyUrl": "https://job-boards.greenhouse.io/celonis/jobs/7683444003?gh_jid=7683444003",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/celonis/jobs/7683444003?gh_jid=7683444003",
+      "postedAt": "2026-11-05T12:55:18-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Cursor"
       ],
       "companyIcon": ""
     },
@@ -2368,6 +2656,28 @@
         "Cursor",
         "Copilot",
         "MongoDB"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-celonis-8173273003",
+      "company": "Celonis",
+      "position": "Senior Deployment Engineer - Hi Tech",
+      "location": "Redwood City, US, California",
+      "locations": [
+        "Redwood City, US, California"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Celonis is the trusted platform to industrialize Enterprise AI. At our core is the Celonis Context Model — which combines process data, business knowledge, and intelligence into a living digital twin of the enterprise that AI can actually understand, turning AI's operational blind spots into...",
+      "applyUrl": "https://job-boards.greenhouse.io/celonis/jobs/8173273003?gh_jid=8173273003",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/celonis/jobs/8173273003?gh_jid=8173273003",
+      "postedAt": "2026-11-05T10:31:36-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Cursor"
       ],
       "companyIcon": ""
     },
@@ -2582,19 +2892,19 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-mongodb-8036348",
+      "id": "gr-mongodb-7778975",
       "company": "MongoDB",
       "position": "Senior Administrator - Business Systems",
-      "location": "Gurugram",
+      "location": "India",
       "locations": [
-        "Gurugram"
+        "India"
       ],
       "remote": false,
       "salary": "",
-      "description": "The IT SaaS Engineering Team plays a critical role in optimizing MongoDB sales processes, streamlining customer interactions, and maximizing the efficiency of our sales efforts. By leveraging Salesforce, the team ensures that business users have the tools, automation, security, and governance...",
-      "applyUrl": "https://www.mongodb.com/careers/job/?gh_jid=8036348",
+      "description": "We are looking to speak to candidates who are based in India for our hybrid working model. About MongoDB The database market is massive, and MongoDB is at the head of its disruption. The MongoDB community is transforming industries and empowering developers to build amazing applications that people...",
+      "applyUrl": "https://www.mongodb.com/careers/job/?gh_jid=7778975",
       "source": "Greenhouse",
-      "sourceUrl": "https://www.mongodb.com/careers/job/?gh_jid=8036348",
+      "sourceUrl": "https://www.mongodb.com/careers/job/?gh_jid=7778975",
       "postedAt": "2026-11-05T05:24:25-05:00",
       "tags": [
         "Claude Code",
@@ -2606,7 +2916,7 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-mongodb-8094387",
+      "id": "gr-mongodb-8094365",
       "company": "MongoDB",
       "position": "Senior Engineer - GTM Tech",
       "location": "Gurugram",
@@ -2615,10 +2925,10 @@
       ],
       "remote": false,
       "salary": "",
-      "description": "About Team The IT SaaS Engineering Team is the backbone of MongoDB's go-to-market operations. We build and run the Salesforce platform — with the automation, security, and governance that Sales Operations, Revenue Operations, Security, and Compliance rely on daily to manage customer relationships...",
-      "applyUrl": "https://www.mongodb.com/careers/job/?gh_jid=8094387",
+      "description": "The IT SaaS Engineering Team plays a critical role in optimizing MongoDB sales processes, streamlining customer interactions, and maximizing the efficiency of our sales efforts. By leveraging Salesforce, the team ensures that business users have the tools, automation, security, and governance...",
+      "applyUrl": "https://www.mongodb.com/careers/job/?gh_jid=8094365",
       "source": "Greenhouse",
-      "sourceUrl": "https://www.mongodb.com/careers/job/?gh_jid=8094387",
+      "sourceUrl": "https://www.mongodb.com/careers/job/?gh_jid=8094365",
       "postedAt": "2026-11-05T05:24:25-05:00",
       "tags": [
         "Claude Code",
@@ -2816,6 +3126,33 @@
         "MySQL"
       ],
       "companyIcon": "https://bitwarden.com/favicon.ico"
+    },
+    {
+      "id": "gr-opswat-4750935005",
+      "company": "OPSWAT",
+      "position": "Software Engineer - SBOM",
+      "location": "Ho Chi Minh City, Ho Chi Minh City, Vietnam",
+      "locations": [
+        "Ho Chi Minh City, Ho Chi Minh City, Vietnam"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "OPSWAT , a global leader in IT, OT , and ICS critical infrastructure cybersecurity, delivers an end-to-end platform that gives public and private sector organizations and enterprises the critical advantage needed to protect their complex networks, secure their devices, and ensure compliance. Over...",
+      "applyUrl": "https://www.opswat.com/jobs/4750935005?gh_jid=4750935005",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.opswat.com/jobs/4750935005?gh_jid=4750935005",
+      "postedAt": "2026-11-05T02:29:04-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Rust",
+        "Go",
+        "Docker",
+        "Cursor",
+        "Copilot",
+        "Java"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "gr-stripe-8338344",
@@ -3194,6 +3531,54 @@
       "companyIcon": ""
     },
     {
+      "id": "gr-celonis-8173249003",
+      "company": "Celonis",
+      "position": "Lead Deployment Architect - AI",
+      "location": "Redwood City, US, California",
+      "locations": [
+        "Redwood City, US, California"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Celonis is the trusted platform to industrialize Enterprise AI. At our core is the Celonis Context Model — which combines process data, business knowledge, and intelligence into a living digital twin of the enterprise that AI can actually understand, turning AI's operational blind spots into...",
+      "applyUrl": "https://job-boards.greenhouse.io/celonis/jobs/8173249003?gh_jid=8173249003",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/celonis/jobs/8173249003?gh_jid=8173249003",
+      "postedAt": "2026-11-04T12:52:24-05:00",
+      "tags": [
+        "Claude Code",
+        "TypeScript",
+        "JavaScript",
+        "Python",
+        "Go",
+        "Cursor",
+        "Java"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-celonis-8173186003",
+      "company": "Celonis",
+      "position": "Lead Deployment Engineer",
+      "location": "Raleigh, US, North Carolina",
+      "locations": [
+        "Raleigh, US, North Carolina"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Celonis is the trusted platform to industrialize Enterprise AI. At our core is the Celonis Context Model — which combines process data, business knowledge, and intelligence into a living digital twin of the enterprise that AI can actually understand, turning AI's operational blind spots into...",
+      "applyUrl": "https://job-boards.greenhouse.io/celonis/jobs/8173186003?gh_jid=8173186003",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/celonis/jobs/8173186003?gh_jid=8173186003",
+      "postedAt": "2026-11-04T12:43:00-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "anth-5390890008",
       "company": "Anthropic",
       "position": "Manager Applied AI Architecture, Healthcare & Life Sciences",
@@ -3233,6 +3618,98 @@
       "tags": [
         "Claude Code",
         "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-celonis-7686200003",
+      "company": "Celonis",
+      "position": "Senior Deployment Engineer - Public Sector",
+      "location": "Remote, US, Washington DC",
+      "locations": [
+        "Remote, US, Washington DC"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "Celonis is the trusted platform to industrialize Enterprise AI. At our core is the Celonis Context Model — which combines process data, business knowledge, and intelligence into a living digital twin of the enterprise that AI can actually understand, turning AI's operational blind spots into...",
+      "applyUrl": "https://job-boards.greenhouse.io/celonis/jobs/7686200003?gh_jid=7686200003",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/celonis/jobs/7686200003?gh_jid=7686200003",
+      "postedAt": "2026-11-04T11:58:58-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-celonis-8173282003",
+      "company": "Celonis",
+      "position": "Senior Deployment Engineer - Financial Services",
+      "location": "New York, US, New York",
+      "locations": [
+        "New York, US, New York"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Celonis is the trusted platform to industrialize Enterprise AI. At our core is the Celonis Context Model — which combines process data, business knowledge, and intelligence into a living digital twin of the enterprise that AI can actually understand, turning AI's operational blind spots into...",
+      "applyUrl": "https://job-boards.greenhouse.io/celonis/jobs/8173282003?gh_jid=8173282003",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/celonis/jobs/8173282003?gh_jid=8173282003",
+      "postedAt": "2026-11-04T11:57:13-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-celonis-8173340003",
+      "company": "Celonis",
+      "position": "Senior Deployment Engineer - Health and Life Sciences",
+      "location": "New York, US, New York",
+      "locations": [
+        "New York, US, New York"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Celonis is the trusted platform to industrialize Enterprise AI. At our core is the Celonis Context Model — which combines process data, business knowledge, and intelligence into a living digital twin of the enterprise that AI can actually understand, turning AI's operational blind spots into...",
+      "applyUrl": "https://job-boards.greenhouse.io/celonis/jobs/8173340003?gh_jid=8173340003",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/celonis/jobs/8173340003?gh_jid=8173340003",
+      "postedAt": "2026-11-04T11:56:54-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-celonis-7815115003",
+      "company": "Celonis",
+      "position": "Lead Deployment Architect",
+      "location": "New York, US, New York",
+      "locations": [
+        "New York, US, New York"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Celonis is the trusted platform to industrialize Enterprise AI. At our core is the Celonis Context Model — which combines process data, business knowledge, and intelligence into a living digital twin of the enterprise that AI can actually understand, turning AI's operational blind spots into...",
+      "applyUrl": "https://job-boards.greenhouse.io/celonis/jobs/7815115003?gh_jid=7815115003",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/celonis/jobs/7815115003?gh_jid=7815115003",
+      "postedAt": "2026-11-04T11:50:12-05:00",
+      "tags": [
+        "Claude Code",
+        "TypeScript",
+        "JavaScript",
+        "Python",
+        "Go",
+        "Cursor",
+        "Java"
       ],
       "companyIcon": ""
     },
@@ -3335,6 +3812,50 @@
         "Claude Code"
       ],
       "companyIcon": "https://stripe.com/favicon.ico"
+    },
+    {
+      "id": "gr-celonis-8042510003",
+      "company": "Celonis",
+      "position": "Principal Deployment Engineer ",
+      "location": "Tokyo, Japan",
+      "locations": [
+        "Tokyo, Japan"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Celonis is the trusted platform to industrialize Enterprise AI. At our core is the Celonis Context Model — which combines process data, business knowledge, and intelligence into a living digital twin of the enterprise that AI can actually understand, turning AI's operational blind spots into...",
+      "applyUrl": "https://job-boards.greenhouse.io/celonis/jobs/8042510003?gh_jid=8042510003",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/celonis/jobs/8042510003?gh_jid=8042510003",
+      "postedAt": "2026-11-04T03:40:47-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-celonis-8037503003",
+      "company": "Celonis",
+      "position": "Deployment Engineer - London",
+      "location": "London, United Kingdom",
+      "locations": [
+        "London, United Kingdom"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Celonis is the trusted platform to industrialize Enterprise AI. At our core is the Celonis Context Model — which combines process data, business knowledge, and intelligence into a living digital twin of the enterprise that AI can actually understand, turning AI's operational blind spots into...",
+      "applyUrl": "https://job-boards.greenhouse.io/celonis/jobs/8037503003?gh_jid=8037503003",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/celonis/jobs/8037503003?gh_jid=8037503003",
+      "postedAt": "2026-11-04T03:39:08-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Cursor"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "as-ramp-390f4cd0-e0e4-451c-ae28-e6b19861dda9",
@@ -4665,19 +5186,19 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-fivetran-7865591003",
+      "id": "gr-fivetran-7865559003",
       "company": "Fivetran",
       "position": "Senior Software Engineer, Metadata",
-      "location": "Oakland, California, United States",
+      "location": "Denver, Colorado, United States, AMER",
       "locations": [
-        "Oakland, California, United States"
+        "Denver, Colorado, United States, AMER"
       ],
       "remote": false,
       "salary": "",
       "description": "From Fivetran’s founding until now, our mission has remained the same: to make access to data as simple and reliable as electricity. With Fivetran, customer data arrives in their warehouses, canonical and ready to query, with no engineering or maintenance required. We’re proud that more...",
-      "applyUrl": "https://www.fivetran.com/careers/job?gh_jid=7865591003",
+      "applyUrl": "https://www.fivetran.com/careers/job?gh_jid=7865559003",
       "source": "Greenhouse",
-      "sourceUrl": "https://www.fivetran.com/careers/job?gh_jid=7865591003",
+      "sourceUrl": "https://www.fivetran.com/careers/job?gh_jid=7865559003",
       "postedAt": "2026-11-03T11:35:48-05:00",
       "tags": [
         "Claude Code",
@@ -6249,19 +6770,19 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-affirm-8036613003",
+      "id": "gr-affirm-7718808003",
       "company": "Affirm",
       "position": "Security Risk Management Lead",
-      "location": "Remote Canada",
+      "location": "Remote US",
       "locations": [
-        "Remote Canada"
+        "Remote US"
       ],
       "remote": true,
-      "salary": "$128,000 - $188,000",
-      "description": "At Affirm, we exist for the moments that matter—giving people a clear, predictable way to pay over time, with no hidden fees, no surprises, and no tradeoffs on what matters most. At Affirm, we exist for the moments that matter—giving people a clear, predictable way to pay over time, with no hidden...",
-      "applyUrl": "https://job-boards.greenhouse.io/affirm/jobs/8036613003",
+      "salary": "$165,000 - $225,000",
+      "description": "At Affirm, we exist for the moments that matter—giving people a clear, predictable way to pay over time, with no hidden fees, no surprises, and no tradeoffs on what matters most. Affirm values security as being critical to the company’s continued success. Our mission is to cultivate a culture of...",
+      "applyUrl": "https://job-boards.greenhouse.io/affirm/jobs/7718808003",
       "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/affirm/jobs/8036613003",
+      "sourceUrl": "https://job-boards.greenhouse.io/affirm/jobs/7718808003",
       "postedAt": "2026-10-30T17:15:12-04:00",
       "tags": [
         "Claude Code",
@@ -6318,19 +6839,19 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-affirm-7829429003",
+      "id": "gr-affirm-7829427003",
       "company": "Affirm",
       "position": "Staff Software Engineer, Mobile (App Infrastructure)",
-      "location": "Remote Canada",
+      "location": "Remote US",
       "locations": [
-        "Remote Canada"
+        "Remote US"
       ],
       "remote": true,
-      "salary": "$181,000 - $241,000",
+      "salary": "$230,000 - $290,000",
       "description": "At Affirm, we exist for the moments that matter—giving people a clear, predictable way to pay over time, with no hidden fees, no surprises, and no tradeoffs on what matters most. App Infrastructure is the team behind Affirm's shared mobile app infrastructure — the platform every other mobile...",
-      "applyUrl": "https://job-boards.greenhouse.io/affirm/jobs/7829429003",
+      "applyUrl": "https://job-boards.greenhouse.io/affirm/jobs/7829427003",
       "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/affirm/jobs/7829429003",
+      "sourceUrl": "https://job-boards.greenhouse.io/affirm/jobs/7829427003",
       "postedAt": "2026-10-30T17:15:12-04:00",
       "tags": [
         "Claude Code",
@@ -6631,19 +7152,19 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-samsara-8281489",
+      "id": "gr-samsara-8281483",
       "company": "Samsara",
       "position": "Senior AI Data & Analytics Engineer II",
-      "location": "Remote - Austin",
+      "location": "Remote - CA",
       "locations": [
-        "Remote - Austin"
+        "Remote - CA"
       ],
       "remote": true,
       "salary": "",
       "description": "Who we are Samsara (NYSE: IOT) is the pioneer of the Connected Operations™ Cloud, which is a platform that enables organizations that depend on physical operations to harness Internet of Things (IoT) data to develop actionable insights and improve their operations. At Samsara, we are helping...",
-      "applyUrl": "https://www.samsara.com/company/careers/roles/8281489?gh_jid=8281489",
+      "applyUrl": "https://www.samsara.com/company/careers/roles/8281483?gh_jid=8281483",
       "source": "Greenhouse",
-      "sourceUrl": "https://www.samsara.com/company/careers/roles/8281489?gh_jid=8281489",
+      "sourceUrl": "https://www.samsara.com/company/careers/roles/8281483?gh_jid=8281483",
       "postedAt": "2026-10-30T11:22:26-04:00",
       "tags": [
         "Claude Code",
@@ -6653,19 +7174,19 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-samsara-7752678",
+      "id": "gr-samsara-8109358",
       "company": "Samsara",
       "position": "Staff Software Engineer, DevEx",
-      "location": "Remote - US",
+      "location": "Remote - Canada",
       "locations": [
-        "Remote - US"
+        "Remote - Canada"
       ],
       "remote": true,
       "salary": "",
       "description": "Who we are Samsara (NYSE: IOT) is the pioneer of the Connected Operations™ Cloud, which is a platform that enables organizations that depend on physical operations to harness Internet of Things (IoT) data to develop actionable insights and improve their operations. At Samsara, we are helping...",
-      "applyUrl": "https://www.samsara.com/company/careers/roles/7752678?gh_jid=7752678",
+      "applyUrl": "https://www.samsara.com/company/careers/roles/8109358?gh_jid=8109358",
       "source": "Greenhouse",
-      "sourceUrl": "https://www.samsara.com/company/careers/roles/7752678?gh_jid=7752678",
+      "sourceUrl": "https://www.samsara.com/company/careers/roles/8109358?gh_jid=8109358",
       "postedAt": "2026-10-30T11:15:54-04:00",
       "tags": [
         "Claude Code",
@@ -6995,6 +7516,29 @@
         "Node.js",
         "Cursor",
         "Copilot"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-opswat-4738784005",
+      "company": "OPSWAT",
+      "position": "AI Native Software Engineer - Secure File Gateway",
+      "location": "Ho Chi Minh City, Ho Chi Minh City, Vietnam",
+      "locations": [
+        "Ho Chi Minh City, Ho Chi Minh City, Vietnam"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "OPSWAT , a global leader in IT, OT , and ICS critical infrastructure cybersecurity, delivers an end-to-end platform that gives public and private sector organizations and enterprises the critical advantage needed to protect their complex networks, secure their devices, and ensure compliance. Over...",
+      "applyUrl": "https://www.opswat.com/jobs/4738784005?gh_jid=4738784005",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.opswat.com/jobs/4738784005?gh_jid=4738784005",
+      "postedAt": "2026-10-29T23:05:35-04:00",
+      "tags": [
+        "Claude Code",
+        "Rust",
+        "PostgreSQL",
+        "Java"
       ],
       "companyIcon": ""
     },
@@ -8133,35 +8677,6 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-hook-8922828002",
-      "company": "Hook",
-      "position": "Principal Engineer  -- Full-Stack TypeScript (Node.js, React, Cloud)",
-      "location": "Remote",
-      "locations": [
-        "Remote"
-      ],
-      "remote": true,
-      "salary": "",
-      "description": "WHO WE ARE We're Hook, an award-winning creative content agency. With a collaborative, maker-centric team, and an emphasis on production-led design, we make ads, campaigns, and experiences that drive growth for the world's most innovative brands. Our mission is to integrate creative and production...",
-      "applyUrl": "https://job-boards.greenhouse.io/hook/jobs/8922828002",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/hook/jobs/8922828002",
-      "postedAt": "2026-10-28T18:58:08-04:00",
-      "tags": [
-        "Claude Code",
-        "React",
-        "Next.js",
-        "TypeScript",
-        "JavaScript",
-        "Python",
-        "Node.js",
-        "PostgreSQL",
-        "AWS",
-        "GCP"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "as-trustly-80de5b31-95fe-432c-b4b5-ea36870460cb",
       "company": "Trustly",
       "position": "Staff Engineer, Billing, Invoicing, Collections and Disputes",
@@ -8484,6 +8999,107 @@
         "Node.js",
         "AWS",
         "Vue.js",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-opswat-4724688005",
+      "company": "OPSWAT",
+      "position": "AI-Native Software Engineer - MD Core",
+      "location": "Ho Chi Minh City, Ho Chi Minh City, Vietnam",
+      "locations": [
+        "Ho Chi Minh City, Ho Chi Minh City, Vietnam"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "OPSWAT , a global leader in IT, OT , and ICS critical infrastructure cybersecurity, delivers an end-to-end platform that gives public and private sector organizations and enterprises the critical advantage needed to protect their complex networks, secure their devices, and ensure compliance. Over...",
+      "applyUrl": "https://www.opswat.com/jobs/4724688005?gh_jid=4724688005",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.opswat.com/jobs/4724688005?gh_jid=4724688005",
+      "postedAt": "2026-10-28T04:46:09-04:00",
+      "tags": [
+        "Claude Code",
+        "Rust",
+        "PostgreSQL",
+        "Copilot",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-opswat-4448237005",
+      "company": "OPSWAT",
+      "position": "SDET - Secure File Gateway",
+      "location": "Ho Chi Minh City, Ho Chi Minh City, Vietnam",
+      "locations": [
+        "Ho Chi Minh City, Ho Chi Minh City, Vietnam"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "OPSWAT , a global leader in IT, OT , and ICS critical infrastructure cybersecurity, delivers an end-to-end platform that gives public and private sector organizations and enterprises the critical advantage needed to protect their complex networks, secure their devices, and ensure compliance. Over...",
+      "applyUrl": "https://www.opswat.com/jobs/4448237005?gh_jid=4448237005",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.opswat.com/jobs/4448237005?gh_jid=4448237005",
+      "postedAt": "2026-10-28T04:46:09-04:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Cursor",
+        "Copilot",
+        "Java"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-opswat-4745443005",
+      "company": "OPSWAT",
+      "position": "Senior Agentic Software Engineer - Sales",
+      "location": "Ho Chi Minh City, Ho Chi Minh City, Vietnam",
+      "locations": [
+        "Ho Chi Minh City, Ho Chi Minh City, Vietnam"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "OPSWAT , a global leader in IT, OT , and ICS critical infrastructure cybersecurity, delivers an end-to-end platform that gives public and private sector organizations and enterprises the critical advantage needed to protect their complex networks, secure their devices, and ensure compliance. Over...",
+      "applyUrl": "https://www.opswat.com/jobs/4745443005?gh_jid=4745443005",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.opswat.com/jobs/4745443005?gh_jid=4745443005",
+      "postedAt": "2026-10-28T04:46:09-04:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "TypeScript",
+        "Python",
+        "PostgreSQL",
+        "AWS",
+        "Azure",
+        "Cursor",
+        "Copilot",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-opswat-4627720005",
+      "company": "OPSWAT",
+      "position": "Software Engineer C++",
+      "location": "Ho Chi Minh City, Ho Chi Minh City, Vietnam",
+      "locations": [
+        "Ho Chi Minh City, Ho Chi Minh City, Vietnam"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "OPSWAT , a global leader in IT, OT , and ICS critical infrastructure cybersecurity, delivers an end-to-end platform that gives public and private sector organizations and enterprises the critical advantage needed to protect their complex networks, secure their devices, and ensure compliance. Over...",
+      "applyUrl": "https://www.opswat.com/jobs/4627720005?gh_jid=4627720005",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.opswat.com/jobs/4627720005?gh_jid=4627720005",
+      "postedAt": "2026-10-28T04:46:09-04:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Docker",
+        "Copilot",
         "MCP"
       ],
       "companyIcon": ""
@@ -8863,6 +9479,75 @@
       "postedAt": "2026-10-27T15:07:07.337+00:00",
       "tags": [
         "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-avante-4436037009",
+      "company": "Avante",
+      "position": "Don't See Your Role? Apply Here",
+      "location": "New York City OR Seattle",
+      "locations": [
+        "New York City OR Seattle"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Avante is the enterprise AI platform for benefits teams. Benefits is one of the most complex, high-stakes functions in any company, and Avante’s purpose-built agents take on end-to-end benefits work, from checking vendor contracts against claims to preparing leadership reports to helping employees...",
+      "applyUrl": "https://job-boards.greenhouse.io/avante/jobs/4436037009",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/avante/jobs/4436037009",
+      "postedAt": "2026-10-27T13:41:58-04:00",
+      "tags": [
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-avante-4435931009",
+      "company": "Avante",
+      "position": "Senior Software Engineer",
+      "location": "Seattle",
+      "locations": [
+        "Seattle"
+      ],
+      "remote": false,
+      "salary": "$170,000–$210,000",
+      "description": "Avante is the enterprise AI platform for benefits teams. Benefits is one of the most complex, high-stakes functions in any company, and Avante’s purpose-built agents take on end-to-end benefits work, from checking vendor contracts against claims to preparing leadership reports to helping employees...",
+      "applyUrl": "https://job-boards.greenhouse.io/avante/jobs/4435931009",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/avante/jobs/4435931009",
+      "postedAt": "2026-10-27T13:41:58-04:00",
+      "tags": [
+        "Claude Code",
+        "TypeScript",
+        "Python",
+        "Cursor",
+        "Java"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-avante-4435948009",
+      "company": "Avante",
+      "position": "Software Engineer",
+      "location": "Seattle",
+      "locations": [
+        "Seattle"
+      ],
+      "remote": false,
+      "salary": "$130,000–$170,000",
+      "description": "Avante is the enterprise AI platform for benefits teams. Benefits is one of the most complex, high-stakes functions in any company, and Avante’s purpose-built agents take on end-to-end benefits work, from checking vendor contracts against claims to preparing leadership reports to helping employees...",
+      "applyUrl": "https://job-boards.greenhouse.io/avante/jobs/4435948009",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/avante/jobs/4435948009",
+      "postedAt": "2026-10-27T13:41:58-04:00",
+      "tags": [
+        "Claude Code",
+        "TypeScript",
+        "Python",
+        "PostgreSQL",
+        "Cursor",
+        "Java"
       ],
       "companyIcon": ""
     },
@@ -12440,27 +13125,6 @@
       "companyIcon": ""
     },
     {
-      "id": "anth-5444482008",
-      "company": "Anthropic",
-      "position": "Manager, Applied AI Architecture, Enterprise Tech",
-      "location": "San Francisco, CA",
-      "locations": [
-        "San Francisco, CA"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "As the manager of the Solutions Architect team within Applied AI Enterprise Tech at Anthropic, you will drive the adoption of frontier AI in partnership with the rest of the go to market organization. Our Enterprise Tech customers are some of the world's most sophisticated technology companies,...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5444482008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5444482008",
-      "postedAt": "2026-10-13T13:11:31-04:00",
-      "tags": [
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
       "id": "gr-asana-7964388",
       "company": "Asana",
       "position": "Staff Software Engineer, AI Developer Experience",
@@ -13017,36 +13681,6 @@
         "AWS",
         "Kubernetes",
         "Django"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "le-provectus-ce930027-43a2-4b4c-af03-ea3edb8f7581",
-      "company": "Provectus",
-      "position": "Junior AI/ML Engineer (GenAI, AWS)",
-      "location": "Ukraine · Spain · Serbia · Yerevan · Poland",
-      "locations": [
-        "Ukraine",
-        "Spain",
-        "Serbia",
-        "Yerevan",
-        "Poland"
-      ],
-      "remote": true,
-      "salary": "",
-      "description": "Provectus is an AWS Premier Partner and an Anthropic Strategic Partner, working at the frontier of applied AI. We help enterprises turn Claude, agentic systems, and their own data into measurable business outcomes — through bespoke applications, managed services, and advisory engagements. With...",
-      "applyUrl": "https://jobs.lever.co/provectus/ce930027-43a2-4b4c-af03-ea3edb8f7581",
-      "source": "Lever",
-      "sourceUrl": "https://jobs.lever.co/provectus/ce930027-43a2-4b4c-af03-ea3edb8f7581",
-      "postedAt": "2026-10-09T13:28:30.652000+00:00",
-      "tags": [
-        "Claude Code",
-        "TypeScript",
-        "Python",
-        "Rust",
-        "Go",
-        "AWS",
-        "MCP"
       ],
       "companyIcon": ""
     },
@@ -14216,19 +14850,19 @@
       "companyIcon": "https://intercom.com/favicon.ico"
     },
     {
-      "id": "gr-tailscale-4721713005",
+      "id": "gr-tailscale-4721714005",
       "company": "Tailscale",
       "position": "Software Engineer, Strategic Projects",
-      "location": "Remote (Canada)",
+      "location": "Remote (United States)",
       "locations": [
-        "Remote (Canada)"
+        "Remote (United States)"
       ],
       "remote": true,
       "salary": "",
       "description": "Thank you for considering Tailscale. If this job description resonates with you, please apply. Frequently cited statistics show that people who identify with historically marginalized groups are likely to apply to jobs only if they meet 100% of the qualifications. We encourage you to help us break...",
-      "applyUrl": "https://job-boards.greenhouse.io/tailscale/jobs/4721713005",
+      "applyUrl": "https://job-boards.greenhouse.io/tailscale/jobs/4721714005",
       "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/tailscale/jobs/4721713005",
+      "sourceUrl": "https://job-boards.greenhouse.io/tailscale/jobs/4721714005",
       "postedAt": "2026-09-29T20:38:27-04:00",
       "tags": [
         "Claude Code",
@@ -15725,6 +16359,28 @@
       "companyIcon": ""
     },
     {
+      "id": "gr-crexi-4723615005",
+      "company": "Crexi",
+      "position": "Senior AI Engineer",
+      "location": "United States",
+      "locations": [
+        "United States"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "About Crexi Commercial real estate is one of the largest asset classes on earth and one of the last to go digital. Deals still get done over email threads, PDFs, and relationships nobody can search for. Crexi is the exchange betting that doesn't have to be true anymore: we're building the platform...",
+      "applyUrl": "https://job-boards.greenhouse.io/crexi/jobs/4723615005",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/crexi/jobs/4723615005",
+      "postedAt": "2026-08-28T15:02:38-04:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "AWS"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "anth-5309805008",
       "company": "Anthropic",
       "position": "Engineering Manager, Connectivity - London",
@@ -15906,19 +16562,19 @@
       "companyIcon": "https://baseten.co/favicon.ico"
     },
     {
-      "id": "gr-instacart-8084089",
+      "id": "gr-instacart-8084090",
       "company": "Instacart",
       "position": "Staff Experience Designer",
-      "location": "United States - Remote",
+      "location": "Canada - Remote (ON, AB, BC, or NS Only)",
       "locations": [
-        "United States - Remote"
+        "Canada - Remote (ON, AB, BC, or NS Only)"
       ],
       "remote": true,
       "salary": "",
       "description": "We're transforming the grocery industry At Instacart, we invite the world to share love through food because we believe everyone should have access to the food they love and more time to enjoy it together. Where others see a simple need for grocery delivery, we see exciting complexity and endless...",
-      "applyUrl": "https://instacart.careers/job/?gh_jid=8084089",
+      "applyUrl": "https://instacart.careers/job/?gh_jid=8084090",
       "source": "Greenhouse",
-      "sourceUrl": "https://instacart.careers/job/?gh_jid=8084089",
+      "sourceUrl": "https://instacart.careers/job/?gh_jid=8084090",
       "postedAt": "2026-08-24T13:15:00-04:00",
       "tags": [
         "Claude Code",
@@ -17176,19 +17832,19 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-brex-8463702002",
+      "id": "gr-brex-8463703002",
       "company": "Brex",
       "position": "Data Analyst II",
-      "location": "New York, New York, United States",
+      "location": "São Paulo, São Paulo, Brazil",
       "locations": [
-        "New York, New York, United States"
+        "São Paulo, São Paulo, Brazil"
       ],
       "remote": false,
-      "salary": "$93,600 - $117,000",
+      "salary": "",
       "description": "Why join us Brex is the intelligent finance platform that enables companies to spend smarter and move faster in more than 200 markets. By combining global corporate cards and banking with intuitive spend management, bill pay, and travel software, Brex enables founders and finance teams to...",
-      "applyUrl": "https://www.brex.com/careers/8463702002?gh_jid=8463702002",
+      "applyUrl": "https://www.brex.com/careers/8463703002?gh_jid=8463703002",
       "source": "Greenhouse",
-      "sourceUrl": "https://www.brex.com/careers/8463702002?gh_jid=8463702002",
+      "sourceUrl": "https://www.brex.com/careers/8463703002?gh_jid=8463703002",
       "postedAt": "2026-06-10T13:59:16-04:00",
       "tags": [
         "Claude Code",
