@@ -12,7 +12,7 @@ export const prerender = true;
   description="What data aitmpl.com and the claude-code-templates CLI collect, why, who processes it, and how to opt out."
 >
   <TopBar />
-  <ProsePage heading="Privacy Policy" updated="November 7, 2026">
+  <ProsePage heading="Privacy Policy" updated="November 8, 2026">
     <p>
       This page explains what data Claude Code Templates collects through the website at aitmpl.com and the
       <code>claude-code-templates</code> command-line tool, why, and how to opt out. The project does not sell personal data
@@ -24,29 +24,49 @@ export const prerender = true;
       You can browse the catalog without an account. Every page, including the catalog and blog articles under <code>/blog</code>, uses Google
       Analytics to count visits and see which pages people find useful, which sets Google cookies in your browser. The site
       loads no advertising trackers. Like any web server, our hosting provider (Cloudflare) processes your IP address and request details to
-      deliver pages and protect the site from abuse. Your theme and layout preferences are kept in your browser's local
-      storage and never sent to us.
+      deliver pages and protect the site from abuse. Your theme and layout preferences, the components you add to your stack,
+      and a cached copy of the repository's GitHub star count are kept in your browser's local storage and never sent to us.
     </p>
 
     <h2>CLI usage statistics</h2>
     <p>
       When you install a component, the CLI sends a usage event so the site can show download counts and
       trending components. The event contains the component type, name and category, the CLI version, your Node.js version,
-      operating system and architecture, and whether the installation succeeded. When you install into a directory other than
+      operating system and architecture, whether the installation succeeded, how long it took, and a random identifier that
+      groups the components installed in one run. When you install into a directory other than
       the current one, the event includes that directory relative to where you ran the command. When an installation fails,
-      it includes the error message, which can contain local file paths. Our server also records the request's IP address
-      and user agent with download events. The contents of your files are never sent.
+      it includes the error message, which can contain local file paths. The contents of your files are never sent.
     </p>
     <p>
-      To turn this off, set <code>CCT_NO_TRACKING=true</code> (or <code>CCT_NO_ANALYTICS=true</code>) in your environment.
+      Since version 1.32.0, the event also says whether the CLI is running inside an AI coding agent such as Claude Code,
+      Cursor or Codex, and which one; how Claude Code was started (for example from a terminal, an editor or the SDK) when it is
+      that agent; and whether the output goes to an interactive terminal. The CLI does not send the account email or the account
+      and session identifiers that Claude Code makes available to it. Our server records the request's IP address, the country
+      our hosting provider derives from it, and the user agent with download events.
+    </p>
+    <p>
+      Commands that are not installations (the catalog browser, analytics, chats, the health check, workflows and options that
+      were removed) send the command name, the CLI and Node.js versions, the operating system and architecture, and a random
+      identifier created for each event. A workflow run also sends how many components of each type it contains, and a removed
+      option sends its name.
+    </p>
+    <p>
+      To install components, the CLI downloads files from GitHub (<code>raw.githubusercontent.com</code> and
+      <code>api.github.com</code>) and from www.aitmpl.com, so those services receive your IP address, as with any download.
+      Plugins are installed by Claude Code itself from the aitmpl marketplace at <code>www.aitmpl.com/marketplace.json</code>.
+    </p>
+    <p>
+      To turn the usage events off, set <code>CCT_NO_TRACKING=true</code> (or <code>CCT_NO_ANALYTICS=true</code>) in your environment.
       Nothing is sent when <code>CI=true</code>. Crash reporting is a separate, off-by-default feature that only runs if you
       set <code>CCT_ERROR_REPORTING=true</code>.
     </p>
 
     <h2>Accounts and collections</h2>
     <p>
-      Signing in is optional and handled by Clerk. If you sign in, we store your account identifier and the component
-      collections you create, including whether you made a collection public. Your name and email are held by Clerk.
+      Signing in is optional for browsing the catalog and handled by Clerk. You need an account to save collections and to open
+      job listings, certifications and courses. If you sign in, we store your account identifier and the component
+      collections you create, including whether you made a collection public. Your name and email are held by Clerk, which also
+      keeps a record of your sign-in sessions (device type, browser and approximate location).
     </p>
 
     <h2>Sending components to a GitHub repository</h2>
@@ -55,10 +75,17 @@ export const prerender = true;
       browser's session storage, used only to create the commit or pull request you asked for, and is not stored on our servers.
     </p>
 
-    <h2>Newsletter</h2>
+    <h2>Email</h2>
     <p>
-      If you subscribed to the newsletter, your email address is stored with our email provider, Resend, and used only to
-      send it. Every email includes an unsubscribe link.
+      From July to September 2026 we sent emails about new and trending components to people with an aitmpl.com
+      account. The addresses came from the sign-in accounts held by Clerk; there was no separate sign-up form. Sending has been
+      paused since September 20, 2026.
+    </p>
+    <p>
+      We still keep each of those addresses, with its account identifier and unsubscribe status, in our database and with our
+      email provider, Resend. We also keep the delivery events Resend reported for each recipient: opened, clicked (with the
+      link), bounced or marked as spam. Every email included an unsubscribe link. To have your address and these records
+      deleted, email <a href="mailto:daniel@aitmpl.com">daniel@aitmpl.com</a>.
     </p>
 
     <h2>Sponsored placements</h2>
@@ -76,10 +103,10 @@ export const prerender = true;
     <h2>Service providers</h2>
     <ul>
       <li>Cloudflare: hosting and content delivery.</li>
-      <li>Supabase and Neon: databases for usage statistics, collections and placements.</li>
+      <li>Supabase and Neon: databases for usage statistics, collections, email records and placements.</li>
       <li>Clerk: sign-in.</li>
-      <li>GitHub: OAuth for "Send to repo" and the public source repository.</li>
-      <li>Resend: newsletter delivery.</li>
+      <li>GitHub: OAuth for "Send to repo", the public source repository, and the files the CLI downloads.</li>
+      <li>Resend: email delivery (paused since September 2026).</li>
       <li>Stripe: payments for sponsored placements.</li>
       <li>Sentry: error monitoring.</li>
       <li>Google: Google Fonts on every page, Google Analytics on every page.</li>
