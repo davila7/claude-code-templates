@@ -25182,6 +25182,38 @@
       }
     },
     {
+      "name": "sync-labs",
+      "path": "audio/sync-labs.json",
+      "category": "audio",
+      "type": "mcp",
+      "description": "Official sync. labs MCP: lipsync a video to new audio or a typed script, translate and dub videos into other languages with matching lips, generate speech previews, clone voices, and manage assets and projects. Streamable HTTP, OAuth sign-in with a sync. account in the browser, no API key. Paid steps such as dubbing and voice clones are quoted before they start.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "hash": "e372dcb3c3893e00",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-08T04:02:27Z"
+      }
+    },
+    {
       "name": "browser-use-mcp-server",
       "path": "browser_automation/browser-use-mcp-server.json",
       "category": "browser_automation",
@@ -28160,6 +28192,38 @@
       }
     },
     {
+      "name": "linkbunny",
+      "path": "marketing/linkbunny.json",
+      "category": "marketing",
+      "type": "mcp",
+      "description": "Remote MCP for contextual nofollow link exchanges between relevant sites. Your coding agent proposes a placement on your own site; you approve before anything is published. Requires a LinkBunny account; first exchange free for one site.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "hash": "472d35cdb52b831e",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-08T04:02:27Z"
+      }
+    },
+    {
       "name": "pageree",
       "path": "marketing/pageree.json",
       "category": "marketing",
@@ -28487,6 +28551,38 @@
         "hash": "3e64412c55b64420",
         "version": "2.12.0",
         "scannedAt": "2026-11-08T03:26:50Z"
+      }
+    },
+    {
+      "name": "reasonbook",
+      "path": "productivity/reasonbook.json",
+      "category": "productivity",
+      "type": "mcp",
+      "description": "Keep project decisions, reasons and lessons in a local SQLite record that AI agents can read across sessions. Includes next steps, sprints and missions. No account is required for local use. Requires Node.js 20 or newer.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "hash": "75f924bc52655d1d",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-08T04:02:27Z"
       }
     },
     {
@@ -81835,6 +81931,257 @@
         "hash": "035d1eac7a82b62e",
         "version": "2.12.0",
         "scannedAt": "2026-10-17T20:36:45Z"
+      }
+    },
+    {
+      "name": "gaffa-authoring",
+      "path": "web-data/gaffa-authoring",
+      "category": "web-data",
+      "type": "skill",
+      "description": "Use for any scraping, crawling, web data extraction, screenshot, or browser automation task, whether or not gaffa is mentioned. A vague request like \"I need a scraping script\" or \"help me extract data from a website\" fires this skill immediately, before any clarifying question is asked. Also use when the user mentions gaffa in a programming context (a gaffa.dev URL, a gaffa endpoint, or an existing gaffa API call) and wants concrete code. Writes, edits, ports, or reviews code that calls the gaffa.dev browser-automation REST API, loading the verified gaffa API facts and live docs first. For triaging a failing request or a brq_* id, /gaffa-debug leads instead. For a URL with only a vague goal and no script, /gaffa-find leads.",
+      "author": "Impetus Labs",
+      "repo": "https://github.com/GaffaAI/gaffa-for-ai",
+      "version": "",
+      "license": "MIT",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "references/actions.md",
+        "templates/async-poll.md",
+        "templates/schema-extraction.md",
+        "templates/sync.md"
+      ],
+      "source": {
+        "repo": "GaffaAI/gaffa-for-ai",
+        "path": "skills/gaffa-authoring",
+        "commit": "8ceb34961a56ed9f95093c33b30d9d7dff3572dc",
+        "license": "MIT",
+        "url": "https://github.com/GaffaAI/gaffa-for-ai/tree/8ceb34961a56ed9f95093c33b30d9d7dff3572dc/skills/gaffa-authoring",
+        "requires": []
+      },
+      "skillspector": {
+        "score": 46,
+        "severity": "MEDIUM",
+        "recommendation": "CAUTION",
+        "issueCount": 11,
+        "analysis": "partial",
+        "findings": [
+          {
+            "id": "TM1",
+            "category": "Tool Misuse",
+            "severity": "HIGH",
+            "title": "Tool Parameter Abuse",
+            "file": "SKILL.md",
+            "line": 55,
+            "count": 1
+          },
+          {
+            "id": "TM1",
+            "category": "Tool Misuse",
+            "severity": "HIGH",
+            "title": "Tool Parameter Abuse",
+            "file": "templates/schema-extraction.md",
+            "line": 30,
+            "count": 1
+          },
+          {
+            "id": "RP1",
+            "category": "MCP Rug Pull",
+            "severity": "MEDIUM",
+            "title": "npx commands without a version suffix (e.g. @1.0.0) create a rug-pull risk if the upstream server is compromised and publishes a malicious update.",
+            "file": "SKILL.md",
+            "line": 158,
+            "count": 1
+          },
+          {
+            "id": "E1",
+            "category": "Data Exfiltration",
+            "severity": "MEDIUM",
+            "title": "External Transmission",
+            "file": "templates/async-poll.md",
+            "line": 15,
+            "count": 3
+          },
+          {
+            "id": "E1",
+            "category": "Data Exfiltration",
+            "severity": "MEDIUM",
+            "title": "External Transmission",
+            "file": "templates/sync.md",
+            "line": 8,
+            "count": 2
+          }
+        ],
+        "hash": "e95911e8bf02c673",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-08T04:02:27Z"
+      }
+    },
+    {
+      "name": "gaffa-debug",
+      "path": "web-data/gaffa-debug",
+      "category": "web-data",
+      "type": "skill",
+      "description": "Use when a scraping or browser automation script or request misbehaves, identified by a gaffa brq_* request ID or a script that errors, returns null, times out, or gives wrong output, whether or not gaffa is mentioned. Pulls the request recording, classifies the failure (gaffa API misuse, target-site change, bot detection, flaky timing, wrong action), and proposes a minimal patch. For a failing script that does not use gaffa, diagnoses from the script and offers a gaffa version.",
+      "author": "Impetus Labs",
+      "repo": "https://github.com/GaffaAI/gaffa-for-ai",
+      "version": "",
+      "license": "MIT",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "references/failure-classification.md",
+        "templates/rerun-with-capture.md"
+      ],
+      "source": {
+        "repo": "GaffaAI/gaffa-for-ai",
+        "path": "skills/gaffa-debug",
+        "commit": "8ceb34961a56ed9f95093c33b30d9d7dff3572dc",
+        "license": "MIT",
+        "url": "https://github.com/GaffaAI/gaffa-for-ai/tree/8ceb34961a56ed9f95093c33b30d9d7dff3572dc/skills/gaffa-debug",
+        "requires": []
+      },
+      "skillspector": {
+        "score": 8,
+        "severity": "LOW",
+        "recommendation": "CAUTION",
+        "issueCount": 2,
+        "analysis": "partial",
+        "findings": [
+          {
+            "id": "E1",
+            "category": "Data Exfiltration",
+            "severity": "MEDIUM",
+            "title": "External Transmission",
+            "file": "templates/rerun-with-capture.md",
+            "line": 12,
+            "count": 2
+          }
+        ],
+        "hash": "c1332afcff4dd683",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-08T04:02:27Z"
+      }
+    },
+    {
+      "name": "gaffa-find",
+      "path": "web-data/gaffa-find",
+      "category": "web-data",
+      "type": "skill",
+      "description": "Use when the user wants to find, scrape, or extract a specific piece of information from a target website given only a URL and a plain-language goal but has no script yet, whether or not gaffa is mentioned. Invoke it even when the URL or the goal is still missing, and ask for them inside the skill, never before invoking. Iteratively writes and refines a gaffa script through reconnaissance, extraction, and validation, then stops in a clear terminal state.",
+      "author": "Impetus Labs",
+      "repo": "https://github.com/GaffaAI/gaffa-for-ai",
+      "version": "",
+      "license": "MIT",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "templates/loop.md"
+      ],
+      "source": {
+        "repo": "GaffaAI/gaffa-for-ai",
+        "path": "skills/gaffa-find",
+        "commit": "8ceb34961a56ed9f95093c33b30d9d7dff3572dc",
+        "license": "MIT",
+        "url": "https://github.com/GaffaAI/gaffa-for-ai/tree/8ceb34961a56ed9f95093c33b30d9d7dff3572dc/skills/gaffa-find",
+        "requires": []
+      },
+      "skillspector": {
+        "score": 16,
+        "severity": "LOW",
+        "recommendation": "CAUTION",
+        "issueCount": 5,
+        "analysis": "partial",
+        "findings": [
+          {
+            "id": "TR2",
+            "category": "Trigger Abuse",
+            "severity": "MEDIUM",
+            "title": "Shadow Command Trigger",
+            "file": "SKILL.md",
+            "line": 1,
+            "count": 1
+          },
+          {
+            "id": "E1",
+            "category": "Data Exfiltration",
+            "severity": "MEDIUM",
+            "title": "External Transmission",
+            "file": "templates/loop.md",
+            "line": 9,
+            "count": 4
+          }
+        ],
+        "hash": "186d3d1b7fe10938",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-08T04:02:27Z"
+      }
+    },
+    {
+      "name": "gaffa-support",
+      "path": "web-data/gaffa-support",
+      "category": "web-data",
+      "type": "skill",
+      "description": "Use when the user is stuck using the gaffa skills or wants to report a problem. First attempts to resolve it from the current context and the live docs, then, if still unresolved, packages a redacted local report the developer can email to support.",
+      "author": "Impetus Labs",
+      "repo": "https://github.com/GaffaAI/gaffa-for-ai",
+      "version": "",
+      "license": "MIT",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "agents/openai.yaml"
+      ],
+      "source": {
+        "repo": "GaffaAI/gaffa-for-ai",
+        "path": "skills/gaffa-support",
+        "commit": "8ceb34961a56ed9f95093c33b30d9d7dff3572dc",
+        "license": "MIT",
+        "url": "https://github.com/GaffaAI/gaffa-for-ai/tree/8ceb34961a56ed9f95093c33b30d9d7dff3572dc/skills/gaffa-support",
+        "requires": []
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "CAUTION",
+        "issueCount": 0,
+        "analysis": "partial",
+        "findings": [],
+        "hash": "3de7a593331b3ccb",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-08T04:02:27Z"
       }
     },
     {
