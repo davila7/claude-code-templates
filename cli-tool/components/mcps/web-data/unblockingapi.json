@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "unblockingapi": {
+      "description": "UnblockingAPI MCP server (hosted): fetch public web pages that block simple requests, and get clean Markdown, HTML or template JSON back. Three tools: unblock_fetch (fetch a URL as Markdown or HTML, or as JSON through a published template), find_templates (find a template for a URL) and get_build_guide (how to build a scraper or integration on the API). Uses OAuth 2.1 (dynamic client registration + consent screen), so no API key goes in the config: the MCP client prompts you to sign in on first use. New accounts get 500 free credits, no card. To run it locally instead: npx -y @unblockingapi/mcp with UNBLOCKINGAPI_KEY set.",
+      "type": "http",
+      "url": "https://mcp.unblockingapi.com/mcp"
+    }
+  }
+}
