@@ -5,7 +5,7 @@
 
 import { collectionsApi } from './collections-api';
 import { dropExpiredPendingAction, takePendingAction, type PendingAction } from './pending-action';
-import { COLLECTIONS_CHANGED_EVENT, myComponentsUrl, saveComponent, type CollectionsChangedDetail } from './save-component';
+import { COLLECTIONS_CHANGED_EVENT, myComponentsUrl, saveComponent, whenSavesSettled, type CollectionsChangedDetail } from './save-component';
 import { showToast } from './toast';
 
 let started = false;
@@ -46,6 +46,7 @@ async function run(clerk: any, action: PendingAction): Promise<void> {
       detail: { type: item.type, path: item.path, collectionId: collection.id },
     }));
     if (status === 'first') {
+      await whenSavesSettled();
       window.location.assign(myComponentsUrl(collection.id));
       return;
     }

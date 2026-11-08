@@ -41,6 +41,12 @@ export function saveComponent(
   return run;
 }
 
+// Resolves once every queued save has finished. Await it before navigating
+// away, or a save queued behind the first one can be cut off by the unload.
+export function whenSavesSettled(): Promise<void> {
+  return queue.then(() => undefined);
+}
+
 async function saveNow(
   api: CollectionsClient,
   token: string,

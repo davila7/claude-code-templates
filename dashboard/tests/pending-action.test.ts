@@ -135,3 +135,13 @@ test('concurrent first saves create one collection', async () => {
   assert.equal(b.status, 'added');
   assert.equal(calls.filter((c) => c.startsWith('create:')).length, 1);
 });
+
+test('whenSavesSettled waits for a save queued behind the first one', async () => {
+  const { whenSavesSettled } = await import('../src/lib/save-component.ts');
+  const { api, calls } = fakeApi([]);
+  const first = saveComponent(api, 't', item, []);
+  void saveComponent(api, 't', { type: 'agents', path: 'x/second', name: 'second' }, []);
+  await first;
+  await whenSavesSettled();
+  assert.ok(calls.some((c) => c.endsWith(':x/second')));
+});
