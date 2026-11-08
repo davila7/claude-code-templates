@@ -7,6 +7,13 @@
 // {"code":"authorization_invalid"}. Nothing in our Clerk config fixes that, so
 // inside an in-app browser we explain it and offer to reopen the page in the
 // system browser before showing Clerk's modal.
+//
+// Pass the action the click started (save, open a job, open a course): it is
+// kept for this tab and completed after sign-in (lib/resume-pending-action.ts).
+// A plain "Sign in" button passes nothing, which drops any earlier action, so
+// signing in later never replays a click the visitor walked away from.
+
+import { clearPendingAction, setPendingAction, type PendingAction } from './pending-action.ts';
 
 export type InAppBrowser = { app: string; platform: 'ios' | 'android' | 'other' };
 
@@ -184,8 +191,10 @@ function showInAppDialog(info: InAppBrowser) {
   (actions.firstElementChild as HTMLElement | null)?.focus();
 }
 
-export function openSignIn() {
+export function openSignIn(pending?: PendingAction) {
   if (typeof window === 'undefined') return;
+  if (pending) setPendingAction(pending);
+  else clearPendingAction();
   const info = detectInAppBrowser(navigator.userAgent || '');
   if (info) showInAppDialog(info);
   else clerkOpenSignIn();
