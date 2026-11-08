@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "twelfth": {
+      "description": "Hosted MCP server for Twelfth, a commercial workspace for retail and category teams: products, suppliers, sales, inventory, pricing, projects and actions in one workspace. Signs in with OAuth in the browser (needs a Twelfth account). Reads by default; changes to your own actions and routines only if you allow them at consent.",
+      "type": "http",
+      "url": "https://api.twelfth.ai/mcp"
+    }
+  }
+}
