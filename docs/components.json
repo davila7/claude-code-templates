@@ -28618,6 +28618,38 @@
       }
     },
     {
+      "name": "smstunnel",
+      "path": "productivity/smstunnel.json",
+      "category": "productivity",
+      "type": "mcp",
+      "description": "Send texts (SMS) and sign-in codes from your own Android phone and your own number, check whether they went out, and read replies. Free plan: 25 texts a day and 500 a month; paid plans from $9 a month. SMSTunnel charges no per-text fee: each text goes out from your phone's SIM at your mobile plan's rates. Needs Node.js 20 or newer, the SMSTunnel app from Google Play on the phone, and SMSTUNNEL_API_KEY set in your environment (a key from dashboard.smstunnel.io: Apps → Add an app).",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "hash": "426469820c9ce3b5",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-08T16:24:14Z"
+      }
+    },
+    {
       "name": "arxiv-mcp-server",
       "path": "research/arxiv-mcp-server.json",
       "category": "research",
