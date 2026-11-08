@@ -210,6 +210,10 @@ PRs validate only the components they change; the weekly run validates the whole
 catalog. Both fail on errors: the catalog reached 0 errors on 2026-10-24. Run it
 locally with `python3 scripts/validate_components.py [--changed FILE] [--strict]`.
 
+#### MCP package pins
+
+An MCP component's server starts its package with `npx`/`pnpx`, `uvx` or `pipx run` on every Claude Code start, so the package is pinned to an exact version (`pkg@1.2.3`, `uvx pkg@1.2.3`, `pipx run pkg==1.2.3`; never `@latest` or bare). `component-validate.yml` fails a PR that adds an unpinned one (`python3 scripts/mcp_versions.py check [FILE ...]`; `pin [FILE ...]` writes the registry's latest version). The weekly `mcp-versions-outdated.yml` keeps one issue listing pins behind the registry; bump them in a PR after reading the changelog. Docker images and local binaries are out of scope.
+
 #### External skills (code in another repo)
 
 A skill can live in its author's GitHub repo instead of being copied here. Its
