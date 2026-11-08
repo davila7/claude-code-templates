@@ -33363,7 +33363,7 @@
       "path": "development-tools/debug-window.json",
       "category": "development-tools",
       "type": "hook",
-      "description": "Auto Debug Log Viewer. Opens a live-tailing debug log window when Claude Code starts with --debug or -d flag. The window closes automatically on session end. To keep the debug window open after session ends, set DEBUG_WINDOW_AUTO_CLOSE_DISABLE=1 in your settings.json. Tested on Intel Mac. Supports macOS, Linux, and Windows (Git Bash/Cygwin). Contributions from other platform users are welcome.",
+      "description": "Auto Debug Log Viewer. Opens a live-tailing debug log window when Claude Code starts with --debug or -d flag. The window closes automatically on session end. To keep the debug window open after the session ends, set the DEBUG_WINDOW_AUTO_CLOSE_DISABLE=1 environment variable in the env property of your settings.json. Supports macOS, Linux, and Windows (Git Bash/Cygwin). If you encounter any issues, please report them at https://github.com/davila7/claude-code-templates/issues",
       "author": "",
       "repo": "",
       "version": "",
@@ -33395,9 +33395,9 @@
             "count": 1
           }
         ],
-        "hash": "d3a55d1c731a7ba4",
+        "hash": "6275b9254704a953",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-08T16:36:25Z"
       }
     },
     {
@@ -60809,6 +60809,39 @@
       }
     },
     {
+      "name": "technical-debt-auditor",
+      "path": "development/technical-debt-auditor",
+      "category": "development",
+      "type": "skill",
+      "description": "Scans a codebase and produces a quantified technical debt report with a prioritized remediation plan. Analyzes dead code, TODO/FIXME/HACK markers, dependency staleness, complexity hotspots, code duplication signals, test coverage gaps, unused exports, and outdated patterns. Use this skill when the user asks to audit their codebase for tech debt, wants a health check of their code quality, says things like \"where should I focus refactoring\", \"find code smells\", \"audit my codebase\", \"what technical debt do we have\", \"prioritize cleanup work\", or asks about code quality metrics. Also trigger when the user mentions \"code rot\", \"legacy cleanup\", \"refactoring priorities\", or wants to understand the overall health of a project before a major effort. Trigger even if the user doesn't say \"technical debt\" explicitly — any request to systematically assess code quality and identify improvement priorities belongs here.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [],
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "CAUTION",
+        "issueCount": 0,
+        "analysis": "partial",
+        "findings": [],
+        "hash": "8cc864faf85c9514",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-08T16:36:25Z"
+      }
+    },
+    {
       "name": "telegram-bot-builder",
       "path": "development/telegram-bot-builder",
       "category": "development",
@@ -76008,9 +76041,9 @@
         "issueCount": 0,
         "analysis": "partial",
         "findings": [],
-        "hash": "5fbbaf115456c2a5",
+        "hash": "c6197b8a81426224",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-08T16:36:25Z"
       }
     },
     {
