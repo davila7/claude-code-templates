@@ -12,7 +12,7 @@ export const prerender = true;
   description="What data aitmpl.com and the claude-code-templates CLI collect, why, who processes it, and how to opt out."
 >
   <TopBar />
-  <ProsePage heading="Privacy Policy" updated="November 7, 2026">
+  <ProsePage heading="Privacy Policy" updated="November 8, 2026">
     <p>
       This page explains what data Claude Code Templates collects through the website at aitmpl.com and the
       <code>claude-code-templates</code> command-line tool, why, and how to opt out. The project does not sell personal data
@@ -47,6 +47,9 @@ export const prerender = true;
     <p>
       Signing in is optional and handled by Clerk. If you sign in, we store your account identifier and the component
       collections you create, including whether you made a collection public. Your name and email are held by Clerk.
+      When you click Save, a job or a course before signing in, that one action (the component, or the link to open) is
+      kept in your browser's session storage for up to 30 minutes so it can be completed after you sign in. It is never
+      sent to us and is deleted as soon as it runs or the tab closes.
     </p>
 
     <h2>Sending components to a GitHub repository</h2>

@@ -79,11 +79,12 @@ export default function JobsPreview({ variant = 'preview' }: Props) {
   const jobs = variant === 'sidebar' ? data.jobs.slice(0, 12) : data.jobs.slice(0, 5);
   const showAuthGate = isLoaded && !isSignedIn;
 
-  function handleJobClick(e: React.MouseEvent) {
+  function handleJobClick(e: React.MouseEvent, job: Job) {
     if (!isLoaded) { e.preventDefault(); return; }
     if (!isSignedIn) {
       e.preventDefault();
-      openSignIn();
+      const url = safeUrl(job.applyUrl);
+      openSignIn(url !== '#' ? { kind: 'open-link', source: 'job', title: `${job.position} at ${job.company}`, url } : undefined);
     }
   }
 
@@ -117,7 +118,7 @@ export default function JobsPreview({ variant = 'preview' }: Props) {
               href={isSignedIn ? safeUrl(job.applyUrl) : '#'}
               target={isSignedIn ? '_blank' : undefined}
               rel={isSignedIn ? 'noopener noreferrer' : undefined}
-              onClick={showAuthGate ? handleJobClick : undefined}
+              onClick={showAuthGate ? (e) => handleJobClick(e, job) : undefined}
               className="flex items-start gap-2.5 p-2.5 rounded border border-[var(--color-border)] hover:border-[var(--color-accent)] bg-[var(--color-card-bg)] hover:bg-[var(--color-card-hover)] transition-all group relative overflow-hidden block"
             >
               {showAuthGate && (
@@ -182,7 +183,7 @@ export default function JobsPreview({ variant = 'preview' }: Props) {
             href={isSignedIn ? safeUrl(job.applyUrl) : '#'}
             target={isSignedIn ? '_blank' : undefined}
             rel={isSignedIn ? 'noopener noreferrer' : undefined}
-            onClick={showAuthGate ? handleJobClick : undefined}
+            onClick={showAuthGate ? (e) => handleJobClick(e, job) : undefined}
             className="bg-[var(--color-card-bg)] border border-[var(--color-border)] rounded-lg p-3.5 hover:border-[var(--color-border-hover)] hover:shadow-md transition-all group relative overflow-hidden"
           >
             {showAuthGate && (

@@ -496,8 +496,11 @@ export default function MyComponentsView() {
       const cols = await collectionsApi.list(token);
       setCollections(cols);
       if (cols.length > 0 && !selectedId) {
-        setSelectedId(cols[0].id);
-        setExpandedIds(new Set([cols[0].id]));
+        // ?collection=<id> opens that one (set after the first save).
+        const wanted = new URLSearchParams(window.location.search).get('collection');
+        const first = cols.find((c) => c.id === wanted) ?? cols[0];
+        setSelectedId(first.id);
+        setExpandedIds(new Set([first.id]));
       }
     } catch (err) {
       console.error('Failed to load collections:', err);
