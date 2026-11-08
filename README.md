@@ -1,68 +1,50 @@
-[![npm version](https://img.shields.io/npm/v/claude-code-templates.svg)](https://www.npmjs.com/package/claude-code-templates)
-[![npm downloads](https://img.shields.io/npm/dt/claude-code-templates.svg)](https://www.npmjs.com/package/claude-code-templates)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
-[![Sponsored by Z.AI](https://img.shields.io/badge/Sponsored%20by-Z.AI-2563eb?style=flat&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJMMiAyMkgyMkwxMiAyWiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+)](https://z.ai/subscribe?ic=8JVLJQFSKB&utm_source=github&utm_medium=badge&utm_campaign=readme)
-[![Claude for Open Source](https://img.shields.io/badge/Claude-Open%20Source%20Program-D97757?style=flat&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIzIiBmaWxsPSJ3aGl0ZSIvPjwvc3ZnPg==)](https://claude.com/contact-sales/claude-for-oss)
-[![Neon Open Source Program](https://img.shields.io/badge/Neon-Open%20Source%20Program-00E599?style=flat)](https://get.neon.com/4eCjZDz)
-[![GitHub Sponsors](https://img.shields.io/badge/GitHub%20Sponsors-sponsor-EA4AAA?style=flat&logo=githubsponsors&logoColor=white)](https://github.com/sponsors/davila7)
-[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-support-yellow?style=flat&logo=buy-me-a-coffee)](https://buymeacoffee.com/daniavila)
-[![GitHub stars](https://img.shields.io/github/stars/davila7/claude-code-templates.svg?style=social&label=Star)](https://github.com/davila7/claude-code-templates)
-
 <p align="center">
-  <a href="https://trendshift.io/repositories/15113" target="_blank">
-    <img src="https://trendshift.io/api/badge/repositories/15113" alt="davila7%2Fclaude-code-templates | Trendshift" style="width: 200px; height: 40px;" width="125" height="40"/>
-  </a>
-  <br />
-  <br />
-  <a href="https://vercel.com/oss">
-  <img alt="Vercel OSS Program" src="https://vercel.com/oss/program-badge.svg" />
-  </a>
-  &nbsp;&nbsp;
-  <a href="https://get.neon.com/4eCjZDz">
-  <img alt="Neon Open Source Program" src="https://img.shields.io/badge/Neon-Open%20Source%20Program-00E599?style=for-the-badge" />
-  </a>
-  &nbsp;&nbsp;
-  <a href="https://claude.com/contact-sales/claude-for-oss">
-  <img alt="Claude for Open Source" src="docs/claude-oss-badge.svg" height="48" />
-  </a>
-</p>
-
----
-
-<p align="center">
-  <a href="https://www.swiftproxy.net/" target="_blank">
+  <a href="https://www.aitmpl.com">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="docs/sponsors/swiftproxy-dark.png" />
-      <source media="(prefers-color-scheme: light)" srcset="docs/sponsors/swiftproxy-light.png" />
-      <img src="docs/sponsors/swiftproxy-light.png" alt="Swiftproxy" width="300" />
+      <source media="(prefers-color-scheme: dark)" srcset="docs-site/logo/dark.svg" />
+      <source media="(prefers-color-scheme: light)" srcset="docs-site/logo/light.svg" />
+      <img src="docs-site/logo/light.svg" alt="Claude Code Templates" width="360" />
     </picture>
   </a>
 </p>
 
-<h3 align="center">Sponsored by <a href="https://www.swiftproxy.net/">Swiftproxy</a></h3>
-
 <p align="center">
-  <b>Swiftproxy proudly supports this project.</b><br />
-  Connect your AI-powered workflows to reliable residential proxies for web data collection, browser automation, and AI-driven research.<br />
-  90M+ residential IPs across 220+ locations, rotating and static residential proxies, with HTTP(S) and SOCKS5 support.
+  An open catalog of components for Claude Code, installable with one command.
 </p>
 
 <p align="center">
+  <a href="https://www.npmjs.com/package/claude-code-templates"><img src="https://img.shields.io/npm/v/claude-code-templates.svg?color=d57455" alt="npm version" /></a>
+  <a href="https://www.npmjs.com/package/claude-code-templates"><img src="https://img.shields.io/npm/dt/claude-code-templates.svg?color=d57455" alt="npm downloads" /></a>
+  <a href="https://github.com/davila7/claude-code-templates/stargazers"><img src="https://img.shields.io/github/stars/davila7/claude-code-templates?color=d57455" alt="GitHub stars" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-d57455.svg" alt="MIT license" /></a>
+</p>
+
+<p align="center">
+  <a href="https://www.aitmpl.com"><b>Browse the catalog</b></a>
+  &nbsp;·&nbsp;
+  <a href="https://docs.aitmpl.com">Documentation</a>
+  &nbsp;·&nbsp;
+  <a href="CONTRIBUTING.md">Contributing</a>
+  &nbsp;·&nbsp;
+  <a href="https://github.com/davila7/claude-code-templates/discussions">Discussions</a>
+  &nbsp;·&nbsp;
+  <a href="CHANGELOG.md">Changelog</a>
+</p>
+
+<p align="center">
+  <sub>Sponsored by</sub><br />
   <a href="https://www.swiftproxy.net/">
-    <img src="https://img.shields.io/badge/Get%2010%25%20off-code%20PROXY90-2563eb?style=for-the-badge" alt="Get 10% off with code PROXY90" />
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="docs/sponsors/swiftproxy-dark.png" />
+      <source media="(prefers-color-scheme: light)" srcset="docs/sponsors/swiftproxy-light.png" />
+      <img src="docs/sponsors/swiftproxy-light.png" alt="Swiftproxy" width="160" />
+    </picture>
   </a>
+  &nbsp;&nbsp;&nbsp;
+  <a href="https://z.ai/subscribe?ic=8JVLJQFSKB&utm_source=github&utm_medium=badge&utm_campaign=readme"><b>Z.AI</b></a>
+  &nbsp;·&nbsp;
+  <a href="#sponsors-and-programs">all sponsors</a>
 </p>
-
----
-
-# Claude Code Templates ([aitmpl.com](https://aitmpl.com))
-
-**Ready-to-use configurations for Anthropic's Claude Code.** An open catalog of about 1,900 components (skills, agents, slash commands, MCP integrations, settings, hooks, mods, loops, sandboxes and project templates), installable with one command.
-
-## Browse & Install Components and Templates
-
-**[Browse all components](https://aitmpl.com)**: search the catalog, preview every file a component writes, and combine several components into a single install command.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/images/readme/aitmpl-catalog-dark.png" />
@@ -70,129 +52,165 @@
   <img src="docs/images/readme/aitmpl-catalog-dark.png" alt="The aitmpl.com component catalog" width="1600" />
 </picture>
 
+## About
 
-## 🚀 Quick Installation
+Claude Code is configured through small files: skills, subagents, slash commands, hooks, MCP servers and settings. Claude Code Templates collects more than 1,980 of them in one catalog at [aitmpl.com](https://www.aitmpl.com), where you can search, preview every file a component writes, and combine several components into a single install command. The CLI writes each file to the right place and merges existing configuration instead of overwriting it.
+
+Every pull request is checked by Claude Code's plugin validator and scanned by [NVIDIA SkillSpector](https://github.com/NVIDIA/skillspector).
+
+## Quickstart
+
+Runs with `npx`, no global install needed.
 
 ```bash
-# Install a complete development stack
-npx claude-code-templates@latest --agent development-team/frontend-developer --command testing/generate-tests --mcp integration/github-integration --yes
-
-# Browse and install interactively
+# Browse the catalog and install interactively
 npx claude-code-templates@latest
 
-# Install specific components
-npx claude-code-templates@latest --skill creative-design/frontend-design --yes
-npx claude-code-templates@latest --agent development-tools/code-reviewer --yes
-npx claude-code-templates@latest --command performance/optimize-bundle-size --yes
-npx claude-code-templates@latest --setting mcp/mcp-timeouts --yes
-npx claude-code-templates@latest --hook git/conventional-commits --yes
-npx claude-code-templates@latest --mcp database/postgresql-integration --yes
-npx claude-code-templates@latest --mod security/secret-redactor --yes
-npx claude-code-templates@latest --loop engineering/docs-sweep-loop --yes  # also installs the components the loop uses
+# Install one component
+npx claude-code-templates@latest --skill creative-design/frontend-design
+
+# Install a stack in one command
+npx claude-code-templates@latest \
+  --agent development-team/frontend-developer \
+  --command testing/generate-tests \
+  --mcp integration/github-integration
 ```
 
-## What You Get
+Add `--yes` to skip the confirmation prompt. Every component page on [aitmpl.com](https://www.aitmpl.com) shows its exact install command.
 
-| Component | Description | Examples |
-|-----------|-------------|----------|
-| **🎨 Skills** (890+) | Reusable capabilities with progressive disclosure | PDF processing, frontend design, code review |
-| **🤖 Agents** (420+) | AI specialists for specific domains | Security auditor, frontend developer, database architect |
-| **⚡ Commands** (280+) | Custom slash commands | `/generate-tests`, `/optimize-bundle-size`, `/security-audit` |
-| **🔌 MCPs** (100+) | External service integrations | GitHub, PostgreSQL, Stripe, Supabase, Sentry |
-| **⚙️ Settings** (75+) | Claude Code configurations | Timeouts, permissions, status lines |
-| **🪝 Hooks** (60+) | Automation triggers | Conventional commits, blocking direct pushes |
-| **🧩 Mods** (45+) | Plugins that change Claude Code's own interface and behavior (Claude Code 2.1.287+) | Secret redaction, protected paths, terminal games |
-| **🔁 Loops** (18) | Autonomous workflows with a goal, an interval and a stop condition | Docs sweep, build-test-fix, adversarial review |
-| **📦 Sandboxes** (11) | Launchers that run Claude Code in an isolated environment, kept in [`cli-tool/components/sandbox/`](cli-tool/components/sandbox/) (the CLI's `--sandbox` was removed in 1.31.0) | E2B, Cloudflare, Docker |
-| **🗂️ Templates** (14) | Complete project configurations | Language and framework setups |
-
-Current counts are in [`dashboard/public/counts.json`](dashboard/public/counts.json).
-
-## 🛠️ Additional Tools
-
-Beyond the template catalog, the CLI includes three local tools. The two dashboards listen on 127.0.0.1 only and answer only to `localhost`, because they serve your conversation history.
-
-### 📊 Claude Code Analytics
-Monitor your Claude Code sessions in real time with live state detection and usage metrics, at http://localhost:3333.
+<details>
+<summary>One example per component type</summary>
 
 ```bash
-npx claude-code-templates@latest --analytics
+npx claude-code-templates@latest --skill creative-design/frontend-design
+npx claude-code-templates@latest --agent development-tools/code-reviewer
+npx claude-code-templates@latest --command performance/optimize-bundle-size
+npx claude-code-templates@latest --mcp database/postgresql-integration
+npx claude-code-templates@latest --setting mcp/mcp-timeouts
+npx claude-code-templates@latest --hook git/conventional-commits
+npx claude-code-templates@latest --mod security/secret-redactor      # Claude Code 2.1.287+
+npx claude-code-templates@latest --loop engineering/docs-sweep-loop  # also installs the components the loop uses
+npx claude-code-templates@latest --plugin productivity/champion-kit  # via the aitmpl marketplace, Claude Code 2.1.288+
 ```
 
-### 💬 Conversation Browser
-Read and search your Claude Code conversations in a mobile-friendly web UI, at http://localhost:9876.
+</details>
 
-```bash
-npx claude-code-templates@latest --chats
-```
+## What's in the catalog
 
-To open it from another device, forward the port over SSH (`ssh -L 9876:localhost:9876 <host>`); the public `--tunnel` option was removed in 1.31.0.
+| Type | Count | What it is | Examples |
+|------|------:|------------|----------|
+| **Skills** | 918 | Reusable capabilities with progressive disclosure | PDF processing, frontend design, code review |
+| **Agents** | 422 | Subagents specialized in one domain | Security auditor, frontend developer, database architect |
+| **Commands** | 288 | Custom slash commands | `/generate-tests`, `/optimize-bundle-size`, `/security-audit` |
+| **MCPs** | 119 | External service integrations | GitHub, PostgreSQL, Stripe, Supabase, Sentry |
+| **Settings** | 80 | Claude Code configuration | Timeouts, permissions, status lines |
+| **Hooks** | 63 | Automation triggers | Conventional commits, blocking direct pushes |
+| **Mods** | 50 | Plugins that change Claude Code's own interface and behavior | Secret redaction, protected paths, terminal games |
+| **Loops** | 18 | Autonomous workflows with a goal, an interval and a stop condition | Docs sweep, build-test-fix, adversarial review |
+| **Templates** | 14 | Complete project configurations | Language and framework setups |
+| **Sandboxes** | 11 | Launchers that run Claude Code in an isolated environment (reference only, see [`cli-tool/components/sandbox/`](cli-tool/components/sandbox/)) | E2B, Cloudflare, Docker |
+| **Plugins** | 1 | Whole Claude Code plugins, installed from the `aitmpl` marketplace | Champion Kit |
 
-### 🔍 Health Check
-Diagnostics for your Claude Code installation and project setup (`--health`, `--check` and `--verify` are aliases).
+Live counts: [`dashboard/public/counts.json`](dashboard/public/counts.json).
 
-```bash
-npx claude-code-templates@latest --health-check
-```
+## Local tools
 
-### Removed in 1.31.0
+The CLI also ships three local tools. The two dashboards listen on `127.0.0.1` only, because they serve your conversation history.
 
-`--plugins`, `--skills-manager`, `--command-stats`, `--hook-stats`, `--mcp-stats`, `--agents`, `--chats-mobile`, `--teams`, `--2025`, `--studio`, `--sandbox`, `--tunnel`, `--create-agent`, `--list-agents`, `--update-agent`, `--remove-agent` and `--clone-session` were removed. Running one prints what replaced it. To see what is installed in each scope (plugins, skills, commands, hooks, MCPs), use the [stack viewer mod](https://www.aitmpl.com/component/mods/ui/stack-viewer): `npx claude-code-templates@latest --mod ui/stack-viewer`, then `/stack` in Claude Code. See the [CHANGELOG](CHANGELOG.md) for details.
+| Command | What it does |
+|---------|--------------|
+| `npx claude-code-templates@latest --analytics` | Real-time session monitoring and usage metrics at `localhost:3333` |
+| `npx claude-code-templates@latest --chats` | Read and search your conversations in a mobile-friendly UI at `localhost:9876` |
+| `npx claude-code-templates@latest --health-check` | Diagnose your Claude Code installation and project setup |
 
-## 📖 Documentation
+To open the conversation browser from another device, forward the port over SSH: `ssh -L 9876:localhost:9876 <host>`.
 
-**[📚 docs.aitmpl.com](https://docs.aitmpl.com/)** - Complete guides, examples, and API reference for all components and tools.
+<details>
+<summary>Flags removed in 1.31.0</summary>
+
+`--plugins`, `--skills-manager`, `--command-stats`, `--hook-stats`, `--mcp-stats`, `--agents`, `--chats-mobile`, `--teams`, `--2025`, `--studio`, `--sandbox`, `--tunnel`, `--create-agent`, `--list-agents`, `--update-agent`, `--remove-agent` and `--clone-session` were removed. Running one prints what replaced it. To see what is installed in each scope, use the [stack viewer mod](https://www.aitmpl.com/component/mods/ui/stack-viewer) (`--mod ui/stack-viewer`, then `/stack` in Claude Code). Details in the [CHANGELOG](CHANGELOG.md).
+
+</details>
+
+## Documentation
+
+Guides, the CLI reference and the catalog API live at **[docs.aitmpl.com](https://docs.aitmpl.com)**.
 
 ## Contributing
 
-We welcome contributions! **[Browse existing templates](https://aitmpl.com)** to see what's available, then check our [contributing guidelines](CONTRIBUTING.md) to add your own skills, agents, commands, MCPs, settings, hooks or mods. Every pull request is checked by Claude Code's plugin validator and scanned by [NVIDIA SkillSpector](https://github.com/NVIDIA/skillspector).
+Contributions are welcome. Read the [contributing guide](CONTRIBUTING.md) to add a skill, agent, command, MCP, setting, hook or mod, and the [Code of Conduct](CODE_OF_CONDUCT.md) before you open a pull request.
 
-**Please read our [Code of Conduct](CODE_OF_CONDUCT.md) before contributing.**
+## Sponsors and programs
+
+### Sponsors
+
+<p align="center">
+  <a href="https://www.swiftproxy.net/">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="docs/sponsors/swiftproxy-dark.png" />
+      <source media="(prefers-color-scheme: light)" srcset="docs/sponsors/swiftproxy-light.png" />
+      <img src="docs/sponsors/swiftproxy-light.png" alt="Swiftproxy" width="280" />
+    </picture>
+  </a>
+</p>
+
+<p align="center">
+  <b>Swiftproxy proudly supports this project.</b><br />
+  Connect your AI-powered workflows to reliable residential proxies for web data collection, browser automation, and AI-driven research.<br />
+  90M+ residential IPs across 220+ locations, rotating and static residential proxies, with HTTP(S) and SOCKS5 support.<br /><br />
+  <a href="https://www.swiftproxy.net/"><img src="https://img.shields.io/badge/Get%2010%25%20off-code%20PROXY90-2563eb?style=for-the-badge" alt="Get 10% off with code PROXY90" /></a>
+</p>
+
+<p align="center">
+  <a href="https://z.ai/subscribe?ic=8JVLJQFSKB&utm_source=github&utm_medium=badge&utm_campaign=readme"><img src="https://img.shields.io/badge/Sponsored%20by-Z.AI-2563eb?style=for-the-badge" alt="Sponsored by Z.AI" /></a>
+</p>
+
+### Open source programs
+
+<p align="center">
+  <a href="https://claude.com/contact-sales/claude-for-oss"><img alt="Claude for Open Source" src="docs/claude-oss-badge.svg" height="40" /></a>
+  &nbsp;&nbsp;
+  <a href="https://vercel.com/oss"><img alt="Vercel OSS Program" src="https://vercel.com/oss/program-badge.svg" height="40" /></a>
+  &nbsp;&nbsp;
+  <a href="https://get.neon.com/4eCjZDz"><img alt="Neon Open Source Program" src="https://img.shields.io/badge/Neon-Open%20Source%20Program-00E599?style=for-the-badge" height="40" /></a>
+</p>
+
+<p align="center">
+  <a href="https://trendshift.io/repositories/15113"><img src="https://trendshift.io/api/badge/repositories/15113" alt="davila7%2Fclaude-code-templates | Trendshift" width="200" height="40" /></a>
+</p>
+
+### Support the project
+
+<p align="center">
+  <a href="https://github.com/sponsors/davila7"><img src="https://img.shields.io/badge/Sponsor%20on%20GitHub-%E2%9D%A4-EA4AAA?style=for-the-badge&logo=githubsponsors&logoColor=white" alt="Sponsor on GitHub" /></a>
+  &nbsp;
+  <a href="https://buymeacoffee.com/daniavila"><img src="https://img.shields.io/badge/Buy%20me%20a%20coffee-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black" alt="Buy me a coffee" /></a>
+</p>
+
+Everyone who supports the project is listed at [aitmpl.com/supporters](https://www.aitmpl.com/supporters).
 
 ## Attribution
 
-This collection includes components from multiple sources:
+The catalog includes components from these sources. Each keeps its original license and attribution.
 
-**Scientific Skills:**
-- **[K-Dense-AI/claude-scientific-skills](https://github.com/K-Dense-AI/claude-scientific-skills)** by K-Dense Inc. - MIT License (139 scientific skills for biology, chemistry, medicine, and computational research)
+| Source | License | Contributes |
+|--------|---------|-------------|
+| [K-Dense-AI/claude-scientific-skills](https://github.com/K-Dense-AI/claude-scientific-skills) (K-Dense Inc.) | MIT | 139 scientific skills for biology, chemistry, medicine and computational research |
+| [anthropics/skills](https://github.com/anthropics/skills) | See repo | 21 official Anthropic skills |
+| [anthropics/claude-code](https://github.com/anthropics/claude-code) | See repo | 10 skills from development guides and examples |
+| [obra/superpowers](https://github.com/obra/superpowers) (Jesse Obra) | MIT | 14 workflow skills |
+| [alirezarezvani/claude-skills](https://github.com/alirezarezvani/claude-skills) (Alireza Rezvani) | MIT | 36 professional role skills |
+| [wshobson/agents](https://github.com/wshobson/agents) | MIT | 48 agents |
+| [hesreallyhim/awesome-claude-code](https://github.com/hesreallyhim/awesome-claude-code) | CC0 1.0 | 21 commands |
+| [mehdi-lamrani/awesome-claude-skills](https://github.com/mehdi-lamrani/awesome-claude-skills) | Apache 2.0 | Community skills |
+| NerdyChefsAI Skills | MIT | Specialized enterprise skills |
+| move-code-quality-skill | MIT | |
+| cocoindex-claude | Apache 2.0 | |
 
-**Official Anthropic:**
-- **[anthropics/skills](https://github.com/anthropics/skills)** - Official Anthropic skills (21 skills)
-- **[anthropics/claude-code](https://github.com/anthropics/claude-code)** - Development guides and examples (10 skills)
+## Star history
 
-**Community Skills & Agents:**
-- **[obra/superpowers](https://github.com/obra/superpowers)** by Jesse Obra - MIT License (14 workflow skills)
-- **[alirezarezvani/claude-skills](https://github.com/alirezarezvani/claude-skills)** by Alireza Rezvani - MIT License (36 professional role skills)
-- **[wshobson/agents](https://github.com/wshobson/agents)** by wshobson - MIT License (48 agents)
-- **NerdyChefsAI Skills** - Community contribution - MIT License (specialized enterprise skills)
-
-**Commands & Tools:**
-- **[awesome-claude-code](https://github.com/hesreallyhim/awesome-claude-code)** by hesreallyhim - CC0 1.0 Universal (21 commands)
-- **[awesome-claude-skills](https://github.com/mehdi-lamrani/awesome-claude-skills)** - Apache 2.0 (community skills)
-- **move-code-quality-skill** - MIT License
-- **cocoindex-claude** - Apache 2.0
-
-Each of these resources retains its **original license and attribution**, as defined by their respective authors.
-We respect and credit all original creators for their work and contributions to the Claude ecosystem.
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🔗 Links
-
-- **🌐 Browse Templates**: [aitmpl.com](https://aitmpl.com)
-- **📚 Documentation**: [docs.aitmpl.com](https://docs.aitmpl.com)
-- **💬 Community**: [GitHub Discussions](https://github.com/davila7/claude-code-templates/discussions)
-- **🐛 Issues**: [GitHub Issues](https://github.com/davila7/claude-code-templates/issues)
-
-## Stargazers over time
 [![Stargazers over time](docs/star-history.svg)](https://www.aitmpl.com/component/skill/git/star-history-chart)
 
----
+## License
 
-**⭐ Found this useful? Give us a star to support the project!**
-
-[![Sponsor on GitHub](https://img.shields.io/badge/Sponsor%20on%20GitHub-%E2%9D%A4-EA4AAA?style=for-the-badge&logo=githubsponsors&logoColor=white)](https://github.com/sponsors/davila7)
-
-[![Buy Me A Coffee](https://img.buymeacoffee.com/button-api/?text=Buy%20me%20a%20coffee&slug=daniavila&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff)](https://buymeacoffee.com/daniavila)
+[MIT](LICENSE)
