@@ -29146,6 +29146,38 @@
       }
     },
     {
+      "name": "wealthville",
+      "path": "web-data/wealthville.json",
+      "category": "web-data",
+      "type": "mcp",
+      "description": "Wealthville MCP — read-only DeFi liquidity-pool scoring. Answers \"is this pool worth providing liquidity to?\" with a 0-100 score and an ENTER/HOLD/EXIT/REDUCE/AVOID verdict, with confidence calibrated per protocol. Covers ~68,800 Solana pools (Meteora DLMM, Orca Whirlpool, Raydium AMM/CLMM/CPMM) and 575 EVM pools across Ethereum, Arbitrum, Base, Optimism, Polygon and BSC (Uniswap v2/v3/v4, Aave, Morpho, Pendle, Curve, Compound, Aerodrome). Four tools: get_pool_score, get_top_pools, get_signals_feed, get_track_record — the last returns a miss-inclusive 30-day track record so the scores can be judged before they are trusted. No API key and no signup required; an optional free partner key raises the rate limit from 60 to 600 req/min. Never touches a wallet and cannot sign or send transactions.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "hash": "351895f309b98ea5",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-08T16:28:56Z"
+      }
+    },
+    {
       "name": "searxng",
       "path": "web/searxng.json",
       "category": "web",
@@ -82429,6 +82461,49 @@
         "hash": "64fc90157497237d",
         "version": "2.12.0",
         "scannedAt": "2026-10-17T20:36:45Z"
+      }
+    },
+    {
+      "name": "wealthville-pool-scoring",
+      "path": "web-data/wealthville-pool-scoring",
+      "category": "web-data",
+      "type": "skill",
+      "description": "Score DeFi liquidity pools before providing liquidity. Returns a 0-100 pool score and an Enter/Hold/Exit/Reduce/Avoid verdict with calibrated confidence for ~68,800 Solana pools and 575 EVM pools, plus a public miss-inclusive track record. Use when asked whether a pool is worth LPing into, which pools look best right now, or how accurate the scores have actually been.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [],
+      "skillspector": {
+        "score": 7,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 1,
+        "analysis": "complete",
+        "findings": [
+          {
+            "id": "RP1",
+            "category": "MCP Rug Pull",
+            "severity": "MEDIUM",
+            "title": "npx commands without a version suffix (e.g. @1.0.0) create a rug-pull risk if the upstream server is compromised and publishes a malicious update.",
+            "file": "SKILL.md",
+            "line": 149,
+            "count": 1
+          }
+        ],
+        "hash": "9be4e8df869881a8",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-08T16:28:56Z"
       }
     },
     {
