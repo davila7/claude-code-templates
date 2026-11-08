@@ -44,6 +44,19 @@ try {
     }) ?? null;
   }
 
+  // One URL per component: singular types and bare names (old links, the grid
+  // before 2026-11) answer 301 to the sitemap form, so Google stops indexing up
+  // to four copies of each page. Checked before the content fetch so a legacy
+  // URL redirects without downloading the page's content.
+  if (component) {
+    const target = componentPath(component.type ?? type ?? '', component.path ?? component.name);
+    let current = Astro.url.pathname;
+    try { current = decodeURI(current); } catch { /* keep the raw path */ }
+    if (current !== target) {
+      return Astro.redirect(`${target}${Astro.url.search}`, 301);
+    }
+  }
+
   // Load full content on demand — the index (components.json) no longer
   // embeds 'content' to keep the payload small (~85% reduction).
   if (component) {
@@ -64,23 +77,11 @@ if (!component && !error) {
   Astro.response.statusText = 'Not Found';
 }
 
-// One URL per component: singular types and bare names (old links, the grid
-// before 2026-11) answer 301 to the sitemap form, so Google stops indexing up
-// to four copies of each page.
-if (component) {
-  const target = componentPath(component.type ?? type ?? '', component.path ?? component.name);
-  let current = Astro.url.pathname;
-  try { current = decodeURI(current); } catch { /* keep the raw path */ }
-  if (current !== target) {
-    return Astro.redirect(`${target}${Astro.url.search}`, 301);
-  }
-}
-
 // Same category first, then the rest of the type, by downloads: static links
 // that let crawlers reach component pages without running the grid's JS.
 const related: Component[] = component
   ? siblings
-      .filter((c) => c.path !== component!.path)
+      .filter((c) => (c.path ?? c.name) !== (component!.path ?? component!.name))
       .sort((a, b) => Number(b.category === component!.category) - Number(a.category === component!.category)
         || (b.downloads ?? 0) - (a.downloads ?? 0))
       .slice(0, 6)
