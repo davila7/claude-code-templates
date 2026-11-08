@@ -3,8 +3,8 @@
 //
 // Read-only by design: it never calls a route that writes (download tracking is
 // probed with an invalid body that the route rejects before inserting, the
-// cron-only /api/health-check and /api/claude-code-check are skipped because a
-// GET runs them), and the CLI runs with tracking off in a temp directory.
+// cron-only /api/health-check is skipped because a
+// GET runs it), and the CLI runs with tracking off in a temp directory.
 //
 // Usage:
 //   node scripts/prod-smoke-test.mjs [--base https://www.aitmpl.com] [--only web,api,cli] [--cli-version latest]

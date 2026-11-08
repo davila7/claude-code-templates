@@ -54,35 +54,6 @@ async function checkEndpoint(endpoint: { url: string; method: string }): Promise
   }
 }
 
-async function sendDiscordAlert(failures: EndpointResult[]) {
-  const webhookUrl = import.meta.env.DISCORD_WEBHOOK_URL_CHANGELOG || process.env.DISCORD_WEBHOOK_URL_CHANGELOG;
-  if (!webhookUrl || failures.length === 0) return;
-
-  const failureList = failures
-    .map((f) => `- \`${f.endpoint}\`: ${f.errorMessage || `HTTP ${f.statusCode}`} (${f.responseTimeMs}ms)`)
-    .join('\n');
-
-  try {
-    await fetch(webhookUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        embeds: [
-          {
-            title: 'API Health Alert',
-            description: `The following endpoints are experiencing issues:\n${failureList}`,
-            color: 0xff4444,
-            timestamp: new Date().toISOString(),
-          },
-        ],
-      }),
-    });
-  } catch (error: unknown) {
-    const err = error as Error;
-    console.error('Failed to send Discord alert:', err.message);
-  }
-}
-
 export const OPTIONS: APIRoute = async () => {
   return corsResponse();
 };
@@ -112,7 +83,6 @@ export const GET: APIRoute = async () => {
     );
 
     if (failures.length > 0) {
-      await sendDiscordAlert(failures);
       for (const failure of failures) {
         await captureApiError(
           new Error(failure.errorMessage || `HTTP ${failure.statusCode}`),

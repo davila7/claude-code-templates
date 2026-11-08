@@ -414,17 +414,17 @@ API endpoints live as Astro API routes in `dashboard/src/pages/api/`:
 - **Agent vs human (CLI >= 1.32.0, live 2026-11-03):** the CLI also sends `agent`, `entrypoint` and `isTty` from `cli-tool/src/agent-detection.js` (`AI_AGENT`, `CLAUDECODE`, Cursor/Codex/Gemini/Copilot/OpenCode/Replit/Devin markers, following `@vercel/detect-agent`; `CLAUDE_CODE_ENTRYPOINT`; `process.stdout.isTTY`). The endpoint clamps them (`dashboard/src/lib/api/download-client-signals.ts`: unknown agent → `other`, entrypoint must be a ≤32-char slug) and stores `client_agent`, `client_entrypoint`, `client_is_tty` (`database/migrations/004_supabase_download_client_signals.sql`, applied). Read a row as: `client_is_tty IS NULL` = older CLI (unknown), `client_agent` set = AI agent, else `client_is_tty` true = person in a terminal, false = script/pipe. Never send the other variables Claude Code exports (account email, account id, session id). Self-reported and spoofable, a person's `!` command inside Claude Code counts as `claude`, and `CI=true` runs are not tracked at all, so the split is a statistic, never a sponsor-billed metric. The Rust CLI does not send it. A new agent name goes in both `KNOWN_AGENTS` lists (CLI and endpoint; `dashboard/tests/download-client-signals.test.ts` fails if they differ). Shown on `/trending#agents` from `trending-data.json` `clientSplit`.
 - Querying `component_downloads` by `created_at` over REST times out (statement timeout, 1.7M+ rows): filter by `id` ranges instead, or use the Supabase MCP `execute_sql` for one-off reads
 
-**`/api/claude-code-check`**
-- Monitors Claude Code releases
-- Triggered every 30 minutes by the `cloudflare-workers/crons` Worker (not a Vercel cron)
-- Database: Neon (claude_code_versions, claude_code_changes, discord_notifications_log, monitoring_metadata tables)
+The project no longer uses Discord (removed 2026-11-08): the Claude Code release monitor
+`/api/claude-code-check` and its changelog parser existed only to post to a Discord
+webhook and were deleted, as were the bot, the Discord workflows and pulse's Discord
+source. Its Neon tables (`claude_code_versions`, `claude_code_changes`,
+`discord_notifications_log`, `monitoring_metadata`) are left in place, unread.
 
 ### Shared API Libraries
 
 - `dashboard/src/lib/api/cors.ts` — CORS headers, `corsResponse()`, `jsonResponse()`
 - `dashboard/src/lib/api/neon.ts` — Neon client factory
 - `dashboard/src/lib/api/auth.ts` — Clerk JWT verification
-- `dashboard/src/lib/api/changelog-parser.ts` — Claude Code changelog parser
 
 ### Emergency Rollback
 
@@ -444,7 +444,6 @@ The `cloudflare-workers/` directory contains Cloudflare Worker projects that run
 
 Replaces the old Vercel cron jobs. On a schedule it calls the dashboard API endpoints (which stay on Cloudflare Pages) with a shared `TRIGGER_SECRET`.
 
-- `*/30 * * * *` → `/api/claude-code-check` (monitors Claude Code npm releases)
 - `0 * * * *` → `/api/health-check` (hourly; was every 15 min on Vercel, reduced to save invocations)
 
 Errors and cron check-ins are reported to Sentry (`sentry.js`, DSN from the `aitmpl-workers` project — see Error Tracking below).
@@ -463,7 +462,7 @@ Monitored https://code.claude.com/docs hourly with Telegram notifications. **Del
 
 ### pulse (Weekly KPI Report)
 
-Collects metrics from GitHub, Discord, Supabase, npm, and Google Analytics every Sunday at 14:00 UTC and sends a consolidated report via Telegram.
+Collects metrics from GitHub, Supabase, npm, and Google Analytics every Sunday at 14:00 UTC and sends a consolidated report via Telegram.
 
 **Architecture:** Single `index.js` file (no npm dependencies at runtime). All source collectors, formatter, and Telegram sender in one file.
 
@@ -494,8 +493,6 @@ TELEGRAM_CHAT_ID            # Shared with docs-monitor
 GITHUB_TOKEN                # GitHub PAT (public_repo scope)
 SUPABASE_URL                # Supabase project URL
 SUPABASE_SERVICE_ROLE_KEY   # Supabase service role key
-DISCORD_BOT_TOKEN           # Discord bot token
-DISCORD_GUILD_ID            # Discord server ID
 TRIGGER_SECRET              # For manual /trigger endpoint
 GA_PROPERTY_ID              # GA4 property ID (optional)
 GA_SERVICE_ACCOUNT_JSON     # Base64 service account (optional)
@@ -543,7 +540,7 @@ appearing in its Issues dashboard).
 - ✅ **Dashboard** (Sentry project `aitmpl-dashboard`) — `SENTRY_DSN` set as a
   Cloudflare Pages secret (`wrangler pages secret put SENTRY_DSN
   --project-name=aitmpl-dashboard`). Wired into `captureApiError()` calls in
-  `claude-code-check`, `health-check`, and the three `track-*` endpoints.
+  `health-check` and the three `track-*` endpoints.
 - ✅ **CLI** (Sentry project `aitmpl-cli`) — the DSN is public by design
   (send-only, not a secret) and ships **hardcoded as the default** in
   `cli-tool/src/error-reporting.js` (`DEFAULT_SENTRY_DSN`, overridable via
@@ -552,11 +549,11 @@ appearing in its Issues dashboard).
   `CCT_ERROR_REPORTING=true`, and always defers to the existing
   `CCT_NO_TRACKING`/`CCT_NO_ANALYTICS`/`CI` opt-outs.
 
-**Not yet configured (any surface):** Sentry alert rules to Discord/Telegram,
+**Not yet configured (any surface):** Sentry alert rules to Telegram,
 and Cron Monitors dashboards for the workers' scheduled check-ins (the
 `checkIn()` calls already send `in_progress`/`ok`/`error` events — a Monitor
 just needs to be created in the Sentry UI with matching slugs:
-`claude-code-check`, `health-check`, `pulse-weekly-report`, `docs-monitor`).
+`health-check`, `pulse-weekly-report`, `docs-monitor`).
 
 **Files:** `cloudflare-workers/{crons,pulse,docs-monitor}/sentry.js` (workers),
 `dashboard/src/lib/api/error-tracking.ts` (dashboard), `cli-tool/src/error-reporting.js` (CLI).
@@ -648,9 +645,6 @@ SUPABASE_SERVICE_ROLE_KEY=xxx               # secret
 
 # Neon Database
 NEON_DATABASE_URL=postgresql://user:pass@host/db?sslmode=require   # secret
-
-# Discord
-DISCORD_WEBHOOK_URL_CHANGELOG=https://discord.com/api/webhooks/xxx   # secret
 ```
 
 ### Known Issues & Solutions
@@ -763,10 +757,8 @@ This automatically:
 only the `docs/` copy, so after creating an article you must mirror it across —
 the article directory, its cover under `assets/`, and the new entry in
 `blog-articles.json` — or it never appears on aitmpl.com. Three articles were
-stranded this way before 2026-09-20. `daily-blog-discord.yml` (schedule paused 2026-10-26 with the other Discord workflows; `workflow_dispatch` only) picks from
-`docs/blog/blog-articles.json` and links to `aitmpl.com/blog/<slug>/`, so an
-unmirrored article is posted to Discord as a 404. Keep the two
-`blog-articles.json` files identical.
+stranded this way before 2026-09-20. Keep the two `blog-articles.json` files
+identical.
 
 ## Rust CLI (`cli-rust/`): in backlog
 

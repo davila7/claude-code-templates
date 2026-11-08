@@ -16,8 +16,6 @@ crons = ["0 14 * * SUN"]
 # - GITHUB_TOKEN: GitHub PAT (public_repo scope)
 # - SUPABASE_URL: Supabase project URL
 # - SUPABASE_SERVICE_ROLE_KEY: Supabase service role key
-# - DISCORD_BOT_TOKEN: Discord bot token
-# - DISCORD_GUILD_ID: Discord server ID
 # - VERCEL_TOKEN: Vercel personal access token
 # - VERCEL_PROJECT_ID: Vercel project ID
 # - TRIGGER_SECRET: Secret for manual /trigger endpoint
