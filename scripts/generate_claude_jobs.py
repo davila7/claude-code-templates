@@ -25,7 +25,7 @@ from datetime import datetime, timedelta, timezone
 from html import unescape
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from urllib.request import Request, urlopen
-from urllib.parse import urlparse
+from urllib.parse import unquote, urlparse
 from urllib.error import URLError
 
 # ---------------------------------------------------------------------------
@@ -713,7 +713,7 @@ def scan_board(board):
         domain = board.get("domain", "")
         found.append({
             "id": f"{board['ats'][:2]}-{board['slug']}-{post['id']}",
-            "company": board.get("company") or post.get("company") or board["slug"],
+            "company": unquote(board.get("company") or post.get("company") or board["slug"]),
             "position": post["title"][:120],
             "location": join_locations(locations)[:120] or ("Remote" if remote else "On-site"),
             "locations": locations,
@@ -725,7 +725,7 @@ def scan_board(board):
             "sourceUrl": post["url"],
             "postedAt": post["postedAt"],
             "tags": tags,
-            "companyIcon": f"https://{domain}/favicon.ico" if domain else company_icon(board.get("company") or ""),
+            "companyIcon": f"https://{domain}/favicon.ico" if domain else company_icon(unquote(board.get("company") or "")),
         })
     return found
 
@@ -806,7 +806,8 @@ def board_from_url(url):
 
 
 def slug_title(slug):
-    return re.sub(r"[-_]+", " ", slug).strip().title()
+    # Board URLs carry percent-encoded slugs ("Superhuman%20Platform%20Inc").
+    return re.sub(r"[-_]+", " ", unquote(slug)).strip().title()
 
 
 DISCOVERED_BOARDS_PATH = "docs/claude-jobs-discovered-boards.json"
@@ -854,6 +855,9 @@ def collect_discovered_boards(listed_boards, excluded):
 
     saved = {(b["ats"], b["slug"].lower()): b for b in load_discovered_boards()
              if (b["ats"], b["slug"].lower()) not in skip}
+    for b in saved.values():
+        if b.get("company"):
+            b["company"] = unquote(b["company"])
     today = datetime.now(timezone.utc).date().isoformat()
     for ats, slug in discover_with_firecrawl(skip | set(saved)):
         saved[(ats, slug.lower())] = {
