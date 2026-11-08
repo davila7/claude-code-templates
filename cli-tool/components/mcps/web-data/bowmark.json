@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "bowmark": {
+      "description": "Typed functions for live websites with one API key: YouTube search, transcripts and comments, Google Maps places and reviews, X profiles and posts, LinkedIn, Reddit, flights, Resy and OpenTable tables, and every open job at a company across 12 applicant tracking systems. Your agent looks functions up with get_library and calls them with run. Starts with a free $10.",
+      "command": "npx",
+      "args": ["-y", "@bowmark/mcp@2.1.2"],
+      "env": {
+        "BOWMARK_API_KEY": "<your-bowmark-api-key>"
+      }
+    }
+  }
+}
