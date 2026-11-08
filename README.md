@@ -33,8 +33,23 @@
   <a href="CHANGELOG.md">Changelog</a>
 </p>
 
+<p align="center"><sub>SPONSORED BY</sub></p>
+
 <p align="center">
-  <sub>Sponsored by <a href="https://www.swiftproxy.net/"><b>Swiftproxy</b></a> and <a href="https://z.ai/subscribe?ic=8JVLJQFSKB&utm_source=github&utm_medium=badge&utm_campaign=readme"><b>Z.AI</b></a> · <a href="#sponsors-and-programs">all sponsors and programs</a></sub>
+  <a href="https://www.swiftproxy.net/">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="docs/sponsors/swiftproxy-dark.png" />
+      <source media="(prefers-color-scheme: light)" srcset="docs/sponsors/swiftproxy-light.png" />
+      <img src="docs/sponsors/swiftproxy-light.png" alt="Swiftproxy" width="280" />
+    </picture>
+  </a>
+</p>
+
+<p align="center">
+  <b>Swiftproxy proudly supports this project.</b><br />
+  Connect your AI-powered workflows to reliable residential proxies for web data collection, browser automation, and AI-driven research.<br />
+  90M+ residential IPs across 220+ locations, rotating and static residential proxies, with HTTP(S) and SOCKS5 support.<br /><br />
+  <a href="https://www.swiftproxy.net/"><img src="https://img.shields.io/badge/Get%2010%25%20off-code%20PROXY90-2563eb?style=for-the-badge" alt="Get 10% off with code PROXY90" /></a>
 </p>
 
 <picture>
@@ -135,25 +150,12 @@ Contributions are welcome. Read the [contributing guide](CONTRIBUTING.md) to add
 
 ### Sponsors
 
-<p align="center">
-  <a href="https://www.swiftproxy.net/">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="docs/sponsors/swiftproxy-dark.png" />
-      <source media="(prefers-color-scheme: light)" srcset="docs/sponsors/swiftproxy-light.png" />
-      <img src="docs/sponsors/swiftproxy-light.png" alt="Swiftproxy" width="280" />
-    </picture>
-  </a>
-</p>
+
 
 <p align="center">
-  <b>Swiftproxy proudly supports this project.</b><br />
-  Connect your AI-powered workflows to reliable residential proxies for web data collection, browser automation, and AI-driven research.<br />
-  90M+ residential IPs across 220+ locations, rotating and static residential proxies, with HTTP(S) and SOCKS5 support.<br /><br />
-  <a href="https://www.swiftproxy.net/"><img src="https://img.shields.io/badge/Get%2010%25%20off-code%20PROXY90-2563eb?style=for-the-badge" alt="Get 10% off with code PROXY90" /></a>
-</p>
-
-<p align="center">
-  <a href="https://z.ai/subscribe?ic=8JVLJQFSKB&utm_source=github&utm_medium=badge&utm_campaign=readme"><img src="https://img.shields.io/badge/Sponsored%20by-Z.AI-2563eb?style=for-the-badge" alt="Sponsored by Z.AI" /></a>
+  <a href="https://z.ai/subscribe?ic=8JVLJQFSKB&utm_source=github&utm_medium=badge&utm_campaign=readme"><img src="https://img.shields.io/badge/Z.AI-sponsor-2563eb?style=for-the-badge" alt="Z.AI" /></a>
+  &nbsp;
+  <a href="https://get.brightdata.com/lcqorc6nzp9w"><img src="https://img.shields.io/badge/Bright%20Data-sponsor-3d7ffc?style=for-the-badge" alt="Bright Data" /></a>
 </p>
 
 ### Open source programs
