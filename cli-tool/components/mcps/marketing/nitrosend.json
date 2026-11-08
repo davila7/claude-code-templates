@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "nitrosend": {
+      "description": "Nitrosend's hosted MCP server for email and SMS in Claude Code. Compose campaigns and flows, manage contacts and segments, send transactional messages, and review delivery. OAuth sign-in and setup: https://nitrosend.com/mcp",
+      "type": "http",
+      "url": "https://api.nitrosend.com/mcp"
+    }
+  }
+}
