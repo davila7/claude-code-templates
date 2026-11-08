@@ -115,7 +115,7 @@ function showInAppDialog(info: InAppBrowser) {
     `GitHub and Google sign-in don't work inside ${appName}. ` +
     `Open this page in ${browserName} and sign in there.` +
     (info.app === 'X' ? ' In X, tap the compass icon at the bottom right.' : '');
-  body.style.cssText = 'margin:0 0 16px;font-size:14px;line-height:1.5;color:var(--color-text-secondary,#a3a197);';
+  body.style.cssText = 'margin:0 0 16px;font-size:14px;line-height:1.5;color:var(--color-text-secondary,#c3c1b7);';
 
   const btnBase =
     'display:block;width:100%;box-sizing:border-box;padding:11px 14px;border-radius:8px;font-size:14px;' +
@@ -161,7 +161,7 @@ function showInAppDialog(info: InAppBrowser) {
   email.type = 'button';
   email.textContent = 'Use email and password here';
   email.style.cssText =
-    btnBase + 'background:transparent;border:0;color:var(--color-text-secondary,#a3a197);margin:0;';
+    btnBase + 'background:transparent;border:0;color:var(--color-text-secondary,#c3c1b7);margin:0;';
   email.addEventListener('click', () => { close(false); clerkOpenSignIn(true); });
   actions.append(email);
 

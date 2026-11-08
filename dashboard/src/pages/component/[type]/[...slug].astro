@@ -457,7 +457,7 @@ const componentSchema = component
           {/* About column. On phones it comes first (install right under the name); on desktop it sits on the right. */}
           <aside class="lg:col-start-2 lg:row-start-2 lg:pt-6 flex flex-col gap-5 min-w-0">
             {aboutDescription && (
-              <p class="lg:hidden text-[15px] leading-relaxed text-[var(--color-text-secondary)] line-clamp-3">{aboutDescription}</p>
+              <p class="lg:hidden text-[15px] leading-relaxed text-[var(--color-text-primary)] line-clamp-3">{aboutDescription}</p>
             )}
             <p class="lg:hidden -mt-2 font-mono text-[12.5px] leading-relaxed text-[var(--color-text-tertiary)]">
               {(component.downloads ?? 0) > 0 && `${formatCount(component.downloads ?? 0, 'download', 'downloads')} · `}
@@ -522,7 +522,7 @@ const componentSchema = component
             <section aria-labelledby="about-h" class="hidden lg:block border-t border-[var(--color-border)] pt-5">
               <h2 id="about-h" class="text-[14px] font-semibold text-[var(--color-text-primary)] mb-2">About</h2>
               {aboutDescription && (
-                <p class="text-[13.5px] leading-relaxed text-[var(--color-text-secondary)] mb-4 line-clamp-6" title={aboutDescription}>{aboutDescription}</p>
+                <p class="text-[14px] leading-relaxed text-[var(--color-text-primary)] mb-4 line-clamp-6" title={aboutDescription}>{aboutDescription}</p>
               )}
               <ul class="flex flex-col gap-2 text-[13.5px] text-[var(--color-text-secondary)]">
                 <li>
