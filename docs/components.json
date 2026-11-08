@@ -3697,6 +3697,66 @@
       }
     },
     {
+      "name": "schema-migration-specialist",
+      "path": "database/schema-migration-specialist.md",
+      "category": "database",
+      "type": "agent",
+      "description": "Database schema migration safety expert. Use when you need to write, review, or execute schema changes without downtime or data loss. Invoke for zero-downtime migration strategies, ORM-specific migration tooling (Drizzle, Prisma, TypeORM, Alembic, Django), rollback planning, NOT NULL column additions, column renames, and CI/CD migration gating.\n\n<example>\nContext: Team needs to add a NOT NULL column to a high-traffic users table with 10M rows without locking the table.\nuser: \"We need to add a `subscription_tier` column to our users table but it can't be NULL. We can't afford downtime.\"\nassistant: \"I'll implement the 3-step expand/backfill/contract pattern: first add the column as nullable, then backfill existing rows in batches with progress tracking, then apply the NOT NULL constraint once all rows have values. I'll generate the migration files, rollback scripts, and a CI gate to block any single-step NOT NULL addition.\"\n<commentary>\nUse this agent for any NOT NULL column addition on tables with existing data — single-step NOT NULL adds cause full table locks and will fail if existing rows have no value. The expand/backfill/contract pattern is the only safe approach.\n</commentary>\n</example>\n\n<example>\nContext: Developer wants to rename a column from `user_email` to `email` in a live app with multiple deployed versions.\nuser: \"I need to rename the `user_email` column to just `email`. How do I do this without breaking the running app?\"\nassistant: \"I'll implement the dual-write migration protocol: add the new `email` column, deploy code that writes to both columns, backfill old rows, deploy code that reads from the new column only, then in a final migration drop the old column. This allows zero-downtime rollout across multiple app versions.\"\n<commentary>\nColumn renames are DANGER-class operations that break running app versions. The dual-write phase is mandatory — the agent enforces a deploy gate between migration steps.\n</commentary>\n</example>\n\n<example>\nContext: Engineering team wants to block unsafe migrations from merging to main.\nuser: \"We keep having migration accidents in production. How do we add automated migration safety checks to our CI pipeline?\"\nassistant: \"I'll add a migration linter to your CI that classifies every operation as SAFE, CAUTION, or DANGER. DANGER operations (DROP COLUMN, change type, remove NOT NULL) will fail the build and require an explicit override with a risk acknowledgment comment. I'll also generate a pre-migration checklist that runs before any deployment.\"\n<commentary>\nUse this agent to establish migration governance — automated classification prevents accidental data loss operations from reaching production without review.\n</commentary>\n</example>",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 26,
+        "severity": "MEDIUM",
+        "recommendation": "CAUTION",
+        "issueCount": 4,
+        "analysis": "partial",
+        "findings": [
+          {
+            "id": "EA5",
+            "category": "Excessive Agency",
+            "severity": "MEDIUM",
+            "title": "External Model or Provider Selection",
+            "file": "schema-migration-specialist.md",
+            "line": 5,
+            "count": 1
+          },
+          {
+            "id": "TR2",
+            "category": "Trigger Abuse",
+            "severity": "MEDIUM",
+            "title": "Shadow Command Trigger",
+            "file": "schema-migration-specialist.md",
+            "line": 4,
+            "count": 1
+          },
+          {
+            "id": "RP1",
+            "category": "MCP Rug Pull",
+            "severity": "MEDIUM",
+            "title": "npx commands without a version suffix (e.g. @1.0.0) create a rug-pull risk if the upstream server is compromised and publishes a malicious update.",
+            "file": "schema-migration-specialist.md",
+            "line": 220,
+            "count": 2
+          }
+        ],
+        "hash": "78692bb7eb9e8259",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-08T16:34:12Z"
+      }
+    },
+    {
       "name": "supabase-schema-architect",
       "path": "database/supabase-schema-architect.md",
       "category": "database",
