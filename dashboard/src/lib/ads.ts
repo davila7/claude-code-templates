@@ -5,6 +5,8 @@
  */
 
 export interface ActiveAd {
+  /** Ad id (contract v2); absent from older deployments of the endpoint. */
+  id?: string;
   // Contract with the (private) ads writer service: component_type is stored
   // PLURAL ('agents', 'commands', ...) — unlike other tables in this repo,
   // which store it singular. matchesAd() below relies on this.
@@ -63,26 +65,4 @@ export async function fetchActiveAds(): Promise<ActiveAd[]> {
   }
 }
 
-function pluralType(type: string): string {
-  return type.endsWith('s') ? type : type + 's';
-}
-
-/** True when a component (any type form) matches an ad. */
-export function matchesAd(ad: ActiveAd, type: string, path: string): boolean {
-  return ad.component_type === pluralType(type) && ad.component_path === path;
-}
-
-/**
- * First active ad (endpoint order = earliest buyer first) whose component is
- * present in the given list. Returns the matching list index, or -1.
- */
-export function findSponsoredIndex<T extends { type: string; path: string }>(
-  ads: ActiveAd[],
-  items: T[]
-): number {
-  for (const ad of ads) {
-    const idx = items.findIndex((item) => matchesAd(ad, item.type, item.path));
-    if (idx !== -1) return idx;
-  }
-  return -1;
-}
+export { matchesAd, findSponsored } from './ads-match';

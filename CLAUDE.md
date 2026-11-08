@@ -735,6 +735,14 @@ Docs page `/developers/catalog-api`; audit and design in
 
 `scripts/generate_claude_jobs.py` runs in `update-json-data.yml` (daily) and writes `claude-jobs.json` to `docs/` and `dashboard/public/` (read by `JobsView.tsx`). Company boards are listed in `scripts/jobs_ats_boards.json`; Firecrawl discovery runs only when the `FIRECRAWL_API_KEY` Actions secret is set and persists `docs/claude-jobs-discovered-boards.json`. Only postings that say "Claude Code" are kept.
 
+### Sponsored placements (CCT Ads)
+
+Payments, review and admin live in the private `davila7/aitmpl-ads` repo; never add them here. This repo only renders
+placements behind `PUBLIC_ADS_ENABLED` (off): `lib/ads.ts` + `lib/ads-match.ts`, `/api/ads/active` (reads the
+`sponsored_ads_live` view), `/promote` (step 1, no payment logic) and `promoted-component-lock.yml`. The contract is
+`dashboard/docs/ads-contract.md`, kept identical in both repos. The sponsored component is an extra labeled slot above
+the grid and Cmd+K results; the organic list is never reordered or trimmed (`tests/ads-match.test.ts`).
+
 ### Plugins & Marketplaces Catalog
 
 - `scripts/generate_plugins_json.py` — scans the repos listed in `REPOS` via the `gh` CLI (needs `gh auth login`) and writes `dashboard/public/plugins.json`. This is a **manual, offline step** — it does not run during `npm run build` or CI/CD, so re-running it never affects deploy time.
