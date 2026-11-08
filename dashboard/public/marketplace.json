@@ -30,6 +30,29 @@
       "repository": "https://github.com/anthropics/claude-plugins-official",
       "license": "Apache-2.0",
       "category": "productivity"
+    },
+    {
+      "name": "egm",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/google/elephant-goldfish-model.git",
+        "path": "distributions/claude",
+        "sha": "b3a35956759bf7f024af2ff061b2e0b44b438e4c"
+      },
+      "displayName": "Elephant-Goldfish Model",
+      "description": "Draft specs, review designs, and check implementation drift.",
+      "author": {
+        "name": "Google"
+      },
+      "homepage": "https://egm.dev",
+      "repository": "https://github.com/google/elephant-goldfish-model",
+      "keywords": [
+        "spec-driven-development",
+        "design-documents",
+        "design-review"
+      ],
+      "license": "Apache-2.0",
+      "category": "documentation"
     }
   ]
 }

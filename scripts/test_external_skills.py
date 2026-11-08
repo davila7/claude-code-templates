@@ -111,6 +111,25 @@ class ValidateManifestTest(unittest.TestCase):
             write("more/x.md")
             self.assertEqual(ext.plugin_inventory(plug)["commands"], ["x"])
 
+    def test_inventory_uses_frontmatter_names_for_skills_and_agents(self):
+        # Claude Code names skills and agents by their frontmatter `name`
+        # (google/elephant-goldfish-model: skills/egm_draft is /egm:egm-draft).
+        with tempfile.TemporaryDirectory() as tmp:
+            plug = Path(tmp) / "kit"
+            def write(rel, text=""):
+                (plug / rel).parent.mkdir(parents=True, exist_ok=True)
+                (plug / rel).write_text(text)
+            write(".claude-plugin/plugin.json", json.dumps({"name": "kit"}))
+            write("skills/my_draft/SKILL.md", "---\nname: my-draft\ndescription: d\n---\nbody\n")
+            write("skills/plain/SKILL.md", "no frontmatter\n")
+            write("agents/design_critic.md", "---\ndescription: x\nname: \"kit-design\"\n---\n")
+            write("agents/scout.md", "---\ndescription: s\n---\nname: not-the-name\n---\n")
+            write("commands/go.md", "---\nname: ignored\n---\n")
+            inv = ext.plugin_inventory(plug)
+            self.assertEqual(inv["skills"], ["my-draft", "plain"])
+            self.assertEqual(inv["agents"], ["kit-design", "scout"])
+            self.assertEqual(inv["commands"], ["go"])
+
     def test_the_site_lists_every_kind_the_inventory_writes(self):
         # dashboard/src/lib/component-page.ts PLUGIN_KINDS renders `contains`; a kind
         # missing there would vanish from the plugin page and its summary.
