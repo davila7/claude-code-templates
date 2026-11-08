@@ -44,8 +44,10 @@ html.dark {
 
   /* Text colors */
   --color-text-primary: #faf9f5;
-  --color-text-secondary: #a3a197;
-  --color-text-tertiary: #85837b;
+  /* Reading text follows GitHub dark / X: body copy near-white, muted only for metadata.
+     On #0b0b0a: primary 18.7:1, secondary 10.9:1, tertiary 7.2:1 (6.3:1 on surface-2). */
+  --color-text-secondary: #c3c1b7;
+  --color-text-tertiary: #9f9d93;
 
   /* Accent color */
   --color-accent: #d57455;
@@ -86,7 +88,7 @@ html.light {
   /* Text colors */
   --color-text-primary: #0f0f0f;
   --color-text-secondary: #525252;
-  --color-text-tertiary: #8a8a8a;
+  --color-text-tertiary: #737373; /* 4.7:1 on white (#8a8a8a failed AA at 3.4:1) */
 
   /* Accent color */
   --color-accent: #d57455;
@@ -121,8 +123,8 @@ html {
 
 body {
   min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  /* No -webkit-font-smoothing: antialiased. On macOS it drops stem darkening and renders
+     light-on-dark text visibly thinner; GitHub and X leave it at auto. */
   background-color: var(--color-surface-0);
   color: var(--color-text-primary);
   transition: background-color 200ms ease, color 200ms ease;
