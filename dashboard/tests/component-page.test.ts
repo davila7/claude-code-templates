@@ -79,3 +79,26 @@ test('languageShares', () => {
   assert.deepEqual(many.map((l) => l.name), ['A', 'B', 'C', 'Other']);
   assert.equal(many[3]!.pct, 15);
 });
+
+test('displayName title-cases a slug and spells acronyms', async () => {
+  const { displayName } = await import('../src/lib/component-page.ts');
+  assert.equal(displayName('react-best-practices'), 'React Best Practices');
+  assert.equal(displayName('mcp-builder'), 'MCP Builder');
+  assert.equal(displayName('github_actions-ci.md'), 'GitHub Actions CI');
+  assert.equal(displayName('angular-app'), 'Angular App');
+  assert.equal(displayName(''), '');
+});
+
+test('nextStepItems: loops first, then the category alphabetically from the current one, never itself', async () => {
+  const { nextStepItems } = await import('../src/lib/component-page.ts');
+  const c = (name: string, category = 'dev', downloads = 0) => ({ name, path: `${category}/${name}.md`, category, downloads });
+  const siblings = [c('zeta', 'dev', 999), c('alpha'), c('mid'), c('beta'), c('other', 'ops', 5000), c('gamma')];
+  const items = nextStepItems(c('delta'), siblings, [c('fix-loop', 'engineering')], 4);
+  assert.deepEqual(items.map((i) => [i.block, i.component.name]), [
+    ['loop', 'fix-loop'], ['same_category', 'gamma'], ['same_category', 'mid'], ['same_category', 'zeta'],
+  ]);
+  // Wraps around to the start of the alphabet; downloads never change the order.
+  const all = nextStepItems(c('mid'), siblings, [], 6).map((i) => i.component.name);
+  assert.deepEqual(all, ['zeta', 'alpha', 'beta', 'gamma']);
+  assert.equal(nextStepItems(c('zeta'), siblings, [], 6)[0].component.name, 'alpha');
+});

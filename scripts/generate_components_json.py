@@ -503,6 +503,66 @@ def component_page_meta(components_base_path, ctype, component, history, previou
         meta['addedAt'] = entry['added']
     return meta
 
+def loops_by_component(loops):
+    """{'{type plural}/{path without extension}': [loop path without extension, ...]} from each
+    loop's `components: [type:path, ...]` frontmatter (the same tokens the loop page parses)."""
+    out = defaultdict(list)
+    for loop in loops:
+        match = re.match(r'^---\s*\n([\s\S]*?)\n---', loop.get('content', ''))
+        if not match:
+            continue
+        line = re.search(r'^components\s*:\s*\[(.*)\]\s*$', match.group(1), re.M)
+        if not line:
+            continue
+        loop_path = re.sub(r'\.md$', '', loop['path'])
+        for token in line.group(1).split(','):
+            token = token.strip().strip('"\'')
+            ref_type, sep, ref_path = token.partition(':')
+            if not sep or not ref_type.strip() or not ref_path.strip():
+                continue
+            ref_type = ref_type.strip()
+            plural = ref_type if ref_type.endswith('s') else ref_type + 's'
+            key = f"{plural}/{re.sub(r'[.](md|json)$', '', ref_path.strip())}"
+            if loop_path not in out[key]:
+                out[key].append(loop_path)
+    return {k: sorted(v) for k, v in out.items()}
+
+def template_content_payload(templates_base_path, template):
+    """Content file of a template: the CLAUDE.md its install writes, plus its files."""
+    if template.get('subtype') == 'framework':
+        language_root = os.path.join(templates_base_path, template.get('language', ''))
+        root = os.path.join(language_root, 'examples', template['name'])
+        candidates = [os.path.join(root, 'CLAUDE.md'), os.path.join(language_root, 'CLAUDE.md'), os.path.join(root, 'README.md')]
+    else:
+        root = os.path.join(templates_base_path, template['name'])
+        candidates = [os.path.join(root, 'CLAUDE.md'), os.path.join(root, 'README.md')]
+    content, main_file = '', ''
+    for candidate in candidates:
+        if os.path.isfile(candidate):
+            with open(candidate, 'r', encoding='utf-8') as f:
+                content = f.read()
+            main_file = os.path.basename(candidate)
+            break
+    files = []
+    language_bytes = defaultdict(int)
+    for rel in template.get('files', []):
+        full = os.path.join(root, rel)
+        try:
+            with open(full, 'rb') as f:
+                data = f.read()
+        except OSError:
+            continue
+        lines = None if b'\0' in data else data.count(b'\n') + (1 if data and not data.endswith(b'\n') else 0)
+        files.append({'path': rel, 'bytes': len(data), 'lines': lines})
+        language_bytes[LANGUAGE_BY_EXT.get(os.path.splitext(rel)[1].lower(), 'Other')] += len(data)
+    if not content and not files:
+        return None
+    languages = [{'name': n, 'bytes': b} for n, b in sorted(language_bytes.items(), key=lambda x: -x[1])]
+    payload = {'content': content, 'meta': {'files': files, 'languages': languages}}
+    if main_file:
+        payload['mainFile'] = main_file
+    return payload
+
 def generate_components_json(skip_downloads=False, skip_skillspector=False, skillspector_only=None):
     """
     Scans the cli-tool/components and cli-tool/templates directories and generates a components.json file
@@ -978,7 +1038,10 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
                                 'language': language_dir,
                                 'description': f'{framework_dir.title()} with {language_dir.title()}',
                                 'files': sorted(framework_files),  # os.listdir order differs per filesystem
-                                'installCommand': f'npx claude-code-templates@latest --template={framework_dir} --yes',
+                                # The CLI takes a framework as --framework of its language
+                                # (cli-tool/src/templates.js keys: react, node, django...);
+                                # --template=angular-app fails with "Unknown language template".
+                                'installCommand': f'npx claude-code-templates@latest --template={language_dir} --framework={re.sub(r"-(app|api)$", "", framework_dir)} --yes',
                                 'downloads': framework_downloads
                             }
                             components_data['templates'].append(framework_template)
@@ -1035,6 +1098,7 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
     os.makedirs(dashboard_content_dir, exist_ok=True)
     written_content_count = 0
     git_history = git_component_history(components_base_path)
+    used_by_loops = loops_by_component(components_data.get('loops', []))
     for ctype in content_bearing_types:
         for component in components_data.get(ctype, []):
             raw_content = component.get('content', '')
@@ -1057,12 +1121,32 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
                     pass
             # Shown on the component page: file list, language bar, last commit and date added.
             content_payload['meta'] = component_page_meta(components_base_path, ctype, component, git_history, previous_meta)
+            # Loops that install this component, for the page's "Next step" block.
+            loops = used_by_loops.get(f"{ctype}/{slug}")
+            if loops:
+                content_payload['usedByLoops'] = loops
             try:
                 with open(content_file_path, 'w', encoding='utf-8') as f:
                     json.dump(content_payload, f, ensure_ascii=False)
                 written_content_count += 1
             except IOError as e:
                 print(f"Warning: Could not write content file {content_file_path}: {e}")
+
+    # Templates have no catalog folder: their page shows the CLAUDE.md the CLI
+    # writes (the framework's own, else the language's, else the README) and
+    # the template's files. Without this file the page had no body.
+    for template in components_data.get('templates', []):
+        content_payload = template_content_payload(templates_base_path, template)
+        if not content_payload:
+            continue
+        content_file_path = os.path.join(dashboard_content_dir, 'templates', template['name'] + '.json')
+        os.makedirs(os.path.dirname(content_file_path), exist_ok=True)
+        try:
+            with open(content_file_path, 'w', encoding='utf-8') as f:
+                json.dump(content_payload, f, ensure_ascii=False)
+            written_content_count += 1
+        except IOError as e:
+            print(f"Warning: Could not write content file {content_file_path}: {e}")
 
     print(f"Generated {written_content_count} component content files in {dashboard_content_dir}/")
 

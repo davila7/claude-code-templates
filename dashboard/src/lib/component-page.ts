@@ -112,3 +112,55 @@ export function languageShares(languages: { name: string; bytes: number }[], max
   }
   return rows.map((r) => ({ name: r.name, pct: Math.round((r.bytes / total) * 1000) / 10 }));
 }
+
+// Words a title-cased slug gets wrong ("Mcp", "Github"): the page H1 spells them this way.
+const WORD_SPELLING: Record<string, string> = {
+  ai: 'AI', api: 'API', cc: 'CC', apis: 'APIs', aws: 'AWS', ci: 'CI', cd: 'CD', cli: 'CLI', cms: 'CMS', css: 'CSS',
+  db: 'DB', dns: 'DNS', e2e: 'E2E', gcp: 'GCP', gpu: 'GPU', graphql: 'GraphQL', github: 'GitHub',
+  gitlab: 'GitLab', html: 'HTML', http: 'HTTP', https: 'HTTPS', ios: 'iOS', javascript: 'JavaScript',
+  jwt: 'JWT', k8s: 'K8s', llm: 'LLM', llms: 'LLMs', macos: 'macOS', mcp: 'MCP', ml: 'ML', mysql: 'MySQL',
+  nextjs: 'Next.js', nodejs: 'Node.js', npm: 'npm', oauth: 'OAuth', openai: 'OpenAI', pdf: 'PDF',
+  php: 'PHP', postgresql: 'PostgreSQL', pr: 'PR', prs: 'PRs', qa: 'QA', rag: 'RAG', rest: 'REST',
+  sdk: 'SDK', seo: 'SEO', sql: 'SQL', ssh: 'SSH', svg: 'SVG', tdd: 'TDD', typescript: 'TypeScript',
+  ui: 'UI', url: 'URL', ux: 'UX', vscode: 'VS Code', xml: 'XML', yaml: 'YAML',
+};
+
+/** The H1 of a component page: "react-best-practices" → "React Best Practices", "mcp-builder" → "MCP Builder". */
+export function displayName(name: string): string {
+  return (name ?? '')
+    .replace(/\.(md|json)$/, '')
+    .split(/[-_\s]+/)
+    .filter(Boolean)
+    .map((w) => WORD_SPELLING[w.toLowerCase()] ?? w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
+}
+
+export interface NextStepItem<T> {
+  component: T;
+  /** Value of data-related on the link (read by the analytics script). */
+  block: 'loop' | 'same_category';
+}
+
+interface Linkable { name: string; path?: string; category?: string }
+
+const key = (c: Linkable) => (c.path ?? c.name).replace(/\.(md|json)$/, '');
+
+/**
+ * The "Next step" block: the loops that install this component, then other components of
+ * its category in alphabetical order, starting after this one and wrapping around, so the
+ * pages of a category link to each other instead of all to the first names. Never by
+ * downloads, never sponsored.
+ */
+export function nextStepItems<T extends Linkable>(current: T, siblings: T[], loops: T[], max = 6): NextStepItem<T>[] {
+  const items: NextStepItem<T>[] = loops.slice(0, max).map((component) => ({ component, block: 'loop' }));
+  const sameCategory = siblings
+    .filter((c) => (c.category ?? '') === (current.category ?? '') && key(c) !== key(current))
+    .sort((a, b) => a.name.localeCompare(b.name, 'en') || key(a).localeCompare(key(b), 'en'));
+  const start = sameCategory.findIndex((c) => c.name.localeCompare(current.name, 'en') > 0);
+  const rotated = start <= 0 ? sameCategory : [...sameCategory.slice(start), ...sameCategory.slice(0, start)];
+  for (const component of rotated) {
+    if (items.length >= max) break;
+    items.push({ component, block: 'same_category' });
+  }
+  return items;
+}

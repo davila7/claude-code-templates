@@ -11,11 +11,11 @@ import SkillSpectorReport from '../../../components/SkillSpectorReport.tsx';
 import { TYPE_CONFIG, ICONS } from '../../../lib/icons';
 import { fetchComponents, fetchComponentContentData, getInstallCommand } from '../../../lib/data';
 import type { ComponentPageMeta } from '../../../lib/data';
-import { PLUGIN_KINDS, commitTitle, formatBytes, formatCount, formatDate, initials, languageShares, pluginContentsSummary, topLevelEntries, totals } from '../../../lib/component-page';
+import { PLUGIN_KINDS, commitTitle, displayName, nextStepItems, formatBytes, formatCount, formatDate, initials, languageShares, pluginContentsSummary, topLevelEntries, totals } from '../../../lib/component-page';
 import type { Component, PluginContents } from '../../../lib/types';
 import { AITMPL_MARKETPLACE } from '../../../lib/constants';
 import { jsonForScript } from '../../../lib/sanitize-html';
-import { componentPath } from '../../../lib/component-url';
+import { componentPath, pluralType } from '../../../lib/component-url';
 
 export const prerender = false;
 
@@ -28,8 +28,12 @@ let error: string | null = null;
 let modFiles: Record<string, string> = {};
 // Files, languages and git history for the file list and the About column.
 let pageMeta: ComponentPageMeta | null = null;
-// Every component of the same type, for the related list.
+// Every component of the same type, for the "Next step" block.
 let siblings: Component[] = [];
+// Loops that install this component (content file `usedByLoops`), also for "Next step".
+let usedByLoops: Component[] = [];
+// Templates: the file the content comes from (CLAUDE.md, or README.md for the coming-soon ones).
+let templateMainFile = 'CLAUDE.md';
 
 try {
   const data = await fetchComponents();
@@ -65,6 +69,11 @@ try {
     component = { ...component, content: contentData.content };
     modFiles = contentData.files ?? {};
     pageMeta = contentData.meta ?? null;
+    if (contentData.mainFile) templateMainFile = contentData.mainFile;
+    const loopPaths = new Set(contentData.usedByLoops ?? []);
+    usedByLoops = loopPaths.size
+      ? (data.loops ?? []).filter((l) => loopPaths.has(l.path.replace(/\.md$/, '')))
+      : [];
   }
 } catch (e: any) {
   error = e.message;
@@ -77,15 +86,11 @@ if (!component && !error) {
   Astro.response.statusText = 'Not Found';
 }
 
-// Same category first, then the rest of the type, by downloads: static links
-// that let crawlers reach component pages without running the grid's JS.
-const related: Component[] = component
-  ? siblings
-      .filter((c) => (c.path ?? c.name) !== (component!.path ?? component!.name))
-      .sort((a, b) => Number(b.category === component!.category) - Number(a.category === component!.category)
-        || (b.downloads ?? 0) - (a.downloads ?? 0))
-      .slice(0, 6)
-  : [];
+// "Next step" (traction plan, initiative 4): the loops that install this
+// component, then the rest of its category in alphabetical order. Static links,
+// so crawlers reach component pages without the grid's JS. Never ordered by
+// downloads or SkillSpector, never sponsored.
+const nextStep = component ? nextStepItems(component, siblings, usedByLoops) : [];
 
 function formatName(name: string): string {
   if (!name) return '';
@@ -157,12 +162,18 @@ const ABOUT_FIELDS: { key: string; label: string; kind?: 'chips' | 'code' }[] = 
   { key: 'license', label: 'License' },
 ];
 
+// <title>, meta description and JSON-LD keep this name (the CTR baseline); the H1 uses displayName.
 const title = component ? formatName(component.name) : 'Component Not Found';
+const headingName = component ? displayName(component.name) : '';
 const typePlural = type?.endsWith('s') ? type : (type + 's');
-const config = TYPE_CONFIG[typePlural ?? 'agents'];
+// Templates are not a grid type (no TYPE_CONFIG entry, no list page), but their pages exist.
+const isTemplate = typePlural === 'templates';
+// Head tags (title, description, JSON-LD) read this one, so templates keep their current head.
+const seoConfig = TYPE_CONFIG[typePlural ?? 'agents'];
+const config = TYPE_CONFIG[typePlural ?? 'agents'] ?? (isTemplate ? { label: 'Templates', singular: 'template' } as typeof TYPE_CONFIG[string] : undefined);
 const installCmd = component ? getInstallCommand(component) : '';
 // Social preview rendered at build time by scripts/generate-og-images.mjs.
-const ogImage = component && config
+const ogImage = component && config && !isTemplate
   ? encodeURI(`/og/${typePlural}/${component.path?.replace(/\.(md|json)$/, '') ?? component.name}.png`)
   : undefined;
 const frontmatter = component ? parseFrontmatter(component.content, typePlural ?? '') : {};
@@ -297,7 +308,14 @@ const lastCommit = pageMeta?.lastCommit;
 // The explorer (Files tab) exists for multi-file components; single files show in Overview only.
 const hasExplorer = refs.length > 0;
 const REPO_URL = 'https://github.com/davila7/claude-code-templates';
-const sourceUrl = externalSource ? externalSource.url : component ? `${REPO_URL}/${hasExplorer ? 'tree' : 'blob'}/main/cli-tool/components/${typePlural}/${component.path}` : '';
+const templateDir = isTemplate && component
+  ? ((component as any).subtype === 'framework' ? `${(component as any).language}/examples/${component.name}` : component.name)
+  : '';
+const sourceUrl = externalSource
+  ? externalSource.url
+  : isTemplate
+    ? `${REPO_URL}/tree/main/cli-tool/templates/${templateDir}`
+    : component ? `${REPO_URL}/${hasExplorer ? 'tree' : 'blob'}/main/cli-tool/components/${typePlural}/${component.path}` : '';
 // Where the CLI writes it (cli-tool/src/index.js); other types show no line.
 const INSTALL_TARGET: Record<string, string> = {
   agents: `.claude/agents/${slugName}.md`,
@@ -311,6 +329,8 @@ const installTarget = typePlural === 'mcps'
   ? 'Merges into .mcp.json'
   : typePlural === 'hooks' || typePlural === 'settings'
     ? 'Merges into the settings file you pick'
+    : isTemplate
+      ? 'Writes CLAUDE.md and .claude/ (commands, settings) to the project'
     : isPlugin
       ? `Claude Code installs it to ~/.claude/plugins/cache/${AITMPL_MARKETPLACE.name}/${slugName}/${component?.version || '<version>'}/ and enables ${pluginId} in .claude/settings.json (pass --scope user or local to change that)`
       : targetDir
@@ -319,13 +339,13 @@ const installTarget = typePlural === 'mcps'
 // The command wraps only between its words (each word breaks inside only when it is wider than the box).
 const cmdParts = installCmd.split(' ');
 // Agent descriptions often carry escaped newlines and <example> tags from their frontmatter.
-const aboutDescription = (frontmatter.description ?? '').replace(/\\n/g, ' ').replace(/<\/?[a-z]+>/gi, ' ').replace(/\s+/g, ' ').trim();
+const aboutDescription = (frontmatter.description ?? (isTemplate ? component?.description : '') ?? '').replace(/\\n/g, ' ').replace(/<\/?[a-z]+>/gi, ' ').replace(/\s+/g, ' ').trim();
 const fileOpen = (file: string) => (hasExplorer ? file : '');
 const typeLabel = typePlural === 'mcps' ? 'MCP' : (config?.singular ?? typePlural ?? '').replace(/^./, (c) => c.toUpperCase());
 
 const seoDescription = frontmatter.description
   ? frontmatter.description.slice(0, 155)
-  : `${title} is a ${config?.label?.toLowerCase() ?? 'component'} for Claude Code. Install with a single npx command.`;
+  : `${title} is a ${seoConfig?.label?.toLowerCase() ?? 'component'} for Claude Code. Install with a single npx command.`;
 
 const canonicalPath = `/component/${typePlural}/${component?.path?.replace(/\.(md|json)$/, '') ?? ''}`;
 
@@ -352,7 +372,7 @@ const componentSchema = component
             {
               '@type': 'ListItem',
               position: 2,
-              name: config?.label ?? typePlural,
+              name: seoConfig?.label ?? typePlural,
               item: `https://www.aitmpl.com/${typePlural}`,
             },
             {
@@ -369,10 +389,10 @@ const componentSchema = component
 ---
 
 <DashboardLayout
-  title={`${title} — ${config?.label ?? 'Component'} for Claude Code | Claude Code Templates`}
+  title={`${title} — ${seoConfig?.label ?? 'Component'} for Claude Code | Claude Code Templates`}
   description={seoDescription}
   ogImage={ogImage}
-  ogImageAlt={component && config ? `${title}, a Claude Code ${config.singular}` : undefined}
+  ogImageAlt={component && seoConfig ? `${title}, a Claude Code ${seoConfig.singular}` : undefined}
 >
   {componentSchema && (
     <script type="application/ld+json" set:html={jsonForScript(componentSchema)} />
@@ -387,7 +407,7 @@ const componentSchema = component
 
     {!component && !error && (
       <div class="flex flex-col items-center justify-center py-32 px-6">
-        <h3 class="text-lg font-semibold text-[var(--color-text-primary)] mb-2">Component not found</h3>
+        <h1 class="text-lg font-semibold text-[var(--color-text-primary)] mb-2">Component not found</h1>
         <p class="text-[14px] text-[var(--color-text-secondary)] text-center max-w-md mb-8 leading-relaxed">
           The component you're looking for doesn't exist or may have been removed.
         </p>
@@ -414,11 +434,12 @@ const componentSchema = component
               </Fragment>
             )}
             <span class="basis-full md:basis-auto flex flex-wrap items-center gap-x-2.5 gap-y-1 min-w-0">
-              <h1 class="text-[26px] md:text-[20px] font-semibold tracking-tight text-[var(--color-text-primary)] break-words min-w-0">{slugName}</h1>
+              <h1 class="text-[26px] md:text-[20px] font-semibold tracking-tight text-[var(--color-text-primary)] break-words min-w-0">{headingName}</h1>
               <span class="inline-flex items-center rounded-full border border-[var(--color-border)] px-2.5 text-[12px] leading-[22px] font-medium text-[var(--color-text-secondary)]">{typeLabel}</span>
             </span>
           </nav>
-          <div class="hidden md:flex items-center gap-2 shrink-0">
+          {/* Templates have no path: the stack and collections cannot hold them. */}
+          {!isTemplate && <div class="hidden md:flex items-center gap-2 shrink-0">
             <SaveToCollectionButton
               client:idle
               variant="button"
@@ -435,7 +456,7 @@ const componentSchema = component
               category={component.category ?? ''}
               description={component.description ?? ''}
             />
-          </div>
+          </div>}
         </header>
 
         <div class="mt-6 md:mt-0 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-x-8">
@@ -483,7 +504,7 @@ const componentSchema = component
               )}
             </section>
 
-            <div class="grid grid-cols-2 gap-2 md:hidden">
+            {!isTemplate && <div class="grid grid-cols-2 gap-2 md:hidden">
               <SaveToCollectionButton
                 client:idle
                 variant="button"
@@ -500,7 +521,7 @@ const componentSchema = component
                 category={component.category ?? ''}
                 description={component.description ?? ''}
               />
-            </div>
+            </div>}
 
             <section aria-labelledby="about-h" class="hidden lg:block border-t border-[var(--color-border)] pt-5">
               <h2 id="about-h" class="text-[14px] font-semibold text-[var(--color-text-primary)] mb-2">About</h2>
@@ -736,7 +757,7 @@ const componentSchema = component
               <div class="rounded-lg border border-[var(--color-border)] overflow-hidden">
                 <div class="flex items-center gap-2.5 px-4 py-2.5 bg-[var(--color-surface-1)] border-b border-[var(--color-border)] text-[13px]">
                   <svg class="w-4 h-4 text-[var(--color-text-tertiary)]" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5.5 4h8M5.5 8h8M5.5 12h8M2.5 4h.01M2.5 8h.01M2.5 12h.01" /></svg>
-                  <span class="font-semibold text-[var(--color-text-primary)]">{typePlural === 'mods' || typePlural === 'skills' || isPlugin ? mainFileName : component.path.split('/').pop()}</span>
+                  <span class="font-semibold text-[var(--color-text-primary)]">{typePlural === 'mods' || typePlural === 'skills' || isPlugin ? mainFileName : isTemplate ? templateMainFile : (component.path ?? component.name).split('/').pop()}</span>
                 </div>
                 {isPlugin && externalSource?.commit && (
                   <p data-plugin-readme-note class="px-4 md:px-6 pt-3 text-[13px] md:text-[12.5px] leading-relaxed text-[var(--color-text-tertiary)]">
@@ -781,23 +802,64 @@ const componentSchema = component
       </article>
     )}
 
-    {related.length > 0 && (
-      <section class="mt-10 pt-6 border-t border-[var(--color-border)]" aria-labelledby="related-heading">
-        <h2 id="related-heading" class="text-[15px] font-semibold text-[var(--color-text-primary)] mb-3">Related {config?.label?.toLowerCase() ?? 'components'}</h2>
+    {nextStep.length > 0 && (
+      <section class="mt-10 pt-6 border-t border-[var(--color-border)]" aria-labelledby="next-step-heading">
+        <h2 id="next-step-heading" class="text-[15px] font-semibold text-[var(--color-text-primary)]">Next step</h2>
+        <p class="mt-1 mb-4 text-[13px] text-[var(--color-text-secondary)]">
+          {usedByLoops.length > 0
+            ? `Loops that install this ${config?.singular ?? 'component'}, and more ${config?.label?.toLowerCase() ?? 'components'} in ${component?.category}.`
+            : `More ${config?.label?.toLowerCase() ?? 'components'} in ${component?.category}, in alphabetical order.`}
+        </p>
         <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {related.map((c) => (
-            <li>
-              <a
-                href={componentPath(c.type ?? typePlural ?? '', c.path ?? c.name)}
-                class="block h-full rounded-lg border border-[var(--color-border)] px-4 py-3 hover:border-[var(--color-accent)] transition-colors"
-              >
-                <span class="block text-[14px] font-semibold text-[var(--color-text-primary)]">{formatName(c.name)}</span>
-                {c.description && (
-                  <span class="block mt-1 text-[12px] leading-relaxed text-[var(--color-text-secondary)] line-clamp-2">{c.description}</span>
-                )}
-              </a>
-            </li>
-          ))}
+          {nextStep.map(({ component: c, block }) => {
+            const cType = pluralType(c.type ?? typePlural ?? '');
+            const cCmd = getInstallCommand(c);
+            const cLabel = cType === 'mcps' ? 'MCP' : (TYPE_CONFIG[cType]?.singular ?? config?.singular ?? '').replace(/^./, (x) => x.toUpperCase());
+            return (
+              <li class="flex flex-col rounded-lg border border-[var(--color-border)] hover:border-[var(--color-text-tertiary)] transition-colors min-w-0">
+                <a
+                  href={componentPath(cType, c.path ?? c.name)}
+                  data-related={block}
+                  class="block px-4 pt-3 pb-2 group"
+                >
+                  <span class="block text-[11.5px] font-mono text-[var(--color-text-tertiary)]">{cLabel} · {c.category}</span>
+                  <span class="block mt-0.5 text-[14px] font-semibold text-[var(--color-text-primary)] group-hover:text-[var(--color-accent)] group-hover:underline underline-offset-4">{displayName(c.name)}</span>
+                  {c.description && (
+                    <span class="mt-1 text-[12px] leading-relaxed text-[var(--color-text-secondary)] line-clamp-2">{c.description}</span>
+                  )}
+                </a>
+                <div class="mt-auto px-4 pb-3 flex flex-col gap-2">
+                  <div class="flex items-center gap-1.5 rounded-md border border-[var(--color-border)] bg-[var(--color-surface-1)] py-1 pl-2.5 pr-1">
+                    <code class="flex-1 min-w-0 truncate font-mono text-[11.5px] text-[var(--color-text-primary)]" title={cCmd}><span class="text-[var(--color-text-tertiary)]">npx … </span>{cCmd.replace(/^npx claude-code-templates@latest /, '')}</code>
+                    <button
+                      type="button"
+                      data-copy-cmd
+                      data-related={block}
+                      data-cmd={cCmd}
+                      data-component-type={cType}
+                      data-component-path={(c.path ?? c.name).replace(/\.(md|json)$/, '')}
+                      aria-label={`Copy the install command of ${displayName(c.name)}`}
+                      class="inline-flex items-center justify-center w-9 h-9 md:w-7 md:h-7 rounded text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-2)] shrink-0"
+                    >
+                      <svg data-copy-icon class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="5" y="5" width="9" height="9" rx="1.5" /><path d="M11 5V3.5A1.5 1.5 0 0 0 9.5 2h-6A1.5 1.5 0 0 0 2 3.5v6A1.5 1.5 0 0 0 3.5 11H5" /></svg>
+                      <svg data-done-icon class="w-3.5 h-3.5 text-[var(--color-accent)]" style="display:none" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m3.5 8.5 3 3 6-7" /></svg>
+                    </button>
+                  </div>
+                  {c.path && cType !== 'templates' && (
+                    <AddToStackButton
+                      client:visible
+                      typePlural={cType}
+                      name={c.name}
+                      path={c.path}
+                      category={c.category ?? ''}
+                      description={c.description ?? ''}
+                      source="related"
+                    />
+                  )}
+                </div>
+              </li>
+            );
+          })}
         </ul>
       </section>
     )}
@@ -882,6 +944,40 @@ const componentSchema = component
         e.preventDefault();
         go('files', true);
         window.dispatchEvent(new CustomEvent('component-file:open', { detail: a.getAttribute('data-open-file') }));
+      });
+    });
+
+    // Copy buttons of the "Next step" cards (#1442's analytics script counts them by their data attributes).
+    document.querySelectorAll('[data-copy-cmd]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var cmd = b.getAttribute('data-cmd') || '';
+        var copyIcon = b.querySelector('[data-copy-icon]');
+        var doneIcon = b.querySelector('[data-done-icon]');
+        var done = function () {
+          if (copyIcon) copyIcon.style.display = 'none';
+          if (doneIcon) doneIcon.style.display = '';
+          setTimeout(function () {
+            if (copyIcon) copyIcon.style.display = '';
+            if (doneIcon) doneIcon.style.display = 'none';
+          }, 2000);
+        };
+        // The card shows a shortened command, so the fallback copies the full one from a hidden field.
+        var legacy = function () {
+          var field = document.createElement('textarea');
+          field.value = cmd;
+          field.setAttribute('readonly', '');
+          field.style.position = 'fixed';
+          field.style.opacity = '0';
+          document.body.appendChild(field);
+          field.select();
+          try { if (document.execCommand('copy')) done(); } catch (e) {}
+          document.body.removeChild(field);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(cmd).then(done, legacy);
+        } else {
+          legacy();
+        }
       });
     });
 

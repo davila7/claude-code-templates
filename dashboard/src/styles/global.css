@@ -492,10 +492,18 @@ a svg, button svg {
 .md-preview h2 { font-size: 1.25rem; padding-bottom: 0.3em; border-bottom: 1px solid var(--color-border); }
 .md-preview h3 { font-size: 1.1rem; }
 .md-preview h4 { font-size: 1rem; }
+/* Component documents render "# x" as <h2 class="md-h1"> (the page has the only h1): size by source level. */
+.md-preview .md-h1 { font-size: 1.5rem; padding-bottom: 0.4em; border-bottom: 1px solid var(--color-border); }
+.md-preview .md-h2 { font-size: 1.25rem; padding-bottom: 0.3em; border-bottom: 1px solid var(--color-border); }
+.md-preview .md-h3 { font-size: 1.1rem; padding-bottom: 0; border-bottom: 0; }
+.md-preview .md-h4 { font-size: 1rem; padding-bottom: 0; border-bottom: 0; }
+.md-preview .md-h5,
+.md-preview .md-h6 { font-size: inherit; padding-bottom: 0; border-bottom: 0; }
 
 .md-preview h1:first-child,
 .md-preview h2:first-child,
-.md-preview h3:first-child {
+.md-preview h3:first-child,
+.md-preview h4:first-child {
   margin-top: 0;
 }
 

@@ -213,6 +213,10 @@ export interface ComponentContentData {
   content: string;
   files?: Record<string, string>;  // mods only: { "hooks/register.ts": "...", ".claude-plugin/plugin.json": "..." }
   meta?: ComponentPageMeta;
+  /** Loops that install this component (paths without .md), for the page's "Next step" block. */
+  usedByLoops?: string[];
+  /** Templates: the file `content` was read from (CLAUDE.md or README.md). */
+  mainFile?: string;
 }
 
 /** Written by scripts/generate_components_json.py for the component page. */
@@ -237,7 +241,7 @@ export async function fetchComponentContentData(type: string, slug: string): Pro
       const filePath = path.resolve(`public/component-content/${typePlural}/${slug}.json`);
       const raw = fs.readFileSync(filePath, 'utf-8');
       const data = JSON.parse(raw);
-      return { content: data.content ?? '', files: data.files, meta: data.meta };
+      return { content: data.content ?? '', files: data.files, meta: data.meta, usedByLoops: data.usedByLoops, mainFile: data.mainFile };
     } catch {
       // fall through to fetch
     }
@@ -258,7 +262,7 @@ export async function fetchComponentContentData(type: string, slug: string): Pro
     clearTimeout(timeoutId);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
-    return { content: data.content ?? '', files: data.files, meta: data.meta };
+    return { content: data.content ?? '', files: data.files, meta: data.meta, usedByLoops: data.usedByLoops, mainFile: data.mainFile };
   } catch {
     clearTimeout(timeoutId);
     return { content: '' };
@@ -310,6 +314,9 @@ export function getInstallCommand(component: Component): string {
     plugin: '--plugin',
     template: '--template',
   };
+  // Templates carry their own command (a framework is --template {language} --framework {name}).
+  const own = (component as Component & { installCommand?: string }).installCommand;
+  if (component.type === 'template' && own) return own;
   const flag = typeFlag[component.type] ?? '--agent';
   const cleanPath = component.path?.replace(/\.(md|json)$/, '') ?? component.name;
   return `npx claude-code-templates@latest ${flag} ${cleanPath}`;
