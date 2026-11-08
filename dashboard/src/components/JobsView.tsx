@@ -178,7 +178,8 @@ export default function JobsView() {
     }
     if (!isSignedIn) {
       e.preventDefault();
-      openSignIn('job');
+      const url = safeUrl(job.applyUrl);
+      openSignIn(url !== '#' ? { kind: 'open-link', source: 'job', title: `${job.position} at ${job.company}`, url } : 'job');
     }
     // If signed in, let the <a> navigate normally
   }

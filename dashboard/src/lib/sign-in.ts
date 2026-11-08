@@ -7,7 +7,15 @@
 // {"code":"authorization_invalid"}. Nothing in our Clerk config fixes that, so
 // inside an in-app browser we explain it and offer to reopen the page in the
 // system browser before showing Clerk's modal.
+//
+// Pass the action the click started (save, open a job, open a course): it is
+// kept for this tab and completed after sign-in (lib/resume-pending-action.ts).
+// A plain "Sign in" button passes only where it sits ('sidebar', 'job', ...),
+// which drops any earlier action, so signing in later never replays a click
+// the visitor walked away from. Either way GA4 counts where the sign-in
+// started (sign_in_open, then sign_in_complete, see lib/analytics.ts).
 
+import { clearPendingAction, setPendingAction, type PendingAction } from './pending-action.ts';
 import { rememberSignInOrigin, track, type SignInOrigin } from './analytics.ts';
 
 export type InAppBrowser = { app: string; platform: 'ios' | 'android' | 'other' };
@@ -186,9 +194,17 @@ function showInAppDialog(info: InAppBrowser) {
   (actions.firstElementChild as HTMLElement | null)?.focus();
 }
 
-export function openSignIn(origin?: SignInOrigin) {
+function signInOrigin(target: PendingAction | SignInOrigin): SignInOrigin {
+  if (typeof target === 'string') return target;
+  return target.kind === 'save' ? 'save' : target.source;
+}
+
+export function openSignIn(target?: PendingAction | SignInOrigin) {
   if (typeof window === 'undefined') return;
-  if (origin) {
+  if (target && typeof target === 'object') setPendingAction(target);
+  else clearPendingAction();
+  if (target) {
+    const origin = signInOrigin(target);
     track('sign_in_open', { origin });
     rememberSignInOrigin(origin);
   }

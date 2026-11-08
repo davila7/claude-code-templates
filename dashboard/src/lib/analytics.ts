@@ -11,6 +11,8 @@
 // gtag() pushes. Without PUBLIC_GA_MEASUREMENT_ID the snippet is not rendered,
 // there is no dataLayer, and track() does nothing.
 
+import { pluralType } from './component-url.ts';
+
 export const SIGN_IN_ORIGINS = ['save', 'job', 'course', 'sidebar', 'collection'] as const;
 export type SignInOrigin = (typeof SIGN_IN_ORIGINS)[number];
 
@@ -46,19 +48,12 @@ export function cleanParams(params: Record<string, unknown>): Clean {
   return out;
 }
 
-// 'agent' -> 'agents'; the site's URLs and the catalog use the plural.
-export function typeKey(type: string): string {
-  const t = String(type || '');
-  return t.endsWith('s') ? t : `${t}s`;
-}
-
-// 'development-team/frontend-developer.md' -> 'development-team/frontend-developer'
-export function componentPath(path: string): string {
-  return String(path || '').replace(/\.(md|json)$/i, '');
-}
-
+// ('agent', 'development-team/frontend-developer.md') ->
+// { component_type: 'agents', component_path: 'development-team/frontend-developer' },
+// the same type and path as the component's URL (lib/component-url.ts).
 export function componentRef(type: string, path: string): ComponentRef {
-  return { component_type: typeKey(type), component_path: componentPath(path) };
+  const clean = String(path || '').replace(/\.(md|json)$/, '').replace(/^\/+|\/+$/g, '');
+  return { component_type: pluralType(String(type || '')), component_path: clean };
 }
 
 export function track<E extends EventName>(name: E, params: EventParams[E]): void {

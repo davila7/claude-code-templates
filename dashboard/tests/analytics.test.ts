@@ -2,13 +2,12 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   cleanParams,
-  componentPath,
   componentRef,
   rememberSignInOrigin,
   takeSignInOrigin,
   track,
-  typeKey,
 } from '../src/lib/analytics.ts';
+import { componentPath } from '../src/lib/component-url.ts';
 
 function fakeSessionStorage() {
   const map = new Map<string, string>();
@@ -39,12 +38,17 @@ test('cleanParams keeps slugs, numbers and booleans and drops free text', () => 
   );
 });
 
-test('typeKey and componentPath match the site URLs', () => {
-  assert.equal(typeKey('agent'), 'agents');
-  assert.equal(typeKey('mcps'), 'mcps');
-  assert.equal(componentPath('development-team/frontend-developer.md'), 'development-team/frontend-developer');
-  assert.equal(componentPath('audio/elevenlabs.json'), 'audio/elevenlabs');
-  assert.equal(componentPath('ai-maestro/agent-management'), 'ai-maestro/agent-management');
+test('componentRef gives the type and path of the component URL', () => {
+  const cases: Array<[string, string]> = [
+    ['agent', 'development-team/frontend-developer.md'],
+    ['mcps', 'audio/elevenlabs.json'],
+    ['skill', 'ai-maestro/agent-management'],
+    ['hook', 'automation/agents-md-loader.json'],
+  ];
+  for (const [type, path] of cases) {
+    const ref = componentRef(type, path);
+    assert.equal(`/component/${ref.component_type}/${ref.component_path}`, componentPath(type, path));
+  }
   assert.deepEqual(componentRef('hook', 'automation/agents-md-loader.json'), {
     component_type: 'hooks',
     component_path: 'automation/agents-md-loader',

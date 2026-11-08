@@ -75,6 +75,11 @@
   Access-Control-Allow-Origin: *
   Access-Control-Allow-Methods: GET
 
+/llms-full.txt
+  Cache-Control: public, max-age=86400, stale-while-revalidate=3600
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET
+
 # FLOSS/fund provenance check (funding.json at the repo root). The file has no
 # extension, so without this Pages would serve it as application/octet-stream.
 /.well-known/funding-manifest-urls

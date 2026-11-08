@@ -29,10 +29,12 @@ interface GatedLinkProps {
   signedIn: boolean;
   loaded: boolean;
   primary?: boolean;
+  /** Shown after sign-in, next to the button that opens the link. */
+  title: string;
   children: React.ReactNode;
 }
 
-function GatedLink({ href, signedIn, loaded, primary, children }: GatedLinkProps) {
+function GatedLink({ href, signedIn, loaded, primary, title, children }: GatedLinkProps) {
   if (!isHttpUrl(href)) return null;
   const open = loaded && signedIn;
   const base =
@@ -48,7 +50,7 @@ function GatedLink({ href, signedIn, loaded, primary, children }: GatedLinkProps
       onClick={(e) => {
         if (open) return;
         e.preventDefault();
-        if (loaded) openSignIn('course');
+        if (loaded) openSignIn({ kind: 'open-link', source: 'course', title, url: href });
       }}
       className={`${base} ${look}`}
     >
@@ -168,13 +170,13 @@ export default function CertificationModal({ item, provider, signedIn, loaded, o
         </dl>
 
         <div className="mt-4 flex flex-wrap gap-2">
-          <GatedLink href={item.url} signedIn={signedIn} loaded={loaded} primary>
+          <GatedLink href={item.url} signedIn={signedIn} loaded={loaded} title={item.title} primary>
             {item.kind === 'certification' ? 'Register' : 'Start course'}
           </GatedLink>
-          <GatedLink href={item.prepUrl} signedIn={signedIn} loaded={loaded}>
+          <GatedLink href={item.prepUrl} signedIn={signedIn} loaded={loaded} title={`${item.title}: prep courses`}>
             Prep courses{item.prepCourses ? ` (${item.prepCourses})` : ''}
           </GatedLink>
-          <GatedLink href={item.examGuideUrl} signedIn={signedIn} loaded={loaded}>
+          <GatedLink href={item.examGuideUrl} signedIn={signedIn} loaded={loaded} title={`${item.title}: exam guide`}>
             Exam guide
           </GatedLink>
         </div>

@@ -6,7 +6,7 @@ This file provides guidance to Claude Code when working with this repository.
 
 Node.js CLI tool (`cli-tool/`) for managing Claude Code components (agents, commands, MCPs, hooks, settings) with a static website for browsing and installing components. The dashboard and its API routes are deployed on Cloudflare Pages, with supporting cron and monitoring tasks running as Cloudflare Workers.
 
-`cli-rust/` is a Rust port of the CLI's install core (preview binary, releases tagged `cli-rust-v*`, CI `rust-ci.yml` / `build-rust-cli.yml`), kept at byte-for-byte install parity with the Node CLI; everything else is delegated to the Node CLI.
+`cli-rust/` (Rust port of the install core) is **in the backlog**: do not plan, change, test parity with or mention it unless Daniel resumes it.
 
 ## Essential Commands
 
@@ -100,9 +100,11 @@ npx claude-code-templates@latest --plugin productivity/champion-kit      # Claud
 # Batch installation
 npx claude-code-templates@latest --agent security-auditor --command security-audit --setting read-only-mode
 
-# Interactive mode
+# No arguments: catalog browser (cli-tool/src/catalog-browser.js, reads /api/v1; since 1.31.0)
 npx claude-code-templates@latest
 ```
+
+Test CLI flows from the packed tarball (`npm pack`), not the checkout: npm is built from the **root** `package.json` `files`, so the published CLI can differ from the repo.
 
 ### Component Development
 
@@ -654,6 +656,9 @@ DISCORD_WEBHOOK_URL_CHANGELOG=https://discord.com/api/webhooks/xxx   # secret
 
 ### Known Issues & Solutions
 
+**Off-canvas panels zoom out the whole site on iOS Safari**
+- A closed `fixed` drawer translated off-screen widens the page iOS counts, and Safari zooms out every page (Chromium emulation never shows it; `overflow-x-hidden` on body does not help). Clip such panels inside a `fixed inset-0 overflow-hidden pointer-events-none` wrapper.
+
 **Node built-ins in SSR**
 - The Cloudflare Workers runtime does not expose Node's `fs`/`path`/etc. by default. `astro.config.mjs` enables `nodejs_compat` (via `wrangler.toml`) and externalizes `node:fs`, `node:path`, `node:url`, `node:stream` in SSR. Avoid adding new hard dependencies on Node-only APIs in server code.
 
@@ -723,6 +728,10 @@ Docs page `/developers/catalog-api`; audit and design in
 3. Dashboard islands (`ComponentGrid.tsx`, `SearchModal.tsx`, `Sidebar.astro`, `SendToRepoModal.tsx`) load the split artifacts instead of the full catalog
 4. `scripts/generate_trending_data.py` writes only `docs/trending-data.json`; `update-json-data.yml` copies it to `dashboard/public/trending-data.json`, which is the one `TrendingView.tsx` and the home counters actually fetch. Besides the per-type rankings it writes `clientSplit` (last 30 days of agent / human / script / unknown installs per day, top agents and Claude Code entrypoints), which the "Agents vs humans" tab (`AgentSplitView.tsx`, `/trending#agents`) renders; it refreshes with the daily cron
 5. Download tracking via `/api/track-download-supabase`
+
+### Jobs board
+
+`scripts/generate_claude_jobs.py` runs in `update-json-data.yml` (daily) and writes `claude-jobs.json` to `docs/` and `dashboard/public/` (read by `JobsView.tsx`). Company boards are listed in `scripts/jobs_ats_boards.json`; Firecrawl discovery runs only when the `FIRECRAWL_API_KEY` Actions secret is set and persists `docs/claude-jobs-discovered-boards.json`. Only postings that say "Claude Code" are kept.
 
 ### Plugins & Marketplaces Catalog
 
