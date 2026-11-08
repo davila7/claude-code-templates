@@ -48,7 +48,7 @@ function GatedLink({ href, signedIn, loaded, primary, children }: GatedLinkProps
       onClick={(e) => {
         if (open) return;
         e.preventDefault();
-        if (loaded) openSignIn();
+        if (loaded) openSignIn('course');
       }}
       className={`${base} ${look}`}
     >

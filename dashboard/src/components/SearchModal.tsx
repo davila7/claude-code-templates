@@ -3,6 +3,7 @@ import { TYPE_CONFIG } from '../lib/icons';
 import TypeIcon from './TypeIcon';
 import { fetchSearchIndex, type SearchIndexEntry } from '../lib/data';
 import { fetchActiveAds, findSponsoredIndex, type ActiveAd } from '../lib/ads';
+import { track } from '../lib/analytics';
 
 type SearchResult = SearchIndexEntry & { sponsored?: boolean };
 
@@ -140,8 +141,8 @@ export default function SearchModal() {
   }, [open]);
 
   // Search results
-  const results = useMemo<SearchResult[]>(() => {
-    if (!data || !query.trim()) return [];
+  const { results, totalMatches } = useMemo<{ results: SearchResult[]; totalMatches: number }>(() => {
+    if (!data || !query.trim()) return { results: [], totalMatches: 0 };
 
     const q = query.toLowerCase();
 
@@ -166,8 +167,18 @@ export default function SearchModal() {
       top.unshift(sponsored);
     }
 
-    return top;
+    return { results: top, totalMatches: matched.length };
   }, [data, ads, query]);
+
+  // One 'search' event per settled query (1 s without typing), with the number
+  // of matches only, never the text.
+  const matchesRef = useRef(0);
+  matchesRef.current = totalMatches;
+  useEffect(() => {
+    if (!open || !data || !query.trim()) return;
+    const timer = setTimeout(() => track('search', { results_count: matchesRef.current, scope: 'modal' }), 1000);
+    return () => clearTimeout(timer);
+  }, [open, data, query]);
 
   // Keyboard navigation: reset on new queries; when the same query's results
   // reorder (ads arriving async), re-anchor to the item that was highlighted

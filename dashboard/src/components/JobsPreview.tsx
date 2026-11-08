@@ -83,7 +83,7 @@ export default function JobsPreview({ variant = 'preview' }: Props) {
     if (!isLoaded) { e.preventDefault(); return; }
     if (!isSignedIn) {
       e.preventDefault();
-      openSignIn();
+      openSignIn('job');
     }
   }
 

@@ -8,6 +8,8 @@
 // inside an in-app browser we explain it and offer to reopen the page in the
 // system browser before showing Clerk's modal.
 
+import { rememberSignInOrigin, track, type SignInOrigin } from './analytics.ts';
+
 export type InAppBrowser = { app: string; platform: 'ios' | 'android' | 'other' };
 
 const APP_MARKERS: Array<[RegExp, string]> = [
@@ -184,8 +186,12 @@ function showInAppDialog(info: InAppBrowser) {
   (actions.firstElementChild as HTMLElement | null)?.focus();
 }
 
-export function openSignIn() {
+export function openSignIn(origin?: SignInOrigin) {
   if (typeof window === 'undefined') return;
+  if (origin) {
+    track('sign_in_open', { origin });
+    rememberSignInOrigin(origin);
+  }
   const info = detectInAppBrowser(navigator.userAgent || '');
   if (info) showInAppDialog(info);
   else clerkOpenSignIn();

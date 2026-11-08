@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { componentRef, track } from '../lib/analytics';
 
 // "Add to stack" on the component page. Same cart as the grid cards
 // (localStorage 'claudeCodeCart' + 'cart-updated'), so CartSidebar picks it up.
@@ -46,6 +47,7 @@ export default function AddToStackButton({ typePlural, name, path, category, des
       localStorage.setItem('claudeCodeCart', JSON.stringify(next));
     } catch { /* private mode: the event still updates this page */ }
     window.dispatchEvent(new CustomEvent('cart-updated', { detail: next }));
+    if (!inStack) track('add_to_stack', { ...componentRef(typePlural, path), source: 'component_page' });
   }
 
   return (
