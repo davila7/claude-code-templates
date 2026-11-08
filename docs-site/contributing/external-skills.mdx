@@ -1,0 +1,32 @@
+---
+title: "List a skill from your repository"
+description: "Add a skill or plugin to the catalog without copying it: a source.json pinned to a commit of your own GitHub repository."
+---
+
+If your skill lives in your own repository, you can list it instead of copying it. Its catalog folder holds only a `source.json`, and the CLI downloads the files from your repository at the pinned commit.
+
+```bash
+python3 scripts/external_skills.py add OWNER/REPO path/to/skill CATEGORY [--requires category/name ...] [--author NAME]
+```
+
+The script resolves your repository's current commit, checks the license and writes `cli-tool/components/skills/{category}/{name}/source.json`:
+
+| Field | Required | Meaning |
+| --- | --- | --- |
+| `repo` | yes | `owner/name` on GitHub |
+| `path` | yes | Folder of the skill inside the repository |
+| `commit` | yes | Full 40-character sha. Never a branch or tag |
+| `license` | yes | SPDX id; must match the repository's LICENSE at that commit |
+| `author` | no | Shown on aitmpl.com |
+| `requires` | no | Other catalog skills to install with it |
+| `include` | no | Files or folders under `path` to keep, when the folder also holds demos or tests. Must list `SKILL.md` |
+
+Limits after filtering: 200 files and 5 MB.
+
+## Updating
+
+A new commit in your repository does not reach users on its own. Open a pull request that moves `commit`. A weekly job opens an issue listing skills whose upstream has newer commits.
+
+## Whole plugins
+
+A `source.json` can also point at a complete Claude Code plugin (a folder with `.claude-plugin/plugin.json`). Those live under `cli-tool/components/plugins/` and are published in the `aitmpl` marketplace. See [Plugins](/components/plugins).

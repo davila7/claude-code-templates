@@ -11,6 +11,7 @@ on:
   pull_request:
     paths:
       - 'cli-tool/components/skills/**'
+      - 'cli-tool/components/plugins/**'
       - 'scripts/skillspector_scan.py'
       - 'scripts/external_skills.py'
       - '.github/workflows/skill-security-scan.yml'

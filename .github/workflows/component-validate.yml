@@ -1,7 +1,8 @@
 name: Component Validate
 
 # Runs `claude plugin validate` (the official validator) over agents, commands,
-# skills, hooks and MCP components. See scripts/validate_components.py for how
+# skills, hooks, MCP components and catalog plugins (plus the aitmpl
+# marketplace.json built from them). See scripts/validate_components.py for how
 # the nested catalog layout is adapted to what the validator accepts.
 #
 # - Pull requests: validates only the components the PR touches and blocks on errors.
@@ -17,6 +18,7 @@ on:
       - 'cli-tool/components/skills/**'
       - 'cli-tool/components/hooks/**'
       - 'cli-tool/components/mcps/**'
+      - 'cli-tool/components/plugins/**'
       - 'scripts/validate_components.py'
       - 'scripts/external_skills.py'
       - 'scripts/test_external_skills.py'
@@ -57,15 +59,16 @@ jobs:
         if: github.event_name != 'pull_request'
         run: python3 scripts/validate_components.py --report component-validation.json
 
-      # External skills (source.json): pinned commit, SKILL.md present, license
-      # on the allowlist and matching the repo's LICENSE file at that commit.
-      - name: Check external skill manifests
+      # External skills and plugins (source.json): pinned commit, SKILL.md or
+      # plugin.json present, license on the allowlist and matching the repo's
+      # LICENSE file at that commit, plugin name = folder name.
+      - name: Check external skill and plugin manifests
         if: success() || failure()
         run: |
           python3 -m unittest scripts/test_external_skills.py
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            git diff --name-only --diff-filter=d "origin/${{ github.base_ref }}...HEAD" -- 'cli-tool/components/skills/*/*/source.json' > external.txt
-            if [ ! -s external.txt ]; then echo "no external skill changed"; exit 0; fi
+            git diff --name-only --diff-filter=d "origin/${{ github.base_ref }}...HEAD" -- 'cli-tool/components/skills/*/*/source.json' 'cli-tool/components/plugins/*/*/source.json' > external.txt
+            if [ ! -s external.txt ]; then echo "no external skill or plugin changed"; exit 0; fi
             python3 scripts/external_skills.py check $(cat external.txt)
           else
             python3 scripts/external_skills.py check

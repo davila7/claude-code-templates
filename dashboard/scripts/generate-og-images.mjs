@@ -37,6 +37,7 @@ const TYPE_LABEL = {
   mcps: 'MCP',
   loops: 'Loop',
   mods: 'Mod',
+  plugins: 'Plugin',
 };
 
 // Anthropic palette only: cream card, dark ink, orange as the one accent.

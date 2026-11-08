@@ -1,0 +1,48 @@
+---
+title: "Agents"
+description: "Specialist subagents for Claude Code: what they are, where the CLI writes them and how Claude uses them."
+---
+
+An agent is a Markdown file with YAML frontmatter that defines a [Claude Code subagent](https://code.claude.com/docs/en/sub-agents): a specialist with its own system prompt, its own context window and, optionally, a restricted tool list. Claude delegates to it when a task matches its description, or when you ask for it by name.
+
+```bash
+npx claude-code-templates@latest --agent security/security-auditor
+```
+
+Written to `.claude/agents/security-auditor.md`. It appears in `/agents` the next time Claude Code starts.
+
+## Anatomy
+
+```markdown .claude/agents/security-auditor.md
+---
+name: security-auditor
+description: Use this agent when conducting security audits, compliance assessments or risk evaluations…
+tools: Read, Grep, Glob
+---
+
+You are a senior security auditor…
+```
+
+| Field | Meaning |
+| --- | --- |
+| `name` | How you and Claude refer to the agent. Matches the file name. |
+| `description` | When Claude should delegate to it. Claude reads this to decide, so it matters most. |
+| `tools` | Optional allowlist. Omit it to inherit every tool; list only read tools for a reviewer. |
+| `model` | Optional: `sonnet`, `opus`, `haiku` or `inherit`. |
+
+## Using it
+
+- Let Claude choose: describe the task and Claude delegates when the description fits.
+- Ask explicitly: "Use the security-auditor agent to review `src/auth`".
+- Edit the file freely after install. It is yours.
+
+## Popular agents
+
+| Path | What it does |
+| --- | --- |
+| `development-team/frontend-developer` | Builds and reviews UI code |
+| `development-team/backend-architect` | Designs APIs and services |
+| `security/security-auditor` | Read-only security and compliance review |
+| `development-tools/code-reviewer` | Reviews a diff for bugs and maintainability |
+
+Browse all of them at [aitmpl.com/agents](https://www.aitmpl.com/agents/).

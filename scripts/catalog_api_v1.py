@@ -29,7 +29,8 @@ REPO = 'https://github.com/davila7/claude-code-templates'
 DOCS = f'{SITE}/developers/catalog-api'
 
 # Plural group key in the legacy index -> CLI flag. Order is the site's.
-# sandbox (docs files, not components), templates (retired), plugins (empty)
+# sandbox (docs files, not components), templates (retired), plugins (installed
+# through dashboard/public/marketplace.json; a v1 type for them is still to come)
 # and componentsMarketplace are deliberately not part of v1.
 TYPES = {
     'agents': '--agent',

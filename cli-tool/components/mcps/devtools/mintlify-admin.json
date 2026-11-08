@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "mintlify-admin": {
+      "description": "Official Mintlify admin MCP server (mcp.mintlify.com): edit pages, restructure navigation, update docs.json, open pull requests, publish, manage automations and project settings of your Mintlify docs, across the projects your OAuth grant covers (specific projects or your whole organization). Requires a Mintlify account and uses OAuth: after installing, run /mcp in Claude Code to sign in; the session inherits your dashboard role. It has write access: edits to the deploy branch stay unpublished until publish (in projects with auto publish and in bases they are committed at once), edits to other branches go to a pull request (publish can also merge it), and settings and automation changes apply to the live project immediately. Pair with the setting permissions/mintlify-mcp-confirm-writes to approve publishing, deletes and project-setting changes.",
+      "type": "http",
+      "url": "https://mcp.mintlify.com"
+    }
+  }
+}

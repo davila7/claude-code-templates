@@ -1,0 +1,36 @@
+---
+title: "Loops"
+description: "Autonomous Claude Code workflows with a goal, an interval and a stop condition, installed together with the agents and commands they use."
+---
+
+A loop is a recurring goal: Claude observes, plans, acts and verifies on an interval until a stop condition is true. A loop file describes the goal and lists the components it relies on.
+
+```bash
+npx claude-code-templates@latest --loop engineering/docs-sweep-loop
+```
+
+Writes `.claude/loops/docs-sweep-loop.md` and installs every component in its `components` list.
+
+## Anatomy
+
+```markdown .claude/loops/docs-sweep-loop.md
+---
+name: docs-sweep-loop
+description: Keeps documentation aligned with the current codebase and opens a reviewable pull request on every pass.
+interval: 30m
+stop-condition: Every public API, command and config option is documented and the docs build passes with no warnings.
+components: [agent:documentation/documentation-engineer, command:documentation/update-docs, command:git-workflow/create-pr]
+---
+```
+
+## Running it
+
+Each loop says how to start it. Most use Claude Code's `/loop` command:
+
+```text
+/loop 30m "Compare the docs against the current code… Continue until docs and code fully agree."
+```
+
+A loop keeps spending tokens until its stop condition is met or you stop it. Start with a long interval and watch the first passes.
+
+Browse all loops at [aitmpl.com/loops](https://www.aitmpl.com/loops/).

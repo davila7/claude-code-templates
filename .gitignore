@@ -40,7 +40,7 @@ coverage
 
 # Sandbox output directories
 sandbox-*/
-cloudflare-*/
+/cloudflare-*/
 !cloudflare-workers/
 
 # Test directories (local only)

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { collectionsApi } from '../lib/collections-api';
 import type { Collection } from '../lib/types';
+import { openSignIn } from '../lib/sign-in';
 
 // Hook that reads auth state from Clerk's global instance (window.Clerk)
 // Works without needing a ClerkProvider in the same React tree
@@ -208,11 +209,11 @@ function SaveButton({ componentType, componentPath, componentName, componentCate
   // Not signed in - open Clerk modal via global instance
   if (!isSignedIn) {
     if (variant === 'button') {
-      return <PageSaveButton saved={false} title="Sign in to save" onClick={(e) => { e.stopPropagation(); (window as any).Clerk?.openSignIn?.(); }} />;
+      return <PageSaveButton saved={false} title="Sign in to save" onClick={(e) => { e.stopPropagation(); openSignIn(); }} />;
     }
     return (
       <button
-        onClick={(e) => { e.stopPropagation(); (window as any).Clerk?.openSignIn?.(); }}
+        onClick={(e) => { e.stopPropagation(); openSignIn(); }}
         className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5 text-[var(--color-text-tertiary)] opacity-0 group-hover:opacity-100 hover:text-white hover:bg-white/10 transition-all"
         title="Sign in to save"
       >

@@ -1,0 +1,34 @@
+---
+title: "Use these docs with AI tools"
+description: "Give Claude Code or another agent these docs and the catalog: the docs MCP server, llms.txt files and Markdown pages."
+---
+
+## Docs MCP server
+
+These docs are available as an MCP server, so Claude Code can search them while it works:
+
+```bash
+claude mcp add --transport http aitmpl-docs https://docs.aitmpl.com/mcp
+```
+
+Every page also has a menu (top right) to copy it as Markdown or open it in Claude, ChatGPT, Cursor or VS Code.
+
+## llms.txt
+
+| URL | What |
+| --- | --- |
+| [docs.aitmpl.com/llms.txt](https://docs.aitmpl.com/llms.txt) | Index of these docs |
+| [docs.aitmpl.com/llms-full.txt](https://docs.aitmpl.com/llms-full.txt) | All of these docs in one file |
+| [aitmpl.com/llms.txt](https://www.aitmpl.com/llms.txt) | The catalog site, its API and how to install |
+
+Add `.md` to any docs URL to get the page as Markdown, for example `https://docs.aitmpl.com/quickstart.md`.
+
+## For agents installing components
+
+Run the CLI with explicit paths and `--yes`, so it never waits for input:
+
+```bash
+npx claude-code-templates@latest --skill development/systematic-debugging --yes
+```
+
+Find paths in the [Catalog API](/developers/catalog-api): each component carries its exact `install.command`.

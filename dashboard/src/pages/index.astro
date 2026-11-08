@@ -4,6 +4,7 @@ import TopBar from '../components/TopBar.astro';
 // Featured section hidden — re-enable by uncommenting this import and <FeaturedSection /> below.
 // import FeaturedSection from '../components/FeaturedSection.astro';
 import JobsPreview from '../components/JobsPreview.tsx';
+import CertificationsPreview from '../components/CertificationsPreview.tsx';
 import ComponentGrid from '../components/ComponentGrid.tsx';
 import SearchModal from '../components/SearchModal.tsx';
 import CartSidebar from '../components/CartSidebar.tsx';
@@ -89,9 +90,14 @@ try {
       </section>
     </div>
 
-    <!-- Right: jobs sidebar (sticky, scrolls independently) -->
-    <aside class="hidden xl:flex flex-col w-[260px] shrink-0 border-l border-[var(--color-border)] sticky top-14 h-[calc(100vh-3.5rem)] overflow-y-auto bg-[var(--color-surface-0)]">
-      <JobsPreview client:idle variant="sidebar" />
+    <!-- Right: sticky sidebar, jobs on top half and certifications on the bottom half; each half scrolls on its own -->
+    <aside class="hidden xl:flex flex-col w-[260px] shrink-0 border-l border-[var(--color-border)] sticky top-14 h-[calc(100vh-3.5rem)] bg-[var(--color-surface-0)]">
+      <div class="flex-1 min-h-0 flex flex-col">
+        <JobsPreview client:idle variant="sidebar" />
+      </div>
+      <div class="flex-1 min-h-0 flex flex-col border-t border-[var(--color-border)]">
+        <CertificationsPreview client:idle />
+      </div>
     </aside>
   </div>
   <SearchModal client:idle />

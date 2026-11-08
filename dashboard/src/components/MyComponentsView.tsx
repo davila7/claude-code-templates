@@ -5,6 +5,7 @@ import TypeIcon from './TypeIcon';
 import SendToRepoModal from './SendToRepoModal';
 import type { Collection, CollectionItem } from '../lib/types';
 import { componentPath } from '../lib/component-url';
+import { openSignIn } from '../lib/sign-in';
 
 // ── Auth hook ────────────────────────────────────────────────────────────
 function useGlobalAuth() {
@@ -642,7 +643,7 @@ export default function MyComponentsView() {
           Sign in to create collections and organize the components you use most.
         </p>
         <button
-          onClick={() => (window as any).Clerk?.openSignIn?.()}
+          onClick={() => openSignIn()}
           className="px-5 py-2.5 bg-white text-black rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
         >
           Sign In

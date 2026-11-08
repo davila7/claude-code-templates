@@ -45,6 +45,8 @@ jobs:
         dashboard/public/components
         dashboard/public/component-content
         dashboard/public/api/v1
+        dashboard/public/marketplace.json
+        docs-site/snippets
 
     steps:
       - name: Checkout repository
@@ -86,6 +88,9 @@ jobs:
 
       - name: Regenerate the catalog, keeping the current download counts
         run: python scripts/generate_components_json.py --skip-downloads
+
+      - name: Refresh the docs tables (component counts) for docs.aitmpl.com
+        run: python docs-site/scripts/generate_snippets.py
 
       - name: Stage generated data and check for changes
         id: check_changes

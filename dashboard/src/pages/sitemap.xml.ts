@@ -35,6 +35,29 @@ function lastCommitDate(type: string, slug: string): string | undefined {
   return date ? date.slice(0, 10) : undefined;
 }
 
+// Blog articles are static files under public/blog/: one directory with an
+// index.html per article (served at /blog/{slug}/), or a {slug}.html file
+// (served at /blog/{slug}). Listed from disk, so an article missing from
+// blog-articles.json is still in the sitemap.
+function blogPaths(): string[] {
+  const dir = path.join(process.cwd(), 'public', 'blog');
+  let entries: fs.Dirent[];
+  try {
+    entries = fs.readdirSync(dir, { withFileTypes: true });
+  } catch {
+    return [];
+  }
+  const paths: string[] = [];
+  for (const e of entries) {
+    if (e.isDirectory() && fs.existsSync(path.join(dir, e.name, 'index.html'))) {
+      paths.push(`/blog/${e.name}/`);
+    } else if (e.isFile() && e.name.endsWith('.html') && e.name !== 'index.html') {
+      paths.push(`/blog/${e.name.slice(0, -'.html'.length)}`);
+    }
+  }
+  return paths.sort();
+}
+
 function safeReadJson<T>(relPath: string, fallback: T): T {
   try {
     const full = path.join(process.cwd(), 'public', relPath);
@@ -57,12 +80,19 @@ export const GET: APIRoute = () => {
   urls.push(buildUrl('/plugins/', { priority: '0.9', changefreq: 'weekly' }));
   urls.push(buildUrl('/trending/', { priority: '0.8', changefreq: 'daily' }));
   urls.push(buildUrl('/jobs/', { priority: '0.6', changefreq: 'weekly' }));
+  urls.push(buildUrl('/certifications/', { priority: '0.6', changefreq: 'weekly' }));
   urls.push(buildUrl('/about/', { priority: '0.5', changefreq: 'monthly' }));
+  urls.push(buildUrl('/supporters/', { priority: '0.4', changefreq: 'monthly' }));
   urls.push(buildUrl('/privacy/', { priority: '0.3', changefreq: 'yearly' }));
   urls.push(buildUrl('/developers/catalog-api/', { priority: '0.4', changefreq: 'monthly' }));
 
   for (const type of ['agents', 'commands', 'skills', 'mcps', 'hooks', 'settings', 'mods', 'loops']) {
     urls.push(buildUrl(`/${type}/`, { priority: '0.9', changefreq: 'daily' }));
+  }
+
+  urls.push(buildUrl('/blog/', { priority: '0.7', changefreq: 'weekly' }));
+  for (const blogPath of blogPaths()) {
+    urls.push(buildUrl(blogPath, { priority: '0.6', changefreq: 'monthly' }));
   }
 
   for (const item of FEATURED_ITEMS) {
@@ -75,7 +105,7 @@ export const GET: APIRoute = () => {
     }
   }
 
-  const COMPONENT_TYPES = ['agents', 'commands', 'skills', 'mcps', 'hooks', 'settings', 'mods', 'loops'];
+  const COMPONENT_TYPES = ['agents', 'commands', 'skills', 'mcps', 'hooks', 'settings', 'mods', 'loops', 'plugins'];
   for (const type of COMPONENT_TYPES) {
     const items = components[type];
     if (!Array.isArray(items)) continue;
