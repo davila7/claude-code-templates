@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "linkednav": {
+      "description": "A hosted MCP server for your own LinkedNav account: find leads from LinkedIn buying signals, launch outreach campaigns, write messages, answer replies, and check results. Sign-in opens LinkedNav's connect page, where you paste your API key once; no key is stored in this file. An independent service, not made by or affiliated with LinkedIn.",
+      "type": "http",
+      "url": "https://mcp.linkednav.com/"
+    }
+  }
+}
