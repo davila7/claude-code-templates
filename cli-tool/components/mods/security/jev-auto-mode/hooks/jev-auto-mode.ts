@@ -154,7 +154,9 @@ export const register: Register = (on, options) => {
   on('turn.start', async ($, e, next) => {
     // a failed read keeps the last good policy (never an empty one) and says so
     try {
-      if (e.text.trim()) intent = e.text
+      // Only the person's own prompt is the judge's intent: since Claude Code 2.1.299 a subagent's
+      // turn starts here too, with a prompt the model wrote.
+      if (e.agentId === undefined && e.text.trim()) intent = e.text
       const home = await $.env.get('HOME')
       const root = await $.session.root()
       const userPath = configFile || (home ? `${home}/.claude/${CONFIG_NAME}` : '')

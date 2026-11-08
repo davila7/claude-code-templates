@@ -185,6 +185,10 @@ describe('the pane', () => {
     await ui.press({ key: 'ag:main' })
     await ui.redraw()
     expect(await ui.find({ type: 'Text', text: /2 subagents|1 subagents/ })).toBeDefined()
+    // a subagent's turn (Claude Code 2.1.299+) never replaces the person's prompt on main
+    await $.turn.start({ text: 'Map the auth module.', turnId: 't2', agentId: 'sub-1' })
+    await ui.redraw()
+    expect(await ui.find({ type: 'Text', text: /› refactor the auth module/ })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: /Messages/ })).toBeDefined()
     await ui.unmount()
   })
