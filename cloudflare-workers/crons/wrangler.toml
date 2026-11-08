@@ -3,10 +3,9 @@ main = "index.js"
 compatibility_date = "2024-09-23"
 
 # Cron triggers:
-# - claude-code-check: every 30 minutes (monitors Claude Code npm releases)
 # - health-check: every hour (was every 15 min on Vercel, reduced to save invocations)
 [triggers]
-crons = ["*/30 * * * *", "0 * * * *"]
+crons = ["0 * * * *"]
 
 # Environment variables — set via: wrangler secret put <KEY>
 # Required:
@@ -15,5 +14,5 @@ crons = ["*/30 * * * *", "0 * * * *"]
 #
 # Optional (error tracking):
 # - SENTRY_DSN: DSN from the "aitmpl-workers" Sentry project. Also configure
-#   Cron Monitors in Sentry with slugs "claude-code-check" and "health-check"
+#   a Cron Monitor in Sentry with slug "health-check"
 #   to get alerted if a schedule stops running entirely.
