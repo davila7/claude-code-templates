@@ -27948,6 +27948,38 @@
       }
     },
     {
+      "name": "asobeast",
+      "path": "marketing/asobeast.json",
+      "category": "marketing",
+      "type": "mcp",
+      "description": "Official MCP server for AsoBeast, an open-source App Store Optimization tool for the App Store and Google Play. Read daily keyword ranks to position 200, keyword popularity and difficulty, competitors and their listing changes, reviews, audits and the ASO to-do list. 37 read tools; a token with the write scope adds 7 tools that track keywords and manage competitors. The hosted app.asobeast.com is paid: Indie is $10/month and Ultimate $99/month, with a 7-day free trial that needs a card and can be cancelled any time. Self-hosting the AGPL-3.0 release is free. Create the token under Integrations in AsoBeast (https://asobeast.com/mcp) and export it as ASOBEAST_API_TOKEN. On a self-hosted instance, use https://your-host/api/backend/mcp as the URL.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "hash": "7a277142bc498795",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-08T04:05:11Z"
+      }
+    },
+    {
       "name": "bulkpublish",
       "path": "marketing/bulkpublish.json",
       "category": "marketing",
