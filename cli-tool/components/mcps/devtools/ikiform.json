@@ -1,11 +1,11 @@
 {
   "mcpServers": {
     "ikiform": {
-      "description": "Official remote MCP server for Ikiform, the backend for any website form. Lets Claude Code create and update forms and get the snippet to connect one, read submissions and mark spam, and set up, test and replay signed webhooks. Authenticates with an Ikiform secret API key (ik_sk_...) from https://ikiform.com/dashboard/api-keys; each tool needs its matching key scope. Docs: https://ikiform.com/docs/mcp",
+      "description": "Official remote MCP server for Ikiform, the backend for any website form. Lets Claude Code create and update forms and get the snippet to connect one, read submissions and mark spam, and set up, test and replay signed webhooks. Authenticates with an Ikiform secret API key (ik_sk_...) from https://ikiform.com/dashboard/api-keys, exported as IKIFORM_API_KEY; each tool needs its matching key scope. Docs: https://ikiform.com/docs/mcp",
       "type": "http",
       "url": "https://ikiform.com/mcp",
       "headers": {
-        "Authorization": "Bearer <YOUR_IKIFORM_API_KEY>"
+        "Authorization": "Bearer ${IKIFORM_API_KEY}"
       }
     }
   }
