@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "asoatlas": {
+      "description": "Official hosted MCP server of ASO Atlas: App Store and Google Play keyword research with Apple-reported popularity and difficulty, rank tracking in 59 storefronts, competitor keyword gaps, App Store Connect and Play Console performance, in-app feedback and onboarding analytics. OAuth sign-in to your ASO Atlas account (subscription required to run tools).",
+      "type": "http",
+      "url": "https://asoatlas.com/mcp"
+    }
+  }
+}
