@@ -4,8 +4,8 @@
 // (Clerk's listener fires).
 
 import { collectionsApi } from './collections-api';
-import { takePendingAction, type PendingAction } from './pending-action';
-import { COLLECTIONS_CHANGED_EVENT, myComponentsUrl, saveComponent, type CollectionsChangedDetail } from './save-component';
+import { dropExpiredPendingAction, takePendingAction, type PendingAction } from './pending-action';
+import { COLLECTIONS_CHANGED_EVENT, myComponentsUrl, saveComponent, whenSavesSettled, type CollectionsChangedDetail } from './save-component';
 import { showToast } from './toast';
 
 let started = false;
@@ -14,6 +14,7 @@ let running = false;
 export function startPendingActionResume(): void {
   if (started || typeof window === 'undefined') return;
   started = true;
+  dropExpiredPendingAction();
 
   const tryRun = () => {
     const clerk = (window as any).Clerk;
@@ -45,6 +46,7 @@ async function run(clerk: any, action: PendingAction): Promise<void> {
       detail: { type: item.type, path: item.path, collectionId: collection.id },
     }));
     if (status === 'first') {
+      await whenSavesSettled();
       window.location.assign(myComponentsUrl(collection.id));
       return;
     }
