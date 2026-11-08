@@ -1,0 +1,33 @@
+{
+  "name": "router",
+  "displayName": "Router",
+  "version": "1.4.0",
+  "description": "Model and effort routing for the main conversation, advised by a prompt classifier (Jev, Clef or Clef Flash). Preserves subagent model choices.",
+  "author": {
+    "name": "Alexei Ledenev",
+    "url": "https://github.com/alexei-led"
+  },
+  "repository": "https://github.com/alexei-led/claude-router",
+  "license": "MIT",
+  "keywords": ["router", "jev", "typesafe", "clef", "cloudflare", "effort", "mods"],
+  "userConfig": {
+    "typesafe_api_key": {
+      "type": "string",
+      "title": "Jev API key (typesafe.ai)",
+      "description": "Jev API key from typesafe.ai. Used when the classifier is Jev; without its key the current model is kept.",
+      "sensitive": true
+    },
+    "cloudflare_api_token": {
+      "type": "string",
+      "title": "Cloudflare API token (Clef, Clef Flash)",
+      "description": "Workers AI token for the Clef and Clef Flash classifiers. Scope it to Workers AI only.",
+      "sensitive": true
+    },
+    "cloudflare_account_id": {
+      "type": "string",
+      "title": "Cloudflare account ID (Clef, Clef Flash)",
+      "description": "The Cloudflare account that runs Workers AI. Not a secret."
+    }
+  },
+  "types": "./types/index.d.ts"
+}
