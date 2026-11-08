@@ -112,11 +112,14 @@ export type SpawnFacts = {
   fork: boolean
   background: boolean
   model?: string
+  /** A resumed subagent or a teammate back from disk (2.1.299): same node, its prompt is a message. */
+  resumed?: boolean
 }
 
 export function spawned(flow: Flow, s: SpawnFacts, now: number): FlowNode {
-  const parentId = s.parentAgentId && flow.nodes.has(s.parentAgentId) ? s.parentAgentId : MAIN
   const known = flow.nodes.get(s.agentId)
+  const parentId =
+    s.resumed && known ? known.parentId : s.parentAgentId && flow.nodes.has(s.parentAgentId) ? s.parentAgentId : MAIN
   const node: FlowNode = {
     ...(known ?? {
       outputTokens: 0,
@@ -130,10 +133,11 @@ export function spawned(flow: Flow, s: SpawnFacts, now: number): FlowNode {
     type: s.subagentType,
     description: s.description,
     model: s.model ?? known?.model,
-    status: known?.status ?? 'running',
+    status: s.resumed ? 'running' : (known?.status ?? 'running'),
     fork: s.fork,
     background: s.background,
-    prompt: s.prompt,
+    // a resume's prompt is the message that woke it, not its task: keep the task
+    prompt: s.resumed && known ? known.prompt : s.prompt,
     turn: flow.turn,
     unlisted: false,
   }
@@ -216,6 +220,8 @@ export function synced(flow: Flow, list: readonly { id: string; status: string; 
       if (info.status === 'completed') node.status = 'done'
       else if (info.status === 'failed') node.status = 'failed'
       else if (info.status === 'killed') node.status = 'aborted'
+      // a teammate between turns: its turn is done; the next step it takes marks it running again
+      else if (info.status === 'idle') node.status = 'done'
     }
   }
 }

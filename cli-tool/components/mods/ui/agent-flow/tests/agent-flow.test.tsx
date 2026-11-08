@@ -13,6 +13,7 @@ import {
   rows,
   spawned,
   stepped,
+  synced,
   toolLabel,
   toolRan,
   trimmed,
@@ -85,6 +86,27 @@ describe('flow.ts', () => {
     completed(flow, 'a', { answer: '', reason: 'answer', durationMs: 1 }, 3)
     trimmed(flow, 0)
     expect([...flow.nodes.keys()].sort()).toEqual(['a', 'a1', 'main'])
+  })
+
+  test('a resume reopens the same node and keeps its task; an idle teammate is not left running', () => {
+    const flow = createFlow()
+    spawned(flow, spawn('a'), 1)
+    spawned(flow, spawn('b', 'a'), 1)
+    completed(flow, 'b', { answer: 'ok', reason: 'answer', durationMs: 1 }, 2)
+    spawned(flow, spawn('b', undefined, { prompt: 'Also check the logout path.', resumed: true }), 3)
+    const b = flow.nodes.get('b')!
+    expect(b.status).toBe('running')
+    expect(b.parentId).toBe('a')
+    expect(b.prompt).toContain('auth tokens')
+    expect(flow.order.filter(id => id === 'b').length).toBe(1)
+
+    spawned(flow, spawn('mate', undefined, { background: true }), 4)
+    synced(flow, [{ id: 'mate', status: 'idle', type: 'Explore', description: 'task mate' }])
+    expect(flow.nodes.get('mate')?.status).toBe('done')
+    synced(flow, [{ id: 'b', status: 'waiting', type: 'Explore', description: 'task b' }])
+    expect(flow.nodes.get('b')?.status).toBe('running')
+    stepped(flow, 'mate', usage(10), 5)
+    expect(flow.nodes.get('mate')?.status).toBe('running')
   })
 
   test('small helpers', () => {

@@ -318,6 +318,12 @@ export const register: Register = (on, options) => {
       $.ui.log(`[jev-auto-mode] internal error, denied ${e.tool}: ${String(err)}`)
       return { deny: `jev-auto-mode could not evaluate this call (${String(err)}); denied to be safe. Tell the user.` }
     }
+  }).catch(async ($, e, next) => {
+    // What the try above cannot catch: the hook ran past its budget or was cut off. Once the call
+    // went through, hand back its result (a replay, nothing runs twice); before that, deny.
+    if (next.called) return next(e)
+    $.ui.log(`[jev-auto-mode] check failed (${next.error.kind}); denied ${e.tool}`)
+    return { deny: `jev-auto-mode could not finish checking this call (${next.error.kind}); denied to be safe. Tell the user.` }
   })
 
   // The pipeline's verdict becomes the permission decision; an engine deny (a settings rule, plan mode) still stands.
@@ -335,7 +341,16 @@ export const register: Register = (on, options) => {
       if (typeof skill === 'string') approvedSkills.delete(skill)
       return engine
     }
+    // An organization's ceiling (`ask` on a connector's tool) is the most this call may reach: the
+    // policy's allow does not lift it, so the engine's own ask stands (Claude Code 2.1.290+).
+    if (mine.decision === 'allow' && (e.ceiling ?? engine.ceiling) === 'ask') return engine
     return { decision: mine.decision, reason: mine.reason }
+  }).catch(async ($, e, next) => {
+    // A failed check never turns into the engine's allow: an engine deny stands, anything else is asked.
+    const engine = next.called ? await next(e).catch(() => null) : null
+    if (engine?.decision === 'deny') return engine
+    $.ui.log(`[jev-auto-mode] permission check failed (${next.error.kind}) on ${e.tool}; asking`)
+    return { decision: 'ask', reason: `jev-auto-mode could not finish its check (${next.error.kind}).` }
   })
 
   // Typed slash commands and skills: rules only (the person typed them; there is nothing to judge).
@@ -397,6 +412,10 @@ export const register: Register = (on, options) => {
       $.ui.log(`[jev-auto-mode] internal error on /${e.command}: ${String(err)}`)
       return { text: `⛔ jev-auto-mode could not check /${e.command} (${String(err)}); not run.` }
     }
+  }).catch(async ($, e, next) => {
+    if (next.called) return next(e)
+    $.ui.log(`[jev-auto-mode] check failed (${next.error.kind}) on /${e.command}; not run`)
+    return { text: `⛔ jev-auto-mode could not finish checking /${e.command} (${next.error.kind}); not run.` }
   })
 
   // A skill's prompt, however it arrives (typed, Skill tool, preloaded into a subagent): deny rules replace it,

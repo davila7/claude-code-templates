@@ -119,7 +119,9 @@ export const register: Register = (on, options) => {
       // held before the URI is read: a branch that exists can always be kept or deleted with /neon
       held = { branch, host: '', isKept: !branch.expiresAt, sessionId }
       const uri = await connectionUri(f, apiKey, project, { branchId: branch.id, database, role, pooled })
-      await $.env.set('DATABASE_URL', uri)
+      // since 2.1.301 the engine can hold the write (an organization's settings): say so, never claim it is set
+      const write = await $.env.set('DATABASE_URL', uri)
+      if (write.deny) throw new Error(write.deny)
       await $.env.set('NEON_BRANCH', branch.name)
       held = { ...held, host: uriHost(uri) }
       $.ui.status(statusText())
@@ -157,9 +159,10 @@ export const register: Register = (on, options) => {
         await deleteBranch(f, apiKey, project, held.branch.id)
         await $.store.delete(sessionKey(held.sessionId))
         held = undefined
-        await $.env.set('DATABASE_URL', undefined)
+        const unset = await $.env.set('DATABASE_URL', undefined)
         await $.env.set('NEON_BRANCH', undefined)
         $.ui.status(undefined)
+        if (unset.deny) return { text: `neon: deleted ${gone}, but DATABASE_URL could not be unset (${unset.deny})` }
         return { text: `neon: deleted ${gone}; DATABASE_URL is unset for this session` }
       } catch (err) {
         return { text: `neon: ${err instanceof Error ? err.message : String(err)}` }

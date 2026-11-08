@@ -173,6 +173,7 @@ export const register: Register = (on, options) => {
           fork: e.fork,
           background: e.background,
           model: r.model,
+          resumed: e.resume !== undefined,
         },
         Date.now(),
       )
