@@ -73,11 +73,19 @@ function assertComponentPage(path, body) {
   assert(!/<script>\s*alert|\sonerror=/i.test(body), `${path} contains unsanitized script markup`);
 }
 
+// Static pages get these from public/_headers, SSR pages from the middleware.
+function assertSecurityHeaders(res) {
+  const csp = res.headers.get('content-security-policy-report-only') || '';
+  assert(/report-uri \/api\/csp-report/.test(csp), 'no Content-Security-Policy-Report-Only');
+  assert(res.headers.get('x-frame-options') === 'DENY', 'no X-Frame-Options');
+}
+
 // ─── Web ──────────────────────────────────────────────────────────────
 async function web() {
   await check('web', 'home is HTML with an <h1>', async () => {
     const { res, body, type } = await get('/');
     assert(res.status === 200 && /text\/html/.test(type) && /<h1[\s>]/.test(body), `HTTP ${res.status} ${type}`);
+    assertSecurityHeaders(res);
     return `HTTP 200, ${body.length} bytes`;
   });
 
@@ -128,6 +136,7 @@ async function web() {
       const { res, body } = await get(path);
       assert(res.status === 200, `HTTP ${res.status}`);
       assertComponentPage(path, body);
+      assertSecurityHeaders(res);
       return `HTTP 200, ${body.length} bytes`;
     });
     await check('web', `component-content for ${plural}/${top.name}`, async () => {
@@ -198,6 +207,13 @@ async function api() {
     const { res } = await get('/api/track-download-supabase', { method: 'POST', body: '{}', headers: { 'Content-Type': 'application/json' } });
     assert(res.status === 400, `HTTP ${res.status}`);
     return 'HTTP 400 on empty body';
+  });
+
+  await check('api', '/api/csp-report accepts a report', async () => {
+    // An empty report carries no violation, so nothing is forwarded to Sentry
+    const { res } = await get('/api/csp-report', { method: 'POST', body: '{}', headers: { 'Content-Type': 'application/csp-report' } });
+    assert(res.status === 204, `HTTP ${res.status}`);
+    return 'HTTP 204';
   });
 
   await check('api', 'unknown /api route is a JSON 404', async () => {

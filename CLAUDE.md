@@ -656,6 +656,9 @@ DISCORD_WEBHOOK_URL_CHANGELOG=https://discord.com/api/webhooks/xxx   # secret
 **Node built-ins in SSR**
 - The Cloudflare Workers runtime does not expose Node's `fs`/`path`/etc. by default. `astro.config.mjs` enables `nodejs_compat` (via `wrangler.toml`) and externalizes `node:fs`, `node:path`, `node:url`, `node:stream` in SSR. Avoid adding new hard dependencies on Node-only APIs in server code.
 
+**Security headers and CSP**
+- `public/_headers` reaches only static files and prerendered pages; SSR pages get the same headers from `src/middleware.ts`. Both come from `src/lib/security-headers.ts` (`tests/security-headers.test.ts` fails if they drift). The CSP is `Content-Security-Policy-Report-Only` for now: violations go to `/api/csp-report`, which forwards each distinct directive + blocked origin to Sentry once per 6 h. A new third-party script, font, iframe or fetch origin must be added there.
+
 **`react-dom/server` on Cloudflare**
 - `astro.config.mjs` aliases `react-dom/server` to `react-dom/server.node` and marks `react-dom` as `noExternal` at build time so React SSR works on the Workers runtime. Don't remove this alias.
 
