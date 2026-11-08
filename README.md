@@ -1,12 +1,14 @@
 <p align="center">
   <a href="https://www.aitmpl.com">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="docs-site/logo/dark.svg" />
-      <source media="(prefers-color-scheme: light)" srcset="docs-site/logo/light.svg" />
-      <img src="docs-site/logo/light.svg" alt="Claude Code Templates" width="360" />
+      <source media="(prefers-color-scheme: dark)" srcset="docs/images/readme/logo-dark.svg" />
+      <source media="(prefers-color-scheme: light)" srcset="docs/images/readme/logo-light.svg" />
+      <img src="docs/images/readme/logo-light.svg" alt="Claude Code Templates logo" width="80" height="80" />
     </picture>
   </a>
 </p>
+
+<h1 align="center">Claude Code Templates</h1>
 
 <p align="center">
   An open catalog of components for Claude Code, installable with one command.
@@ -15,7 +17,7 @@
 <p align="center">
   <a href="https://www.npmjs.com/package/claude-code-templates"><img src="https://img.shields.io/npm/v/claude-code-templates.svg?color=d57455" alt="npm version" /></a>
   <a href="https://www.npmjs.com/package/claude-code-templates"><img src="https://img.shields.io/npm/dt/claude-code-templates.svg?color=d57455" alt="npm downloads" /></a>
-  <a href="https://github.com/davila7/claude-code-templates/stargazers"><img src="https://img.shields.io/github/stars/davila7/claude-code-templates?color=d57455" alt="GitHub stars" /></a>
+  <a href="https://github.com/davila7/claude-code-templates/stargazers"><img src="https://img.shields.io/github/stars/davila7/claude-code-templates?style=flat&label=stars&color=d57455" alt="GitHub stars" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-d57455.svg" alt="MIT license" /></a>
 </p>
 
@@ -32,18 +34,7 @@
 </p>
 
 <p align="center">
-  <sub>Sponsored by</sub><br />
-  <a href="https://www.swiftproxy.net/">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="docs/sponsors/swiftproxy-dark.png" />
-      <source media="(prefers-color-scheme: light)" srcset="docs/sponsors/swiftproxy-light.png" />
-      <img src="docs/sponsors/swiftproxy-light.png" alt="Swiftproxy" width="160" />
-    </picture>
-  </a>
-  &nbsp;&nbsp;&nbsp;
-  <a href="https://z.ai/subscribe?ic=8JVLJQFSKB&utm_source=github&utm_medium=badge&utm_campaign=readme"><b>Z.AI</b></a>
-  &nbsp;·&nbsp;
-  <a href="#sponsors-and-programs">all sponsors</a>
+  <sub>Sponsored by <a href="https://www.swiftproxy.net/"><b>Swiftproxy</b></a> and <a href="https://z.ai/subscribe?ic=8JVLJQFSKB&utm_source=github&utm_medium=badge&utm_campaign=readme"><b>Z.AI</b></a> · <a href="#sponsors-and-programs">all sponsors and programs</a></sub>
 </p>
 
 <picture>
