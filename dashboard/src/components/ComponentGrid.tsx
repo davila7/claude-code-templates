@@ -6,6 +6,7 @@ import { fetchComponentsByType } from '../lib/data';
 import SkillSpectorBadge from './SkillSpectorBadge';
 import { fetchActiveAds, findSponsoredIndex, type ActiveAd } from '../lib/ads';
 import SaveToCollectionButton from './SaveToCollectionButton';
+import { componentPath } from '../lib/component-url';
 
 type GridComponent = Component & { sponsored?: boolean };
 
@@ -596,7 +597,7 @@ export default function ComponentGrid({ initialType }: Props) {
                   animationFillMode: 'both'
                 }}
                 onClick={() => {
-                  window.location.href = `/component/${component.type}/${cleanPath(component.path ?? component.name)}`;
+                  window.location.href = componentPath(component.type, component.path ?? component.name);
                 }}
               >
                 {/* Icon */}
@@ -614,7 +615,9 @@ export default function ComponentGrid({ initialType }: Props) {
                 {/* Info */}
                 <div className="flex-1 min-w-0">
                   <h3 className="font-mono text-[14px] font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-accent)] transition-colors mb-1">
-                    {formatName(component.name)}
+                    <a href={componentPath(component.type, component.path ?? component.name)} onClick={(e) => e.stopPropagation()}>
+                      {formatName(component.name)}
+                    </a>
                   </h3>
                   <p className="text-[12px] text-[var(--color-text-secondary)] line-clamp-1 leading-relaxed">
                     {component.description || component.content?.slice(0, 150) || 'No description'}
@@ -690,7 +693,7 @@ export default function ComponentGrid({ initialType }: Props) {
                 animationFillMode: 'both'
               }}
               onClick={() => {
-                window.location.href = `/component/${component.type}/${cleanPath(component.path ?? component.name)}`;
+                window.location.href = componentPath(component.type, component.path ?? component.name);
               }}
             >
               {/* Icon — flat, no glow */}
@@ -708,7 +711,9 @@ export default function ComponentGrid({ initialType }: Props) {
               {/* Info */}
               <div className="min-w-0 flex-1">
                 <h3 className="font-mono text-[14px] font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-accent)] transition-colors leading-tight mb-1.5">
-                  {formatName(component.name)}
+                  <a href={componentPath(component.type, component.path ?? component.name)} onClick={(e) => e.stopPropagation()}>
+                    {formatName(component.name)}
+                  </a>
                 </h3>
                 <p className="text-[12px] text-[var(--color-text-secondary)] line-clamp-2 leading-[1.6]">
                   {component.description || component.content?.slice(0, 120) || 'No description'}

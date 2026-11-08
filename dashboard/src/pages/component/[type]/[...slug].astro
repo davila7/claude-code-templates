@@ -15,6 +15,7 @@ import { PLUGIN_KINDS, commitTitle, formatBytes, formatCount, formatDate, initia
 import type { Component, PluginContents } from '../../../lib/types';
 import { AITMPL_MARKETPLACE } from '../../../lib/constants';
 import { jsonForScript } from '../../../lib/sanitize-html';
+import { componentPath } from '../../../lib/component-url';
 
 export const prerender = false;
 
@@ -27,6 +28,8 @@ let error: string | null = null;
 let modFiles: Record<string, string> = {};
 // Files, languages and git history for the file list and the About column.
 let pageMeta: ComponentPageMeta | null = null;
+// Every component of the same type, for the related list.
+let siblings: Component[] = [];
 
 try {
   const data = await fetchComponents();
@@ -34,10 +37,24 @@ try {
   const items = data[typeKey] as Component[] | undefined;
 
   if (items) {
+    siblings = items;
     component = items.find((c) => {
       const cleanPath = c.path?.replace(/\.(md|json)$/, '') ?? '';
       return cleanPath === slug || c.name === slug;
     }) ?? null;
+  }
+
+  // One URL per component: singular types and bare names (old links, the grid
+  // before 2026-11) answer 301 to the sitemap form, so Google stops indexing up
+  // to four copies of each page. Checked before the content fetch so a legacy
+  // URL redirects without downloading the page's content.
+  if (component) {
+    const target = componentPath(component.type ?? type ?? '', component.path ?? component.name);
+    let current = Astro.url.pathname;
+    try { current = decodeURI(current); } catch { /* keep the raw path */ }
+    if (current !== target) {
+      return Astro.redirect(`${target}${Astro.url.search}`, 301);
+    }
   }
 
   // Load full content on demand — the index (components.json) no longer
@@ -59,6 +76,16 @@ if (!component && !error) {
   Astro.response.status = 404;
   Astro.response.statusText = 'Not Found';
 }
+
+// Same category first, then the rest of the type, by downloads: static links
+// that let crawlers reach component pages without running the grid's JS.
+const related: Component[] = component
+  ? siblings
+      .filter((c) => (c.path ?? c.name) !== (component!.path ?? component!.name))
+      .sort((a, b) => Number(b.category === component!.category) - Number(a.category === component!.category)
+        || (b.downloads ?? 0) - (a.downloads ?? 0))
+      .slice(0, 6)
+  : [];
 
 function formatName(name: string): string {
   if (!name) return '';
@@ -342,7 +369,7 @@ const componentSchema = component
 ---
 
 <DashboardLayout
-  title={`${title} — ${config?.label ?? 'Component'} for Claude Code | AI Templates`}
+  title={`${title} — ${config?.label ?? 'Component'} for Claude Code | Claude Code Templates`}
   description={seoDescription}
   ogImage={ogImage}
   ogImageAlt={component && config ? `${title}, a Claude Code ${config.singular}` : undefined}
@@ -752,6 +779,27 @@ const componentSchema = component
           </div>
         </div>
       </article>
+    )}
+
+    {related.length > 0 && (
+      <section class="mt-10 pt-6 border-t border-[var(--color-border)]" aria-labelledby="related-heading">
+        <h2 id="related-heading" class="text-[15px] font-semibold text-[var(--color-text-primary)] mb-3">Related {config?.label?.toLowerCase() ?? 'components'}</h2>
+        <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {related.map((c) => (
+            <li>
+              <a
+                href={componentPath(c.type ?? typePlural ?? '', c.path ?? c.name)}
+                class="block h-full rounded-lg border border-[var(--color-border)] px-4 py-3 hover:border-[var(--color-accent)] transition-colors"
+              >
+                <span class="block text-[14px] font-semibold text-[var(--color-text-primary)]">{formatName(c.name)}</span>
+                {c.description && (
+                  <span class="block mt-1 text-[12px] leading-relaxed text-[var(--color-text-secondary)] line-clamp-2">{c.description}</span>
+                )}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
     )}
   </div>
 
