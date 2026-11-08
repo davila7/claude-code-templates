@@ -301,6 +301,17 @@ const lastCommit = pageMeta?.lastCommit;
 // The explorer (Files tab) exists for multi-file components; single files show in Overview only.
 const hasExplorer = refs.length > 0;
 const REPO_URL = 'https://github.com/davila7/claude-code-templates';
+// Base for the document's relative links: the author's repo at the pinned commit, or
+// this repo's folder for multi-file components (single files have no folder of their own).
+const docRoot = externalSource
+  ? { repo: externalSource.repo, ref: externalSource.commit, dir: externalSource.path }
+  : component && hasExplorer ? { repo: 'davila7/claude-code-templates', ref: 'main', dir: `cli-tool/components/${typePlural}/${component.path}` } : null;
+const docBase = docRoot
+  ? {
+    raw: `https://raw.githubusercontent.com/${docRoot.repo}/${docRoot.ref}/${docRoot.dir}`.replace(/\/+$/, ''),
+    blob: `https://github.com/${docRoot.repo}/blob/${docRoot.ref}/${docRoot.dir}`.replace(/\/+$/, ''),
+  }
+  : null;
 const sourceUrl = externalSource ? externalSource.url : component ? `${REPO_URL}/${hasExplorer ? 'tree' : 'blob'}/main/cli-tool/components/${typePlural}/${component.path}` : '';
 // Where the CLI writes it (cli-tool/src/index.js); other types show no line.
 const INSTALL_TARGET: Record<string, string> = {
@@ -755,7 +766,7 @@ const componentSchema = component
                   {isJsonType ? (
                     <JsonViewer client:load content={component.content || ''} />
                   ) : (
-                    <MarkdownViewer client:load content={component.content || ''} headings={contentHeadings} />
+                    <MarkdownViewer client:load content={component.content || ''} headings={contentHeadings} docBase={docBase} />
                   )}
                 </div>
               </div>
