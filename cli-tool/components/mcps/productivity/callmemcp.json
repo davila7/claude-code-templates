@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "callmemcp": {
+      "description": "CallMeMCP: your AI agent rings your iPhone, reads its question aloud, and returns your spoken answer as text. Six tools: setup, call, poll_result, text, wait_for_reply and set_thread_title. Pass the 10-digit number from the /call-me iPhone app; there is no key or login. Needs a /call-me subscription; try it first with the demo line 5550001234.",
+      "type": "http",
+      "url": "https://callmemcp.com/mcp"
+    }
+  }
+}
