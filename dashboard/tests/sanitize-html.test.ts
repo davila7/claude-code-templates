@@ -74,3 +74,26 @@ test('demoteH1 turns raw h1 tags into h2 and leaves the rest', async () => {
   assert.equal(demoteH1('<h1 align="center">X</h1><h2>Y</h2><H1>Z</H1>'), '<h2 align="center">X</h2><h2>Y</h2><h2>Z</h2>');
   assert.equal(demoteH1('<h10>a</h10><header>b</header>'), '<h10>a</h10><header>b</header>');
 });
+
+test('resolves relative image and link URLs against the source', () => {
+  const base = {
+    raw: 'https://raw.githubusercontent.com/o/r/abc/plug',
+    blob: 'https://github.com/o/r/blob/abc/plug',
+  };
+  const md = [
+    '<p align="center"><a href="https://egm.dev"><img src="docs/assets/h.svg" alt="x"></a></p>',
+    '[docs](docs/getting_started.md) [up](../LICENSE) [here](#install) [abs](https://x.dev/a) [root](/b)',
+    '![shot](./img/s.png) [bad](javascript:alert(1))',
+  ].join('\n\n');
+  const out = sanitizeHtml(marked.parse(md) as string, base);
+  assert.match(out, /src="https:\/\/raw\.githubusercontent\.com\/o\/r\/abc\/plug\/docs\/assets\/h\.svg"/);
+  assert.match(out, /href="https:\/\/github\.com\/o\/r\/blob\/abc\/plug\/docs\/getting_started\.md"/);
+  assert.match(out, /href="https:\/\/github\.com\/o\/r\/blob\/abc\/LICENSE"/);
+  assert.match(out, /src="https:\/\/raw\.githubusercontent\.com\/o\/r\/abc\/plug\/img\/s\.png"/);
+  assert.match(out, /href="#install"/);
+  assert.match(out, /href="https:\/\/x\.dev\/a"/);
+  assert.match(out, /href="https:\/\/egm\.dev"/);
+  assert.match(out, /href="\/b"/);
+  assert.doesNotMatch(out, /javascript:/);
+  assert.equal(sanitizeHtml(marked.parse(md) as string, null), sanitizeHtml(marked.parse(md) as string));
+});
