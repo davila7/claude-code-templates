@@ -30,9 +30,10 @@ export const prerender = true;
     <p>
       Google Analytics also receives a few named events, so we can see which features people use: viewing a component,
       copying its install command, adding it to your stack, copying the install command of your stack or of a collection,
-      clicking Save, opening and completing the sign-in, following a link to the component's source on GitHub, and searching.
-      They carry only the component's type and path, the part of the site where it happened (for a sign-in, the feature that
-      asked for it), a number of components, whether you were signed in, and for a search the number of results. They never
+      clicking Save, opening and completing the sign-in, following a link to the component's source on GitHub, following a link
+      to another component it suggests, and searching. They carry only the type and path of the components involved, the part
+      of the site where it happened (for a sign-in, the feature that asked for it), a number of components, whether you were
+      signed in, and for a search the number of results. They never
       carry what you type, a collection's name or your account details. When you open the sign-in, the feature that asked for
       it is kept in your browser's session storage so the completed sign-in can be counted; it is removed when the sign-in
       completes or the tab closes, and ignored after 30 minutes.

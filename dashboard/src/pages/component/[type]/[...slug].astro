@@ -925,8 +925,9 @@ const componentSchema = component
 
 <script>
   // GA4 events (lib/analytics.ts): the page view of a component, copies of its
-  // install command and clicks to its source on GitHub.
-  import { componentRef, track } from '../../../lib/analytics';
+  // install command, clicks to its source on GitHub, and clicks in the blocks
+  // that suggest other components.
+  import { componentRef, componentRefFromUrl, isRelatedBlock, track } from '../../../lib/analytics';
 
   const copyBtn = document.getElementById('copyBtn');
   const type = copyBtn?.dataset.componentType;
@@ -939,6 +940,21 @@ const componentSchema = component
       const link = a.dataset.outbound;
       if (link !== 'source' && link !== 'commit' && link !== 'pull_request') return;
       a.addEventListener('click', () => track('outbound_github', { ...ref, link }));
+    });
+    // A suggested component: a link with data-related="<block>" and its canonical
+    // href, or a copy button with data-related, data-cmd and data-component-*.
+    // Delegated, so blocks rendered later count too.
+    document.addEventListener('click', (e) => {
+      const el = (e.target as Element | null)?.closest?.('a[data-related], button[data-related][data-cmd]');
+      if (!(el instanceof HTMLElement)) return;
+      const block = el.dataset.related;
+      if (!isRelatedBlock(block)) return;
+      if (el instanceof HTMLAnchorElement) {
+        const target = componentRefFromUrl(el.href);
+        if (target) track('related_click', { ...ref, block, target_type: target.component_type, target_path: target.component_path });
+      } else if (el.dataset.componentType && el.dataset.componentPath) {
+        track('copy_install_command', { ...componentRef(el.dataset.componentType, el.dataset.componentPath), source: 'related' });
+      }
     });
   }
 </script>

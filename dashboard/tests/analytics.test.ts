@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import {
   cleanParams,
   componentRef,
+  componentRefFromUrl,
+  isRelatedBlock,
   rememberSignInOrigin,
   takeSignInOrigin,
   track,
@@ -53,6 +55,23 @@ test('componentRef gives the type and path of the component URL', () => {
     component_type: 'hooks',
     component_path: 'automation/agents-md-loader',
   });
+});
+
+test('componentRefFromUrl reads a component URL and nothing else', () => {
+  const ref = { component_type: 'hooks', component_path: 'automation/agents-md-loader' };
+  assert.deepEqual(componentRefFromUrl('/component/hooks/automation/agents-md-loader'), ref);
+  assert.deepEqual(componentRefFromUrl('/component/hooks/automation/agents-md-loader/'), ref);
+  assert.deepEqual(componentRefFromUrl('https://www.aitmpl.com/component/hooks/automation/agents-md-loader?x=1#files'), ref);
+  assert.deepEqual(componentRefFromUrl(`https://www.aitmpl.com${componentPath('hook', 'automation/agents-md-loader.json')}`), ref);
+  assert.equal(componentRefFromUrl('/skills'), null);
+  assert.equal(componentRefFromUrl('/component/hooks'), null);
+  assert.equal(componentRefFromUrl('https://github.com/davila7/claude-code-templates'), null);
+  assert.equal(componentRefFromUrl('/component/hooks/%E0%A4%A'), null);
+});
+
+test('isRelatedBlock accepts the declared blocks only', () => {
+  for (const b of ['same_category', 'loop', 'pair', 'referenced']) assert.equal(isRelatedBlock(b), true);
+  for (const b of ['', 'grid', 'Same_category', undefined, 3]) assert.equal(isRelatedBlock(b), false);
 });
 
 test('track pushes a gtag Arguments object and does nothing without dataLayer', () => {

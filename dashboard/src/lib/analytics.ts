@@ -16,17 +16,24 @@ import { pluralType } from './component-url.ts';
 export const SIGN_IN_ORIGINS = ['save', 'job', 'course', 'sidebar', 'collection'] as const;
 export type SignInOrigin = (typeof SIGN_IN_ORIGINS)[number];
 
+// Blocks of links to other components on a component page (initiative 4 of the
+// traction plan). A link opts in with data-related="<block>" and its canonical
+// href; see the analytics script at the end of pages/component/[type]/[...slug].astro.
+export const RELATED_BLOCKS = ['same_category', 'loop', 'pair', 'referenced'] as const;
+export type RelatedBlock = (typeof RELATED_BLOCKS)[number];
+
 type ComponentRef = { component_type: string; component_path: string };
 
 export interface EventParams {
   view_component: ComponentRef;
-  copy_install_command: ComponentRef & { source: 'component_page' | 'featured' };
-  add_to_stack: ComponentRef & { source: 'component_page' | 'grid' };
+  copy_install_command: ComponentRef & { source: 'component_page' | 'featured' | 'related' };
+  add_to_stack: ComponentRef & { source: 'component_page' | 'grid' | 'related' };
   copy_stack_command: { item_count: number; source: 'stack' | 'collection' };
   save_click: ComponentRef & { signed_in: boolean };
   sign_in_open: { origin: SignInOrigin };
   sign_in_complete: { origin: SignInOrigin };
   outbound_github: ComponentRef & { link: 'source' | 'commit' | 'pull_request' };
+  related_click: ComponentRef & { block: RelatedBlock; target_type: string; target_path: string };
   search: { results_count: number; scope: 'modal' | 'grid'; component_type?: string };
 }
 
@@ -54,6 +61,28 @@ export function cleanParams(params: Record<string, unknown>): Clean {
 export function componentRef(type: string, path: string): ComponentRef {
   const clean = String(path || '').replace(/\.(md|json)$/, '').replace(/^\/+|\/+$/g, '');
   return { component_type: pluralType(String(type || '')), component_path: clean };
+}
+
+export function isRelatedBlock(value: unknown): value is RelatedBlock {
+  return typeof value === 'string' && (RELATED_BLOCKS as readonly string[]).includes(value);
+}
+
+// '/component/agents/development-team/frontend-developer' (relative or absolute)
+// -> its type and path. Any other URL -> null.
+export function componentRefFromUrl(href: string): ComponentRef | null {
+  let pathname: string;
+  try {
+    pathname = new URL(href, 'https://www.aitmpl.com').pathname;
+  } catch {
+    return null;
+  }
+  const match = pathname.match(/^\/component\/([^/]+)\/(.+?)\/?$/);
+  if (!match) return null;
+  try {
+    return componentRef(decodeURIComponent(match[1]), decodeURIComponent(match[2]));
+  } catch {
+    return null; // malformed percent-encoding
+  }
 }
 
 export function track<E extends EventName>(name: E, params: EventParams[E]): void {
