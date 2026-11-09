@@ -1,7 +1,7 @@
 {
   "mcpServers": {
     "marcora": {
-      "description": "Official MCP server for Marcora, the context layer for go-to-market teams: your positioning, brand voice, and product facts in one source of truth that your AI tools read from. Hosted remote server with OAuth sign-in, so there's nothing to install.",
+      "description": "Official MCP server for Marcora, the context layer for go-to-market teams: your positioning, brand voice, and product facts in one source of truth that your AI tools read from. Hosted remote server with OAuth sign-in, so there's nothing to install. Free and paid plans.",
       "type": "http",
       "url": "https://mcp.marcora.ai"
     }
