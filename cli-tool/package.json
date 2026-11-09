@@ -9,7 +9,6 @@
     "claude-code-template": "bin/create-claude-config.js",
     "claude-init": "bin/create-claude-config.js",
     "cctemplates": "bin/create-claude-config.js",
-    "cct": "bin/create-claude-config.js",
     "claude-setup": "bin/create-claude-config.js",
     "claude-config": "bin/create-claude-config.js"
   },
