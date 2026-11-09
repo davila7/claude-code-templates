@@ -17,14 +17,31 @@ from catalog_api_v1 import write_catalog_api_v1
 load_dotenv()
 
 
+# Header of a YAML block scalar: `|` or `>`, optional chomping/indentation
+# indicators, optional comment.
+_BLOCK_SCALAR_HEADER = re.compile(r'[|>][-+0-9]*(\s+#.*)?')
+
+
 def _line_frontmatter(frontmatter):
     """Line-based fallback for frontmatter that is not valid YAML (Claude Code
     tolerates many of these, e.g. unquoted colons in a description)."""
     meta = {}
-    for line in frontmatter.split('\n'):
+    lines = frontmatter.split('\n')
+    for i, line in enumerate(lines):
         for key in ('description', 'author', 'repo', 'version', 'license', 'tags'):
             if line.startswith(key + ':'):
-                meta[key] = line.split(key + ':', 1)[1].strip()
+                value = line.split(key + ':', 1)[1].strip()
+                if _BLOCK_SCALAR_HEADER.fullmatch(value):
+                    # The text is the indented lines below the key: `|` keeps
+                    # their line breaks, `>` folds them into one line.
+                    block = []
+                    for below in lines[i + 1:]:
+                        if below.strip() and not below[0].isspace():
+                            break
+                        block.append(below.strip())
+                    text = '\n'.join(block).strip()
+                    value = text if value.startswith('|') else ' '.join(text.split())
+                meta[key] = value
     return meta
 
 

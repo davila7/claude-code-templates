@@ -193,6 +193,15 @@ class FrontmatterMetaTest(unittest.TestCase):
         self.assertEqual(meta["version"], "1.10")
         self.assertEqual(meta["keywords"], ["git", "review"])
 
+    def test_invalid_yaml_still_reads_a_block_scalar_description(self):
+        for indicator, expected in self.BLOCK_SCALARS:
+            with self.subTest(indicator=indicator):
+                # The unquoted ": " in the hint sends the whole frontmatter to the fallback.
+                meta = self.parse("name: reviewer", f"description: {indicator}", *self.BLOCK_LINES,
+                                  "argument-hint: usage: /review <pr>")
+
+                self.assertEqual(meta["description"], expected)
+
 
 if __name__ == "__main__":
     unittest.main()
