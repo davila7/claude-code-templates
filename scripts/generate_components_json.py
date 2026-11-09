@@ -548,6 +548,7 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
         download_stats = previous_download_stats(output_path)
     component_types = ['agents', 'commands', 'mcps', 'settings', 'hooks', 'sandbox', 'skills', 'loops', 'mods', 'plugins']
     marketplace_dirs = []  # catalog plugins that made it into the catalog
+    published_mods = {}  # '{category}/{name}' of a mod -> its marketplace listing
 
     print(f"Starting scan of {components_base_path} and {templates_base_path}...")
 
@@ -694,6 +695,19 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
                         print(f"Warning: skipping plugin {category}/{plugin_dir}: {e}")
                         continue
                     name = plugin_dir
+                    mod = external_skills.own_mod(manifest)
+                    if mod:
+                        # One of our mods published in the marketplace: the mod stays
+                        # the only catalog entry (no second page, search hit or count)
+                        # and its page shows the marketplace install.
+                        published_mods[mod] = {
+                            'plugin': f"{name}@{external_skills.MARKETPLACE_NAME}",
+                            'commit': manifest['commit'],
+                            'version': str(meta.get('version') or ''),
+                        }
+                        marketplace_dirs.append(plugin_path.resolve())
+                        print(f"  Processed plugin: {category}/{name} (marketplace listing of mod {mod})")
+                        continue
                     content = ''
                     readme = root / 'README.md'
                     try:
@@ -1008,6 +1022,15 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
                             components_data['templates'].append(framework_template)
     else:
         print(f"Warning: Templates directory not found: {templates_base_path}")
+
+    # Mods also published in the aitmpl marketplace (plugins/ manifests pointing at
+    # their own folder here): the mod entry carries the listing.
+    mods_by_path = {m['path']: m for m in components_data['mods']}
+    for mod_path, listing in sorted(published_mods.items()):
+        if mod_path in mods_by_path:
+            mods_by_path[mod_path]['marketplace'] = listing
+        else:
+            print(f"Warning: plugins/ publishes mod {mod_path}, which is not in the catalog")
 
     # Load components metadata from marketplace.json (Claude Code standard)
     components_marketplace_path = 'cli-tool/components/.claude-plugin/marketplace.json'

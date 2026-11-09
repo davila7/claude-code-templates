@@ -272,6 +272,8 @@ const pluginId = isPlugin ? `${slugNameFor(component)}@${AITMPL_MARKETPLACE.name
 // Mods: plugin metadata shown in the sidebar (modules hooked, options declared).
 const modModules: string[] = typePlural === 'mods' ? ((component as any)?.modules ?? []) : [];
 const modOptions: string[] = typePlural === 'mods' ? Object.keys((component as any)?.userConfig ?? {}) : [];
+// Mods also listed in the aitmpl marketplace: Claude Code installs and updates them as a plugin.
+const modListing = typePlural === 'mods' ? component?.marketplace : undefined;
 
 // Extract headings from markdown content for TOC
 const contentHeadings: { level: number; text: string; id: string }[] = [];
@@ -496,6 +498,19 @@ const componentSchema = component
                   <p class="text-[12px] text-[var(--color-text-tertiary)] mb-1.5">Or inside Claude Code:</p>
                   <pre class="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-1)] px-3 py-2 font-mono text-[12px] leading-relaxed text-[var(--color-text-primary)] whitespace-pre-wrap [overflow-wrap:anywhere]">{`/plugin marketplace add ${AITMPL_MARKETPLACE.url}\n/plugin install ${pluginId}`}</pre>
                   <p data-plugin-min-version class="mt-1.5 text-[12px] text-[var(--color-text-tertiary)]">Needs Claude Code {AITMPL_MARKETPLACE.minClaudeCode} or later (<code>claude --version</code>).</p>
+                </div>
+              )}
+              {modListing && (
+                <div id="install-with-updates" class="mt-4">
+                  <h3 class="text-[13px] font-semibold text-[var(--color-text-primary)] mb-1">Install with updates</h3>
+                  <p class="text-[12px] leading-relaxed text-[var(--color-text-tertiary)] mb-1.5">Inside Claude Code, from the <a href={AITMPL_MARKETPLACE.url} target="_blank" rel="noopener" class="underline underline-offset-2 hover:text-[var(--color-text-primary)]">aitmpl marketplace</a>. <code>/plugin</code> then shows, updates and removes it.</p>
+                  <pre class="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-1)] px-3 py-2 font-mono text-[12px] leading-relaxed text-[var(--color-text-primary)] whitespace-pre-wrap [overflow-wrap:anywhere]">{`/plugin marketplace add ${AITMPL_MARKETPLACE.url}\n/plugin install ${modListing.plugin}`}</pre>
+                  <ul class="mt-1.5 space-y-1 text-[12px] leading-relaxed text-[var(--color-text-tertiary)]">
+                    <li>Updates: in <code>/plugin</code>, open Marketplaces, pick {AITMPL_MARKETPLACE.name} and enable auto-update, or run <code>/plugin marketplace update {AITMPL_MARKETPLACE.name}</code>. The marketplace pins commit <code>{modListing.commit.slice(0, 7)}</code>{modListing.version ? ` (v${modListing.version})` : ''}; a newer one reaches it after a new review.</li>
+                    <li>Use one install, not both: if you used the command above, delete <code>.claude/skills/{slugName}/</code> first.</li>
+                    <li>Options go under <code>pluginConfigs["{modListing.plugin}"].options</code> in your user settings.</li>
+                    <li>Needs Claude Code {AITMPL_MARKETPLACE.minClaudeCode} or later.</li>
+                  </ul>
                 </div>
               )}
             </section>
