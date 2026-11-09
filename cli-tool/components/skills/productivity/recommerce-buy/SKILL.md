@@ -1,6 +1,6 @@
 ---
 name: recommerce-buy
-description: Find and compare second-hand listings against the buyer's needs, complete cost, compatibility, and collection or delivery constraints. Use for used-item searches, supplied shortlists, and rechecking options before a decision. Produces an evidence-backed shortlist; does not contact sellers or transact.
+description: Find and compare new and pre-owned listings against the buyer's needs, complete cost, compatibility, and collection or delivery constraints. Use for item searches, supplied shortlists, and rechecking options before a decision. Produces an evidence-backed shortlist; does not contact sellers or transact.
 license: MIT
 ---
 
@@ -20,7 +20,7 @@ Ask only for information that changes which options can qualify. Geography may b
 
 Read the description and important attributes for serious candidates, not only a title or search card. Identify the actual offered object, exact model/variant, included components, disclosed faults, sale type, and location or shipping terms. A box, accessory, bare tool, parts-only item, and working bundle are different offers. Seller photos can support visible contents but do not prove hidden condition or authenticity.
 
-Connect consequential claims to their source: seller statement, exact-model documentation, buyer observation, or marketplace record. Use links or supplied evidence IDs. Manufacturer specifications establish expected capabilities and supported combinations, not the condition of this particular used item. A seller's rating, identity badge, or “tested” label does not certify the item. Where documentation and listing claims conflict, preserve the conflict and resolve it before relying on that claim.
+Connect consequential claims to their source: seller statement, exact-model documentation, buyer observation, or marketplace record. Use links or supplied evidence IDs. Manufacturer specifications establish expected capabilities and supported combinations, not the condition of this particular item. A seller's rating, identity badge, or “tested” label does not certify the item. Where documentation and listing claims conflict, preserve the conflict and resolve it before relying on that claim.
 
 Check the whole usable setup against the buyer's task and owned components. A manual included beside several offers does not identify any offer's model: link each candidate's actual model and variant to the applicable documentation before borrowing its specifications. Do not infer compatibility from brand, connector shape, voltage, a family name, or “complete kit.” Confirm the exact combination from suitable documentation or leave that match unresolved. Separate required essentials from optional extras. Do not require duplicate accessories the buyer already has.
 

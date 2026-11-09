@@ -1,6 +1,6 @@
 ---
 name: recommerce-collect
-description: Assess whether a second-hand item can realistically be collected and moved from the seller's room to the buyer's destination. Use for dimensions, access, transport, disassembly, handling needs, costs, and collection constraints. Produces a conditional collection plan and prioritized missing measurements; does not book transport or arrange collection.
+description: Assess whether a new or pre-owned item can realistically be collected and moved from the seller's pickup location to the buyer's destination. Use for dimensions, access, transport, disassembly, handling needs, costs, and collection constraints. Produces a conditional collection plan and prioritized missing measurements; does not book transport or arrange collection.
 license: MIT
 ---
 
@@ -18,7 +18,7 @@ Record dimensions with units and orientation for the state in which the item wil
 
 ## Follow the entire route
 
-Work from the seller's current room through exit doors, corridors, turns, stairs or lift, building entrance, loading access, vehicle opening and interior, then through the buyer's unloading route to the final room. Identify the actual limiting segment; do not demand every possible measurement when a decisive obstacle is already established.
+Work from the seller's pickup location through exit doors, corridors, turns, stairs or lift, building entrance, loading access, vehicle opening and interior, then through the buyer's unloading route to the final room. Identify the actual limiting segment; do not demand every possible measurement when a decisive obstacle is already established.
 
 For relevant pinch points, obtain clear usable openings and heights, corridor or landing space, turns, stair constraints, lift door and cabin dimensions and rated capacity, vehicle loading aperture and usable interior, and vehicle payload limits. Consider all items, passengers, equipment, and packing where they affect capacity. An advertised van volume or interior length alone does not establish fit or payload allowance. Verify applicable limits from the actual equipment or vehicle, not a generic model category.
 

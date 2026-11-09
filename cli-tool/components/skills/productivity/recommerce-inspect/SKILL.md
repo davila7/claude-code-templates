@@ -1,12 +1,12 @@
 ---
 name: recommerce-inspect
-description: Assess a supplied second-hand listing against the buyer's needs and prepare a concise inspection card before purchase or collection. Use for listing-specific suitability, missing essentials, cost, and inspection questions; does not perform marketplace-wide discovery or transact.
+description: Assess a supplied new or pre-owned listing against the buyer's needs and prepare a concise inspection card before purchase or collection. Use for listing-specific suitability, missing essentials, cost, and inspection questions; does not perform marketplace-wide discovery or transact.
 license: MIT
 ---
 
 # Recommerce Inspect
 
-Help the buyer decide whether a used item is worth pursuing and what remains to be checked. Give the smallest useful next step, including keeping what they own or rejecting the listing when justified. An inspection card is decision support, not certification of condition, authenticity, ownership, or safety.
+Help the buyer decide whether an item is worth pursuing and what remains to be checked. Give the smallest useful next step, including keeping what they own or rejecting the listing when justified. An inspection card is decision support, not certification of condition, authenticity, ownership, or safety.
 
 Choose checks for the actual item and intended use, using applicable model documentation, measurements, and observations. Do not apply a checklist from another category or invent a test protocol when the relevant requirements are unknown.
 
@@ -21,7 +21,7 @@ Ask only for missing information that could change the recommendation. Proceed w
 For every consequential claim, identify its source and what that source establishes:
 
 - **Seller claim:** description, answer, or photograph supplied by the seller. Attribute claimed condition and inclusions; a photograph does not establish hidden condition or future reliability.
-- **Model specification:** documentation for the actual offered model and variant. A manual supplied alongside a listing does not establish that listing's model. It supports expected capabilities or compatibility only after the model match is established, not the condition of this used unit.
+- **Model specification:** documentation for the actual offered model and variant. A manual supplied alongside a listing does not establish that listing's model. It supports expected capabilities or compatibility only after the model match is established, not the condition of this particular unit.
 - **Buyer observation:** what the buyer actually inspected or tested, with its limits. A brief successful demonstration is not a lifetime or capacity test.
 - **Unknown or assumption:** information that is absent, conflicting, inaccessible, or inferred. Explain the specific check that would resolve a decision-relevant gap.
 

@@ -1,6 +1,6 @@
 ---
 name: recommerce-keep
-description: Compare keeping, repairing, or upgrading an owned item with replacing it second-hand. Use when deciding whether an existing item still meets the owner's needs or whether a repair is worthwhile. Produces a conditional recommendation grounded in costs, suitability, and uncertainty; does not diagnose faults or arrange repairs or purchases.
+description: Compare keeping, repairing, or upgrading an owned item with a new or pre-owned replacement. Use when deciding whether an existing item still meets the owner's needs or whether a repair is worthwhile. Produces a conditional recommendation grounded in costs, suitability, and uncertainty; does not diagnose faults or arrange repairs or purchases.
 license: MIT
 ---
 
@@ -18,7 +18,7 @@ Keep evidence attached to its source and scope. Documentation can establish supp
 
 ## Build comparable options
 
-Consider the credible options supported by the evidence: continue as-is, modest maintenance or an accessory, targeted repair, supported upgrade, and a suitable used replacement. Do not pad the comparison with speculative remedies. A replacement should satisfy the same workload, essential functions, accessories, and deadline as the retained item.
+Consider the credible options supported by the evidence: continue as-is, modest maintenance or an accessory, targeted repair, supported upgrade, and a suitable new or pre-owned replacement. Do not pad the comparison with speculative remedies. A replacement should satisfy the same workload, essential functions, accessories, and deadline as the retained item.
 
 For a proposed repair, distinguish a confirmed cause and fixed quote from a suspected cause, diagnostic fee, estimate, or conditional price. Identify what is included, whether diagnostics are credited, and what happens to the charge if the repair is declined or unsuccessful when those facts affect the choice. An upgrade that improves performance need not fix an unrelated fault. Do not turn symptoms into a confident diagnosis or assert that a quoted repair guarantees years of use.
 

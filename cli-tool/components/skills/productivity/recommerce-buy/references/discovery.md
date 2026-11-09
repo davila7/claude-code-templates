@@ -1,4 +1,4 @@
-# Bounded second-hand discovery
+# Bounded marketplace discovery
 
 Use this guide when live read-only search is available. Supplied-shortlist assessment does not require a discovery phase. Adapt the steps to the actual tool schemas and the user's request; do not invent providers, filters, category IDs, or capabilities.
 

@@ -1,6 +1,6 @@
 ---
 name: recommerce-kits
-description: Assemble a complete second-hand setup for an outcome such as recording a podcast, starting photography, or equipping a workshop. Use when several components must work together within one budget, including gear the buyer already owns. Produces a compatible bill of materials, alternatives, and acquisition dependencies; does not purchase or reserve items.
+description: Assemble a complete setup from new or pre-owned items for an outcome such as recording a podcast, starting photography, or equipping a workshop. Use when several components must work together within one budget, including gear the buyer already owns. Produces a compatible bill of materials, alternatives, and acquisition dependencies; does not purchase or reserve items.
 license: MIT
 ---
 
@@ -22,7 +22,7 @@ Make a minimal bill of materials, distinguishing **owned**, **included**, **requ
 
 Link each offered component's actual model and variant to the documentation used. A nearby manual does not identify the listing. Brand, voltage, connector shape, a model-family name, or “complete kit” does not prove compatibility. Supported pairs can still form an unusable chain because of direction, capacity, shared ports, or a missing endpoint. Verify the intended combination and operating mode; leave undocumented matches conditional.
 
-Distinguish seller claims about contents and condition, model specifications, buyer observations, and marketplace availability. Specifications describe expected capability, not this used unit's health. Attribute claims using links or supplied evidence IDs. Preserve material contradictions instead of choosing the more convenient statement. Identify whether the actual offer is equipment, packaging, an accessory, parts-only stock, rental, deposit, instalment, or auction. A current bid does not establish an obtainable purchase total.
+Distinguish seller claims about contents and condition, model specifications, buyer observations, and marketplace availability. Specifications describe expected capability, not this unit's health. Attribute claims using links or supplied evidence IDs. Preserve material contradictions instead of choosing the more convenient statement. Identify whether the actual offer is equipment, packaging, an accessory, parts-only stock, rental, deposit, instalment, or auction. A current bid does not establish an obtainable purchase total.
 
 Count shared resources once only when they can serve the required use. One cable used on two simultaneous connections is not two cables; two bundle listings containing the same photographed item do not establish two available units. Do not buy duplicate accessories already supplied or owned. Treat unsafe damage as a blocker for ordinary use, rather than assuming an improvised repair makes the kit complete.
 
