@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+- **The `cct` binary.** It only worked after a global install, and
+  `npx cct` never ran it: npm downloads the unrelated `cct` package, owned by
+  another account. Use `npx claude-code-templates@latest` (or, installed
+  globally, `claude-code-templates`). Anyone who used `cct` from a global
+  install must switch to one of those.
+
 ### Added
 - **FLOSS/fund application** (#1359, #1361): `funding.json` (funding.json
   v1.1.0) at the repository root, with `.well-known/funding-manifest-urls` in
