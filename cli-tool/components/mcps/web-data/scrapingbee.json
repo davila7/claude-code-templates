@@ -5,7 +5,7 @@
       "type": "http",
       "url": "https://mcp.scrapingbee.com/mcp",
       "headers": {
-        "Authorization": "Bearer YOUR_SCRAPINGBEE_API_KEY"
+        "Authorization": "Bearer ${SCRAPINGBEE_API_KEY}"
       }
     }
   }
