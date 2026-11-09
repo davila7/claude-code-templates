@@ -183,6 +183,7 @@ export function readDecision(responseText: string): Decision | null {
   } catch {
     return null
   }
+  if (!parsed || typeof parsed !== 'object') return null
   const answers = (parsed as { answers?: Record<string, Record<string, unknown>> }).answers
   if (!answers) return null
 
