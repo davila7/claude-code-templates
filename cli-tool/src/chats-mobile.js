@@ -3,7 +3,6 @@ const fs = require('fs-extra');
 const path = require('path');
 const express = require('express');
 const open = require('open');
-const os = require('os');
 const ConversationAnalyzer = require('./analytics/core/ConversationAnalyzer');
 const StateCalculator = require('./analytics/core/StateCalculator');
 const FileWatcher = require('./analytics/core/FileWatcher');
@@ -12,6 +11,7 @@ const AgentAnalyzer = require('./analytics/core/AgentAnalyzer');
 const WebSocketServer = require('./analytics/notifications/WebSocketServer');
 const SessionSharing = require('./session-sharing');
 const { LISTEN_HOST, localOnly, verifyLocalWebSocket } = require('./local-server-guard');
+const { claudeConfigDir } = require('./claude-paths');
 
 class ChatsMobile {
   constructor(options = {}) {
@@ -27,8 +27,7 @@ class ChatsMobile {
     this.verbose = options.verbose || false;
     
     // Initialize ConversationAnalyzer with proper parameters
-    const homeDir = os.homedir();
-    const claudeDir = path.join(homeDir, '.claude');
+    const claudeDir = claudeConfigDir();
     this.conversationAnalyzer = new ConversationAnalyzer(claudeDir, this.dataCache);
 
     // Initialize SessionSharing for export/import functionality
@@ -823,8 +822,7 @@ class ChatsMobile {
    */
   async setupFileWatching() {
     try {
-      const homeDir = os.homedir();
-      const claudeDir = path.join(homeDir, '.claude');
+      const claudeDir = claudeConfigDir();
       
       this.fileWatcher.setupFileWatchers(
         claudeDir,
@@ -1006,8 +1004,7 @@ class ChatsMobile {
    */
   async loadInitialData() {
     try {
-      const homeDir = os.homedir();
-      const claudeDataDir = path.join(homeDir, '.claude');
+      const claudeDataDir = claudeConfigDir();
       
       if (await fs.pathExists(claudeDataDir)) {
         // Use ConversationAnalyzer to load conversations
