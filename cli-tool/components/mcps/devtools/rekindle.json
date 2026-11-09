@@ -1,9 +1,12 @@
 {
   "mcpServers": {
     "rekindle": {
-      "description": "Local session continuity engine for Claude Code. Provides boot reports with orientation scoring, structured end-session capture, and memory search. Run `npx rekindle init` in your project first to create the local database.",
+      "description": "Local session continuity engine for Claude Code. Provides boot reports with orientation scoring, structured end-session capture, and memory search. Requires Node.js 22 or newer. Run `npx rekindle@0.5.1 init` in your project first to create the local database. Plain init installs no hooks; use `npx rekindle@0.5.1 init --with-delivery` to also install the session-start delivery hook.",
       "command": "npx",
-      "args": ["-y", "rekindle"]
+      "args": [
+        "-y",
+        "rekindle@0.5.1"
+      ]
     }
   }
 }
