@@ -1,0 +1,136 @@
+globalThis.process ??= {}; globalThis.process.env ??= {};
+const SITE = "https://www.aitmpl.com";
+const CLI_COMMAND = "npx claude-code-templates@latest";
+const MARKDOWN_CONTENT_TYPE = "text/markdown; charset=utf-8";
+function prefersMarkdown(accept) {
+  if (!accept) return false;
+  let markdown = -1;
+  let html = -1;
+  for (const part of accept.split(",")) {
+    const [rawType, ...params] = part.trim().split(";");
+    const type = rawType.trim().toLowerCase();
+    let q = 1;
+    for (const p of params) {
+      const [k, v] = p.trim().split("=");
+      if (k?.trim().toLowerCase() === "q") {
+        const parsed = Number.parseFloat(v);
+        q = Number.isFinite(parsed) ? parsed : 0;
+      }
+    }
+    if (type === "text/markdown" || type === "text/x-markdown") markdown = Math.max(markdown, q);
+    else if (type === "text/html") html = Math.max(html, q);
+  }
+  return markdown > 0 && markdown >= html;
+}
+function notFoundMarkdown(pathname) {
+  const safePath = pathname.replace(/[\r\n`]/g, "").slice(0, 200);
+  return `# 404 Not Found
+
+There is no page at \`${safePath}\` on aitmpl.com (Claude Code Templates).
+
+- Site overview for agents: ${SITE}/llms.txt
+- Every page on the site: ${SITE}/sitemap.xml
+- Catalog data API (OpenAPI 3.1): ${SITE}/openapi.json
+- Component pages live at ${SITE}/component/{type}/{category}/{name}, for example ${SITE}/component/agents/development-team/frontend-developer
+- Documentation: https://docs.aitmpl.com
+`;
+}
+const COUNTED_TYPES = [
+  ["skills", "Skills", "--skill"],
+  ["agents", "Agents", "--agent"],
+  ["commands", "Slash commands", "--command"],
+  ["mcps", "MCP server configurations", "--mcp"],
+  ["settings", "Settings", "--setting"],
+  ["hooks", "Hooks", "--hook"],
+  ["loops", "Loops", "--loop"],
+  ["mods", "Mods (function-hooks plugins)", "--mod"]
+];
+function totalComponents(counts) {
+  return COUNTED_TYPES.reduce((sum, [key]) => sum + (counts[key] ?? 0), 0);
+}
+function buildLlmsTxt(counts) {
+  const total = totalComponents(counts);
+  const typeLines = COUNTED_TYPES.filter(([key]) => (counts[key] ?? 0) > 0).map(([key, label, flag]) => `- [${label}](${SITE}/${key}): ${counts[key]} components, install with \`${flag}\``).join("\n");
+  return `# Claude Code Templates (aitmpl.com)
+
+> Open-source catalog and CLI of ${total}+ ready-to-use components for Claude Code: agents, slash commands, skills, hooks, MCP server configurations, settings, loops and mods. Every component is a plain file with its source on GitHub, and installs into a project with one \`${CLI_COMMAND}\` command.
+
+## When to use this
+
+- The user wants an existing Claude Code subagent, skill, slash command, hook, MCP configuration or settings file instead of writing one from scratch.
+- The user asks how to install a Claude Code component, or wants one command that sets up several components in a project.
+- You need to look up what a component contains before installing it: its files, description and install command.
+- You want to compare available components for a job (for example code review, security auditing, testing, deployment, documentation).
+
+Not a fit: general questions about Claude Code itself (use https://code.claude.com/docs), or calling Claude models (use the Claude API).
+
+## How an agent should use it
+
+1. Search the catalog: GET ${SITE}/api/v1/catalog/{type}.json (one type, e.g. skills) or ${SITE}/api/v1/catalog.json (everything). Each entry has id, name, category, description, downloads, install.command and urls.
+2. Read a component's full file before recommending it: GET ${SITE}/component-content/{type}/{category}/{name}.json, where {category}/{name} is \`path\` without its extension and {type} is plural (agents, commands, skills, ...).
+3. Install it from the project root: \`${CLI_COMMAND} --agent {category}/{name}\` (use the flag for its type, below). Several flags can be combined in one command.
+4. Hooks, MCP servers and mods run code with local permissions: show the user the component's content before installing them.
+
+## Component types
+
+${typeLines}
+
+## API and machine-readable data
+
+- [Catalog API v1](${SITE}/developers/catalog-api): versioned, documented catalog with a JSON Schema and a stability policy. Use this one in code.
+- [Catalog v1](${SITE}/api/v1/catalog.json): every component; [one type](${SITE}/api/v1/catalog/agents.json): replace \`agents\` with any plural type.
+- [Catalog version](${SITE}/api/v1/version.json): generatedAt, sha256 and counts per type; poll this before downloading the catalog.
+- [OpenAPI 3.1 spec](${SITE}/openapi.json): read-only GET endpoints for the catalog JSON files. No authentication, CORS enabled.
+- [Trending](${SITE}/trending-data.json): download statistics and trending components.
+- [Sitemap](${SITE}/sitemap.xml): every component page.
+- [llms-full.txt](${SITE}/llms-full.txt): this file plus every component in the catalog, one line each, with its install command.
+
+## CLI
+
+- [npm package claude-code-templates](https://www.npmjs.com/package/claude-code-templates): \`${CLI_COMMAND}\` with --agent, --command, --skill, --hook, --mcp, --setting, --loop or --mod followed by a component path. Run without flags for an interactive picker.
+- [Batch installation guide](https://docs.aitmpl.com/guides/batch-installation)
+
+## Docs and source
+
+- [Documentation](https://docs.aitmpl.com)
+- [GitHub repository](https://github.com/davila7/claude-code-templates): source of every component, issues and contributions.
+- [About](${SITE}/about)
+- [Privacy](${SITE}/privacy)
+
+## Optional
+
+- [Plugins and marketplaces](${SITE}/plugins): third-party Claude Code plugin marketplaces indexed by the site.
+- [Trending components](${SITE}/trending)
+`;
+}
+function shortDescription(text, max = 200) {
+  let s = (text ?? "").replace(/<example>[\s\S]*?(<\/example>|$)/gi, " ").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  const sentence = s.match(/^(.+?[.!?])(\s|$)/);
+  if (sentence && sentence[1].length >= 20) s = sentence[1];
+  if (s.length > max) s = s.slice(0, max - 1).replace(/\s+\S*$/, "") + "…";
+  return s;
+}
+function buildLlmsFullTxt(counts, components) {
+  const sections = COUNTED_TYPES.map(([key, label]) => {
+    const items = components.filter((c) => c.type === key).sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
+    if (items.length === 0) return "";
+    const lines = items.map((c) => {
+      const page = c.urls?.page ?? `${SITE}/component/${c.id}`;
+      const desc = shortDescription(c.description);
+      const cmd = c.install?.command ? ` Install: \`${c.install.command}\`` : "";
+      return `- [${c.id}](${page})${desc ? `: ${desc}` : ""}${cmd}`;
+    });
+    return `### ${label} (${items.length})
+
+${lines.join("\n")}
+`;
+  }).filter(Boolean);
+  return `${buildLlmsTxt(counts)}
+## Full catalog
+
+Every component in the catalog, from ${SITE}/api/v1/catalog.json, grouped by type and sorted by id. Each line has the component page, the first sentence of its description and its install command. Read the full file at ${SITE}/component-content/{type}/{category}/{name}.json before installing a hook, MCP server or mod.
+
+${sections.join("\n")}`;
+}
+
+export { MARKDOWN_CONTENT_TYPE as M, buildLlmsTxt as a, buildLlmsFullTxt as b, notFoundMarkdown as n, prefersMarkdown as p, totalComponents as t };

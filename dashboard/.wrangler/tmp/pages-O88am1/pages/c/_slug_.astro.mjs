@@ -1,0 +1,119 @@
+globalThis.process ??= {}; globalThis.process.env ??= {};
+import { e as createAstro, f as createComponent, k as renderComponent, r as renderTemplate, l as renderScript, h as addAttribute, m as maybeRenderHead } from '../../chunks/astro/server_OwOTC5bf.mjs';
+import { $ as $$DashboardLayout, S as SearchModal } from '../../chunks/SearchModal_DgLldkrh.mjs';
+import { $ as $$TopBar } from '../../chunks/TopBar_Bh3QMdWD.mjs';
+import { g as getNeonClient } from '../../chunks/neon_CxLPHwrs.mjs';
+export { r as renderers } from '../../chunks/_@astro-renderers_BvXjVE0w.mjs';
+
+var __freeze = Object.freeze;
+var __defProp = Object.defineProperty;
+var __template = (cooked, raw) => __freeze(__defProp(cooked, "raw", { value: __freeze(cooked.slice()) }));
+var _a;
+const $$Astro = createAstro("https://www.aitmpl.com");
+const prerender = false;
+const $$slug = createComponent(async ($$result, $$props, $$slots) => {
+  const Astro2 = $$result.createAstro($$Astro, $$props, $$slots);
+  Astro2.self = $$slug;
+  const { slug } = Astro2.params;
+  if (!slug) return Astro2.rewrite("/404");
+  const sql = getNeonClient();
+  let collection = null;
+  let items = [];
+  let authorName = "user";
+  try {
+    const collections = await sql`
+    SELECT uc.id, uc.name, uc.share_slug, uc.clerk_user_id, uc.created_at
+    FROM user_collections uc
+    WHERE uc.share_slug = ${slug} AND uc.is_public = true
+  `;
+    if (collections.length === 0) return Astro2.rewrite("/404");
+    collection = collections[0];
+    items = await sql`
+    SELECT component_type, component_path, component_name, component_category
+    FROM collection_items
+    WHERE collection_id = ${collection.id}
+    ORDER BY added_at ASC
+  `;
+    try {
+      const { createClerkClient } = await import('../../chunks/index_BRJRoD4-.mjs');
+      const clerkSecret = process.env.CLERK_SECRET_KEY;
+      if (clerkSecret) {
+        const clerk = createClerkClient({ secretKey: clerkSecret });
+        const user = await clerk.users.getUser(collection.clerk_user_id);
+        authorName = user.username || user.firstName || "user";
+      }
+    } catch {
+    }
+  } catch (e) {
+    console.error("Shared collection error:", e);
+    return Astro2.redirect("/");
+  }
+  const TAG_COLORS = {
+    skills: "#f59e0b",
+    agents: "#3b82f6",
+    commands: "#10b981",
+    hooks: "#f97316",
+    mcps: "#06b6d4",
+    settings: "#8b5cf6"
+  };
+  const TYPE_FLAGS = {
+    agents: "--agent",
+    commands: "--command",
+    settings: "--setting",
+    hooks: "--hook",
+    mcps: "--mcp",
+    skills: "--skill",
+    templates: "--template"
+  };
+  function pluralType(type) {
+    return type.endsWith("s") ? type : type + "s";
+  }
+  function cleanPath(path) {
+    return path.replace(/^cli-tool\/components\/[^/]+\//, "");
+  }
+  function humanName(name) {
+    return name.replace(/\.(md|json)$/, "").replace(/-/g, " ").split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+  }
+  function generateCommand(collItems) {
+    const grouped = {};
+    for (const item of collItems) {
+      const t = pluralType(item.component_type);
+      if (!grouped[t]) grouped[t] = [];
+      grouped[t].push(cleanPath(item.component_path));
+    }
+    let cmd = "npx claude-code-templates@latest";
+    for (const [type, paths] of Object.entries(grouped)) {
+      const flag = TYPE_FLAGS[type];
+      if (flag) cmd += ` ${flag} ${paths.join(",")}`;
+    }
+    return cmd;
+  }
+  function groupByType(collItems) {
+    const map = {};
+    for (const item of collItems) {
+      const t = pluralType(item.component_type);
+      if (!map[t]) map[t] = [];
+      map[t].push(item);
+    }
+    const order = ["agents", "skills", "commands", "hooks", "mcps", "settings", "templates"];
+    return order.filter((t) => map[t]).map((t) => ({ type: t, color: TAG_COLORS[t] ?? "#888", items: map[t] }));
+  }
+  const installCmd = generateCommand(items);
+  const groups = groupByType(items);
+  const totalComponents = items.length;
+  return renderTemplate`${renderComponent($$result, "DashboardLayout", $$DashboardLayout, { "title": `${collection.name} — Shared Collection | Claude Code Templates`, "description": `${authorName}'s "${collection.name}" collection with ${totalComponents} Claude Code components. Install with one command.` }, { "default": async ($$result2) => renderTemplate(_a || (_a = __template([" ", "  ", '<div class="relative overflow-hidden border-b border-[var(--color-border)] bg-gradient-to-b from-[var(--color-surface-0)] to-[var(--color-surface-1)]"> <div class="absolute inset-0 opacity-20"> <div class="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-transparent to-purple-500/10"></div> </div> <div class="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-500/5 to-transparent rounded-full blur-3xl"></div> <div class="relative px-6 py-10 max-w-5xl mx-auto"> <div class="flex items-start gap-5"> <!-- Avatar --> <div class="w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 shadow-xl text-[28px] font-bold select-none" style="background: linear-gradient(135deg, #3b82f620 0%, #8b5cf620 100%); border: 2px solid #3b82f630; color: #60a5fa;"> ', ' </div> <div class="flex-1 min-w-0"> <div class="flex items-center gap-2 mb-1"> <span class="text-[13px] text-[var(--color-text-tertiary)]">\nShared by <span class="text-[var(--color-text-secondary)] font-medium">', '</span> </span> </div> <p class="text-[13px] text-[var(--color-text-tertiary)] mb-1">Component Collection</p> <h1 class="text-2xl md:text-3xl font-bold text-[var(--color-text-primary)] tracking-tight mb-2"> ', ' </h1> <div class="flex items-center gap-3 flex-wrap"> <span class="text-[13px] text-[var(--color-text-tertiary)]"> ', " ", " </span> ", ' </div> </div> </div> </div> </div>  <div class="px-6 py-8 max-w-5xl mx-auto space-y-8"> <!-- Install Command --> <div> <h2 class="text-sm font-semibold text-[var(--color-text-tertiary)] uppercase tracking-wider mb-3">Install all components</h2> <div class="relative group"> <pre id="installCmd" class="p-4 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-border)] text-[13px] text-[var(--color-text-secondary)] overflow-x-auto font-mono leading-relaxed whitespace-pre-wrap break-all"><code>$ ', '</code></pre> <button id="copyBtn"', ' class="absolute top-3 right-3 px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all duration-200 opacity-0 group-hover:opacity-100" style="background: var(--color-surface-3); color: var(--color-text-secondary); border: 1px solid var(--color-border);">\nCopy\n</button> </div> </div> <!-- Components by type --> ', ' <!-- CTA: Create your own --> <div class="relative overflow-hidden rounded-2xl p-8 text-center" style="background: linear-gradient(135deg, rgba(59,130,246,0.08) 0%, rgba(139,92,246,0.08) 100%); border: 1px solid rgba(59,130,246,0.15);"> <div class="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-blue-500/10 to-transparent rounded-full blur-3xl"></div> <div class="relative z-10"> <h3 class="text-lg font-bold text-[var(--color-text-primary)] mb-2">\nCreate your own collections\n</h3> <p class="text-[14px] text-[var(--color-text-secondary)] mb-5 max-w-md mx-auto">\nSign up for free to create, organize, and share your favorite Claude Code components with your team.\n</p> <a href="/my-components" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-[13px] font-semibold transition-all duration-200 hover:scale-105 no-underline" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; box-shadow: 0 4px 15px rgba(59,130,246,0.3);"> <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path> </svg>\nStart Building Collections\n</a> </div> </div> <!-- Back --> <div> <a href="/" class="inline-flex items-center gap-2 text-[13px] text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] transition-colors no-underline"> <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>\nBrowse all components\n</a> </div> </div> ', "  <script>\n    fetch('/counts.json')\n      .then(function(r) { return r.json(); })\n      .then(function(counts) {\n        window.dispatchEvent(new CustomEvent('component-counts', { detail: counts }));\n      })\n      .catch(function() {});\n  </script>  ", " "])), renderComponent($$result2, "TopBar", $$TopBar, {}), maybeRenderHead(), authorName.charAt(0).toUpperCase(), authorName, collection.name, totalComponents, totalComponents === 1 ? "component" : "components", groups.map((g) => renderTemplate`<span class="text-[10px] font-semibold px-2.5 py-1 rounded-full border"${addAttribute(`background: ${g.color}12; color: ${g.color}; border-color: ${g.color}25;`, "style")}> ${g.items.length} ${g.type} </span>`), installCmd, addAttribute(totalComponents, "data-item-count"), groups.map((group) => renderTemplate`<div> <div class="flex items-center gap-2 mb-4"> <span class="w-6 h-6 rounded-md flex items-center justify-center"${addAttribute(`background: ${group.color}15; border: 1px solid ${group.color}25;`, "style")}> <span class="w-3 h-3 rounded-full"${addAttribute(`background: ${group.color};`, "style")}></span> </span> <h2 class="text-base font-bold text-[var(--color-text-primary)] capitalize">${group.type}</h2> <span class="text-[12px] text-[var(--color-text-tertiary)]">(${group.items.length})</span> </div> <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"> ${group.items.map((item) => renderTemplate`<a${addAttribute(`/component/${pluralType(item.component_type)}/${cleanPath(item.component_path).replace(/\.(md|json)$/, "")}`, "href")} class="flex items-center gap-3 p-4 rounded-xl bg-[var(--color-card-bg)] border border-[var(--color-border)] hover:border-[var(--color-border-hover)] transition-all duration-200 no-underline group/card" style="box-shadow: var(--shadow-card);"> <div class="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 text-[14px] font-bold select-none transition-transform duration-200 group-hover/card:scale-110"${addAttribute(`background: ${group.color}12; border: 1px solid ${group.color}20; color: ${group.color};`, "style")}> ${humanName(item.component_name).charAt(0)} </div> <div class="min-w-0 flex-1"> <div class="text-[13px] font-semibold text-[var(--color-text-primary)] truncate"> ${humanName(item.component_name)} </div> ${item.component_category && renderTemplate`<div class="text-[11px] text-[var(--color-text-tertiary)]">${item.component_category}</div>`} </div> </a>`)} </div> </div>`), renderComponent($$result2, "SearchModal", SearchModal, { "client:idle": true, "client:component-hydration": "idle", "client:component-path": "/home/user/claude-code-templates/dashboard/src/components/SearchModal.tsx", "client:component-export": "default" }), renderScript($$result2, "/home/user/claude-code-templates/dashboard/src/pages/c/[slug].astro?astro&type=script&index=0&lang.ts")) })}`;
+}, "/home/user/claude-code-templates/dashboard/src/pages/c/[slug].astro", void 0);
+const $$file = "/home/user/claude-code-templates/dashboard/src/pages/c/[slug].astro";
+const $$url = "/c/[slug]";
+
+const _page = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: $$slug,
+  file: $$file,
+  prerender,
+  url: $$url
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const page = () => _page;
+
+export { page };
