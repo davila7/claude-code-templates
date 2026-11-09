@@ -1,6 +1,5 @@
 ---
 allowed-tools: Read, Write, Bash, Glob
-argument-hint:
 description: Generate Dev.to RSS feed from all blog posts for automatic syndication
 ---
 
