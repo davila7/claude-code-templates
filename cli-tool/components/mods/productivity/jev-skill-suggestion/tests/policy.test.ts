@@ -290,6 +290,13 @@ test('the request carries the prompt as state and the model where each backend e
   expect(requestHeaders('typesafe', 'k', 'jev-latest').authorization).toBe('Bearer k')
 })
 
+// Without it the Gateway answers 400 "Unsupported gateway protocol version"
+// before it reads anything else, so the gateway backend never suggested a skill.
+test('the Gateway request names the protocol version, without which it is refused', () => {
+  expect(requestHeaders('gateway', 'k', 'typesafe-ai/jev')['ai-gateway-protocol-version']).toBe('0.0.1')
+  expect(requestHeaders('typesafe', 'k', 'jev-latest')['ai-gateway-protocol-version']).toBeUndefined()
+})
+
 test('provider selection prefers TypeSafe, and a forced backend without its key is null', () => {
   expect(selectProvider('auto', 'ts', 'gw')).toBe('typesafe')
   expect(selectProvider('auto', '', 'gw')).toBe('gateway')
