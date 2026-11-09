@@ -4,7 +4,11 @@ import { parseCspReports } from '../../lib/security-headers';
 
 // Browsers POST here when a page breaks the Report-Only policy (src/lib/security-headers.ts).
 // Each distinct directive + blocked origin goes to Sentry once per 6 h per
-// Cloudflare colo, so a popular page cannot use up the Sentry quota.
+// Cloudflare colo, so a popular page cannot use up the Sentry quota. They go
+// as warnings, one issue per directive + origin: most come from browser
+// extensions or in-browser translation injecting into the page, and at the
+// default 'error' level each new origin became a high-priority issue that the
+// Sentry alert rule emailed.
 const MAX_BODY_BYTES = 16 * 1024;
 const DEDUPE_SECONDS = 6 * 60 * 60;
 
@@ -35,7 +39,7 @@ export const POST: APIRoute = async ({ request }) => {
       route: '/api/csp-report',
       page: v.page,
       source: v.source,
-    });
+    }, { level: 'warning', fingerprint: ['csp-report', v.directive, v.blocked || '(empty)'] });
   }
 
   return new Response(null, { status: 204 });

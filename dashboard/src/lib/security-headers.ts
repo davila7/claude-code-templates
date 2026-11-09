@@ -10,7 +10,7 @@
  *
  * Third parties:
  * - Clerk (custom FAPI host clerk.aitmpl.com, Turnstile on sign-in)
- * - Google Analytics (gtag)
+ * - Google Analytics (gtag; with Google signals it also sends to www.google.com)
  * - Hotjar: only the blog articles load it (NPS survey)
  * - jsDelivr: mermaid in some blog articles
  * - Google Fonts
@@ -44,6 +44,7 @@ const DIRECTIVES: Record<string, string[]> = {
     'https://www.googletagmanager.com',
     'https://*.google-analytics.com',
     'https://*.analytics.google.com',
+    'https://www.google.com',
     'https://*.hotjar.com',
     'https://*.hotjar.io',
     'wss://*.hotjar.com',
