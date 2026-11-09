@@ -426,6 +426,10 @@ test('the setup says, before the yes, that the model can no longer load a hidden
   expect(lines[show]).toContain('can no longer load a hidden skill with the Skill tool')
   expect(lines[show]).toContain('subagents')
   expect(lines[show]).toContain('stops working')
+  // Only an injection gets a hidden skill to the model, and inject: "suggest"
+  // makes none.
+  expect(lines[show]).toContain('reaches the model only when this mod injects it')
+  expect(lines[show]).toContain('not with inject: "suggest"')
   // Bundled skills are not hidden but turned off: the person loses them too.
   expect(text).toContain('the user cannot run them either')
 })
