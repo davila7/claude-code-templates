@@ -411,6 +411,25 @@ test('the setup instructions list every skill, carry the exact edit and the back
   expect(describeStillListed(13)).toContain(`run /${SETUP_COMMAND}`)
 })
 
+// `user-invocable-only` is the block a skill's own `disable-model-invocation:
+// true` sets: the Skill tool refuses the skill to the model. The person
+// overrides every skill author's choice by saying yes, so they hear it first.
+test('the setup says, before the yes, that the model can no longer load a hidden skill', () => {
+  const settings = { skillOverrides: {}, disableBundledSkills: undefined }
+  const plan = setupPlan([{ name: 'pptx', source: 'user' }], settings, new Set())
+  const text = setupInstructions('apply', plan, settings, '/s.json', '/b.json')
+  const lines = text.split('\n')
+  const show = lines.findIndex((line) => line.startsWith('1. Show the user the lists above'))
+  const ask = lines.findIndex((line) => line.startsWith('2. Ask them to confirm'))
+  expect(show).toBeGreaterThan(-1)
+  expect(show).toBeLessThan(ask)
+  expect(lines[show]).toContain('can no longer load a hidden skill with the Skill tool')
+  expect(lines[show]).toContain('subagents')
+  expect(lines[show]).toContain('stops working')
+  // Bundled skills are not hidden but turned off: the person loses them too.
+  expect(text).toContain('the user cannot run them either')
+})
+
 test("a skill named with spaces in its frontmatter is mapped to its directory, which is the engine's id", () => {
   expect(commandLike('pb-api-rules')).toBe(true)
   expect(commandLike('PocketBase API Rules')).toBe(false)

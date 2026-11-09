@@ -54,7 +54,7 @@ The status row under the prompt reads `jev · skill: <name>`, the transcript sho
 
 **5. Undo, whenever.** `/jev-skill-suggestion:setup restore` puts the saved values back (and removes the backup); restart afterwards. Do this before uninstalling the mod, or your skills stay hidden from the model with nothing left to inject them.
 
-Skills you have hidden are still yours to run by typing `/name`.
+Skills you have hidden are still yours to run by typing `/name`, but no longer the model's: the Skill tool refuses a `user-invocable-only` skill to the model and to its subagents, so an instruction to load one by name (in `CLAUDE.md`, or in another skill) stops working, and only the skill the mod attaches to a prompt reaches the model. The bundled skills are turned off rather than hidden, so you cannot run them either. Without the setup the mod still withholds the listing on every prompt, and the model can still load any skill by name.
 
 ## How it works
 

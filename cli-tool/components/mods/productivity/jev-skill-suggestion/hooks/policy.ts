@@ -873,7 +873,7 @@ export function setupInstructions(
     2,
   )
   lines.push(
-    `The user asked jev-skill-suggestion to take over skill selection: every skill is hidden from the model's listing (state "user-invocable-only": the user can still type /name) and the mod injects the one skill each prompt needs. Nothing here is written until the user has seen the list and said yes.`,
+    `The user asked jev-skill-suggestion to take over skill selection: every skill is hidden from the model's listing (state "user-invocable-only": the user can still type /name, but the Skill tool refuses the skill to the model and to its subagents) and the mod injects the one skill each prompt needs. Nothing here is written until the user has seen the list and said yes.`,
     '',
     `Skills that will be hidden from the model (${plan.hide.length}):`,
     ...(plan.hide.length > 0 ? plan.hide.map((name) => `- ${name}`) : ['- (none)']),
@@ -884,7 +884,7 @@ export function setupInstructions(
   lines.push(
     '',
     plan.bundledStillOn
-      ? `Claude Code's bundled skills (simplify, loop, init, ...) will be hidden too, by setting "disableBundledSkills": true.`
+      ? `Claude Code's bundled skills (simplify, loop, init, ...) will be turned off by setting "disableBundledSkills": true. Unlike the skills above, the user cannot run them either.`
       : `Claude Code's bundled skills are already disabled ("disableBundledSkills": true).`,
   )
   if (plan.locked.length > 0) {
@@ -897,7 +897,7 @@ export function setupInstructions(
   lines.push(
     '',
     'Steps:',
-    `1. Show the user the lists above, in their language, and say the change goes to ${settingsPath} (their user settings) and can be undone with /${SETUP_COMMAND} restore.`,
+    `1. Show the user the lists above, in their language, and say what hiding does: the model and its subagents can no longer load a hidden skill with the Skill tool, so an instruction to load one by name (in CLAUDE.md, or in another skill) stops working, and only the skill the mod attaches to a prompt reaches the model. Say the change goes to ${settingsPath} (their user settings) and can be undone with /${SETUP_COMMAND} restore.`,
     '2. Ask them to confirm. Do not edit anything before a clear yes.',
     ...(backupExists
       ? [
