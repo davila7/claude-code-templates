@@ -13,7 +13,7 @@ Usage:
   python scripts/validate_components.py                # whole catalog
   python scripts/validate_components.py --changed FILE # only the paths listed in FILE
   python scripts/validate_components.py --strict       # warnings count as errors
-Exit code 1 when any (selected) component has an error.
+Exit code 1 when any (selected) component has an error, or with --strict a warning.
 """
 import argparse, json, os, shutil, subprocess, sys, tempfile
 from pathlib import Path
@@ -147,10 +147,13 @@ def main():
     for f in errs:
         for e in f["errors"]:
             print(f"::error file=cli-tool/components/{f['file']}::{e['message'][:300]}")
+    # `claude plugin validate --strict --json` keeps warnings under "warnings" and
+    # only sets "success" to false, so --strict has to count them here.
+    level = "error" if a.strict else "warning"
     for f in warns:
         for w in f["warnings"]:
-            print(f"::warning file=cli-tool/components/{f['file']}::{w['message'][:300]}")
-    return 1 if errs else 0
+            print(f"::{level} file=cli-tool/components/{f['file']}::{w['message'][:300]}")
+    return 1 if errs or (a.strict and warns) else 0
 
 
 if __name__ == "__main__":
