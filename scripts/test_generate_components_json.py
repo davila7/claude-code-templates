@@ -202,6 +202,48 @@ class FrontmatterMetaTest(unittest.TestCase):
 
                 self.assertEqual(meta["description"], expected)
 
+    # Values on the lines below the key. The fallback has to read each one as
+    # YAML does, so a description comes out the same whether or not another
+    # line makes the frontmatter invalid.
+    MULTI_LINE_VALUES = (
+        ("a | block keeps indentation past its own",
+         ("description: |", "  Usage:", "    /review <pr>", "  Then merge."),
+         "Usage:\n  /review <pr>\nThen merge."),
+        ("a > block keeps a blank line as a line break",
+         ("description: >", "  Reviews a pull request.", "", "  Use it before merging."),
+         "Reviews a pull request.\nUse it before merging."),
+        ("a > block keeps the line breaks around lines indented further",
+         ("description: >", "  Reviews a pull request for:", "    - style", "    - tests",
+          "  Use it before merging."),
+         "Reviews a pull request for:\n  - style\n  - tests\nUse it before merging."),
+        ("an indentation indicator sets the block's indentation",
+         ("description: |2", "    /review <pr>", "  Then merge."),
+         "/review <pr>\nThen merge."),
+        ("a plain value below an empty key folds its lines",
+         ("description:", "  Reviews a pull request", "  before merging.", "", "  Use it often."),
+         "Reviews a pull request before merging.\nUse it often."),
+    )
+
+    def test_invalid_yaml_reads_a_multi_line_value_as_yaml_does(self):
+        for case, lines, expected in self.MULTI_LINE_VALUES:
+            with self.subTest(case=case):
+                from_yaml = self.parse("name: reviewer", *lines)
+                from_fallback = self.parse("name: reviewer", *lines,
+                                           "argument-hint: usage: /review <pr>")
+
+                self.assertEqual(from_yaml["description"], expected)
+                self.assertEqual(from_fallback["description"], expected)
+
+    def test_invalid_yaml_does_not_read_a_nested_mapping_as_text(self):
+        meta = self.parse("description: Reviews a pull request",
+                          "author:",
+                          "  name: Jane Doe",
+                          "  url: https://example.com/jane",
+                          "argument-hint: usage: /review <pr>")
+
+        # Left empty rather than read as "name: Jane Doe url: https://...".
+        self.assertEqual(meta["author"], "")
+
 
 if __name__ == "__main__":
     unittest.main()

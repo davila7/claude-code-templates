@@ -21,10 +21,62 @@ load_dotenv()
 # indicators, optional comment.
 _BLOCK_SCALAR_HEADER = re.compile(r'[|>][-+0-9]*(\s+#.*)?')
 
+# First line of a nested mapping or sequence: not text, so not read as such.
+_COLLECTION_LINE = re.compile(r'- |-$|[\w.-]+:(\s|$)')
+
+
+def _lines_below(lines, start, indent=None):
+    """The lines of the value below a key, from lines[start]: those indented
+    at least `indent` spaces (by default, as far as the first non-blank one),
+    with that indentation taken off. Blank lines inside stay as '', blank
+    lines at the end are dropped."""
+    block = []
+    for line in lines[start:]:
+        line = line.rstrip('\r')
+        if not line.strip():
+            block.append('')
+            continue
+        width = len(line) - len(line.lstrip(' '))
+        if indent is None:
+            indent = width
+        if width == 0 or width < indent:
+            break
+        block.append(line[indent:])
+    while block and not block[-1]:
+        block.pop()
+    return block
+
+
+def _fold(block, keep_spaced):
+    """YAML line folding: the break between two lines of text becomes a space,
+    and each blank line between them a line break. With keep_spaced (a `>`
+    block), a line indented further keeps the breaks around it; in a plain
+    value, every line is text."""
+    out = []
+    previous = None
+    blank = 0
+    for line in block:
+        if not line:
+            blank += 1
+            continue
+        spaced = keep_spaced and line[0].isspace()
+        if previous is not None:
+            if previous == 'text' and not spaced:
+                out.append('\n' * blank if blank else ' ')
+            else:
+                out.append('\n' * (blank + 1))
+        out.append(line if spaced else line.strip())
+        previous = 'spaced' if spaced else 'text'
+        blank = 0
+    return ''.join(out)
+
 
 def _line_frontmatter(frontmatter):
     """Line-based fallback for frontmatter that is not valid YAML (Claude Code
-    tolerates many of these, e.g. unquoted colons in a description)."""
+    tolerates many of these, e.g. unquoted colons in a description). A value
+    that continues on indented lines below its key is read as YAML would read
+    it: a `|` block keeps its line breaks and the indentation past the
+    block's own, a `>` block and a plain value fold their lines."""
     meta = {}
     lines = frontmatter.split('\n')
     for i, line in enumerate(lines):
@@ -32,15 +84,14 @@ def _line_frontmatter(frontmatter):
             if line.startswith(key + ':'):
                 value = line.split(key + ':', 1)[1].strip()
                 if _BLOCK_SCALAR_HEADER.fullmatch(value):
-                    # The text is the indented lines below the key: `|` keeps
-                    # their line breaks, `>` folds them into one line.
-                    block = []
-                    for below in lines[i + 1:]:
-                        if below.strip() and not below[0].isspace():
-                            break
-                        block.append(below.strip())
-                    text = '\n'.join(block).strip()
-                    value = text if value.startswith('|') else ' '.join(text.split())
+                    digits = ''.join(c for c in value.split()[0] if c.isdigit())
+                    block = _lines_below(lines, i + 1, int(digits) if digits else None)
+                    value = '\n'.join(block) if value.startswith('|') else _fold(block, keep_spaced=True)
+                elif not value:
+                    block = _lines_below(lines, i + 1)
+                    first = next((b for b in block if b), '')
+                    if first and not _COLLECTION_LINE.match(first):
+                        value = _fold(block, keep_spaced=False)
                 meta[key] = value
     return meta
 
