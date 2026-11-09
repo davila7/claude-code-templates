@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "ophis": {
+      "description": "Gasless, MEV-protected onchain token swaps for AI agents across 11 EVM chains (Ethereum, Optimism, BNB Chain, Gnosis, Polygon, Base, Arbitrum, Avalanche, Plasma, Ink, Linea). Ophis is an intent-based DEX built on CoW Protocol: keyless and non-custodial, the server returns an unsigned order that the agent signs with its own wallet, and the receiver is pinned to the signer. Provides 12 tools (parse_intent, resolve_token, list_chains, get_quote, expected_surplus, build_order, submit_order, lookup_tier, get_balances, get_portfolio, get_gas, get_token_chart); submit_order is the only state-changing tool, and resolve_token fails closed to prevent token spoofing. Public endpoint, no API key required. Not affiliated with njayp/ophis, an unrelated Go MCP library.",
+      "url": "https://mcp.ophis.fi/mcp"
+    }
+  }
+}
