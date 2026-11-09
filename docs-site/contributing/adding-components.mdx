@@ -30,10 +30,11 @@ Names are kebab-case and match the file or folder name. Pick an existing categor
 
 ## Test it before opening the PR
 
-The CLI installs from `main`, so it cannot install your branch yet. Copy the files where Claude Code reads them and try them in a real session: an agent into `.claude/agents/`, a skill folder into `.claude/skills/`, a hook into `.claude/settings.local.json`. Then run Claude Code's validator on it:
+The CLI installs from `main`, so it cannot install your branch yet. Copy the files where Claude Code reads them and try them in a real session: an agent into `.claude/agents/`, a skill folder into `.claude/skills/`, a hook into `.claude/settings.local.json`. Then run Claude Code's validator on it. `--changed` takes a file that lists the paths to validate, one per line:
 
 ```bash
-python3 scripts/validate_components.py --changed cli-tool/components/agents/security/my-agent.md
+echo cli-tool/components/agents/security/my-agent.md > /tmp/changed.txt
+python3 scripts/validate_components.py --changed /tmp/changed.txt
 ```
 
 ## What reviews your pull request
