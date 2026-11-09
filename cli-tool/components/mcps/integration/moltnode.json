@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "moltnode": {
+      "description": "Hosted no-key MCP by Chord: read 31 blockchains over JSON-RPC (Ethereum, Base, Arbitrum, Solana, Monad, BNB Chain, Avalanche, Sui and more), get DEX swap quotes and unsigned transactions via Chord. Non-custodial: the user's wallet signs.",
+      "type": "http",
+      "url": "https://moltnode.ag/mcp"
+    }
+  }
+}
