@@ -1,5 +1,5 @@
 ---
-allowed-tools: Bash(npx --yes github:skprasad-korture/who-said-yes:*)
+allowed-tools: Bash(npx --yes github:skprasad-korture/who-said-yes#b66783d871ef12f5e19c1a2194390155b413884e:*)
 argument-hint: "[--detail]"
 description: "Count which of your coding agent's actions you approved yourself at the prompt, from the Claude Code and Codex session logs on this computer. Read only, sends nothing."
 ---
@@ -25,9 +25,9 @@ It runs [who-said-yes](https://github.com/skprasad-korture/who-said-yes) (MIT), 
    "Out of your agent's last 1,000 actions, how many do you think you said yes to yourself?"
    Do not guess for them and do not hint at the answer.
 2. If they give a whole number from 0 to 1000, run:
-   `npx --yes github:skprasad-korture/who-said-yes --guess <their number>`
+   `npx --yes github:skprasad-korture/who-said-yes#b66783d871ef12f5e19c1a2194390155b413884e --guess <their number>`
    If they skip, run:
-   `npx --yes github:skprasad-korture/who-said-yes --no-guess`
+   `npx --yes github:skprasad-korture/who-said-yes#b66783d871ef12f5e19c1a2194390155b413884e --no-guess`
    Add `--detail` if they asked for the count by project or by week: $ARGUMENTS
 3. Show the output exactly as printed, inside a code block. Do not add advice about permission settings, modes or rules, and do not summarise the numbers in your own words. If they ask what a line means, explain only that line.
 
