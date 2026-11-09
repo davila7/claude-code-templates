@@ -25,7 +25,7 @@ The Agent tool has no effort parameter, so a subagent's effort is not this mod's
 
 **Both directions, both dimensions.** A task read as mechanical is routed down; one read as hard is routed up — model and effort alike.
 
-The prompt is classified at `prompt.submit`, which runs before the turn starts, and the decision is applied to the turn's first model request and reused by the rest of that turn.
+The prompt is classified at `prompt.submit`, which runs before the turn starts, and the decision is applied to the turn's first model request and reused by the rest of that turn. If more than one prompt is waiting when the turn starts (prompts queued while the model was busy), no decision is applied: which prompt the turn reads cannot be told, and routing it on another prompt's classification is worse than not routing it.
 
 **With no key configured the mod still works**: it falls back to the engine's own `$.model.classify`, which answers the same question with the small fast model. That path reports no confidence, so the threshold does not apply to it.
 
