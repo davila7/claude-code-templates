@@ -28,18 +28,14 @@ def row(component_type, name):
 
 
 class DownloadStatsTestCase(unittest.TestCase):
-    def fetch(self, downloads=None, stats=None):
+    def fetch(self, downloads=None):
         """Run fetch_download_stats against fake Supabase responses.
 
-        `downloads` is one page of component_downloads rows (the primary path).
-        Leaving it empty makes the function fall through to the download_stats
-        table, which `stats` then answers.
+        `downloads` is one page of component_downloads rows.
         """
         pages = [list(downloads or [])]
 
         def fake_get(url, headers=None, params=None, timeout=None):
-            if "download_stats" in url:
-                return FakeResponse(list(stats or []))
             return FakeResponse(pages.pop(0) if pages else [])
 
         env = {"SUPABASE_URL": "https://example.supabase.co", "SUPABASE_API_KEY": "key"}
@@ -71,38 +67,6 @@ class DownloadStatsTypeMappingTest(DownloadStatsTestCase):
 
         self.assertEqual(counts["agents/development-team/react-expert"], 1)
         self.assertEqual(counts["mcps/database/postgres"], 1)
-
-
-class DownloadStatsFallbackTableTest(DownloadStatsTestCase):
-    """The download_stats table path, used when component_downloads returns nothing."""
-
-    def stat(self, component_type, name, total):
-        return {
-            "component_type": component_type,
-            "component_name": name,
-            "total_downloads": total,
-        }
-
-    def test_legacy_and_current_totals_are_summed(self):
-        counts = self.fetch(
-            downloads=[],
-            stats=[self.stat("function-hook", "security/secret-redactor", 11),
-                   self.stat("mod", "security/secret-redactor", 3)],
-        )
-
-        # Before accumulating, the second row overwrote the first instead of adding.
-        self.assertNotIn("function-hooks/security/secret-redactor", counts)
-        self.assertEqual(counts["mods/security/secret-redactor"], 14)
-
-    def test_unrelated_types_keep_their_own_totals(self):
-        counts = self.fetch(
-            downloads=[],
-            stats=[self.stat("agent", "development-team/react-expert", 7),
-                   self.stat("mod", "games/pacman", 5)],
-        )
-
-        self.assertEqual(counts["agents/development-team/react-expert"], 7)
-        self.assertEqual(counts["mods/games/pacman"], 5)
 
 
 if __name__ == "__main__":
