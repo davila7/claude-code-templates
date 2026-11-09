@@ -897,7 +897,7 @@ export function setupInstructions(
   lines.push(
     '',
     'Steps:',
-    `1. Show the user the lists above, in their language, and say what hiding does: the model and its subagents can no longer load a hidden skill with the Skill tool, so an instruction to load one by name (in CLAUDE.md, or in another skill) stops working. A hidden skill reaches the model only when this mod injects it into a prompt, which it does with inject: "content" (the default) and not with inject: "suggest". Say the change goes to ${settingsPath} (their user settings) and can be undone with /${SETUP_COMMAND} restore.`,
+    `1. Show the user the lists above, in their language, and say what hiding does: the model and its subagents can no longer load a hidden skill with the Skill tool, so an instruction to load one by name (in CLAUDE.md, or in another skill) stops working, and the mod's alwaysListed option cannot keep one in the listing. The user can still run a hidden skill by typing /name (not one already set to off); other than that, it reaches the model only when this mod injects it into a prompt, which it does with inject: "content" (the default). With inject: "suggest" the model has to load the skill itself, and the Skill tool refuses a hidden one. Say the change goes to ${settingsPath} (their user settings) and can be undone with /${SETUP_COMMAND} restore.`,
     '2. Ask them to confirm. Do not edit anything before a clear yes.',
     ...(backupExists
       ? [
