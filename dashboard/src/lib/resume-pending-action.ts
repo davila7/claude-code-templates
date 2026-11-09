@@ -7,6 +7,9 @@ import { collectionsApi } from './collections-api';
 import { dropExpiredPendingAction, takePendingAction, type PendingAction } from './pending-action';
 import { COLLECTIONS_CHANGED_EVENT, myComponentsUrl, saveComponent, whenSavesSettled, type CollectionsChangedDetail } from './save-component';
 import { showToast } from './toast';
+import { decodeStack } from './stack-link';
+import { saveStackAsCollection } from './save-stack';
+import { fetchComponentsByType } from './data';
 
 let started = false;
 let running = false;
@@ -36,6 +39,7 @@ export function startPendingActionResume(): void {
 
 async function run(clerk: any, action: PendingAction): Promise<void> {
   if (action.kind === 'open-link') return openLink(action);
+  if (action.kind === 'save-stack') return saveStack(clerk, action.code);
 
   const item = { type: action.type, path: action.path, name: action.name, category: action.category };
   try {
@@ -57,6 +61,20 @@ async function run(clerk: any, action: PendingAction): Promise<void> {
   } catch (err) {
     console.error('Failed to resume save after sign-in:', err);
     showToast({ message: `Couldn't save ${action.name}. Click Save again to retry.` });
+  }
+}
+
+async function saveStack(clerk: any, code: string): Promise<void> {
+  const stack = decodeStack(code);
+  if (!stack) return;
+  try {
+    const token = await clerk.session?.getToken();
+    if (!token) throw new Error('No session token');
+    const { collection } = await saveStackAsCollection(collectionsApi, token, stack, fetchComponentsByType);
+    window.location.assign(myComponentsUrl(collection.id));
+  } catch (err) {
+    console.error('Failed to resume saving the stack after sign-in:', err);
+    showToast({ message: "Couldn't save your stack. Open it and click Save as collection again." });
   }
 }
 

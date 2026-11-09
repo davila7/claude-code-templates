@@ -1,5 +1,5 @@
 // The action a signed-out visitor started before the sign-in modal opened:
-// saving a component, opening a job or opening a course. It is kept in this
+// saving a component or a stack, opening a job or opening a course. It is kept in this
 // tab's sessionStorage (never sent anywhere) and completed once the visitor is
 // signed in, after an OAuth round trip or in place after email sign-in.
 //
@@ -8,7 +8,9 @@
 
 export type PendingAction =
   | { kind: 'save'; type: string; path: string; name: string; category?: string }
-  | { kind: 'open-link'; source: 'job' | 'course'; title: string; url: string };
+  | { kind: 'open-link'; source: 'job' | 'course'; title: string; url: string }
+  // "Save as collection" from the stack: the /s/ code (lib/stack-link.ts) of the cart.
+  | { kind: 'save-stack'; code: string };
 
 export const PENDING_ACTION_KEY = 'aitmpl:pending-action';
 // Long enough for a GitHub/Google round trip or creating an account by email.
@@ -44,6 +46,10 @@ export function parsePendingAction(v: unknown): PendingAction | null {
     if (!str(a.type, 40) || !str(a.path, 300) || !str(a.name, 200)) return null;
     if (a.category !== undefined && !str(a.category, 100)) return null;
     return { kind: 'save', type: a.type, path: a.path, name: a.name, ...(a.category ? { category: a.category as string } : {}) };
+  }
+  if (a.kind === 'save-stack') {
+    if (!str(a.code, 6000) || !/^[A-Za-z0-9_-]+$/.test(a.code)) return null;
+    return { kind: 'save-stack', code: a.code };
   }
   if (a.kind === 'open-link') {
     if ((a.source !== 'job' && a.source !== 'course') || !str(a.title, 300) || !isHttpsUrl(a.url)) return null;
