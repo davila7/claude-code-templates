@@ -27,7 +27,7 @@ The Agent tool has no effort parameter, so a subagent's effort is not this mod's
 
 The prompt is classified at `prompt.submit`, which runs before the turn starts, and the decision is applied to the turn's first model request and reused by the rest of that turn.
 
-**With no key configured the mod still works**: it falls back to the engine's own `$.model.classify`, which answers the same question with the small fast model. That path reports no confidence, so the threshold does not apply to it.
+**With no key configured the mod still works**: it falls back to the engine's own `$.model.classify`, which answers the same question with the small fast model. That path returns only a tier, with no confidence, so it may only move a model up and never sets an effort.
 
 ## What it asks
 
