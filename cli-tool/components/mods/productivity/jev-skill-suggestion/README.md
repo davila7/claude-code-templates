@@ -78,7 +78,7 @@ Its instructions follow: follow them now, including any setup steps. Do not load
 </skill_relevance>
 ```
 
-The first line is the cookbook's, word for word: it says the suggestion can be ignored, because pushing harder wins compliance on wrong suggestions too, and a wrong one is worse than none. The rest is the skill as the engine would have rendered it on a Skill-tool call, so the model has it whether or not the engine would let it load the skill: a skill set to `user-invocable-only` or `off` in `skillOverrides` is refused by the Skill tool, and this is what makes hiding every skill workable. A skill injected once is only named again on later prompts (`Skill /commit is already loaded above; instructions unchanged.`), as the engine does on a repeated call — until the conversation is no longer the one it went into: `/clear`, a resume or a compaction of the main conversation start the count over, and the next pick goes in whole again. A skill whose file cannot be found (a bundled one) is suggested by name, for the Skill tool.
+The first line is the cookbook's, word for word: it says the suggestion can be ignored, because pushing harder wins compliance on wrong suggestions too, and a wrong one is worse than none. The rest is the skill as the engine would have rendered it on a Skill-tool call, so the model has it whether or not the engine would let it load the skill: a skill set to `user-invocable-only` or `off` in `skillOverrides` is refused by the Skill tool, and this is what makes hiding every skill workable. A skill injected once is only named again on later prompts (`Skill /commit is already loaded above; instructions unchanged.`), as the engine does on a repeated call — until the conversation is no longer the one it went into: `/clear`, a resume or a compaction of the main conversation start the count over, and the next pick goes in whole again. A skill whose file cannot be found is suggested by name, for the Skill tool.
 
 What the Skill tool does that this does not: apply the skill's `allowed-tools`, and count as a skill invocation for `/skill-doctor`.
 
@@ -175,7 +175,7 @@ If `/skills` still shows one of your own skills as `on` after `setup` and a rest
 
 ## Privacy
 
-With a key set, the prompt text and every candidate skill's name and one-line description leave the machine on the first request, and the first `excerptChars` of each shortlisted skill's SKILL.md on the second, to whichever backend the key belongs to. Nothing else. With no key set, nothing leaves the machine.
+With a key set, the prompt text and every candidate skill's name and one-line description leave the machine on the first request, and the first `excerptChars` of each shortlisted skill's SKILL.md on the second, to whichever backend the key belongs to. Nothing else. When the built-in classifier answers instead (no key set, `provider: "builtin"`, or a forced backend without its key), no backend is called, but the prompt and the same names and descriptions go to Claude Code's own model provider: `$.model.classify` is one completion on the engine's small fast model, through the session's own client and credentials.
 
 ## Options
 
@@ -238,7 +238,7 @@ Pairs with [jev-model-router](../jev-model-router/README.md), which asks the sam
 ## Tests
 
 ```sh
-bun test cli-tool/components/mods/productivity/jev-skill-suggestion/tests
+claude plugin test cli-tool/components/mods/productivity/jev-skill-suggestion
 ```
 
 **Requirements.** Mods are on by default in Claude Code 2.1.287+. This mod needs **Claude Code 2.1.278 or newer**: the `prompt.attachment` event it hooks to withhold the listing first shipped there. On an older release the module loads but the event never fires, so the listing stays and only the suggestion is added. Typed against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
