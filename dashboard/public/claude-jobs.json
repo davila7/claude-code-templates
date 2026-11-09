@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-11-08T03:04:51.205811+00:00",
-  "totalJobs": 747,
+  "lastUpdated": "2026-11-09T03:08:27.204060+00:00",
+  "totalJobs": 754,
   "sources": [
     "Anthropic",
     "Ashby",
@@ -24,7 +24,7 @@
       "applyUrl": "https://job-boards.greenhouse.io/deliveroo/jobs/8205846",
       "source": "Greenhouse",
       "sourceUrl": "https://job-boards.greenhouse.io/deliveroo/jobs/8205846",
-      "postedAt": "2026-11-07T21:48:05-05:00",
+      "postedAt": "2026-11-08T21:46:30-05:00",
       "tags": [
         "Claude Code",
         "Python",
@@ -407,6 +407,30 @@
         "Azure",
         "Cursor",
         "Copilot"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-wealthbox-82e0339d-8ff8-4fd2-9a1b-26ead23aff5d",
+      "company": "Wealthbox",
+      "position": "Design Engineer",
+      "location": "United States",
+      "locations": [
+        "United States"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "ABOUT WEALTHBOX\n\nWe’re building an AI-powered CRM software platform for financial advisors. Thousands of advisory firms use Wealthbox every single day – not once a week, not occasionally – all day. It’s where they manage their clients, run their practices, and grow their businesses.\n\nWhen we ship...",
+      "applyUrl": "https://jobs.ashbyhq.com/wealthbox/82e0339d-8ff8-4fd2-9a1b-26ead23aff5d",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/wealthbox/82e0339d-8ff8-4fd2-9a1b-26ead23aff5d",
+      "postedAt": "2026-11-06T16:59:17.036+00:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "TypeScript",
+        "Ruby",
+        "Rails"
       ],
       "companyIcon": ""
     },
@@ -1011,6 +1035,29 @@
         "AWS",
         "GCP",
         "Azure"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "le-iru-76bb7b66-05fb-4fea-ae75-cbf8bfa0c23d",
+      "company": "Iru",
+      "position": "Director, AI-Driven Marketing",
+      "location": "Miami",
+      "locations": [
+        "Miami"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "About Iru\n \nIru is the AI-powered security & IT platform used by the world’s fastest-growing companies to secure their users, apps, and devices. Built for the AI era, Iru unifies identity & access, endpoint security & management, and compliance automation—collapsing the stack and giving IT &...",
+      "applyUrl": "https://jobs.lever.co/iru/76bb7b66-05fb-4fea-ae75-cbf8bfa0c23d",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/iru/76bb7b66-05fb-4fea-ae75-cbf8bfa0c23d",
+      "postedAt": "2026-11-06T14:28:43.241000+00:00",
+      "tags": [
+        "Claude Code",
+        "AWS",
+        "Cursor",
+        "MCP"
       ],
       "companyIcon": ""
     },
@@ -4641,6 +4688,26 @@
       "companyIcon": ""
     },
     {
+      "id": "gr-epicgames-6021022004",
+      "company": "Epic Games",
+      "position": "Lead Gameplay Programmer",
+      "location": "Montreal,Quebec,Canada",
+      "locations": [
+        "Montreal,Quebec,Canada"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "WHAT MAKES US EPIC? At the core of Epic’s success are talented, passionate people. Epic prides itself on creating a collaborative, welcoming, and creative environment. Whether it’s building award-winning games or crafting engine technology that enables others to make visually stunning interactive...",
+      "applyUrl": "https://epicgames.com/careers/jobs/6021022004?gh_jid=6021022004",
+      "source": "Greenhouse",
+      "sourceUrl": "https://epicgames.com/careers/jobs/6021022004?gh_jid=6021022004",
+      "postedAt": "2026-11-03T16:19:38-05:00",
+      "tags": [
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "gr-genevatrading-5242063007",
       "company": "Geneva Trading",
       "position": "C++ Developer (Intern) ",
@@ -6863,6 +6930,31 @@
       "companyIcon": ""
     },
     {
+      "id": "le-iru-7953e8ff-75df-4766-ad65-fbb4968b4a4c",
+      "company": "Iru",
+      "position": "Senior Manager, GTM Engineering",
+      "location": "Miami",
+      "locations": [
+        "Miami"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "About Iru\n \nIru is the AI-powered security & IT platform used by the world’s fastest-growing companies to secure their users, apps, and devices. Built for the AI era, Iru unifies identity & access, endpoint security & management, and compliance automation—collapsing the stack and giving IT &...",
+      "applyUrl": "https://jobs.lever.co/iru/7953e8ff-75df-4766-ad65-fbb4968b4a4c",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/iru/7953e8ff-75df-4766-ad65-fbb4968b4a4c",
+      "postedAt": "2026-10-30T17:09:14.920000+00:00",
+      "tags": [
+        "Claude Code",
+        "TypeScript",
+        "Python",
+        "PostgreSQL",
+        "AWS",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "as-kaluza-fa9e7a73-a80c-4695-9551-373729593b52",
       "company": "Kaluza",
       "position": "Technical Lead ",
@@ -7152,19 +7244,19 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-samsara-8281483",
+      "id": "gr-samsara-8281482",
       "company": "Samsara",
       "position": "Senior AI Data & Analytics Engineer II",
-      "location": "Remote - CA",
+      "location": "Remote - Dallas",
       "locations": [
-        "Remote - CA"
+        "Remote - Dallas"
       ],
       "remote": true,
       "salary": "",
       "description": "Who we are Samsara (NYSE: IOT) is the pioneer of the Connected Operations™ Cloud, which is a platform that enables organizations that depend on physical operations to harness Internet of Things (IoT) data to develop actionable insights and improve their operations. At Samsara, we are helping...",
-      "applyUrl": "https://www.samsara.com/company/careers/roles/8281483?gh_jid=8281483",
+      "applyUrl": "https://www.samsara.com/company/careers/roles/8281482?gh_jid=8281482",
       "source": "Greenhouse",
-      "sourceUrl": "https://www.samsara.com/company/careers/roles/8281483?gh_jid=8281483",
+      "sourceUrl": "https://www.samsara.com/company/careers/roles/8281482?gh_jid=8281482",
       "postedAt": "2026-10-30T11:22:26-04:00",
       "tags": [
         "Claude Code",
@@ -7416,6 +7508,29 @@
         "Python"
       ],
       "companyIcon": "https://fivetran.com/favicon.ico"
+    },
+    {
+      "id": "gr-epicgames-6122977004",
+      "company": "Epic Games",
+      "position": "Principal Engineer, AI Platform",
+      "location": "BLANK,BLANK,Multiple Locations",
+      "locations": [
+        "BLANK,BLANK,Multiple Locations"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "WHAT MAKES US EPIC? At the core of Epic’s success are talented, passionate people. Epic prides itself on creating a collaborative, welcoming, and creative environment. Whether it’s building award-winning games or crafting engine technology that enables others to make visually stunning interactive...",
+      "applyUrl": "https://epicgames.com/careers/jobs/6122977004?gh_jid=6122977004",
+      "source": "Greenhouse",
+      "sourceUrl": "https://epicgames.com/careers/jobs/6122977004?gh_jid=6122977004",
+      "postedAt": "2026-10-30T08:51:14-04:00",
+      "tags": [
+        "Claude Code",
+        "Kubernetes",
+        "Cursor",
+        "Copilot"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "gr-quintoandar-4471917009",
@@ -8891,6 +9006,59 @@
       "companyIcon": ""
     },
     {
+      "id": "as-wealthbox-90ff39fb-c6de-4b6f-bef5-9012f0453daf",
+      "company": "Wealthbox",
+      "position": "Software Engineer",
+      "location": "United States",
+      "locations": [
+        "United States"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "ABOUT WEALTHBOX\n\nWe’re building an AI-powered CRM software platform for financial advisors. Thousands of advisory firms use Wealthbox every single day – not once a week, not occasionally – all day. It’s where they manage their clients, run their practices, and grow their businesses.\n\nWhen we ship...",
+      "applyUrl": "https://jobs.ashbyhq.com/wealthbox/90ff39fb-c6de-4b6f-bef5-9012f0453daf",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/wealthbox/90ff39fb-c6de-4b6f-bef5-9012f0453daf",
+      "postedAt": "2026-10-28T13:04:25.242+00:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "TypeScript",
+        "JavaScript",
+        "Python",
+        "Ruby",
+        "Rails"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-wealthbox-5bcced88-d658-427d-9434-4d0313fbc17e",
+      "company": "Wealthbox",
+      "position": "Senior Software Engineer",
+      "location": "United States",
+      "locations": [
+        "United States"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "ABOUT WEALTHBOX\n\nWe’re building an AI-powered CRM software platform for financial advisors. Thousands of advisory firms use Wealthbox every single day – not once a week, not occasionally – all day. It’s where they manage their clients, run their practices, and grow their businesses.\n\nWhen we ship...",
+      "applyUrl": "https://jobs.ashbyhq.com/wealthbox/5bcced88-d658-427d-9434-4d0313fbc17e",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/wealthbox/5bcced88-d658-427d-9434-4d0313fbc17e",
+      "postedAt": "2026-10-28T13:03:24.412+00:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "TypeScript",
+        "JavaScript",
+        "Ruby",
+        "Rails",
+        "Vue.js",
+        "Angular"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "as-kaluza-f7df0526-45bb-4ff3-aa47-181d4fe694f7",
       "company": "Kaluza",
       "position": "Lead Designer",
@@ -9277,7 +9445,7 @@
         "Burnaby"
       ],
       "remote": false,
-      "salary": "CA$25 – CA$28 per hour",
+      "salary": "CA$20 per hour",
       "description": "🎨 OpusClip https://www.opus.pro is the world's No.1 AI video agent, built for authenticity on social media.\n\nWe envision a world where everyone can authentically share their story through video, with no expertise needed. Within just 18 months of our launch, over 20 million creators and businesses...",
       "applyUrl": "https://jobs.ashbyhq.com/opusclip/6906926b-eb37-4b68-ad17-5383fbda7818",
       "source": "Ashby",
