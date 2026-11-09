@@ -3,5 +3,10 @@
 /component/function-hook/*     /component/mods/:splat   301
 /component/function-hooks/*    /component/mods/:splat   301
 
+# Our mods in the aitmpl marketplace keep one page, the mod's (cli-tool/components/plugins/
+# manifests pointing at cli-tool/components/mods/); `--plugin` prints the plugins/ URL.
+/component/plugins/observability/prompt-cache-control  /component/mods/observability/prompt-cache-control  301
+/component/plugins/ui/stack-viewer                     /component/mods/ui/stack-viewer                     301
+
 # The home is also reachable as /index.html, which Google indexed as its own page.
 /index.html                    /                        301
