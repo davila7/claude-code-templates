@@ -44,11 +44,11 @@ function cacheDir() {
   return path.join(base, 'claude-code-templates', 'catalog-v1');
 }
 
-async function fetchJson(relPath) {
+async function fetchJson(relPath, { timeoutMs = FETCH_TIMEOUT_MS } = {}) {
   let lastError;
   for (const base of SOURCES) {
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
     try {
       const res = await fetch(`${base}/${relPath}`, { signal: controller.signal });
       if (!res.ok) throw new Error(`HTTP ${res.status} from ${base}`);
@@ -80,9 +80,9 @@ async function writeCache(name, data) {
 }
 
 /** version.json from the network, or the cached copy when offline. */
-async function loadVersion() {
+async function loadVersion(fetchOptions) {
   try {
-    const version = await fetchJson('version.json');
+    const version = await fetchJson('version.json', fetchOptions);
     await writeCache('version.json', version);
     return { version, offline: false };
   } catch (error) {
@@ -93,11 +93,11 @@ async function loadVersion() {
 }
 
 /** One type's components, from cache when its sha matches version.json. */
-async function loadType(type, version) {
+async function loadType(type, version, fetchOptions) {
   const cached = await readCache(`${type}.json`);
   if (cached && cached.sha256 === version.sha256) return cached.components;
   try {
-    const data = await fetchJson(`catalog/${type}.json`);
+    const data = await fetchJson(`catalog/${type}.json`, fetchOptions);
     await writeCache(`${type}.json`, { sha256: version.sha256, components: data.components });
     return data.components;
   } catch (error) {
@@ -323,9 +323,10 @@ function printNonInteractiveHelp(cliVersion) {
     '',
     'Install components by path (category/name), comma-separated, combinable:',
     '  npx claude-code-templates@latest --skill <category/name> --agent <category/name> --yes',
-    '  Flags: --skill --agent --command --mcp --hook --setting --mod --loop',
+    '  Flags: --skill --agent --command --mcp --hook --setting --mod --loop --plugin',
     '',
     'Find paths:',
+    '  npx claude-code-templates@latest --search "<words>"   top 5 matches with page and install command',
     '  https://www.aitmpl.com                        catalog',
     '  https://www.aitmpl.com/api/v1/catalog.json    every component with its install command (JSON)',
     '  https://www.aitmpl.com/llms.txt               summary for agents',

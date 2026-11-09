@@ -38,6 +38,7 @@ program
   .option('--plugin <plugin>', 'install a Claude Code plugin from the aitmpl marketplace with Claude Code itself, pinned to its reviewed commit (supports comma-separated values)')
   .option('--scope <scope>', 'where --plugin enables the plugin: project (.claude/settings.json, default), user (~/.claude/settings.json) or local (.claude/settings.local.json)')
   .addOption(new Option('--function-hook <mod>', 'alias of --mod (kept for older docs)').hideHelp())
+  .option('--search <words>', 'search the catalog by text: top 5 matches with their page and install command (installs nothing)')
   .option('--workflow <workflow>', 'install workflow from hash (#hash) OR workflow YAML (base64 encoded) when used with --agent/--command/--mcp')
   .option('--prompt <prompt>', 'execute the provided prompt in Claude Code after installation');
 
@@ -50,7 +51,7 @@ program.action(async (options) => {
     // and a removed flag prints only its replacement.
     const isComponentInstall = Boolean(options.agent || options.command || options.mcp || options.setting ||
                                        options.hook || options.skill || options.loop || options.mod || options.functionHook || options.plugin);
-    const isQuietCommand = isComponentInstall || findRemovedCommands(options).length > 0;
+    const isQuietCommand = isComponentInstall || options.search !== undefined || findRemovedCommands(options).length > 0;
 
     // No arguments opens the catalog browser, which prints its own header
     // (or plain usage text when there is no terminal).

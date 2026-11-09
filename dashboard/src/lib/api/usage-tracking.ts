@@ -24,6 +24,11 @@ export const VALID_COMMANDS = [
   'removed-command',
   // 1.31.0+: --workflow (components come inline, so they are not downloads)
   'workflow',
+  // 1.33.0+: --search (only that it ran and how many results; never the words)
+  'search',
+  // reserved for 1.34 (--check-updates / --update), accepted ahead of the CLI release
+  'check-updates',
+  'update',
 ] as const;
 
 // Component types the CLI installs and reports through trackDownload() and

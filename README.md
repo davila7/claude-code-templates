@@ -82,7 +82,7 @@ npx claude-code-templates@latest \
   --mcp integration/github-integration
 ```
 
-Add `--yes` to skip the confirmation prompt. Every component page on [aitmpl.com](https://www.aitmpl.com) shows its exact install command.
+Add `--yes` to skip the confirmation prompt. Every component page on [aitmpl.com](https://www.aitmpl.com) shows its exact install command. To find one from the terminal: `npx claude-code-templates@latest --search "code review"`.
 
 <details>
 <summary>One example per component type</summary>
