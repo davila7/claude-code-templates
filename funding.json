@@ -8,8 +8,8 @@
     "email": "daniel@aitmpl.com",
     "description": "Creator and maintainer of Claude Code Templates (aitmpl.com), an open-source registry of components for AI coding agents. AI software engineer with 17+ years building developer tools, co-founder of CodeGPT (2.5M+ VS Code installs).",
     "webpageUrl": {
-      "url": "https://aitmpl.com",
-      "wellKnown": "https://aitmpl.com/.well-known/funding-manifest-urls"
+      "url": "https://www.aitmpl.com",
+      "wellKnown": "https://www.aitmpl.com/.well-known/funding-manifest-urls"
     }
   },
   "projects": [
@@ -18,15 +18,28 @@
       "name": "Claude Code Templates",
       "description": "Open-source registry and CLI for AI coding agent components: agents, commands, skills, hooks, MCP servers and settings. Developers browse aitmpl.com and install any component with one npx command. 1,900+ components, 33K+ GitHub stars, 3.8K+ forks, 130+ contributors and 215K+ npm downloads in the last 12 months. Every contributed component goes through automated security review (static analysis, NVIDIA SkillSpector and AI code review) before it reaches users, because installing third-party agent components is a software supply chain risk. The catalog is also published as a versioned public API that other tools build on. The registry is independent (not affiliated with Anthropic) and MIT licensed.",
       "webpageUrl": {
-        "url": "https://aitmpl.com",
-        "wellKnown": "https://aitmpl.com/.well-known/funding-manifest-urls"
+        "url": "https://www.aitmpl.com",
+        "wellKnown": "https://www.aitmpl.com/.well-known/funding-manifest-urls"
       },
       "repositoryUrl": {
         "url": "https://github.com/davila7/claude-code-templates",
         "wellKnown": "https://github.com/davila7/claude-code-templates/blob/main/.well-known/funding-manifest-urls"
       },
-      "licenses": ["spdx:MIT"],
-      "tags": ["developer-tools", "artificial-intelligence", "security", "cli", "coding-agents", "ai-agents", "mcp", "supply-chain-security", "registry", "ai"]
+      "licenses": [
+        "spdx:MIT"
+      ],
+      "tags": [
+        "developer-tools",
+        "artificial-intelligence",
+        "security",
+        "cli",
+        "coding-agents",
+        "ai-agents",
+        "mcp",
+        "supply-chain-security",
+        "registry",
+        "ai"
+      ]
     }
   ],
   "funding": {
@@ -53,7 +66,10 @@
         "amount": 25000,
         "currency": "USD",
         "frequency": "yearly",
-        "channels": ["github-sponsors", "bank"]
+        "channels": [
+          "github-sponsors",
+          "bank"
+        ]
       },
       {
         "guid": "infrastructure",
@@ -63,7 +79,9 @@
         "amount": 0,
         "currency": "USD",
         "frequency": "monthly",
-        "channels": ["github-sponsors"]
+        "channels": [
+          "github-sponsors"
+        ]
       }
     ],
     "history": [
