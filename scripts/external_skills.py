@@ -86,6 +86,11 @@ PLUGIN_NAME_RE = re.compile(r"^[a-z0-9][a-z0-9.-]{0,63}$")
 # plugin.json display fields copied onto the marketplace entry: before install,
 # Claude Code shows only the entry's own fields for a non-relative source.
 DISPLAY_FIELDS = ("displayName", "description", "author", "homepage", "repository", "keywords")
+# Our own mods can be published in the marketplace too: a plugins/ manifest whose
+# repo is this one and whose path is a mod folder. The catalog keeps one entry
+# for it, the mod; the plugin is only its marketplace listing (own_mod()).
+SELF_REPO = "davila7/claude-code-templates"
+MODS_PREFIX = "cli-tool/components/mods/"
 
 
 class ManifestError(ValueError):
@@ -391,6 +396,15 @@ def _display_value(field: str, value: object) -> object | None:
     return value if isinstance(value, str) and value.strip() else None
 
 
+def own_mod(m: dict) -> str | None:
+    """'{category}/{name}' of the mod a plugin manifest publishes, or None for any other plugin."""
+    path = m.get("path") or ""
+    if m.get("repo") != SELF_REPO or not path.startswith(MODS_PREFIX):
+        return None
+    rest = path[len(MODS_PREFIX):]
+    return rest if re.match(r"^[a-z0-9][a-z0-9-]*/[a-z0-9][a-z0-9.-]*$", rest) else None
+
+
 def marketplace_entry(plugin_dir: Path) -> dict:
     """The marketplace entry for one catalog plugin, pinned to its reviewed commit."""
     m = read_manifest(plugin_dir)
@@ -407,7 +421,9 @@ def marketplace_entry(plugin_dir: Path) -> dict:
     if "author" not in entry and m.get("author"):
         entry["author"] = {"name": m["author"]}
     category, name = plugin_dir.parent.name, plugin_dir.name
-    entry.setdefault("homepage", f"https://www.aitmpl.com/component/plugins/{category}/{name}")
+    mod = own_mod(m)
+    page = f"mods/{mod}" if mod else f"plugins/{category}/{name}"
+    entry.setdefault("homepage", f"https://www.aitmpl.com/component/{page}")
     entry.setdefault("repository", f"https://github.com/{m['repo']}")
     # Checked against the repo's LICENSE at that commit, so it beats plugin.json.
     entry["license"] = m["license"]
@@ -503,6 +519,12 @@ def check(dirs: list[Path]) -> list[str]:
             if kind_of(d) == "plugin":
                 if not PLUGIN_NAME_RE.match(d.name):
                     raise ManifestError(f"plugin folder name {d.name!r} must be lowercase letters, digits, '.' and '-'")
+                mod = own_mod(m)
+                if m["repo"] == SELF_REPO and m["path"].startswith(MODS_PREFIX):
+                    if not mod or not (ROOT / m["path"] / PLUGIN_MANIFEST).is_file():
+                        raise ManifestError(f'{m["path"]} is not a mod folder of this repo')
+                    if mod.split("/")[1] != d.name:
+                        raise ManifestError(f"a published mod keeps its name: the folder must be {mod.split('/')[1]!r}")
                 if len(plugin_names.get(d.name, [])) > 1:
                     raise ManifestError(f"plugin name {d.name!r} is used in more than one category: "
                                         + ", ".join(sorted(plugin_names[d.name])))
@@ -541,6 +563,22 @@ def _dirs_from_args(paths: list[str]) -> list[Path]:
 def remote_head(repo: str) -> str:
     out = _git("ls-remote", f"https://github.com/{repo}.git", "HEAD")
     return out.split()[0]
+
+
+def folder_changed(repo: str, path: str, old: str, new: str) -> bool:
+    """True when path's tree differs between two commits (trees only: a blobless fetch)."""
+    git_dir = CACHE_ROOT / "git-trees" / repo.replace("/", "__")
+    if not (git_dir / "HEAD").exists():
+        git_dir.mkdir(parents=True, exist_ok=True)
+        _git("init", "--bare", "-q", str(git_dir))
+    _git("--git-dir", str(git_dir), "fetch", "-q", "--depth", "1", "--filter=blob:none",
+         f"https://github.com/{repo}.git", old, new)
+
+    def tree(commit: str) -> str:
+        r = subprocess.run(["git", "--git-dir", str(git_dir), "rev-parse", f"{commit}:{path}"],
+                           capture_output=True, text=True)
+        return r.stdout.strip() if r.returncode == 0 else ""
+    return tree(old) != tree(new)
 
 
 def add(repo: str, path: str, category: str, name: str | None, requires: list[str], commit: str | None,
@@ -627,7 +665,9 @@ def main() -> int:
         for d in all_external_dirs():
             m = read_manifest(d)
             head = heads.setdefault(m["repo"], remote_head(m["repo"]))
-            if head != m["commit"]:
+            # This repo moves on every merge: one of our mods is outdated only
+            # when its own folder changed since the pinned commit.
+            if head != m["commit"] and (not own_mod(m) or folder_changed(m["repo"], m["path"], m["commit"], head)):
                 print(f"{d.relative_to(ROOT / 'cli-tool' / 'components').as_posix()}\t{m['repo']}\t{m['commit']}\t{head}")
         return 0
     return 2

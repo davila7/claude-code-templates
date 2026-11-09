@@ -87734,6 +87734,11 @@
         "hooks/prompt-cache-control.tsx",
         "tests/cache.test.tsx"
       ],
+      "marketplace": {
+        "plugin": "prompt-cache-control@aitmpl",
+        "commit": "cc40466a2c64dc9eaf392bc3554ab01956d45b0e",
+        "version": "0.1.0"
+      },
       "skillspector": {
         "score": 58,
         "severity": "HIGH",
@@ -90742,6 +90747,11 @@
         "hooks/stack.ts",
         "tests/stack-viewer.test.tsx"
       ],
+      "marketplace": {
+        "plugin": "stack-viewer@aitmpl",
+        "commit": "cc40466a2c64dc9eaf392bc3554ab01956d45b0e",
+        "version": "0.3.1"
+      },
       "skillspector": {
         "score": 100,
         "severity": "CRITICAL",

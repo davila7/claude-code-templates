@@ -17,6 +17,16 @@ export interface Component {
   source?: ExternalSource;
   /** Plugins: what the plugin ships, by kind; names are shown after the plugin prefix (/{plugin}:{skill}). */
   contains?: PluginContents;
+  /** Mods also published in the aitmpl marketplace (a plugins/ manifest pointing at the mod's folder). */
+  marketplace?: MarketplaceListing;
+}
+
+export interface MarketplaceListing {
+  /** Plugin id for /plugin install, e.g. stack-viewer@aitmpl. */
+  plugin: string;
+  /** Commit of this repo the marketplace pins. */
+  commit: string;
+  version: string;
 }
 
 export type PluginContents = Partial<Record<

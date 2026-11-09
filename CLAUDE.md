@@ -301,6 +301,17 @@ into its own folders (decided 2026-11-07, PR #1429).
   (plugin.json and marketplace.json results come under `manifest` in its
   `--json`, not `contents`); SkillSpector scans the plugin root (with a stub
   SKILL.md only when the root has none). Catalog API v1 does not list plugins yet.
+- Our own mods can be listed too (first: `observability/prompt-cache-control` and
+  `ui/stack-viewer`, 2026-11-09): `external_skills.py add davila7/claude-code-templates
+  cli-tool/components/mods/{category}/{name} {category} --plugin`, same category and
+  name as the mod. The mod stays the only catalog entry: the generator puts the
+  listing on the mod (`marketplace: {plugin, commit, version}`), writes no plugin
+  page, search hit or count, and the mod page shows "Install with updates". Add a
+  `/component/plugins/...` → `/component/mods/...` line to `public/_redirects`
+  (`--plugin` prints the plugins/ URL). A mod change reaches the marketplace only
+  through a PR that bumps `commit`; `outdated` lists our mods only when their
+  folder changed since the pin. Installed copies read options from
+  `pluginConfigs["{name}@aitmpl"]`.
 - Site: `/component/plugins/{category}/{name}` (README, what it ships, the CLI
   command and the `/plugin marketplace add` + `/plugin install` pair for inside
   Claude Code) and the "aitmpl marketplace" section on `/plugins`. The sidebar's

@@ -29,6 +29,18 @@ try {
   console.warn('plugins: could not read public/components/plugins.json', error);
   catalogPlugins = [];
 }
+// Our own mods that the marketplace also lists: their page stays the mod's.
+let marketplaceMods: Component[] = [];
+try {
+  const mods: Component[] = JSON.parse(fs.readFileSync(nodePath.join(process.cwd(), 'public', 'components', 'mods.json'), 'utf-8'));
+  marketplaceMods = mods.filter((m) => m.marketplace).sort((a, b) => a.name.localeCompare(b.name));
+} catch (error) {
+  console.warn('plugins: could not read public/components/mods.json', error);
+}
+const marketplaceEntries = [
+  ...catalogPlugins.map((p) => ({ name: p.name, href: `/component/plugins/${p.path}`, author: p.author, version: p.version, description: p.description, summary: pluginContentsSummary(p.contains), id: `${p.name}@${AITMPL_MARKETPLACE.name}` })),
+  ...marketplaceMods.map((m) => ({ name: m.name, href: `/component/mods/${m.path}`, author: m.author, version: m.marketplace!.version, description: m.description, summary: 'Mod', id: m.marketplace!.plugin })),
+];
 ---
 
 <DashboardLayout
@@ -74,7 +86,7 @@ try {
     </div>
   </div>
 
-  {catalogPlugins.length > 0 && (
+  {marketplaceEntries.length > 0 && (
     <section aria-labelledby="aitmpl-marketplace-h" class="px-6 pt-8 max-w-7xl mx-auto">
       <div class="flex flex-wrap items-end justify-between gap-3 mb-3">
         <div>
@@ -86,16 +98,16 @@ try {
         <pre class="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-1)] px-3 py-2 font-mono text-[12px] text-[var(--color-text-primary)] whitespace-pre-wrap [overflow-wrap:anywhere]">{`/plugin marketplace add ${AITMPL_MARKETPLACE.url}`}</pre>
       </div>
       <ul class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
-        {catalogPlugins.map((p) => (
+        {marketplaceEntries.map((p) => (
           <li class="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-1)] hover:border-[var(--color-accent)]/40 transition-colors">
-            <a href={`/component/plugins/${p.path}`} class="block p-4">
+            <a href={p.href} class="block p-4">
               <div class="flex items-baseline justify-between gap-2">
                 <span class="font-semibold text-[14px] text-[var(--color-text-primary)]">{p.name}</span>
                 <span class="text-[12px] text-[var(--color-text-tertiary)]">{p.author}{p.version ? ` · v${p.version}` : ''}</span>
               </div>
               <p class="mt-1 text-[13px] leading-relaxed text-[var(--color-text-secondary)] line-clamp-3">{p.description}</p>
-              {pluginContentsSummary(p.contains) && <p class="mt-2 font-mono text-[12px] text-[var(--color-text-tertiary)]">{pluginContentsSummary(p.contains)}</p>}
-              <p class="mt-2 font-mono text-[12px] text-[var(--color-text-primary)] [overflow-wrap:anywhere]">/plugin install {p.name}@{AITMPL_MARKETPLACE.name}</p>
+              {p.summary && <p class="mt-2 font-mono text-[12px] text-[var(--color-text-tertiary)]">{p.summary}</p>}
+              <p class="mt-2 font-mono text-[12px] text-[var(--color-text-primary)] [overflow-wrap:anywhere]">/plugin install {p.id}</p>
             </a>
           </li>
         ))}
