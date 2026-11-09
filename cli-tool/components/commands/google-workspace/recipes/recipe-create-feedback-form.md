@@ -1,6 +1,6 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [task-parameters]
+argument-hint: "[task-parameters]"
 description: Create a Google Form for feedback and share it via Gmail.
 ---
 

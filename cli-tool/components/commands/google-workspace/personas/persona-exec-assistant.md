@@ -1,6 +1,6 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [task-description]
+argument-hint: "[task-description]"
 description: Manage an executive's schedule, inbox, and communications.
 ---
 

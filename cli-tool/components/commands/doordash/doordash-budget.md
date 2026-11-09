@@ -1,6 +1,6 @@
 ---
 allowed-tools: Bash(dd-cli:*), Bash(bash:*), Bash(cat:*), Bash(jq:*), Bash(mkdir:*), Read, Write, Edit
-argument-hint: [status | set | reconcile]
+argument-hint: "[status | set | reconcile]"
 description: View DoorDash spend vs caps, edit the dd-guard spending policy interactively, and reconcile the intent ledger against real order history
 ---
 
