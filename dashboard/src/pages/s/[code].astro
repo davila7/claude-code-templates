@@ -1,0 +1,276 @@
+---
+// /s/<code>: a stack someone shared (traction plan, initiative 9). The code
+// carries the component list and the day it was made (lib/stack-link.ts), so
+// there is no account, no database and nothing stored when a link is made.
+// Components keep the order they were added in: never reordered, never by
+// downloads, never sponsored.
+import DashboardLayout from '../../layouts/DashboardLayout.astro';
+import TopBar from '../../components/TopBar.astro';
+import SearchModal from '../../components/SearchModal.tsx';
+import CartSidebar from '../../components/CartSidebar.tsx';
+import { fetchComponents } from '../../lib/data';
+import { displayName, formatDate } from '../../lib/component-page';
+import { componentPath } from '../../lib/component-url';
+import { TYPE_CONFIG } from '../../lib/icons';
+import { jsonForScript } from '../../lib/sanitize-html';
+import { decodeStack, groupItems, stackCommand, type StackItem, type StackType } from '../../lib/stack-link';
+import type { Component } from '../../lib/types';
+
+export const prerender = false;
+
+const stack = decodeStack(Astro.params.code ?? '');
+if (!stack) {
+  Astro.response.status = 404;
+  Astro.response.statusText = 'Not Found';
+}
+
+interface Row { item: StackItem; component: Component | null }
+
+let rows: Row[] = [];
+// The catalog could not be read: show every component and the full command
+// rather than calling them all removed.
+let catalogUnavailable = false;
+
+if (stack) {
+  try {
+    const data = await fetchComponents();
+    const byKey = new Map<string, Component>();
+    for (const type of new Set(stack.items.map((i) => i.type))) {
+      for (const c of ((data as any)[type] ?? []) as Component[]) {
+        byKey.set(`${type}:${(c.path ?? c.name).replace(/\.(md|json)$/, '')}`, c);
+      }
+    }
+    rows = stack.items.map((item) => ({ item, component: byKey.get(`${item.type}:${item.path}`) ?? null }));
+  } catch {
+    catalogUnavailable = true;
+    rows = stack.items.map((item) => ({ item, component: null }));
+  }
+}
+
+const present = catalogUnavailable ? rows : rows.filter((r) => r.component);
+const missing = catalogUnavailable ? [] : rows.filter((r) => !r.component);
+const installCmd = present.length ? stackCommand(present.map((r) => r.item)) : '';
+const total = rows.length;
+
+const groups = groupItems(rows.map((r) => r.item)).map(({ type }) => ({
+  type,
+  config: TYPE_CONFIG[type],
+  rows: rows.filter((r) => r.item.type === type),
+}));
+
+function nameOf(r: Row): string {
+  return displayName(r.component?.name ?? r.item.path.split('/').pop() ?? r.item.path);
+}
+
+function categoryOf(r: Row): string {
+  return r.component?.category ?? (r.item.path.includes('/') ? r.item.path.split('/')[0] : '');
+}
+
+// What "Add to my stack" puts in the cart (same item shape as the grid cards).
+const cartItems = present.map((r) => ({
+  type: r.item.type as StackType,
+  item: {
+    name: r.component?.name ?? r.item.path.split('/').pop() ?? r.item.path,
+    path: r.component?.path ?? r.item.path,
+    category: categoryOf(r),
+    description: r.component?.description ?? '',
+    icon: r.item.type,
+  },
+}));
+
+const created = stack ? formatDate(stack.created) : '';
+const title = stack
+  ? `Claude Code stack: ${total} ${total === 1 ? 'component' : 'components'} | Claude Code Templates`
+  : 'Stack link not found | Claude Code Templates';
+const description = stack
+  ? `A Claude Code stack with ${rows.slice(0, 4).map(nameOf).join(', ')}${total > 4 ? ` and ${total - 4} more` : ''}. Install it with one command.`
+  : 'This stack link is incomplete or broken. Browse the Claude Code Templates catalog.';
+---
+
+<DashboardLayout title={title} description={description} noindex>
+  <TopBar />
+
+  {!stack ? (
+    <div class="flex flex-col items-center justify-center py-32 px-6">
+      <h1 class="text-lg font-bold text-[var(--color-text-primary)] mb-2">This stack link doesn't work</h1>
+      <p class="text-[14px] text-[var(--color-text-secondary)] text-center max-w-md mb-8 leading-relaxed">
+        The link may have been cut off when it was copied. Ask for it again, or build your own stack from the catalog.
+      </p>
+      <a href="/" class="px-5 py-2.5 text-[13px] font-semibold rounded-lg bg-[var(--color-primary-500)] text-white hover:bg-[var(--color-primary-600)] transition-colors">
+        Browse components
+      </a>
+    </div>
+  ) : (
+    <div class="px-4 md:px-6 py-8 max-w-4xl mx-auto space-y-8">
+      <header>
+        <p class="text-[13px] text-[var(--color-text-tertiary)] mb-1">Shared stack · created {created}</p>
+        <h1 class="text-2xl md:text-3xl font-bold text-[var(--color-text-primary)] tracking-tight">
+          Claude Code stack with {total} {total === 1 ? 'component' : 'components'}
+        </h1>
+        <p class="mt-2 text-[14px] text-[var(--color-text-secondary)] max-w-2xl">
+          Someone put these components together on aitmpl.com. Run the command below in your project to install all of them.
+        </p>
+      </header>
+
+      {catalogUnavailable && (
+        <p class="text-[13px] rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-1)] px-4 py-3 text-[var(--color-text-secondary)]">
+          We couldn't check the catalog right now, so this page can't tell whether every component still exists.
+        </p>
+      )}
+
+      {missing.length > 0 && (
+        <p class="text-[13px] rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-1)] px-4 py-3 text-[var(--color-text-secondary)]">
+          {missing.length === 1 ? '1 component in this stack is' : `${missing.length} components in this stack are`} no longer in the catalog.
+          {present.length > 0 ? ` The command below leaves ${missing.length === 1 ? 'it' : 'them'} out.` : ''}
+        </p>
+      )}
+
+      {installCmd && (
+        <section>
+          <h2 class="text-[13px] font-semibold text-[var(--color-text-secondary)] mb-2">
+            Install {present.length === total ? 'all' : `the ${present.length} available`} {present.length === 1 ? 'component' : 'components'}
+          </h2>
+          <div class="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-1)] overflow-hidden">
+            <pre id="stackCmd" class="m-0 p-4 text-[13px] font-mono text-[var(--color-text-primary)] whitespace-pre-wrap break-all leading-relaxed"><code>{installCmd}</code></pre>
+            <div class="flex flex-wrap gap-2 border-t border-[var(--color-border)] px-3 py-2.5">
+              <button id="stackCopy" type="button" data-item-count={present.length} class="hidden md:inline-flex h-9 items-center gap-1.5 px-3 rounded-md bg-[var(--color-accent)] text-white text-[13px] font-semibold hover:opacity-90 transition-opacity">
+                Copy command
+              </button>
+              <button id="stackShare" type="button" data-item-count={present.length} class="md:hidden inline-flex h-10 w-full items-center justify-center gap-1.5 px-3 rounded-md bg-[var(--color-accent)] text-white text-[14px] font-semibold">
+                Send to your computer
+              </button>
+              <button id="stackOpen" type="button" class="inline-flex h-10 md:h-9 w-full md:w-auto items-center justify-center gap-1.5 px-3 rounded-md border border-[var(--color-border)] bg-[var(--color-surface-0)] text-[14px] md:text-[13px] font-medium text-[var(--color-text-primary)] hover:bg-[var(--color-surface-2)] transition-colors">
+                Add to my stack
+              </button>
+              <button id="stackCopyPhone" type="button" data-item-count={present.length} class="md:hidden w-full text-center text-[12px] text-[var(--color-text-tertiary)] py-1">
+                Copy command
+              </button>
+            </div>
+          </div>
+          <p class="mt-2 text-[12px] text-[var(--color-text-tertiary)] md:hidden">npx runs on a computer, not on a phone.</p>
+        </section>
+      )}
+
+      {groups.map((group) => (
+        <section>
+          <h2 class="flex items-center gap-2 text-[15px] font-semibold text-[var(--color-text-primary)] mb-3">
+            <span class="w-2.5 h-2.5 rounded-full" style={`background:${group.config?.color ?? 'var(--color-text-tertiary)'}`}></span>
+            {group.config?.label ?? group.type}
+            <span class="text-[12px] font-normal text-[var(--color-text-tertiary)]">{group.rows.length}</span>
+          </h2>
+          <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 list-none p-0 m-0">
+            {group.rows.map((r) => {
+              const gone = !catalogUnavailable && !r.component;
+              const inner = (
+                <>
+                  <div class="flex items-center gap-2">
+                    <span class="text-[14px] font-semibold text-[var(--color-text-primary)] truncate">{nameOf(r)}</span>
+                    {gone && (
+                      <span class="shrink-0 text-[11px] px-1.5 py-0.5 rounded border border-[var(--color-border)] text-[var(--color-text-tertiary)]">No longer in the catalog</span>
+                    )}
+                  </div>
+                  <div class="text-[12px] text-[var(--color-text-tertiary)]">{categoryOf(r)}</div>
+                  {r.component?.description && (
+                    <p class="mt-1 text-[13px] text-[var(--color-text-secondary)] line-clamp-2">{r.component.description}</p>
+                  )}
+                </>
+              );
+              return (
+                <li>
+                  {gone ? (
+                    <div class="h-full p-3.5 rounded-lg border border-dashed border-[var(--color-border)] opacity-70">{inner}</div>
+                  ) : (
+                    <a href={componentPath(r.item.type, r.item.path)} class="block h-full p-3.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-card-bg)] hover:border-[var(--color-border-hover)] transition-colors no-underline">{inner}</a>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      ))}
+
+      <p class="text-[13px] text-[var(--color-text-secondary)]">
+        Want your own? Add components to your stack from the <a href="/" class="text-[var(--color-accent)] hover:underline">catalog</a>, then use "Copy stack link".
+      </p>
+    </div>
+  )}
+
+  {stack && <script type="application/json" id="stack-data" set:html={jsonForScript({ items: cartItems })} />}
+
+  <SearchModal client:idle />
+  <CartSidebar client:idle />
+
+  <script is:inline>
+    fetch('/counts.json')
+      .then(function (r) { return r.json(); })
+      .then(function (counts) { window.dispatchEvent(new CustomEvent('component-counts', { detail: counts })); })
+      .catch(function () {});
+  </script>
+
+  <script>
+    import { track } from '../../lib/analytics';
+    import { showToast } from '../../lib/toast';
+
+    const cmd = () => document.getElementById('stackCmd')?.textContent?.trim() ?? '';
+    const count = (el: HTMLElement) => Number(el.dataset.itemCount) || 0;
+
+    async function copy(text: string): Promise<boolean> {
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    for (const id of ['stackCopy', 'stackCopyPhone']) {
+      const btn = document.getElementById(id);
+      btn?.addEventListener('click', async () => {
+        if (!(await copy(cmd()))) return;
+        track('copy_stack_command', { item_count: count(btn), source: 'stack_page' });
+        const label = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(() => { btn.textContent = label; }, 2000);
+      });
+    }
+
+    const share = document.getElementById('stackShare');
+    share?.addEventListener('click', async () => {
+      const url = window.location.href.split('#')[0];
+      const item_count = count(share);
+      if (typeof navigator.share === 'function') {
+        try {
+          await navigator.share({ title: document.title, text: 'Install this Claude Code stack from your computer:', url });
+          track('share_component', { kind: 'stack', method: 'share', item_count, source: 'stack_page' });
+          return;
+        } catch (err) {
+          if ((err as Error)?.name === 'AbortError') return;
+        }
+      }
+      if (await copy(url)) {
+        track('share_component', { kind: 'stack', method: 'copy', item_count, source: 'stack_page' });
+        showToast({ message: 'Link copied. Open it on your computer to install the stack.' });
+      }
+    });
+
+    // Merges this stack into the visitor's own cart (localStorage 'claudeCodeCart',
+    // the same store and event as the grid cards), so it can be changed and saved.
+    document.getElementById('stackOpen')?.addEventListener('click', () => {
+      let data: { items: Array<{ type: string; item: { path: string } }> } = { items: [] };
+      try { data = JSON.parse(document.getElementById('stack-data')?.textContent || '{}'); } catch { return; }
+      let cart: Record<string, Array<{ path: string }>> = {};
+      try { cart = JSON.parse(localStorage.getItem('claudeCodeCart') || '{}') || {}; } catch { cart = {}; }
+      let added = 0;
+      for (const { type, item } of data.items ?? []) {
+        const list = Array.isArray(cart[type]) ? cart[type] : [];
+        if (list.some((i) => i.path === item.path)) continue;
+        cart[type] = [...list, item];
+        added++;
+      }
+      try { localStorage.setItem('claudeCodeCart', JSON.stringify(cart)); } catch { /* private mode: the event still updates this page */ }
+      window.dispatchEvent(new CustomEvent('cart-updated', { detail: cart }));
+      track('stack_open_in_builder', { item_count: data.items?.length ?? 0 });
+      showToast({ message: added ? `Added ${added} ${added === 1 ? 'component' : 'components'} to your stack.` : 'These components are already in your stack.' });
+    });
+  </script>
+</DashboardLayout>

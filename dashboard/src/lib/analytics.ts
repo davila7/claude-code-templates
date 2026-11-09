@@ -13,7 +13,7 @@
 
 import { pluralType } from './component-url.ts';
 
-export const SIGN_IN_ORIGINS = ['save', 'job', 'course', 'sidebar', 'collection'] as const;
+export const SIGN_IN_ORIGINS = ['save', 'job', 'course', 'sidebar', 'collection', 'stack'] as const;
 export type SignInOrigin = (typeof SIGN_IN_ORIGINS)[number];
 
 // Blocks of links to other components on a component page (initiative 4 of the
@@ -28,7 +28,13 @@ export interface EventParams {
   view_component: ComponentRef;
   copy_install_command: ComponentRef & { source: 'component_page' | 'featured' | 'related' };
   add_to_stack: ComponentRef & { source: 'component_page' | 'grid' | 'related' };
-  copy_stack_command: { item_count: number; source: 'stack' | 'collection' };
+  copy_stack_command: { item_count: number; source: 'stack' | 'collection' | 'stack_page' };
+  // A /s/<code> link made from the cart (initiative 9). Only the number of components.
+  stack_link_create: { item_count: number; source: 'stack' };
+  // "Send to your computer" on a phone: the system share sheet, or copying the link where there is none.
+  share_component: { kind: 'stack'; method: 'share' | 'copy'; item_count: number; source: 'stack' | 'stack_page' };
+  // "Add to my stack" on a /s/ page, which loads its components into the cart.
+  stack_open_in_builder: { item_count: number };
   save_click: ComponentRef & { signed_in: boolean };
   sign_in_open: { origin: SignInOrigin };
   sign_in_complete: { origin: SignInOrigin };

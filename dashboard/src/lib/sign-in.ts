@@ -196,7 +196,9 @@ function showInAppDialog(info: InAppBrowser) {
 
 function signInOrigin(target: PendingAction | SignInOrigin): SignInOrigin {
   if (typeof target === 'string') return target;
-  return target.kind === 'save' ? 'save' : target.source;
+  if (target.kind === 'save') return 'save';
+  if (target.kind === 'save-stack') return 'stack';
+  return target.source;
 }
 
 export function openSignIn(target?: PendingAction | SignInOrigin) {

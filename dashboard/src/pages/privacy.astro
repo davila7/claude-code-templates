@@ -28,8 +28,14 @@ export const prerender = true;
       and a cached copy of the repository's GitHub star count are kept in your browser's local storage and never sent to us.
     </p>
     <p>
+      A stack link (<code>/s/…</code>) carries the list of components and the day it was made inside the link itself.
+      Making one stores nothing on our servers, and anyone who has the link can see that list. If you click "Save as collection"
+      while signed out, that link waits in your browser's session storage until you sign in, then becomes a collection in your
+      account; it is removed when it is used or the tab closes, and ignored after 30 minutes.
+    </p>
+    <p>
       Google Analytics also receives a few named events, so we can see which features people use: viewing a component,
-      copying its install command, adding it to your stack, copying the install command of your stack or of a collection,
+      copying its install command, adding it to your stack, copying the install command of your stack, of a stack link or of a collection, creating a stack link, sending a stack link to your computer from a phone, adding a shared stack to your own,
       clicking Save, opening and completing the sign-in, following a link to the component's source on GitHub, following a link
       to another component it suggests, and searching. They carry only the type and path of the components involved, the part
       of the site where it happened (for a sign-in, the feature that asked for it), a number of components, whether you were

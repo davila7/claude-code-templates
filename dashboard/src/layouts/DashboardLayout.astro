@@ -9,6 +9,8 @@ interface Props {
   description?: string;
   ogImage?: string;
   ogImageAlt?: string;
+  /** Keep the page out of search results (one URL per user-made link, e.g. /s/<code>). */
+  noindex?: boolean;
 }
 
 const {
@@ -16,6 +18,7 @@ const {
   description = 'Browse and install 1000+ components for Claude Code: AI agents, slash commands, MCP integrations, hooks, settings, and skills. Free, open-source CLI tool.',
   ogImage = '/og/site.png',
   ogImageAlt,
+  noindex = false,
 } = Astro.props;
 // Generated 1200x630 previews live under /og/ (scripts/generate-og-images.mjs).
 const ogImageSized = ogImage.startsWith('/og/');
@@ -69,6 +72,7 @@ const schemaData = JSON.stringify({
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL.href} />
+    {noindex && <meta name="robots" content="noindex" />}
     <link rel="service-desc" type="application/vnd.oai.openapi+json" href="/openapi.json" />
 
     <!-- Open Graph -->
