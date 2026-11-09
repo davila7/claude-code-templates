@@ -149,8 +149,9 @@ def main():
             print(f"::error file=cli-tool/components/{f['file']}::{e['message'][:300]}")
     # `claude plugin validate --strict --json` keeps warnings under "warnings" and
     # only sets "success" to false, so --strict has to count them here.
+    # A file with errors is in errs, not warns: its warnings are reported too.
     level = "error" if a.strict else "warning"
-    for f in warns:
+    for f in findings:
         for w in f["warnings"]:
             print(f"::{level} file=cli-tool/components/{f['file']}::{w['message'][:300]}")
     return 1 if errs or (a.strict and warns) else 0

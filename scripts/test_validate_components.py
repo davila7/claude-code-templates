@@ -24,6 +24,18 @@ def fake_claude(path, strict):
     return {"success": not (strict and contents), "strict": strict, "contents": contents}
 
 
+ERROR = "Missing required field: description"
+
+
+def fake_claude_with_an_error(path, strict):
+    """The same skill, with an error next to the warning."""
+    report = fake_claude(path, strict)
+    for c in report["contents"]:
+        c["errors"] = [{"path": "description", "message": ERROR, "code": None}]
+    report["success"] = not report["contents"]
+    return report
+
+
 class StrictTest(unittest.TestCase):
 
     def setUp(self):
@@ -60,6 +72,17 @@ class StrictTest(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertIn(f"::error file=cli-tool/components/skills/development/demo/SKILL.md::{WARNING}", out)
         self.assertEqual(json.loads(self.report.read_text())[0]["warnings"][0]["message"], WARNING)
+
+    def test_a_warning_is_reported_next_to_an_error(self):
+        where = "file=cli-tool/components/skills/development/demo/SKILL.md"
+        with mock.patch.object(validate_components, "claude", fake_claude_with_an_error):
+            for flags, level in (((), "warning"), (("--strict",), "error")):
+                with self.subTest(flags=flags):
+                    code, out = self.run_main(*flags)
+
+                    self.assertEqual(code, 1)
+                    self.assertIn(f"::error {where}::{ERROR}", out)
+                    self.assertIn(f"::{level} {where}::{WARNING}", out)
 
 
 if __name__ == "__main__":
