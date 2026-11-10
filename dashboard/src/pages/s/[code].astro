@@ -12,9 +12,9 @@ import StackHarness from '../../components/StackHarness.astro';
 import { fetchComponents } from '../../lib/data';
 import { displayName, formatDate } from '../../lib/component-page';
 import { componentPath } from '../../lib/component-url';
-import { TYPE_CONFIG } from '../../lib/icons';
+import { ICONS, TYPE_CONFIG } from '../../lib/icons';
 import { jsonForScript } from '../../lib/sanitize-html';
-import { decodeStack, groupItems, stackCommand, type StackItem, type StackType } from '../../lib/stack-link';
+import { decodeStack, groupItems, stackCommand, type HarnessEntry, type StackItem, type StackType } from '../../lib/stack-link';
 import type { Component } from '../../lib/types';
 
 export const prerender = false;
@@ -79,11 +79,19 @@ const cartItems = present.map((r) => ({
   },
 }));
 
-// Harness diagram: every component under its type, in saved order.
-const harnessEntries: Partial<Record<StackType, Array<{ name: string; slug: string; href: string | null }>>> = {};
+// Harness diagram: every component under its type, in saved order, with what
+// its hover card shows.
+const harnessEntries: Partial<Record<StackType, HarnessEntry[]>> = {};
 for (const r of rows) {
   const gone = !catalogUnavailable && !r.component;
-  (harnessEntries[r.item.type] ??= []).push({ name: nameOf(r), slug: r.item.path.split('/').pop() ?? r.item.path, href: gone ? null : componentPath(r.item.type, r.item.path) });
+  (harnessEntries[r.item.type] ??= []).push({
+    name: nameOf(r),
+    slug: r.item.path.split('/').pop() ?? r.item.path,
+    category: categoryOf(r),
+    description: r.component?.description ?? '',
+    command: gone ? '' : stackCommand([r.item]),
+    href: gone ? null : componentPath(r.item.type, r.item.path),
+  });
 }
 
 const created = stack ? formatDate(stack.created) : '';
@@ -164,7 +172,7 @@ const description = stack
       {groups.map((group) => (
         <section>
           <h2 class="flex items-center gap-2 text-[15px] font-semibold text-[var(--color-text-primary)] mb-3">
-            <span class="w-2.5 h-2.5 rounded-full" style={`background:${group.config?.color ?? 'var(--color-text-tertiary)'}`}></span>
+            <span class="inline-flex text-[var(--color-text-tertiary)]" set:html={ICONS[group.type] ?? ''} />
             {group.config?.label ?? group.type}
             <span class="text-[12px] font-normal text-[var(--color-text-tertiary)]">{group.rows.length}</span>
           </h2>
