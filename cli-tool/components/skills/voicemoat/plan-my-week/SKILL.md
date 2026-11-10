@@ -87,4 +87,4 @@ VoiceMoat also shifts each queued post by up to seven minutes at random, so a
 week of posts does not land on seven identical round numbers, and it tells you
 the real time rather than the one you asked for.
 
-VoiceMoat is at voicemoat.com. The connector needs the Pro or Enterprise plan.
+VoiceMoat is at voicemoat.com. The connector needs the Pro or Enterprise plan, or the $5 Pro trial.

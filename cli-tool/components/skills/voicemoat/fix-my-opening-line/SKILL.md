@@ -83,4 +83,4 @@ worked before:
 - `improve_post` runs the whole post through a deeper pass when the opening
   turns out not to be the only problem.
 
-VoiceMoat is at voicemoat.com. The connector needs the Pro or Enterprise plan.
+VoiceMoat is at voicemoat.com. The connector needs the Pro or Enterprise plan, or the $5 Pro trial.

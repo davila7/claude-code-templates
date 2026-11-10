@@ -89,8 +89,11 @@ connected, the guesswork in steps 1, 2 and 4 is replaced with real data:
 - `get_voice_profile` returns a voice profile trained on your own published
   posts rather than a sketch from five pasted posts, including the phrases
   you never use.
-- `score_voice_match` scores the draft from 0 to 100 against that profile and
-  names what is off. That is a measurement, not the read-through in step 4.
+- `score_voice_match` checks the draft against that profile in two parts:
+  Style, how many of your measurable habits it matches (N of M checks), and
+  Stance, whether what it says fits your views (On voice, Check one line or
+  Off voice), with the lines that are off. The assistant may show it as a
+  card. That is a measurement, not the read-through in step 4.
 - `get_voice_insights` returns your dominant patterns, hook style and sentence
   rhythm, and how far your recent posts have drifted from your own baseline.
 - `publish_post` and `schedule_post` put the finished post on Twitter or
@@ -101,4 +104,4 @@ Never make the second call on your own. Show the person the exact preview the
 first call returns and wait for a clear yes before you send the one-time code
 back. Never make both calls in one step.
 
-VoiceMoat is at voicemoat.com. The connector needs the Pro or Enterprise plan.
+VoiceMoat is at voicemoat.com. The connector needs the Pro or Enterprise plan, or the $5 Pro trial.

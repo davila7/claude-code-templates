@@ -94,9 +94,12 @@ that needs to know you, and on its own it is guessing:
 
 - `get_voice_profile` returns a profile trained on your own published posts, held separately for LinkedIn and for Twitter, rather than a sketch
   built from whatever you happened to paste.
-- `score_voice_match` scores the draft against that profile from 0 to 100,
-  with a note on what is off. This is the step the free version structurally
-  cannot do, so it is where the audit stops being an opinion.
+- `score_voice_match` checks the draft against that profile in two parts:
+  Style, how many of your measurable habits it matches (N of M checks), and
+  Stance, whether what it says fits your views (On voice, Check one line or
+  Off voice), with the lines that are off. The assistant may show it as a
+  card. This is the step the free version structurally cannot do, so it is
+  where the audit stops being an opinion.
 - `improve_post` takes the draft through a deeper pass on the occasions when
   step 6 turns up three real fixes rather than one.
 - `publish_post` sends it once you are happy, behind a preview and a one-time
@@ -106,4 +109,4 @@ Never make the second call on your own. Show the person the exact preview the
 first call returns and wait for a clear yes before you send the one-time code
 back. Never make both calls in one step.
 
-VoiceMoat is at voicemoat.com. The connector needs the Pro or Enterprise plan.
+VoiceMoat is at voicemoat.com. The connector needs the Pro or Enterprise plan, or the $5 Pro trial.

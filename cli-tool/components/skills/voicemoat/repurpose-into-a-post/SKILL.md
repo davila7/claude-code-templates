@@ -95,4 +95,4 @@ Never make the second call on your own. Show the person the exact preview the
 first call returns and wait for a clear yes before you send the one-time code
 back. Never make both calls in one step.
 
-VoiceMoat is at voicemoat.com. The connector needs the Pro or Enterprise plan.
+VoiceMoat is at voicemoat.com. The connector needs the Pro or Enterprise plan, or the $5 Pro trial.
