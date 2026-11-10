@@ -1,9 +1,9 @@
 {
   "mcpServers": {
     "alphayou": {
-      "description": "AI models guess at insider sales and fund filings. This server returns SEC Form 4 insider trades, 13F fund holdings, company SEC filings and Hyperliquid wallet positions, each with a source link and date. Read-only research, no key.",
+      "description": "AI models guess at insider sales and fund filings. This server returns SEC Form 4 insider trades, 13F fund holdings, company SEC filings and Hyperliquid wallet positions, each with a source link and date. Free, read-only research, no key or sign-in.",
       "type": "http",
-      "url": "https://alphayou.net/api/mcp/market?utm_source=aitmpl&utm_medium=directory&utm_campaign=install-push-nov"
+      "url": "https://alphayou.net/api/mcp/market"
     }
   }
 }
