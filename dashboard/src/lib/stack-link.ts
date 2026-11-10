@@ -194,3 +194,13 @@ export function singularType(type: StackType): string {
   return type.replace(/s$/, '');
 }
 
+// One component as the /s/ harness diagram shows it (name, hover card, link).
+// href is null when the component is no longer in the catalog.
+export interface HarnessEntry {
+  name: string;
+  slug: string;
+  category: string;
+  description: string;
+  command: string;
+  href: string | null;
+}

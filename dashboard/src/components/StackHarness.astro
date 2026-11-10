@@ -1,27 +1,27 @@
 ---
-// How a /s/ stack fits in Claude Code, in two pictures:
-// 1. A horizontal flow (animated, Play/Pause/Replay): what loads when the
-//    session starts, what you send, what the hooks check, and which agents,
-//    skills and MCP servers Claude reaches for. Built from this stack's own
-//    components; parts it doesn't have stay dimmed.
-// 2. The harness in layers: settings wrap everything, hooks sit around every
-//    action, and inside is Claude Code with its commands, agents, skills, MCPs
-//    and mods. No lines to follow, so it stacks cleanly on a phone.
-// Components keep their saved order. Never ordered by downloads.
-import type { StackType } from '../lib/stack-link';
-import { TYPE_CONFIG } from '../lib/icons';
+// How a /s/ stack fits in Claude Code, as two tabs:
+// - Session flow: a horizontal animated flow (Play/Pause/Replay) of one session
+//   with this stack: settings load, MCP servers connect, you send a command,
+//   hooks check each action, and Claude reaches for agents, skills and MCPs.
+//   Only components still in the catalog take part.
+// - Harness layers: settings wrap hooks, which wrap Claude Code and what it
+//   uses. Every saved component is listed (removed ones struck through).
+// Neutral palette like the rest of the site: grays plus the accent for Claude
+// Code and the packet. Hovering or focusing a component opens a card with its
+// details and "Open component" (new tab). Components keep their saved order;
+// never ordered by downloads.
+import type { HarnessEntry, StackType } from '../lib/stack-link';
+import { ICONS } from '../lib/icons';
 import { jsonForScript } from '../lib/sanitize-html';
-import Chip from './StackChip.astro';
+import StackItem from './StackItem.astro';
 
-interface Entry { name: string; slug: string; href: string | null }
-interface Props { entries: Partial<Record<StackType, Entry[]>> }
+interface Props { entries: Partial<Record<StackType, HarnessEntry[]>> }
 
 const { entries } = Astro.props;
 const list = (t: StackType) => entries[t] ?? [];
 // The session flow uses only components still in the catalog (the install
 // command leaves removed ones out); the layers list every saved one.
 const live = (t: StackType) => list(t).filter((e) => e.href !== null);
-const color = (t: StackType) => TYPE_CONFIG[t]?.color ?? 'var(--color-text-tertiary)';
 
 function summary(t: StackType, empty: string): string {
   const names = live(t).map((e) => e.name);
@@ -85,7 +85,7 @@ steps.push({
   text: '<b>Claude answers</b> with the work done by the stack.',
 });
 
-const toolNodes = tools.map((t) => ({ ...t, on: has(t.key), sub: summary(t.key, 'none in this stack'), color: color(t.key) }));
+const toolNodes = tools.map((t) => ({ ...t, on: has(t.key), sub: summary(t.key, 'none in this stack') }));
 const hookOn = has('hooks');
 const settingsOn = has('settings');
 
@@ -93,127 +93,133 @@ const settingsOn = has('settings');
 const coreKinds: Array<{ type: StackType; label: string; role: string }> = [
   { type: 'agents', label: 'Agents', role: 'Subagents Claude delegates to' },
   { type: 'skills', label: 'Skills', role: 'Know-how loaded on demand' },
-  { type: 'mcps', label: 'MCP', role: 'Outside tools and data' },
+  { type: 'mcps', label: 'MCP servers', role: 'Outside tools and data' },
   { type: 'mods', label: 'Mods', role: 'Change Claude Code itself' },
   { type: 'loops', label: 'Loops', role: 'Repeat a goal until done' },
 ];
 const shownCore = coreKinds.filter((k) => inStack(k.type) || ['agents', 'skills', 'mcps'].includes(k.type));
 const total = Object.values(entries).reduce((n, l) => n + (l ?? []).filter((e) => e.href !== null).length, 0);
+const icon = (t: string) => ICONS[t] ?? '';
 ---
 
-<section aria-labelledby="harness-title" class="space-y-6">
+<section aria-labelledby="harness-title" class="space-y-3" data-stack-harness>
   <div>
     <h2 id="harness-title" class="text-[15px] font-semibold text-[var(--color-text-primary)]">How it works in Claude Code</h2>
-    <p class="mt-1 text-[13px] text-[var(--color-text-secondary)]">Follow one session with this stack, then see how the parts fit together.</p>
+    <p class="mt-1 text-[13px] text-[var(--color-text-secondary)]">Two views of the same stack. Hover a component for its details.</p>
   </div>
 
-  {/* 1. Flow */}
-  <div class="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-1)] p-3 md:p-4" data-stack-flow>
-    <div class="overflow-x-auto" data-flow-scroll>
-      <svg viewBox={`0 0 ${W} ${H}`} class="mx-auto block w-full min-w-[640px] max-w-[880px]" role="img" aria-label="Flow of a Claude Code session with this stack">
-        {/* Settings band */}
-        <rect x={settingsBand.x1} y={settingsBand.y} width={settingsBand.x2 - settingsBand.x1} height={settingsBand.h} rx="8"
-          fill={settingsOn ? `${color('settings')}14` : 'transparent'} stroke={color('settings')} stroke-dasharray="5 4" opacity={settingsOn ? 1 : 0.4} />
-        <circle cx={settingsBand.x1 + 16} cy={settingsBand.y + settingsBand.h / 2} r="4" fill={color('settings')} opacity={settingsOn ? 1 : 0.4} />
-        <text x={settingsBand.x1 + 28} y={settingsBand.y + 23} class="flow-title" opacity={settingsOn ? 1 : 0.5}>Settings</text>
-        <text x={settingsBand.x1 + 92} y={settingsBand.y + 23} class="flow-sub" opacity={settingsOn ? 1 : 0.5}>{settingsOn ? `${summary('settings', '')} · apply to every step` : 'none in this stack'}</text>
-        <line x1={core.x} y1={settingsBand.y + settingsBand.h} x2={core.x} y2={core.y - NH / 2} class="flow-edge" data-edge />
+  <div class="border-b border-[var(--color-border)] overflow-x-auto">
+    <div class="flex gap-1" role="tablist" aria-label="Stack diagrams">
+      <button type="button" role="tab" id="harness-tab-flow" aria-controls="harness-panel-flow" aria-selected="true" data-harness-tab="flow" class="harness-tab">Session flow</button>
+      <button type="button" role="tab" id="harness-tab-layers" aria-controls="harness-panel-layers" aria-selected="false" tabindex="-1" data-harness-tab="layers" class="harness-tab">Harness layers</button>
+    </div>
+  </div>
 
-        {/* Edges */}
-        <line x1={right(you)} y1={you.y} x2={left(core)} y2={core.y} class="flow-edge" />
-        <line x1={right(core)} y1={core.y} x2={left(hook)} y2={hook.y} class="flow-edge" />
-        <line x1={right(hook)} y1={hook.y} x2={hook.x + 90} y2={hook.y} class="flow-edge" />
-        <line x1={hook.x + 90} y1={tools[0].y} x2={hook.x + 90} y2={tools[2].y} class="flow-edge" />
-        {toolNodes.map((t) => <line x1={hook.x + 90} y1={t.y} x2={toolX - toolW / 2} y2={t.y} class="flow-edge" opacity={t.on ? 1 : 0.4} />)}
+  {/* Tab 1: session flow */}
+  <div id="harness-panel-flow" role="tabpanel" aria-labelledby="harness-tab-flow" data-harness-panel="flow">
+    <div class="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-1)] p-3 md:p-4" data-stack-flow>
+      <div class="overflow-x-auto" data-flow-scroll>
+        <svg viewBox={`0 0 ${W} ${H}`} class="mx-auto block w-full min-w-[640px] max-w-[880px]" role="img" aria-label="Flow of a Claude Code session with this stack">
+          {/* Settings band */}
+          <rect x={settingsBand.x1} y={settingsBand.y} width={settingsBand.x2 - settingsBand.x1} height={settingsBand.h} rx="8" class="flow-band" opacity={settingsOn ? 1 : 0.5} />
+          <text x={settingsBand.x1 + 14} y={settingsBand.y + 23} class="flow-title" opacity={settingsOn ? 1 : 0.5}>Settings</text>
+          <text x={settingsBand.x1 + 78} y={settingsBand.y + 23} class="flow-sub" opacity={settingsOn ? 1 : 0.5}>{settingsOn ? `${summary('settings', '')} · apply to every step` : 'none in this stack'}</text>
+          <line x1={core.x} y1={settingsBand.y + settingsBand.h} x2={core.x} y2={core.y - NH / 2} class="flow-edge" />
 
-        {/* Nodes */}
-        <g>
-          <rect x={left(you)} y={you.y - NH / 2} width={you.w} height={NH} rx="10" class="flow-node" />
-          <text x={you.x} y={you.y - 3} text-anchor="middle" class="flow-title">You</text>
-          <text x={you.x} y={you.y + 14} text-anchor="middle" class="flow-sub">{has('commands') ? 'slash command' : 'prompt'}</text>
-        </g>
-        <g>
-          <rect x={left(core)} y={core.y - NH / 2} width={core.w} height={NH} rx="10" class="flow-node flow-core" />
-          <text x={core.x} y={core.y - 3} text-anchor="middle" class="flow-title">Claude Code</text>
-          <text x={core.x} y={core.y + 14} text-anchor="middle" class="flow-sub">{total} {total === 1 ? 'component' : 'components'}</text>
-        </g>
-        <g opacity={hookOn ? 1 : 0.45}>
-          <rect x={left(hook)} y={hook.y - NH / 2} width={hook.w} height={NH} rx="10" class="flow-node" stroke-dasharray={hookOn ? undefined : '4 3'} />
-          <circle cx={left(hook) + 13} cy={hook.y - 7} r="4" fill={color('hooks')} />
-          <text x={hook.x + 6} y={hook.y - 3} text-anchor="middle" class="flow-title">Hooks</text>
-          <text x={hook.x} y={hook.y + 14} text-anchor="middle" class="flow-sub">{summary('hooks', 'none in this stack')}</text>
-        </g>
-        {toolNodes.map((t) => (
-          <g opacity={t.on ? 1 : 0.45}>
-            <rect x={toolX - toolW / 2} y={t.y - NH / 2} width={toolW} height={NH} rx="10" class="flow-node" stroke-dasharray={t.on ? undefined : '4 3'} />
-            <circle cx={toolX - toolW / 2 + 14} cy={t.y - 7} r="4" fill={t.color} />
-            <text x={toolX - toolW / 2 + 26} y={t.y - 3} class="flow-title">{t.label}</text>
-            <text x={toolX - toolW / 2 + 26} y={t.y + 14} class="flow-sub">{t.sub}</text>
+          {/* Edges */}
+          <line x1={right(you)} y1={you.y} x2={left(core)} y2={core.y} class="flow-edge" />
+          <line x1={right(core)} y1={core.y} x2={left(hook)} y2={hook.y} class="flow-edge" />
+          <line x1={right(hook)} y1={hook.y} x2={hook.x + 90} y2={hook.y} class="flow-edge" />
+          <line x1={hook.x + 90} y1={tools[0].y} x2={hook.x + 90} y2={tools[2].y} class="flow-edge" />
+          {toolNodes.map((t) => <line x1={hook.x + 90} y1={t.y} x2={toolX - toolW / 2} y2={t.y} class="flow-edge" opacity={t.on ? 1 : 0.5} />)}
+
+          {/* Nodes */}
+          <g>
+            <rect x={left(you)} y={you.y - NH / 2} width={you.w} height={NH} rx="10" class="flow-node" />
+            <text x={you.x} y={you.y - 3} text-anchor="middle" class="flow-title">You</text>
+            <text x={you.x} y={you.y + 14} text-anchor="middle" class="flow-sub">{has('commands') ? 'slash command' : 'prompt'}</text>
           </g>
-        ))}
+          <g>
+            <rect x={left(core)} y={core.y - NH / 2} width={core.w} height={NH} rx="10" class="flow-node flow-core" />
+            <text x={core.x} y={core.y - 3} text-anchor="middle" class="flow-title">Claude Code</text>
+            <text x={core.x} y={core.y + 14} text-anchor="middle" class="flow-sub">{total} {total === 1 ? 'component' : 'components'}</text>
+          </g>
+          <g opacity={hookOn ? 1 : 0.5}>
+            <rect x={left(hook)} y={hook.y - NH / 2} width={hook.w} height={NH} rx="10" class="flow-node" stroke-dasharray={hookOn ? undefined : '4 3'} />
+            <text x={hook.x} y={hook.y - 3} text-anchor="middle" class="flow-title">Hooks</text>
+            <text x={hook.x} y={hook.y + 14} text-anchor="middle" class="flow-sub">{summary('hooks', 'none in this stack')}</text>
+          </g>
+          {toolNodes.map((t) => (
+            <g opacity={t.on ? 1 : 0.5}>
+              <rect x={toolX - toolW / 2} y={t.y - NH / 2} width={toolW} height={NH} rx="10" class="flow-node" stroke-dasharray={t.on ? undefined : '4 3'} />
+              <text x={toolX - toolW / 2 + 14} y={t.y - 3} class="flow-title">{t.label}</text>
+              <text x={toolX - toolW / 2 + 14} y={t.y + 14} class="flow-sub">{t.sub}</text>
+            </g>
+          ))}
 
-        {/* Packet */}
-        <g data-packet opacity="0">
-          <rect data-packet-bg rx="5" height="20" y="-32" class="flow-packet-bg" />
-          <text data-packet-label y="-18" text-anchor="middle" class="flow-packet-label"></text>
-          <circle r="6" class="flow-packet" />
-        </g>
-      </svg>
+          {/* Packet */}
+          <g data-packet opacity="0">
+            <rect data-packet-bg rx="5" height="20" y="-32" class="flow-packet-bg" />
+            <text data-packet-label y="-18" text-anchor="middle" class="flow-packet-label"></text>
+            <circle r="6" class="flow-packet" />
+          </g>
+        </svg>
+      </div>
+      <p data-flow-text aria-live="polite" class="mt-3 min-h-[2.8em] text-center text-[13px] text-[var(--color-text-secondary)] max-w-xl mx-auto">
+        Press Play to follow a session with this stack.
+      </p>
+      <div class="mt-2 flex justify-center gap-2">
+        <button type="button" data-flow-play class="h-9 px-4 rounded-md bg-[var(--color-accent)] text-white text-[13px] font-semibold hover:opacity-90 transition-opacity">Play</button>
+        <button type="button" data-flow-replay class="h-9 px-4 rounded-md border border-[var(--color-border)] bg-[var(--color-surface-0)] text-[13px] font-medium text-[var(--color-text-primary)] hover:bg-[var(--color-surface-2)] transition-colors">Replay</button>
+      </div>
+      <script type="application/json" data-flow-steps set:html={jsonForScript(steps)} />
     </div>
-    <p data-flow-text aria-live="polite" class="mt-3 min-h-[2.8em] text-center text-[13px] text-[var(--color-text-secondary)] max-w-xl mx-auto">
-      Press Play to follow a session with this stack.
-    </p>
-    <div class="mt-2 flex justify-center gap-2">
-      <button type="button" data-flow-play class="h-9 px-4 rounded-md bg-[var(--color-accent)] text-white text-[13px] font-semibold">Play</button>
-      <button type="button" data-flow-replay class="h-9 px-4 rounded-md border border-[var(--color-border)] bg-[var(--color-surface-0)] text-[13px] font-medium text-[var(--color-text-primary)]">Replay</button>
-    </div>
-    <script type="application/json" data-flow-steps set:html={jsonForScript(steps)} />
   </div>
 
-  {/* 2. Layers */}
-  <div class="space-y-2">
-    <h3 class="text-[13px] font-semibold text-[var(--color-text-secondary)]">The harness in layers</h3>
-    <div class="rounded-xl p-3 md:p-4 space-y-3 border border-dashed" style={`border-color:${color('settings')};background:${color('settings')}0d`}>
-      <div class="flex flex-wrap items-center gap-2">
-        <span class="w-2 h-2 rounded-full" style={`background:${color('settings')}`}></span>
-        <span class="text-[13px] font-semibold text-[var(--color-text-primary)]">Settings</span>
-        <span class="text-[12px] text-[var(--color-text-secondary)]">what Claude may do</span>
+  {/* Tab 2: harness layers */}
+  <div id="harness-panel-layers" role="tabpanel" aria-labelledby="harness-tab-layers" data-harness-panel="layers" hidden>
+    <div class="rounded-xl border border-dashed border-[var(--color-border-strong)] p-3 md:p-4 space-y-3">
+      <div class="layer-head">
+        <span class="layer-icon" set:html={icon('settings')} />
+        <span class="layer-title">Settings</span>
+        <span class="layer-role">What Claude may do, in every step</span>
       </div>
-      <ul class="flex flex-wrap gap-1.5 list-none p-0 m-0">
-        {inStack('settings') ? list('settings').map((e) => <li class="min-w-0 max-w-full"><Chip entry={e} /></li>) : <li class="text-[12px] text-[var(--color-text-tertiary)]">None in this stack</li>}
-      </ul>
+      {inStack('settings')
+        ? <ul class="item-grid">{list('settings').map((e) => <li class="min-w-0"><StackItem entry={e} type="settings" /></li>)}</ul>
+        : <p class="layer-empty">None in this stack</p>}
 
-      <div class="rounded-xl p-3 md:p-4 space-y-3 border" style={`border-color:${color('hooks')};background:${color('hooks')}0d`}>
-        <div class="flex flex-wrap items-center gap-2">
-          <span class="w-2 h-2 rounded-full" style={`background:${color('hooks')}`}></span>
-          <span class="text-[13px] font-semibold text-[var(--color-text-primary)]">Hooks</span>
-          <span class="text-[12px] text-[var(--color-text-secondary)]">run on their own around actions</span>
+      <div class="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-1)] p-3 md:p-4 space-y-3">
+        <div class="layer-head">
+          <span class="layer-icon" set:html={icon('hooks')} />
+          <span class="layer-title">Hooks</span>
+          <span class="layer-role">Run on their own around Claude's actions</span>
         </div>
-        <ul class="flex flex-wrap gap-1.5 list-none p-0 m-0">
-          {inStack('hooks') ? list('hooks').map((e) => <li class="min-w-0 max-w-full"><Chip entry={e} /></li>) : <li class="text-[12px] text-[var(--color-text-tertiary)]">None in this stack</li>}
-        </ul>
+        {inStack('hooks')
+          ? <ul class="item-grid">{list('hooks').map((e) => <li class="min-w-0"><StackItem entry={e} type="hooks" /></li>)}</ul>
+          : <p class="layer-empty">None in this stack</p>}
 
-        <div class="rounded-xl p-3 md:p-4 space-y-3 border border-[var(--color-accent)]/60 bg-[var(--color-surface-0)]">
+        <div class="rounded-xl border border-[var(--color-accent)]/40 bg-[var(--color-surface-0)] p-3 md:p-4 space-y-4">
           <div class="flex flex-wrap items-center gap-2 text-[13px]">
             <span class="font-semibold text-[var(--color-text-primary)]">You</span>
-            <span class="text-[var(--color-text-tertiary)]">→</span>
+            <span class="text-[var(--color-text-tertiary)]" aria-hidden="true">→</span>
             {inStack('commands')
-              ? list('commands').map((e) => <Chip entry={e} label={`/${e.slug}`} />)
-              : <span class="text-[12px] text-[var(--color-text-tertiary)]">your prompt</span>}
-            <span class="text-[var(--color-text-tertiary)]">→</span>
-            <span class="font-semibold text-[var(--color-text-primary)]">Claude Code</span>
+              ? list('commands').map((e) => <StackItem entry={e} type="commands" label={`/${e.slug}`} inline />)
+              : <span class="text-[var(--color-text-tertiary)]">your prompt</span>}
+            <span class="text-[var(--color-text-tertiary)]" aria-hidden="true">→</span>
+            <span class="font-semibold text-[var(--color-accent)]">Claude Code</span>
           </div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-3">
             {shownCore.map((k) => (
-              <div class:list={['rounded-lg border p-2.5 space-y-1.5 min-w-0', inStack(k.type) ? 'border-[var(--color-border)] bg-[var(--color-surface-1)]' : 'border-dashed border-[var(--color-border)] opacity-55']}>
-                <div class="flex items-center gap-2">
-                  <span class="w-2 h-2 rounded-full" style={`background:${color(k.type)}`}></span>
-                  <span class="text-[13px] font-semibold text-[var(--color-text-primary)]">{k.label}</span>
+              <div class="min-w-0 space-y-2">
+                <div class="layer-head">
+                  <span class="layer-icon" set:html={icon(k.type)} />
+                  <span class="layer-title">{k.label}</span>
+                  <span class="ml-auto text-[11px] font-mono text-[var(--color-text-tertiary)]">{list(k.type).length}</span>
                 </div>
-                <p class="text-[12px] text-[var(--color-text-secondary)]">{k.role}</p>
-                <ul class="flex flex-wrap gap-1.5 list-none p-0 m-0">
-                  {inStack(k.type) ? list(k.type).map((e) => <li class="min-w-0 max-w-full"><Chip entry={e} /></li>) : <li class="text-[12px] text-[var(--color-text-tertiary)]">None in this stack</li>}
-                </ul>
+                <p class="text-[12px] text-[var(--color-text-tertiary)]">{k.role}</p>
+                {inStack(k.type)
+                  ? <ul class="space-y-1.5 list-none p-0 m-0">{list(k.type).map((e) => <li class="min-w-0"><StackItem entry={e} type={k.type} /></li>)}</ul>
+                  : <p class="layer-empty h-9 flex items-center px-3 rounded-md border border-dashed border-[var(--color-border)]">None in this stack</p>}
               </div>
             ))}
           </div>
@@ -221,14 +227,55 @@ const total = Object.values(entries).reduce((n, l) => n + (l ?? []).filter((e) =
       </div>
     </div>
   </div>
+
+  {/* Hover card, shared by every component */}
+  <div data-harness-card role="dialog" aria-label="Component details" hidden
+    class="harness-card absolute z-50 w-[320px] max-w-[calc(100vw-32px)] rounded-lg border border-[var(--color-border-strong)] bg-[var(--color-surface-1)] p-4 shadow-2xl">
+    <p data-card-meta class="text-[11px] uppercase tracking-wide text-[var(--color-text-tertiary)]"></p>
+    <p data-card-name class="mt-1 text-[14px] font-semibold text-[var(--color-text-primary)] break-words"></p>
+    <p data-card-desc class="mt-1.5 text-[13px] leading-relaxed text-[var(--color-text-secondary)] line-clamp-4"></p>
+    <pre data-card-cmd class="mt-3 m-0 p-2.5 rounded-md bg-[var(--color-surface-0)] border border-[var(--color-border)] text-[11.5px] font-mono text-[var(--color-text-secondary)] whitespace-pre-wrap break-all"></pre>
+    <p data-card-gone class="mt-3 text-[12px] text-[var(--color-text-tertiary)]" hidden>No longer in the catalog, so the install command leaves it out.</p>
+    <a data-card-open target="_blank" rel="noopener" class="mt-3 inline-flex h-9 items-center gap-1.5 px-3 rounded-md bg-[var(--color-accent)] text-white text-[13px] font-semibold no-underline hover:opacity-90 transition-opacity">
+      Open component
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg>
+    </a>
+  </div>
 </section>
 
 <style>
-  .flow-node { fill: var(--color-surface-0); stroke: var(--color-border-hover); }
-  .flow-core { fill: var(--color-surface-0); stroke: var(--color-accent); stroke-width: 1.5; }
+  .harness-tab {
+    position: relative;
+    padding: 10px 12px 11px;
+    font-size: 14px;
+    white-space: nowrap;
+    color: var(--color-text-secondary);
+  }
+  .harness-tab:hover { color: var(--color-text-primary); }
+  .harness-tab[aria-selected='true'] { color: var(--color-text-primary); font-weight: 600; }
+  .harness-tab[aria-selected='true']::after {
+    content: '';
+    position: absolute;
+    left: 6px;
+    right: 6px;
+    bottom: -1px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--color-accent);
+  }
+  .layer-head { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .layer-icon { display: inline-flex; color: var(--color-text-tertiary); }
+  .layer-title { font-size: 13px; font-weight: 600; color: var(--color-text-primary); }
+  .layer-role { font-size: 12px; color: var(--color-text-tertiary); }
+  .layer-empty { font-size: 12px; color: var(--color-text-tertiary); }
+  .item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 6px; list-style: none; padding: 0; margin: 0; }
+
+  .flow-band { fill: transparent; stroke: var(--color-border-strong); stroke-dasharray: 5 4; }
+  .flow-node { fill: var(--color-surface-0); stroke: var(--color-border-strong); }
+  .flow-core { stroke: var(--color-accent); stroke-width: 1.5; }
   .flow-title { fill: var(--color-text-primary); font: 600 13px var(--font-sans, system-ui, sans-serif); }
   .flow-sub { fill: var(--color-text-tertiary); font: 400 11px var(--font-sans, system-ui, sans-serif); }
-  .flow-edge { stroke: var(--color-border-hover); stroke-width: 1.5; }
+  .flow-edge { stroke: var(--color-border-strong); stroke-width: 1.5; }
   .flow-packet { fill: var(--color-accent); }
   .flow-packet-bg { fill: var(--color-surface-0); stroke: var(--color-accent); }
   .flow-packet-label { fill: var(--color-text-primary); font: 500 11px var(--font-mono, ui-monospace, monospace); }
@@ -311,5 +358,98 @@ const total = Object.values(entries).reduce((n, l) => n + (l ?? []).filter((e) =
     });
     root.querySelector('[data-flow-replay]')?.addEventListener('click', () => { i = 0; t = 0; show(0); place(0, 0); start(); });
     show(0);
+  }
+
+  // ---- Tabs ----
+  for (const root of document.querySelectorAll<HTMLElement>('[data-stack-harness]')) {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[data-harness-tab]')];
+    const select = (key: string, focus = false) => {
+      for (const t of tabs) {
+        const on = t.dataset.harnessTab === key;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+        if (on && focus) t.focus();
+      }
+      for (const p of root.querySelectorAll<HTMLElement>('[data-harness-panel]')) p.hidden = p.dataset.harnessPanel !== key;
+    };
+    tabs.forEach((t, n) => {
+      t.addEventListener('click', () => select(t.dataset.harnessTab!));
+      t.addEventListener('keydown', (e) => {
+        if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+        const next = tabs[(n + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
+        select(next.dataset.harnessTab!, true);
+      });
+    });
+
+    // ---- Hover card ----
+    const card = root.querySelector<HTMLElement>('[data-harness-card]');
+    if (!card) continue;
+    document.body.appendChild(card); // escape any clipping parent
+    const $ = <T extends HTMLElement>(s: string) => card.querySelector<T>(s)!;
+    const open = $<HTMLAnchorElement>('[data-card-open]');
+    let current: HTMLElement | null = null;
+    let hideTimer = 0;
+
+    function place(el: HTMLElement) {
+      const r = el.getBoundingClientRect();
+      const w = card!.offsetWidth, h = card!.offsetHeight, gap = 8, pad = 16;
+      let left = r.left;
+      left = Math.max(pad, Math.min(left, document.documentElement.clientWidth - w - pad));
+      const below = r.bottom + gap + h <= window.innerHeight || r.top - gap - h < 0;
+      const top = below ? r.bottom + gap : r.top - gap - h;
+      card!.style.left = `${left + window.scrollX}px`;
+      card!.style.top = `${top + window.scrollY}px`;
+    }
+    function show(el: HTMLElement) {
+      clearTimeout(hideTimer);
+      if (current === el && !card!.hidden) return;
+      current = el;
+      const d = el.dataset;
+      $('[data-card-meta]').textContent = [d.type, d.category].filter(Boolean).join(' · ');
+      $('[data-card-name]').textContent = d.name ?? '';
+      const desc = $('[data-card-desc]');
+      desc.textContent = d.description ?? '';
+      desc.hidden = !d.description;
+      const cmd = $('[data-card-cmd]');
+      cmd.textContent = d.command ?? '';
+      cmd.hidden = !d.command;
+      $('[data-card-gone]').hidden = Boolean(d.href);
+      open.hidden = !d.href;
+      if (d.href) open.href = d.href;
+      card!.hidden = false;
+      el.setAttribute('aria-expanded', 'true');
+      place(el);
+    }
+    function hide() {
+      card!.hidden = true;
+      current?.setAttribute('aria-expanded', 'false');
+      current = null;
+    }
+    // Touch browsers fire a synthetic mouseleave after a tap: only a mouse hides on leave.
+    let pointer = 'mouse';
+    document.addEventListener('pointerdown', (e) => { pointer = e.pointerType; }, true);
+    const hideSoon = () => {
+      if (pointer === 'touch') return;
+      clearTimeout(hideTimer);
+      hideTimer = window.setTimeout(hide, 180);
+    };
+
+    for (const el of root.querySelectorAll<HTMLElement>('[data-harness-item]')) {
+      el.addEventListener('mouseenter', () => { if (pointer !== 'touch') show(el); });
+      el.addEventListener('mouseleave', hideSoon);
+      el.addEventListener('focus', () => show(el));
+      el.addEventListener('blur', (e) => { if (!card.contains(e.relatedTarget as Node)) hideSoon(); });
+      // Phones have no hover: a tap opens the card; a tap outside or Escape closes it.
+      el.addEventListener('click', () => show(el));
+    }
+    card.addEventListener('mouseenter', () => clearTimeout(hideTimer));
+    card.addEventListener('mouseleave', hideSoon);
+    card.addEventListener('focusout', (e) => { if (!card.contains(e.relatedTarget as Node) && e.relatedTarget !== current) hideSoon(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !card.hidden) { const el = current; hide(); el?.focus(); } });
+    document.addEventListener('pointerdown', (e) => {
+      const t = e.target as Node;
+      if (!card.hidden && !card.contains(t) && !current?.contains(t)) hide();
+    });
+    window.addEventListener('resize', () => { if (current && !card.hidden) place(current); });
   }
 </script>
