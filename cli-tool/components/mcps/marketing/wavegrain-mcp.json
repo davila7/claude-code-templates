@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "wavegrain": {
+      "description": "Hosted MCP server for Wavegrain: curated TikTok slideshows and Instagram carousels for your brand on autopilot. Sign in with your Wavegrain account through the MCP client's OAuth flow; paid plans from $29 a month, no free trial. Docs: https://wavegrain.com/mcp",
+      "type": "http",
+      "url": "https://wavegrain.com/api/mcp"
+    }
+  }
+}
