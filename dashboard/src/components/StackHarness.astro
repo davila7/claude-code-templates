@@ -1,0 +1,97 @@
+---
+// Harness diagram for a /s/ stack: Claude Code in the middle, what drives or
+// configures a session on the left, what Claude reaches for on the right. Each
+// slot says where the CLI writes that type and lists the stack's components in
+// their saved order; types the stack doesn't have stay as dimmed placeholders
+// so the whole setup is visible. Pure markup, no JS.
+import { HARNESS_SLOTS, type HarnessSlot, type StackType } from '../lib/stack-link';
+import { TYPE_CONFIG } from '../lib/icons';
+
+interface Entry { name: string; href: string | null }
+interface Props { entries: Partial<Record<StackType, Entry[]>> }
+
+const { entries } = Astro.props;
+const total = Object.values(entries).reduce((n, list) => n + (list?.length ?? 0), 0);
+// Loops are rare: show their slot only when the stack has one.
+const slots = HARNESS_SLOTS.filter((s) => s.type !== 'loops' || (entries.loops?.length ?? 0) > 0);
+const left = slots.filter((s) => s.side === 'in');
+const right = slots.filter((s) => s.side === 'out');
+
+function view(slot: HarnessSlot) {
+  const items = entries[slot.type] ?? [];
+  return { ...slot, items, config: TYPE_CONFIG[slot.type] };
+}
+---
+
+<section aria-labelledby="harness-title">
+  <h2 id="harness-title" class="text-[15px] font-semibold text-[var(--color-text-primary)]">How it fits in Claude Code</h2>
+  <p class="mt-1 mb-4 text-[13px] text-[var(--color-text-secondary)]">
+    Where each component goes in your project and what it does once Claude Code starts.
+  </p>
+
+  <div class="grid gap-4 md:grid-cols-[1fr_168px_1fr] md:items-center md:gap-0">
+    {/* Claude Code */}
+    <div class="md:order-2 flex items-center">
+      <span class="hidden md:block flex-1 h-px bg-[var(--color-border-hover)]"></span>
+      <div class="w-full md:w-auto rounded-xl border border-[var(--color-accent)]/50 bg-[var(--color-accent)]/10 px-4 py-3 text-center">
+        <div class="text-[14px] font-semibold text-[var(--color-text-primary)]">Claude Code</div>
+        <div class="text-[11px] text-[var(--color-text-tertiary)] mt-0.5">your project + this stack</div>
+        <div class="text-[11px] font-medium text-[var(--color-accent)] mt-1">{total} {total === 1 ? 'component' : 'components'}</div>
+      </div>
+      <span class="hidden md:block flex-1 h-px bg-[var(--color-border-hover)]"></span>
+    </div>
+
+    {[{ side: 'left', list: left }, { side: 'right', list: right }].map(({ side, list }) => (
+      <div class:list={[
+        'relative space-y-2.5 pl-5',
+        side === 'left' ? 'md:order-1 md:pl-0 md:pr-6' : 'md:order-3 md:pl-6',
+      ]}>
+        <p class="text-[11px] font-semibold uppercase tracking-wide text-[var(--color-text-tertiary)] md:hidden -ml-5">
+          {side === 'left' ? 'Drives and configures the session' : 'What Claude reaches for'}
+        </p>
+        <span class:list={[
+          'absolute w-px bg-[var(--color-border-hover)] left-1.5 top-6 bottom-6',
+          side === 'left' ? 'md:left-auto md:right-0 md:top-8 md:bottom-8' : 'md:left-0 md:top-8 md:bottom-8',
+        ]} aria-hidden="true"></span>
+        {list.map(view).map((slot) => (
+          <div class:list={[
+            'relative rounded-lg border p-3',
+            slot.items.length
+              ? 'border-[var(--color-border)] bg-[var(--color-card-bg)]'
+              : 'border-dashed border-[var(--color-border)] opacity-55',
+          ]}>
+            <span class:list={[
+              'absolute top-1/2 h-px bg-[var(--color-border-hover)] -left-3.5 w-3.5',
+              side === 'left' ? 'md:left-auto md:-right-6 md:w-6' : 'md:-left-6 md:w-6',
+            ]} aria-hidden="true"></span>
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full shrink-0" style={`background:${slot.config?.color ?? 'var(--color-text-tertiary)'}`}></span>
+              <span class="text-[13px] font-semibold text-[var(--color-text-primary)]">{slot.config?.label ?? slot.type}</span>
+              <span class="ml-auto text-[11px] tabular-nums text-[var(--color-text-tertiary)]">{slot.items.length}</span>
+            </div>
+            <p class="mt-0.5 text-[12px] text-[var(--color-text-secondary)]">{slot.role}</p>
+            {slot.items.length > 0 ? (
+              <ul class="mt-2 flex flex-wrap gap-1.5 list-none p-0 m-0">
+                {slot.items.map((item) => (
+                  <li>
+                    {item.href ? (
+                      <a href={item.href} class="inline-block max-w-[220px] truncate text-[12px] px-2 py-0.5 rounded-md border border-[var(--color-border)] bg-[var(--color-surface-1)] text-[var(--color-text-primary)] hover:border-[var(--color-border-hover)] no-underline">{item.name}</a>
+                    ) : (
+                      <span class="inline-block max-w-[220px] truncate text-[12px] px-2 py-0.5 rounded-md border border-dashed border-[var(--color-border)] text-[var(--color-text-tertiary)] line-through" title="No longer in the catalog">{item.name}</span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p class="mt-1.5 text-[12px] text-[var(--color-text-tertiary)]">None in this stack</p>
+            )}
+            <code class="mt-2 block text-[11px] text-[var(--color-text-tertiary)] break-all">{slot.location}</code>
+          </div>
+        ))}
+      </div>
+    ))}
+  </div>
+  <p class="mt-3 text-[12px] text-[var(--color-text-tertiary)]">
+    Hooks and settings ask where to go when you install them (project, local or user settings); the paths show the default.
+  </p>
+</section>

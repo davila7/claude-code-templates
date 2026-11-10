@@ -193,3 +193,25 @@ export function cartToItems(cart: Record<string, Array<{ path?: string }> | unde
 export function singularType(type: StackType): string {
   return type.replace(/s$/, '');
 }
+
+// Where each type lands in the project and what it does in Claude Code, for the
+// harness diagram on /s/ pages. Paths are the CLI's defaults (cli-tool/src/index.js):
+// hooks and settings ask where to go and default to .claude/settings.local.json.
+export interface HarnessSlot {
+  type: StackType;
+  role: string;
+  location: string;
+  // 'in': what drives or configures a session; 'out': what Claude reaches for during one.
+  side: 'in' | 'out';
+}
+
+export const HARNESS_SLOTS: HarnessSlot[] = [
+  { type: 'commands', side: 'in', role: 'You run them as /slash commands', location: '.claude/commands/' },
+  { type: 'hooks', side: 'in', role: 'Run on their own on session events', location: '.claude/settings.local.json + .claude/hooks/' },
+  { type: 'settings', side: 'in', role: 'Set permissions, model and behaviour', location: '.claude/settings.local.json' },
+  { type: 'loops', side: 'in', role: 'Repeat a goal until it is done', location: '.claude/loops/' },
+  { type: 'agents', side: 'out', role: 'Claude hands tasks to these subagents', location: '.claude/agents/' },
+  { type: 'skills', side: 'out', role: 'Loaded when a task needs them', location: '.claude/skills/' },
+  { type: 'mcps', side: 'out', role: 'Connect Claude to outside tools and data', location: '.mcp.json' },
+  { type: 'mods', side: 'out', role: 'Plugins that change Claude Code itself', location: '.claude/skills/' },
+];

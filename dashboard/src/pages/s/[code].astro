@@ -8,6 +8,7 @@ import DashboardLayout from '../../layouts/DashboardLayout.astro';
 import TopBar from '../../components/TopBar.astro';
 import SearchModal from '../../components/SearchModal.tsx';
 import CartSidebar from '../../components/CartSidebar.tsx';
+import StackHarness from '../../components/StackHarness.astro';
 import { fetchComponents } from '../../lib/data';
 import { displayName, formatDate } from '../../lib/component-page';
 import { componentPath } from '../../lib/component-url';
@@ -77,6 +78,13 @@ const cartItems = present.map((r) => ({
     icon: r.item.type,
   },
 }));
+
+// Harness diagram: every component under its type, in saved order.
+const harnessEntries: Partial<Record<StackType, Array<{ name: string; href: string | null }>>> = {};
+for (const r of rows) {
+  const gone = !catalogUnavailable && !r.component;
+  (harnessEntries[r.item.type] ??= []).push({ name: nameOf(r), href: gone ? null : componentPath(r.item.type, r.item.path) });
+}
 
 const created = stack ? formatDate(stack.created) : '';
 const title = stack
@@ -150,6 +158,8 @@ const description = stack
           <p class="mt-2 text-[12px] text-[var(--color-text-tertiary)] md:hidden">npx runs on a computer, not on a phone.</p>
         </section>
       )}
+
+      <StackHarness entries={harnessEntries} />
 
       {groups.map((group) => (
         <section>
