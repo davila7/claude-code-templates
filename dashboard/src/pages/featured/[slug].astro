@@ -840,6 +840,8 @@ ck init -g</code></div>
 </style>
 
 <script>
+  import { track } from '../../lib/analytics';
+
   const shareBtn = document.getElementById('shareBtn');
   const shareOptions = document.getElementById('shareOptions');
 
@@ -873,6 +875,9 @@ ck init -g</code></div>
   document.getElementById('copyInstallBtn')?.addEventListener('click', (e) => {
     const cmd = document.getElementById('installCmd')?.textContent ?? '';
     navigator.clipboard.writeText(cmd);
+    // A featured page installs a set of components: its slug stands for the path.
+    const slug = window.location.pathname.replace(/\/+$/, '').split('/').pop() ?? '';
+    track('copy_install_command', { component_type: 'featured', component_path: slug, source: 'featured' });
     const btn = e.currentTarget as HTMLElement;
     btn.textContent = 'Copied!';
     setTimeout(() => { btn.textContent = 'Copy'; }, 2000);

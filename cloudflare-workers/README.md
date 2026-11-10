@@ -20,7 +20,6 @@ We separate monitoring and automation tasks into Cloudflare Workers to:
 Scheduled caller for the dashboard API (replaces the old Vercel cron jobs).
 
 **Functionality:**
-- Calls `/api/claude-code-check` every 30 minutes (monitors Claude Code npm releases)
 - Calls `/api/health-check` every hour
 - Reports errors and cron check-ins to Sentry
 
@@ -59,7 +58,7 @@ npm run deploy
 Weekly KPI report sent via Telegram every Sunday at 14:00 UTC.
 
 **Functionality:**
-- Collects metrics from GitHub, Discord, Supabase, npm, and Google Analytics
+- Collects metrics from GitHub, Supabase, npm, and Google Analytics
 - Formats a consolidated weekly report
 - Sends to Telegram automatically via cron
 - Manual trigger via HTTP endpoint

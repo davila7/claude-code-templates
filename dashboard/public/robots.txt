@@ -3,9 +3,10 @@
 
 User-agent: *
 Allow: /
-Disallow: /api/
-Disallow: /github-callback
-Disallow: /my-components
+# /api/, /my-components and /github-callback are not blocked here on purpose:
+# they answer with `X-Robots-Tag: noindex` (src/lib/robots.ts), and Google can
+# only see that header if it may crawl them. A Disallow kept linked URLs
+# "indexed, though blocked by robots.txt".
 
 # AI Crawlers
 User-agent: GPTBot

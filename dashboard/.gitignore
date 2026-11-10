@@ -11,3 +11,4 @@ node_modules
 
 # Generated social preview images (scripts/generate-og-images.mjs)
 public/og/
+.wrangler/

@@ -117,6 +117,8 @@ export const register: Register = on => {
   })
 
   on('turn.start', async ($, e, next) => {
+    // Since Claude Code 2.1.299 a subagent's or teammate's turn starts here too (its prompt in `e.text`).
+    if (e.agentId !== undefined) return next(e)
     turnStartedAt = await $.clock.now()
     return next(e)
   })

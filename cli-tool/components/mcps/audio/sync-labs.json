@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "sync": {
+      "description": "Official sync. labs MCP: lipsync a video to new audio or a typed script, translate and dub videos into other languages with matching lips, generate speech previews, clone voices, and manage assets and projects. Streamable HTTP, OAuth sign-in with a sync. account in the browser, no API key. Paid steps such as dubbing and voice clones are quoted before they start.",
+      "type": "http",
+      "url": "https://mcp.sync.so/mcp"
+    }
+  }
+}

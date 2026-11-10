@@ -42,11 +42,16 @@ import tarfile
 import tempfile
 from pathlib import Path
 
+import external_skills
+
 # Repo-relative root that holds every skill component.
 SKILLS_ROOT = Path("cli-tool/components/skills")
+# Catalog plugins (plugins/{category}/{name}/source.json) are scanned like skills.
+PLUGINS_ROOT = Path("cli-tool/components/plugins")
 
-# Accepted manifest filenames (case variants seen in the catalog).
-MANIFEST_NAMES = {"skill.md"}
+# Accepted manifest filenames (case variants seen in the catalog). source.json
+# marks an external skill: its code is fetched from the pinned commit to scan.
+MANIFEST_NAMES = {"skill.md", "source.json"}
 
 # Risk score above which a skill is considered HIGH/CRITICAL.
 DEFAULT_THRESHOLD = 50
@@ -242,12 +247,40 @@ def discover_changed_skills(base_ref: str, root: Path = SKILLS_ROOT) -> list[Pat
 def scan_skill(directory: Path) -> dict:
     """Run skillspector on one skill dir; return a normalized result dict."""
     result: dict = {"path": str(directory), "status": "ok"}
+    target = directory
+    if external_skills.is_external(directory):
+        try:
+            target = external_skills.local_dir(directory.resolve())
+        except (external_skills.ManifestError, OSError) as e:
+            result["status"] = "error"
+            result["error"] = f"external skill: {e}"[:500]
+            return result
+    staging = None
+    if external_skills.is_plugin(target):
+        # A catalog plugin: SkillSpector needs a SKILL.md at the root.
+        staging = tempfile.TemporaryDirectory(prefix="cct-skillspector-")
+        try:
+            target = external_skills.stage_plugin_for_scan(target, Path(staging.name), directory.name)
+        except (external_skills.ManifestError, OSError) as e:
+            # One broken plugin is reported as its own error, never aborts the batch.
+            staging.cleanup()
+            result["status"] = "error"
+            result["error"] = f"plugin: {e}"[:500]
+            return result
+    try:
+        return _run_skillspector(directory, target, result)
+    finally:
+        if staging:
+            staging.cleanup()
+
+
+def _run_skillspector(directory: Path, target: Path, result: dict) -> dict:
     try:
         proc = subprocess.run(
             [
                 "skillspector",
                 "scan",
-                str(directory),
+                str(target),
                 "--no-llm",
                 "--format",
                 "json",
@@ -526,9 +559,9 @@ def main() -> int:
     args = parser.parse_args()
 
     if args.changed:
-        skills = discover_changed_skills(args.base_ref)
+        skills = discover_changed_skills(args.base_ref) + discover_changed_skills(args.base_ref, PLUGINS_ROOT)
     else:
-        skills = discover_all_skills()
+        skills = discover_all_skills() + discover_all_skills(PLUGINS_ROOT)
 
     print(f"Discovered {len(skills)} skill director{'y' if len(skills) == 1 else 'ies'}.")
 

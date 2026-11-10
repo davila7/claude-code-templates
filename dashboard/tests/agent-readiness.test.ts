@@ -61,3 +61,35 @@ test('buildLlmsTxt follows llmstxt.org structure', () => {
   // Every list item in a section is a Markdown link or plain bullet, never an empty link.
   assert.ok(!/\]\(\)/.test(txt));
 });
+
+test('robots.txt lets every crawler but CCBot fetch /api/v1/', async () => {
+  const fs = await import('node:fs');
+  const path = await import('node:path');
+  const robots = fs.readFileSync(path.join(import.meta.dirname, '..', 'public', 'robots.txt'), 'utf-8');
+  const star = robots.split(/\n(?=User-agent:)/).find((g) => g.startsWith('User-agent: *'));
+  assert.ok(star, 'User-agent: * group');
+  // The rest of /api/ is kept out of the index with X-Robots-Tag (tests/robots.test.ts), not a Disallow.
+  const disallowed = [...star.matchAll(/^Disallow:\s*(\S+)/gm)].map((m) => m[1]);
+  assert.ok(disallowed.every((d) => !'/api/v1/catalog.json'.startsWith(d)), `blocked by ${disallowed}`);
+});
+
+test('llms.txt links llms-full.txt', () => {
+  assert.match(buildLlmsTxt({ skills: 1 }), /\/llms-full\.txt/);
+});
+
+test('llms-full.txt lists every component by type in id order, with its command', async () => {
+  const { buildLlmsFullTxt, shortDescription } = await import('../src/lib/agent-readiness.ts');
+  const txt = buildLlmsFullTxt({ skills: 2, hooks: 1 }, [
+    { id: 'skills/z/zeta', type: 'skills', description: 'Zeta skill. More text.', install: { command: 'npx claude-code-templates@latest --skill z/zeta' }, urls: { page: 'https://www.aitmpl.com/component/skills/z/zeta' } },
+    { id: 'skills/a/alpha', type: 'skills', description: 'Use this when you need alpha things.\n\n<example>user: hi</example>', install: { command: 'npx claude-code-templates@latest --skill a/alpha' } },
+    { id: 'hooks/git/h', type: 'hooks', description: null },
+  ]);
+  assert.ok(txt.startsWith(buildLlmsTxt({ skills: 2, hooks: 1 })));
+  assert.match(txt, /### Skills \(2\)/);
+  assert.match(txt, /### Hooks \(1\)/);
+  assert.ok(txt.indexOf('skills/a/alpha') < txt.indexOf('skills/z/zeta'));
+  assert.match(txt, /- \[skills\/a\/alpha\]\(https:\/\/www\.aitmpl\.com\/component\/skills\/a\/alpha\): Use this when you need alpha things\. Install: `npx claude-code-templates@latest --skill a\/alpha`/);
+  assert.match(txt, /- \[hooks\/git\/h\]\(https:\/\/www\.aitmpl\.com\/component\/hooks\/git\/h\)$/m);
+  assert.doesNotMatch(txt, /<example>/);
+  assert.ok(shortDescription('x'.repeat(500)).length <= 200);
+});

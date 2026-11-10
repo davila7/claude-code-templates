@@ -3,7 +3,7 @@
     "chrome-devtools": {
       "description": "A Model Context Protocol server for interacting with Chrome DevTools, enabling browser automation, debugging, and performance analysis capabilities.",
       "command": "npx",
-      "args": ["-y", "chrome-devtools-mcp@latest"]
+      "args": ["-y", "chrome-devtools-mcp@1.12.0"]
     }
   }
 }

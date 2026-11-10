@@ -1,0 +1,41 @@
+---
+title: "Settings"
+description: "Ready-made Claude Code settings: permissions, status lines, models, cleanup and themes, merged into the settings file you choose."
+---
+
+A setting is a fragment of Claude Code's `settings.json`. Installing it merges that fragment into the file you choose, so you can combine several.
+
+```bash
+npx claude-code-templates@latest --setting permissions/read-only-mode
+```
+
+The CLI asks for the scope (local, project, user or enterprise; local with `--yes`). See [Settings scope](/installation#settings-scope).
+
+## Categories
+
+| Category | Examples |
+| --- | --- |
+| `permissions` | `read-only-mode`, allow and deny lists |
+| `statusline` | `context-monitor`: a status line with context usage, cost and duration |
+| `model` | Default model and effort |
+| `cleanup` | `retention-7-days`: how long transcripts are kept |
+| `environment`, `telemetry`, `authentication`, `api` | Environment variables and provider options |
+| `appearance` | Themes |
+
+## Status lines with scripts
+
+Some status lines run a script:
+
+```json statusline/context-monitor.json
+{
+  "statusLine": { "type": "command", "command": "python3 .claude/scripts/context-monitor.py" }
+}
+```
+
+The CLI downloads the script next to it, into `.claude/scripts/`, and makes it executable. The relative path resolves from the project root, so start Claude Code there.
+
+## Themes
+
+A setting can ship a custom theme. Claude Code only reads themes from `~/.claude/themes/`, so the CLI writes theme files there whatever scope you chose for the rest.
+
+Browse all settings at [aitmpl.com/settings](https://www.aitmpl.com/settings/).

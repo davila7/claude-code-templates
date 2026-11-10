@@ -1,0 +1,7 @@
+{
+  "repo": "anthropics/claude-plugins-official",
+  "path": "plugins/champion-kit",
+  "commit": "0412be76f50ab4f4f8abff3753efa9269fbbca5b",
+  "license": "Apache-2.0",
+  "author": "Anthropic"
+}

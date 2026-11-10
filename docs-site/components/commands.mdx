@@ -1,0 +1,39 @@
+---
+title: "Commands"
+description: "Custom slash commands for Claude Code: a saved prompt you run as /name, with optional arguments and tool permissions."
+---
+
+A command is a Markdown file that becomes a slash command. Typing `/generate-tests src/cart.ts` sends the file's body to Claude, with `$ARGUMENTS` replaced by what you typed after the name.
+
+```bash
+npx claude-code-templates@latest --command testing/generate-tests
+```
+
+Written to `.claude/commands/generate-tests.md`, available as `/generate-tests`.
+
+## Anatomy
+
+```markdown .claude/commands/generate-tests.md
+---
+allowed-tools: Read, Write, Edit, Bash
+argument-hint: "[file-path] | [component-name]"
+description: Generate a complete test file for a specified source file or component.
+---
+
+Generate tests for: $ARGUMENTS
+…
+```
+
+| Field | Meaning |
+| --- | --- |
+| `description` | Shown in the `/` menu. |
+| `argument-hint` | Shown after the command name while you type. |
+| `allowed-tools` | Tools the command may use without asking. |
+
+Project commands (`.claude/commands/`) are shared with anyone who clones the repository. To have a command in every project, move the file to `~/.claude/commands/`.
+
+## Commands or skills?
+
+Use a command when you decide when it runs. Use a [skill](/components/skills) when Claude should decide, based on the task. Claude Code also exposes skills in the `/` menu, so the line between them is mostly who triggers it.
+
+Browse all commands at [aitmpl.com/commands](https://www.aitmpl.com/commands/).
