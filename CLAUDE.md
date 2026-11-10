@@ -388,22 +388,21 @@ npm run check:version-sync
 # 4. Push the version commit and tag created by npm version
 git push origin main --follow-tags
 
-# 5. Publish to npm (requires granular access token with "Bypass 2FA" enabled)
-npm config set //registry.npmjs.org/:_authToken=YOUR_GRANULAR_TOKEN
-npm publish --ignore-scripts=false
-npm config delete //registry.npmjs.org/:_authToken  # always clean up after
+# 5. Publish to npm: web login (Daniel's npm 2FA is a passkey; no tokens)
+npm ci --ignore-scripts                    # prepublishOnly needs the CLI's dependencies
+npm login --auth-type=web && npm whoami
+npm publish --ignore-scripts=false --auth-type=web
 
 # 6. Deploy website (dashboard on Cloudflare Pages)
 # Automatic on push to main (GitHub Actions). Manual: from dashboard/ run `npx wrangler pages deploy dist --project-name=aitmpl-dashboard`
 ```
 
 **npm Publishing Notes:**
-- Classic npm tokens were revoked Dec 2025. Use **granular access tokens** from [npmjs.com/settings/~/tokens](https://www.npmjs.com/settings/~/tokens)
-- The token must have **Read and Write** permissions for `claude-code-templates` and **"Bypass 2FA"** enabled
-- Always remove the token from npm config after publishing (`npm config delete`)
+- Publish with `npm login --auth-type=web`, never a token (Bypass-2FA tokens are being restricted by npm).
+- `prepublishOnly` blocks the publish unless the version is in sync, `npm run test:install-paths` passes and `scripts/prepublish-check.mjs` passes: it runs `npm pack` and the prod smoke test's CLI checks (one install of every component type, tracking off) against that tarball, so it needs network. Added after 1.33.0 shipped with every `--skill` install failing. `CCT_SKIP_PREPUBLISH_SMOKE=1` skips only the smoke step; do not use it for a release.
+- `202` "Your package is being processed" is npm's automated review (minutes): never republish the same version. `E404` on the PUT means the login expired: log in again.
 - The repository disables lifecycle scripts by default for security. Pass `--ignore-scripts=false` only to the trusted release commands shown above so their version and prepublish hooks can run.
 - The local `package.json` version may drift from npm if published from CI — always check `npm view claude-code-templates version` first
-- Never hardcode or commit tokens
 
 ## API Architecture
 
