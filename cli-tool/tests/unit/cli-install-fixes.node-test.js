@@ -224,3 +224,34 @@ test('pageUrl and stackCommand', () => {
     'npx claude-code-templates@latest --agent a/b,e/f --skill c/d --plugin p/q --scope user'
   );
 });
+
+// --- --setting into a settings file that already has hooks -------------
+
+test('--setting keeps the hooks already configured for the same event', async () => {
+  process.env.CCT_NO_TRACKING = 'true';
+  const { createClaudeConfig } = require('../../src/index');
+  const dir = fs.mkdtempSync(path.join(require('os').tmpdir(), 'cct-setting-hooks-'));
+  const settingsFile = path.join(dir, '.claude', 'settings.local.json');
+  const mine = { matcher: 'Bash', hooks: [{ type: 'command', command: './my-guard.sh' }] };
+  const theirs = { matcher: 'Bash', hooks: [{ type: 'command', command: './setting-guard.sh' }] };
+  fs.mkdirSync(path.dirname(settingsFile));
+  fs.writeFileSync(settingsFile, JSON.stringify({ hooks: { PreToolUse: [mine] } }));
+
+  const realFetch = global.fetch;
+  const realLog = console.log;
+  global.fetch = async url => String(url).endsWith('/settings/demo/guard.json')
+    ? new Response(JSON.stringify({ description: 'demo', hooks: { PreToolUse: [theirs] } }))
+    : new Response('not found', { status: 404 });
+  console.log = () => {};
+  try {
+    await createClaudeConfig({ setting: 'demo/guard', directory: dir, yes: true });
+    await createClaudeConfig({ setting: 'demo/guard', directory: dir, yes: true });
+  } finally {
+    global.fetch = realFetch;
+    console.log = realLog;
+  }
+
+  const { hooks } = JSON.parse(fs.readFileSync(settingsFile, 'utf8'));
+  assert.deepEqual(hooks.PreToolUse, [mine, theirs], 'the existing hook stays and installing twice adds the setting\'s hook once');
+  fs.rmSync(dir, { recursive: true, force: true });
+});
