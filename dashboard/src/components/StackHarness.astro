@@ -18,10 +18,13 @@ interface Props { entries: Partial<Record<StackType, Entry[]>> }
 
 const { entries } = Astro.props;
 const list = (t: StackType) => entries[t] ?? [];
+// The session flow uses only components still in the catalog (the install
+// command leaves removed ones out); the layers list every saved one.
+const live = (t: StackType) => list(t).filter((e) => e.href !== null);
 const color = (t: StackType) => TYPE_CONFIG[t]?.color ?? 'var(--color-text-tertiary)';
 
 function summary(t: StackType, empty: string): string {
-  const names = list(t).map((e) => e.name);
+  const names = live(t).map((e) => e.name);
   if (!names.length) return empty;
   const first = names[0].length > 22 ? `${names[0].slice(0, 21)}…` : names[0];
   return names.length > 1 ? `${first} +${names.length - 1}` : first;
@@ -40,8 +43,9 @@ const tools = [
 ];
 const settingsBand = { x1: 150, x2: 745, y: 20, h: 36 };
 
-const has = (t: StackType) => list(t).length > 0;
-const commandName = has('commands') ? `/${list('commands')[0].slug}` : 'your prompt';
+const has = (t: StackType) => live(t).length > 0;
+const inStack = (t: StackType) => list(t).length > 0;
+const commandName = has('commands') ? `/${live('commands')[0].slug}` : 'your prompt';
 
 type Pt = [number, number];
 interface Step { path: Pt[]; label: string; text: string }
@@ -93,7 +97,7 @@ const coreKinds: Array<{ type: StackType; label: string; role: string }> = [
   { type: 'mods', label: 'Mods', role: 'Change Claude Code itself' },
   { type: 'loops', label: 'Loops', role: 'Repeat a goal until done' },
 ];
-const shownCore = coreKinds.filter((k) => has(k.type) || ['agents', 'skills', 'mcps'].includes(k.type));
+const shownCore = coreKinds.filter((k) => inStack(k.type) || ['agents', 'skills', 'mcps'].includes(k.type));
 const total = Object.values(entries).reduce((n, l) => n + (l?.length ?? 0), 0);
 ---
 
@@ -176,7 +180,7 @@ const total = Object.values(entries).reduce((n, l) => n + (l?.length ?? 0), 0);
         <span class="text-[12px] text-[var(--color-text-secondary)]">what Claude may do</span>
       </div>
       <ul class="flex flex-wrap gap-1.5 list-none p-0 m-0">
-        {has('settings') ? list('settings').map((e) => <li><Chip entry={e} /></li>) : <li class="text-[12px] text-[var(--color-text-tertiary)]">None in this stack</li>}
+        {inStack('settings') ? list('settings').map((e) => <li class="min-w-0 max-w-full"><Chip entry={e} /></li>) : <li class="text-[12px] text-[var(--color-text-tertiary)]">None in this stack</li>}
       </ul>
 
       <div class="rounded-xl p-3 md:p-4 space-y-3 border" style={`border-color:${color('hooks')};background:${color('hooks')}0d`}>
@@ -186,14 +190,14 @@ const total = Object.values(entries).reduce((n, l) => n + (l?.length ?? 0), 0);
           <span class="text-[12px] text-[var(--color-text-secondary)]">run on their own around actions</span>
         </div>
         <ul class="flex flex-wrap gap-1.5 list-none p-0 m-0">
-          {has('hooks') ? list('hooks').map((e) => <li><Chip entry={e} /></li>) : <li class="text-[12px] text-[var(--color-text-tertiary)]">None in this stack</li>}
+          {inStack('hooks') ? list('hooks').map((e) => <li class="min-w-0 max-w-full"><Chip entry={e} /></li>) : <li class="text-[12px] text-[var(--color-text-tertiary)]">None in this stack</li>}
         </ul>
 
         <div class="rounded-xl p-3 md:p-4 space-y-3 border border-[var(--color-accent)]/60 bg-[var(--color-surface-0)]">
           <div class="flex flex-wrap items-center gap-2 text-[13px]">
             <span class="font-semibold text-[var(--color-text-primary)]">You</span>
             <span class="text-[var(--color-text-tertiary)]">→</span>
-            {has('commands')
+            {inStack('commands')
               ? list('commands').map((e) => <Chip entry={e} label={`/${e.slug}`} />)
               : <span class="text-[12px] text-[var(--color-text-tertiary)]">your prompt</span>}
             <span class="text-[var(--color-text-tertiary)]">→</span>
@@ -201,14 +205,14 @@ const total = Object.values(entries).reduce((n, l) => n + (l?.length ?? 0), 0);
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
             {shownCore.map((k) => (
-              <div class:list={['rounded-lg border p-2.5 space-y-1.5 min-w-0', has(k.type) ? 'border-[var(--color-border)] bg-[var(--color-surface-1)]' : 'border-dashed border-[var(--color-border)] opacity-55']}>
+              <div class:list={['rounded-lg border p-2.5 space-y-1.5 min-w-0', inStack(k.type) ? 'border-[var(--color-border)] bg-[var(--color-surface-1)]' : 'border-dashed border-[var(--color-border)] opacity-55']}>
                 <div class="flex items-center gap-2">
                   <span class="w-2 h-2 rounded-full" style={`background:${color(k.type)}`}></span>
                   <span class="text-[13px] font-semibold text-[var(--color-text-primary)]">{k.label}</span>
                 </div>
                 <p class="text-[12px] text-[var(--color-text-secondary)]">{k.role}</p>
                 <ul class="flex flex-wrap gap-1.5 list-none p-0 m-0">
-                  {has(k.type) ? list(k.type).map((e) => <li><Chip entry={e} /></li>) : <li class="text-[12px] text-[var(--color-text-tertiary)]">None in this stack</li>}
+                  {inStack(k.type) ? list(k.type).map((e) => <li class="min-w-0 max-w-full"><Chip entry={e} /></li>) : <li class="text-[12px] text-[var(--color-text-tertiary)]">None in this stack</li>}
                 </ul>
               </div>
             ))}
@@ -284,8 +288,8 @@ const total = Object.values(entries).reduce((n, l) => n + (l?.length ?? 0), 0);
     function frame(now: number) {
       if (!playing) return;
       t += now - last; last = now;
-      if (t <= MOVE) place(i, t / MOVE);
-      else if (t > MOVE + HOLD) {
+      place(i, Math.min(1, t / MOVE));
+      if (t > MOVE + HOLD) {
         if (i === steps.length - 1) { playing = false; play.textContent = 'Play'; return; }
         i++; t = 0; show(i);
       }

@@ -5,7 +5,7 @@
 interface Props { entry: { name: string; href: string | null }; label?: string }
 const { entry, label } = Astro.props;
 const text = label ?? entry.name;
-const base = 'inline-block max-w-[240px] truncate text-[12px] px-2 py-0.5 rounded-md border';
+const base = 'inline-block max-w-[min(240px,100%)] truncate align-top text-[12px] px-2 py-0.5 rounded-md border';
 ---
 {entry.href ? (
   <a href={entry.href} title={entry.name} class={`${base} border-[var(--color-border)] bg-[var(--color-surface-1)] text-[var(--color-text-primary)] hover:border-[var(--color-border-hover)] no-underline`}>{text}</a>
