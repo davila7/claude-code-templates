@@ -62,14 +62,15 @@ test('buildLlmsTxt follows llmstxt.org structure', () => {
   assert.ok(!/\]\(\)/.test(txt));
 });
 
-test('robots.txt allows /api/v1/ for every crawler and keeps the rest of /api/ blocked', async () => {
+test('robots.txt lets every crawler but CCBot fetch /api/v1/', async () => {
   const fs = await import('node:fs');
   const path = await import('node:path');
   const robots = fs.readFileSync(path.join(import.meta.dirname, '..', 'public', 'robots.txt'), 'utf-8');
   const star = robots.split(/\n(?=User-agent:)/).find((g) => g.startsWith('User-agent: *'));
   assert.ok(star, 'User-agent: * group');
-  assert.match(star, /^Allow: \/api\/v1\/$/m);
-  assert.match(star, /^Disallow: \/api\/$/m);
+  // The rest of /api/ is kept out of the index with X-Robots-Tag (tests/robots.test.ts), not a Disallow.
+  const disallowed = [...star.matchAll(/^Disallow:\s*(\S+)/gm)].map((m) => m[1]);
+  assert.ok(disallowed.every((d) => !'/api/v1/catalog.json'.startsWith(d)), `blocked by ${disallowed}`);
 });
 
 test('llms.txt links llms-full.txt', () => {
