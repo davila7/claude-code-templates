@@ -193,3 +193,4 @@ export function cartToItems(cart: Record<string, Array<{ path?: string }> | unde
 export function singularType(type: StackType): string {
   return type.replace(/s$/, '');
 }
+
