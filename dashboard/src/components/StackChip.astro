@@ -1,0 +1,12 @@
+---
+// One component of a /s/ stack as a small chip: a link to its page, or struck
+// through when it is no longer in the catalog.
+interface Props { entry: { name: string; href: string | null }; prefix?: string }
+const { entry, prefix = '' } = Astro.props;
+const base = 'inline-block max-w-[240px] truncate text-[12px] px-2 py-0.5 rounded-md border';
+---
+{entry.href ? (
+  <a href={entry.href} class={`${base} border-[var(--color-border)] bg-[var(--color-surface-1)] text-[var(--color-text-primary)] hover:border-[var(--color-border-hover)] no-underline`}>{prefix}{entry.name}</a>
+) : (
+  <span class={`${base} border-dashed border-[var(--color-border)] text-[var(--color-text-tertiary)] line-through`} title="No longer in the catalog">{prefix}{entry.name}</span>
+)}

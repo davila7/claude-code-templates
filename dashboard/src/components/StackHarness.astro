@@ -1,97 +1,305 @@
 ---
-// Harness diagram for a /s/ stack: Claude Code in the middle, what drives or
-// configures a session on the left, what Claude reaches for on the right. Each
-// slot says where the CLI writes that type and lists the stack's components in
-// their saved order; types the stack doesn't have stay as dimmed placeholders
-// so the whole setup is visible. Pure markup, no JS.
-import { HARNESS_SLOTS, type HarnessSlot, type StackType } from '../lib/stack-link';
+// How a /s/ stack fits in Claude Code, in two pictures:
+// 1. A horizontal flow (animated, Play/Pause/Replay): what loads when the
+//    session starts, what you send, what the hooks check, and which agents,
+//    skills and MCP servers Claude reaches for. Built from this stack's own
+//    components; parts it doesn't have stay dimmed.
+// 2. The harness in layers: settings wrap everything, hooks sit around every
+//    action, and inside is Claude Code with its commands, agents, skills, MCPs
+//    and mods. No lines to follow, so it stacks cleanly on a phone.
+// Components keep their saved order. Never ordered by downloads.
+import type { StackType } from '../lib/stack-link';
 import { TYPE_CONFIG } from '../lib/icons';
+import { jsonForScript } from '../lib/sanitize-html';
+import Chip from './StackChip.astro';
 
 interface Entry { name: string; href: string | null }
 interface Props { entries: Partial<Record<StackType, Entry[]>> }
 
 const { entries } = Astro.props;
-const total = Object.values(entries).reduce((n, list) => n + (list?.length ?? 0), 0);
-// Loops are rare: show their slot only when the stack has one.
-const slots = HARNESS_SLOTS.filter((s) => s.type !== 'loops' || (entries.loops?.length ?? 0) > 0);
-const left = slots.filter((s) => s.side === 'in');
-const right = slots.filter((s) => s.side === 'out');
+const list = (t: StackType) => entries[t] ?? [];
+const color = (t: StackType) => TYPE_CONFIG[t]?.color ?? 'var(--color-text-tertiary)';
 
-function view(slot: HarnessSlot) {
-  const items = entries[slot.type] ?? [];
-  return { ...slot, items, config: TYPE_CONFIG[slot.type] };
+function summary(t: StackType, empty: string): string {
+  const names = list(t).map((e) => e.name);
+  if (!names.length) return empty;
+  const first = names[0].length > 22 ? `${names[0].slice(0, 21)}…` : names[0];
+  return names.length > 1 ? `${first} +${names.length - 1}` : first;
 }
+
+// ---- Flow geometry (SVG user units) ----
+const W = 760, H = 300, NH = 52;
+const you = { x: 70, y: 170, w: 110 };
+const core = { x: 245, y: 170, w: 140 };
+const hook = { x: 420, y: 170, w: 130 };
+const toolX = 640, toolW = 200;
+const tools = [
+  { key: 'agents' as StackType, label: 'Agents', y: 95, verb: 'delegate' },
+  { key: 'skills' as StackType, label: 'Skills', y: 170, verb: 'load' },
+  { key: 'mcps' as StackType, label: 'MCP', y: 245, verb: 'call' },
+];
+const settingsBand = { x1: 150, x2: 745, y: 20, h: 36 };
+
+const has = (t: StackType) => list(t).length > 0;
+const commandName = has('commands') ? `/${list('commands')[0].name.toLowerCase().replace(/\s+/g, '-')}` : 'your prompt';
+
+type Pt = [number, number];
+interface Step { path: Pt[]; label: string; text: string }
+const steps: Step[] = [];
+const left = (n: { x: number; w: number }) => n.x - n.w / 2;
+const right = (n: { x: number; w: number }) => n.x + n.w / 2;
+
+if (has('settings')) steps.push({
+  path: [[core.x, settingsBand.y + settingsBand.h], [core.x, core.y - NH / 2]],
+  label: 'permissions',
+  text: `<b>Session starts.</b> Settings load (${summary('settings', '')}) and apply to every step after this.`,
+});
+if (has('mcps')) steps.push({
+  path: [[toolX - toolW / 2, 245], [hook.x + 90, 245], [hook.x + 90, core.y + 6], [right(core), core.y + 6]],
+  label: 'tools',
+  text: `The <b>MCP server</b> (${summary('mcps', '')}) connects and offers Claude its tools.`,
+});
+steps.push({
+  path: [[right(you), you.y], [left(core), core.y]],
+  label: commandName.length > 26 ? `${commandName.slice(0, 25)}…` : commandName,
+  text: has('commands') ? `<b>You type</b> <code>${commandName}</code>, a slash command from this stack.` : '<b>You ask</b> Claude for something.',
+});
+for (const t of tools) {
+  if (!has(t.key)) continue;
+  steps.push({
+    path: [[right(core), core.y], [left(hook), hook.y], [right(hook), hook.y], [hook.x + 90, hook.y], [hook.x + 90, t.y], [toolX - toolW / 2, t.y]],
+    label: t.verb,
+    text: (has('hooks') ? `<b>Hooks check it first</b> (${summary('hooks', '')}), then ` : 'Claude ')
+      + (t.key === 'agents' ? `hands the task to a <b>subagent</b>: ${summary('agents', '')}.`
+        : t.key === 'skills' ? `loads a <b>skill</b> it needs: ${summary('skills', '')}.`
+        : `calls the <b>MCP server</b>: ${summary('mcps', '')}.`),
+  });
+}
+steps.push({
+  path: [[left(core), core.y + 8], [right(you), you.y + 8]],
+  label: 'result',
+  text: '<b>Claude answers</b> with the work done by the stack.',
+});
+
+const toolNodes = tools.map((t) => ({ ...t, on: has(t.key), sub: summary(t.key, 'none in this stack'), color: color(t.key) }));
+const hookOn = has('hooks');
+const settingsOn = has('settings');
+
+// ---- Layers ----
+const coreKinds: Array<{ type: StackType; label: string; role: string }> = [
+  { type: 'agents', label: 'Agents', role: 'Subagents Claude delegates to' },
+  { type: 'skills', label: 'Skills', role: 'Know-how loaded on demand' },
+  { type: 'mcps', label: 'MCP', role: 'Outside tools and data' },
+  { type: 'mods', label: 'Mods', role: 'Change Claude Code itself' },
+  { type: 'loops', label: 'Loops', role: 'Repeat a goal until done' },
+];
+const shownCore = coreKinds.filter((k) => has(k.type) || ['agents', 'skills', 'mcps'].includes(k.type));
+const total = Object.values(entries).reduce((n, l) => n + (l?.length ?? 0), 0);
 ---
 
-<section aria-labelledby="harness-title">
-  <h2 id="harness-title" class="text-[15px] font-semibold text-[var(--color-text-primary)]">How it fits in Claude Code</h2>
-  <p class="mt-1 mb-4 text-[13px] text-[var(--color-text-secondary)]">
-    Where each component goes in your project and what it does once Claude Code starts.
-  </p>
-
-  <div class="grid gap-4 md:grid-cols-[1fr_168px_1fr] md:items-center md:gap-0">
-    {/* Claude Code */}
-    <div class="md:order-2 flex items-center">
-      <span class="hidden md:block flex-1 h-px bg-[var(--color-border-hover)]"></span>
-      <div class="w-full md:w-auto rounded-xl border border-[var(--color-accent)]/50 bg-[var(--color-accent)]/10 px-4 py-3 text-center">
-        <div class="text-[14px] font-semibold text-[var(--color-text-primary)]">Claude Code</div>
-        <div class="text-[11px] text-[var(--color-text-tertiary)] mt-0.5">your project + this stack</div>
-        <div class="text-[11px] font-medium text-[var(--color-accent)] mt-1">{total} {total === 1 ? 'component' : 'components'}</div>
-      </div>
-      <span class="hidden md:block flex-1 h-px bg-[var(--color-border-hover)]"></span>
-    </div>
-
-    {[{ side: 'left', list: left }, { side: 'right', list: right }].map(({ side, list }) => (
-      <div class:list={[
-        'relative space-y-2.5 pl-5',
-        side === 'left' ? 'md:order-1 md:pl-0 md:pr-6' : 'md:order-3 md:pl-6',
-      ]}>
-        <p class="text-[11px] font-semibold uppercase tracking-wide text-[var(--color-text-tertiary)] md:hidden -ml-5">
-          {side === 'left' ? 'Drives and configures the session' : 'What Claude reaches for'}
-        </p>
-        <span class:list={[
-          'absolute w-px bg-[var(--color-border-hover)] left-1.5 top-6 bottom-6',
-          side === 'left' ? 'md:left-auto md:right-0 md:top-8 md:bottom-8' : 'md:left-0 md:top-8 md:bottom-8',
-        ]} aria-hidden="true"></span>
-        {list.map(view).map((slot) => (
-          <div class:list={[
-            'relative rounded-lg border p-3',
-            slot.items.length
-              ? 'border-[var(--color-border)] bg-[var(--color-card-bg)]'
-              : 'border-dashed border-[var(--color-border)] opacity-55',
-          ]}>
-            <span class:list={[
-              'absolute top-1/2 h-px bg-[var(--color-border-hover)] -left-3.5 w-3.5',
-              side === 'left' ? 'md:left-auto md:-right-6 md:w-6' : 'md:-left-6 md:w-6',
-            ]} aria-hidden="true"></span>
-            <div class="flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full shrink-0" style={`background:${slot.config?.color ?? 'var(--color-text-tertiary)'}`}></span>
-              <span class="text-[13px] font-semibold text-[var(--color-text-primary)]">{slot.config?.label ?? slot.type}</span>
-              <span class="ml-auto text-[11px] tabular-nums text-[var(--color-text-tertiary)]">{slot.items.length}</span>
-            </div>
-            <p class="mt-0.5 text-[12px] text-[var(--color-text-secondary)]">{slot.role}</p>
-            {slot.items.length > 0 ? (
-              <ul class="mt-2 flex flex-wrap gap-1.5 list-none p-0 m-0">
-                {slot.items.map((item) => (
-                  <li>
-                    {item.href ? (
-                      <a href={item.href} class="inline-block max-w-[220px] truncate text-[12px] px-2 py-0.5 rounded-md border border-[var(--color-border)] bg-[var(--color-surface-1)] text-[var(--color-text-primary)] hover:border-[var(--color-border-hover)] no-underline">{item.name}</a>
-                    ) : (
-                      <span class="inline-block max-w-[220px] truncate text-[12px] px-2 py-0.5 rounded-md border border-dashed border-[var(--color-border)] text-[var(--color-text-tertiary)] line-through" title="No longer in the catalog">{item.name}</span>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p class="mt-1.5 text-[12px] text-[var(--color-text-tertiary)]">None in this stack</p>
-            )}
-            <code class="mt-2 block text-[11px] text-[var(--color-text-tertiary)] break-all">{slot.location}</code>
-          </div>
-        ))}
-      </div>
-    ))}
+<section aria-labelledby="harness-title" class="space-y-6">
+  <div>
+    <h2 id="harness-title" class="text-[15px] font-semibold text-[var(--color-text-primary)]">How it works in Claude Code</h2>
+    <p class="mt-1 text-[13px] text-[var(--color-text-secondary)]">Follow one session with this stack, then see how the parts fit together.</p>
   </div>
-  <p class="mt-3 text-[12px] text-[var(--color-text-tertiary)]">
-    Hooks and settings ask where to go when you install them (project, local or user settings); the paths show the default.
-  </p>
+
+  {/* 1. Flow */}
+  <div class="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-1)] p-3 md:p-4" data-stack-flow>
+    <div class="overflow-x-auto" data-flow-scroll>
+      <svg viewBox={`0 0 ${W} ${H}`} class="mx-auto block w-full min-w-[640px] max-w-[880px]" role="img" aria-label="Flow of a Claude Code session with this stack">
+        {/* Settings band */}
+        <rect x={settingsBand.x1} y={settingsBand.y} width={settingsBand.x2 - settingsBand.x1} height={settingsBand.h} rx="8"
+          fill={settingsOn ? `${color('settings')}14` : 'transparent'} stroke={color('settings')} stroke-dasharray="5 4" opacity={settingsOn ? 1 : 0.4} />
+        <circle cx={settingsBand.x1 + 16} cy={settingsBand.y + settingsBand.h / 2} r="4" fill={color('settings')} opacity={settingsOn ? 1 : 0.4} />
+        <text x={settingsBand.x1 + 28} y={settingsBand.y + 23} class="flow-title" opacity={settingsOn ? 1 : 0.5}>Settings</text>
+        <text x={settingsBand.x1 + 92} y={settingsBand.y + 23} class="flow-sub" opacity={settingsOn ? 1 : 0.5}>{settingsOn ? `${summary('settings', '')} · apply to every step` : 'none in this stack'}</text>
+        <line x1={core.x} y1={settingsBand.y + settingsBand.h} x2={core.x} y2={core.y - NH / 2} class="flow-edge" data-edge />
+
+        {/* Edges */}
+        <line x1={right(you)} y1={you.y} x2={left(core)} y2={core.y} class="flow-edge" />
+        <line x1={right(core)} y1={core.y} x2={left(hook)} y2={hook.y} class="flow-edge" />
+        <line x1={right(hook)} y1={hook.y} x2={hook.x + 90} y2={hook.y} class="flow-edge" />
+        <line x1={hook.x + 90} y1={tools[0].y} x2={hook.x + 90} y2={tools[2].y} class="flow-edge" />
+        {toolNodes.map((t) => <line x1={hook.x + 90} y1={t.y} x2={toolX - toolW / 2} y2={t.y} class="flow-edge" opacity={t.on ? 1 : 0.4} />)}
+
+        {/* Nodes */}
+        <g>
+          <rect x={left(you)} y={you.y - NH / 2} width={you.w} height={NH} rx="10" class="flow-node" />
+          <text x={you.x} y={you.y - 3} text-anchor="middle" class="flow-title">You</text>
+          <text x={you.x} y={you.y + 14} text-anchor="middle" class="flow-sub">{has('commands') ? 'slash command' : 'prompt'}</text>
+        </g>
+        <g>
+          <rect x={left(core)} y={core.y - NH / 2} width={core.w} height={NH} rx="10" class="flow-node flow-core" />
+          <text x={core.x} y={core.y - 3} text-anchor="middle" class="flow-title">Claude Code</text>
+          <text x={core.x} y={core.y + 14} text-anchor="middle" class="flow-sub">{total} {total === 1 ? 'component' : 'components'}</text>
+        </g>
+        <g opacity={hookOn ? 1 : 0.45}>
+          <rect x={left(hook)} y={hook.y - NH / 2} width={hook.w} height={NH} rx="10" class="flow-node" stroke-dasharray={hookOn ? undefined : '4 3'} />
+          <circle cx={left(hook) + 13} cy={hook.y - 7} r="4" fill={color('hooks')} />
+          <text x={hook.x + 6} y={hook.y - 3} text-anchor="middle" class="flow-title">Hooks</text>
+          <text x={hook.x} y={hook.y + 14} text-anchor="middle" class="flow-sub">{summary('hooks', 'none in this stack')}</text>
+        </g>
+        {toolNodes.map((t) => (
+          <g opacity={t.on ? 1 : 0.45}>
+            <rect x={toolX - toolW / 2} y={t.y - NH / 2} width={toolW} height={NH} rx="10" class="flow-node" stroke-dasharray={t.on ? undefined : '4 3'} />
+            <circle cx={toolX - toolW / 2 + 14} cy={t.y - 7} r="4" fill={t.color} />
+            <text x={toolX - toolW / 2 + 26} y={t.y - 3} class="flow-title">{t.label}</text>
+            <text x={toolX - toolW / 2 + 26} y={t.y + 14} class="flow-sub">{t.sub}</text>
+          </g>
+        ))}
+
+        {/* Packet */}
+        <g data-packet opacity="0">
+          <rect data-packet-bg rx="5" height="20" y="-32" class="flow-packet-bg" />
+          <text data-packet-label y="-18" text-anchor="middle" class="flow-packet-label"></text>
+          <circle r="6" class="flow-packet" />
+        </g>
+      </svg>
+    </div>
+    <p data-flow-text aria-live="polite" class="mt-3 min-h-[2.8em] text-center text-[13px] text-[var(--color-text-secondary)] max-w-xl mx-auto">
+      Press Play to follow a session with this stack.
+    </p>
+    <div class="mt-2 flex justify-center gap-2">
+      <button type="button" data-flow-play class="h-9 px-4 rounded-md bg-[var(--color-accent)] text-white text-[13px] font-semibold">Play</button>
+      <button type="button" data-flow-replay class="h-9 px-4 rounded-md border border-[var(--color-border)] bg-[var(--color-surface-0)] text-[13px] font-medium text-[var(--color-text-primary)]">Replay</button>
+    </div>
+    <script type="application/json" data-flow-steps set:html={jsonForScript(steps)} />
+  </div>
+
+  {/* 2. Layers */}
+  <div class="space-y-2">
+    <h3 class="text-[13px] font-semibold text-[var(--color-text-secondary)]">The harness in layers</h3>
+    <div class="rounded-xl p-3 md:p-4 space-y-3 border border-dashed" style={`border-color:${color('settings')};background:${color('settings')}0d`}>
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="w-2 h-2 rounded-full" style={`background:${color('settings')}`}></span>
+        <span class="text-[13px] font-semibold text-[var(--color-text-primary)]">Settings</span>
+        <span class="text-[12px] text-[var(--color-text-secondary)]">what Claude may do</span>
+      </div>
+      <ul class="flex flex-wrap gap-1.5 list-none p-0 m-0">
+        {has('settings') ? list('settings').map((e) => <li><Chip entry={e} /></li>) : <li class="text-[12px] text-[var(--color-text-tertiary)]">None in this stack</li>}
+      </ul>
+
+      <div class="rounded-xl p-3 md:p-4 space-y-3 border" style={`border-color:${color('hooks')};background:${color('hooks')}0d`}>
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="w-2 h-2 rounded-full" style={`background:${color('hooks')}`}></span>
+          <span class="text-[13px] font-semibold text-[var(--color-text-primary)]">Hooks</span>
+          <span class="text-[12px] text-[var(--color-text-secondary)]">run on their own around actions</span>
+        </div>
+        <ul class="flex flex-wrap gap-1.5 list-none p-0 m-0">
+          {has('hooks') ? list('hooks').map((e) => <li><Chip entry={e} /></li>) : <li class="text-[12px] text-[var(--color-text-tertiary)]">None in this stack</li>}
+        </ul>
+
+        <div class="rounded-xl p-3 md:p-4 space-y-3 border border-[var(--color-accent)]/60 bg-[var(--color-surface-0)]">
+          <div class="flex flex-wrap items-center gap-2 text-[13px]">
+            <span class="font-semibold text-[var(--color-text-primary)]">You</span>
+            <span class="text-[var(--color-text-tertiary)]">→</span>
+            {has('commands')
+              ? list('commands').map((e) => <Chip entry={e} prefix="/" />)
+              : <span class="text-[12px] text-[var(--color-text-tertiary)]">your prompt</span>}
+            <span class="text-[var(--color-text-tertiary)]">→</span>
+            <span class="font-semibold text-[var(--color-text-primary)]">Claude Code</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+            {shownCore.map((k) => (
+              <div class:list={['rounded-lg border p-2.5 space-y-1.5 min-w-0', has(k.type) ? 'border-[var(--color-border)] bg-[var(--color-surface-1)]' : 'border-dashed border-[var(--color-border)] opacity-55']}>
+                <div class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full" style={`background:${color(k.type)}`}></span>
+                  <span class="text-[13px] font-semibold text-[var(--color-text-primary)]">{k.label}</span>
+                </div>
+                <p class="text-[12px] text-[var(--color-text-secondary)]">{k.role}</p>
+                <ul class="flex flex-wrap gap-1.5 list-none p-0 m-0">
+                  {has(k.type) ? list(k.type).map((e) => <li><Chip entry={e} /></li>) : <li class="text-[12px] text-[var(--color-text-tertiary)]">None in this stack</li>}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
+
+<style>
+  .flow-node { fill: var(--color-surface-0); stroke: var(--color-border-hover); }
+  .flow-core { fill: var(--color-surface-0); stroke: var(--color-accent); stroke-width: 1.5; }
+  .flow-title { fill: var(--color-text-primary); font: 600 13px var(--font-sans, system-ui, sans-serif); }
+  .flow-sub { fill: var(--color-text-tertiary); font: 400 11px var(--font-sans, system-ui, sans-serif); }
+  .flow-edge { stroke: var(--color-border-hover); stroke-width: 1.5; }
+  .flow-packet { fill: var(--color-accent); }
+  .flow-packet-bg { fill: var(--color-surface-0); stroke: var(--color-accent); }
+  .flow-packet-label { fill: var(--color-text-primary); font: 500 11px var(--font-mono, ui-monospace, monospace); }
+</style>
+
+<script>
+  type Pt = [number, number];
+  interface Step { path: Pt[]; label: string; text: string }
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-stack-flow]')) {
+    let steps: Step[] = [];
+    try { steps = JSON.parse(root.querySelector('[data-flow-steps]')?.textContent || '[]'); } catch { continue; }
+    if (!steps.length) continue;
+    const packet = root.querySelector<SVGGElement>('[data-packet]')!;
+    const label = root.querySelector<SVGTextElement>('[data-packet-label]')!;
+    const bg = root.querySelector<SVGRectElement>('[data-packet-bg]')!;
+    const text = root.querySelector<HTMLElement>('[data-flow-text]')!;
+    const play = root.querySelector<HTMLButtonElement>('[data-flow-play]')!;
+    const scroller = root.querySelector<HTMLElement>('[data-flow-scroll]')!;
+    const svg = root.querySelector('svg')!;
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    const MOVE = reduce ? 1 : 1600, HOLD = 1500;
+    let i = 0, t = 0, playing = false, last = 0;
+
+    const lengths = (p: Pt[]) => p.slice(1).map((q, k) => Math.hypot(q[0] - p[k][0], q[1] - p[k][1]));
+    function at(p: Pt[], f: number): Pt {
+      const ls = lengths(p), total = ls.reduce((a, b) => a + b, 0) || 1;
+      let d = f * total;
+      for (let k = 0; k < ls.length; k++) {
+        if (d <= ls[k] || k === ls.length - 1) {
+          const r = ls[k] ? Math.min(1, d / ls[k]) : 1;
+          return [p[k][0] + (p[k + 1][0] - p[k][0]) * r, p[k][1] + (p[k + 1][1] - p[k][1]) * r];
+        }
+        d -= ls[k];
+      }
+      return p[p.length - 1];
+    }
+    function show(n: number) {
+      const s = steps[n];
+      text.innerHTML = `${n + 1} / ${steps.length} · ${s.text}`;
+      label.textContent = s.label;
+      const w = Math.max(44, s.label.length * 6.8 + 16);
+      bg.setAttribute('width', String(w));
+      bg.setAttribute('x', String(-w / 2));
+    }
+    function place(n: number, f: number) {
+      const e = f < 0.5 ? 2 * f * f : 1 - Math.pow(-2 * f + 2, 2) / 2;
+      const [x, y] = at(steps[n].path, e);
+      packet.setAttribute('transform', `translate(${x},${y})`);
+      // On a phone the flow scrolls sideways: keep the packet in view.
+      if (scroller.scrollWidth > scroller.clientWidth) {
+        const scale = svg.clientWidth / 760;
+        scroller.scrollLeft = x * scale - scroller.clientWidth / 2;
+      }
+    }
+    function frame(now: number) {
+      if (!playing) return;
+      t += now - last; last = now;
+      if (t <= MOVE) place(i, t / MOVE);
+      else if (t > MOVE + HOLD) {
+        if (i === steps.length - 1) { playing = false; play.textContent = 'Play'; return; }
+        i++; t = 0; show(i);
+      }
+      requestAnimationFrame(frame);
+    }
+    function start() {
+      playing = true; last = performance.now(); packet.setAttribute('opacity', '1');
+      play.textContent = 'Pause'; requestAnimationFrame(frame);
+    }
+    play.addEventListener('click', () => {
+      if (playing) { playing = false; play.textContent = 'Play'; return; }
+      if (i === steps.length - 1 && t > MOVE) { i = 0; t = 0; }
+      show(i); start();
+    });
+    root.querySelector('[data-flow-replay]')?.addEventListener('click', () => { i = 0; t = 0; show(0); place(0, 0); start(); });
+    show(0);
+  }
+</script>
