@@ -249,7 +249,9 @@ results = client.query_points(
 ### Nested Payload Filtering
 
 ```python
-from qdrant_client.models import Filter, FieldCondition, MatchValue, NestedCondition
+from qdrant_client.models import (
+    Filter, FieldCondition, MatchValue, Nested, NestedCondition
+)
 
 # Filter on nested objects
 results = client.query_points(
@@ -258,14 +260,16 @@ results = client.query_points(
     query_filter=Filter(
         must=[
             NestedCondition(
-                key="metadata",
-                filter=Filter(
-                    must=[
-                        FieldCondition(
-                            key="author.name",
-                            match=MatchValue(value="John")
-                        )
-                    ]
+                nested=Nested(
+                    key="metadata",
+                    filter=Filter(
+                        must=[
+                            FieldCondition(
+                                key="author.name",
+                                match=MatchValue(value="John")
+                            )
+                        ]
+                    )
                 )
             )
         ]
