@@ -23618,5 +23618,26 @@
     "website": "https://www.minicut.ai/?utm_source=claude-code-templates&utm_medium=integration",
     "marketplace_name": "minicut",
     "plugin_name": "minicut"
+  },
+  {
+    "slug": "lexio-api-skill",
+    "name": "Lexio Api Skill",
+    "author": "lexio-rent-git",
+    "description": "Build integrations with the Lexio Rent API, the REST API of a vehicle rental management software: availability and prices, quotes, rentals, payments, fleet and event sync. One documentation skill that asks before any write that changes a booking or money.",
+    "github": "https://github.com/lexio-rent-git/lexio-api-skill",
+    "stars": 0,
+    "type": "plugin",
+    "tags": [
+      "skills"
+    ],
+    "contains": {
+      "skills": 1
+    },
+    "highlights": [
+      "Web UI: https://lexio.rent/logiciel-location-voiture"
+    ],
+    "website": "https://lexio.rent/logiciel-location-voiture",
+    "marketplace_name": "lexio-rent",
+    "plugin_name": "lexio-api"
   }
 ]
