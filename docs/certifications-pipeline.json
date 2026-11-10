@@ -139,7 +139,7 @@
         "id": "anthropic-claude-code-in-action",
         "kind": "course",
         "title": "Claude Code in Action",
-        "description": "Run long, hands-off Claude Code sessions you can trust: steer, configure, automate, and verify",
+        "description": "Run long, hands-off Claude Code sessions you can trust: steer, configure, automate, and verify.",
         "url": "https://anthropic.skilljar.com/claude-code-in-action"
       },
       {
@@ -155,7 +155,7 @@
         "id": "anthropic-ai-fluency-framework-foundations",
         "kind": "course",
         "title": "AI Fluency: Framework & Foundations",
-        "description": "Learn to collaborate with AI systems effectively, efficiently, ethically, and safely",
+        "description": "Learn to collaborate with AI systems effectively, efficiently, ethically, and safely.",
         "url": "https://anthropic.skilljar.com/ai-fluency-framework-foundations"
       },
       {
@@ -171,7 +171,7 @@
         "id": "anthropic-claude-with-the-anthropic-api",
         "kind": "course",
         "title": "Building with the Claude API",
-        "description": "This comprehensive course covers the full spectrum of working with Anthropic models using the Claude API",
+        "description": "This comprehensive course covers the full spectrum of working with Anthropic models using the Claude API.",
         "url": "https://anthropic.skilljar.com/claude-with-the-anthropic-api"
       },
       {
@@ -187,7 +187,7 @@
         "id": "anthropic-introduction-to-model-context-protocol",
         "kind": "course",
         "title": "Introduction to Model Context Protocol",
-        "description": "Learn to build Model Context Protocol servers and clients from scratch using Python. Master MCP's three core primitives—tools, resources, and prompts—to connect Claude with external services",
+        "description": "Learn to build Model Context Protocol servers and clients from scratch using Python. Master MCP's three core primitives—tools, resources, and prompts—to connect Claude with external services.",
         "url": "https://anthropic.skilljar.com/introduction-to-model-context-protocol"
       },
       {
@@ -347,7 +347,7 @@
         "id": "anthropic-ai-capabilities-and-limitations",
         "kind": "course",
         "title": "AI Capabilities and Limitations",
-        "description": "An introductory course about how AI works",
+        "description": "An introductory course about how AI works.",
         "url": "https://anthropic.skilljar.com/ai-capabilities-and-limitations"
       },
       {
@@ -423,10 +423,11 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI programming",
+          "AI tools",
           "Software development",
-          "AI tools usage",
-          "Understanding AI models"
+          "Programming with AI",
+          "Understanding AI models",
+          "AI limitations"
         ],
         "source": "cursor-learn",
         "price": null,
@@ -465,7 +466,7 @@
         "eligibility": "public",
         "topics": [
           "Applied AI",
-          "Workflows"
+          "Foundations"
         ],
         "source": "openai-academy",
         "price": null,
@@ -501,7 +502,8 @@
         "eligibility": "public",
         "topics": [
           "OpenAI API",
-          "Solutions"
+          "Scope",
+          "AI Solutions"
         ],
         "source": "openai-academy",
         "price": null,
@@ -519,7 +521,8 @@
         "eligibility": "public",
         "topics": [
           "OpenAI API",
-          "Evaluation"
+          "Evaluate",
+          "AI Applications"
         ],
         "source": "openai-academy",
         "price": null,
@@ -537,6 +540,7 @@
         "eligibility": "public",
         "topics": [
           "OpenAI API",
+          "Design",
           "Agentic Systems"
         ],
         "source": "openai-academy",
@@ -555,6 +559,7 @@
         "eligibility": "public",
         "topics": [
           "OpenAI API",
+          "Build",
           "Retrieval-Augmented Generation"
         ],
         "source": "openai-academy",
@@ -573,7 +578,8 @@
         "eligibility": "public",
         "topics": [
           "OpenAI API",
-          "Performance"
+          "Optimize",
+          "AI Application Performance"
         ],
         "source": "openai-academy",
         "price": null,
@@ -590,7 +596,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Codex"
+          "Codex",
+          "Get Started"
         ],
         "source": "openai-academy",
         "price": null,
@@ -608,6 +615,7 @@
         "eligibility": "public",
         "topics": [
           "Codex",
+          "Extend",
           "Workflows"
         ],
         "source": "openai-academy",
@@ -626,7 +634,9 @@
         "eligibility": "public",
         "topics": [
           "Codex",
-          "Governance"
+          "Scale",
+          "Teams",
+          "Systems"
         ],
         "source": "openai-academy",
         "price": null,
@@ -643,8 +653,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Leadership",
-          "AI Strategy"
+          "AI Leadership",
+          "AI Adoption"
         ],
         "source": "openai-academy",
         "price": null,
@@ -661,9 +671,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Education",
-          "Teaching",
-          "ChatGPT"
+          "AI",
+          "Educators"
         ],
         "source": "openai-academy",
         "price": null,
@@ -680,16 +689,15 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Education",
-          "Students",
-          "ChatGPT"
+          "AI",
+          "College Students"
         ],
         "source": "openai-academy",
         "price": null,
         "id": "openai-ai-for-college-students-gxgmr",
         "kind": "course",
         "title": "AI for College Students",
-        "description": "Learn how to use ChatGPT for practical study and career tasks to improve learning outcomes.",
+        "description": "Learn how to use ChatGPT for practical study and career tasks.",
         "url": "https://academy.openai.com/public/courses/ai-for-college-students-gxgmr"
       }
     ],
@@ -719,7 +727,7 @@
         "id": "vercel-build-and-launch-with-ai",
         "kind": "course",
         "title": "Build and Launch with AI",
-        "description": "Build and launch a website for Small Hours Studio with AI. Start in v0, add workshop pages and an email inquiry form, and learn to publish your own updates with fx, GitHub, and Vercel. No coding experience required.",
+        "description": "Build and launch a website for Small Hours Studio with AI. Start in v0, add workshop pages and an email inquiry form, and learn to publish your own updates with fx, GitHub, and Vercel.",
         "url": "https://vercel.com/academy/build-and-launch-with-ai"
       },
       {
@@ -1135,8 +1143,7 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI Infrastructure",
-          "AI Operations"
+          "AI Infrastructure and Operations"
         ],
         "source": "nvidia-certification",
         "level": "Entry",
@@ -1257,7 +1264,7 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI Models and Application Development"
+          "AI Models"
         ],
         "source": "nvidia-certification",
         "level": "Entry",
