@@ -1,12 +1,14 @@
 ---
 // One component of a /s/ stack as a small chip: a link to its page, or struck
-// through when it is no longer in the catalog.
-interface Props { entry: { name: string; href: string | null }; prefix?: string }
-const { entry, prefix = '' } = Astro.props;
+// through when it is no longer in the catalog. `label` replaces the shown text
+// (commands show the slash command you type, e.g. /fix_bug).
+interface Props { entry: { name: string; href: string | null }; label?: string }
+const { entry, label } = Astro.props;
+const text = label ?? entry.name;
 const base = 'inline-block max-w-[240px] truncate text-[12px] px-2 py-0.5 rounded-md border';
 ---
 {entry.href ? (
-  <a href={entry.href} class={`${base} border-[var(--color-border)] bg-[var(--color-surface-1)] text-[var(--color-text-primary)] hover:border-[var(--color-border-hover)] no-underline`}>{prefix}{entry.name}</a>
+  <a href={entry.href} title={entry.name} class={`${base} border-[var(--color-border)] bg-[var(--color-surface-1)] text-[var(--color-text-primary)] hover:border-[var(--color-border-hover)] no-underline`}>{text}</a>
 ) : (
-  <span class={`${base} border-dashed border-[var(--color-border)] text-[var(--color-text-tertiary)] line-through`} title="No longer in the catalog">{prefix}{entry.name}</span>
+  <span class={`${base} border-dashed border-[var(--color-border)] text-[var(--color-text-tertiary)] line-through`} title={`${entry.name}: no longer in the catalog`}>{text}</span>
 )}

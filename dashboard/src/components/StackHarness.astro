@@ -13,7 +13,7 @@ import { TYPE_CONFIG } from '../lib/icons';
 import { jsonForScript } from '../lib/sanitize-html';
 import Chip from './StackChip.astro';
 
-interface Entry { name: string; href: string | null }
+interface Entry { name: string; slug: string; href: string | null }
 interface Props { entries: Partial<Record<StackType, Entry[]>> }
 
 const { entries } = Astro.props;
@@ -41,7 +41,7 @@ const tools = [
 const settingsBand = { x1: 150, x2: 745, y: 20, h: 36 };
 
 const has = (t: StackType) => list(t).length > 0;
-const commandName = has('commands') ? `/${list('commands')[0].name.toLowerCase().replace(/\s+/g, '-')}` : 'your prompt';
+const commandName = has('commands') ? `/${list('commands')[0].slug}` : 'your prompt';
 
 type Pt = [number, number];
 interface Step { path: Pt[]; label: string; text: string }
@@ -194,7 +194,7 @@ const total = Object.values(entries).reduce((n, l) => n + (l?.length ?? 0), 0);
             <span class="font-semibold text-[var(--color-text-primary)]">You</span>
             <span class="text-[var(--color-text-tertiary)]">→</span>
             {has('commands')
-              ? list('commands').map((e) => <Chip entry={e} prefix="/" />)
+              ? list('commands').map((e) => <Chip entry={e} label={`/${e.slug}`} />)
               : <span class="text-[12px] text-[var(--color-text-tertiary)]">your prompt</span>}
             <span class="text-[var(--color-text-tertiary)]">→</span>
             <span class="font-semibold text-[var(--color-text-primary)]">Claude Code</span>
@@ -280,6 +280,7 @@ const total = Object.values(entries).reduce((n, l) => n + (l?.length ?? 0), 0);
         scroller.scrollLeft = x * scale - scroller.clientWidth / 2;
       }
     }
+    let raf = 0;
     function frame(now: number) {
       if (!playing) return;
       t += now - last; last = now;
@@ -288,11 +289,12 @@ const total = Object.values(entries).reduce((n, l) => n + (l?.length ?? 0), 0);
         if (i === steps.length - 1) { playing = false; play.textContent = 'Play'; return; }
         i++; t = 0; show(i);
       }
-      requestAnimationFrame(frame);
+      raf = requestAnimationFrame(frame);
     }
     function start() {
+      cancelAnimationFrame(raf);
       playing = true; last = performance.now(); packet.setAttribute('opacity', '1');
-      play.textContent = 'Pause'; requestAnimationFrame(frame);
+      play.textContent = 'Pause'; raf = requestAnimationFrame(frame);
     }
     play.addEventListener('click', () => {
       if (playing) { playing = false; play.textContent = 'Play'; return; }

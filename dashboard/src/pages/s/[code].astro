@@ -80,10 +80,10 @@ const cartItems = present.map((r) => ({
 }));
 
 // Harness diagram: every component under its type, in saved order.
-const harnessEntries: Partial<Record<StackType, Array<{ name: string; href: string | null }>>> = {};
+const harnessEntries: Partial<Record<StackType, Array<{ name: string; slug: string; href: string | null }>>> = {};
 for (const r of rows) {
   const gone = !catalogUnavailable && !r.component;
-  (harnessEntries[r.item.type] ??= []).push({ name: nameOf(r), href: gone ? null : componentPath(r.item.type, r.item.path) });
+  (harnessEntries[r.item.type] ??= []).push({ name: nameOf(r), slug: r.item.path.split('/').pop() ?? r.item.path, href: gone ? null : componentPath(r.item.type, r.item.path) });
 }
 
 const created = stack ? formatDate(stack.created) : '';
