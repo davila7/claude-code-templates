@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "paxa": {
+      "description": "Official Paxa Labs MCP for Thai, English, and Mandarin speech AI. Speak text aloud through your speakers or save it to audio files with matching captions, using 50 voices that each speak all three languages, including mixed sentences, or a voice you design from a text description. Also transcribes recordings and videos with subtitles (research preview), translates any language into Thai, and reads PDFs and images with OCR and field extraction.",
+      "command": "npx",
+      "args": ["-y", "@paxalabs/mcp"],
+      "env": {
+        "PAXA_API_KEY": "<your-api-key>"
+      }
+    }
+  }
+}
