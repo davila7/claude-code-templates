@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.33.1] - Unreleased
+
+### Fixed
+- **`--skill` installs reported failure and were not counted** (regression in
+  1.33.0). The skill files were written, then a `ReferenceError: source is not
+  defined` in the tracking call made the install print `FAIL ... source is not
+  defined` and a `Retry:` line, skip the download count and exit 1 in a batch.
+  External skills (`source.json`) were not affected.
+
 ### Removed
 - **The `cct` binary.** It only worked after a global install, and
   `npx cct` never ran it: npm downloads the unrelated `cct` package, owned by
@@ -21,8 +30,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   directory on 2026-11-02 as an application for a 25,000 USD/year grant; both
   URLs show as verified in the
   [listing](https://dir.floss.fund/view/project/@github.com/davila7/claude-code-templates).
+- `cli-ci.yml`: on PRs touching the CLI, installs its dependencies, runs a
+  `--skill` install against a stubbed GitHub (`npm run test:install-paths`) and
+  lints `cli-tool/src` and `cli-tool/bin` for undefined identifiers. The root
+  `npm test` runs without dependencies, so it never loaded `index.js`.
 
-## [1.33.0] - Unreleased
+## [1.33.0] - 2026-11-09
 
 ### Changed
 - **Mods download from aitmpl.com** (`--mod`): one request to

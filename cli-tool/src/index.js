@@ -1533,7 +1533,7 @@ async function installIndividualSkill(skillName, targetDir, options) {
     trackingService.trackDownload('skill', skillName, {
       installation_type: 'individual_skill',
       target_directory: path.relative(process.cwd(), targetDir),
-      source,
+      source: 'github_main',
       total_files: Object.keys(downloadedFiles).length
     });
     trackingService.trackInstallationOutcome('skill', skillName, 'success', { durationMs: Date.now() - startTime, batchId: options.batchId });
@@ -2785,4 +2785,5 @@ async function handlePromptExecution(prompt, targetDir) {
   }
 }
 
-module.exports = { createClaudeConfig };
+// installIndividualSkill is exported for tests (cli-tool/tests/unit/skill-install.node-test.js).
+module.exports = { createClaudeConfig, installIndividualSkill };

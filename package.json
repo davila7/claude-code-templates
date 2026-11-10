@@ -1,6 +1,6 @@
 {
   "name": "claude-code-templates",
-  "version": "1.33.0",
+  "version": "1.33.1",
   "description": "Component templates and tracking system for Claude Code",
   "main": "cli-tool/src/index.js",
   "bin": {
@@ -12,6 +12,7 @@
     "test:external-skill": "node --test cli-tool/tests/unit/external-skill.node-test.js",
     "test:plugin-install": "node --test cli-tool/tests/unit/plugin-install.node-test.js",
     "test:cli-install-fixes": "node --test cli-tool/tests/unit/cli-install-fixes.node-test.js",
+    "test:install-paths": "node --test cli-tool/tests/unit/skill-install.node-test.js",
     "check:version-sync": "node scripts/sync-package-versions.js --check",
     "test:version-sync": "node --test scripts/sync-package-versions.test.js",
     "prepublishOnly": "npm run check:version-sync",
