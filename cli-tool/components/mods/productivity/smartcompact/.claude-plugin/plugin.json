@@ -1,0 +1,27 @@
+{
+  "name": "smartcompact",
+  "version": "0.2.3",
+  "description": "A Claude Code mod that compacts the conversation at the right moment with a summary focused on the current task, and then picks the work back up.",
+  "author": { "name": "Amber van den Berg", "url": "https://github.com/ambervdberg" },
+  "homepage": "https://github.com/ambervdberg/smartcompact",
+  "repository": "https://github.com/ambervdberg/smartcompact",
+  "privacyPolicyUrl": "https://github.com/ambervdberg/smartcompact/blob/main/plugin/smartcompact/README.md#what-it-reads-sends-and-writes",
+  "supportUrl": "https://github.com/ambervdberg/smartcompact/issues",
+  "documentationUrl": "https://github.com/ambervdberg/smartcompact/blob/main/plugin/smartcompact/README.md",
+  "license": "MIT",
+  "keywords": ["compact", "context", "judge", "automation"],
+  "userConfig": {
+    "minTokens": {
+      "type": "number",
+      "title": "Token floor",
+      "description": "Tokens added since the first turn of the session, or since the first turn after a compaction, before the session is nudged to compact, the judge is asked or a session's own request compacts.",
+      "default": 60000
+    },
+    "claudeModel": {
+      "type": "string",
+      "title": "Claude judge model",
+      "description": "Model alias or id for the Claude judge. It runs through Claude Code's own model call.",
+      "default": "haiku"
+    }
+  }
+}
