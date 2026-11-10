@@ -17,11 +17,11 @@ function isActive(path: string): boolean {
   <div class="px-4 py-4 border-b border-[var(--color-border)] flex items-center justify-between min-h-[65px] transition-all duration-300 bg-[var(--color-surface-0)]">
     <a href="/" class="flex items-center gap-2.5 group min-w-0 overflow-hidden transition-all duration-300">
       <svg
-        class="w-8 h-8 shrink-0 transition-transform duration-200 group-hover:scale-110"
+        class="w-8 h-8 shrink-0"
         viewBox="0 0 32 32"
         aria-hidden="true"
       >
-        <rect x="0.5" y="0.5" width="31" height="31" rx="7" fill="var(--color-surface-2)" stroke="var(--color-border-strong)" />
+        <rect x="0.5" y="0.5" width="31" height="31" rx="7" class="fill-[var(--color-surface-2)] stroke-[var(--color-border-strong)] transition-colors duration-200 group-hover:fill-[var(--color-surface-3)] group-hover:stroke-[var(--color-text-tertiary)]" />
         <g fill="var(--color-text-primary)">
           <rect x="7" y="7" width="8" height="8" rx="1.6" />
           <rect x="17" y="17" width="8" height="8" rx="1.6" />

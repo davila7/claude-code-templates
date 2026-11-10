@@ -270,15 +270,20 @@ body {
   padding-right: 0.5rem !important;
 }
 
+/* 72px rail - 16px padding = 56px: the 32px logo and a 24px toggle fit
+   exactly. With a 32px toggle the logo link shrank (min-w-0) and its
+   overflow-hidden cut the tile's right edge. */
 #sidebar[data-collapsed="true"] > div > div:first-child > a {
   width: auto !important;
   min-width: auto !important;
+  flex-shrink: 0 !important;
   gap: 0 !important;
   padding: 0 !important;
 }
 
 #sidebar[data-collapsed="true"] > div > div:first-child > button {
-  margin: 0 auto !important;
+  margin: 0 !important;
+  width: 1.5rem !important;
 }
 
 /* Center bottom section in collapsed state */
