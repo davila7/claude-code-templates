@@ -98,7 +98,7 @@ const coreKinds: Array<{ type: StackType; label: string; role: string }> = [
   { type: 'loops', label: 'Loops', role: 'Repeat a goal until done' },
 ];
 const shownCore = coreKinds.filter((k) => inStack(k.type) || ['agents', 'skills', 'mcps'].includes(k.type));
-const total = Object.values(entries).reduce((n, l) => n + (l?.length ?? 0), 0);
+const total = Object.values(entries).reduce((n, l) => n + (l ?? []).filter((e) => e.href !== null).length, 0);
 ---
 
 <section aria-labelledby="harness-title" class="space-y-6">
@@ -267,28 +267,32 @@ const total = Object.values(entries).reduce((n, l) => n + (l?.length ?? 0), 0);
       return p[p.length - 1];
     }
     function show(n: number) {
-      const s = steps[n];
+      const s = steps[n]; settled = -1;
       text.innerHTML = `${n + 1} / ${steps.length} · ${s.text}`;
       label.textContent = s.label;
       const w = Math.max(44, s.label.length * 6.8 + 16);
       bg.setAttribute('width', String(w));
       bg.setAttribute('x', String(-w / 2));
     }
-    function place(n: number, f: number) {
+    function place(n: number, f: number, follow = true) {
       const e = f < 0.5 ? 2 * f * f : 1 - Math.pow(-2 * f + 2, 2) / 2;
       const [x, y] = at(steps[n].path, e);
       packet.setAttribute('transform', `translate(${x},${y})`);
       // On a phone the flow scrolls sideways: keep the packet in view.
-      if (scroller.scrollWidth > scroller.clientWidth) {
+      if (follow && scroller.scrollWidth > scroller.clientWidth) {
         const scale = svg.clientWidth / 760;
         scroller.scrollLeft = x * scale - scroller.clientWidth / 2;
       }
     }
-    let raf = 0;
+    let raf = 0, settled = -1;
     function frame(now: number) {
       if (!playing) return;
       t += now - last; last = now;
-      place(i, Math.min(1, t / MOVE));
+      // On a phone, follow while it moves and once at the step's end (reduced
+      // motion has no move phase); the rest of the hold leaves scrolling to the reader.
+      const moving = t <= MOVE;
+      place(i, Math.min(1, t / MOVE), moving || settled !== i);
+      if (!moving) settled = i;
       if (t > MOVE + HOLD) {
         if (i === steps.length - 1) { playing = false; play.textContent = 'Play'; return; }
         i++; t = 0; show(i);
