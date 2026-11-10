@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Pre-publish smoke test.** `prepublishOnly` now also runs
+  `npm run test:install-paths` and `scripts/prepublish-check.mjs`, which packs
+  the package and runs the prod smoke test's CLI checks (an install of every
+  component type, tracking off) against that tarball. A publish stops when any
+  install fails, as every `--skill` install did in 1.33.0.
+  `prod-smoke-test.mjs` takes `--cli-tarball <path>` for this.
+
 ## [1.33.1] - Unreleased
 
 ### Fixed

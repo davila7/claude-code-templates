@@ -8,6 +8,8 @@
 //
 // Usage:
 //   node scripts/prod-smoke-test.mjs [--base https://www.aitmpl.com] [--only web,api,cli] [--cli-version latest]
+//   node scripts/prod-smoke-test.mjs --only cli --cli-tarball /abs/claude-code-templates-X.Y.Z.tgz
+//     (the CLI checks against a packed tarball instead of npm: scripts/prepublish-check.mjs runs this before every publish)
 // Exit code 1 when any check fails. Node 22+ (global fetch).
 
 import { spawnSync } from 'node:child_process';
@@ -23,6 +25,9 @@ const opt = (name, fallback) => {
 const base = opt('base', 'https://www.aitmpl.com').replace(/\/$/, '');
 const only = new Set(opt('only', 'web,api,cli').split(','));
 const cliVersion = opt('cli-version', 'latest');
+const cliTarball = opt('cli-tarball', '');
+const cliSpec = cliTarball ? ['--package', cliTarball, 'claude-code-templates'] : [`claude-code-templates@${cliVersion}`];
+const cliLabel = cliTarball ? cliTarball.split('/').pop() : `claude-code-templates@${cliVersion}`;
 
 const TYPES = [
   // [catalog file and canonical /component/{plural}/... segment, legacy singular segment]
@@ -232,7 +237,7 @@ async function api() {
 
 // ─── CLI ──────────────────────────────────────────────────────────────
 function runCli(dir, cliArgs) {
-  const r = spawnSync('npx', ['-y', `claude-code-templates@${cliVersion}`, ...cliArgs], {
+  const r = spawnSync('npx', ['-y', ...cliSpec, ...cliArgs], {
     cwd: dir,
     encoding: 'utf8',
     timeout: 240000,
@@ -242,7 +247,7 @@ function runCli(dir, cliArgs) {
 }
 
 async function cli() {
-  await check('cli', `claude-code-templates@${cliVersion} --version`, async () => {
+  await check('cli', `${cliLabel} --version`, async () => {
     const { code, out } = runCli(tmpdir(), ['--version']);
     assert(code === 0 && /\d+\.\d+\.\d+/.test(out), `exit ${code}: ${out.slice(-200)}`);
     return out.trim().split('\n').pop();
