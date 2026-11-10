@@ -1,6 +1,6 @@
 ---
 // How a /s/ stack fits in Claude Code, as two tabs:
-// - Session flow: a horizontal animated flow (Play/Pause/Replay) of one session
+// - Session flow: a horizontal animated flow of one session (autoplays once in view; small Play/Pause and Replay icons in the corner)
 //   with this stack: settings load, MCP servers connect, you send a command,
 //   hooks check each action, and Claude reaches for agents, skills and MCPs.
 //   Only components still in the catalog take part.
@@ -117,7 +117,16 @@ const icon = (t: string) => ICONS[t] ?? '';
 
   {/* Tab 1: session flow */}
   <div id="harness-panel-flow" role="tabpanel" aria-labelledby="harness-tab-flow" data-harness-panel="flow">
-    <div class="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-1)] p-3 md:p-4" data-stack-flow>
+    <div class="relative rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-1)] p-3 pt-10 md:p-4" data-stack-flow>
+      <div class="absolute top-2 right-2 z-10 flex gap-1">
+        <button type="button" data-flow-play aria-label="Play" title="Play" class="flow-ctl">
+          <svg data-icon-play viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M4.5 2.8v10.4L13 8z" fill="currentColor" /></svg>
+          <svg data-icon-pause viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" hidden><path d="M4 3h3v10H4zM9 3h3v10H9z" fill="currentColor" /></svg>
+        </button>
+        <button type="button" data-flow-replay aria-label="Replay" title="Replay" class="flow-ctl">
+          <svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.8 8a5.2 5.2 0 1 0 1.6-3.8" /><path d="M2.5 2.5v3h3" /></svg>
+        </button>
+      </div>
       <div class="overflow-x-auto" data-flow-scroll>
         <svg viewBox={`0 0 ${W} ${H}`} class="mx-auto block w-full min-w-[640px] max-w-[880px]" role="img" aria-label="Flow of a Claude Code session with this stack">
           {/* Settings band */}
@@ -166,12 +175,8 @@ const icon = (t: string) => ICONS[t] ?? '';
         </svg>
       </div>
       <p data-flow-text aria-live="polite" class="mt-3 min-h-[2.8em] text-center text-[13px] text-[var(--color-text-secondary)] max-w-xl mx-auto">
-        Press Play to follow a session with this stack.
+        A session with this stack, step by step.
       </p>
-      <div class="mt-2 flex justify-center gap-2">
-        <button type="button" data-flow-play class="h-9 px-4 rounded-md bg-[var(--color-accent)] text-white text-[13px] font-semibold hover:opacity-90 transition-opacity">Play</button>
-        <button type="button" data-flow-replay class="h-9 px-4 rounded-md border border-[var(--color-border)] bg-[var(--color-surface-0)] text-[13px] font-medium text-[var(--color-text-primary)] hover:bg-[var(--color-surface-2)] transition-colors">Replay</button>
-      </div>
       <script type="application/json" data-flow-steps set:html={jsonForScript(steps)} />
     </div>
   </div>
@@ -251,6 +256,14 @@ const icon = (t: string) => ICONS[t] ?? '';
     white-space: nowrap;
     color: var(--color-text-secondary);
   }
+  .flow-ctl {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border-radius: 6px;
+    border: 1px solid var(--color-border); background: var(--color-surface-0);
+    color: var(--color-text-secondary); transition: color .15s, background-color .15s, border-color .15s;
+  }
+  .flow-ctl:hover { color: var(--color-text-primary); background: var(--color-surface-2); border-color: var(--color-border-strong); }
+  .flow-ctl:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 1px; }
   .harness-tab:hover { color: var(--color-text-primary); }
   .harness-tab[aria-selected='true'] { color: var(--color-text-primary); font-weight: 600; }
   .harness-tab[aria-selected='true']::after {
@@ -295,10 +308,18 @@ const icon = (t: string) => ICONS[t] ?? '';
     const text = root.querySelector<HTMLElement>('[data-flow-text]')!;
     const play = root.querySelector<HTMLButtonElement>('[data-flow-play]')!;
     const scroller = root.querySelector<HTMLElement>('[data-flow-scroll]')!;
-    const svg = root.querySelector('svg')!;
+    const svg = scroller.querySelector('svg')!;
     const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     const MOVE = reduce ? 1 : 1600, HOLD = 1500;
-    let i = 0, t = 0, playing = false, last = 0;
+    let i = 0, t = 0, playing = false, last = 0, touched = false;
+    const iconPlay = play.querySelector<SVGElement>('[data-icon-play]')!;
+    const iconPause = play.querySelector<SVGElement>('[data-icon-pause]')!;
+    function setPlaying(on: boolean) {
+      playing = on;
+      iconPlay.toggleAttribute('hidden', on); iconPause.toggleAttribute('hidden', !on);
+      const l = on ? 'Pause' : 'Play';
+      play.setAttribute('aria-label', l); play.title = l;
+    }
 
     const lengths = (p: Pt[]) => p.slice(1).map((q, k) => Math.hypot(q[0] - p[k][0], q[1] - p[k][1]));
     function at(p: Pt[], f: number): Pt {
@@ -341,23 +362,35 @@ const icon = (t: string) => ICONS[t] ?? '';
       place(i, Math.min(1, t / MOVE), moving || settled !== i);
       if (!moving) settled = i;
       if (t > MOVE + HOLD) {
-        if (i === steps.length - 1) { playing = false; play.textContent = 'Play'; return; }
+        if (i === steps.length - 1) { setPlaying(false); return; }
         i++; t = 0; show(i);
       }
       raf = requestAnimationFrame(frame);
     }
     function start() {
       cancelAnimationFrame(raf);
-      playing = true; last = performance.now(); packet.setAttribute('opacity', '1');
-      play.textContent = 'Pause'; raf = requestAnimationFrame(frame);
+      setPlaying(true); last = performance.now(); packet.setAttribute('opacity', '1');
+      raf = requestAnimationFrame(frame);
     }
     play.addEventListener('click', () => {
-      if (playing) { playing = false; play.textContent = 'Play'; return; }
+      touched = true;
+      if (playing) { setPlaying(false); return; }
       if (i === steps.length - 1 && t > MOVE) { i = 0; t = 0; }
       show(i); start();
     });
-    root.querySelector('[data-flow-replay]')?.addEventListener('click', () => { i = 0; t = 0; show(0); place(0, 0); start(); });
+    root.querySelector('[data-flow-replay]')?.addEventListener('click', () => { touched = true; i = 0; t = 0; show(0); place(0, 0); start(); });
     show(0);
+    // Autoplay once, the first time the diagram is mostly on screen (a hidden
+    // tab never intersects, so switching to it counts). Not with reduced motion,
+    // and never after the reader pressed a control.
+    if (!reduce && 'IntersectionObserver' in window) {
+      const io = new IntersectionObserver((list) => {
+        if (!list.some((e) => e.isIntersecting)) return;
+        io.disconnect();
+        if (!touched && !playing) { show(i); start(); }
+      }, { threshold: 0.5 });
+      io.observe(root);
+    }
   }
 
   // ---- Tabs ----
