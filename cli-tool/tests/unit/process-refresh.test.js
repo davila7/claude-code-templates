@@ -9,6 +9,7 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const DataCache = require('../../src/analytics/data/DataCache');
 const ConversationAnalyzer = require('../../src/analytics/core/ConversationAnalyzer');
 const ProcessDetector = require('../../src/analytics/core/ProcessDetector');
 const StateCalculator = require('../../src/analytics/core/StateCalculator');
@@ -38,6 +39,28 @@ describe('process refresh', () => {
   });
 
   afterAll(() => fs.rmSync(claudeDir, { recursive: true, force: true }));
+
+  it('can read new transcript messages even while the parsed cache is warm', async () => {
+    const cache = new DataCache();
+    try {
+      const analyzer = new ConversationAnalyzer(claudeDir, cache);
+      writeTranscript(claudeDir, '/home/me/cache-test', 'cache-session', 20);
+      const file = path.join(claudeDir, 'projects', '-home-me-cache-test', 'cache-session.jsonl');
+      expect(await analyzer.getParsedConversation(file)).toHaveLength(2);
+      fs.appendFileSync(file, JSON.stringify({
+        type: 'user',
+        timestamp: minutesAgo(1).toISOString(),
+        message: { role: 'user', content: 'Run them again' }
+      }) + '\n');
+
+      expect(await analyzer.getParsedConversation(file)).toHaveLength(2);
+      const latest = await analyzer.getParsedConversation(file, { fresh: true });
+      expect(latest).toHaveLength(3);
+      expect(latest.at(-1).role).toBe('user');
+    } finally {
+      cache.cleanup();
+    }
+  });
 
   it('recomputes the state of every conversation that has a running claude process', async () => {
     const stateCalculator = new StateCalculator();
