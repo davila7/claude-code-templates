@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "karagoz": {
+      "description": "Control Android emulators, Android phones, iOS simulators and real iPhones from Claude Code. Read the screen as an accessibility tree, tap an element by its text or id, swipe, type, take full-resolution screenshots, install and launch apps, open deep links and read device logs. Every tool returns the same JSON on all four targets, and a failure comes back as an error code such as APP_NOT_FOUND. Runs locally over stdio on the adb and Xcode tools you already have, with no telemetry. Free and MIT licensed, no account or API key. Needs Node 22 or later; iOS needs macOS and Xcode, and an iPhone also needs karagoz's runner app, which the install_runner tool installs. Source: https://github.com/yagizdo/karagoz-mcp",
+      "command": "npx",
+      "args": ["-y", "karagoz-mcp@0.4.0", "mcp"]
+    }
+  }
+}
