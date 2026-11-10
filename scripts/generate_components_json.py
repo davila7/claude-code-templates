@@ -92,6 +92,15 @@ def _line_frontmatter(frontmatter):
                     first = next((b for b in block if b), '')
                     if first and not _COLLECTION_LINE.match(first):
                         value = _fold(block, keep_spaced=False)
+                    elif key == 'author' and first:
+                        # Parse this mapping on its own so an unrelated invalid
+                        # key does not hide the author's name or URL.
+                        try:
+                            author = yaml.load('\n'.join(block), Loader=yaml.BaseLoader)
+                        except yaml.YAMLError:
+                            author = None
+                        if isinstance(author, dict):
+                            value = author
                 meta[key] = value
     return meta
 
