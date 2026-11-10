@@ -98,11 +98,11 @@ client.upsert(
 )
 
 # Read from specific shard
-results = client.search(
+results = client.query_points(
     collection_name="documents",
-    query_vector=query,
+    query=query,
     consistency="majority"  # Read from majority of replicas
-)
+).points
 ```
 
 ## Hybrid Search
@@ -172,7 +172,7 @@ results = client.query_points(
 ### Multi-Stage Search
 
 ```python
-from qdrant_client.models import Prefetch, Query
+from qdrant_client.models import Prefetch
 
 # Two-stage retrieval: coarse then fine
 results = client.query_points(
@@ -184,10 +184,10 @@ results = client.query_points(
             params={"quantization": {"rescore": False}}  # Fast, approximate
         )
     ],
-    query=Query(nearest=query_vector),
+    query=query_vector,
     limit=10,
-    params={"quantization": {"rescore": True}}  # Accurate reranking
-)
+    search_params={"quantization": {"rescore": True}}  # Accurate reranking
+).points
 ```
 
 ## Recommendations
@@ -196,17 +196,23 @@ results = client.query_points(
 
 ```python
 # Find similar items
-recommendations = client.recommend(
+from qdrant_client.models import RecommendQuery, RecommendInput
+
+recommendations = client.query_points(
     collection_name="products",
-    positive=[1, 2, 3],  # IDs user liked
-    negative=[4],         # IDs user disliked
+    query=RecommendQuery(
+        recommend=RecommendInput(
+            positive=[1, 2, 3],  # IDs user liked
+            negative=[4]         # IDs user disliked
+        )
+    ),
     limit=10
-)
+).points
 
 # With filtering
-recommendations = client.recommend(
+recommendations = client.query_points(
     collection_name="products",
-    positive=[1, 2],
+    query=RecommendQuery(recommend=RecommendInput(positive=[1, 2])),
     query_filter={
         "must": [
             {"key": "category", "match": {"value": "electronics"}},
@@ -214,26 +220,28 @@ recommendations = client.recommend(
         ]
     },
     limit=10
-)
+).points
 ```
 
 ### Lookup from Another Collection
 
 ```python
-from qdrant_client.models import RecommendStrategy, LookupLocation
+from qdrant_client.models import (
+    LookupLocation, RecommendInput, RecommendQuery, RecommendStrategy
+)
 
 # Recommend using vectors from another collection
-results = client.recommend(
+results = client.query_points(
     collection_name="products",
-    positive=[
-        LookupLocation(
-            collection_name="user_history",
-            id="user_123"
+    query=RecommendQuery(
+        recommend=RecommendInput(
+            positive=[123],  # point ID in user_history
+            strategy=RecommendStrategy.AVERAGE_VECTOR
         )
-    ],
-    strategy=RecommendStrategy.AVERAGE_VECTOR,
+    ),
+    lookup_from=LookupLocation(collection="user_history"),
     limit=10
-)
+).points
 ```
 
 ## Advanced Filtering
@@ -244,9 +252,9 @@ results = client.recommend(
 from qdrant_client.models import Filter, FieldCondition, MatchValue, NestedCondition
 
 # Filter on nested objects
-results = client.search(
+results = client.query_points(
     collection_name="documents",
-    query_vector=query,
+    query=query,
     query_filter=Filter(
         must=[
             NestedCondition(
@@ -263,7 +271,7 @@ results = client.search(
         ]
     ),
     limit=10
-)
+).points
 ```
 
 ### Geo Filtering
@@ -272,9 +280,9 @@ results = client.search(
 from qdrant_client.models import FieldCondition, GeoRadius, GeoPoint
 
 # Find within radius
-results = client.search(
+results = client.query_points(
     collection_name="locations",
-    query_vector=query,
+    query=query,
     query_filter=Filter(
         must=[
             FieldCondition(
@@ -287,14 +295,14 @@ results = client.search(
         ]
     ),
     limit=10
-)
+).points
 
 # Geo bounding box
 from qdrant_client.models import GeoBoundingBox
 
-results = client.search(
+results = client.query_points(
     collection_name="locations",
-    query_vector=query,
+    query=query,
     query_filter=Filter(
         must=[
             FieldCondition(
@@ -307,7 +315,7 @@ results = client.search(
         ]
     ),
     limit=10
-)
+).points
 ```
 
 ### Full-Text Search
@@ -331,9 +339,9 @@ client.create_payload_index(
 # Full-text filter
 from qdrant_client.models import MatchText
 
-results = client.search(
+results = client.query_points(
     collection_name="documents",
-    query_vector=query,
+    query=query,
     query_filter=Filter(
         must=[
             FieldCondition(
@@ -343,7 +351,7 @@ results = client.search(
         ]
     ),
     limit=10
-)
+).points
 ```
 
 ## Quantization Strategies
@@ -400,9 +408,9 @@ client.create_collection(
 )
 
 # Search with oversampling
-results = client.search(
+results = client.query_points(
     collection_name="binary_quantized",
-    query_vector=query,
+    query=query,
     search_params={
         "quantization": {
             "rescore": True,
@@ -410,7 +418,7 @@ results = client.search(
         }
     },
     limit=10
-)
+).points
 ```
 
 ## Snapshots and Backups
@@ -476,7 +484,7 @@ client.update_collection_aliases(
 )
 
 # Search via alias
-results = client.search(collection_name="production", query_vector=query, limit=10)
+results = client.query_points(collection_name="production", query=query, limit=10).points
 ```
 
 ## Scroll and Iteration
@@ -539,13 +547,13 @@ async def main():
         points=points
     )
 
-    results = await client.search(
+    response = await client.query_points(
         collection_name="async_docs",
-        query_vector=query,
+        query=query,
         limit=10
     )
 
-    return results
+    return response.points
 
 results = asyncio.run(main())
 ```
@@ -592,14 +600,14 @@ client.upsert(
 )
 
 # Search within tenant
-results = client.search(
+results = client.query_points(
     collection_name="multi_tenant",
-    query_vector=query,
+    query=query,
     query_filter=Filter(
         must=[FieldCondition(key="tenant_id", match=MatchValue(value="tenant_a"))]
     ),
     limit=10
-)
+).points
 ```
 
 ### Collection-Per-Tenant
@@ -614,11 +622,11 @@ def create_tenant_collection(tenant_id: str):
 
 # Search tenant collection
 def search_tenant(tenant_id: str, query_vector: list, limit: int = 10):
-    return client.search(
+    return client.query_points(
         collection_name=f"tenant_{tenant_id}",
-        query_vector=query_vector,
+        query=query_vector,
         limit=limit
-    )
+    ).points
 ```
 
 ## Performance Monitoring
