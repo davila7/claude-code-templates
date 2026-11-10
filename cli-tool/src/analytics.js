@@ -993,7 +993,7 @@ class ClaudeAnalytics {
         for (const conv of activeConversations) {
           try {
             const conversationFile = conv.filePath;
-            const parsedMessages = await this.conversationAnalyzer.getParsedConversation(conversationFile);
+            const parsedMessages = await this.conversationAnalyzer.getParsedConversation(conversationFile, { fresh: true });
             
             const stats = await fs.stat(conversationFile);
             conv.conversationState = this.stateCalculator.determineConversationState(
