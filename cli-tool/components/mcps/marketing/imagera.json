@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "imagera": {
+      "description": "Hosted MCP server that lets Claude generate and edit images, video, voice, music and 3D models, and run ready-made jobs such as product listing photos, static ad packs and talking product reviews. It quotes the credit cost before a paid run starts. Sign in with your Imagera account through OAuth; there is no key to paste. Generation uses Imagera credits on a paid plan.",
+      "type": "http",
+      "url": "https://mcp.imagera.ai/mcp"
+    }
+  }
+}
