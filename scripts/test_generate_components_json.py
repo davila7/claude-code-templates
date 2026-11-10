@@ -234,15 +234,19 @@ class FrontmatterMetaTest(unittest.TestCase):
                 self.assertEqual(from_yaml["description"], expected)
                 self.assertEqual(from_fallback["description"], expected)
 
-    def test_invalid_yaml_does_not_read_a_nested_mapping_as_text(self):
-        meta = self.parse("description: Reviews a pull request",
-                          "author:",
-                          "  name: Jane Doe",
-                          "  url: https://example.com/jane",
-                          "argument-hint: usage: /review <pr>")
-
-        # Left empty rather than read as "name: Jane Doe url: https://...".
-        self.assertEqual(meta["author"], "")
+    def test_invalid_yaml_preserves_nested_author(self):
+        for author, expected in (
+            (("  name: Jane Doe", "  url: https://example.com/jane"), "Jane Doe"),
+            (("  url: https://example.com/jane",), "https://example.com/jane"),
+            (("  contact: jane@example.com",), ""),
+        ):
+            with self.subTest(author=author):
+                lines = ("description: Reviews a pull request", "author:", *author)
+                self.assertEqual(self.parse(*lines)["author"], expected)
+                self.assertEqual(
+                    self.parse(*lines, "argument-hint: usage: /review <pr>")["author"],
+                    expected,
+                )
 
 
 if __name__ == "__main__":
