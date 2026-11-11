@@ -84,14 +84,14 @@ class DataCache {
       this.metrics.misses++;
       const content = await fs.readFile(filepath, 'utf8');
       
-      this.caches.fileContent.set(filepath, {
+      this.setCacheEntry('fileContent', filepath, {
         content,
         timestamp: stats.mtime.getTime(),
         stats: stats
       });
       
       // Also cache the file stats
-      this.caches.fileStats.set(filepath, {
+      this.setCacheEntry('fileStats', filepath, {
         stats: stats,
         timestamp: Date.now()
       });
@@ -126,7 +126,7 @@ class DataCache {
     
     const messages = this.parseAndCorrelateToolMessages(lines);
     
-    this.caches.parsedConversations.set(filepath, {
+    this.setCacheEntry('parsedConversations', filepath, {
       messages,
       timestamp: fileStats.mtime.getTime()
     });
@@ -273,7 +273,7 @@ class DataCache {
     this.metrics.misses++;
     const stats = await fs.stat(filepath);
     
-    this.caches.fileStats.set(filepath, {
+    this.setCacheEntry('fileStats', filepath, {
       stats: stats,
       timestamp: Date.now()
     });
@@ -365,7 +365,7 @@ class DataCache {
     this.metrics.misses++;
     const usage = await calculateFn();
     
-    this.caches.tokenUsage.set(filepath, {
+    this.setCacheEntry('tokenUsage', filepath, {
       usage,
       timestamp: fileStats.mtime.getTime()
     });
@@ -391,7 +391,7 @@ class DataCache {
     this.metrics.misses++;
     const info = await extractFn();
     
-    this.caches.modelInfo.set(filepath, {
+    this.setCacheEntry('modelInfo', filepath, {
       info,
       timestamp: fileStats.mtime.getTime()
     });
@@ -417,7 +417,7 @@ class DataCache {
     this.metrics.misses++;
     const squares = await generateFn();
     
-    this.caches.statusSquares.set(filepath, {
+    this.setCacheEntry('statusSquares', filepath, {
       squares,
       timestamp: fileStats.mtime.getTime()
     });
@@ -443,7 +443,7 @@ class DataCache {
     this.metrics.misses++;
     const usage = await extractFn();
     
-    this.caches.toolUsage.set(filepath, {
+    this.setCacheEntry('toolUsage', filepath, {
       usage,
       timestamp: fileStats.mtime.getTime()
     });
@@ -528,7 +528,8 @@ class DataCache {
       misses: 0,
       invalidations: 0,
       filesInvalidated: 0,
-      computationsInvalidated: 0
+      computationsInvalidated: 0,
+      evictions: 0
     };
   }
 
@@ -570,10 +571,36 @@ class DataCache {
   }
 
   /**
+   * Bound each map as it grows: startup can fill the cache before the
+   * periodic cleanup gets a chance to run.
+   */
+  setCacheEntry(name, key, value) {
+    const cache = this.caches[name];
+    cache.set(key, value);
+    this.trimCache(cache);
+  }
+
+  trimCache(cache) {
+    const toRemove = cache.size - Math.max(0, this.config.maxCacheSize);
+    if (toRemove <= 0) return 0;
+
+    // Preserve the periodic cleanup's oldest-timestamp-first policy.
+    const entries = Array.from(cache.entries()).sort((a, b) =>
+      (a[1].timestamp || 0) - (b[1].timestamp || 0)
+    );
+    let evicted = 0;
+    for (let i = 0; i < toRemove && i < entries.length; i++) {
+      cache.delete(entries[i][0]);
+      evicted++;
+    }
+    this.metrics.evictions += evicted;
+    return evicted;
+  }
+
+  /**
    * Enforce cache size limits to prevent memory buildup
    */
   enforceSizeLimits() {
-    const maxSize = this.config.maxCacheSize;
     let totalEvicted = 0;
 
     // Enforce size limits on each cache
@@ -589,25 +616,10 @@ class DataCache {
     ];
 
     for (const [, cache] of caches) {
-      if (cache.size > maxSize) {
-        // Convert to array and sort by timestamp (oldest first)
-        const entries = Array.from(cache.entries()).sort((a, b) => {
-          const timestampA = a[1].timestamp || 0;
-          const timestampB = b[1].timestamp || 0;
-          return timestampA - timestampB;
-        });
-
-        // Remove oldest entries until we're under the limit
-        const toRemove = cache.size - maxSize;
-        for (let i = 0; i < toRemove && i < entries.length; i++) {
-          cache.delete(entries[i][0]);
-          totalEvicted++;
-        }
-      }
+      totalEvicted += this.trimCache(cache);
     }
 
     if (totalEvicted > 0) {
-      this.metrics.evictions += totalEvicted;
       console.log(chalk.gray(`🗑️  Enforced size limits, evicted ${totalEvicted} entries`));
     }
   }
