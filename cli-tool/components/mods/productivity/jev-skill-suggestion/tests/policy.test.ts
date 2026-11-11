@@ -273,6 +273,10 @@ test('skill bodies are looked for where Claude Code lays skills out', () => {
   })
   expect(installPathsOf(installed, 'engineering')).toEqual(['/x/cache/engineering/1.0.0'])
   expect(installPathsOf('not json', 'engineering')).toEqual([])
+  // Valid JSON that is not an object: `null` used to throw reading `.plugins`.
+  expect(installPathsOf('null', 'engineering')).toEqual([])
+  expect(installPathsOf('42', 'engineering')).toEqual([])
+  expect(installPathsOf('"engineering"', 'engineering')).toEqual([])
   // A name that is not a plain basename is never spliced into a path.
   expect(skillFileCandidates('../etc/passwd')).toEqual([])
   expect(skillFileCandidates('x', '..')).toEqual([])
