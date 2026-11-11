@@ -1,7 +1,7 @@
 {
   "mcpServers": {
     "scalekit": {
-      "description": "Hosted Scalekit MCP server for managing auth for AI agents and MCP servers: environments, organizations, users, OIDC connections, roles, scopes, and MCP server registrations. Sign in with OAuth in the browser.",
+      "description": "Hosted Scalekit MCP server for managing auth for AI agents and MCP servers: environments, organizations, users, OIDC connections, roles, scopes, and MCP server registrations. Sign in with OAuth in the browser. Requires a Scalekit account: free tier available, paid plans from $99/month.",
       "type": "http",
       "url": "https://mcp.scalekit.com/"
     }
