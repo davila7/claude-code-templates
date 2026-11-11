@@ -84,9 +84,10 @@ jev · fast 0.87 → haiku/low
 jev · fast 0.41 · unchanged
 ```
 
-`confidence n/d` means the backend reported no confidence, which the built-in
-classifier never does and the Gateway does whenever its probability
-distribution is absent; the `ready on` line says which one answered.
+`confidence n/d` means the backend reported no confidence: the built-in
+classifier never reports one, and a Gateway answer has none whenever its
+probability distribution is absent; the `ready on` line says which one
+answered.
 
 **No lines at all** has three causes, and only the last is the module failing
 to load. Check them in this order:
@@ -190,7 +191,7 @@ every event it hooks and every `$` call it makes.
 ## Tests
 
 ```sh
-bun test cli-tool/components/mods/productivity/jev-model-router/tests
+claude plugin test cli-tool/components/mods/productivity/jev-model-router
 ```
 
 **Requirements.** Mods are on by default in Claude Code 2.1.287+. Typed against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
