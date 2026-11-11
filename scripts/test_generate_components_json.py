@@ -27,6 +27,11 @@ def row(component_type, name):
     return {"component_type": component_type, "component_name": name}
 
 
+def markdown(*frontmatter_lines):
+    """A component file whose frontmatter is the given lines."""
+    return "---\n" + "\n".join(frontmatter_lines) + "\n---\n\nBody.\n"
+
+
 class DownloadStatsTestCase(unittest.TestCase):
     def fetch(self, downloads=None, stats=None):
         """Run fetch_download_stats against fake Supabase responses.
@@ -103,6 +108,145 @@ class DownloadStatsFallbackTableTest(DownloadStatsTestCase):
 
         self.assertEqual(counts["agents/development-team/react-expert"], 7)
         self.assertEqual(counts["mods/games/pacman"], 5)
+
+
+class FrontmatterMetaTest(unittest.TestCase):
+    """parse_frontmatter_meta, which fills the catalog's description, author,
+    repo, version, license and keywords for markdown components."""
+
+    BLOCK_LINES = ("  Reviews a pull request.", "  Use it before merging.")
+    BLOCK_SCALARS = (
+        ("|", "Reviews a pull request.\nUse it before merging."),
+        ("|-", "Reviews a pull request.\nUse it before merging."),
+        (">", "Reviews a pull request. Use it before merging."),
+        (">-", "Reviews a pull request. Use it before merging."),
+    )
+
+    def parse(self, *lines):
+        return generator.parse_frontmatter_meta(markdown(*lines))
+
+    def test_block_scalar_description(self):
+        for indicator, expected in self.BLOCK_SCALARS:
+            with self.subTest(indicator=indicator):
+                meta = self.parse("name: reviewer", f"description: {indicator}", *self.BLOCK_LINES)
+
+                # The line parser this replaced returned the bare indicator (#1046).
+                self.assertEqual(meta["description"], expected)
+
+    def test_quotes_are_not_part_of_the_value(self):
+        meta = self.parse('description: "Reviews: one pull request at a time"',
+                          "author: 'Jane Doe'")
+
+        self.assertEqual(meta["description"], "Reviews: one pull request at a time")
+        self.assertEqual(meta["author"], "Jane Doe")
+
+    def test_plain_values_are_read_as_written(self):
+        meta = self.parse("description: Reviews a pull request",
+                          "author: Jane Doe",
+                          "repo: https://github.com/example/reviewer",
+                          "license: MIT")
+
+        self.assertEqual(meta["description"], "Reviews a pull request")
+        self.assertEqual(meta["author"], "Jane Doe")
+        self.assertEqual(meta["repo"], "https://github.com/example/reviewer")
+        self.assertEqual(meta["license"], "MIT")
+
+    def test_scalars_stay_strings(self):
+        meta = self.parse("description: true", "version: 1.10")
+
+        # A typed loader such as yaml.safe_load would give "True" and "1.1".
+        self.assertEqual(meta["description"], "true")
+        self.assertEqual(meta["version"], "1.10")
+
+    def test_metadata_fills_keys_missing_at_the_top_level(self):
+        meta = self.parse("description: Reviews a pull request",
+                          "metadata:",
+                          "  author: Jane Doe",
+                          "  version: 1.10")
+
+        # Agent Skills frontmatter keeps author and version under metadata.
+        self.assertEqual(meta["author"], "Jane Doe")
+        self.assertEqual(meta["version"], "1.10")
+
+    def test_top_level_keys_win_over_metadata(self):
+        meta = self.parse("description: Reviews a pull request",
+                          "author: Jane Doe",
+                          "metadata:",
+                          "  author: Someone Else")
+
+        self.assertEqual(meta["author"], "Jane Doe")
+
+    def test_tag_lists_become_keywords(self):
+        for tags in (["tags: [git, review]"], ["tags:", "  - git", "  - review"]):
+            with self.subTest(tags=tags):
+                meta = self.parse("description: Reviews a pull request", *tags)
+
+                self.assertEqual(meta["keywords"], ["git", "review"])
+
+    def test_invalid_yaml_falls_back_to_line_parsing(self):
+        # Claude Code accepts an unquoted ": " in a value; YAML does not.
+        meta = self.parse("description: Use when: the user asks for a review",
+                          "version: 1.10",
+                          "tags: [git, review]")
+
+        self.assertEqual(meta["description"], "Use when: the user asks for a review")
+        self.assertEqual(meta["version"], "1.10")
+        self.assertEqual(meta["keywords"], ["git", "review"])
+
+    def test_invalid_yaml_still_reads_a_block_scalar_description(self):
+        for indicator, expected in self.BLOCK_SCALARS:
+            with self.subTest(indicator=indicator):
+                # The unquoted ": " in the hint sends the whole frontmatter to the fallback.
+                meta = self.parse("name: reviewer", f"description: {indicator}", *self.BLOCK_LINES,
+                                  "argument-hint: usage: /review <pr>")
+
+                self.assertEqual(meta["description"], expected)
+
+    # Values on the lines below the key. The fallback has to read each one as
+    # YAML does, so a description comes out the same whether or not another
+    # line makes the frontmatter invalid.
+    MULTI_LINE_VALUES = (
+        ("a | block keeps indentation past its own",
+         ("description: |", "  Usage:", "    /review <pr>", "  Then merge."),
+         "Usage:\n  /review <pr>\nThen merge."),
+        ("a > block keeps a blank line as a line break",
+         ("description: >", "  Reviews a pull request.", "", "  Use it before merging."),
+         "Reviews a pull request.\nUse it before merging."),
+        ("a > block keeps the line breaks around lines indented further",
+         ("description: >", "  Reviews a pull request for:", "    - style", "    - tests",
+          "  Use it before merging."),
+         "Reviews a pull request for:\n  - style\n  - tests\nUse it before merging."),
+        ("an indentation indicator sets the block's indentation",
+         ("description: |2", "    /review <pr>", "  Then merge."),
+         "/review <pr>\nThen merge."),
+        ("a plain value below an empty key folds its lines",
+         ("description:", "  Reviews a pull request", "  before merging.", "", "  Use it often."),
+         "Reviews a pull request before merging.\nUse it often."),
+    )
+
+    def test_invalid_yaml_reads_a_multi_line_value_as_yaml_does(self):
+        for case, lines, expected in self.MULTI_LINE_VALUES:
+            with self.subTest(case=case):
+                from_yaml = self.parse("name: reviewer", *lines)
+                from_fallback = self.parse("name: reviewer", *lines,
+                                           "argument-hint: usage: /review <pr>")
+
+                self.assertEqual(from_yaml["description"], expected)
+                self.assertEqual(from_fallback["description"], expected)
+
+    def test_invalid_yaml_preserves_nested_author(self):
+        for author, expected in (
+            (("  name: Jane Doe", "  url: https://example.com/jane"), "Jane Doe"),
+            (("  url: https://example.com/jane",), "https://example.com/jane"),
+            (("  contact: jane@example.com",), ""),
+        ):
+            with self.subTest(author=author):
+                lines = ("description: Reviews a pull request", "author:", *author)
+                self.assertEqual(self.parse(*lines)["author"], expected)
+                self.assertEqual(
+                    self.parse(*lines, "argument-hint: usage: /review <pr>")["author"],
+                    expected,
+                )
 
 
 if __name__ == "__main__":
