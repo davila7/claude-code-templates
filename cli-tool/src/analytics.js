@@ -16,6 +16,7 @@ const WebSocketServer = require('./analytics/notifications/WebSocketServer');
 const NotificationManager = require('./analytics/notifications/NotificationManager');
 const PerformanceMonitor = require('./analytics/utils/PerformanceMonitor');
 const { LISTEN_HOST, localOnly, verifyLocalWebSocket } = require('./local-server-guard');
+const { claudeConfigDir } = require('./claude-paths');
 
 class ClaudeAnalytics {
   constructor(options = {}) {
@@ -75,7 +76,7 @@ class ClaudeAnalytics {
 
   async initialize() {
     const homeDir = os.homedir();
-    this.claudeDir = path.join(homeDir, '.claude');
+    this.claudeDir = claudeConfigDir();
     this.claudeDesktopDir = path.join(homeDir, 'Library', 'Application Support', 'Claude');
     this.claudeStatsigDir = path.join(this.claudeDir, 'statsig');
 
@@ -1335,10 +1336,9 @@ class ClaudeAnalytics {
    */
   async loadAgents() {
     const agents = [];
-    const homeDir = os.homedir();
     
     // Define agent paths (user level and project level)
-    const userAgentsDir = path.join(homeDir, '.claude', 'agents');
+    const userAgentsDir = path.join(claudeConfigDir(), 'agents');
     const projectAgentsDirs = [];
     
     try {
