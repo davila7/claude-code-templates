@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "scrapely": {
+      "description": "Official MCP server for Scrape.ly, a cloud platform of ready-made web scrapers for sites such as Google Maps, Amazon, LinkedIn, Instagram and TikTok. Search the Scrape.ly Store, run a scraper in the cloud, and read its results, logs, datasets and key-value stores. Claude Code signs in with OAuth on first use, so no token setup is needed. The Free plan includes $5 of usage each month; paid plans start at $19/month. Docs: https://scrape.ly/docs/mcp",
+      "type": "http",
+      "url": "https://mcp.scrape.ly"
+    }
+  }
+}
