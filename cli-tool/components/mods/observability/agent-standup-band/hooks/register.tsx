@@ -32,8 +32,10 @@ const byProgram = (s: Status): boolean => s.entrypoint === 'sdk-cli'
 const alive = async ($: EngineInterface, pids: readonly number[]): Promise<Set<number>> => {
   if (!pids.length) return new Set()
   try {
-    const { stdout } = await $.process.run(['ps', '-o', 'pid=', '-p', pids.join(',')], { timeoutMs: 5000 })
-    return new Set(stdout.split(/\s+/).filter(Boolean).map(Number))   // ps exits 1 when none of them runs: nothing is listed then
+    const { exitCode, stdout, stderr } = await $.process.run(['ps', '-o', 'pid=', '-p', pids.join(',')], { timeoutMs: 5000 })
+    // ps exits 1 with nothing on stderr when none of them runs. Any other failure is a ps that cannot answer (Git for Windows, BusyBox: no -o): every file is taken at its word
+    if (exitCode !== 0 && (exitCode !== 1 || stderr.trim())) return new Set(pids)
+    return new Set(stdout.split(/\s+/).filter(Boolean).map(Number))
   } catch {
     return new Set(pids)   // no ps (Windows): every file is taken at its word
   }

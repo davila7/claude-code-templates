@@ -7,7 +7,7 @@ A line above your Claude Code prompt when another Claude Code session on this co
 
 and a short toast when one starts waiting for you, or finishes its turn ("✓ api has finished: your turn there"). You stay in the session you are working in and still know when another one is stuck on a question or an approval. "Hide" puts the current waits away until a new one comes.
 
-Vendored from [Atoll92/agent-standup](https://github.com/Atoll92/agent-standup/tree/901f3923b5fba49df23a14ff3f54283352d50103/plugin-band) (MIT, see `LICENSE`).
+Vendored from [Atoll92/agent-standup](https://github.com/Atoll92/agent-standup/tree/a36554033aff08068e649c954ffdce70027c332e/plugin-band) (MIT, see `LICENSE`).
 
 ## Install
 

@@ -140,6 +140,23 @@ test('a slow look that ends after a newer one does not bring back what the newer
   await ui.unmount()
 })
 
+test('a ps that cannot answer (Git for Windows, BusyBox: no -o) takes every file at its word', async ($, on) => {
+  world(on, files, { id: 's-self' }, () => ({ value: { exitCode: 1, stdout: '', stderr: 'ps: unknown option -- o', isStdoutTruncated: false, isStderrTruncated: false } }))
+  await $.session.start({ cwd: '/work/me', surface: 'terminal', isInteractive: true })
+  const ui = await $.ui.mount({ plugin: 'agent-standup-band', surface: 'terminal', component: 'AbovePrompt', props: BAND })
+  expect(await ui.find({ type: 'Text', text: /web-shop/ })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: /old/ })).toBeDefined()   // a crash cannot be told apart then
+  await ui.unmount()
+})
+
+test('a ps that finds none of them running (exit 1, nothing on stderr): no band', async ($, on) => {
+  world(on, files, { id: 's-self' }, () => ({ value: { exitCode: 1, stdout: '', stderr: '', isStdoutTruncated: false, isStderrTruncated: false } }))
+  await $.session.start({ cwd: '/work/me', surface: 'terminal', isInteractive: true })
+  const ui = await $.ui.mount({ plugin: 'agent-standup-band', surface: 'terminal', component: 'AbovePrompt', props: BAND })
+  expect(await ui.find({ type: 'Text', text: /needs/ })).toBeUndefined()
+  await ui.unmount()
+})
+
 test('no sessions folder (none has run yet, or a Claude Code that writes no status): no band, no error', async ($, on) => {
   mock.env(on, { HOME: '/home/ana' })
   on('session.id', () => ({ value: 's-self' }))
