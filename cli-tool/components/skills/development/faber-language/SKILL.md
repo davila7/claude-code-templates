@@ -12,13 +12,15 @@ This skill was written against Faber 1.19.1.
 
 ## Install (ask first)
 
-Ask the user before installing anything. The release binaries (macOS arm64, Linux x64) are on GitHub: https://github.com/faberlang/releases. To pin the version this skill was written for, with checksum verification:
+Ask the user before installing anything. Release binaries (macOS arm64, Linux x64) and their `.sha256` files are published at https://github.com/faberlang/releases (the source repo, https://github.com/faberlang/faber, does not carry binaries). The installer below is pinned to the reviewed commit tagged `v1.19.1`, so a later change to `main` cannot alter it; it downloads the release archive and verifies its SHA-256 before installing to `~/.faber/bin`. Read the script first if the user wants to review it:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/faberlang/faber/main/install.sh | sh -s -- --version 1.19.1
+curl -fsSL https://raw.githubusercontent.com/faberlang/faber/493d146ce29613df93e52364aa9d695f87d6fb2a/install.sh -o faber-install.sh
+less faber-install.sh   # optional review
+sh faber-install.sh --version 1.19.1
+export PATH="$HOME/.faber/bin:$PATH"
+faber --version
 ```
-
-Then confirm with `faber --version`.
 
 ## Loop
 
@@ -100,7 +102,7 @@ test "doubles" {
 ## Targets
 
 - `faber run file.fab` compiles in memory with Cranelift.
-- `faber run --target go|ts|python|c|swift|llvm-host file.fab` builds for that target and runs it (the toolchain for that target must be installed).
+- `faber run --target go file.fab` builds for Go and runs it. Other values for `--target` include `ts`, `python`, `c`, `swift` and `llvm-host`; the toolchain for that target must be installed.
 - `faber emit` writes source for another language; `faber build` produces a package.
 
 ## Reference
