@@ -98,6 +98,15 @@ export const register: Register = (on, options) => {
     return { deny: answer === ASK.no ? 'The user chose not to run this command.' : `The user did not run this command and said: ${answer}` }
   }
 
+  /** Closes the pane of an interrupted turn and says, truthfully, whether that worked. */
+  async function interrupted(host: Host, r: Rex, block: string | undefined): Promise<Outcome> {
+    if (!block) return { ok: false, deny: 'The turn was interrupted before this command was sent to a Rex pane; it was not run.' }
+    const closed = await host.run([r.bin, 'block', 'close', block]).catch(() => undefined)
+    return closed && closed.exitCode === 0
+      ? { ok: false, deny: 'The turn was interrupted while this command waited in a Rex pane; the pane was closed.' }
+      : { ok: false, deny: `The turn was interrupted while this command waited in a Rex pane, and the pane (${block}) could not be closed: the command may still be running there. Tell the user; do not run it again.` }
+  }
+
   /**
    * `pane` with every failure turned into a refusal: once the person's answer
    * was "a pane", a hook that threw would be skipped and core would run the
@@ -109,11 +118,8 @@ export const register: Register = (on, options) => {
       return await pane(host, r, command, opened, signal)
     } catch (err) {
       host.status(undefined)
-      if (signal.aborted) {
-        // the turn was interrupted: the pane goes with it, whatever was running in it
-        if (opened.block) await host.run([r.bin, 'block', 'close', opened.block]).catch(() => undefined)
-        return { ok: false, deny: 'The turn was interrupted while this command waited in a Rex pane; the pane was closed.' }
-      }
+      // the turn was interrupted: the pane goes with it, whatever was running in it
+      if (signal.aborted) return interrupted(host, r, opened.block)
       const what = err instanceof Error ? err.message : String(err)
       return {
         ok: false,
@@ -145,14 +151,12 @@ export const register: Register = (on, options) => {
     host.status(undefined)
     // an interrupted turn kills `rex wait`, and its stream may just end rather than throw:
     // the pane goes with the turn whatever closeOnExit says, so nothing runs on unattended
-    if (signal.aborted && end.kind !== 'exit') {
-      await host.run([r.bin, 'block', 'close', block]).catch(() => undefined)
-      return { ok: false, deny: 'The turn was interrupted while this command waited in a Rex pane; the pane was closed.' }
-    }
+    if (signal.aborted && end.kind !== 'exit') return interrupted(host, r, block)
 
     const shown = await host.run([r.bin, 'capture', '-b', block, '--trim', '--unwrap']).catch(() => undefined)
     // unread, or cut at the engine's 4 MiB (its end, the part that matters, is what was dropped)
-    const isLost = returnOutput && (!shown || shown.exitCode !== 0 || shown.isStdoutTruncated)
+    // (a pane that is gone has nothing to read and nothing to keep: that case says so itself)
+    const isLost = returnOutput && end.kind !== 'gone' && (!shown || shown.exitCode !== 0 || shown.isStdoutTruncated)
     const text = shown && shown.exitCode === 0 ? paneOutput(shown.stdout, head) : ''
     const lost = !isLost
       ? ''

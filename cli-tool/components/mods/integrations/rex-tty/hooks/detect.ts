@@ -111,7 +111,9 @@ const WRAPPERS: Record<string, { valued: readonly string[]; operands: number }> 
 export function unwrap(argv: readonly string[]): string[] {
   let rest = [...argv]
   for (;;) {
-    const wrapper = WRAPPERS[(rest[0] ?? '').replace(/^.*\//, '')]
+    // own keys only: a command named `constructor` or `toString` is no wrapper
+    const name = (rest[0] ?? '').replace(/^.*\//, '')
+    const wrapper = Object.hasOwn(WRAPPERS, name) ? WRAPPERS[name] : undefined
     if (!wrapper) return rest
     let i = 1
     while (i < rest.length) {
@@ -220,7 +222,7 @@ function reasonFor(segment: string): string | null {
       if (has(args, '', '--gen-key', '--full-generate-key', '--full-gen-key', '--edit-key')) return 'gpg asks questions'
       return null
     default: {
-      const form = LOGINS[name]?.find(f => f.every((w, i) => plain[i] === w))
+      const form = Object.hasOwn(LOGINS, name) ? LOGINS[name]!.find(f => f.every((w, i) => plain[i] === w)) : undefined
       if (!form || has(args, '', ...UNATTENDED)) return null
       return `${name} ${form.join(' ')} is interactive`
     }

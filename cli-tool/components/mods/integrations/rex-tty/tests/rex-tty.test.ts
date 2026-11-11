@@ -272,6 +272,16 @@ describe('rex-tty: how a pane ends', () => {
     expect(r.context?.[0]).toContain('exit code is unknown')
   })
 
+  test('a pane that is gone and cannot be read is never called "left open"', async ($, on) => {
+    const w = world({ wait: { stdout: '', stderr: 'Error: block target "block:new" not found\n' }, capture: { exitCode: 3, stdout: '', stderr: 'Error: block target "block:new" not found\n' } })
+    fakeEngine(on, w)
+    await start($)
+    const r = await bash($, 'sudo ls')
+    expect(r.result?.stdout).toContain('closed before the command reported an exit code')
+    expect(r.result?.stdout.includes('left open')).toBe(false)
+    expect(r.context?.[0]?.includes('left open')).toBe(false)
+  })
+
   test('output that cannot be read is reported and the pane is kept', async ($, on) => {
     const w = world({ capture: { exitCode: 3, stdout: '', stderr: 'Error: capture failed\n' } })
     fakeEngine(on, w)
