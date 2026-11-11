@@ -1,12 +1,9 @@
 {
   "mcpServers": {
     "meigen": {
-      "description": "Turn Claude Code into your personal design assistant. MeiGen brings complete creative workflow orchestration — from inspiration research and prompt engineering to multi-direction parallel generation. Includes 8 MCP tools, 3 specialized agents, curated 1,300+ prompt library, and works with local ComfyUI (free, private), MeiGen Cloud, or OpenAI-compatible APIs. Free features work without any API key.",
-      "command": "npx",
-      "args": ["-y", "meigen@latest"],
-      "env": {
-        "MEIGEN_API_TOKEN": "<your-meigen-api-token>"
-      }
+      "description": "Find inspiration, generate images and videos, and use your MeiGen favorites, boards and history. Connect through remote HTTP and browser OAuth. Generation uses purchased credits; private-library access requires its OAuth permissions.",
+      "type": "http",
+      "url": "https://www.meigen.ai/api/mcp"
     }
   }
 }
