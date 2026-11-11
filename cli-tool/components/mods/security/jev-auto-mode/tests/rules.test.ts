@@ -2,6 +2,7 @@
 import { describe, expect, test } from 'claude-code/testing'
 import {
   DEFAULT_CONFIG,
+  describeAction,
   riskyRegex,
   bashParts,
   evaluate,
@@ -269,5 +270,14 @@ describe('judge', () => {
     const body = JSON.parse(requestBody('typesafe', state, 'jev-latest'))
     expect(Object.keys(body.questions)).toEqual(['destructive', 'exfiltration', 'security_weakening', 'out_of_scope', 'severity'])
     expect(body.model).toBe('jev-latest')
+  })
+})
+
+describe('describeAction', () => {
+  test('cuts to 80 characters by default, and to none with Infinity', () => {
+    const command = `git push origin ${'x'.repeat(200)}`
+    expect(describeAction(bash(command)).length).toBe('Bash()'.length + 80)
+    expect(describeAction(bash(command)).endsWith('…)')).toBe(true)
+    expect(describeAction(bash(command), Infinity)).toBe(`Bash(${command})`)
   })
 })
