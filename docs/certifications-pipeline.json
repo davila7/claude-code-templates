@@ -423,18 +423,16 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI tools",
-          "Software development",
-          "Programming with AI",
-          "Understanding AI models",
-          "AI limitations"
+          "AI",
+          "Programming",
+          "Software Development"
         ],
         "source": "cursor-learn",
         "price": null,
         "id": "cursor-ai-foundations",
         "kind": "course",
         "title": "AI Foundations",
-        "description": "This course will teach you about how to use AI to be more effective as a programmer. It’s not a course to teach about machine learning or how to train your own models, but instead a course focused on developers writing software using AI models and tools.",
+        "description": "This course will teach you about how to use AI to be more effective as a programmer. It focuses on developers writing software using AI models and tools, providing understanding of how models work, their limitations, and practical patterns for building software with AI tools.",
         "url": "https://cursor.com/learn"
       }
     ],
@@ -448,7 +446,7 @@
         "topics": [
           "AI",
           "Foundations",
-          "ChatGPT"
+          "Large Language Models"
         ],
         "source": "openai-academy",
         "price": null,
@@ -466,7 +464,7 @@
         "eligibility": "public",
         "topics": [
           "Applied AI",
-          "Foundations"
+          "Workflows"
         ],
         "source": "openai-academy",
         "price": null,
@@ -501,9 +499,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "OpenAI API",
-          "Scope",
-          "AI Solutions"
+          "AI",
+          "Solutions"
         ],
         "source": "openai-academy",
         "price": null,
@@ -520,9 +517,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "OpenAI API",
-          "Evaluate",
-          "AI Applications"
+          "AI",
+          "Applications"
         ],
         "source": "openai-academy",
         "price": null,
@@ -539,9 +535,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "OpenAI API",
-          "Design",
-          "Agentic Systems"
+          "Agentic Systems",
+          "Design"
         ],
         "source": "openai-academy",
         "price": null,
@@ -558,8 +553,6 @@
         ],
         "eligibility": "public",
         "topics": [
-          "OpenAI API",
-          "Build",
           "Retrieval-Augmented Generation"
         ],
         "source": "openai-academy",
@@ -577,9 +570,7 @@
         ],
         "eligibility": "public",
         "topics": [
-          "OpenAI API",
-          "Optimize",
-          "AI Application Performance"
+          "AI Performance"
         ],
         "source": "openai-academy",
         "price": null,
@@ -596,8 +587,7 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Codex",
-          "Get Started"
+          "Codex"
         ],
         "source": "openai-academy",
         "price": null,
@@ -615,7 +605,6 @@
         "eligibility": "public",
         "topics": [
           "Codex",
-          "Extend",
           "Workflows"
         ],
         "source": "openai-academy",
@@ -634,9 +623,7 @@
         "eligibility": "public",
         "topics": [
           "Codex",
-          "Scale",
-          "Teams",
-          "Systems"
+          "Teams"
         ],
         "source": "openai-academy",
         "price": null,
@@ -653,8 +640,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI Leadership",
-          "AI Adoption"
+          "AI",
+          "Leadership"
         ],
         "source": "openai-academy",
         "price": null,
@@ -672,7 +659,7 @@
         "eligibility": "public",
         "topics": [
           "AI",
-          "Educators"
+          "Education"
         ],
         "source": "openai-academy",
         "price": null,
@@ -690,7 +677,8 @@
         "eligibility": "public",
         "topics": [
           "AI",
-          "College Students"
+          "Education",
+          "Students"
         ],
         "source": "openai-academy",
         "price": null,
@@ -727,7 +715,7 @@
         "id": "vercel-build-and-launch-with-ai",
         "kind": "course",
         "title": "Build and Launch with AI",
-        "description": "Build and launch a website for Small Hours Studio with AI. Start in v0, add workshop pages and an email inquiry form, and learn to publish your own updates with fx, GitHub, and Vercel.",
+        "description": "Build and launch a website for Small Hours Studio with AI. Start in v0, add workshop pages and an email inquiry form, and learn to publish your own updates with fx, GitHub, and Vercel. No coding experience required.",
         "url": "https://vercel.com/academy/build-and-launch-with-ai"
       },
       {
@@ -1075,7 +1063,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI Infrastructure"
+          "AI Infrastructure",
+          "Professional"
         ],
         "source": "nvidia-certification",
         "level": "Advanced",
@@ -1092,7 +1081,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI Operations"
+          "AI Operations",
+          "Professional"
         ],
         "source": "nvidia-certification",
         "level": "Advanced",
@@ -1109,7 +1099,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI Networking"
+          "AI Networking",
+          "Professional"
         ],
         "source": "nvidia-certification",
         "level": "Advanced",
@@ -1126,7 +1117,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI Rack and Interconnect"
+          "AI Rack and Interconnect",
+          "Professional"
         ],
         "source": "nvidia-certification",
         "level": "Advanced",
@@ -1143,14 +1135,15 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI Infrastructure and Operations"
+          "AI Infrastructure and Operations",
+          "Associate"
         ],
         "source": "nvidia-certification",
         "level": "Entry",
         "id": "nvidia-ai-infrastructure-operations-associate",
         "kind": "certification",
         "title": "NVIDIA-Certified Associate AI Infrastructure and Operations",
-        "description": "Validate a candidate’s knowledge of foundational concepts of AI computing related to infrastructure and operations.",
+        "description": "Validate a candidate's knowledge of foundational concepts of AI computing related to infrastructure and operations.",
         "url": "https://www.nvidia.com/en-us/learn/certification/ai-infrastructure-operations-associate"
       },
       {
@@ -1160,7 +1153,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Accelerated Data Science"
+          "Accelerated Data Science",
+          "Professional"
         ],
         "source": "nvidia-certification",
         "role": "Data",
@@ -1178,7 +1172,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Accelerated Data Science"
+          "Accelerated Data Science",
+          "Associate"
         ],
         "source": "nvidia-certification",
         "role": "Data",
@@ -1186,7 +1181,7 @@
         "id": "nvidia-accelerated-data-science-associate",
         "kind": "certification",
         "title": "NVIDIA-Certified Associate Accelerated Data Science",
-        "description": "Verify a candidate’s understanding of GPU-accelerated data science concepts for preparing data, developing models, and managing end-to-end workflows.",
+        "description": "Verify a candidate's understanding of GPU-accelerated data science concepts for preparing data, developing models, and managing end-to-end workflows.",
         "url": "https://www.nvidia.com/en-us/learn/certification/accelerated-data-science-associate"
       },
       {
@@ -1196,7 +1191,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Generative AI"
+          "Generative AI",
+          "Professional"
         ],
         "source": "nvidia-certification",
         "level": "Advanced",
@@ -1213,7 +1209,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Agentic AI"
+          "Agentic AI",
+          "Professional"
         ],
         "source": "nvidia-certification",
         "level": "Advanced",
@@ -1230,7 +1227,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Generative AI"
+          "Generative AI LLM",
+          "Associate"
         ],
         "source": "nvidia-certification",
         "level": "Entry",
@@ -1247,7 +1245,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Generative AI"
+          "Generative AI Multimodal",
+          "Associate"
         ],
         "source": "nvidia-certification",
         "level": "Entry",
@@ -1264,14 +1263,15 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI Models"
+          "AI Models and Application Development",
+          "Associate"
         ],
         "source": "nvidia-certification",
         "level": "Entry",
         "id": "nvidia-ai-model-application-development-associate",
         "kind": "certification",
         "title": "NVIDIA-Certified Associate AI Models and Application Development",
-        "description": "Validates foundational skills in building, customizing, deploying, and evaluating AI models and applications on NVIDIA’s platform, including retrieval pipelines, inference optimization, and agentic systems.",
+        "description": "Validates foundational skills in building, customizing, deploying, and evaluating AI models and applications on NVIDIA’s platform.",
         "url": "https://www.nvidia.com/en-us/learn/certification/ai-model-application-development-associate"
       },
       {
@@ -1281,7 +1281,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "OpenUSD"
+          "OpenUSD Interpretation",
+          "Professional"
         ],
         "source": "nvidia-certification",
         "level": "Advanced",
