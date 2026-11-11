@@ -1,6 +1,6 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [task-parameters]
+argument-hint: "[task-parameters]"
 description: Apply Gmail labels to matching messages and archive them to keep your inbox clean.
 ---
 

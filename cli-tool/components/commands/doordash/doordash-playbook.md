@@ -1,6 +1,6 @@
 ---
 allowed-tools: Bash(dd-cli:*), Bash(jq:*), Bash(cat:*), Bash(mkdir:*), Read, Write, Edit
-argument-hint: [list | add <name> | rm <name> | show <name>]
+argument-hint: "[list | add <name> | rm <name> | show <name>]"
 description: Manage saved DoorDash order playbooks (list, add from order history, remove, inspect) stored in ~/.claude/dd-cli/playbooks.json
 ---
 
