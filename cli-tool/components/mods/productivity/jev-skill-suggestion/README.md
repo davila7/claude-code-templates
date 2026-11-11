@@ -54,7 +54,7 @@ The status row under the prompt reads `jev · skill: <name>`, the transcript sho
 
 **5. Undo, whenever.** `/jev-skill-suggestion:setup restore` puts the saved values back (and removes the backup); restart afterwards. Do this before uninstalling the mod, or your skills stay hidden from the model with nothing left to inject them.
 
-Skills you have hidden are still yours to run by typing `/name`.
+Skills you have hidden are still yours to run by typing `/name`, but no longer the model's: the Skill tool refuses a `user-invocable-only` skill to the model and to its subagents, so an instruction to load one by name (in `CLAUDE.md`, or in another skill) stops working, and `alwaysListed` cannot keep one in the listing, since the engine no longer lists it. Besides your own `/name`, a hidden skill reaches the model only when the mod injects it into a prompt, which it does with `inject: "content"` (the default); with `inject: "suggest"` the model has to load the skill itself, and the Skill tool refuses it. A plugin's skills cannot be hidden this way (`skillOverrides` does not touch them), so the model can still load them. The bundled skills are turned off rather than hidden, so you cannot run them either. Without the setup the mod still withholds the listing on every prompt, and the model can still load a skill by name, unless the skill's own frontmatter says `disable-model-invocation: true`.
 
 ## How it works
 
@@ -84,7 +84,7 @@ What the Skill tool does that this does not: apply the skill's `allowed-tools`, 
 
 With `inject: "suggest"` the block is the cookbook's: the name, and with the listing withheld the skill's line and the way to load it. A turn with nothing to suggest, while the listing is in place (`hideListing: false`), still sends `No skill in the roster appears relevant to this request.`, so the roster's own "err on the side of loading" is not left unopposed. With the listing withheld there is nothing to oppose, so nothing is sent. In this mode the call stays the model's, and a skill hidden with `skillOverrides` cannot be loaded.
 
-A typed `/name` still loads any skill, suggested or not.
+A typed `/name` still loads any skill you can run, suggested or not.
 
 **Where the candidates come from.** The listing is rendered at the turn's first model request, *after* `prompt.submit` has run, so the first prompt of a session would have nothing to choose from if the listing were the source. The candidates come from `$.command.list()` instead — every command the person can run, less the built-ins (`/help`, `/clear`, and Claude Code's bundled skills, which have no file to inject) and the names in `neverSuggested`. Skills hidden with `skillOverrides` are still candidates: the mod loads the winner itself. With `inject: "suggest"`, once a listing has been seen only the skills it named are offered, since there the Skill tool does the loading and the listing is the engine's word on what it will load. A skill whose own frontmatter says `disable-model-invocation: true` is never picked in either mode.
 
@@ -200,7 +200,7 @@ With a key set, the prompt text and every candidate skill's name and one-line de
   logDecisions:     boolean log each decision (default true)
 ```
 
-`inject: "suggest"` with `hideListing: false` reproduces the cookbook exactly — the listing stays, the suggestion goes on top — and is the way to measure the suggestions against what the model would have chosen on its own before committing to the saving. The two thresholds are the cookbook's; TypeSafe's [confidence guide](https://docs.typesafe.ai/confidence) is the place to read before moving them. `alwaysListed` is for the one or two skills you want the model to know about on every prompt (a house-style `commit`, say); `neverSuggested` for skills that should only ever run when the user types them.
+`inject: "suggest"` with `hideListing: false` reproduces the cookbook exactly — the listing stays, the suggestion goes on top — and is the way to measure the suggestions against what the model would have chosen on its own before committing to the saving. The two thresholds are the cookbook's; TypeSafe's [confidence guide](https://docs.typesafe.ai/confidence) is the place to read before moving them. `alwaysListed` is for the one or two skills you want the model to know about on every prompt (a house-style `commit`, say); it can only keep a skill the engine still lists, so not one the setup has hidden. `neverSuggested` is for skills that should only ever run when the user types them.
 
 Declared in `.claude-plugin/plugin.json` (`userConfig`). Set them in `/config`, in user settings (`~/.claude/settings.json`, not project settings), with `--settings <file>` or in managed settings:
 
