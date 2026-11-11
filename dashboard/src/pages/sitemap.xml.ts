@@ -94,6 +94,7 @@ export const GET: APIRoute = () => {
   urls.push(buildUrl('/certifications/', { priority: '0.6', changefreq: 'weekly' }));
   urls.push(buildUrl('/about/', { priority: '0.5', changefreq: 'monthly' }));
   urls.push(buildUrl('/supporters/', { priority: '0.4', changefreq: 'monthly' }));
+  urls.push(buildUrl('/security/', { priority: '0.5', changefreq: 'monthly' }));
   urls.push(buildUrl('/privacy/', { priority: '0.3', changefreq: 'yearly' }));
   urls.push(buildUrl('/developers/catalog-api/', { priority: '0.4', changefreq: 'monthly' }));
 
