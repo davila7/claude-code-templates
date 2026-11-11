@@ -3,6 +3,8 @@ import { createClient } from '@supabase/supabase-js';
 import { corsResponse, jsonResponse } from '../../lib/api/cors';
 import { captureApiError } from '../../lib/api/error-tracking';
 import { getCountry } from '../../lib/api/geo';
+import { COMPONENT_TYPES } from '../../lib/api/usage-tracking';
+import { insertWithClientSignals } from '../../lib/api/download-client-signals';
 
 function getSupabaseClient() {
   const supabaseUrl = import.meta.env.SUPABASE_URL || process.env.SUPABASE_URL;
@@ -22,8 +24,7 @@ function validateComponentData(data: { type?: string; name?: string; path?: stri
     return { valid: false, error: 'Component type and name are required' };
   }
 
-  const validTypes = ['agent', 'command', 'setting', 'hook', 'mcp', 'skill', 'loop', 'mod', 'template'];
-  if (!validTypes.includes(type)) {
+  if (!(COMPONENT_TYPES as readonly string[]).includes(type)) {
     return { valid: false, error: 'Invalid component type' };
   }
 
@@ -36,7 +37,8 @@ function validateComponentData(data: { type?: string; name?: string; path?: stri
 
 export const POST: APIRoute = async ({ request }) => {
   try {
-    const { type, name, path, category, cliVersion } = await request.json();
+    const body = await request.json();
+    const { type, name, path, category, cliVersion } = body;
     const validation = validateComponentData({ type, name, path, category });
 
     if (!validation.valid) {
@@ -52,20 +54,25 @@ export const POST: APIRoute = async ({ request }) => {
 
     const supabase = getSupabaseClient();
 
-    const { error: insertError } = await supabase
-      .from('component_downloads')
-      .insert({
-        component_type: type,
-        component_name: name,
-        component_path: path,
-        category: category,
-        user_agent: userAgent,
-        ip_address: ipAddress,
-        country: country,
-        cli_version: cliVersion,
-        download_timestamp: new Date().toISOString(),
-        created_at: new Date().toISOString(),
-      });
+    const row = {
+      component_type: type,
+      component_name: name,
+      component_path: path,
+      category: category,
+      user_agent: userAgent,
+      ip_address: ipAddress,
+      country: country,
+      cli_version: cliVersion,
+      download_timestamp: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+    };
+
+    // Falls back to the row without client_* columns until database/migrations/004 runs.
+    const { error: insertError } = await insertWithClientSignals(
+      (values) => supabase.from('component_downloads').insert(values),
+      row,
+      body
+    );
 
     if (insertError) {
       console.error('Supabase insert error:', insertError);

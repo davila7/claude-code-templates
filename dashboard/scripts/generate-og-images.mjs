@@ -1,5 +1,6 @@
-// Generates the social preview image (og:image / twitter:image) of every
-// component page: public/og/{type}/{path}.png, 1200x630.
+// Generates the social preview images (og:image / twitter:image), 1200x630:
+// one per component page (public/og/{type}/{path}.png) and the site card
+// used by every other page (public/og/site.png).
 //
 // Runs before `astro build` (see package.json). The output is a build
 // artifact (gitignored): CI regenerates it on every deploy from the catalog
@@ -24,6 +25,7 @@ const WIDTH = 1200;
 const HEIGHT = 630;
 // Bump when the design changes so cached images are re-rendered.
 const DESIGN_VERSION = '2';
+const SITE_DESIGN_VERSION = '1';
 
 // Stat label per type: "Subagent" is Claude Code's own name for agents.
 const TYPE_LABEL = {
@@ -35,6 +37,7 @@ const TYPE_LABEL = {
   mcps: 'MCP',
   loops: 'Loop',
   mods: 'Mod',
+  plugins: 'Plugin',
 };
 
 // Anthropic palette only: cream card, dark ink, orange as the one accent.
@@ -59,6 +62,7 @@ const fonts = [
   { name: 'Geist', weight: 400, data: readFileSync(join(fontDir, 'Geist-Regular.ttf')) },
   { name: 'Geist', weight: 600, data: readFileSync(join(fontDir, 'Geist-SemiBold.ttf')) },
   { name: 'Geist', weight: 700, data: readFileSync(join(fontDir, 'Geist-Bold.ttf')) },
+  { name: 'Geist Mono', weight: 500, data: readFileSync(join(fontDir, '..', 'geist-mono', 'GeistMono-Medium.ttf')) },
 ];
 
 const h = (type, style, children) => ({ type, props: { style, children } });
@@ -82,6 +86,8 @@ const ICON = {
   downloads: 'M12 4v11m0 0l-4.5-4.5M12 15l4.5-4.5M5 19.5h14',
   type: 'M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3zm0 0v18M4 7.5l8 4.5 8-4.5',
   files: 'M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8l-5-5zm0 0v5h5',
+  components: 'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z',
+  license: 'M12 3v18M5 7h14M5 7l-2.5 6a3 3 0 005 0L5 7zm14 0l-2.5 6a3 3 0 005 0L19 7zM8 21h8',
   version: 'M3.5 12.6V5a1.5 1.5 0 011.5-1.5h7.6l8 8a1.5 1.5 0 010 2.1l-7.6 7.6a1.5 1.5 0 01-2.1 0l-7.4-7.6zM8 8h.01',
 };
 
@@ -128,6 +134,71 @@ function card({ category, name, description, stats, bar }) {
     h('div', { display: 'flex', height: 16, width: WIDTH }, bar.map(([share, color]) =>
       h('div', { display: 'flex', height: 16, width: Math.round(share * WIDTH), backgroundColor: color }))),
   ]);
+}
+
+// Plural label per catalog type, for the site card's legend.
+const TYPE_PLURAL = {
+  skills: 'Skills', agents: 'Agents', commands: 'Commands', mcps: 'MCPs', settings: 'Settings',
+  hooks: 'Hooks', mods: 'Mods', loops: 'Loops', templates: 'Templates', sandbox: 'Sandboxes',
+};
+
+// Site card: same layout as the component card, with the whole catalog as
+// the "repository" and its component types as the language bar.
+function siteCard({ stats, bar, legend }) {
+  return h('div', { width: WIDTH, height: HEIGHT, display: 'flex', flexDirection: 'column', backgroundColor: C.bg, fontFamily: 'Geist' }, [
+    h('div', { display: 'flex', flexGrow: 1, padding: '84px 84px 0 84px' }, [
+      h('div', { display: 'flex', flexDirection: 'column', flexGrow: 1, flexShrink: 1, maxWidth: 820 }, [
+        h('div', { display: 'flex', fontSize: 72, lineHeight: 1.05, color: C.ink, letterSpacing: -72 * 0.025, fontWeight: 700 }, 'Claude Code Templates'),
+        h('div', { display: 'block', fontSize: 28, lineHeight: 1.45, color: C.muted, marginTop: 24, lineClamp: 2 },
+          'Open catalog of agents, skills, commands, hooks, MCPs and settings for Claude Code.'),
+        h('div', { display: 'flex', marginTop: 30 }, [
+          h('div', { display: 'flex', alignItems: 'center', fontFamily: 'Geist Mono', fontSize: 24, color: C.ink, backgroundColor: '#F0EEE6', border: '1px solid #E8E6DC', borderRadius: 10, padding: '12px 20px' }, [
+            h('span', { color: '#D97757', marginRight: 14 }, '$'),
+            h('span', {}, 'npx claude-code-templates@latest'),
+          ]),
+        ]),
+      ]),
+      h('div', { display: 'flex', marginLeft: 56, flexShrink: 0 }, [logo(168)]),
+    ]),
+    h('div', { display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', padding: '0 84px 26px 84px' }, [
+      h('div', { display: 'flex' }, stats.map(([icon, value, label]) => stat(icon, value, label))),
+      h('div', { display: 'flex', fontSize: 24, fontWeight: 600, color: C.ink, marginBottom: 30 }, 'aitmpl.com'),
+    ]),
+    h('div', { display: 'flex', padding: '0 84px 18px 84px', fontSize: 18, color: C.faint }, legend.map(([label, color]) =>
+      h('div', { display: 'flex', alignItems: 'center', marginRight: 26 }, [
+        h('div', { display: 'flex', width: 12, height: 12, borderRadius: 6, backgroundColor: color, border: '1px solid #B0AEA5', marginRight: 8 }),
+        label,
+      ]))),
+    h('div', { display: 'flex', height: 16, width: WIDTH }, bar.map(([share, color]) =>
+      h('div', { display: 'flex', height: 16, width: Math.round(share * WIDTH), backgroundColor: color }))),
+  ]);
+}
+
+function siteEntry() {
+  const catalog = JSON.parse(readFileSync(join(ROOT, 'public', 'components.json'), 'utf8'));
+  const sizes = Object.keys(TYPE_PLURAL)
+    .map((t) => [t, (catalog[t] ?? []).length])
+    .filter(([, n]) => n > 0)
+    .sort((a, b) => b[1] - a[1]);
+  const total = sizes.reduce((a, [, n]) => a + n, 0);
+  const downloads = Object.keys(TYPE_PLURAL)
+    .reduce((a, t) => a + (catalog[t] ?? []).reduce((b, c) => b + (c.downloads ?? 0), 0), 0);
+  // The four largest types get their own segment; the rest share a fifth, "More".
+  const top = sizes.slice(0, 4);
+  const rest = sizes.slice(4).reduce((a, [, n]) => a + n, 0);
+  const segments = [...top.map(([t, n]) => [TYPE_PLURAL[t], n]), ...(rest ? [['More', rest]] : [])];
+  const bar = segments.map(([, n], i) => [n / total, BAR_COLORS[i]]);
+  const legend = segments.map(([label], i) => [label, BAR_COLORS[i]]);
+  const compactBig = (n) => (n >= 1e6 ? `${(n / 1e6).toFixed(1)}M` : compact(n));
+  return {
+    stats: [
+      ['components', total.toLocaleString('en-US'), 'Components'],
+      ['downloads', compactBig(downloads), 'Downloads'],
+      ['license', 'MIT', 'License'],
+    ],
+    bar,
+    legend,
+  };
 }
 
 function walk(dir) {
@@ -197,6 +268,21 @@ if (!isMainThread) {
 
   const jobs = [];
   let skipped = 0;
+  let siteRendered = 0;
+  // The site card renders on the main thread: one image, counts change daily.
+  if (!only.length || only.includes('site')) {
+    const site = siteEntry();
+    const siteFile = join(outDir, 'site.png');
+    const siteHash = createHash('sha1').update(SITE_DESIGN_VERSION + JSON.stringify(site)).digest('hex');
+    if (manifest.site === siteHash && existsSync(siteFile)) skipped++;
+    else {
+      const svg = await satori(siteCard(site), { width: WIDTH, height: HEIGHT, fonts });
+      mkdirSync(outDir, { recursive: true });
+      writeFileSync(siteFile, new Resvg(svg, { fitTo: { mode: 'width', value: WIDTH } }).render().asPng());
+      manifest.site = siteHash;
+      siteRendered = 1;
+    }
+  }
   for (const e of entries()) {
     const key = `${e.typeKey}/${e.path}`;
     if (only.length && !only.includes(key)) continue;
@@ -218,5 +304,5 @@ if (!isMainThread) {
   for (const { key, hash } of jobs) manifest[key] = hash;
   mkdirSync(outDir, { recursive: true });
   writeFileSync(manifestPath, JSON.stringify(manifest));
-  console.log(`og images: ${jobs.length} rendered, ${skipped} unchanged, ${threads} threads (${((Date.now() - started) / 1000).toFixed(1)}s)`);
+  console.log(`og images: ${jobs.length + siteRendered} rendered, ${skipped} unchanged, ${threads} threads (${((Date.now() - started) / 1000).toFixed(1)}s)`);
 }

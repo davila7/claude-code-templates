@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { collectionsApi } from '../lib/collections-api';
 import type { Collection } from '../lib/types';
+import { openSignIn } from '../lib/sign-in';
+import { componentRef, track } from '../lib/analytics';
+import { COLLECTIONS_CHANGED_EVENT, myComponentsUrl, saveComponent, whenSavesSettled, type CollectionsChangedDetail } from '../lib/save-component';
 
 // Hook that reads auth state from Clerk's global instance (window.Clerk)
 // Works without needing a ClerkProvider in the same React tree
@@ -78,11 +81,23 @@ function SaveButton({ componentType, componentPath, componentName, componentCate
     return () => document.removeEventListener('mousedown', handleClick);
   }, [open]);
 
-  async function loadCollections() {
+  // A save completed elsewhere on the page (the action resumed after sign-in).
+  useEffect(() => {
+    function onChanged(e: Event) {
+      const d = (e as CustomEvent<CollectionsChangedDetail>).detail;
+      if (d?.type === componentType && d.path === componentPath) setSavedIn((prev) => new Set(prev).add(d.collectionId));
+    }
+    window.addEventListener(COLLECTIONS_CHANGED_EVENT, onChanged);
+    return () => window.removeEventListener(COLLECTIONS_CHANGED_EVENT, onChanged);
+  }, [componentType, componentPath]);
+
+  const item = { type: componentType, path: componentPath, name: componentName, category: componentCategory };
+
+  async function loadCollections(): Promise<Collection[] | null> {
     setLoading(true);
     try {
       const token = await getToken();
-      if (!token) return;
+      if (!token) return null;
       const cols = await collectionsApi.list(token);
       setCollections(cols);
 
@@ -94,8 +109,10 @@ function SaveButton({ componentType, componentPath, componentName, componentCate
         }
       }
       setSavedIn(saved);
+      return cols;
     } catch (err) {
       console.error('Failed to load collections:', err);
+      return null;
     } finally {
       setLoading(false);
     }
@@ -115,11 +132,39 @@ function SaveButton({ componentType, componentPath, componentName, componentCate
     return () => { card.style.zIndex = ''; card.style.position = ''; };
   }, [open]);
 
+  // Signed out: the save waits in sessionStorage and runs after sign-in
+  // (lib/resume-pending-action.ts).
+  function signInToSave() {
+    track('save_click', { ...componentRef(componentType, componentPath), signed_in: false });
+    openSignIn({ kind: 'save', ...item });
+  }
+
   async function handleToggle(e: React.MouseEvent) {
     e.stopPropagation();
     if (!open) {
+      track('save_click', { ...componentRef(componentType, componentPath), signed_in: true });
       setOpen(true);
-      await loadCollections();
+      const cols = await loadCollections();
+      // First save: no collection to pick yet, so create "My components" with
+      // this component and open it, where its install command is shown.
+      if (cols && cols.length === 0) {
+        const token = await getToken();
+        if (!token) return;
+        setCreating(true);
+        try {
+          const { status, collection } = await saveComponent(collectionsApi, token, item, cols);
+          if (status === 'first') {
+            await whenSavesSettled();
+            window.location.assign(myComponentsUrl(collection.id));
+            return;
+          }
+          // Another save created the first collection meanwhile: show the picker.
+          await loadCollections();
+        } catch (err) {
+          console.error('Failed to create the first collection:', err);
+        }
+        setCreating(false);
+      }
     } else {
       setOpen(false);
     }
@@ -208,11 +253,11 @@ function SaveButton({ componentType, componentPath, componentName, componentCate
   // Not signed in - open Clerk modal via global instance
   if (!isSignedIn) {
     if (variant === 'button') {
-      return <PageSaveButton saved={false} title="Sign in to save" onClick={(e) => { e.stopPropagation(); (window as any).Clerk?.openSignIn?.(); }} />;
+      return <PageSaveButton saved={false} title="Sign in to save" onClick={(e) => { e.stopPropagation(); signInToSave(); }} />;
     }
     return (
       <button
-        onClick={(e) => { e.stopPropagation(); (window as any).Clerk?.openSignIn?.(); }}
+        onClick={(e) => { e.stopPropagation(); signInToSave(); }}
         className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5 text-[var(--color-text-tertiary)] opacity-0 group-hover:opacity-100 hover:text-white hover:bg-white/10 transition-all"
         title="Sign in to save"
       >
@@ -246,7 +291,7 @@ function SaveButton({ componentType, componentPath, componentName, componentCate
 
       {open && (
         <div className={`absolute ${variant === 'button' ? 'left-0 md:left-auto md:right-0' : 'right-0'} top-full mt-1 w-56 bg-[var(--color-surface-1)] border border-[var(--color-border)] rounded-lg shadow-xl z-[9999] py-1`}>
-          {loading ? (
+          {loading || (creating && collections.length === 0) ? (
             <div className="px-3 py-4 text-center">
               <div className="w-4 h-4 border-2 border-[var(--color-text-tertiary)] border-t-transparent rounded-full animate-spin mx-auto" />
             </div>

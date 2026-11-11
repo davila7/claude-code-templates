@@ -1,0 +1,54 @@
+name: Docs CI
+
+# docs.aitmpl.com is built by Mintlify from docs-site/ on main. This job checks,
+# on the PR, that the docs still match the CLI: every install example points at
+# a real component, no page documents a removed flag, the generated CLI tables
+# are current, docs.json is valid and no internal link is broken.
+
+on:
+  pull_request:
+    paths:
+      - 'docs-site/**'
+      - 'cli-tool/bin/**'
+      - 'cli-tool/src/removed-commands.js'
+      - '.github/workflows/docs-ci.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-ci-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  docs:
+    name: Docs match the CLI
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: cli-tool/package-lock.json
+
+      - name: Install CLI dependencies (for --help)
+        run: npm ci --ignore-scripts --no-audit --no-fund
+        working-directory: cli-tool
+
+      - name: Install paths, removed flags, navigation and links
+        run: python3 docs-site/scripts/check_docs.py
+
+      - name: Generated CLI tables are current
+        run: python3 docs-site/scripts/generate_snippets.py --check
+
+      - name: Mintlify validate and broken links
+        working-directory: docs-site
+        run: |
+          npx -y mint@4 validate
+          npx -y mint@4 broken-links

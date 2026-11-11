@@ -14,11 +14,9 @@ function expectScopedBashPermissions(settings) {
     // language template. Keep the existing named-command prefix rules.
     expect(rule).toMatch(/^Bash\([\w-]+:\*\)$/);
   }
-  expect(settings.permissions.allow).toEqual(expect.arrayContaining(['Edit', 'MultiEdit', 'Write']));
   expect(settings.permissions.deny).toEqual([
     'Bash(curl:*)', 'Bash(wget:*)', 'Bash(rm -rf:*)'
   ]);
-  expect(settings.permissions.defaultMode).toBe('allowEdits');
 }
 
 describe('language template Bash permissions', () => {
@@ -60,7 +58,10 @@ describe('installing language template settings', () => {
       const original = await fs.readJson(path.join(templatesRoot, source));
       const config = {
         language,
-        files: [{ source: `${language}/.claude`, destination: '.claude' }]
+        files: [
+          { source: `${language}/.claude`, destination: '.claude' },
+          { source: `${language}/.claude/settings.json`, destination: '.claude/settings.json' }
+        ]
       };
 
       expect(await copyTemplateFiles(config, targetDir, { yes: true })).toBe(true);

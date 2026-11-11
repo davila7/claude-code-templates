@@ -2,7 +2,7 @@
  * aitmpl-crons — Cloudflare Worker
  *
  * Replaces Vercel cron jobs by calling the dashboard API endpoints
- * on a schedule. Cron: every 30 minutes (claude-code-check) and hourly (health-check).
+ * on a schedule. Cron: hourly (health-check).
  *
  * Secrets (wrangler secret put):
  *   DASHBOARD_URL    — e.g. https://www.aitmpl.com
@@ -13,7 +13,6 @@
 import { reportError, checkIn } from './sentry.js';
 
 const MONITORS = {
-  '*/30 * * * *': 'claude-code-check',
   '0 * * * *': 'health-check',
 };
 
@@ -26,9 +25,7 @@ export default {
     };
 
     const cron = event.cron;
-    const endpoint = cron === '*/30 * * * *' ? '/api/claude-code-check'
-      : cron === '0 * * * *' ? '/api/health-check'
-      : null;
+    const endpoint = cron === '0 * * * *' ? '/api/health-check' : null;
 
     if (!endpoint) {
       console.log(`Unknown cron schedule: ${cron}`);
@@ -60,7 +57,7 @@ export default {
     }
   },
 
-  // Manual trigger for testing: GET /trigger?cron=*/30+*+*+*+*
+  // Manual trigger for testing: GET /trigger?cron=0+*+*+*+*
   async fetch(request, env) {
     const url = new URL(request.url);
 
@@ -69,7 +66,6 @@ export default {
         status: 'running',
         worker: 'aitmpl-crons',
         schedules: {
-          '*/30 * * * *': '/api/claude-code-check',
           '0 * * * *': '/api/health-check',
         },
       }), { headers: { 'Content-Type': 'application/json' } });
@@ -84,7 +80,7 @@ export default {
       return new Response('Unauthorized', { status: 401 });
     }
 
-    const cron = url.searchParams.get('cron') || '*/30 * * * *';
+    const cron = url.searchParams.get('cron') || '0 * * * *';
     await this.scheduled({ cron }, env, {});
     return new Response(`Triggered: ${cron}`, { status: 200 });
   },

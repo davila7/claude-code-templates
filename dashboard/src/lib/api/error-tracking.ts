@@ -33,16 +33,25 @@ function getDsn(): string | undefined {
   return (import.meta.env.SENTRY_DSN as string | undefined) || process.env.SENTRY_DSN;
 }
 
+export interface CaptureOptions {
+  /** Sentry level. 'error' (default) and 'fatal' make the issue high priority, which the alert rule emails. */
+  level?: 'fatal' | 'error' | 'warning' | 'info' | 'debug';
+  /** Groups events into one issue per distinct value instead of Sentry's default grouping. */
+  fingerprint?: string[];
+}
+
 /**
  * Report an error from an API route to Sentry. Safe to call unconditionally:
  * no-ops if SENTRY_DSN isn't configured, and never throws.
  *
  * @param error - The error (or message) to report
  * @param context - Extra tags/context, e.g. { route: '/api/health-check' }
+ * @param options - Level and fingerprint overrides
  */
 export async function captureApiError(
   error: unknown,
-  context: Record<string, unknown> = {}
+  context: Record<string, unknown> = {},
+  options: CaptureOptions = {}
 ): Promise<void> {
   const dsn = getDsn();
   if (!dsn) {
@@ -66,6 +75,8 @@ export async function captureApiError(
     timestamp,
     platform: 'javascript',
     logger: 'dashboard-api',
+    level: options.level ?? 'error',
+    ...(options.fingerprint ? { fingerprint: options.fingerprint } : {}),
     environment: process.env.NODE_ENV === 'production' ? 'production' : 'development',
     tags: { route: context.route || 'unknown' },
     extra: context,

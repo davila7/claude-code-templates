@@ -1544,7 +1544,7 @@ async function showComponentDetails(type, name) {
     document.getElementById('componentModalType').textContent = type;
     document.getElementById('componentModalCategory').textContent = component.category;
     document.getElementById('componentModalPath').textContent = component.path;
-    document.getElementById('componentModalUsage').textContent = `cct --${type} "${component.path}"`;
+    document.getElementById('componentModalUsage').textContent = `npx claude-code-templates@latest --${type} "${component.path}"`;
 
     const descriptionElement = document.getElementById('componentModalDescription');
     descriptionElement.textContent = component.content || 'No content available.';

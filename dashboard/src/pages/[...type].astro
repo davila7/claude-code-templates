@@ -5,13 +5,14 @@ import ComponentGrid from '../components/ComponentGrid.tsx';
 import SearchModal from '../components/SearchModal.tsx';
 import CartSidebar from '../components/CartSidebar.tsx';
 import { VALID_TYPES, TYPE_CONFIG, ICONS } from '../lib/icons';
+import { skillsPageMeta } from '../lib/list-page-meta';
+import counts from '../../public/counts.json';
 
 export const prerender = true;
 
-const TYPE_META: Record<string, { title: string; description: string; tagline: string }> = {
+const TYPE_META: Record<string, { title: string; description: string; tagline: string; h1?: string }> = {
   skills: {
-    title: 'Claude Code Skills: Pre-built Templates & Configurations',
-    description: 'Browse skills for Claude Code. Pre-built templates and configurations to enhance your AI development workflow. Install with a single npx command.',
+    ...skillsPageMeta((counts as Record<string, number>).skills),
     tagline: 'Pre-built templates and configurations to supercharge your AI workflow'
   },
   agents: {
@@ -101,7 +102,7 @@ export function getStaticPaths() {
         <div class="flex-1">
           <div class="flex flex-wrap items-center gap-x-3 gap-y-2 mb-1 sm:mb-2">
             <h1 class="text-2xl sm:text-3xl font-bold text-[var(--color-text-primary)] tracking-tight">
-              {config?.label ?? activeType}
+              {meta?.h1 ?? config?.label ?? activeType}
             </h1>
           </div>
           <p class="text-[13px] sm:text-[15px] text-[var(--color-text-secondary)] leading-relaxed max-w-2xl">

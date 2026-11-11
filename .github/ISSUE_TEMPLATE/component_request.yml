@@ -1,0 +1,33 @@
+name: Component idea or improvement
+description: Suggest a new component or an improvement to an existing one.
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        If you already built the component, open a pull request instead (see [CONTRIBUTING.md](https://github.com/davila7/claude-code-templates/blob/main/CONTRIBUTING.md)). Paid placements are not requested here: they never change catalog ranking or search.
+  - type: dropdown
+    id: type
+    attributes:
+      label: Component type
+      options: [Agent, Command, Skill, Hook, MCP, Setting, Mod, Loop, Template, Not sure]
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem it solves
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What it should do
+      description: For an existing component, include its path and what to change.
+    validations:
+      required: true
+  - type: textarea
+    id: access
+    attributes:
+      label: What it needs access to
+      description: Files, commands, network or external services it would use. Components that run code get extra review.
