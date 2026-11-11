@@ -103,6 +103,68 @@ class HelpersTest(unittest.TestCase):
             self.assertEqual(g.validate_item(item, VOCAB), [], item["id"])
 
 
+GOOGLE_LIST = """
+<a href="/learn/certification/agentic-architect">Agentic Architect</a>
+<h3 class="x">Foundational certification</h3>
+<a href="/certification/cloud-digital-leader" class="dS49Hc">Cloud Digital Leader</a>
+<a href="/learn/certification/generative-ai-leader" class="dS49Hc">Generative AI Leader</a>
+<h3 class="x">Professional certification</h3>
+<a href="https://cloud.google.com/learn/certification/agentic-architect/" class="dS49Hc">Agentic Architect</a>
+<a href="/certification/cloud-architect" class="dS49Hc">Cloud Architect</a>
+<a href="/certification/machine-learning-engineer" class="dS49Hc">Machine Learning Engineer</a>
+"""
+
+
+def google_page(title, desc, fee="<b>Registration fee:</b> $200 (plus tax where applicable)"):
+    return (
+        f'<meta property="og:title" content="{title} &nbsp;|&nbsp; Learn &nbsp;|&nbsp; Google Cloud">'
+        f'<meta name="description" content="{desc} Find out how to prepare for the exam.">'
+        f"<li>{fee}</li>"
+        '<a href="https://services.google.com/fh/files/misc/x_exam_guide_english.pdf">Exam guide</a>'
+        '<a href="https://partner.skills.google/paths/9">Partners</a>'
+        '<a href="https://www.skills.google/paths/4525?utm_source=cgc">Learning path</a>'
+    )
+
+
+class GoogleCloudTest(unittest.TestCase):
+    SOURCE = {
+        "id": "gc", "label": "Gc", "provider": "Google Cloud", "categories": ["AI & Agents"],
+        "url": "https://cloud.google.com/learn/certification", "match": "agentic|generative ai|machine learning",
+        "rules": [{"match": "architect", "role": "Architect"}, {"match": "leader", "role": "Business"}],
+    }
+
+    def fetch(self, url):
+        if url == self.SOURCE["url"]:
+            return GOOGLE_LIST
+        pages = {
+            "agentic-architect": google_page("Professional Agentic Architect Certification", "Designs agents &amp;amp; workflows."),
+            "generative-ai-leader": google_page("Generative AI Leader", "Leads gen AI.", fee="<b>Registration fee:</b> $99"),
+            "machine-learning-engineer": google_page("Professional ML Engineer Certification", "Builds ML.", fee=""),
+        }
+        return pages[url.rsplit("/", 1)[-1]]
+
+    def test_picks_matching_certifications_with_the_section_level(self):
+        items = g.fetch_google_cloud(self.SOURCE, fetch=self.fetch)
+        by_id = {i["id"]: i for i in items}
+        self.assertEqual(list(by_id), ["google-cloud-generative-ai-leader", "google-cloud-agentic-architect", "google-cloud-machine-learning-engineer"])
+        aa = by_id["google-cloud-agentic-architect"]
+        self.assertEqual((aa["title"], aa["level"], aa["role"]), ("Professional Agentic Architect", "Advanced", "Architect"))
+        self.assertEqual(aa["description"], "Designs agents & workflows.")
+        self.assertEqual(aa["url"], "https://cloud.google.com/learn/certification/agentic-architect")
+        self.assertEqual(aa["price"], {"amount": 200, "currency": "USD"})
+        self.assertEqual(aa["prepUrl"], "https://www.skills.google/paths/4525")
+        self.assertTrue(aa["examGuideUrl"].endswith("_exam_guide_english.pdf"))
+        self.assertEqual(by_id["google-cloud-generative-ai-leader"]["level"], "Entry")
+        self.assertEqual(by_id["google-cloud-generative-ai-leader"]["price"]["amount"], 99)
+        self.assertNotIn("price", by_id["google-cloud-machine-learning-engineer"])  # no fee on the page: "See price"
+        for item in items:
+            self.assertTrue(g.is_valid_fetched(item, VOCAB))
+
+    def test_layout_change_fails_the_source(self):
+        with self.assertRaises(RuntimeError):
+            g.fetch_google_cloud(self.SOURCE, fetch=lambda url: "<html></html>")
+
+
 class MainRetentionTest(unittest.TestCase):
     """main() keeps a source's previous entries when a fetch shrinks, fails or is skipped."""
 

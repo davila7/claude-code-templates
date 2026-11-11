@@ -15,6 +15,9 @@
     },
     "NVIDIA": {
       "icon": "https://www.nvidia.com/favicon.ico"
+    },
+    "Google Cloud": {
+      "icon": "https://cloud.google.com/favicon.ico"
     }
   },
   "sources": [
@@ -147,6 +150,32 @@
         {
           "match": "\\bprofessional\\b",
           "level": "Advanced"
+        }
+      ]
+    },
+    {
+      "id": "google-cloud-certification",
+      "type": "google-cloud",
+      "label": "Google Cloud Certification",
+      "url": "https://cloud.google.com/learn/certification",
+      "provider": "Google Cloud",
+      "platform": "Google Cloud",
+      "categories": [
+        "AI & Agents"
+      ],
+      "match": "agentic|\\bagents?\\b|generative ai|\\bgen ?ai\\b|machine learning|\\bml\\b|\\bai\\b|gemini",
+      "rules": [
+        {
+          "match": "agentic|architect",
+          "role": "Architect"
+        },
+        {
+          "match": "\\bleader\\b",
+          "role": "Business"
+        },
+        {
+          "match": "machine learning|\\bml\\b",
+          "role": "Developer"
         }
       ]
     }
