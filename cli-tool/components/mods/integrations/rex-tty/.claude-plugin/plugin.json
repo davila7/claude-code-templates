@@ -1,0 +1,62 @@
+{
+  "name": "rex-tty",
+  "version": "0.1.0",
+  "description": "Inside the Rex terminal, runs the Bash commands that need a real terminal (sudo, gh auth login, git rebase -i, a key passphrase) in a Rex pane beside the session, where you type; Claude gets the exit code and the output, never what you typed. Adds a tty_run tool for commands that failed without a terminal.",
+  "author": {
+    "name": "claude-code-templates",
+    "url": "https://www.aitmpl.com"
+  },
+  "repository": "https://github.com/davila7/claude-code-templates",
+  "license": "MIT",
+  "keywords": [
+    "mod",
+    "function-hooks",
+    "rex",
+    "terminal",
+    "tty"
+  ],
+  "userConfig": {
+    "commands": {
+      "type": "string",
+      "title": "Extra commands",
+      "description": "Comma-separated regex sources: a Bash command that matches one also runs in a Rex pane",
+      "default": ""
+    },
+    "skip": {
+      "type": "string",
+      "title": "Never send",
+      "description": "Comma-separated regex sources: a Bash command that matches one always runs as usual",
+      "default": ""
+    },
+    "side": {
+      "type": "string",
+      "title": "Pane side",
+      "description": "Where the pane opens relative to the session: below, right, above or left",
+      "default": "below"
+    },
+    "ratio": {
+      "type": "number",
+      "title": "Pane size",
+      "description": "Percent of the split the pane takes (10-90)",
+      "default": 35
+    },
+    "closeOnExit": {
+      "type": "boolean",
+      "title": "Close the pane when the command ends",
+      "description": "Off keeps every pane open until you close it; a pane whose command timed out is always kept",
+      "default": true
+    },
+    "returnOutput": {
+      "type": "boolean",
+      "title": "Give Claude the pane's output",
+      "description": "Off returns only the exit code, for commands that print secrets on screen",
+      "default": true
+    },
+    "timeoutMinutes": {
+      "type": "number",
+      "title": "Wait limit",
+      "description": "Minutes to wait for the command to end before Claude is told it is still running (1-720)",
+      "default": 30
+    }
+  }
+}
