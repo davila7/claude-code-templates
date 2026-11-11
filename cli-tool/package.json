@@ -24,7 +24,7 @@
     "test:unit": "jest tests/unit",
     "test:integration": "jest tests/integration",
     "test:e2e": "jest tests/e2e",
-    "test:analytics": "jest --testPathPattern=analytics",
+    "test:analytics": "jest --testPathPatterns=analytics",
     "test:commands": "./test-commands.sh",
     "test:detailed": "./test-detailed.sh",
     "test:react": "make test-react",
