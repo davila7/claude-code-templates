@@ -59684,11 +59684,11 @@
       "path": "development/senior-frontend",
       "category": "development",
       "type": "skill",
-      "description": "Comprehensive frontend development skill for building modern, performant web applications using ReactJS, NextJS, TypeScript, Tailwind CSS. Includes component scaffolding, performance optimization, bundle analysis, and UI best practices. Use when developing frontend features, optimizing performance, implementing UI/UX designs, managing state, or reviewing frontend code.",
-      "author": "",
+      "description": "You MUST use this whenever you build, change or review user interface code, including small UI tweaks and when the user is in a hurry: pages, components, forms, lists, tables, modals, navigation, layout or styling in React, Next.js, Vue, Svelte, Astro or plain HTML/CSS/Tailwind. Reuse the project's own components and tokens, design every state (loading, empty, error, long content), make it work with a keyboard and a screen reader and at phone width, then open it in a real browser and check it before saying it is done.",
+      "author": "claude-code-templates",
       "repo": "",
-      "version": "",
-      "license": "",
+      "version": "2.0.0",
+      "license": "MIT",
       "keywords": [],
       "downloads": 31450,
       "security": {
@@ -59700,42 +59700,22 @@
         "lastValidated": null
       },
       "references": [
-        "references/frontend_best_practices.md",
-        "references/nextjs_optimization_guide.md",
-        "references/react_patterns.md",
-        "scripts/bundle_analyzer.py",
-        "scripts/component_generator.py",
-        "scripts/frontend_scaffolder.py"
+        "references/NOTICE.md",
+        "references/react-patterns.md",
+        "references/ui-checklist.md",
+        "scripts/check_ui.mjs",
+        "scripts/page-audit.mjs"
       ],
       "skillspector": {
-        "score": 22,
-        "severity": "MEDIUM",
+        "score": 0,
+        "severity": "LOW",
         "recommendation": "CAUTION",
-        "issueCount": 2,
-        "analysis": "complete",
-        "findings": [
-          {
-            "id": "PE3",
-            "category": "Privilege Escalation",
-            "severity": "HIGH",
-            "title": "Credential Access",
-            "file": "SKILL.md",
-            "line": 126,
-            "count": 1
-          },
-          {
-            "id": "LP3",
-            "category": "MCP Least Privilege",
-            "severity": "MEDIUM",
-            "title": "Skill declares no tool scope ('permissions' or 'allowed-tools') but code capabilities were detected: file_write.",
-            "file": "SKILL.md",
-            "line": 1,
-            "count": 1
-          }
-        ],
-        "hash": "1e983ef16e9408b8",
+        "issueCount": 0,
+        "analysis": "partial",
+        "findings": [],
+        "hash": "ccc2207f6a12c939",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:30:55Z"
+        "scannedAt": "2026-11-11T13:38:18Z"
       }
     },
     {
