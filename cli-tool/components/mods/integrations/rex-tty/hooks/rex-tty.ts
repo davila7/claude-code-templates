@@ -106,7 +106,7 @@ export const register: Register = (on, options) => {
   async function inPane(host: Host, r: Rex, command: string, signal: AbortSignal): Promise<Outcome> {
     const opened: { block?: string } = {}
     try {
-      return await pane(host, r, command, opened)
+      return await pane(host, r, command, opened, signal)
     } catch (err) {
       host.status(undefined)
       if (signal.aborted) {
@@ -125,7 +125,7 @@ export const register: Register = (on, options) => {
   }
 
   /** Opens the pane, waits for the command and reads what the pane showed. */
-  async function pane(host: Host, r: Rex, command: string, opened: { block?: string }): Promise<Outcome> {
+  async function pane(host: Host, r: Rex, command: string, opened: { block?: string }, signal: AbortSignal): Promise<Outcome> {
     count += 1
     const label = `tty-${count}`
     const head = banner(command)
@@ -143,6 +143,12 @@ export const register: Register = (on, options) => {
     const out = await host.wait([r.bin, 'wait', '--for', `${timeoutMinutes}m`, '--json', block])
     const end = waited(out.stdout, out.stderr)
     host.status(undefined)
+    // an interrupted turn kills `rex wait`, and its stream may just end rather than throw:
+    // the pane goes with the turn whatever closeOnExit says, so nothing runs on unattended
+    if (signal.aborted && end.kind !== 'exit') {
+      await host.run([r.bin, 'block', 'close', block]).catch(() => undefined)
+      return { ok: false, deny: 'The turn was interrupted while this command waited in a Rex pane; the pane was closed.' }
+    }
 
     const shown = await host.run([r.bin, 'capture', '-b', block, '--trim', '--unwrap']).catch(() => undefined)
     // unread, or cut at the engine's 4 MiB (its end, the part that matters, is what was dropped)
