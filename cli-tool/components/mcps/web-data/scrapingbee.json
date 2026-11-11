@@ -1,7 +1,7 @@
 {
   "mcpServers": {
     "scrapingbee": {
-      "description": "ScrapingBee MCP server — fetch any web page as text, markdown, HTML or a screenshot with JavaScript rendering and anti-bot handling done for you, extract structured data by describing the fields in plain English, and get JSON results from Google search, Amazon products and pricing, Walmart, YouTube metadata and subtitles, ChatGPT and Gemini. Paid plans; get an API key at https://app.scrapingbee.com/account/register (1,000 free API credits on signup, no credit card).",
+      "description": "ScrapingBee MCP server — fetch any web page as text, markdown, HTML or a screenshot with JavaScript rendering and anti-bot handling done for you, extract structured data by describing the fields in plain English, and get JSON results from Google search, Amazon products and pricing, Walmart, YouTube metadata and subtitles, ChatGPT and Gemini. Paid plans; get an API key at https://app.scrapingbee.com/account/register (1,000 free API credits on signup, no credit card) and set it as the SCRAPINGBEE_API_KEY environment variable before connecting.",
       "type": "http",
       "url": "https://mcp.scrapingbee.com/mcp",
       "headers": {
