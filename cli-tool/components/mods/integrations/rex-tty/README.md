@@ -25,12 +25,12 @@ Commands sent to a pane by default:
 
 | Command | Left alone when |
 |---|---|
-| `sudo …` (also behind `env`, `command`, `nohup`, `time`, `timeout N`) | `-n`, `-S`, `-A`, `-K`, `-V` |
+| `sudo …` (also behind `env`, `command`, `nohup`, `time`, `nice`, `timeout N`) | `-n`, `-S`, `-A`, `-K`, `-V` |
 | `su`, `passwd`, `ssh-copy-id` | |
 | `gh auth login`, `gh auth refresh` | `--with-token` |
 | `git rebase -i`, `git add -p` / `-i`, `git checkout|restore|reset|stash -p` | `GIT_EDITOR=` or `GIT_SEQUENCE_EDITOR=` is set on the command |
 | `git commit` with no message | `-m`, `-F`, `-C`, `--no-edit`, `--fixup`, `--dry-run` |
-| `docker login`, `podman login` | `-p`, `--password-stdin` |
+| `docker login`, `podman login` | `-p`, `--password`, `--password-stdin` |
 | `ssh-add <key>`, `ssh-keygen` | `ssh-add -l`, `ssh-keygen -N …`, `-l`, `-y` |
 | `gpg --gen-key`, `--full-generate-key`, `--edit-key` | |
 | `npm`/`pnpm login`, `vercel login`, `wrangler login`, `gcloud auth login`, `gcloud init`, `aws sso login`, `az login`, `firebase login`, `heroku login`, `supabase login`, `fly auth login`, `op signin`, `netlify login`, `stripe login`, `doctl auth init`, `railway login` | a credential flag is given: `--token`, `--api-key`, `--service-principal`, `--cred-file`, `--browserless`, `--ci`, … |
@@ -49,14 +49,15 @@ A mod that answers a tool call runs before Claude Code's own permission dialog, 
 What this gate does not cover:
 
 - **The pane is outside Claude Code's Bash sandbox.** A command you send to a pane runs with your full access, as it would in any terminal.
-- **`PreToolUse` hooks and the auto-mode classifier are not asked** about a command that goes to a pane: only the permission rules are.
+- **`PreToolUse` hooks and the auto-mode classifier are not asked** about a command that goes to a pane. The permission rules are, and so are other mods' `tool.check` hooks: a mod such as `security/human-gate` can still hold or deny it.
 - **`tty_run` is checked as the Bash command it carries**, so `Bash(...)` rules apply to it. A rule written for `mcp__rex-tty__tty_run` itself is not what decides.
 
 In a `-p` run with no allow rule there is no one to ask, and the command runs as it would without the mod.
 
 ## Limits
 
-- **The pane's output goes to the model.** A hidden prompt is safe, but everything the pane shows is read by Claude like any Bash output: a secret a command prints (`gh auth token`), a one-time code, and input a command echoes as you type it (a username, an access key ID at `aws configure`). Set `returnOutput` to `false` to return only the exit code, or install `security/secret-redactor` below it.
+- **The pane's output goes to the model.** A hidden prompt is safe, but everything the pane shows is read by Claude like any Bash output: a secret a command prints (`gh auth token`), a one-time code, and input a command echoes as you type it (a username, an access key ID at `aws configure`).
+- **Long output is cut to its end.** Claude gets the last 30,000 characters of what the pane showed, with a line saying how much was left out. When the pane's text cannot be read, or is larger than 4 MiB, the result says so and the pane stays open. Set `returnOutput` to `false` to return only the exit code, or install `security/secret-redactor` below it.
 - **The pane has its own shell with your login environment** (not your interactive config such as `~/.zshrc`). It starts in the session's working directory, but variables Claude exported in earlier Bash commands, or a virtualenv it activated, are not set there.
 - **Interrupting the turn closes the pane**, with whatever was running in it.
 - **A command that runs past `timeoutMinutes` is not stopped.** Claude is told it is still waiting in the pane, and the pane stays open.

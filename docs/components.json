@@ -87392,7 +87392,7 @@
       "path": "integrations/rex-tty",
       "category": "integrations",
       "type": "mod",
-      "description": "Inside the Rex terminal, runs the Bash commands that need a real terminal (sudo, gh auth login, git rebase -i, a key passphrase) in a Rex pane beside the session, where you type; Claude gets the exit code and the output, never what you typed. Adds a tty_run tool for commands that failed without a terminal.",
+      "description": "Inside the Rex terminal, runs the Bash commands that need a real terminal (sudo, gh auth login, git rebase -i, a key passphrase) in a Rex pane beside the session, where you type; Claude gets the exit code and what the pane showed: input typed at a hidden prompt (a password, a passphrase) is never returned, visible or echoed input is, unless returnOutput is off. Adds a tty_run tool for commands that failed without a terminal.",
       "author": "claude-code-templates",
       "repo": "https://github.com/davila7/claude-code-templates",
       "version": "0.1.0",
@@ -87465,7 +87465,8 @@
         "hooks/detect.ts",
         "hooks/hooks.json",
         "hooks/rex-tty.ts",
-        "tests/detect.test.ts"
+        "tests/detect.test.ts",
+        "tests/rex-tty.test.ts"
       ]
     },
     {

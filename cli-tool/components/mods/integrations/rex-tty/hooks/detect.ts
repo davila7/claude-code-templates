@@ -42,8 +42,11 @@ export function clamp(value: unknown, min: number, max: number, fallback: number
  * find each command word.
  */
 export function segments(source: string): string[] {
-  // a heredoc's body is data, not commands
-  const command = source.replace(/<<-?\s*(['"]?)([A-Za-z_][A-Za-z0-9_]*)\1[^\n]*\n[\s\S]*?\n[ \t]*\2[ \t]*(?=\n|$)/g, '<<$2')
+  const command = source
+    // a heredoc's body is data, not commands; its delimiter is any shell word, quoted or not
+    .replace(/<<-?[ \t]*(?:'([^'\n]+)'|"([^"\n]+)"|\\?([^\s'"<>|;&()]+))[^\n]*\n([\s\S]*?\n)?[ \t]*(?:\1|\2|\3)[ \t]*(?=\n|$)/g, '<<HEREDOC')
+    // a backslash before a line break joins the two lines
+    .replace(/\\\r?\n/g, ' ')
   const out: string[] = []
   let current = ''
   let quote: '"' | "'" | null = null
@@ -87,22 +90,41 @@ function has(args: readonly string[], short: string, ...long: string[]): boolean
   )
 }
 
-/** Words that run the command after them: looked through to the real command. */
-const WRAPPERS = new Set(['env', 'command', 'nohup', 'time', 'exec', 'builtin', 'nice', 'caffeinate'])
+/**
+ * Words that run the command after them, looked through to the real command:
+ * for each, the options that take a separate value, and how many operands of
+ * its own come before the command (`timeout 5 cmd`).
+ */
+const WRAPPERS: Record<string, { valued: readonly string[]; operands: number }> = {
+  env: { valued: ['-u', '--unset', '-C', '--chdir', '-S', '--split-string', '-P'], operands: 0 },
+  command: { valued: [], operands: 0 },
+  builtin: { valued: [], operands: 0 },
+  nohup: { valued: [], operands: 0 },
+  time: { valued: ['-o', '--output', '-f', '--format'], operands: 0 },
+  exec: { valued: ['-a'], operands: 0 },
+  nice: { valued: ['-n', '--adjustment'], operands: 0 },
+  caffeinate: { valued: ['-t', '-w'], operands: 0 },
+  timeout: { valued: ['-k', '--kill-after', '-s', '--signal'], operands: 1 },
+}
 
-/** `argv` without leading wrappers (`env A=1`, `command`, `timeout 5`) and their options. */
+/** `argv` without leading wrappers (`env -u A B=1`, `command`, `timeout -k 5 10`), their options and operands. */
 export function unwrap(argv: readonly string[]): string[] {
   let rest = [...argv]
   for (;;) {
-    const name = (rest[0] ?? '').replace(/^.*\//, '')
-    if (WRAPPERS.has(name)) {
-      rest = rest.slice(1)
-      while (rest.length && (rest[0]!.startsWith('-') || /^[A-Za-z_][A-Za-z0-9_]*=/.test(rest[0]!))) rest = rest.slice(1)
-    } else if (name === 'timeout' && rest.length > 2) {
-      rest = rest.slice(1)
-      while (rest.length && rest[0]!.startsWith('-')) rest = rest.slice(1)
-      rest = rest.slice(1)
-    } else return rest
+    const wrapper = WRAPPERS[(rest[0] ?? '').replace(/^.*\//, '')]
+    if (!wrapper) return rest
+    let i = 1
+    while (i < rest.length) {
+      const word = rest[i]!
+      if (word === '--') {
+        i++
+        break
+      }
+      if (wrapper.valued.includes(word)) i += 2
+      else if (word.startsWith('-') || /^[A-Za-z_][A-Za-z0-9_]*=/.test(word)) i++
+      else break
+    }
+    rest = rest.slice(i + wrapper.operands)
   }
 }
 
@@ -114,6 +136,15 @@ function dropValued(args: readonly string[], valued: readonly string[]): string[
     else out.push(args[i]!)
   }
   return out
+}
+
+const GIT_GLOBAL = ['-C', '-c', '--git-dir', '--work-tree', '--namespace', '--exec-path', '--super-prefix', '--config-env']
+
+/** A git command line from its subcommand on: the global options before it (`-C dir`, `-c k=v`, `--no-pager`) dropped, the subcommand's own kept. */
+export function gitFromSubcommand(args: readonly string[]): string[] {
+  let i = 0
+  while (i < args.length && args[i]!.startsWith('-')) i += GIT_GLOBAL.includes(args[i]!) ? 2 : 1
+  return args.slice(i)
 }
 
 /** Flags that make a login take its credential from an argument, a file or the environment. */
@@ -146,7 +177,7 @@ function reasonFor(segment: string): string | null {
   const assignments = parsed.assignments
   const argv = unwrap(parsed.argv)
   const name = (argv[0] ?? '').replace(/^.*\//, '')
-  const args = name === 'git' ? dropValued(argv.slice(1), ['-C', '-c', '--git-dir', '--work-tree', '--namespace', '--exec-path']) : argv.slice(1)
+  const args = argv.slice(1)
   const plain = args.filter(a => !a.startsWith('-'))
   switch (name) {
     case 'sudo': {
@@ -166,8 +197,7 @@ function reasonFor(segment: string): string | null {
       return null
     case 'git': {
       if (assignments.some(a => /^GIT_(SEQUENCE_)?EDITOR=/.test(a))) return null
-      const sub = plain[0]
-      const rest = args.slice(args.indexOf(sub ?? '') + 1)
+      const [sub, ...rest] = gitFromSubcommand(args)
       if (sub === 'rebase' && has(rest, 'i', '--interactive') && !has(rest, '', '--continue', '--abort', '--skip')) return 'git rebase -i opens an editor'
       if ((sub === 'add' || sub === 'checkout' || sub === 'restore' || sub === 'reset' || sub === 'stash') && has(rest, 'p', '--patch')) return `git ${sub} -p asks hunk by hunk`
       if (sub === 'add' && has(rest, 'i', '--interactive')) return 'git add -i is interactive'

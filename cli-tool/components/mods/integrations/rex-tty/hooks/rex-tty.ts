@@ -145,8 +145,16 @@ export const register: Register = (on, options) => {
     host.status(undefined)
 
     const shown = await host.run([r.bin, 'capture', '-b', block, '--trim', '--unwrap']).catch(() => undefined)
+    // unread, or cut at the engine's 4 MiB (its end, the part that matters, is what was dropped)
+    const isLost = returnOutput && (!shown || shown.exitCode !== 0 || shown.isStdoutTruncated)
     const text = shown && shown.exitCode === 0 ? paneOutput(shown.stdout, head) : ''
-    const body = returnOutput ? text : '(rex-tty withheld the pane\'s output: the returnOutput option is off)'
+    const lost = !isLost
+      ? ''
+      : shown && shown.exitCode === 0
+        ? `${TAG} the pane's output is larger than 4 MiB: only its beginning could be read, the end is missing. The pane (${label}) was left open.`
+        : `${TAG} the pane's output could not be read (${(shown && (shown.stderr || shown.stdout).trim().split('\n')[0]) || 'rex capture failed'}). The pane (${label}) was left open.`
+    const body = !returnOutput ? '(rex-tty withheld the pane\'s output: the returnOutput option is off)' : lost ? `${text}\n\n${lost}`.trim() : text
+    const lostNote = lost ? ' Its output is incomplete or missing as the result says; the pane was left open so the user can read it. Say so rather than assuming what it printed.' : ''
 
     if (end.kind === 'timeout') {
       return {
@@ -155,7 +163,7 @@ export const register: Register = (on, options) => {
         context: `This command runs in a Rex terminal pane (${label}, ${block}) and had not ended after ${timeoutMinutes} minutes, probably waiting for the user. It was not stopped. Tell the user it is waiting in that pane; do not run it again.`,
       }
     }
-    if (closeOnExit) await host.run([r.bin, 'block', 'close', block]).catch(() => undefined)
+    if (closeOnExit && !isLost) await host.run([r.bin, 'block', 'close', block]).catch(() => undefined)
     await host.run([r.bin, 'block', 'focus', r.anchor]).catch(() => undefined)
     if (end.kind === 'gone') {
       return {
@@ -168,7 +176,7 @@ export const register: Register = (on, options) => {
     return {
       ok: true,
       stdout: end.code === 0 ? body : `${body}\n\nExit code ${end.code}`.trim(),
-      context: `This command ran in a Rex terminal pane (${label}) where the user could type, not in your shell: exit code ${end.code}. ${returnOutput ? 'The output is what the pane showed; anything the user typed at a hidden prompt (a password, a passphrase) is not in it.' : 'Its output was withheld by the user\'s configuration; only the exit code is known.'} The pane had its own shell with the user's login environment, so variables you exported earlier were not set there.`,
+      context: `This command ran in a Rex terminal pane (${label}) where the user could type, not in your shell: exit code ${end.code}. ${returnOutput ? 'The output is what the pane showed; anything the user typed at a hidden prompt (a password, a passphrase) is not in it.' : 'Its output was withheld by the user\'s configuration; only the exit code is known.'} The pane had its own shell with the user's login environment, so variables you exported earlier were not set there.${lostNote}`,
     }
   }
 
@@ -246,14 +254,17 @@ export const register: Register = (on, options) => {
     const go = await permit(host, command, why)
     if (go === 'here') return next(e)
     if (go !== 'pane') return go
-    chosen.add(e.tool_use_id ?? command)
+    const key = e.tool_use_id ?? command
+    chosen.add(key)
     const done = await inPane(host, r, command, next.signal)
+    // settled: only a call still in flight needs the .catch below
+    chosen.delete(key)
     if (!done.ok) return { deny: done.deny }
     return { result: { stdout: done.stdout, stderr: '', interrupted: false }, context: [done.context] }
   }).catch(async ($, e, next) => {
     // before the person chose a pane nothing ran: core decides as if the mod were absent
     const key = typeof e.command === 'string' ? (e.tool_use_id ?? e.command) : ''
-    if (!chosen.has(key)) return next(e)
+    if (!chosen.delete(key)) return next(e)
     return { deny: `rex-tty failed (${next.error.kind}) after this command was sent to a Rex pane. It may have run there: do not run it again; ask the user to look at the pane.` }
   })
 

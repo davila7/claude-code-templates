@@ -1,6 +1,6 @@
 // Run with: claude plugin test integrations/rex-tty
 import { describe, expect, test } from 'claude-code/testing'
-import { quoted, unwrap, banner, blockOf, clamp, compile, needsTerminal, paneOutput, saysNoTerminal, segments, shellFor, side, strings, waited, words } from '../hooks/detect.ts'
+import { gitFromSubcommand, quoted, unwrap, banner, blockOf, clamp, compile, needsTerminal, paneOutput, saysNoTerminal, segments, shellFor, side, strings, waited, words } from '../hooks/detect.ts'
 
 describe('needsTerminal', () => {
   const yes = [
@@ -29,6 +29,12 @@ describe('needsTerminal', () => {
     'env FOO=1 sudo ls',
     'timeout 5 sudo ls',
     'command sudo ls',
+    'env -u FOO sudo make install',
+    'nice -n 5 sudo ls',
+    'timeout -k 5 10 sudo ls',
+    'cd /srv && \\\n  sudo systemctl restart app',
+    'echo ok && \\\nsudo ls',
+    'git --no-pager -C repo commit',
   ]
   for (const c of yes) test(`sends: ${c}`, () => expect(needsTerminal(c)).not.toBe(null))
 
@@ -62,6 +68,12 @@ describe('needsTerminal', () => {
     'stripe login --api-key sk_x',
     'supabase login --token t',
     'git -C repo commit -m x',
+    'git commit -C HEAD',
+    'git commit -C HEAD~1 --no-edit',
+    "cat <<'END-OF.FILE' > notes.txt\nsudo apt install x\nEND-OF.FILE",
+    'cat <<"my eof"\nsudo ls\nmy eof',
+    'cat <<-EOF\n\tsudo ls\n\tEOF',
+    'echo a \\\n  b',
     '',
   ]
   for (const c of no) test(`leaves: ${c || '(empty)'}`, () => expect(needsTerminal(c)).toBe(null))
@@ -84,6 +96,13 @@ describe('what the person is shown', () => {
   test('wrappers are looked through', () => {
     expect(unwrap(['env', '-i', 'A=1', 'nohup', 'sudo', 'ls'])).toEqual(['sudo', 'ls'])
     expect(unwrap(['timeout', '5', 'sudo', 'ls'])).toEqual(['sudo', 'ls'])
+    expect(unwrap(['timeout', '-k', '5', '10', 'sudo'])).toEqual(['sudo'])
+    expect(unwrap(['env', '-u', 'FOO', '--', 'sudo'])).toEqual(['sudo'])
+    expect(unwrap(['/usr/bin/nice', '-n', '5', 'ls'])).toEqual(['ls'])
+  })
+  test('git global options go, the subcommand keeps its own', () => {
+    expect(gitFromSubcommand(['-C', 'repo', '--no-pager', 'commit', '-C', 'HEAD'])).toEqual(['commit', '-C', 'HEAD'])
+    expect(gitFromSubcommand(['status'])).toEqual(['status'])
   })
 })
 
@@ -91,6 +110,8 @@ describe('shell parsing', () => {
   test('segments split at operators outside quotes', () => {
     expect(segments('a && b; c | d')).toEqual(['a', 'b', 'c', 'd'])
     expect(segments('echo "a; b" && c')).toEqual(['echo "a; b"', 'c'])
+    expect(segments('a && \\\n  b')).toEqual(['a', 'b'])
+    expect(segments('cat <<X\nsudo ls\nX\necho done')).toEqual(['cat <<HEREDOC', 'echo done'])
   })
   test('words drop assignments and quotes', () => {
     expect(words('A=1 B=2 cmd "x y" z')).toEqual({ assignments: ['A=1', 'B=2'], argv: ['cmd', 'x y', 'z'] })
