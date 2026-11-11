@@ -1,3 +1,7 @@
+---
+description: "Identify and resolve code issues"
+---
+
 # Fix Issue Command
 
 Identify and resolve code issues

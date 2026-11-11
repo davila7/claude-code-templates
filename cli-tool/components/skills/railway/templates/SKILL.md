@@ -1,12 +1,13 @@
 ---
 name: railway-templates
 description: Search and deploy services from Railway's template marketplace. Use when user wants to add a service from a template, find templates for a specific use case, or deploy tools like Ghost, Strapi, n8n, Minio, Uptime Kuma, etc. For databases (Postgres, Redis, MySQL, MongoDB), prefer the railway-database skill.
-version: 1.0.0
-author: Railway
 license: MIT
-tags: [Railway, Templates, Marketplace, Deployment, CMS, Automation, Infrastructure]
-dependencies: [railway-cli]
 allowed-tools: Bash(railway:*)
+metadata:
+  version: 1.0.0
+  author: Railway
+  tags: [Railway, Templates, Marketplace, Deployment, CMS, Automation, Infrastructure]
+  dependencies: [railway-cli]
 ---
 
 # Railway Templates

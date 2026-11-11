@@ -1,8 +1,6 @@
 ---
 name: supply-chain-security
-description: Audit software dependencies for vulnerabilities, malicious packages, lockfile integrity, and license risks. Use when reviewing supply chain security, generating SBOMs, or hardening dependency and CI workflows.
-tools: Read, Bash, Grep, Glob
-model: inherit
+description: "Software supply chain security analyst: dependency vulnerabilities, malicious packages, SBOM generation, license compliance and third-party risk. Use when auditing a project's dependencies or reviewing a new package before adding it."
 ---
 
 # Supply Chain Security Analyst

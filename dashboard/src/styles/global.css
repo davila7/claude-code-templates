@@ -27,25 +27,27 @@
   --font-mono: 'Geist Mono', 'JetBrains Mono', 'Fira Code', monospace;
 }
 
-/* Dark mode (default) — GitHub-dark terminal palette */
+/* Dark mode (default) — near-black warm neutrals (Anthropic), orange as the single accent */
 :root,
 html.dark {
-  /* Backgrounds - GitHub-dark terminal */
-  --color-surface-0: #0d1117;
-  --color-surface-1: #161b22;
-  --color-surface-2: #21262d;
-  --color-surface-3: #2a3038;
-  --color-surface-4: #30363d;
+  /* Backgrounds */
+  --color-surface-0: #0b0b0a;
+  --color-surface-1: #141413;
+  --color-surface-2: #1c1c1a;
+  --color-surface-3: #262624;
+  --color-surface-4: #302f2c;
 
   /* Borders - Sharp terminal borders */
-  --color-border: #30363d;
+  --color-border: #2a2926;
   --color-border-hover: #d57455;
-  --color-border-strong: #3d444d;
+  --color-border-strong: #3d3c38;
 
   /* Text colors */
-  --color-text-primary: #c9d1d9;
-  --color-text-secondary: #7d8590;
-  --color-text-tertiary: #6e7681;
+  --color-text-primary: #faf9f5;
+  /* Reading text follows GitHub dark / X: body copy near-white, muted only for metadata.
+     On #0b0b0a: primary 18.7:1, secondary 10.9:1, tertiary 7.2:1 (6.3:1 on surface-2). */
+  --color-text-secondary: #c3c1b7;
+  --color-text-tertiary: #9f9d93;
 
   /* Accent color */
   --color-accent: #d57455;
@@ -57,8 +59,8 @@ html.dark {
   --color-success-bg: rgba(63, 185, 80, 0.1);
 
   /* Card backgrounds */
-  --color-card-bg: #161b22;
-  --color-card-hover: #1c2330;
+  --color-card-bg: #141413;
+  --color-card-hover: #1c1c1a;
 
   /* Card shadows — flat terminal look */
   --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4);
@@ -86,7 +88,7 @@ html.light {
   /* Text colors */
   --color-text-primary: #0f0f0f;
   --color-text-secondary: #525252;
-  --color-text-tertiary: #8a8a8a;
+  --color-text-tertiary: #737373; /* 4.7:1 on white (#8a8a8a failed AA at 3.4:1) */
 
   /* Accent color */
   --color-accent: #d57455;
@@ -113,10 +115,16 @@ html {
   scroll-behavior: smooth;
 }
 
+html {
+  /* Stop iOS Safari from inflating text on its own (it skews em-sized boxes). */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 body {
   min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  /* No -webkit-font-smoothing: antialiased. On macOS it drops stem darkening and renders
+     light-on-dark text visibly thinner; GitHub and X leave it at auto. */
   background-color: var(--color-surface-0);
   color: var(--color-text-primary);
   transition: background-color 200ms ease, color 200ms ease;
@@ -262,15 +270,20 @@ body {
   padding-right: 0.5rem !important;
 }
 
+/* 72px rail - 16px padding = 56px: the 32px logo and a 24px toggle fit
+   exactly. With a 32px toggle the logo link shrank (min-w-0) and its
+   overflow-hidden cut the tile's right edge. */
 #sidebar[data-collapsed="true"] > div > div:first-child > a {
   width: auto !important;
   min-width: auto !important;
+  flex-shrink: 0 !important;
   gap: 0 !important;
   padding: 0 !important;
 }
 
 #sidebar[data-collapsed="true"] > div > div:first-child > button {
-  margin: 0 auto !important;
+  margin: 0 !important;
+  width: 1.5rem !important;
 }
 
 /* Center bottom section in collapsed state */
@@ -486,10 +499,18 @@ a svg, button svg {
 .md-preview h2 { font-size: 1.25rem; padding-bottom: 0.3em; border-bottom: 1px solid var(--color-border); }
 .md-preview h3 { font-size: 1.1rem; }
 .md-preview h4 { font-size: 1rem; }
+/* Component documents render "# x" as <h2 class="md-h1"> (the page has the only h1): size by source level. */
+.md-preview .md-h1 { font-size: 1.5rem; padding-bottom: 0.4em; border-bottom: 1px solid var(--color-border); }
+.md-preview .md-h2 { font-size: 1.25rem; padding-bottom: 0.3em; border-bottom: 1px solid var(--color-border); }
+.md-preview .md-h3 { font-size: 1.1rem; padding-bottom: 0; border-bottom: 0; }
+.md-preview .md-h4 { font-size: 1rem; padding-bottom: 0; border-bottom: 0; }
+.md-preview .md-h5,
+.md-preview .md-h6 { font-size: inherit; padding-bottom: 0; border-bottom: 0; }
 
 .md-preview h1:first-child,
 .md-preview h2:first-child,
-.md-preview h3:first-child {
+.md-preview h3:first-child,
+.md-preview h4:first-child {
   margin-top: 0;
 }
 
@@ -889,4 +910,148 @@ html.light .stat-today-active {
 
 .card-terminal:hover {
   border-color: var(--color-accent);
+}
+
+/* ---------------------------------------------------------------------------
+   Home hero counters (HomeStats.tsx)
+   Compact odometer strip sitting under the AI TEMPLATES banner.
+   --------------------------------------------------------------------------- */
+.hs-root {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0;
+  margin: 10px auto 0;
+  padding: 8px 6px;
+  width: fit-content;
+  max-width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface-1);
+}
+
+.hs-item {
+  display: flex;
+  align-items: stretch;
+}
+
+.hs-divider {
+  width: 1px;
+  margin: 4px 0;
+  background: var(--color-border);
+  flex-shrink: 0;
+}
+
+.hs-cell-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 16px;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: background 150ms ease;
+}
+
+.hs-link:hover {
+  background: var(--color-card-hover);
+}
+
+.hs-link:hover .hs-value {
+  color: var(--color-accent);
+}
+
+.hs-value {
+  /* Height of one digit cell; the JS transform steps by this exact amount. */
+  --hs-cell-h: 1.15em;
+  display: inline-flex;
+  align-items: flex-start;
+  font-family: var(--font-mono);
+  font-size: 19px;
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--color-text-primary);
+  font-variant-numeric: tabular-nums;
+  transition: color 150ms ease;
+}
+
+.hs-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1.2;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+/* One digit column: a 1em window over a strip of 0-9 repeated. */
+.hs-digit {
+  display: inline-block;
+  height: var(--hs-cell-h);
+  overflow: hidden;
+  vertical-align: top;
+  /* Fade the sliver of the neighbouring digit that shows mid-roll. The solid
+     band (16%-84%) is wider than a digit glyph, so a settled digit is intact. */
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 1) 16%,
+    rgba(0, 0, 0, 1) 84%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 1) 16%,
+    rgba(0, 0, 0, 1) 84%,
+    rgba(0, 0, 0, 0) 100%
+  );
+}
+
+.hs-strip {
+  display: block;
+  will-change: transform;
+}
+
+.hs-cell {
+  display: block;
+  height: var(--hs-cell-h);
+  line-height: var(--hs-cell-h);
+  text-align: center;
+}
+
+.hs-sep {
+  display: inline-block;
+  height: var(--hs-cell-h);
+  line-height: var(--hs-cell-h);
+  color: var(--color-text-tertiary);
+}
+
+@media (max-width: 640px) {
+  .hs-cell-wrap {
+    padding: 2px 10px;
+  }
+
+  .hs-value {
+    font-size: 16px;
+  }
+
+  .hs-label {
+    font-size: 9px;
+    letter-spacing: 0.05em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hs-strip {
+    transition: none !important;
+  }
+}
+
+/* Dark logo glyphs (GitHub) disappear on dark surfaces: invert them unless the theme is light. */
+html:not(.light) .logo-invert-dark {
+  filter: invert(1);
 }

@@ -1,0 +1,6 @@
+{
+  "description": "turn-inspector: /turns opens a Pane drawing each model request as a turn, its input and output blocks and how much of the context window it fills; turn.start, turn.step, tool.call and session.measure feed it",
+  "modules": [
+    "./turn-inspector.tsx"
+  ]
+}

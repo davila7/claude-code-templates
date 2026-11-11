@@ -1,7 +1,7 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [resource] [method] [flags]
-description: Google Docs: Append text to a document.
+argument-hint: "[resource] [method] [flags]"
+description: "Google Docs: Append text to a document."
 ---
 
 # Google Workspace Docs Write

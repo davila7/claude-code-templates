@@ -1,0 +1,39 @@
+{
+  "name": "session-time-machine",
+  "version": "0.1.0",
+  "description": "/timemachine draws the session as a timeline of prompts, tool calls and turn ends from its own transcript. Press a point and give a new instruction: the mod writes a copy of the transcript cut there under a new session id and gives you the `claude --resume` command that continues it, so you can try the other approach without losing this one. Hooks session.start, command.run, turn.complete and ui.render on Pane.",
+  "author": {
+    "name": "claude-code-templates",
+    "url": "https://www.aitmpl.com"
+  },
+  "repository": "https://github.com/davila7/claude-code-templates",
+  "license": "MIT",
+  "keywords": [
+    "mod",
+    "function-hooks",
+    "productivity",
+    "timeline",
+    "fork",
+    "sessions"
+  ],
+  "userConfig": {
+    "copyCommand": {
+      "type": "boolean",
+      "title": "Copy the resume command",
+      "description": "Copy the `claude --resume` command of a fork to the clipboard",
+      "default": true
+    },
+    "snapshots": {
+      "type": "boolean",
+      "title": "Snapshot the working tree",
+      "description": "Commit the working tree with a throwaway git index at each point so a fork can restore the files into a worktree",
+      "default": true
+    },
+    "openTerminal": {
+      "type": "boolean",
+      "title": "Open forks in Terminal",
+      "description": "macOS: open the forked session in a new Terminal window instead of only copying the command",
+      "default": true
+    }
+  }
+}

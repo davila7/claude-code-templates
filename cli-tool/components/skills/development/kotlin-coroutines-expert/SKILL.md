@@ -1,9 +1,10 @@
 ---
 name: kotlin-coroutines-expert
 description: "Expert patterns for Kotlin Coroutines and Flow, covering structured concurrency, error handling, and testing."
-risk: safe
-source: community
-date_added: "2026-02-27"
+metadata:
+  risk: safe
+  source: community
+  date_added: "2026-02-27"
 ---
 
 # Kotlin Coroutines Expert

@@ -1,0 +1,16 @@
+---
+title: "Environment variables"
+description: "Environment variables that change what the claude-code-templates CLI does: tracking opt-outs, error reporting, debug output and the catalog URL."
+---
+
+| Variable | Default | Effect |
+| --- | --- | --- |
+| `CCT_NO_TRACKING` | unset | `true` disables the anonymous download count sent on each install. |
+| `CCT_NO_ANALYTICS` | unset | `true` does the same as `CCT_NO_TRACKING`. |
+| `CI` | set by CI systems | `true` disables tracking too. |
+| `CCT_ERROR_REPORTING` | unset | `true` sends crash reports to the project's Sentry. Off unless you set it, and always off when tracking is off. |
+| `CCT_SENTRY_DSN` | the project's DSN | Send error reports to a different Sentry project (for testing). |
+| `CCT_DEBUG` | unset | `true` prints debug output. |
+| `CCT_CATALOG_URL` | `https://www.aitmpl.com/api/v1` | Where the catalog browser reads the catalog. The GitHub copy is the fallback. |
+
+What a download count contains, and what it never contains, is on [Download tracking](/developers/download-tracking).

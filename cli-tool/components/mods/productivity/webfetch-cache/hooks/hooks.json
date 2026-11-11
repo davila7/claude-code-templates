@@ -1,0 +1,6 @@
+{
+  "description": "Short-circuits repeated WebFetch calls for the same URL and prompt within a session, answering { result } from cache without a network round trip. A tool.call hook with TTL and size limits.",
+  "modules": [
+    "./webfetch-cache.ts"
+  ]
+}

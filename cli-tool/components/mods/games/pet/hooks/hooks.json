@@ -1,0 +1,6 @@
+{
+  "description": "A virtual pet above the prompt: /pet shows it, tool.call feeds it from passing tests, commits and edits, $.store keeps it across sessions",
+  "modules": [
+    "./register.tsx"
+  ]
+}

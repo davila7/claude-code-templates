@@ -1,8 +1,15 @@
 name: Skill Security Scan (Full)
 
 # Scans EVERY skill component with SkillSpector (NVIDIA, Apache-2.0) static
-# analysis. Runs weekly and on demand. Reports only — never blocks. Uploads
-# an aggregated SARIF to code scanning and a Markdown summary to the run.
+# analysis. Runs weekly and on demand. Reports only — never blocks. Writes a
+# Markdown summary to the run and keeps the SARIF as an artifact.
+#
+# The full SARIF is NOT uploaded to code scanning any more: ~5,000 catalog
+# findings (2026-11-05) buried the alerts about our own code. Each run uploads
+# an empty SARIF under the old `skillspector-full` category instead, which
+# closes those alerts and keeps them closed. Per-component results live on
+# the catalog (SkillSpector seal on aitmpl.com); changed skills are still
+# uploaded by skill-security-scan.yml on PRs.
 
 on:
   workflow_dispatch:
@@ -29,7 +36,7 @@ jobs:
           python-version: '3.12'
 
       - name: Install SkillSpector
-        run: pip install "git+https://github.com/NVIDIA/skillspector.git@main"
+        run: pip install "git+https://github.com/NVIDIA/skillspector.git@v2.12.0"
 
       - name: Run SkillSpector on all skills
         id: scan
@@ -55,10 +62,18 @@ jobs:
             skillspector.sarif
           retention-days: 90
 
-      - name: Upload SARIF to code scanning
+      - name: Write empty SARIF (retires the skillspector-full category)
+        if: always()
+        run: |
+          cat > skillspector-empty.sarif <<'JSON'
+          {"version":"2.1.0","$schema":"https://json.schemastore.org/sarif-2.1.0.json",
+           "runs":[{"tool":{"driver":{"name":"skillspector","informationUri":"https://github.com/NVIDIA/skillspector","rules":[]}},"results":[]}]}
+          JSON
+
+      - name: Upload empty SARIF to code scanning
         if: always()
         continue-on-error: true
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: skillspector.sarif
+          sarif_file: skillspector-empty.sarif
           category: skillspector-full

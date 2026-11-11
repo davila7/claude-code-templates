@@ -1,11 +1,12 @@
 ---
-name: knowledge-distillation
+name: emerging-techniques-knowledge-distillation
 description: Compress large language models using knowledge distillation from teacher to student models. Use when deploying smaller models with retained performance, transferring GPT-4 capabilities to open-source models, or reducing inference costs. Covers temperature scaling, soft targets, reverse KLD, logit distillation, and MiniLLM training strategies.
-version: 1.0.0
-author: Orchestra Research
 license: MIT
-tags: [Emerging Techniques, Knowledge Distillation, Model Compression, Teacher-Student, MiniLLM, Reverse KLD, Soft Targets, Temperature Scaling, Logit Distillation, Model Transfer]
-dependencies: [transformers, torch, datasets]
+metadata:
+  version: 1.0.0
+  author: Orchestra Research
+  tags: [Emerging Techniques, Knowledge Distillation, Model Compression, Teacher-Student, MiniLLM, Reverse KLD, Soft Targets, Temperature Scaling, Logit Distillation, Model Transfer]
+  dependencies: [transformers, torch, datasets]
 ---
 
 # Knowledge Distillation: Compressing LLMs

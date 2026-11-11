@@ -1,0 +1,24 @@
+---
+// Shared shell for long-form text pages (/about, /privacy).
+interface Props {
+  heading: string;
+  updated?: string;
+}
+const { heading, updated } = Astro.props;
+---
+
+<article class="prose-page max-w-3xl px-6 py-10 text-[14px] leading-relaxed text-[var(--color-text-secondary)]">
+  <h1 class="text-2xl font-bold text-[var(--color-text-primary)] mb-2">{heading}</h1>
+  {updated && <p class="text-[12px] text-[var(--color-text-tertiary)] mb-8">Last updated {updated}</p>}
+  <slot />
+</article>
+
+<style is:global>
+  .prose-page h2 { color: var(--color-text-primary); font-size: 16px; font-weight: 600; margin: 2rem 0 0.5rem; }
+  .prose-page p { margin: 0 0 0.75rem; }
+  .prose-page ul { list-style: disc; padding-left: 1.25rem; margin: 0 0 0.75rem; }
+  .prose-page li { margin: 0.25rem 0; }
+  .prose-page a { text-decoration: underline; }
+  .prose-page a:hover { color: var(--color-text-primary); }
+  .prose-page code { font-family: var(--font-mono, ui-monospace, monospace); font-size: 12px; }
+</style>

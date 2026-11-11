@@ -1,7 +1,7 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [resource] [method] [flags]
-description: Google Workflow: Prepare for your next meeting: agenda, attendees, and linked docs.
+argument-hint: "[resource] [method] [flags]"
+description: "Google Workflow: Prepare for your next meeting: agenda, attendees, and linked docs."
 ---
 
 # Google Workspace Workflow Meeting Prep

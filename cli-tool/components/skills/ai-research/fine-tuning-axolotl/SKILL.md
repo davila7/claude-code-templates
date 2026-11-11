@@ -1,5 +1,5 @@
 ---
-name: axolotl
+name: fine-tuning-axolotl
 description: Expert guidance for fine-tuning LLMs with Axolotl - YAML configs, 100+ models, LoRA/QLoRA, DPO/KTO/ORPO/GRPO, multimodal support
 version: 1.0.0
 author: Orchestra Research

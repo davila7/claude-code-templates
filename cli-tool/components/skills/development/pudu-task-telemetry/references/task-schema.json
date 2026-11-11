@@ -1,0 +1,294 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Pudu task telemetry v1",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "taskId",
+    "repositoryId",
+    "git",
+    "taskHash",
+    "startedAt",
+    "endedAt",
+    "status",
+    "attempts",
+    "verification",
+    "coverage"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "pudu-task-telemetry/v1"
+    },
+    "taskId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "repositoryId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "git": {
+      "type": "object"
+    },
+    "taskHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "startedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "endedAt": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "status": {
+      "enum": [
+        "running",
+        "completed",
+        "failed",
+        "cancelled",
+        "interrupted"
+      ]
+    },
+    "attempts": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "$ref": "#/$defs/attempt"
+      }
+    },
+    "verification": {
+      "$ref": "#/$defs/verification"
+    },
+    "coverage": {
+      "type": "object",
+      "required": [
+        "localCallsOnly",
+        "hostActivity"
+      ],
+      "properties": {
+        "localCallsOnly": {
+          "const": true
+        },
+        "hostActivity": {
+          "const": "not_instrumented"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "metric": {
+      "type": "object",
+      "required": [
+        "value",
+        "unit",
+        "origin",
+        "source",
+        "scope",
+        "unavailableReason"
+      ],
+      "properties": {
+        "value": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "unit": {
+          "type": "string"
+        },
+        "origin": {
+          "enum": [
+            "measured",
+            "derived",
+            "estimated",
+            "unavailable"
+          ]
+        },
+        "source": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "string"
+        },
+        "unavailableReason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "value": {
+                "type": "null"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "origin": {
+                "const": "unavailable"
+              },
+              "unavailableReason": {
+                "type": "string"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "origin": {
+                "enum": [
+                  "measured",
+                  "derived",
+                  "estimated"
+                ]
+              },
+              "unavailableReason": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "verification": {
+      "type": "object",
+      "required": [
+        "status",
+        "source",
+        "checks"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "passed",
+            "failed",
+            "unverified"
+          ]
+        },
+        "source": {
+          "enum": [
+            "runner",
+            "host_reported"
+          ]
+        },
+        "checks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "passed"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "passed": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "rubricHash": {
+          "type": "string"
+        }
+      }
+    },
+    "attempt": {
+      "type": "object",
+      "required": [
+        "attemptId",
+        "status",
+        "model",
+        "runtime",
+        "startedAt",
+        "endedAt",
+        "metrics",
+        "verification",
+        "requestHash",
+        "hardwareHash"
+      ],
+      "properties": {
+        "attemptId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "status": {
+          "enum": [
+            "running",
+            "completed",
+            "failed",
+            "cancelled",
+            "interrupted"
+          ]
+        },
+        "startedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "endedAt": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "model": {
+          "type": "object",
+          "required": [
+            "name",
+            "digest"
+          ],
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "digest": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        },
+        "runtime": {
+          "type": "object",
+          "required": [
+            "name",
+            "version"
+          ],
+          "properties": {
+            "name": {
+              "const": "ollama"
+            },
+            "version": {
+              "type": "string"
+            }
+          }
+        },
+        "metrics": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/metric"
+          }
+        },
+        "verification": {
+          "$ref": "#/$defs/verification"
+        },
+        "requestHash": {
+          "type": "string"
+        },
+        "hardwareHash": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,4 @@
+{
+  "description": "cc-arcade: games above the prompt. Builds without function hooks ignore the modules key.",
+  "modules": ["./register.tsx"]
+}

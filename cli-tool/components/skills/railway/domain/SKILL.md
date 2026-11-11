@@ -1,12 +1,13 @@
 ---
 name: railway-domain
 description: Add, view, or remove domains for Railway services. Use when user wants to add a domain, generate a railway domain, check current domains, get the URL for a service, or remove a domain.
-version: 1.0.0
-author: Railway
 license: MIT
-tags: [Railway, Domain, DNS, URL, Custom Domain, Infrastructure]
-dependencies: [railway-cli]
 allowed-tools: Bash(railway:*)
+metadata:
+  version: 1.0.0
+  author: Railway
+  tags: [Railway, Domain, DNS, URL, Custom Domain, Infrastructure]
+  dependencies: [railway-cli]
 ---
 
 # Railway Domain Management

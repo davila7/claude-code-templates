@@ -1,0 +1,6 @@
+{
+  "description": "stack-viewer: /stack opens a Pane mapping every component of the session to the scope it is installed from; prompt.compose and classic.PostToolUse only observe (output style, MCP server scope)",
+  "modules": [
+    "./stack-viewer.tsx"
+  ]
+}

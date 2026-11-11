@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { marked } from 'marked';
+import { sanitizeHtml, codeLang, demoteH1 } from '../lib/sanitize-html';
 import SkillSlideView from './SkillSlideView';
 
 interface Heading {
@@ -29,9 +30,15 @@ interface SkillExplorerProps {
   skillPath: string;
   references: string[];
   headings: Heading[];
+  /** Component type directory under cli-tool/components (default "skills"; mods pass "mods"). */
+  componentType?: string;
+  /** The file `skillContent` is (default "SKILL.md"; mods pass "README.md"). */
+  mainFile?: string;
+  /** Files already fetched with the component (mods): read from here instead of GitHub. */
+  files?: Record<string, string>;
 }
 
-const GITHUB_RAW_BASE = 'https://raw.githubusercontent.com/davila7/claude-code-templates/main/cli-tool/components/skills';
+const GITHUB_RAW_ROOT = 'https://raw.githubusercontent.com/davila7/claude-code-templates/main/cli-tool/components';
 
 const EXT_COLORS: Record<string, string> = {
   md: '#60a5fa', js: '#facc15', ts: '#60a5fa', tsx: '#60a5fa', jsx: '#facc15',
@@ -46,12 +53,15 @@ function renderMarkdown(content: string): string {
   const renderer = new marked.Renderer();
   renderer.heading = ({ text, depth }: { text: string; depth: number }) => {
     const id = text.toLowerCase().replace(/[^\w]+/g, '-').replace(/^-|-$/g, '');
-    return `<h${depth} id="${id}" class="md-heading">${text}</h${depth}>`;
+    // The page owns the only <h1>: a document's headings go one level down
+    // (# → h2), keeping their look through the md-hN class.
+    const tag = `h${Math.min(depth + 1, 6)}`;
+    return `<${tag} id="${id}" class="md-heading md-h${depth}">${text}</${tag}>`;
   };
   renderer.code = ({ text, lang }: { text: string; lang?: string }) => {
-    return `<div class="md-code-block"><div class="md-code-lang">${lang || ''}</div><pre><code class="language-${lang || ''}">${text.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre></div>`;
+    return `<div class="md-code-block"><div class="md-code-lang">${codeLang(lang)}</div><pre><code class="language-${codeLang(lang)}">${text.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre></div>`;
   };
-  return marked.parse(stripped, { renderer }) as string;
+  return demoteH1(sanitizeHtml(marked.parse(stripped, { renderer }) as string));
 }
 
 function extractHeadings(content: string): Heading[] {
@@ -92,9 +102,9 @@ function buildSearchIndex(content: string, headings: Heading[]): { text: string;
 }
 
 // ─── Tree building ─────────────────────────────────────────────────
-function buildTree(paths: string[], skillName: string): TreeNode[] {
+function buildTree(paths: string[], skillName: string, mainFile = 'SKILL.md'): TreeNode[] {
   const root: TreeNode[] = [];
-  root.push({ name: 'SKILL.md', path: 'SKILL.md', isFile: true, children: [], ext: 'md' });
+  root.push({ name: mainFile, path: mainFile, isFile: true, children: [], ext: 'md' });
   for (const p of paths) {
     const parts = p.split('/');
     let current = root;
@@ -113,8 +123,8 @@ function buildTree(paths: string[], skillName: string): TreeNode[] {
   }
   function sortNodes(nodes: TreeNode[]) {
     nodes.sort((a, b) => {
-      if (a.name === 'SKILL.md') return -1;
-      if (b.name === 'SKILL.md') return 1;
+      if (a.name === mainFile) return -1;
+      if (b.name === mainFile) return 1;
       if (a.isFile !== b.isFile) return a.isFile ? 1 : -1;
       return a.name.localeCompare(b.name);
     });
@@ -131,8 +141,8 @@ function countFiles(nodes: TreeNode[]): number {
 }
 
 // ─── Main Component ────────────────────────────────────────────────
-export default function SkillExplorer({ skillContent, skillName, skillPath, references, headings: initialHeadings }: SkillExplorerProps) {
-  const [selectedFile, setSelectedFile] = useState('SKILL.md');
+export default function SkillExplorer({ skillContent, skillName, skillPath, references, headings: initialHeadings, componentType = 'skills', mainFile = 'SKILL.md', files }: SkillExplorerProps) {
+  const [selectedFile, setSelectedFile] = useState(mainFile);
   const [fileContent, setFileContent] = useState(skillContent);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -152,20 +162,20 @@ export default function SkillExplorer({ skillContent, skillName, skillPath, refe
   const isMarkdown = selectedFile.endsWith('.md');
   const html = useMemo(() => isMarkdown ? renderMarkdown(fileContent) : '', [fileContent, isMarkdown]);
   const currentHeadings = useMemo(() => {
-    if (selectedFile === 'SKILL.md') return initialHeadings;
+    if (selectedFile === mainFile) return initialHeadings;
     if (isMarkdown) return extractHeadings(fileContent);
     return [];
   }, [selectedFile, fileContent, isMarkdown, initialHeadings]);
   const searchIndex = useMemo(() => buildSearchIndex(fileContent, currentHeadings), [fileContent, currentHeadings]);
 
-  const tree = useMemo(() => buildTree(references, skillName), [references, skillName]);
+  const tree = useMemo(() => buildTree(references, skillName, mainFile), [references, skillName, mainFile]);
   const filteredTree = useMemo(() => {
     if (!treeFilter.trim()) return tree;
     const q = treeFilter.toLowerCase();
     const filtered = references.filter((r) => r.toLowerCase().includes(q));
-    const t = buildTree(filtered, skillName);
-    if (!('SKILL.md').toLowerCase().includes(q)) {
-      const idx = t.findIndex((n) => n.name === 'SKILL.md');
+    const t = buildTree(filtered, skillName, mainFile);
+    if (!mainFile.toLowerCase().includes(q)) {
+      const idx = t.findIndex((n) => n.name === mainFile);
       if (idx >= 0) t.splice(idx, 1);
     }
     return t;
@@ -173,14 +183,25 @@ export default function SkillExplorer({ skillContent, skillName, skillPath, refe
 
   // Fetch file content
   useEffect(() => {
-    if (selectedFile === 'SKILL.md') { setFileContent(skillContent); setError(''); return; }
+    if (selectedFile === mainFile) { setFileContent(skillContent); setError(''); return; }
+    if (files && selectedFile in files) { setFileContent(files[selectedFile] ?? ''); setError(''); return; }
     setLoading(true); setError('');
-    fetch(`${GITHUB_RAW_BASE}/${skillPath}/${selectedFile}`)
+    fetch(`${GITHUB_RAW_ROOT}/${componentType}/${skillPath}/${selectedFile}`)
       .then((res) => { if (!res.ok) throw new Error(`HTTP ${res.status}`); return res.text(); })
       .then((text) => setFileContent(text))
       .catch((e) => { setError(`Failed to load file: ${e.message}`); setFileContent(''); })
       .finally(() => setLoading(false));
-  }, [selectedFile, skillPath, skillContent]);
+  }, [selectedFile, skillPath, skillContent, componentType, mainFile, files]);
+
+  // The component page's file list opens a file here ('component-file:open', detail = path).
+  useEffect(() => {
+    const open = (e: Event) => {
+      const file = (e as CustomEvent<string>).detail;
+      if (file === mainFile || references.includes(file)) setSelectedFile(file);
+    };
+    window.addEventListener('component-file:open', open);
+    return () => window.removeEventListener('component-file:open', open);
+  }, [mainFile, references]);
 
   // Search results
   const searchResults = useMemo((): SearchMatch[] => {
@@ -341,13 +362,13 @@ export default function SkillExplorer({ skillContent, skillName, skillPath, refe
   return (
     <div className="flex-1 min-w-0">
         {/* File indicator when viewing non-SKILL file */}
-        {selectedFile !== 'SKILL.md' && (
+        {selectedFile !== mainFile && (
           <div className="flex items-center gap-2 mb-2 text-[12px] text-[var(--color-text-secondary)]">
             <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke={EXT_COLORS[selectedFile.split('.').pop() || ''] || 'var(--color-text-tertiary)'} strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
             </svg>
             <span className="font-mono">{selectedFile}</span>
-            <button onClick={() => handleFileClick('SKILL.md')} className="text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)] ml-1">
+            <button onClick={() => handleFileClick(mainFile)} className="text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)] ml-1">
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
@@ -375,7 +396,7 @@ export default function SkillExplorer({ skillContent, skillName, skillPath, refe
                   </svg>
                   Preview
                 </button>
-                {selectedFile === 'SKILL.md' && (
+                {selectedFile === mainFile && (
                   <button onClick={() => setMode('slides')}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${mode === 'slides' ? 'bg-surface-2 text-text-primary shadow-sm' : 'text-text-tertiary hover:text-text-secondary'}`}>
                     <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -463,7 +484,7 @@ export default function SkillExplorer({ skillContent, skillName, skillPath, refe
         )}
 
         {/* Slides mode */}
-        {mode === 'slides' && selectedFile === 'SKILL.md' ? (
+        {mode === 'slides' && selectedFile === mainFile ? (
           <SkillSlideView content={skillContent} skillName={skillName} />
         ) : (
         <>

@@ -1,0 +1,6 @@
+{
+  "description": "Asks the user, in the engine's AskUserQuestion dialog ($.ui.ask), before Claude edits or overwrites a file larger than a configurable line count; denies by default when nobody can answer (headless runs). A tool.call hook on Edit and Write using $.fs.read.",
+  "modules": [
+    "./large-edit-confirmation.ts"
+  ]
+}

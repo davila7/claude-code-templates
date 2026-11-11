@@ -1,3 +1,7 @@
+---
+description: "Generate comprehensive reports on task execution, progress, and metrics."
+---
+
 # Task Report Command
 
 Generate comprehensive reports on task execution, progress, and metrics.

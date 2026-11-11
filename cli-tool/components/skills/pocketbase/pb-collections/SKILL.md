@@ -1,5 +1,5 @@
 ---
-name: "PocketBase Collections"
+name: pb-collections
 description: "Collection and schema design for PocketBase. Use when creating collections, designing schemas, adding fields, setting up relations, or choosing between base/auth/view collection types. Prevents wrong field types, documents zero-default behavior, and covers relation cascading."
 ---
 

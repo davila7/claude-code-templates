@@ -3,7 +3,7 @@
     "notionApi": {
       "description": "Official MCP server for Notion API",
       "command": "npx",
-      "args": ["-y", "@notionhq/notion-mcp-server"],
+      "args": ["-y", "@notionhq/notion-mcp-server@2.6.1"],
       "env": {
         "NOTION_TOKEN": "ntn_****"
       }

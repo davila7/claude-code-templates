@@ -1,0 +1,51 @@
+---
+title: "Add a component"
+description: "Contribute an agent, command, skill, hook, MCP server, setting, loop or mod to the catalog: file layout, rules, checks and review."
+---
+
+Components live in [`cli-tool/components/`](https://github.com/davila7/claude-code-templates/tree/main/cli-tool/components) as `{type}/{category}/{name}`. Fork the repository, add yours, and open a pull request.
+
+## Where each type goes
+
+| Type | Path | Required |
+| --- | --- | --- |
+| Agent | `agents/{category}/{name}.md` | frontmatter `name`, `description` |
+| Command | `commands/{category}/{name}.md` | frontmatter `description` |
+| Skill | `skills/{category}/{name}/SKILL.md` | frontmatter `name` (= folder), `description` |
+| Hook | `hooks/{category}/{name}.json` | `description`, `hooks`; scripts next to it with the same name |
+| MCP server | `mcps/{category}/{name}.json` | `mcpServers`, placeholders instead of keys |
+| Setting | `settings/{category}/{name}.json` | `description` and the settings keys |
+| Loop | `loops/{category}/{name}.md` | `interval`, `stop-condition`, `components` that already exist |
+| Mod | `mods/{category}/{name}/` | see [Build a mod](/contributing/mods) |
+
+Names are kebab-case and match the file or folder name. Pick an existing category when one fits.
+
+## Rules
+
+- **Only commit your component.** Never run `scripts/generate_components_json.py` or commit `docs/components.json` or anything under `dashboard/public/`. They are regenerated after merge, and the `generated-files-guard` check fails a pull request that touches them.
+- **No secrets.** API keys go in placeholders (`<your-api-key>`) or environment variables, never in the file.
+- **Relative paths only.** Use `.claude/hooks/`, `.claude/scripts/`; never a home directory or absolute path.
+- **One component, or one small related set, per pull request.**
+- **A clear `description`** that says what it does and when to use it. Claude reads it to decide.
+
+## Test it before opening the PR
+
+The CLI installs from `main`, so it cannot install your branch yet. Copy the files where Claude Code reads them and try them in a real session: an agent into `.claude/agents/`, a skill folder into `.claude/skills/`, a hook into `.claude/settings.local.json`. Then run Claude Code's validator on it:
+
+```bash
+python3 scripts/validate_components.py --changed cli-tool/components/agents/security/my-agent.md
+```
+
+## What reviews your pull request
+
+| Check | Blocks merge? |
+| --- | --- |
+| `claude plugin validate` on the changed components | Yes, on errors |
+| SkillSpector on changed skills | Yes, when the score is above 50 |
+| SkillSpector on other types | No, reported as a comment |
+| Mods type check | Yes |
+| AI review, then a maintainer | Yes |
+
+Hooks with scripts, mods and anything that runs code or sends data off the machine always get a maintainer's manual review.
+
+Sponsored placements on aitmpl.com never change review, ranking or search.

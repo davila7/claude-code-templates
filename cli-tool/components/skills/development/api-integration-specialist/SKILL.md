@@ -1,5 +1,5 @@
 ---
-name: API Integration Specialist
+name: api-integration-specialist
 description: Expert in integrating third-party APIs with proper authentication, error handling, rate limiting, and retry logic. Use when integrating REST APIs, GraphQL endpoints, webhooks, or external services. Specializes in OAuth flows, API key management, request/response transformation, and building robust API clients.
 ---
 

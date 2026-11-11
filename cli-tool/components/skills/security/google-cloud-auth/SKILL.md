@@ -1,7 +1,8 @@
 ---
 name: google-cloud-auth
 description: Provides expert guidance on authenticating and authorizing to Google Cloud services and APIs, covering human users, service identities, Application Default Credentials (ADC), and best practices for secure access.
-source: google/skills (Apache 2.0)
+metadata:
+  source: google/skills (Apache 2.0)
 ---
 
 # Authenticating to Google Cloud

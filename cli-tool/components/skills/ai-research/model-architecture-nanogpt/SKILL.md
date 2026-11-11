@@ -1,11 +1,12 @@
 ---
-name: nanogpt
+name: model-architecture-nanogpt
 description: Educational GPT implementation in ~300 lines. Reproduces GPT-2 (124M) on OpenWebText. Clean, hackable code for learning transformers. By Andrej Karpathy. Perfect for understanding GPT architecture from scratch. Train on Shakespeare (CPU) or OpenWebText (multi-GPU).
-version: 1.0.0
-author: Orchestra Research
 license: MIT
-tags: [Model Architecture, NanoGPT, GPT-2, Educational, Andrej Karpathy, Transformer, Minimalist, From Scratch, Training]
-dependencies: [torch, transformers, datasets, tiktoken, wandb]
+metadata:
+  version: 1.0.0
+  author: Orchestra Research
+  tags: [Model Architecture, NanoGPT, GPT-2, Educational, Andrej Karpathy, Transformer, Minimalist, From Scratch, Training]
+  dependencies: [torch, transformers, datasets, tiktoken, wandb]
 ---
 
 # nanoGPT - Minimalist GPT Training

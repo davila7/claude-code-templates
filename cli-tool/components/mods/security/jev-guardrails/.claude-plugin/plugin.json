@@ -1,0 +1,142 @@
+{
+  "name": "jev-guardrails",
+  "version": "0.1.0",
+  "description": "Screens every prompt going into the conversation and every reply coming out of it with TypeSafe's Jev, a System One decision model, the way TypeSafe's guardrails cookbook does: one request per message asks a battery of hazard questions (jailbreak, harm or a crime, a diagnosis or a dosage, self-harm) and scores how much harm complying would do. The thresholds live here, in a named policy (strict or permissive), and turn the probabilities into pass, review (the user is asked), block (the prompt is dropped, or the reply withheld) or support. Falls back to the engine's built-in classifier when no key is set.",
+  "author": {
+    "name": "claude-code-templates",
+    "url": "https://www.aitmpl.com"
+  },
+  "repository": "https://github.com/davila7/claude-code-templates",
+  "license": "MIT",
+  "keywords": [
+    "mod",
+    "function-hooks",
+    "security",
+    "guardrails",
+    "jailbreak"
+  ],
+  "userConfig": {
+    "typesafeApiKey": {
+      "type": "string",
+      "title": "TypeSafe API key",
+      "description": "Key for TypeSafe's own API; preferred over the Gateway, since only it reports a calibrated probability per answer",
+      "default": "",
+      "sensitive": true
+    },
+    "gatewayApiKey": {
+      "type": "string",
+      "title": "Vercel AI Gateway API key",
+      "description": "Key for the AI Gateway; with none set the engine's built-in classifier is used instead",
+      "default": "",
+      "sensitive": true
+    },
+    "provider": {
+      "type": "string",
+      "title": "Backend",
+      "description": "Which backend to use; \"auto\" picks TypeSafe when its key is set, then the Gateway, then the built-in classifier",
+      "default": "auto",
+      "options": [
+        "auto",
+        "typesafe",
+        "gateway",
+        "builtin"
+      ]
+    },
+    "typesafeBaseUrl": {
+      "type": "string",
+      "title": "TypeSafe base URL",
+      "description": "Base URL of TypeSafe's own API; empty uses https://api.typesafe.ai",
+      "default": ""
+    },
+    "typesafeModel": {
+      "type": "string",
+      "title": "TypeSafe model",
+      "description": "Decision model on TypeSafe's own API; empty uses jev-latest",
+      "default": ""
+    },
+    "gatewayBaseUrl": {
+      "type": "string",
+      "title": "AI Gateway base URL",
+      "description": "Base URL of the AI Gateway; empty uses https://ai-gateway.vercel.sh/v4/ai",
+      "default": ""
+    },
+    "gatewayModel": {
+      "type": "string",
+      "title": "AI Gateway model",
+      "description": "Decision model on the AI Gateway; empty uses typesafe-ai/jev",
+      "default": ""
+    },
+    "policy": {
+      "type": "string",
+      "title": "Policy",
+      "description": "The cookbook's named thresholds: strict acts at 0.70, permissive at 0.85; both review from 0.35 and let a severity of 2.0 turn a review into a block",
+      "default": "strict",
+      "options": [
+        "strict",
+        "permissive"
+      ]
+    },
+    "reviewThreshold": {
+      "type": "number",
+      "title": "Review threshold",
+      "description": "Overrides the policy's review line when set: a hazard probability at or above this sends the message to review. Leave unset to use the policy's own (0.35 in both)"
+    },
+    "actionThreshold": {
+      "type": "number",
+      "title": "Action threshold",
+      "description": "Overrides the policy's action line when set: a hazard probability at or above this triggers the hazard's action (block, review or support). Leave unset to use the policy's own (strict 0.70, permissive 0.85)"
+    },
+    "severityBlock": {
+      "type": "number",
+      "title": "Severity block",
+      "description": "Overrides the policy's severity line when set: a severity score (0-3) at or above this turns a review into a block. Leave unset to use the policy's own (2.0 in both)"
+    },
+    "screenInput": {
+      "type": "boolean",
+      "title": "Screen prompts",
+      "description": "Run the input battery on every prompt the user submits",
+      "default": true
+    },
+    "screenOutput": {
+      "type": "string",
+      "title": "Screen replies",
+      "description": "\"block\" holds each reply's text until it is screened and withholds one that fails; \"audit\" streams replies live and only logs the screening; \"off\" leaves replies alone",
+      "default": "block",
+      "options": [
+        "block",
+        "audit",
+        "off"
+      ]
+    },
+    "screenSubagents": {
+      "type": "boolean",
+      "title": "Screen subagent replies",
+      "description": "Also run the output battery on each subagent's responses; off screens the main conversation alone",
+      "default": false
+    },
+    "disabledHazards": {
+      "type": "string",
+      "title": "Disabled hazards",
+      "description": "Comma-separated hazards left out of both batteries (jailbreak, broke_policy, harmful_request, medical_advice, self_harm)",
+      "default": ""
+    },
+    "failClosed": {
+      "type": "boolean",
+      "title": "Fail closed on input",
+      "description": "Drop a prompt the backend could not screen (timeout, error); off lets it through and says so. Replies are never dropped for this",
+      "default": false
+    },
+    "timeoutMs": {
+      "type": "number",
+      "title": "Latency budget (ms)",
+      "description": "How long to wait for a screening before letting the message through unchanged",
+      "default": 1500
+    },
+    "logDecisions": {
+      "type": "boolean",
+      "title": "Log decisions",
+      "description": "Write each screening and its outcome to the session log",
+      "default": true
+    }
+  }
+}

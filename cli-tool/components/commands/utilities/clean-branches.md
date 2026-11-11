@@ -1,3 +1,7 @@
+---
+description: "Clean up merged and stale git branches"
+---
+
 # Clean Branches Command
 
 Clean up merged and stale git branches

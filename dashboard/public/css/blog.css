@@ -1147,3 +1147,311 @@
         height: 14px;
     }
 }
+/* ==========================================================================
+   Mobile reading layout (blog index + articles)
+   Scoped to <=768px so the desktop layout is unchanged.
+   ========================================================================== */
+@media (max-width: 768px) {
+    /* Compact sticky header: wordmark left, icon buttons right (~56px tall) */
+    .header .header-content {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        margin-left: 0;
+        padding: 0.6rem 0;
+        gap: 0.75rem;
+    }
+
+    .header .terminal-header {
+        flex: 0 1 auto;
+        text-align: left;
+    }
+
+    .header .ascii-title {
+        margin-bottom: 0;
+    }
+
+    .header .ascii-art,
+    .header .ascii-title .ascii-art {
+        font-size: 0.25rem;
+        text-align: left;
+        margin: 0;
+    }
+
+    .header .terminal-subtitle {
+        display: none;
+    }
+
+    .header-actions {
+        width: auto;
+        gap: 0.5rem;
+        justify-content: flex-end;
+    }
+
+    .header .header-btn {
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        justify-content: center;
+        gap: 0;
+        font-size: 0;
+        border-radius: 8px;
+    }
+
+    .header .header-btn svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .terminal {
+        padding: 0 16px 16px;
+    }
+
+    /* Article header: one inset for every block, actions under the meta */
+    .article-header,
+    .article-body {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .article-header {
+        padding-top: 1.5rem;
+        padding-bottom: 0.5rem;
+    }
+
+    .article-header .container {
+        display: flex;
+        flex-direction: column;
+        padding: 0;
+    }
+
+    .article-title {
+        font-size: 1.4rem;
+        line-height: 1.3;
+        margin-bottom: 0.75rem;
+        overflow-wrap: anywhere;
+    }
+
+    .article-subtitle {
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 1.25rem;
+    }
+
+    .article-meta-full {
+        gap: 0.75rem;
+    }
+
+    .article-tags {
+        gap: 0.4rem;
+    }
+
+    .article-tags .tag {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.5rem;
+    }
+
+    .copy-markdown-button {
+        order: 10;
+        margin: 1.25rem 0 0;
+        padding: 0.55rem 0.85rem;
+        font-size: 0.75rem;
+    }
+
+    .article-cover {
+        margin: 1.25rem 0 1.5rem;
+        border-radius: 10px;
+    }
+
+    /* Body copy */
+    .article-content-full {
+        font-size: 0.95rem;
+        line-height: 1.7;
+        overflow-wrap: break-word;
+    }
+
+    .article-content-full h2 {
+        font-size: 1.2rem;
+        line-height: 1.35;
+        margin: 2.25rem 0 0.75rem;
+    }
+
+    .article-content-full h3 {
+        font-size: 1.05rem;
+        line-height: 1.4;
+        margin: 1.75rem 0 0.6rem;
+    }
+
+    .article-content-full p {
+        margin-bottom: 1.15rem;
+    }
+
+    .article-content-full ul,
+    .article-content-full ol {
+        margin: 1rem 0;
+        padding-left: 1.25rem;
+    }
+
+    .article-content-full img {
+        margin: 1.25rem 0;
+    }
+
+    .article-content-full blockquote {
+        padding: 1rem;
+        margin: 1.5rem 0;
+    }
+
+    /* Code: scroll inside the block, never widen the page */
+    .article-content-full pre {
+        max-width: 100%;
+        padding: 1rem;
+        font-size: 0.8rem;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .article-content-full code {
+        padding: 0.1rem 0.3rem;
+        font-size: 0.85em;
+        overflow-wrap: anywhere;
+    }
+
+    .article-content-full pre code {
+        overflow-wrap: normal;
+    }
+
+    .code-block {
+        margin: 1.25rem 0;
+        border-radius: 8px;
+    }
+
+    .code-header {
+        padding: 0.5rem 0.75rem;
+    }
+
+    /* Tables: swipe horizontally inside the table, not the page */
+    .article-content-full table,
+    .components-table {
+        display: block;
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .article-content-full th,
+    .article-content-full td {
+        padding: 0.65rem 0.75rem;
+        font-size: 0.8rem;
+        line-height: 1.45;
+        min-width: 7.5rem;
+    }
+
+    .article-content-full td {
+        vertical-align: top;
+    }
+
+    .article-content-full td code {
+        overflow-wrap: normal;
+        white-space: nowrap;
+    }
+
+    /* Mermaid diagrams scale to the column */
+    .article-content-full .mermaid,
+    .article-content-full .mermaid-diagram {
+        max-width: 100%;
+        overflow-x: auto;
+    }
+
+    .article-content-full .mermaid svg {
+        max-width: 100% !important;
+        height: auto;
+    }
+
+    .article-nav {
+        margin: 2.5rem 0 1.5rem;
+    }
+
+    /* Index cards: covers are 16:9, 1200x630 or square; size the frame
+       to the image instead of a fixed 140px strip */
+    .article-card .article-image {
+        height: auto;
+        aspect-ratio: 16 / 9;
+    }
+
+    /* Blog index hero */
+    .blog-hero {
+        padding: 1.75rem 0 0.5rem;
+    }
+
+    .blog-hero .header-content {
+        margin-left: 0;
+        gap: 0.4rem;
+    }
+
+    .blog-hero .search-title {
+        font-size: 1.15rem;
+        line-height: 1.35;
+    }
+
+    .blog-hero .title-params {
+        display: block;
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+    }
+
+    .blog-hero .search-subtitle {
+        font-size: 0.8rem;
+        line-height: 1.5;
+        margin-top: 0.25rem;
+    }
+
+    .blog-articles {
+        padding: 1rem 0 3rem;
+    }
+
+    .blog-articles > .container,
+    .blog-hero > .container {
+        padding: 0;
+    }
+
+    /* Featured carousel: native swipe with snap, next card peeks in */
+    /* blog-loader.js sets display inline on the arrows */
+    .featured-carousel-wrapper .carousel-nav {
+        display: none !important;
+    }
+
+    .featured-carousel {
+        gap: 0.75rem;
+        width: 100%;
+        scroll-snap-type: x mandatory;
+        scroll-padding-left: 0;
+        padding: 0.5rem 0 0.75rem;
+    }
+
+    /* styles.css (legacy homepage) gives .featured-card a fixed 200px
+       height, padding and centered text below 480px, which clipped these */
+    .featured-posts-section .featured-card {
+        min-width: 78%;
+        max-width: 78%;
+        height: auto;
+        padding: 0;
+        text-align: left;
+        scroll-snap-align: start;
+    }
+
+    .featured-posts-section .featured-image {
+        height: auto;
+        aspect-ratio: 1200 / 630;
+    }
+
+    .featured-posts-section .featured-content h3 {
+        font-size: 0.9rem;
+    }
+
+    .featured-posts-section .featured-content p {
+        font-size: 0.75rem;
+    }
+
+    .featured-card:hover {
+        transform: none;
+    }
+}

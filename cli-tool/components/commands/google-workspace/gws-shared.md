@@ -1,7 +1,7 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [resource] [method] [flags]
-description: gws CLI: Shared patterns for authentication, global flags, and output formatting.
+argument-hint: "[resource] [method] [flags]"
+description: "gws CLI: Shared patterns for authentication, global flags, and output formatting."
 ---
 
 # Google Workspace Shared

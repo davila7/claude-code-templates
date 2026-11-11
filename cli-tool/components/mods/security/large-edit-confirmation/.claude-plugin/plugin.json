@@ -1,0 +1,34 @@
+{
+  "name": "large-edit-confirmation",
+  "version": "0.2.0",
+  "description": "Asks the user, in the engine's AskUserQuestion dialog ($.ui.ask), before Claude edits or overwrites a file larger than a configurable line count; denies by default when nobody can answer (headless runs). A tool.call hook on Edit and Write using $.fs.read.",
+  "author": {
+    "name": "claude-code-templates",
+    "url": "https://www.aitmpl.com"
+  },
+  "repository": "https://github.com/davila7/claude-code-templates",
+  "license": "MIT",
+  "keywords": [
+    "mod",
+    "function-hooks",
+    "security"
+  ],
+  "userConfig": {
+    "maxLines": {
+      "type": "number",
+      "title": "Line threshold",
+      "description": "Files above this many lines need the user's confirmation before an Edit or Write",
+      "default": 1000
+    },
+    "headless": {
+      "type": "string",
+      "title": "Headless behaviour",
+      "description": "What to do when nobody can answer (claude -p)",
+      "default": "deny",
+      "options": [
+        "deny",
+        "allow"
+      ]
+    }
+  }
+}

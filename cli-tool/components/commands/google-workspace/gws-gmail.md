@@ -1,7 +1,7 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [resource] [method] [flags]
-description: Gmail: Send, read, and manage email.
+argument-hint: "[resource] [method] [flags]"
+description: "Gmail: Send, read, and manage email."
 ---
 
 # Google Workspace Gmail

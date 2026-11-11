@@ -5,9 +5,54 @@ export interface Component {
   type: string;
   content: string;
   description?: string;
+  author?: string;
+  version?: string;
+  license?: string;
+  keywords?: string[];
   url?: string;
   downloads?: number;
   references?: string[];
+  skillspector?: SkillSpectorResult;
+  /** External skills: the code lives in another repo, downloaded from this commit at install time. */
+  source?: ExternalSource;
+  /** Plugins: what the plugin ships, by kind; names are shown after the plugin prefix (/{plugin}:{skill}). */
+  contains?: PluginContents;
+}
+
+export type PluginContents = Partial<Record<
+  'skills' | 'commands' | 'agents' | 'hooks' | 'mcpServers' | 'lspServers' | 'outputStyles' | 'themes' | 'bin' | 'monitors',
+  string[]
+>>;
+
+export interface ExternalSource {
+  repo: string;
+  path: string;
+  commit: string;
+  license: string;
+  url: string;
+  requires?: string[];
+}
+
+export interface SkillSpectorFinding {
+  id: string;
+  category: string;
+  severity: string;
+  title: string;
+  file: string;
+  line?: number | null;
+  count: number;
+}
+
+// NVIDIA SkillSpector static scan, written by scripts/skillspector_catalog.py.
+export interface SkillSpectorResult {
+  score: number;
+  severity: string;
+  recommendation: string;
+  issueCount: number;
+  analysis?: string;
+  findings: SkillSpectorFinding[];
+  version?: string;
+  scannedAt?: string;
 }
 
 export interface ComponentsData {
@@ -18,7 +63,7 @@ export interface ComponentsData {
   hooks: Component[];
   skills: Component[];
   loops: Component[];
-  'function-hooks': Component[];
+  mods: Component[];
   templates: Component[];
 }
 
@@ -40,7 +85,7 @@ export interface Cart {
   mcps: CartItem[];
   skills: CartItem[];
   loops: CartItem[];
-  'function-hooks': CartItem[];
+  mods: CartItem[];
   templates: CartItem[];
 }
 

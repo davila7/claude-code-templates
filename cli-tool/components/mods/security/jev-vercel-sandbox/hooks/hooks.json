@@ -1,0 +1,6 @@
+{
+  "description": "jev-vercel-sandbox: tool.call on Bash asks TypeSafe's Jev whether the command is a sandbox job (tests, another repo, unknown code, a bulk change, a clean build) and, after asking the user, runs it in a Vercel Sandbox; tool.call serves the sandbox_* tools; command.run starts the sandbox and opens its pane; session.end stops it",
+  "modules": [
+    "./jev-vercel-sandbox.tsx"
+  ]
+}

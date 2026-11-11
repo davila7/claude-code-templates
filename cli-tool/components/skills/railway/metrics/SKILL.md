@@ -1,12 +1,13 @@
 ---
 name: railway-metrics
 description: Query resource usage metrics for Railway services. Use when user asks about resource usage, CPU, memory, network, disk, or service performance like "how much memory is my service using" or "is my service slow".
-version: 1.0.0
-author: Railway
 license: MIT
-tags: [Railway, Metrics, Monitoring, Performance, CPU, Memory, Resources, Analytics]
-dependencies: [railway-cli]
 allowed-tools: Bash(railway:*)
+metadata:
+  version: 1.0.0
+  author: Railway
+  tags: [Railway, Metrics, Monitoring, Performance, CPU, Memory, Resources, Analytics]
+  dependencies: [railway-cli]
 ---
 
 # Railway Service Metrics

@@ -1,6 +1,6 @@
 ---
 allowed-tools: Read, Write, Edit, Bash
-argument-hint: [migration-type] | --create | --alter | --seed | --rollback
+argument-hint: "[migration-type] | --create | --alter | --seed | --rollback"
 description: Generate and manage Supabase database migrations with automated testing and validation
 ---
 

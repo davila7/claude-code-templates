@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { TYPE_CONFIG } from '../lib/icons';
 import TypeIcon from './TypeIcon';
 import CountryFlag from './CountryFlag';
+import AgentSplitView, { type ClientSplit } from './AgentSplitView';
 
 interface TrendingItem {
   id: string;
@@ -35,6 +36,7 @@ interface TrendingData {
   globalStats: GlobalStats;
   topCountries: TopCountry[];
   trending: Record<string, TrendingItem[]>;
+  clientSplit?: ClientSplit;
 }
 
 function formatName(name: string): string {
@@ -47,13 +49,23 @@ function formatNumber(n: number): string {
   return String(n);
 }
 
-const TRENDING_TYPES = ['all', 'skills', 'agents', 'commands', 'settings', 'hooks', 'mcps'] as const;
+const TRENDING_TYPES = ['all', 'skills', 'agents', 'commands', 'settings', 'hooks', 'mcps', 'mods'] as const;
 
 export default function TrendingView() {
   const [data, setData] = useState<TrendingData | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeType, setActiveType] = useState<string>('all');
   const [period, setPeriod] = useState<'downloadsWeek' | 'downloadsMonth' | 'downloadsTotal'>('downloadsWeek');
+  const [view, setView] = useState<'components' | 'agents'>('components');
+
+  useEffect(() => {
+    if (window.location.hash === '#agents') setView('agents');
+  }, []);
+
+  const selectView = (next: 'components' | 'agents') => {
+    setView(next);
+    history.replaceState(null, '', next === 'agents' ? '#agents' : window.location.pathname + window.location.search);
+  };
 
   useEffect(() => {
     fetch('/trending-data.json')
@@ -67,6 +79,13 @@ export default function TrendingView() {
     const list = data.trending[activeType] ?? [];
     return [...list].sort((a, b) => (b[period] ?? 0) - (a[period] ?? 0));
   }, [data, activeType, period]);
+
+  // Only show a type filter once the data actually carries that bucket, so a
+  // type the generator hasn't published yet never renders as an empty tab.
+  const visibleTypes = useMemo(
+    () => TRENDING_TYPES.filter((type) => type === 'all' || (data?.trending[type]?.length ?? 0) > 0),
+    [data]
+  );
 
   if (loading) {
     return (
@@ -186,6 +205,31 @@ export default function TrendingView() {
         </div>
       </div>
 
+      {/* View tabs */}
+      <div className="px-6 pb-5">
+        <div role="tablist" className="inline-flex items-center gap-1 p-1 rounded-lg bg-[var(--color-surface-2)] border border-[var(--color-border)]">
+          {([['components', 'Components'], ['agents', 'Agents vs humans']] as const).map(([key, label]) => (
+            <button
+              key={key}
+              role="tab"
+              aria-selected={view === key}
+              onClick={() => selectView(key)}
+              className={`px-3 py-1.5 rounded-md text-[12px] font-medium transition-colors ${
+                view === key
+                  ? 'bg-[var(--color-surface-0)] text-[var(--color-text-primary)] shadow-sm'
+                  : 'text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)]'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {view === 'agents' ? (
+        <AgentSplitView split={data.clientSplit} />
+      ) : (
+      <>
       {/* Top countries with icons */}
       <div className="px-6 pb-6">
         <div className="bg-[var(--color-surface-1)] border border-[var(--color-border)] rounded-xl p-4">
@@ -226,7 +270,7 @@ export default function TrendingView() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
           {/* Type filter */}
           <div className="flex items-center gap-1.5 flex-wrap">
-            {TRENDING_TYPES.map((type) => {
+            {visibleTypes.map((type) => {
               const config = TYPE_CONFIG[type];
               return (
                 <button
@@ -429,6 +473,9 @@ export default function TrendingView() {
           </div>
         </div>
       </div>
+
+      </>
+      )}
 
       {/* Last updated with icon */}
       <div className="px-6 pb-6">

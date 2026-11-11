@@ -1,0 +1,70 @@
+{
+  "name": "vercel-deploys",
+  "version": "0.1.0",
+  "description": "Your Vercel projects in a side pane: each connected site with the state of its latest deployment (building, ready, failed), the production domain, the Git commit behind it and whether the site answers right now. It polls Vercel's REST API (faster while something builds) and toasts when a deployment finishes or fails. /vercel opens it. Needs a Vercel access token.",
+  "author": {
+    "name": "claude-code-templates",
+    "url": "https://www.aitmpl.com"
+  },
+  "repository": "https://github.com/davila7/claude-code-templates",
+  "license": "MIT",
+  "keywords": [
+    "mod",
+    "function-hooks",
+    "integrations",
+    "vercel",
+    "deployments",
+    "ui"
+  ],
+  "userConfig": {
+    "vercelToken": {
+      "type": "string",
+      "title": "Vercel access token",
+      "description": "A Vercel access token (vercel.com/account/tokens); with none set the mod does nothing. Read-only use: it lists projects and deployments",
+      "default": "",
+      "sensitive": true
+    },
+    "teamId": {
+      "type": "string",
+      "title": "Team id or slug",
+      "description": "A team (team_... id) to list instead of your personal account; empty lists the account the token belongs to",
+      "default": ""
+    },
+    "maxProjects": {
+      "type": "number",
+      "title": "Projects listed",
+      "description": "How many projects to show, most recently updated first (1-50)",
+      "default": 20
+    },
+    "pollSeconds": {
+      "type": "number",
+      "title": "Refresh interval (s)",
+      "description": "Seconds between refreshes while nothing is building, 10-3600 (every 10 s while something is); polling pauses while the pane is closed and the status line is off",
+      "default": 60
+    },
+    "healthCheck": {
+      "type": "boolean",
+      "title": "Check that sites answer",
+      "description": "Send one GET to each project's production domain (at most once a minute) and show whether it answers with a non-error status",
+      "default": true
+    },
+    "status": {
+      "type": "boolean",
+      "title": "Status line entry",
+      "description": "Keep a summary (live, building, failed) under the prompt and keep polling while the pane is closed",
+      "default": true
+    },
+    "toast": {
+      "type": "boolean",
+      "title": "Toast on finish",
+      "description": "A toast when a deployment turns ready or fails",
+      "default": true
+    },
+    "openOnStart": {
+      "type": "boolean",
+      "title": "Open on start",
+      "description": "Open the pane when the session starts; the engine keeps an unasked pane hidden below 144 columns",
+      "default": false
+    }
+  }
+}

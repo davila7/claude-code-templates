@@ -1,3 +1,7 @@
+---
+description: "Analyze directory structure and purpose"
+---
+
 # Directory Deep Dive
 
 Analyze directory structure and purpose

@@ -1,0 +1,6 @@
+{
+  "description": "Reads the session's own transcript into a timeline of prompts, tool calls and turn ends, drawn in a pane; pressing a point arms a fork that writes a truncated copy of the transcript under a new session id, ready for `claude --resume`.",
+  "modules": [
+    "./register.tsx"
+  ]
+}

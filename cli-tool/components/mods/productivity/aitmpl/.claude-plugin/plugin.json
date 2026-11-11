@@ -1,0 +1,39 @@
+{
+  "name": "aitmpl",
+  "version": "0.4.0",
+  "description": "/aitmpl opens a side pane for the aitmpl.com catalog: search box, the site's Browse menu with an icon, colour and count per type, an Installed section (agents, commands, skills and mods found in .claude/ and ~/.claude/), a Popular/Results list with download counts, and view/install on every row. Install runs the fixed CLI argv ($.process.run, validated path, no shell). The catalog is read live through $.http.fetch; browsing costs no tokens.",
+  "author": {
+    "name": "claude-code-templates",
+    "url": "https://www.aitmpl.com"
+  },
+  "repository": "https://github.com/davila7/claude-code-templates",
+  "license": "MIT",
+  "keywords": [
+    "mod",
+    "function-hooks",
+    "productivity",
+    "aitmpl",
+    "catalog",
+    "sidebar"
+  ],
+  "userConfig": {
+    "siteUrl": {
+      "type": "string",
+      "title": "Site URL",
+      "description": "The site whose public catalog JSON is browsed (counts.json, components/{type}.json)",
+      "default": "https://www.aitmpl.com"
+    },
+    "pageSize": {
+      "type": "number",
+      "title": "Rows per page",
+      "description": "Rows shown per section before \"show more\"",
+      "default": 8
+    },
+    "columns": {
+      "type": "number",
+      "title": "Pane width",
+      "description": "Columns asked for the docked pane in the fullscreen layout (28-120); a width you drag it to wins",
+      "default": 48
+    }
+  }
+}

@@ -1,11 +1,12 @@
 ---
 name: railway-docs
 description: Fetch up-to-date Railway documentation to answer questions accurately. Use when user asks about Railway features, how Railway works, or shares a docs.railway.com URL.
-version: 1.0.0
-author: Railway
 license: MIT
-tags: [Railway, Documentation, Docs, Help, Reference, Learning]
-dependencies: [railway-cli]
+metadata:
+  version: 1.0.0
+  author: Railway
+  tags: [Railway, Documentation, Docs, Help, Reference, Learning]
+  dependencies: [railway-cli]
 ---
 
 # Railway Documentation

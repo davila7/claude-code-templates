@@ -1,11 +1,12 @@
 ---
-name: llava
+name: multimodal-llava
 description: Large Language and Vision Assistant. Enables visual instruction tuning and image-based conversations. Combines CLIP vision encoder with Vicuna/LLaMA language models. Supports multi-turn image chat, visual question answering, and instruction following. Use for vision-language chatbots or image understanding tasks. Best for conversational image analysis.
-version: 1.0.0
-author: Orchestra Research
 license: MIT
-tags: [LLaVA, Vision-Language, Multimodal, Visual Question Answering, Image Chat, CLIP, Vicuna, Conversational AI, Instruction Tuning, VQA]
-dependencies: [transformers, torch, pillow]
+metadata:
+  version: 1.0.0
+  author: Orchestra Research
+  tags: [LLaVA, Vision-Language, Multimodal, Visual Question Answering, Image Chat, CLIP, Vicuna, Conversational AI, Instruction Tuning, VQA]
+  dependencies: [transformers, torch, pillow]
 ---
 
 # LLaVA - Large Language and Vision Assistant

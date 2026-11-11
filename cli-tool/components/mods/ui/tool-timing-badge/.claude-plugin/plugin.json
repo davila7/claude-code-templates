@@ -1,0 +1,24 @@
+{
+  "name": "tool-timing-badge",
+  "version": "0.2.0",
+  "description": "Times every tool call and wraps the engine's ToolUse rendering with a colored duration badge from the surface's own element table, on the terminal, Desktop and mobile. Hooks tool.call and ui.render using JSX.",
+  "author": {
+    "name": "claude-code-templates",
+    "url": "https://www.aitmpl.com"
+  },
+  "repository": "https://github.com/davila7/claude-code-templates",
+  "license": "MIT",
+  "keywords": [
+    "mod",
+    "function-hooks",
+    "ui"
+  ],
+  "userConfig": {
+    "slowMs": {
+      "type": "number",
+      "title": "Slow threshold (ms)",
+      "description": "Calls at or above this are red, above a quarter of it yellow",
+      "default": 5000
+    }
+  }
+}

@@ -1,5 +1,5 @@
 ---
-name: latex-posters
+name: pptx-posters
 description: "Create professional research posters in LaTeX using beamerposter, tikzposter, or baposter. Support for conference presentations, academic posters, and scientific communication. Includes layout design, color schemes, multi-column formats, figure integration, and poster-specific best practices for visual communication."
 allowed-tools: [Read, Write, Edit, Bash]
 ---

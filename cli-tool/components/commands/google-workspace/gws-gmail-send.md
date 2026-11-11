@@ -1,7 +1,7 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [resource] [method] [flags]
-description: Gmail: Send an email.
+argument-hint: "[resource] [method] [flags]"
+description: "Gmail: Send an email."
 ---
 
 # Google Workspace Gmail Send

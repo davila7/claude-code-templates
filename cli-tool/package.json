@@ -1,6 +1,6 @@
 {
   "name": "claude-code-templates",
-  "version": "1.29.4",
+  "version": "1.33.1",
   "description": "CLI tool to setup Claude Code configurations with framework-specific commands, automation hooks and MCP Servers for your projects",
   "main": "src/index.js",
   "bin": {
@@ -9,7 +9,6 @@
     "claude-code-template": "bin/create-claude-config.js",
     "claude-init": "bin/create-claude-config.js",
     "cctemplates": "bin/create-claude-config.js",
-    "cct": "bin/create-claude-config.js",
     "claude-setup": "bin/create-claude-config.js",
     "claude-config": "bin/create-claude-config.js"
   },
@@ -17,7 +16,8 @@
     "start": "node bin/create-claude-config.js",
     "build:ui": "cd analytics-ui && npm install && npm run build",
     "dev:ui": "cd analytics-ui && npm run dev",
-    "prepublishOnly": "npm run build:ui && npm test",
+    "check:version-sync": "node ../scripts/sync-package-versions.js --check",
+    "prepublishOnly": "npm run check:version-sync && npm run build:ui && npm test",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
@@ -79,8 +79,6 @@
     "js-yaml": "^4.1.0",
     "open": "^8.4.2",
     "ora": "^5.4.1",
-    "qrcode": "^1.5.3",
-    "uuid": "^11.1.0",
     "ws": "^8.18.3"
   },
   "engines": {
@@ -97,9 +95,6 @@
   "files": [
     "bin/",
     "src/",
-    "components/sandbox/e2b/",
-    "components/sandbox/cloudflare/",
-    "components/sandbox/docker/",
     "README.md"
   ],
   "devDependencies": {

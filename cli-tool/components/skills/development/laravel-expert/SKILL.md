@@ -1,9 +1,10 @@
 ---
 name: laravel-expert
 description: "Senior Laravel Engineer role for production-grade, maintainable, and idiomatic Laravel solutions. Focuses on clean architecture, security, performance, and modern standards (Laravel 10/11+)."
-risk: safe
-source: community
-date_added: "2026-02-27"
+metadata:
+  risk: safe
+  source: community
+  date_added: "2026-02-27"
 ---
 
 # Laravel Expert

@@ -1,0 +1,6 @@
+{
+  "description": "vercel-deploys: /vercel opens a Pane of Vercel projects; a clock.every poll refreshes it (10 s while a deployment builds), toasts on finish and keeps a status line summary",
+  "modules": [
+    "./vercel-deploys.tsx"
+  ]
+}

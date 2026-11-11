@@ -1,7 +1,7 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [resource] [method] [flags]
-description: Google Workspace Events: Renew/reactivate Workspace Events subscriptions.
+argument-hint: "[resource] [method] [flags]"
+description: "Google Workspace Events: Renew/reactivate Workspace Events subscriptions."
 ---
 
 # Google Workspace Events Renew

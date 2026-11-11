@@ -1,7 +1,7 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [resource] [method] [flags]
-description: Google Workspace Admin SDK: Manage users, groups, and devices.
+argument-hint: "[resource] [method] [flags]"
+description: "Google Workspace Admin SDK: Manage users, groups, and devices."
 ---
 
 # Google Workspace Admin

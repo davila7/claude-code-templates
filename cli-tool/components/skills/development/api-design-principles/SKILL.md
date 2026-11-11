@@ -1,9 +1,10 @@
 ---
 name: api-design-principles
 description: "Master REST and GraphQL API design principles to build intuitive, scalable, and maintainable APIs that delight developers and stand the test of time."
-risk: safe
-source: community
-date_added: "2026-02-27"
+metadata:
+  risk: safe
+  source: community
+  date_added: "2026-02-27"
 ---
 
 # API Design Principles

@@ -1,3 +1,7 @@
+---
+description: "Test multiple code variations through simulation before implementation with quality gates and performance prediction."
+---
+
 # Code Permutation Tester
 
 Test multiple code variations through simulation before implementation with quality gates and performance prediction.

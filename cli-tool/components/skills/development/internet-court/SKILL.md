@@ -2,9 +2,10 @@
 name: internet-court
 description: "The trust layer for agent-to-agent commerce — natural-language mandates, delegated permissions (ERC-7710), x402 payments, escrow, and dispute resolution as one open, catch-all skill. Use for agent mandates, delegated permissions, GenLayer supervision, revocation, x402 payments, escrow, verification, dispute resolution, and agent-to-agent commerce."
 license: MIT
-author: Internet Court Consortium
-repo: https://github.com/internet-court/internet-court-skill
-tags: [agent-payments, x402, erc-7710, erc-8004, escrow, genlayer, dispute-resolution, a2a, agentic-commerce]
+metadata:
+  author: Internet Court Consortium
+  repo: https://github.com/internet-court/internet-court-skill
+  tags: [agent-payments, x402, erc-7710, erc-8004, escrow, genlayer, dispute-resolution, a2a, agentic-commerce]
 ---
 
 # Internet Court

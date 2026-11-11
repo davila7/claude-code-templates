@@ -1,0 +1,99 @@
+name: Component Validate
+
+# Runs `claude plugin validate` (the official validator) over agents, commands,
+# skills, hooks, MCP components and catalog plugins (plus the aitmpl
+# marketplace.json built from them). See scripts/validate_components.py for how
+# the nested catalog layout is adapted to what the validator accepts.
+#
+# - Pull requests: validates only the components the PR touches and blocks on errors.
+# - Weekly / manual: validates the whole catalog and fails on any error (the catalog
+#   reached 0 errors in 2026-10), so a regression that slips past a PR shows up here.
+# Mods are validated by mods-typecheck.yml; settings and loops have no official validator.
+
+on:
+  pull_request:
+    paths:
+      - 'cli-tool/components/agents/**'
+      - 'cli-tool/components/commands/**'
+      - 'cli-tool/components/skills/**'
+      - 'cli-tool/components/hooks/**'
+      - 'cli-tool/components/mcps/**'
+      - 'cli-tool/components/plugins/**'
+      - 'scripts/validate_components.py'
+      - 'scripts/external_skills.py'
+      - 'scripts/test_external_skills.py'
+      - 'scripts/mcp_versions.py'
+      - 'scripts/test_mcp_versions.py'
+      - '.github/workflows/component-validate.yml'
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: claude plugin validate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Validate changed components (PR, blocking)
+        if: github.event_name == 'pull_request'
+        run: |
+          git diff --name-only --diff-filter=d "origin/${{ github.base_ref }}...HEAD" -- cli-tool/components > changed.txt
+          python3 scripts/validate_components.py --changed changed.txt --report component-validation.json
+
+      - name: Validate whole catalog
+        if: github.event_name != 'pull_request'
+        run: python3 scripts/validate_components.py --report component-validation.json
+
+      # External skills and plugins (source.json): pinned commit, SKILL.md or
+      # plugin.json present, license on the allowlist and matching the repo's
+      # LICENSE file at that commit, plugin name = folder name.
+      - name: Check external skill and plugin manifests
+        if: success() || failure()
+        run: |
+          python3 -m unittest scripts/test_external_skills.py
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            git diff --name-only --diff-filter=d "origin/${{ github.base_ref }}...HEAD" -- 'cli-tool/components/skills/*/*/source.json' 'cli-tool/components/plugins/*/*/source.json' > external.txt
+            if [ ! -s external.txt ]; then echo "no external skill or plugin changed"; exit 0; fi
+            python3 scripts/external_skills.py check $(cat external.txt)
+          else
+            python3 scripts/external_skills.py check
+          fi
+
+      # MCP servers start with npx/uvx/pipx on every Claude Code start, so each
+      # package must be pinned to an exact version (scripts/mcp_versions.py).
+      - name: Check MCP package pins
+        if: success() || failure()
+        run: |
+          python3 -m unittest scripts/test_mcp_versions.py
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            git diff --name-only --diff-filter=d "origin/${{ github.base_ref }}...HEAD" -- 'cli-tool/components/mcps/**/*.json' > mcps.txt
+            if [ ! -s mcps.txt ]; then echo "no MCP changed"; exit 0; fi
+            python3 scripts/mcp_versions.py check --github $(cat mcps.txt)
+          else
+            python3 scripts/mcp_versions.py check --github
+          fi
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: component-validation-report
+          path: component-validation.json
+          if-no-files-found: ignore

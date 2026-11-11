@@ -1,0 +1,19 @@
+{
+  "name": "pi-agent-for-claude",
+  "version": "0.1.0",
+  "description": "pi agent for claude: a `pi` subagent type whose model steps run the pi CLI, so pi subagents and agent-team teammates live in Claude Code's own agent UI, streamed live, on any model pi can reach.",
+  "author": {
+    "name": "Fazal Ali"
+  },
+  "homepage": "https://github.com/FazalAAli/pi-agent-for-claude",
+  "repository": "https://github.com/FazalAAli/pi-agent-for-claude",
+  "license": "MIT",
+  "keywords": [
+    "pi",
+    "subagent",
+    "agent-teams",
+    "multi-model",
+    "openrouter",
+    "function-hooks"
+  ]
+}

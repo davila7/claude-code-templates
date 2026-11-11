@@ -1,15 +1,23 @@
 import { useState, useEffect } from 'react';
 import type { Cart } from '../lib/types';
 import { TYPE_CONFIG } from '../lib/icons';
+import { track } from '../lib/analytics';
+import { cartToItems, decodeStack, encodeStack, stackPath } from '../lib/stack-link';
+import { saveStackAsCollection } from '../lib/save-stack';
+import { collectionsApi } from '../lib/collections-api';
+import { fetchComponentsByType } from '../lib/data';
+import { openSignIn } from '../lib/sign-in';
+import { myComponentsUrl } from '../lib/save-component';
+import { showToast } from '../lib/toast';
 
 const EMPTY_CART: Cart = {
-  agents: [], commands: [], settings: [], hooks: [], mcps: [], skills: [], loops: [], 'function-hooks': [], templates: [],
+  agents: [], commands: [], settings: [], hooks: [], mcps: [], skills: [], loops: [], mods: [], templates: [],
 };
 
 const TYPE_FLAGS: Record<string, string> = {
   agents: '--agent', commands: '--command', settings: '--setting',
   hooks: '--hook', mcps: '--mcp', skills: '--skill', loops: '--loop',
-  'function-hooks': '--function-hook', templates: '--template',
+  mods: '--mod', templates: '--template',
 };
 
 function cleanPath(path: string): string {
@@ -26,19 +34,40 @@ export default function CartSidebar() {
   const [open, setOpen] = useState(false);
   const [cart, setCart] = useState<Cart>(EMPTY_CART);
   const [copied, setCopied] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
+  const [saving, setSaving] = useState(false);
+  // Phones get "Send to your computer": npx does not run there.
+  const [isPhone, setIsPhone] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia?.('(max-width: 767px)');
+    if (!mq) return;
+    const sync = () => setIsPhone(mq.matches);
+    sync();
+    mq.addEventListener?.('change', sync);
+    return () => mq.removeEventListener?.('change', sync);
+  }, []);
 
   // Load cart
   useEffect(() => {
+    // "function-hooks" became "mods": a cart saved before the rename keeps its items under the new key
+    function migrate(saved: Record<string, unknown>): Cart {
+      const { 'function-hooks': legacy, ...rest } = saved as Record<string, unknown> & { 'function-hooks'?: unknown };
+      const cart = { ...EMPTY_CART, ...rest } as Cart;
+      if (Array.isArray(legacy) && legacy.length > 0) cart.mods = [...(cart.mods ?? []), ...legacy];
+      return cart;
+    }
+
     function loadCart() {
       try {
         const saved = localStorage.getItem('claudeCodeCart');
-        if (saved) setCart({ ...EMPTY_CART, ...JSON.parse(saved) });
+        if (saved) setCart(migrate(JSON.parse(saved)));
       } catch {}
     }
 
     loadCart();
     window.addEventListener('cart-updated', ((e: CustomEvent) => {
-      setCart({ ...EMPTY_CART, ...e.detail });
+      setCart(migrate(e.detail));
     }) as EventListener);
     window.addEventListener('storage', loadCart);
 
@@ -81,8 +110,78 @@ export default function CartSidebar() {
 
   function copyCommand() {
     navigator.clipboard.writeText(generateCommand());
+    track('copy_stack_command', { item_count: totalItems, source: 'stack' });
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  }
+
+  // /s/<code>: the link itself carries the list and today's date (lib/stack-link.ts).
+  function stackUrl(): string | null {
+    const code = encodeStack(cartToItems(cart as any));
+    return code ? `${window.location.origin}${stackPath(code)}` : null;
+  }
+
+  async function copyText(text: string): Promise<boolean> {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  async function copyStackLink() {
+    const url = stackUrl();
+    if (!url) return;
+    track('stack_link_create', { item_count: totalItems, source: 'stack' });
+    if (await copyText(url)) {
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 2000);
+    } else {
+      window.prompt('Copy your stack link:', url);
+    }
+  }
+
+  async function sendToComputer() {
+    const url = stackUrl();
+    if (!url) return;
+    track('stack_link_create', { item_count: totalItems, source: 'stack' });
+    const item_count = totalItems;
+    if (typeof navigator.share === 'function') {
+      try {
+        await navigator.share({ title: 'My Claude Code stack', text: 'Install it from your computer:', url });
+        track('share_component', { kind: 'stack', method: 'share', item_count, source: 'stack' });
+        return;
+      } catch (err) {
+        if ((err as Error)?.name === 'AbortError') return; // closed the share sheet
+      }
+    }
+    track('share_component', { kind: 'stack', method: 'copy', item_count, source: 'stack' });
+    if (await copyText(url)) showToast({ message: 'Link copied. Open it on your computer to install the stack.' });
+    else window.prompt('Copy your stack link:', url);
+  }
+
+  async function saveAsCollection() {
+    const items = cartToItems(cart as any);
+    const code = encodeStack(items);
+    const stack = code ? decodeStack(code) : null;
+    if (!code || !stack || saving) return;
+    const clerk = (window as any).Clerk;
+    if (!clerk?.user) {
+      openSignIn({ kind: 'save-stack', code });
+      return;
+    }
+    setSaving(true);
+    try {
+      const token = await clerk.session?.getToken();
+      if (!token) throw new Error('No session token');
+      const { collection } = await saveStackAsCollection(collectionsApi, token, stack, fetchComponentsByType);
+      window.location.assign(myComponentsUrl(collection.id));
+    } catch (err) {
+      console.error('Failed to save the stack as a collection:', err);
+      showToast({ message: "Couldn't save your stack. Try again in a moment." });
+      setSaving(false);
+    }
   }
 
   function shareTwitter() {
@@ -117,10 +216,13 @@ export default function CartSidebar() {
         />
       )}
 
-      {/* Sidebar panel */}
+      {/* Sidebar panel. The clipping wrapper keeps the closed (off-screen)
+          panel inside the viewport box: iOS Safari counts a translated fixed
+          element in the page width and zooms the whole site out to fit it. */}
+      <div className="fixed inset-0 z-50 overflow-hidden pointer-events-none">
       <div
-        className={`fixed top-0 right-0 h-full w-96 max-w-[90vw] bg-[var(--color-surface-0)] border-l border-[var(--color-border)] shadow-2xl z-50 transform transition-transform duration-300 ease-out flex flex-col ${
-          open ? 'translate-x-0' : 'translate-x-full'
+        className={`absolute top-0 right-0 h-full w-96 max-w-[90vw] bg-[var(--color-surface-0)] border-l border-[var(--color-border)] transform transition-[transform,visibility] duration-300 ease-out flex flex-col pointer-events-auto ${
+          open ? 'translate-x-0 shadow-2xl' : 'translate-x-full invisible'
         }`}
       >
         {/* Header */}
@@ -288,8 +390,39 @@ export default function CartSidebar() {
                 </svg>
               </button>
             </div>
+
+            {/* Stack link (no account), "Send to your computer" on phones, and Save as collection */}
+            <div className={isPhone ? 'flex flex-col gap-2' : 'flex gap-2'}>
+              {isPhone ? (
+                <button onClick={sendToComputer} className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-3)] text-[var(--color-text-primary)] rounded-lg text-[13px] font-medium transition-colors border border-[var(--color-border)] disabled:opacity-60">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="4" width="18" height="12" rx="2" /><path d="M8 20h8M12 16v4" />
+                  </svg>
+                  Send to your computer
+                </button>
+              ) : (
+                <button onClick={copyStackLink} className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-3)] text-[var(--color-text-primary)] rounded-lg text-[13px] font-medium transition-colors border border-[var(--color-border)] disabled:opacity-60">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M10 13a5 5 0 007.07 0l3-3a5 5 0 00-7.07-7.07l-1 1M14 11a5 5 0 00-7.07 0l-3 3a5 5 0 007.07 7.07l1-1" />
+                  </svg>
+                  {linkCopied ? 'Link copied' : 'Copy stack link'}
+                </button>
+              )}
+              <button onClick={saveAsCollection} disabled={saving} className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-3)] text-[var(--color-text-primary)] rounded-lg text-[13px] font-medium transition-colors border border-[var(--color-border)] disabled:opacity-60">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                </svg>
+                {saving ? 'Saving…' : 'Save as collection'}
+              </button>
+            </div>
+            {isPhone && (
+              <button onClick={copyStackLink} className="w-full text-center text-[12px] text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] transition-colors">
+                {linkCopied ? 'Link copied' : 'Or copy the stack link'}
+              </button>
+            )}
           </div>
         )}
+      </div>
       </div>
     </>
   );

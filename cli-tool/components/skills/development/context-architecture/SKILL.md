@@ -9,12 +9,15 @@ description: >-
   in steps). Use when an agent reimplements code that already exists, invents structure, follows
   stale or deleted docs, propagates a deprecated pattern, or resolves ambiguity at random, or when
   asked to make a repository "agent-ready", "AI-legible", or to add or fix AGENTS.md / CLAUDE.md
-  files.
-license: CC BY 4.0
+  files. Related terms: harness engineering, context files, instruction bloat, cognitive debt, agent
+  readiness.
+license: CC-BY-4.0
 metadata:
   source: https://context-architecture.dev
   author: Sergio Azócar
-  term-introduced: 2025-10
+  version: "0.3.0"
+  term-introduced: "2025-10"
+  first-published: "2026-06"
 ---
 
 # Context Architecture: bind a repository's claims to mechanisms
@@ -32,7 +35,9 @@ October 2025. Canonical specification: https://context-architecture.dev
 ## The one assumption
 
 Design for a reader who **retains nothing between sessions and knows only what the repository says
-out loud.** An AI agent meets this exactly; a new human contributor approximates it.
+out loud.** An AI agent meets this exactly; a new human contributor approximates it. Agents keep
+memory now, but it is local, unverified, and unshared, so it is not the repository's truth; design as
+if it were absent.
 
 ## The rule (the test you run, claim by claim)
 
@@ -49,41 +54,29 @@ person or an agent) that breaks when that stops being true?** If not, it is pros
 stale without anything noticing. A claim with no mechanism behind it _is_ the violation.
 
 The mechanism has to actually fail, not just exist. A performance test that never exercises the slow
-path does not satisfy the rule, it violates it. The rule applies to itself: the set of tests and
-rules that verify the repository is itself a set of claims, so it too is bound to a mechanism that
+path does not satisfy the rule, it violates it. That a test can fail is a claim too: mutation testing
+checks it, a surviving mutant is a test that cannot fail. The rule applies to itself: the set of tests
+and rules that verify the repository is itself a set of claims, so it too is bound to a mechanism that
 fails if it is weakened.
 
 ## The loop (write a claim, verify it, repeat on every change)
 
-Working with an agent is a continuous flow of code changes. The rule lives inside that flow, not off
-to the side:
-
-1. **Write the claim.** A change introduces or modifies something the repository holds about itself:
-   a new source of truth, an invariant, a convention.
-2. **Verify it.** Bind that claim to a mechanism that fails when it stops being true, in the **same
-   change**. A change that touches existing code also meets the mechanisms already there: if it
-   violates a claim, something goes red before it reaches production.
-3. **Repeat on every change.** This is not a setup you do once. It is a property maintained change by
-   change, which is why the repository's context grows with the system instead of falling behind.
-
-When a change adds a new claim and leaves it loose, review (by a person or an agent) catches it and
-requires it to be bound before the change is accepted.
+Working with an agent is a continuous flow of code changes, and the rule lives inside it. When a
+change introduces a claim (a source of truth, an invariant, a convention), bind it to a mechanism in
+the **same change**; a change that touches existing code meets the mechanisms already there, so a
+violation goes red before it reaches production. It is not a one-time setup but a property maintained
+change by change, which is why the context grows with the system instead of falling behind. A claim
+left loose is caught in review, by a person or an agent, and bound before the change is accepted.
 
 ## Works with or without a person in the loop
 
 Context Architecture serves the whole autonomy spectrum. What changes across it is **who consumes
 the verification, not the verification.** The same `AGENTS.md` and the same mechanisms work at every
-level:
-
-| Level | Who reviews | What breaks without repository discipline |
-| --- | --- | --- |
-| Inline | a person approves each edit | the agent reimplements things that already exist; the person burns time on what the tools could have caught |
-| Async | a person reviews the change before integrating it | review does not scale; the integration gate exists but enforces nothing, one click lets a change through |
-| Autonomous | a person sets the rules, does not look at each change | if the mechanisms are missing, "done" is empty: the agent calls a change finished when it passes but is wrong |
-| Orchestrated | nobody in the middle | the error multiplies at machine speed; the only arbiters are the repository's mechanisms |
-
-When there is a person, the mechanisms absorb the routine checks, so the person spends attention on
-what needs judgment. When there is no person, the mechanisms are the reviewer.
+level: inline (a person, or a classifier, approves each edit), async (a person reviews before
+integrating), autonomous (a person sets the rules and does not watch each change), and orchestrated
+(nobody in the middle). As of 2026 all four exist as products, and with several agents in parallel
+the merge queue is where the mechanisms arbitrate. When there is a person, the mechanisms absorb the
+routine checks; when there is no person, they are the reviewer.
 
 ## The kinds of mechanism (not tools)
 
@@ -98,10 +91,15 @@ it makes no difference), and the infrastructure runs it on each change.
 - **Automated tests** catch documentation that lies and behavior that strays: an `AGENTS.md` that
   mentions a deleted file turns the tests red.
 - **Review**, by a person or an agent, catches the meaning the others do not see: on each change it
-  asks whether any document now says something false, and requires the fix in the same change.
+  asks whether any document now says something false, and requires the fix in the same change. Review
+  by an agent counts only when its verdict can stop the change (a required check, a request for
+  changes), not a comment nobody must resolve, and its approval never authorizes a change to the
+  verification surface.
 
-The split is clean: Context Architecture decides **what** gets verified and guarantees the mechanism
-exists and fails. The infrastructure runs it.
+Where a mechanism fires is the infrastructure's choice: a hook the repository commits runs it in the
+agent's loop, the repository's rules run it at push, or CI runs it. Firing early does not replace the
+gate, because a hook can be switched off locally. The split is clean: Context Architecture decides
+**what** gets verified and guarantees the mechanism exists and fails. The infrastructure runs it.
 
 ## When this applies, and when it does not
 
@@ -261,19 +259,18 @@ is a new claim that can go stale.
 **Bind claims to mechanisms.** The four kinds, each catching a kind of drift:
 
 - _Compiler._ A forbidden import alias breaks the typecheck (a banned path mapping, a nominal type).
-- _Linter._ A file in the wrong folder is an immediate error citing the rule (custom lint rule /
-  import-boundary rule). Reach for the linter to enforce structure and conventions.
-- _Tests._ A doc that cites a deleted file turns the suite red (a test that asserts every path
-  referenced in `AGENTS.md`/`README` still exists); a generated capability index that drops a real
-  capability turns it red.
+- _Linter._ A file in the wrong folder is an immediate error citing the rule (custom lint rule or
+  import-boundary rule), the tool of choice for structure and conventions.
+- _Tests._ A doc that cites a deleted file turns the suite red; a generated capability index that
+  drops a real capability turns it red.
 - _Review (person or agent)._ Guards semantic truth: on every change, ask whether it leaves any doc
   lying, and require fixing it in the same change.
 
-**Detect and fix context-rot.** Find documentation that lies:
+**Detect and fix context rot.** Find documentation that lies:
 
 - Extract every file path, command, symbol, and URL referenced in `README`, `AGENTS.md`/`CLAUDE.md`,
-  and design docs; verify each still exists / still runs. Dead references are the highest-priority
-  fix.
+  the path-scoped rule files (`.claude/rules`, `.cursor/rules`, `.github/instructions`), `SKILL.md`,
+  and design docs; verify each still exists / still runs. Dead references are the highest-priority fix.
 - Diff each `AGENTS.md` against the code it sits beside: does it describe modules, exports, or flows
   that no longer match? Correct the doc, then add the test that would have caught it.
 - Land a **doc-reference test** so this class of rot cannot return.
@@ -288,13 +285,16 @@ locations (`package.json` scripts, a `scripts/` or `skills/` directory). Where p
 **generate** the capability index from the conventional paths rather than hand-keeping it, and test
 that the index is complete. A hand-kept list is itself a claim that goes stale.
 
-### Phase 4: Keep the loop running
+### Phase 4: Keep the loop running with a mechanism, not a reminder
 
-Context grows with the system only if write-and-verify runs on every change. Install the review-loop
-instruction: when a change introduces a source of truth or an invariant, the loop asks to document
-it right there, in the same change, bound to a mechanism. Add this instruction to the root
-`AGENTS.md` and to the review checklist, so a new claim cannot land loose. Bind the verification
-surface itself (principle 09) so the mechanisms cannot be weakened to get a change through.
+Context grows with the system only if write-and-verify runs on every change. Put the review
+instruction where the repository's reviewers read it (the root `AGENTS.md`; a `REVIEW.md` if an agent
+reviews pull requests) and wire the check that fails when a claim lands loose: the doc-reference test
+as a required check, and where supported a hook that runs the tests before the turn ends. The
+instruction says what to look for; the check stops the change. Bind the verification surface itself
+(principle 09): a test over the lint and CI config, `CODEOWNERS` plus a ruleset over `tests/` and that
+config, and a check that can fail (mutation testing or a deliberate break). Promote a recurring
+correction to a bound claim, not a note the agent keeps to itself.
 
 ## Output: the audit report
 

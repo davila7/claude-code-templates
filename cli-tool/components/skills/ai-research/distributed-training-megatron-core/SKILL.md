@@ -1,11 +1,12 @@
 ---
-name: training-llms-megatron
+name: distributed-training-megatron-core
 description: Trains large language models (2B-462B parameters) using NVIDIA Megatron-Core with advanced parallelism strategies. Use when training models >1B parameters, need maximum GPU efficiency (47% MFU on H100), or require tensor/pipeline/sequence/context/expert parallelism. Production-ready framework used for Nemotron, LLaMA, DeepSeek.
-version: 1.0.0
-author: Orchestra Research
 license: MIT
-tags: [Megatron-Core, Large-Scale Training, NVIDIA, Tensor Parallelism, Pipeline Parallelism, Model Parallelism, H100, Distributed Training, Production]
-dependencies: [megatron-core, torch, apex, transformer-engine]
+metadata:
+  version: 1.0.0
+  author: Orchestra Research
+  tags: [Megatron-Core, Large-Scale Training, NVIDIA, Tensor Parallelism, Pipeline Parallelism, Model Parallelism, H100, Distributed Training, Production]
+  dependencies: [megatron-core, torch, apex, transformer-engine]
 ---
 
 # Megatron-Core - Large-Scale LLM Training

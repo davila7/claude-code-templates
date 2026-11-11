@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { marked } from 'marked';
+import { sanitizeHtml, codeLang } from '../lib/sanitize-html';
 
 // Lightweight token-count approximation: ~4 characters per token for English prose.
 // Avoids shipping the heavy gpt-tokenizer BPE table to the browser.
@@ -53,9 +54,9 @@ function renderSlideMarkdown(md: string): string {
     return `<${tag} class="slide-heading">${text}</${tag}>`;
   };
   renderer.code = ({ text, lang }: { text: string; lang?: string }) => {
-    return `<div class="slide-code-block"><div class="slide-code-lang">${lang || ''}</div><pre><code class="language-${lang || ''}">${text.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre></div>`;
+    return `<div class="slide-code-block"><div class="slide-code-lang">${codeLang(lang)}</div><pre><code class="language-${codeLang(lang)}">${text.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre></div>`;
   };
-  return marked.parse(md, { renderer }) as string;
+  return sanitizeHtml(marked.parse(md, { renderer }) as string);
 }
 
 // ─── Slide building ───────────────────────────────────────────────

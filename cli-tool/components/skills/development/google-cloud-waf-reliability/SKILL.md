@@ -1,7 +1,8 @@
 ---
 name: google-cloud-waf-reliability
 description: Generates reliability-focused guidance for Google Cloud workloads based on the Google Cloud Well-Architected Framework. Use to evaluate a workload, identify reliability requirements, and provide actionable recommendations for building resilient, highly available systems.
-source: google/skills (Apache 2.0)
+metadata:
+  source: google/skills (Apache 2.0)
 ---
 
 # Google Cloud Well-Architected Framework skill for the Reliability pillar

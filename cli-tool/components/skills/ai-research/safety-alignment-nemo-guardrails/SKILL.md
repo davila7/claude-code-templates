@@ -1,5 +1,5 @@
 ---
-name: nemo-guardrails
+name: safety-alignment-nemo-guardrails
 description: NVIDIA's runtime safety framework for LLM applications. Features jailbreak detection, input/output validation, fact-checking, hallucination detection, PII filtering, toxicity detection. Uses Colang 2.0 DSL for programmable rails. Production-ready, runs on T4 GPU.
 version: 1.0.0
 author: Orchestra Research

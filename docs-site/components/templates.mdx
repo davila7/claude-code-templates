@@ -1,0 +1,16 @@
+---
+title: "Templates"
+description: "Project templates that write a CLAUDE.md with conventions and commands for your language and framework."
+---
+
+A template is a starting `CLAUDE.md`, the file Claude Code reads at the start of every session, written for a language and, optionally, a framework.
+
+```bash
+npx claude-code-templates@latest --template python
+```
+
+With `--yes` and no `--template`, the CLI uses the language it detects in the project, or `common`. Available languages: `common` (language-agnostic), `javascript-typescript` (React, Vue.js, Angular, Node.js), `python` (Django, Flask, FastAPI), `ruby` (Rails 8, Sinatra), `rust` and `go`.
+
+A template is a starting point. Edit `CLAUDE.md` with your project's real commands, structure and rules; a short, accurate file beats a long generic one.
+
+`--language` and `--framework` still work but are deprecated in favour of `--template`.

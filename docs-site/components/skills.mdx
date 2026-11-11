@@ -1,0 +1,50 @@
+---
+title: "Skills"
+description: "Agent Skills for Claude Code: folders with a SKILL.md that Claude loads when a task calls for them, including skills installed from their author's repository."
+---
+
+A skill is a folder with a `SKILL.md` and, optionally, scripts, references and templates. Claude sees only each skill's name and description until a task matches; then it reads the whole `SKILL.md` and follows it. That keeps hundreds of skills cheap to have installed.
+
+```bash
+npx claude-code-templates@latest --skill development/systematic-debugging
+```
+
+Written to `.claude/skills/systematic-debugging/`, every file of the folder included.
+
+## Anatomy
+
+```markdown .claude/skills/systematic-debugging/SKILL.md
+---
+name: systematic-debugging
+description: You MUST use this whenever something is broken, before proposing or making any fix…
+license: MIT
+---
+
+# Systematic debugging
+…
+```
+
+The `description` decides when the skill is used, so good skills say both what they do and when to use them. The format follows the open [Agent Skills specification](https://agentskills.io).
+
+## Skills from their author's repository
+
+Some skills are not copied into this repository. Their catalog folder holds only a `source.json` that points at the author's repo, pinned to a full commit:
+
+```json source.json
+{
+  "repo": "t3dotgg/tstack",
+  "path": "skills/babysit-pr",
+  "commit": "7de017b3fc9d50c03cf3ecb98fb71e0ca65a78bd",
+  "license": "MIT",
+  "author": "Theo Browne",
+  "requires": ["git/leaving-pr-comments"]
+}
+```
+
+You install them the same way (`--skill git/babysit-pr`). The CLI downloads the files at that exact commit, checks each one against its git blob hash, and installs the skills listed in `requires` too. An upstream change reaches you only after a pull request here moves the pinned commit, so what you get is what was reviewed and scanned. How to add one: [External skills](/contributing/external-skills).
+
+## Security
+
+Skills can ship scripts that Claude will run. Every skill in the catalog is scanned by [NVIDIA SkillSpector](/guides/security), and a pull request that adds a high-risk skill is blocked. Read the files on the component page before installing.
+
+Browse all skills at [aitmpl.com/skills](https://www.aitmpl.com/skills/).

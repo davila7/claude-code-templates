@@ -1,0 +1,6 @@
+{
+  "description": "One hook on * that records every event on $ (tool calls, prompts, turns, other plugins' fs/http/process calls) as JSON lines with origin plugin and tier, duration and outcome, including denials. Buffered and flushed to a JSONL file through $.fs at the end of every turn.",
+  "modules": [
+    "./universal-audit-log.ts"
+  ]
+}

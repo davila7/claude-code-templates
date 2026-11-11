@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This directory contains the static website (aitmpl.com) that serves as the public web interface for browsing and installing Claude Code components. The site is a vanilla JavaScript application that loads component data dynamically and provides an interactive browsing experience for 500+ components including agents, commands, settings, hooks, MCPs, and templates.
+> **Legacy.** www.aitmpl.com is served by the Astro dashboard in `../dashboard/` (Cloudflare Pages), not by this directory. GitHub Pages still publishes it at davila7.github.io/claude-code-templates and nothing in production depends on it, except `docs/components.json` (read by external code; keep generating it) and `docs/blog/` (new articles must be mirrored to `dashboard/public/blog/`). See the root `CLAUDE.md`. The rest of this file describes the old site.
+
+This directory contains the old static website that serves as the public web interface for browsing and installing Claude Code components. The site is a vanilla JavaScript application that loads component data dynamically and provides an interactive browsing experience for 500+ components including agents, commands, settings, hooks, MCPs, and templates.
 
 ## Development Commands
 
@@ -28,9 +30,7 @@ python scripts/generate_components_json.py
 ```
 
 ### Deployment
-- Site is automatically deployed to GitHub Pages when changes are pushed to `docs/` directory
-- Deployed at: https://aitmpl.com (davila7.github.io/claude-code-templates)
-- Vercel configuration in `vercel.json` for routing
+- GitHub Pages builds it from repository settings at davila7.github.io/claude-code-templates (not aitmpl.com)
 
 ## Architecture
 

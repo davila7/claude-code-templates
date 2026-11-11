@@ -1,0 +1,42 @@
+{
+  "name": "websearch-to-exa",
+  "version": "0.2.0",
+  "description": "Overrides the built-in WebSearch tool and routes queries to the Exa search API through $.http.fetch, answering in WebSearch's own result shape, with automatic fallback to the built-in search. A tool.call hook that replaces a core tool.",
+  "author": {
+    "name": "claude-code-templates",
+    "url": "https://www.aitmpl.com"
+  },
+  "repository": "https://github.com/davila7/claude-code-templates",
+  "license": "MIT",
+  "keywords": [
+    "mod",
+    "function-hooks",
+    "integrations"
+  ],
+  "userConfig": {
+    "exaApiKey": {
+      "type": "string",
+      "title": "Exa API key",
+      "description": "Your Exa API key; with none set, the built-in WebSearch runs",
+      "default": "",
+      "sensitive": true
+    },
+    "numResults": {
+      "type": "number",
+      "title": "Results per query",
+      "description": "How many Exa results to return",
+      "default": 8
+    },
+    "type": {
+      "type": "string",
+      "title": "Search type",
+      "description": "Exa search mode",
+      "default": "auto",
+      "options": [
+        "auto",
+        "neural",
+        "keyword"
+      ]
+    }
+  }
+}

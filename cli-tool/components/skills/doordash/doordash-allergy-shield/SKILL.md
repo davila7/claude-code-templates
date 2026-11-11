@@ -2,7 +2,8 @@
 name: doordash-allergy-shield
 description: Persistent dietary safety layer for DoorDash CLI (dd-cli) ordering. Stores a personal/household dietary profile (allergens with severity tiers, diets, dislikes) that every cart is vetted against before checkout, with a deterministic tripwire — the vetting step saves the full cart contents to a vetted-cart dump, and a PreToolUse hook re-greps that dump against the anaphylaxis-severity allergen list before any checkout URL is allowed. Use when the user mentions allergies or dietary restrictions, when ordering food for someone with restrictions, or on every dd-cli cart flow while this skill is installed. A tripwire, not medical-grade — the human checkout page is the final check.
 allowed-tools: Bash(dd-cli:*), Bash(command -v:*), Bash(mkdir:*), Bash(cat:*), Bash(jq:*), Read, Write, Edit
-tags: [DoorDash, Allergies, Dietary Restrictions, Safety, Guardrails, CLI]
+metadata:
+  tags: [DoorDash, Allergies, Dietary Restrictions, Safety, Guardrails, CLI]
 ---
 
 # DoorDash Allergy Shield
