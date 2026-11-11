@@ -12,6 +12,12 @@ Source types:
   is kept only if its URL is on the source's own host and matches
   `urlPattern`, and its title appears in the page's markdown (extraction can
   invent entries that are not on the page).
+- google-cloud: the public Google Cloud certification list
+  (cloud.google.com/learn/certification, plain HTML, no key). Keeps the
+  certifications whose name matches `match`; the level comes from the list's
+  section (Foundational/Associate/Professional), and title, description,
+  registration fee, exam guide and learning path from each certification's
+  own page.
 
 Merge rules:
 - Entries with `source: "manual"` are never touched.
@@ -86,6 +92,11 @@ EXTRACT_SCHEMA = {
 
 def today():
     return datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+
+def http_text(url, timeout=60):
+    with urlopen(Request(url, headers={"User-Agent": USER_AGENT}), timeout=timeout) as resp:
+        return resp.read().decode("utf-8", "replace")
 
 
 def http_json(url, data=None, headers=None, timeout=60):
@@ -308,9 +319,86 @@ def fetch_firecrawl(source, api_key):
     return items
 
 
+GOOGLE_LEVELS = {"foundational": "Entry", "associate": "Intermediate", "professional": "Advanced"}
+GOOGLE_ORIGIN = "https://cloud.google.com"
+# A section heading ("Professional certification") or a certification link in the list.
+GOOGLE_LIST_RE = re.compile(
+    r"<h[23][^>]*>\s*(Foundational|Associate|Professional) certification\s*</h[23]>"
+    r"|<a href=\"((?:https://cloud\.google\.com)?/(?:learn/)?certification/[a-z0-9-]+/?)\"[^>]*>([^<]+)</a>",
+    re.I,
+)
+
+
+def google_meta(html, attr, name):
+    m = re.search(rf'<meta {attr}="{name}" content="([^"]*)"', html)
+    return re.sub(r"\s+", " ", unescape(unescape(m.group(1)))).strip() if m else ""
+
+
+def google_link(html, pattern):
+    m = re.search(rf'href="({pattern}[^"]*)"', html)
+    return clean_url(unescape(m.group(1))) if m else None
+
+
+def parse_google_page(html):
+    """Title, description, price and links from one certification page."""
+    title = google_meta(html, "property", "og:title").split("|")[0].strip()
+    title = re.sub(r"\s+Certification$", "", title)
+    desc = re.sub(r"\s*Find out how to prepare for the exam\.?$", "", google_meta(html, "name", "description"))
+    text = re.sub(r"\s+", " ", unescape(re.sub(r"<[^>]+>", " ", html)))
+    fee = re.search(r"Registration fee:\s*\$(\d+(?:\.\d+)?)", text)
+    return {
+        "title": title,
+        "description": desc,
+        "price": {"amount": float(fee.group(1)) if "." in fee.group(1) else int(fee.group(1)), "currency": "USD"} if fee else None,
+        "examGuideUrl": google_link(html, r"https://services\.google\.com/fh/files/misc/[a-z0-9_]*exam_guide"),
+        "prepUrl": google_link(html, r"https://www\.(?:skills\.google|cloudskillsboost\.google)/paths/\d+"),
+    }
+
+
+def fetch_google_cloud(source, fetch=http_text):
+    listing = fetch(source["url"])
+    wanted = re.compile(source["match"], re.I)
+    level, picks, seen = None, [], set()
+    for m in GOOGLE_LIST_RE.finditer(listing):
+        if m.group(1):
+            level = GOOGLE_LEVELS[m.group(1).lower()]
+            continue
+        href, name = m.group(2), unescape(m.group(3)).strip()
+        slug = href.rstrip("/").rsplit("/", 1)[-1]
+        if level and wanted.search(name) and slug not in seen:
+            seen.add(slug)
+            picks.append((slug, level))
+    if not picks:
+        raise RuntimeError("no matching certification in the list (page layout changed?)")
+    items = []
+    for slug, lvl in picks:
+        url = f"{GOOGLE_ORIGIN}/learn/certification/{slug}"
+        page = parse_google_page(fetch(url))
+        if not page["title"] or not page["description"]:
+            print(f"  [warn] {source['id']}: {url} has no title or description")
+            continue
+        fields = {k: v for k, v in page.items() if k in ("examGuideUrl", "prepUrl") and v}
+        if page["price"]:  # absent = "See price" rather than a guess
+            fields["price"] = page["price"]
+        items.append(
+            base_item(
+                source,
+                **{"level": lvl, **title_rules(source, page["title"])},
+                id=item_id(source["provider"], slug),
+                kind="certification",
+                title=page["title"],
+                description=first_sentences(page["description"]),
+                url=url,
+                **fields,
+            )
+        )
+    return items
+
+
 FETCHERS = {
     "microsoft-learn": lambda source, _key: fetch_microsoft_learn(source),
     "firecrawl": fetch_firecrawl,
+    "google-cloud": lambda source, _key: fetch_google_cloud(source),
 }
 # A source that answers with fewer than this share of its previous entries is
 # treated as a failed read. A real removal of that size needs a manual edit.

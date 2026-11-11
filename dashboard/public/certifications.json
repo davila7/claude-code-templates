@@ -1,10 +1,11 @@
 {
   "schemaVersion": 1,
-  "lastUpdated": "2026-11-11T03:15:00Z",
+  "lastUpdated": "2026-11-11T21:15:00Z",
   "sources": [
     "Anthropic Academy",
     "Anthropic Partner Academy",
     "Cursor Learn",
+    "Google Cloud Certification",
     "Microsoft Learn",
     "NVIDIA Certification",
     "OpenAI Academy",
@@ -29,6 +30,9 @@
     },
     "NVIDIA": {
       "icon": "https://www.nvidia.com/favicon.ico"
+    },
+    "Google Cloud": {
+      "icon": "https://cloud.google.com/favicon.ico"
     }
   },
   "items": [
@@ -1597,6 +1601,81 @@
       "description": "Verify a candidate’s ability to build, maintain, and optimize 3D content creation pipelines using OpenUSD.",
       "url": "https://www.nvidia.com/en-us/learn/certification/openusd-development-professional",
       "addedAt": "2026-11-06",
+      "verifiedAt": "2026-11-11"
+    },
+    {
+      "provider": "Google Cloud",
+      "categories": [
+        "AI & Agents"
+      ],
+      "eligibility": "public",
+      "topics": [],
+      "source": "google-cloud-certification",
+      "platform": "Google Cloud",
+      "level": "Entry",
+      "role": "Business",
+      "id": "google-cloud-generative-ai-leader",
+      "kind": "certification",
+      "title": "Generative AI Leader",
+      "description": "A Generative AI Leader is a visionary professional with comprehensive knowledge of how generative AI (gen AI) can transform businesses.",
+      "url": "https://cloud.google.com/learn/certification/generative-ai-leader",
+      "examGuideUrl": "https://services.google.com/fh/files/misc/generative_ai_leader_exam_guide_english.pdf",
+      "prepUrl": "https://www.cloudskillsboost.google/paths/1951",
+      "price": {
+        "amount": 99,
+        "currency": "USD"
+      },
+      "addedAt": "2026-11-11",
+      "verifiedAt": "2026-11-11"
+    },
+    {
+      "provider": "Google Cloud",
+      "categories": [
+        "AI & Agents"
+      ],
+      "eligibility": "public",
+      "topics": [],
+      "source": "google-cloud-certification",
+      "platform": "Google Cloud",
+      "level": "Advanced",
+      "role": "Architect",
+      "id": "google-cloud-agentic-architect",
+      "kind": "certification",
+      "title": "Professional Agentic Architect",
+      "description": "Professional Agentic Architects is a technical practitioner who designs and manages autonomous, AI-driven agentic workflows in Google Cloud.",
+      "url": "https://cloud.google.com/learn/certification/agentic-architect",
+      "examGuideUrl": "https://services.google.com/fh/files/misc/professional_agentic_architect_exam_guide_english.pdf",
+      "prepUrl": "https://www.skills.google/paths/4525",
+      "price": {
+        "amount": 200,
+        "currency": "USD"
+      },
+      "addedAt": "2026-11-11",
+      "verifiedAt": "2026-11-11"
+    },
+    {
+      "provider": "Google Cloud",
+      "categories": [
+        "AI & Agents"
+      ],
+      "eligibility": "public",
+      "topics": [],
+      "source": "google-cloud-certification",
+      "platform": "Google Cloud",
+      "level": "Advanced",
+      "role": "Developer",
+      "id": "google-cloud-machine-learning-engineer",
+      "kind": "certification",
+      "title": "Professional ML Engineer",
+      "description": "Professional Machine Learning Engineers design, build, & productionize ML models to solve business challenges.",
+      "url": "https://cloud.google.com/learn/certification/machine-learning-engineer",
+      "examGuideUrl": "https://services.google.com/fh/files/misc/professional_machine_learning_engineer_exam_guide_english_new.pdf",
+      "prepUrl": "https://www.cloudskillsboost.google/paths/17",
+      "price": {
+        "amount": 200,
+        "currency": "USD"
+      },
+      "addedAt": "2026-11-11",
       "verifiedAt": "2026-11-11"
     }
   ]
