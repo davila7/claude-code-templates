@@ -992,11 +992,8 @@ class ClaudeAnalytics {
         
         for (const conv of activeConversations) {
           try {
-            const conversationFile = path.join(this.claudeDir, conv.fileName);
-            const content = await fs.readFile(conversationFile, 'utf8');
-            const parsedMessages = content.split('\n')
-              .filter(line => line.trim())
-              .map(line => JSON.parse(line));
+            const conversationFile = conv.filePath;
+            const parsedMessages = await this.conversationAnalyzer.getParsedConversation(conversationFile, { fresh: true });
             
             const stats = await fs.stat(conversationFile);
             conv.conversationState = this.stateCalculator.determineConversationState(
