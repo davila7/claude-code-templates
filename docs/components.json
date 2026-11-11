@@ -87467,7 +87467,64 @@
         "hooks/rex-tty.ts",
         "tests/detect.test.ts",
         "tests/rex-tty.test.ts"
-      ]
+      ],
+      "skillspector": {
+        "score": 100,
+        "severity": "CRITICAL",
+        "recommendation": "DO_NOT_INSTALL",
+        "issueCount": 69,
+        "analysis": "partial",
+        "findings": [
+          {
+            "id": "AS1",
+            "category": "Agent Snooping",
+            "severity": "HIGH",
+            "title": "Agent Config Directory Access",
+            "file": "README.md",
+            "line": 88,
+            "count": 1
+          },
+          {
+            "id": "PE3",
+            "category": "Privilege Escalation",
+            "severity": "HIGH",
+            "title": "Credential Access",
+            "file": "tests/detect.test.ts",
+            "line": 23,
+            "count": 1
+          },
+          {
+            "id": "SC2",
+            "category": "Supply Chain",
+            "severity": "HIGH",
+            "title": "External Script Fetching",
+            "file": "tests/rex-tty.test.ts",
+            "line": 172,
+            "count": 2
+          },
+          {
+            "id": "TM2",
+            "category": "Tool Misuse",
+            "severity": "HIGH",
+            "title": "Chaining Abuse",
+            "file": "tests/detect.test.ts",
+            "line": 8,
+            "count": 2
+          },
+          {
+            "id": "AS3",
+            "category": "Agent Snooping",
+            "severity": "MEDIUM",
+            "title": "Skill Enumeration",
+            "file": "README.md",
+            "line": 86,
+            "count": 1
+          }
+        ],
+        "hash": "f1b99360e8656d3c",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-11T01:22:04Z"
+      }
     },
     {
       "name": "vercel-deploys",
