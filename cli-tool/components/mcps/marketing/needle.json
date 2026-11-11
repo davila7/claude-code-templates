@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "needle": {
+      "description": "Find perfect leads and run outreach campaigns on Linkedin, email, Instagram and more. Hosted Needle MCP server (needle.app). Uses OAuth authentication; an API key in the Authorization header also works.",
+      "type": "http",
+      "url": "https://needle.app/mcp/v1"
+    }
+  }
+}
