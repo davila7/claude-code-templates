@@ -1,0 +1,18 @@
+---
+import DashboardLayout from '../layouts/DashboardLayout.astro';
+import TopBar from '../components/TopBar.astro';
+import CertificationsView from '../components/CertificationsView.tsx';
+import SearchModal from '../components/SearchModal.tsx';
+import CartSidebar from '../components/CartSidebar.tsx';
+export const prerender = true;
+---
+
+<DashboardLayout
+  title="AI Certifications & Courses | Claude Code Templates"
+  description="Certifications and courses for AI developer tools in one place, with prices, prep courses and exam guides."
+>
+  <TopBar />
+  <CertificationsView client:load />
+  <SearchModal client:idle />
+  <CartSidebar client:idle />
+</DashboardLayout>

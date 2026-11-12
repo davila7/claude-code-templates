@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "crakseo-search-console": {
+      "description": "Free Google Search Console MCP with Bing Webmaster Tools by CrakSEO. Ask Claude for your own sites' search queries, clicks, impressions, CTR and average position, inspect URLs in Google, list and submit sitemaps, and read Bing traffic and crawl issues. Every tool is free; sign in with OAuth, then connect your Google and Bing accounts.",
+      "type": "http",
+      "url": "https://crakseo.com/mcp/search-console"
+    }
+  }
+}

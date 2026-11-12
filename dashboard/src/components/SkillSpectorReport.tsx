@@ -84,6 +84,10 @@ export default function SkillSpectorReport({ result }: Props) {
         >
           NVIDIA SkillSpector
         </a>
+        {' '}or{' '}
+        <a href="/security" className="underline hover:text-[var(--color-text-primary)]">
+          how components are reviewed
+        </a>
         .
       </p>
     </section>

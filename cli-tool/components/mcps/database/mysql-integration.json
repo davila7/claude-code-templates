@@ -3,7 +3,7 @@
     "mysql": {
       "description": "Connect to MySQL databases for direct data access, queries, and database management within Claude Code workflows.",
       "command": "uvx",
-      "args": ["mcp-server-mysql"],
+      "args": ["mcp-server-mysql@0.1.4"],
       "env": {
         "MYSQL_CONNECTION_STRING": "mysql://user:password@localhost:3306/dbname"
       }

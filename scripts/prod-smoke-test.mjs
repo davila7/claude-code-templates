@@ -3,11 +3,13 @@
 //
 // Read-only by design: it never calls a route that writes (download tracking is
 // probed with an invalid body that the route rejects before inserting, the
-// cron-only /api/health-check and /api/claude-code-check are skipped because a
-// GET runs them), and the CLI runs with tracking off in a temp directory.
+// cron-only /api/health-check is skipped because a
+// GET runs it), and the CLI runs with tracking off in a temp directory.
 //
 // Usage:
 //   node scripts/prod-smoke-test.mjs [--base https://www.aitmpl.com] [--only web,api,cli] [--cli-version latest]
+//   node scripts/prod-smoke-test.mjs --only cli --cli-tarball /abs/claude-code-templates-X.Y.Z.tgz
+//     (the CLI checks against a packed tarball instead of npm: scripts/prepublish-check.mjs runs this before every publish)
 // Exit code 1 when any check fails. Node 22+ (global fetch).
 
 import { spawnSync } from 'node:child_process';
@@ -23,9 +25,12 @@ const opt = (name, fallback) => {
 const base = opt('base', 'https://www.aitmpl.com').replace(/\/$/, '');
 const only = new Set(opt('only', 'web,api,cli').split(','));
 const cliVersion = opt('cli-version', 'latest');
+const cliTarball = opt('cli-tarball', '');
+const cliSpec = cliTarball ? ['--package', cliTarball, 'claude-code-templates'] : [`claude-code-templates@${cliVersion}`];
+const cliLabel = cliTarball ? cliTarball.split('/').pop() : `claude-code-templates@${cliVersion}`;
 
 const TYPES = [
-  // [catalog file, singular used in /component/{singular}/...]
+  // [catalog file and canonical /component/{plural}/... segment, legacy singular segment]
   ['agents', 'agent'],
   ['commands', 'command'],
   ['mcps', 'mcp'],
@@ -73,11 +78,19 @@ function assertComponentPage(path, body) {
   assert(!/<script>\s*alert|\sonerror=/i.test(body), `${path} contains unsanitized script markup`);
 }
 
+// Static pages get these from public/_headers, SSR pages from the middleware.
+function assertSecurityHeaders(res) {
+  const csp = res.headers.get('content-security-policy-report-only') || '';
+  assert(/report-uri \/api\/csp-report/.test(csp), 'no Content-Security-Policy-Report-Only');
+  assert(res.headers.get('x-frame-options') === 'DENY', 'no X-Frame-Options');
+}
+
 // ─── Web ──────────────────────────────────────────────────────────────
 async function web() {
   await check('web', 'home is HTML with an <h1>', async () => {
     const { res, body, type } = await get('/');
     assert(res.status === 200 && /text\/html/.test(type) && /<h1[\s>]/.test(body), `HTTP ${res.status} ${type}`);
+    assertSecurityHeaders(res);
     return `HTTP 200, ${body.length} bytes`;
   });
 
@@ -123,12 +136,19 @@ async function web() {
     // The most downloaded component is the one people actually open
     const top = [...list].sort((a, b) => (b.downloads || 0) - (a.downloads || 0))[0];
     const slug = top.path.replace(/\.(md|json)$/, '');
-    await check('web', `component page /component/${singular}/${slug}`, async () => {
-      const path = `/component/${singular}/${slug}`;
+    await check('web', `component page /component/${plural}/${slug}`, async () => {
+      const path = `/component/${plural}/${slug}`;
       const { res, body } = await get(path);
       assert(res.status === 200, `HTTP ${res.status}`);
       assertComponentPage(path, body);
+      assertSecurityHeaders(res);
       return `HTTP 200, ${body.length} bytes`;
+    });
+    await check('web', `/component/${singular}/${slug} 301s to the plural URL`, async () => {
+      const { res } = await get(`/component/${singular}/${slug}`);
+      const location = res.headers.get('location') || '';
+      assert(res.status === 301 && location.endsWith(`/component/${plural}/${slug}`), `HTTP ${res.status} -> ${location}`);
+      return 'HTTP 301';
     });
     await check('web', `component-content for ${plural}/${top.name}`, async () => {
       const data = await getJson(`/component-content/${plural}/${slug}.json`);
@@ -150,7 +170,7 @@ async function web() {
   });
 
   // Pages that exercise the markdown sanitizer on content known to carry HTML
-  for (const path of ['/component/agent/data-ai/prompt-builder', '/component/skill/creative-design/marp-slide', '/component/skill/creative-design/remotion-best-practices']) {
+  for (const path of ['/component/agents/data-ai/prompt-builder', '/component/skills/creative-design/marp-slide', '/component/skills/creative-design/remotion-best-practices']) {
     await check('web', `sanitized markdown renders ${path}`, async () => {
       const { res, body } = await get(path);
       assert(res.status === 200, `HTTP ${res.status}`);
@@ -200,6 +220,13 @@ async function api() {
     return 'HTTP 400 on empty body';
   });
 
+  await check('api', '/api/csp-report accepts a report', async () => {
+    // An empty report carries no violation, so nothing is forwarded to Sentry
+    const { res } = await get('/api/csp-report', { method: 'POST', body: '{}', headers: { 'Content-Type': 'application/csp-report' } });
+    assert(res.status === 204, `HTTP ${res.status}`);
+    return 'HTTP 204';
+  });
+
   await check('api', 'unknown /api route is a JSON 404', async () => {
     const { res, body, type } = await get('/api/smoke-missing');
     assert(res.status === 404 && /json/.test(type), `HTTP ${res.status} ${type}`);
@@ -210,7 +237,7 @@ async function api() {
 
 // ─── CLI ──────────────────────────────────────────────────────────────
 function runCli(dir, cliArgs) {
-  const r = spawnSync('npx', ['-y', `claude-code-templates@${cliVersion}`, ...cliArgs], {
+  const r = spawnSync('npx', ['-y', ...cliSpec, ...cliArgs], {
     cwd: dir,
     encoding: 'utf8',
     timeout: 240000,
@@ -220,7 +247,7 @@ function runCli(dir, cliArgs) {
 }
 
 async function cli() {
-  await check('cli', `claude-code-templates@${cliVersion} --version`, async () => {
+  await check('cli', `${cliLabel} --version`, async () => {
     const { code, out } = runCli(tmpdir(), ['--version']);
     assert(code === 0 && /\d+\.\d+\.\d+/.test(out), `exit ${code}: ${out.slice(-200)}`);
     return out.trim().split('\n').pop();
