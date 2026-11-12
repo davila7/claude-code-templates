@@ -23597,5 +23597,26 @@
         "cohesivity-local"
       ]
     }
+  },
+  {
+    "slug": "minicut-skills",
+    "name": "MiniCut",
+    "author": "lliu56",
+    "description": "Make AI short dramas from Claude Code: MiniCut writes the script, plans every shot, makes the video and edits the episode.",
+    "github": "https://github.com/lliu56/minicut-skills",
+    "stars": 0,
+    "type": "plugin",
+    "tags": [
+      "skills"
+    ],
+    "contains": {
+      "skills": 2
+    },
+    "highlights": [
+      "Web UI: https://www.minicut.ai"
+    ],
+    "website": "https://www.minicut.ai/?utm_source=claude-code-templates&utm_medium=integration",
+    "marketplace_name": "minicut",
+    "plugin_name": "minicut"
   }
 ]

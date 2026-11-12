@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { marked } from 'marked';
-import { sanitizeHtml, codeLang } from '../lib/sanitize-html';
+import { sanitizeHtml, codeLang, demoteH1 } from '../lib/sanitize-html';
 import SkillSlideView from './SkillSlideView';
 
 interface Heading {
@@ -53,12 +53,15 @@ function renderMarkdown(content: string): string {
   const renderer = new marked.Renderer();
   renderer.heading = ({ text, depth }: { text: string; depth: number }) => {
     const id = text.toLowerCase().replace(/[^\w]+/g, '-').replace(/^-|-$/g, '');
-    return `<h${depth} id="${id}" class="md-heading">${text}</h${depth}>`;
+    // The page owns the only <h1>: a document's headings go one level down
+    // (# → h2), keeping their look through the md-hN class.
+    const tag = `h${Math.min(depth + 1, 6)}`;
+    return `<${tag} id="${id}" class="md-heading md-h${depth}">${text}</${tag}>`;
   };
   renderer.code = ({ text, lang }: { text: string; lang?: string }) => {
     return `<div class="md-code-block"><div class="md-code-lang">${codeLang(lang)}</div><pre><code class="language-${codeLang(lang)}">${text.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre></div>`;
   };
-  return sanitizeHtml(marked.parse(stripped, { renderer }) as string);
+  return demoteH1(sanitizeHtml(marked.parse(stripped, { renderer }) as string));
 }
 
 function extractHeadings(content: string): Heading[] {
@@ -189,6 +192,16 @@ export default function SkillExplorer({ skillContent, skillName, skillPath, refe
       .catch((e) => { setError(`Failed to load file: ${e.message}`); setFileContent(''); })
       .finally(() => setLoading(false));
   }, [selectedFile, skillPath, skillContent, componentType, mainFile, files]);
+
+  // The component page's file list opens a file here ('component-file:open', detail = path).
+  useEffect(() => {
+    const open = (e: Event) => {
+      const file = (e as CustomEvent<string>).detail;
+      if (file === mainFile || references.includes(file)) setSelectedFile(file);
+    };
+    window.addEventListener('component-file:open', open);
+    return () => window.removeEventListener('component-file:open', open);
+  }, [mainFile, references]);
 
   // Search results
   const searchResults = useMemo((): SearchMatch[] => {

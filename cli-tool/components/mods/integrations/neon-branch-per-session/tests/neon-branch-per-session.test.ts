@@ -38,7 +38,7 @@ describe('neon-api helpers', () => {
 type Call = { method: string; url: string; auth?: string; body?: Record<string, unknown> }
 const SESSION = '3f9a1c2e-7b40-4d11-9e0a-aaaaaaaaaaaa'
 
-type World = { calls: Call[]; env: Record<string, string | undefined>; store: Record<string, unknown>; toasts: string[]; exists: boolean; fail: number; taken?: string }
+type World = { calls: Call[]; env: Record<string, string | undefined>; store: Record<string, unknown>; toasts: string[]; exists: boolean; fail: number; taken?: string; held?: string }
 
 const world = (): World => ({ calls: [], env: {}, store: {}, toasts: [], exists: true, fail: 0 })
 
@@ -56,8 +56,10 @@ function fakeEngine(on: On, w: World) {
     return { value: undefined }
   })
   on('env.set', ($, e) => {
+    // an organization's settings can hold the write (2.1.301): resolved, with why
+    if (w.held) return { value: { deny: w.held } }
     w.env[e.name] = e.value
-    return { value: undefined }
+    return { value: {} }
   })
   on('command.register', () => ({ value: undefined }) as never)
   on('ui.status', () => ({ value: undefined }))
@@ -147,6 +149,20 @@ describe('the session branch', () => {
     expect(w.env.DATABASE_URL).toBeUndefined()
     expect(w.toasts.join(' ')).toContain('answered 404')
     expect(w.toasts.join(' ')).not.toContain(KEY)
+  })
+
+  test('an env write the engine holds is reported, not claimed', { options: OPTIONS }, async ($, on) => {
+    const w = world()
+    w.held = 'your organization manages DATABASE_URL'
+    fakeEngine(on, w)
+    await start($)
+    expect(w.env.DATABASE_URL).toBeUndefined()
+    const said = w.toasts.join(' ')
+    expect(said).toContain('DATABASE_URL is not set')
+    expect(said).toContain('your organization manages DATABASE_URL')
+    expect(said).not.toContain('points at it')
+    expect((await run($, '')).text).toContain('DATABASE_URL not set')
+    expect((await run($, 'delete')).text).toContain('could not be unset')
   })
 
   test('a resumed session reuses its branch', { options: OPTIONS }, async ($, on) => {

@@ -1,10 +1,6 @@
 {
   "permissions": {
     "allow": [
-      "Bash",
-      "Edit",
-      "MultiEdit",
-      "Write",
       "Bash(ruby:*)",
       "Bash(bundle:*)",
       "Bash(rails:*)",
@@ -24,8 +20,7 @@
       "Bash(curl:*)",
       "Bash(wget:*)",
       "Bash(rm -rf:*)"
-    ],
-    "defaultMode": "allowEdits"
+    ]
   },
   "env": {
     "BASH_DEFAULT_TIMEOUT_MS": "60000",

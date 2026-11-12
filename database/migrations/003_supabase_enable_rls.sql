@@ -1,50 +1,38 @@
--- Supabase (download tracking project): close the `rls_disabled_in_public`
--- advisor finding. Run in the Supabase SQL editor; not part of the Neon
--- migrations above.
+-- Supabase (download tracking project): RLS on the download-tracking tables.
+-- Run in the Supabase SQL editor; not part of the Neon migrations above.
+-- Mirrors what is live since 2026-11 (checked 2026-11-08).
 --
--- Every legitimate client of this database uses the service_role key, which
--- bypasses RLS:
---   - dashboard/src/pages/api/track-download-supabase.ts (writes)
---   - cloudflare-workers/pulse (reads)
---   - scripts/generate_{components_json,trending_data}.py via the
---     SUPABASE_API_KEY secret (reads) -- this secret must hold the
---     service_role key, not the anon key, BEFORE this migration runs.
+-- Scoped to these two tables on purpose: the same database's public schema
+-- holds another app's tables (course_access, user_memberships, ...) with their
+-- own policies and grants. Never run a blanket "every public table" change here.
 --
--- So RLS is enabled with no policies: anon and authenticated get nothing.
+-- Clients:
+--   - dashboard/src/pages/api/track-download-supabase.ts: service_role (writes)
+--   - cloudflare-workers/pulse: service_role (reads)
+--   - scripts/generate_{components_json,trending_data}.py: SUPABASE_API_KEY,
+--     the anon key, reading only the non-PII columns granted below. Both
+--     scripts must name their columns: `select=*` is denied.
 
--- 0. Inspect first: public tables and their RLS state.
-SELECT c.relname AS table_name, c.relrowsecurity AS rls_enabled
-FROM pg_class c
-JOIN pg_namespace n ON n.oid = c.relnamespace
-WHERE n.nspname = 'public' AND c.relkind IN ('r', 'p')
-ORDER BY 1;
+ALTER TABLE public.component_downloads ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.download_stats ENABLE ROW LEVEL SECURITY;
 
--- 1. Enable RLS on every public table that lacks it, and drop the default
---    grants Supabase gives anon/authenticated (defense in depth).
-DO $$
-DECLARE
-  t record;
-BEGIN
-  FOR t IN
-    SELECT c.relname
-    FROM pg_class c
-    JOIN pg_namespace n ON n.oid = c.relnamespace
-    WHERE n.nspname = 'public' AND c.relkind IN ('r', 'p')
-  LOOP
-    EXECUTE format('ALTER TABLE public.%I ENABLE ROW LEVEL SECURITY', t.relname);
-    EXECUTE format('REVOKE ALL ON TABLE public.%I FROM anon, authenticated', t.relname);
-  END LOOP;
-END $$;
+REVOKE ALL ON TABLE public.component_downloads FROM anon, authenticated;
+REVOKE ALL ON TABLE public.download_stats FROM anon, authenticated;
 
--- 2. Verify: every row should show rls_enabled = true and anon_select = false.
+-- ip_address and user_agent stay service_role only.
+GRANT SELECT (id, component_type, component_name, category, country,
+              download_timestamp, client_agent, client_entrypoint, client_is_tty)
+  ON public.component_downloads TO anon;
+
+DROP POLICY IF EXISTS "Catalog reads non-PII columns" ON public.component_downloads;
+CREATE POLICY "Catalog reads non-PII columns" ON public.component_downloads
+  FOR SELECT TO anon USING (true);
+
+-- Verify: rls_enabled = true; anon_select = false (table-level; the column grants
+-- above are what anon gets).
 SELECT c.relname AS table_name,
        c.relrowsecurity AS rls_enabled,
        has_table_privilege('anon', c.oid, 'SELECT') AS anon_select
 FROM pg_class c
 JOIN pg_namespace n ON n.oid = c.relnamespace
-WHERE n.nspname = 'public' AND c.relkind IN ('r', 'p')
-ORDER BY 1;
-
--- Rollback (only if a reader you missed breaks):
---   ALTER TABLE public.<table> DISABLE ROW LEVEL SECURITY;
---   GRANT SELECT ON TABLE public.<table> TO anon;
+WHERE n.nspname = 'public' AND c.relname IN ('component_downloads', 'download_stats');

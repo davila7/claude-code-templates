@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "datacircle": {
+      "description": "A hosted MCP server that finds the best GTM APIs: list every API, see who is best for each, search every plan. Free and open, with no key.",
+      "type": "http",
+      "url": "https://api.datacircle.dev/mcp"
+    }
+  }
+}

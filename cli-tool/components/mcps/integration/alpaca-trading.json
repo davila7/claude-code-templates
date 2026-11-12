@@ -3,7 +3,7 @@
     "alpaca-trading": {
       "description": "Trading platform MCP server enabling stock, ETF, crypto, and options trading via Alpaca's API. Supports market data, portfolio management, and order execution.",
       "command": "uvx",
-      "args": ["alpaca-mcp-server"],
+      "args": ["alpaca-mcp-server@2.4.1"],
       "env": {
         "ALPACA_API_KEY": "<your-alpaca-api-key>",
         "ALPACA_SECRET_KEY": "<your-alpaca-secret-key>"

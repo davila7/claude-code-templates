@@ -3,7 +3,7 @@
     "browsermcp": {
       "description": "With Browser MCP, you can use MCP to automate your browser so that AI applications can navigate the web, fill out forms, and more.",
       "command": "npx",
-      "args": ["@browsermcp/mcp@latest"]
+      "args": ["@browsermcp/mcp@2.4.0"]
     }
   }
 }

@@ -1,20 +1,25 @@
 version: 2
 updates:
+  # Minor and patch bumps arrive grouped (one PR per ecosystem and week);
+  # majors stay one PR each because they usually need code changes.
+  # Security updates are separate and not limited by these groups.
   - package-ecosystem: "npm"
-    directory: "/cli-tool"
+    directories:
+      - "/"
+      - "/cli-tool"
+      - "/cli-tool/analytics-ui"
+      - "/dashboard"
+      - "/cloudflare-workers/*"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5
     labels:
       - "dependencies"
-
-  - package-ecosystem: "npm"
-    directory: "/dashboard"
-    schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 5
-    labels:
-      - "dependencies"
+    groups:
+      npm-minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
 
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -22,4 +27,8 @@ updates:
       interval: "weekly"
     open-pull-requests-limit: 5
     labels:
-      - "ci"
+      - "dependencies"
+    groups:
+      actions:
+        patterns:
+          - "*"
