@@ -1,6 +1,6 @@
 {
   "name": "smartcompact",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "A Claude Code mod that compacts the conversation at the right moment with a summary focused on the current task, and then picks the work back up.",
   "author": { "name": "Amber van den Berg", "url": "https://github.com/ambervdberg" },
   "homepage": "https://github.com/ambervdberg/smartcompact",

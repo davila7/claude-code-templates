@@ -65,7 +65,7 @@ export class RequestFollowing {
     }
   }
 
-  async #follow(engine: Engine, turn: FinishedTurn, request: CompactRequest): Promise<void> {
+  async #follow(engine: Engine, turn: FinishedTurn & { resetsAtEnd: number }, request: CompactRequest): Promise<void> {
     const tokens = await contextTokens(engine);
 
     if (this.#turns.hasResetSince(turn.resetsAtEnd)) {

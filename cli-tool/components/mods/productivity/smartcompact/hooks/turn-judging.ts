@@ -60,7 +60,7 @@ export class TurnJudging {
     }
   }
 
-  async #judgeWhenWorthIt(engine: Engine, turn: FinishedTurn): Promise<void> {
+  async #judgeWhenWorthIt(engine: Engine, turn: FinishedTurn & { resetsAtEnd: number }): Promise<void> {
     const tokens = await contextTokens(engine);
 
     if (this.#turns.hasResetSince(turn.resetsAtEnd)) {
@@ -124,7 +124,7 @@ export class TurnJudging {
     return true;
   }
 
-  async #judge(engine: Engine, turn: FinishedTurn, tokens: number): Promise<void> {
+  async #judge(engine: Engine, turn: FinishedTurn & { resetsAtEnd: number }, tokens: number): Promise<void> {
     const startedAt = await engine.now();
     const input = buildJudgeInput(await engine.messages(), turn.answer);
     const answer = await askClaudeJudge(engine, this.#settings, input);

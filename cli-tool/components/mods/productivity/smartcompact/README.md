@@ -127,7 +127,7 @@ When nothing was compacted, a first line `Context was compacted automatically.` 
 
 ### Choices file
 
-Your own continue prompt can ask Claude to write the choices it made for you to `~/.claude/smartcompact/choices.md`. The plugin folder is the default location for the choices file. With `SMARTCOMPACT_LOG` set, it sits next to that log file. A bare log filename uses the current folder, and `{choicesFile}` is always an absolute path. For example:
+Your own continue prompt can ask Claude to write the choices it made for you to `~/.claude/smartcompact/choices.md`. That folder is the default location for the choices file. With `SMARTCOMPACT_LOG` set, it sits next to that log file. A bare log filename uses the current folder, and `{choicesFile}` is always an absolute path. For example:
 
 ```
 Append your choices to {choicesFile}. Create the file if it is missing and never overwrite earlier text. Start with this line:

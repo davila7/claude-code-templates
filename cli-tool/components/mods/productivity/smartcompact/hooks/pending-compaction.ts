@@ -28,7 +28,8 @@ export type CompactionRequest = {
   tokens: number;
   /** The turn count when the asking turn ended. A higher count when it is held means a new turn took over. */
   turnsAtEnd: number;
-  resetsAtEnd?: number;
+  /** The reset count when the asking turn ended. A higher count when it is held means a /clear or a compact took over. */
+  resetsAtEnd: number;
   /** What the summarizer is told to keep. */
   instructions: string;
   /** The text for `{next}` in the continue prompt. Empty gets the fallback text. */
@@ -76,7 +77,7 @@ export class PendingCompaction {
     }
 
     this.#take()?.timer?.cancel();
-    const held = { ...request, resetsAtEnd: request.resetsAtEnd ?? this.#turns.resets(), heldAt: 0, retries: 0 };
+    const held = { ...request, heldAt: 0, retries: 0 };
     this.#held = held;
     held.heldAt = await engine.now();
 

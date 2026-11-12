@@ -18,7 +18,7 @@ declare function setTimeout(callback: () => void, delay: number): unknown;
 
 const HOME = { USERPROFILE: FAKE_HOME };
 const START = Date.UTC(2026, 9, 10, 10);
-const REQUEST = { source: 'request' as const, tokens: 70000, turnsAtEnd: 0, instructions: 'Keep the goal', next: 'Go on', continueWhenSkipped: true, errorEvent: 'request-error' as const };
+const REQUEST = { source: 'request' as const, tokens: 70000, turnsAtEnd: 0, resetsAtEnd: 0, instructions: 'Keep the goal', next: 'Go on', continueWhenSkipped: true, errorEvent: 'request-error' as const };
 const TEXT = { next: 'Go on', kind: 'below-floor' as const, source: 'request' as const };
 
 describe('review findings', () => {
