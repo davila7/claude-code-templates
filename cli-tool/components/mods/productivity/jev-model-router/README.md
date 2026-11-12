@@ -35,7 +35,9 @@ One request, three questions evaluated in parallel:
 
 - `tier` — a `choice` between three descriptions of the *work* (mechanical and local / ordinary engineering / hard or high-stakes). The decision model never sees a model name.
 - `effort` — a `score` on a four-level rubric, for how much step-by-step reasoning the task needs.
-- `risky` — whether the task touches production, money, credentials, or state that cannot be undone. A `noul` on TypeSafe's API, a `boolean` on the Gateway: the same question under two names.
+- `risky` — whether carrying the task out would itself do something outside the working copy that is hard to take back: change or deploy to production, push or force-push to a shared branch, move real money or place real orders, send messages to people, delete or overwrite data or backups. Writing, testing, explaining or planning such an act does not count. A `noul` on TypeSafe's API, a `boolean` on the Gateway: the same question under two names.
+
+The state is the prompt and, beside it, the last assistant message (up to `contextChars`, 2000 characters by default): a follow-up such as "yes" or "go ahead" says nothing on its own, and is read against the plan it confirms. A prompt longer than `maxPromptChars` (4000) goes as its first and last halves with the cut named, and so does an assistant message longer than `contextChars`: TypeSafe refuses a state past about 80k characters, and a plan names its act at the start and asks at the end.
 
 ## How it decides
 
@@ -66,6 +68,8 @@ status line, the header and the effort box never move whatever it decides.
 [jev-model-router] main loop → effort low: fast (confidence 0.87)
 [jev-model-router] jev: tier fast (0.41) · effort 0.4 → low (0.38) · risky 0.01 · 210ms
 [jev-model-router] main loop: kept opus/medium, wanted haiku/low (confidence 0.41)
+[jev-model-router] jev: tier deep (0.87) · effort 0.3 → low (0.70) · risky 0.90 · 252ms · with 214 chars of the last reply
+[jev-model-router] main loop → effort high: deep, forced by risk
 ```
 
 - The first line appears once per session, the first time a hook runs. It is
@@ -73,9 +77,12 @@ status line, the header and the effort box never move whatever it decides.
 - A `jev:` line is what the decision model replied, before any policy is
   applied — the tier, the effort score and the risk, each with its confidence,
   and how long the call took.
-- The line under it is what the policy then did. The last pair above is a
+- The line under it is what the policy then did. The second pair above is a
   working router declining to act: it wanted to spend less but did not clear
   `minDowngradeConfidence`.
+- `with N chars of the last reply` says that much of the assistant message
+  it answers went with the prompt; the last pair is "go ahead" after a plan
+  to change production.
 
 It also keeps a one-line status on screen, replaced as it goes:
 
@@ -117,7 +124,7 @@ the plugin's id, which depends on how it was loaded (see Options).
 
 ## Privacy
 
-With a key set, the prompt text leaves the machine and goes to whichever backend the key belongs to. The main-loop path sends the prompt; the subagent path sends the subagent's prompt, its description and its agent type. Nothing else. With no key set, nothing leaves the machine.
+With a key set, the prompt text leaves the machine and goes to whichever backend the key belongs to. The main-loop path sends the prompt (past `maxPromptChars`, only its first and last halves of that size) and the assistant message before it, up to `contextChars` characters (a longer one as its first and last halves; set `contextChars` to 0 to send the prompt alone); the subagent path sends the subagent's prompt, cut the same way, its description and its agent type. Nothing else. With no key set, nothing leaves the machine.
 
 ## Options
 
@@ -137,6 +144,8 @@ With a key set, the prompt text leaves the machine and goes to whichever backend
   routeSubagentModel:     boolean model of each subagent (default true)
   routeMainEffort:        boolean effort of the main loop (default true)
   routeMainModel:         boolean model of the main loop (default false)
+  contextChars:           number  characters of the last assistant message sent with the prompt (default 2000; 0 = prompt alone)
+  maxPromptChars:         number  longest prompt sent whole; longer goes as its two ends (default 4000; 0 = whole)
   timeoutMs:              number  latency budget per classification (default 800)
   logDecisions:           boolean log each decision (default true)
 ```
