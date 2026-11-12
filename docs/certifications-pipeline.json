@@ -5,7 +5,8 @@
     "cursor-learn",
     "openai-academy",
     "vercel-academy",
-    "nvidia-certification"
+    "nvidia-certification",
+    "google-cloud-certification"
   ],
   "items": {
     "microsoft-learn-github": [
@@ -423,16 +424,17 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI",
-          "Programming",
-          "Software Development"
+          "AI Tools",
+          "Software Development",
+          "Programming with AI",
+          "Understanding AI Models"
         ],
         "source": "cursor-learn",
         "price": null,
         "id": "cursor-ai-foundations",
         "kind": "course",
         "title": "AI Foundations",
-        "description": "This course will teach you about how to use AI to be more effective as a programmer. It focuses on developers writing software using AI models and tools, providing understanding of how models work, their limitations, and practical patterns for building software with AI tools.",
+        "description": "This course will teach you about how to use AI to be more effective as a programmer. It’s not a course to teach about machine learning or how to train your own models, but instead a course focused on developers writing software using AI models and tools.",
         "url": "https://cursor.com/learn"
       }
     ],
@@ -445,8 +447,7 @@
         "eligibility": "public",
         "topics": [
           "AI",
-          "Foundations",
-          "Large Language Models"
+          "Foundations"
         ],
         "source": "openai-academy",
         "price": null,
@@ -464,7 +465,7 @@
         "eligibility": "public",
         "topics": [
           "Applied AI",
-          "Workflows"
+          "Foundations"
         ],
         "source": "openai-academy",
         "price": null,
@@ -499,8 +500,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI",
-          "Solutions"
+          "OpenAI API",
+          "Scope"
         ],
         "source": "openai-academy",
         "price": null,
@@ -517,8 +518,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI",
-          "Applications"
+          "OpenAI API",
+          "Evaluation"
         ],
         "source": "openai-academy",
         "price": null,
@@ -535,7 +536,7 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Agentic Systems",
+          "OpenAI API",
           "Design"
         ],
         "source": "openai-academy",
@@ -553,6 +554,7 @@
         ],
         "eligibility": "public",
         "topics": [
+          "OpenAI API",
           "Retrieval-Augmented Generation"
         ],
         "source": "openai-academy",
@@ -570,7 +572,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI Performance"
+          "OpenAI API",
+          "Performance"
         ],
         "source": "openai-academy",
         "price": null,
@@ -587,7 +590,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Codex"
+          "Codex",
+          "Getting Started"
         ],
         "source": "openai-academy",
         "price": null,
@@ -623,7 +627,7 @@
         "eligibility": "public",
         "topics": [
           "Codex",
-          "Teams"
+          "Scaling"
         ],
         "source": "openai-academy",
         "price": null,
@@ -640,8 +644,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI",
-          "Leadership"
+          "Leadership",
+          "AI"
         ],
         "source": "openai-academy",
         "price": null,
@@ -658,8 +662,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI",
-          "Education"
+          "Education",
+          "AI"
         ],
         "source": "openai-academy",
         "price": null,
@@ -676,9 +680,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI",
           "Education",
-          "Students"
+          "AI"
         ],
         "source": "openai-academy",
         "price": null,
@@ -1062,10 +1065,7 @@
           "Cloud & Infrastructure"
         ],
         "eligibility": "public",
-        "topics": [
-          "AI Infrastructure",
-          "Professional"
-        ],
+        "topics": [],
         "source": "nvidia-certification",
         "level": "Advanced",
         "id": "nvidia-ai-infrastructure-professional",
@@ -1080,10 +1080,7 @@
           "Cloud & Infrastructure"
         ],
         "eligibility": "public",
-        "topics": [
-          "AI Operations",
-          "Professional"
-        ],
+        "topics": [],
         "source": "nvidia-certification",
         "level": "Advanced",
         "id": "nvidia-ai-operations-professional",
@@ -1098,10 +1095,7 @@
           "Cloud & Infrastructure"
         ],
         "eligibility": "public",
-        "topics": [
-          "AI Networking",
-          "Professional"
-        ],
+        "topics": [],
         "source": "nvidia-certification",
         "level": "Advanced",
         "id": "nvidia-ai-networking-professional",
@@ -1116,10 +1110,7 @@
           "Cloud & Infrastructure"
         ],
         "eligibility": "public",
-        "topics": [
-          "AI Rack and Interconnect",
-          "Professional"
-        ],
+        "topics": [],
         "source": "nvidia-certification",
         "level": "Advanced",
         "id": "nvidia-ai-rack-and-interconnect-professional",
@@ -1134,16 +1125,13 @@
           "Cloud & Infrastructure"
         ],
         "eligibility": "public",
-        "topics": [
-          "AI Infrastructure and Operations",
-          "Associate"
-        ],
+        "topics": [],
         "source": "nvidia-certification",
         "level": "Entry",
         "id": "nvidia-ai-infrastructure-operations-associate",
         "kind": "certification",
         "title": "NVIDIA-Certified Associate AI Infrastructure and Operations",
-        "description": "Validate a candidate's knowledge of foundational concepts of AI computing related to infrastructure and operations.",
+        "description": "Validate a candidate’s knowledge of foundational concepts of AI computing related to infrastructure and operations.",
         "url": "https://www.nvidia.com/en-us/learn/certification/ai-infrastructure-operations-associate"
       },
       {
@@ -1152,10 +1140,7 @@
           "Data & Analytics"
         ],
         "eligibility": "public",
-        "topics": [
-          "Accelerated Data Science",
-          "Professional"
-        ],
+        "topics": [],
         "source": "nvidia-certification",
         "role": "Data",
         "level": "Advanced",
@@ -1171,17 +1156,14 @@
           "Data & Analytics"
         ],
         "eligibility": "public",
-        "topics": [
-          "Accelerated Data Science",
-          "Associate"
-        ],
+        "topics": [],
         "source": "nvidia-certification",
         "role": "Data",
         "level": "Entry",
         "id": "nvidia-accelerated-data-science-associate",
         "kind": "certification",
         "title": "NVIDIA-Certified Associate Accelerated Data Science",
-        "description": "Verify a candidate's understanding of GPU-accelerated data science concepts for preparing data, developing models, and managing end-to-end workflows.",
+        "description": "Verify a candidate’s understanding of GPU-accelerated data science concepts for preparing data, developing models, and managing end-to-end workflows.",
         "url": "https://www.nvidia.com/en-us/learn/certification/accelerated-data-science-associate"
       },
       {
@@ -1190,10 +1172,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "Generative AI",
-          "Professional"
-        ],
+        "topics": [],
         "source": "nvidia-certification",
         "level": "Advanced",
         "id": "nvidia-generative-ai-llm-professional",
@@ -1208,10 +1187,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "Agentic AI",
-          "Professional"
-        ],
+        "topics": [],
         "source": "nvidia-certification",
         "level": "Advanced",
         "id": "nvidia-agentic-ai-professional",
@@ -1226,10 +1202,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "Generative AI LLM",
-          "Associate"
-        ],
+        "topics": [],
         "source": "nvidia-certification",
         "level": "Entry",
         "id": "nvidia-generative-ai-llm-associate",
@@ -1244,10 +1217,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "Generative AI Multimodal",
-          "Associate"
-        ],
+        "topics": [],
         "source": "nvidia-certification",
         "level": "Entry",
         "id": "nvidia-generative-ai-multimodal-associate",
@@ -1262,16 +1232,13 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "AI Models and Application Development",
-          "Associate"
-        ],
+        "topics": [],
         "source": "nvidia-certification",
         "level": "Entry",
         "id": "nvidia-ai-model-application-development-associate",
         "kind": "certification",
         "title": "NVIDIA-Certified Associate AI Models and Application Development",
-        "description": "Validates foundational skills in building, customizing, deploying, and evaluating AI models and applications on NVIDIA’s platform.",
+        "description": "Validates foundational skills in building, customizing, deploying, and evaluating AI models and applications on NVIDIA’s platform, including retrieval pipelines, inference optimization, and agentic systems.",
         "url": "https://www.nvidia.com/en-us/learn/certification/ai-model-application-development-associate"
       },
       {
@@ -1280,10 +1247,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "OpenUSD Interpretation",
-          "Professional"
-        ],
+        "topics": [],
         "source": "nvidia-certification",
         "level": "Advanced",
         "id": "nvidia-openusd-development-professional",
@@ -1291,6 +1255,77 @@
         "title": "NVIDIA-Certified Professional OpenUSD Development",
         "description": "Verify a candidate’s ability to build, maintain, and optimize 3D content creation pipelines using OpenUSD.",
         "url": "https://www.nvidia.com/en-us/learn/certification/openusd-development-professional"
+      }
+    ],
+    "google-cloud-certification": [
+      {
+        "provider": "Google Cloud",
+        "categories": [
+          "AI & Agents"
+        ],
+        "eligibility": "public",
+        "topics": [],
+        "source": "google-cloud-certification",
+        "platform": "Google Cloud",
+        "level": "Entry",
+        "role": "Business",
+        "id": "google-cloud-generative-ai-leader",
+        "kind": "certification",
+        "title": "Generative AI Leader",
+        "description": "A Generative AI Leader is a visionary professional with comprehensive knowledge of how generative AI (gen AI) can transform businesses.",
+        "url": "https://cloud.google.com/learn/certification/generative-ai-leader",
+        "examGuideUrl": "https://services.google.com/fh/files/misc/generative_ai_leader_exam_guide_english.pdf",
+        "prepUrl": "https://www.cloudskillsboost.google/paths/1951",
+        "price": {
+          "amount": 99,
+          "currency": "USD"
+        }
+      },
+      {
+        "provider": "Google Cloud",
+        "categories": [
+          "AI & Agents"
+        ],
+        "eligibility": "public",
+        "topics": [],
+        "source": "google-cloud-certification",
+        "platform": "Google Cloud",
+        "level": "Advanced",
+        "role": "Architect",
+        "id": "google-cloud-agentic-architect",
+        "kind": "certification",
+        "title": "Professional Agentic Architect",
+        "description": "Professional Agentic Architects is a technical practitioner who designs and manages autonomous, AI-driven agentic workflows in Google Cloud.",
+        "url": "https://cloud.google.com/learn/certification/agentic-architect",
+        "examGuideUrl": "https://services.google.com/fh/files/misc/professional_agentic_architect_exam_guide_english.pdf",
+        "prepUrl": "https://www.skills.google/paths/4525",
+        "price": {
+          "amount": 200,
+          "currency": "USD"
+        }
+      },
+      {
+        "provider": "Google Cloud",
+        "categories": [
+          "AI & Agents"
+        ],
+        "eligibility": "public",
+        "topics": [],
+        "source": "google-cloud-certification",
+        "platform": "Google Cloud",
+        "level": "Advanced",
+        "role": "Developer",
+        "id": "google-cloud-machine-learning-engineer",
+        "kind": "certification",
+        "title": "Professional ML Engineer",
+        "description": "Professional Machine Learning Engineers design, build, & productionize ML models to solve business challenges.",
+        "url": "https://cloud.google.com/learn/certification/machine-learning-engineer",
+        "examGuideUrl": "https://services.google.com/fh/files/misc/professional_machine_learning_engineer_exam_guide_english_new.pdf",
+        "prepUrl": "https://www.cloudskillsboost.google/paths/17",
+        "price": {
+          "amount": 200,
+          "currency": "USD"
+        }
       }
     ]
   }
