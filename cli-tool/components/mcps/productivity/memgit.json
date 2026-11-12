@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "memgit": {
+      "description": "Versioned memory shared by Claude Code, Cursor, Codex and any MCP host. Imports Claude Code's own memory files, keeps every change as a checkpoint with diff and rollback, BM25 recall, optional end-to-end encrypted sync between machines. Local stdio server, MIT. Needs Python 3.11+ on the machine.",
+      "command": "npx",
+      "args": [
+        "-y",
+        "memgit-mcp@0.16.0"
+      ]
+    }
+  }
+}
