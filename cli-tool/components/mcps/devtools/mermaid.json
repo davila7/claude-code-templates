@@ -3,7 +3,7 @@
     "mermaid": {
       "description": "Generate Mermaid diagrams and charts dynamically with AI. Create flowcharts, sequence diagrams, class diagrams, and more via MCP.",
       "command": "npx",
-      "args": ["-y", "mcp-mermaid"]
+      "args": ["-y", "mcp-mermaid@0.4.1"]
     }
   }
 }

@@ -1,0 +1,27 @@
+{
+  "repo": "cloudflare/security-audit-skill",
+  "path": "skills/security-audit",
+  "commit": "c1c8a8c1471069fb0e188eeaff69b8e8db6564a8",
+  "license": "MIT",
+  "author": "Cloudflare",
+  "include": [
+    "AI-AND-LLM.md",
+    "ATTACK-CLASSES.md",
+    "CLIENT-SIDE.md",
+    "CLOUD-AND-DEPLOYMENT.md",
+    "DATA-ISOLATION-AND-LIFECYCLE.md",
+    "DESKTOP-MOBILE-AND-LOCAL-IPC.md",
+    "HUNTING.md",
+    "MEMORY-SAFETY-AND-BINARY.md",
+    "PROTOCOLS-RPC-AND-MESSAGING.md",
+    "RECONNAISSANCE.md",
+    "RESOURCE-EXHAUSTION-AND-AVAILABILITY.md",
+    "SKILL.md",
+    "SUPPLY-CHAIN-AND-RELEASE.md",
+    "VALIDATION-AND-REPORTING.md",
+    "WEB-PROTOCOL-AND-AUTH.md",
+    "report-schema.json",
+    "validate-coverage-ledger.cjs",
+    "validate-findings.cjs"
+  ]
+}

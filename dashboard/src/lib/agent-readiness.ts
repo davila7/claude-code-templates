@@ -102,6 +102,7 @@ ${typeLines}
 - [OpenAPI 3.1 spec](${SITE}/openapi.json): read-only GET endpoints for the catalog JSON files. No authentication, CORS enabled.
 - [Trending](${SITE}/trending-data.json): download statistics and trending components.
 - [Sitemap](${SITE}/sitemap.xml): every component page.
+- [llms-full.txt](${SITE}/llms-full.txt): this file plus every component in the catalog, one line each, with its install command.
 
 ## CLI
 
@@ -120,4 +121,53 @@ ${typeLines}
 - [Plugins and marketplaces](${SITE}/plugins): third-party Claude Code plugin marketplaces indexed by the site.
 - [Trending components](${SITE}/trending)
 `;
+}
+
+/** The fields of a Catalog API v1 entry that /llms-full.txt lists. */
+export interface CatalogEntry {
+  id: string;
+  type: string;
+  description?: string | null;
+  install?: { command?: string } | null;
+  urls?: { page?: string } | null;
+}
+
+/** First sentence of a description, on one line, at most `max` characters. */
+export function shortDescription(text: string | null | undefined, max = 200): string {
+  let s = (text ?? '')
+    .replace(/<example>[\s\S]*?(<\/example>|$)/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  const sentence = s.match(/^(.+?[.!?])(\s|$)/);
+  if (sentence && sentence[1].length >= 20) s = sentence[1];
+  if (s.length > max) s = s.slice(0, max - 1).replace(/\s+\S*$/, '') + '…';
+  return s;
+}
+
+/**
+ * /llms-full.txt: /llms.txt followed by every component of Catalog API v1,
+ * grouped by type and in id order (never by downloads, never with placements).
+ */
+export function buildLlmsFullTxt(counts: Counts, components: CatalogEntry[]): string {
+  const sections = COUNTED_TYPES.map(([key, label]) => {
+    const items = components
+      .filter((c) => c.type === key)
+      .sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+    if (items.length === 0) return '';
+    const lines = items.map((c) => {
+      const page = c.urls?.page ?? `${SITE}/component/${c.id}`;
+      const desc = shortDescription(c.description);
+      const cmd = c.install?.command ? ` Install: \`${c.install.command}\`` : '';
+      return `- [${c.id}](${page})${desc ? `: ${desc}` : ''}${cmd}`;
+    });
+    return `### ${label} (${items.length})\n\n${lines.join('\n')}\n`;
+  }).filter(Boolean);
+
+  return `${buildLlmsTxt(counts)}
+## Full catalog
+
+Every component in the catalog, from ${SITE}/api/v1/catalog.json, grouped by type and sorted by id. Each line has the component page, the first sentence of its description and its install command. Read the full file at ${SITE}/component-content/{type}/{category}/{name}.json before installing a hook, MCP server or mod.
+
+${sections.join('\n')}`;
 }

@@ -48,6 +48,16 @@ const checks = [
     expect: (r, body) => r.status === 200 && /text\/plain/.test(r.headers.get('content-type')) && body.startsWith('# ') && body.includes('## When to use this'),
   },
   {
+    name: '/llms-full.txt is plain text with the full catalog',
+    path: '/llms-full.txt',
+    expect: (r, body) => r.status === 200 && /text\/plain/.test(r.headers.get('content-type')) && body.startsWith('# ') && body.includes('## Full catalog'),
+  },
+  {
+    name: '/robots.txt lets every crawler read /api/v1/',
+    path: '/robots.txt',
+    expect: (r, body) => r.status === 200 && /User-agent: \*[\s\S]*?Allow: \/api\/v1\/[\s\S]*?Disallow: \/api\//.test(body),
+  },
+  {
     name: '/openapi.json is an OpenAPI 3.1 document with unique operationIds',
     path: '/openapi.json',
     expect: (r, body) => {

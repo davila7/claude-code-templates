@@ -59,6 +59,9 @@ Este sistema rastrea las descargas e instalaciones de componentes de forma compl
 - **Plataforma**: OS (linux, darwin, win32)
 - **Versión CLI**: Para compatibilidad
 - **País**: Solo código de 2 letras (IP geolocation)
+- **Agente**: nombre corto del agente de IA que ejecutó el CLI (`claude`, `cursor`, `codex`, ... u `other`), o nada si no se detecta ninguno. Sale de variables de entorno como `AI_AGENT` o `CLAUDECODE` (`cli-tool/src/agent-detection.js`); nunca se envía su valor completo
+- **Entrypoint**: `CLAUDE_CODE_ENTRYPOINT` (`cli`, `sdk-ts`, `claude-desktop`, ...) cuando existe
+- **Terminal interactiva**: si stdout es un TTY (persona en terminal) o no (agente, script o pipe)
 
 ### NO se Recopila
 - ❌ Información personal identificable

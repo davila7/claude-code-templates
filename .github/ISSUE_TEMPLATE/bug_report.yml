@@ -1,0 +1,57 @@
+name: Bug report
+description: Something in the CLI, a component or aitmpl.com does not work as described.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. If this is a security vulnerability, stop here and [report it privately](https://github.com/davila7/claude-code-templates/security/advisories/new) instead.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - CLI (npx claude-code-templates)
+        - A component (agent, command, skill, hook, MCP, setting, mod, loop)
+        - aitmpl.com website
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: component
+    attributes:
+      label: Component path
+      description: For a component bug, its path as shown on aitmpl.com, e.g. `security/secret-redactor`.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened and what you expected
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: The exact command you ran and its output.
+      render: shell
+    validations:
+      required: true
+  - type: input
+    id: cli-version
+    attributes:
+      label: claude-code-templates version
+      description: Output of `npx claude-code-templates@latest --version`.
+    validations:
+      required: true
+  - type: input
+    id: cc-version
+    attributes:
+      label: Claude Code version
+      description: Output of `claude --version`. Required for mods and hooks.
+  - type: input
+    id: os
+    attributes:
+      label: OS and Node.js version
+      placeholder: macOS 15.1, Node 22.11
+    validations:
+      required: true

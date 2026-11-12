@@ -1,0 +1,31 @@
+---
+title: "Plugins"
+description: "Complete Claude Code plugins from the aitmpl marketplace, installed and managed by Claude Code itself and pinned to the reviewed commit."
+---
+
+Some components are whole Claude Code plugins: commands, agents, skills and hooks that reference each other and must stay together. The catalog publishes them as a Claude Code marketplace named `aitmpl`, at `https://www.aitmpl.com/marketplace.json`. Each entry points at the author's repository, pinned to the commit that was reviewed and scanned.
+
+```bash
+npx claude-code-templates@latest --plugin productivity/champion-kit
+```
+
+The CLI asks Claude Code to do the install (`claude plugin marketplace add` and `claude plugin install champion-kit@aitmpl`), so the files land in `~/.claude/plugins/cache/aitmpl/` and you manage the plugin with `/plugin` like any other. If `claude` is not on your PATH, the CLI writes the same two settings keys (the marketplace and the enabled plugin) instead, and Claude Code offers to install the plugin the next time it starts in that folder.
+
+## Scope
+
+| `--scope` | Enabled in |
+| --- | --- |
+| `project` (default) | `.claude/settings.json` |
+| `user` | `~/.claude/settings.json` |
+| `local` | `.claude/settings.local.json` |
+
+## Without the CLI
+
+Add the marketplace in Claude Code directly:
+
+```text
+/plugin marketplace add https://www.aitmpl.com/marketplace.json
+/plugin install champion-kit@aitmpl
+```
+
+Browse plugins at [aitmpl.com](https://www.aitmpl.com).

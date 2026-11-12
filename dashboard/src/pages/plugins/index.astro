@@ -8,6 +8,9 @@ export const prerender = true;
 
 import fs from 'node:fs';
 import nodePath from 'node:path';
+import { AITMPL_MARKETPLACE } from '../../lib/constants';
+import type { Component } from '../../lib/types';
+import { pluginContentsSummary } from '../../lib/component-page';
 
 // Load plugins data at build time from filesystem
 const filePath = nodePath.join(process.cwd(), 'public', 'plugins.json');
@@ -15,6 +18,17 @@ let plugins: any[] = [];
 try {
   plugins = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
 } catch { plugins = []; }
+
+// Plugins in this catalog (cli-tool/components/plugins/), served together as
+// the aitmpl marketplace; each one is pinned to the commit that was reviewed.
+let catalogPlugins: Component[] = [];
+try {
+  catalogPlugins = JSON.parse(fs.readFileSync(nodePath.join(process.cwd(), 'public', 'components', 'plugins.json'), 'utf-8'));
+} catch (error) {
+  // The generator always writes this file; without it the aitmpl section is left out.
+  console.warn('plugins: could not read public/components/plugins.json', error);
+  catalogPlugins = [];
+}
 ---
 
 <DashboardLayout
@@ -59,6 +73,36 @@ try {
       </div>
     </div>
   </div>
+
+  {catalogPlugins.length > 0 && (
+    <section aria-labelledby="aitmpl-marketplace-h" class="px-6 pt-8 max-w-7xl mx-auto">
+      <div class="flex flex-wrap items-end justify-between gap-3 mb-3">
+        <div>
+          <h2 id="aitmpl-marketplace-h" class="text-[17px] font-semibold text-[var(--color-text-primary)]">The aitmpl marketplace</h2>
+          <p class="text-[13.5px] text-[var(--color-text-secondary)] max-w-2xl">
+            Plugins reviewed and scanned for this catalog, each pinned to that commit. Claude Code installs them with its own plugin system, so <code>/plugin</code> shows, updates and removes them.
+          </p>
+        </div>
+        <pre class="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-1)] px-3 py-2 font-mono text-[12px] text-[var(--color-text-primary)] whitespace-pre-wrap [overflow-wrap:anywhere]">{`/plugin marketplace add ${AITMPL_MARKETPLACE.url}`}</pre>
+      </div>
+      <ul class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+        {catalogPlugins.map((p) => (
+          <li class="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-1)] hover:border-[var(--color-accent)]/40 transition-colors">
+            <a href={`/component/plugins/${p.path}`} class="block p-4">
+              <div class="flex items-baseline justify-between gap-2">
+                <span class="font-semibold text-[14px] text-[var(--color-text-primary)]">{p.name}</span>
+                <span class="text-[12px] text-[var(--color-text-tertiary)]">{p.author}{p.version ? ` · v${p.version}` : ''}</span>
+              </div>
+              <p class="mt-1 text-[13px] leading-relaxed text-[var(--color-text-secondary)] line-clamp-3">{p.description}</p>
+              {pluginContentsSummary(p.contains) && <p class="mt-2 font-mono text-[12px] text-[var(--color-text-tertiary)]">{pluginContentsSummary(p.contains)}</p>}
+              <p class="mt-2 font-mono text-[12px] text-[var(--color-text-primary)] [overflow-wrap:anywhere]">/plugin install {p.name}@{AITMPL_MARKETPLACE.name}</p>
+            </a>
+          </li>
+        ))}
+      </ul>
+      <h2 class="mt-10 text-[17px] font-semibold text-[var(--color-text-primary)]">Other marketplaces and collections</h2>
+    </section>
+  )}
 
   <PluginsGrid client:load plugins={plugins} />
 

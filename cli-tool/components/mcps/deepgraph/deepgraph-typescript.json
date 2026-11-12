@@ -5,7 +5,7 @@
       "command": "npx",
       "args": [
         "-y",
-        "mcp-code-graph@latest",
+        "mcp-code-graph@1.1.2",
         "microsoft/TypeScript"
       ]
     }
