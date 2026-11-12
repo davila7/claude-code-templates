@@ -1,5 +1,5 @@
 ---
-description: "Load project context by reading README.md and listing the tracked files"
+description: "Load project context from README and tracked files"
 allowed-tools: Read, Bash, Bash(git:*)
 ---
 
