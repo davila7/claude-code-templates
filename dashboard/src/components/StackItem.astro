@@ -1,0 +1,34 @@
+---
+// One component of a /s/ stack in the harness diagram. Hovering or focusing it
+// opens a card with its details and an "Open component" link (StackHarness
+// owns the card). Removed components stay listed, struck through.
+import type { HarnessEntry, StackType } from '../lib/stack-link';
+import { TYPE_CONFIG } from '../lib/icons';
+
+interface Props { entry: HarnessEntry; type: StackType; label?: string; inline?: boolean }
+const { entry, type, label, inline = false } = Astro.props;
+const gone = entry.href === null;
+---
+<button
+  type="button"
+  data-harness-item
+  data-name={entry.name}
+  data-type={TYPE_CONFIG[type]?.singular ?? type}
+  data-category={entry.category}
+  data-description={entry.description}
+  data-command={entry.command}
+  data-href={entry.href ?? ''}
+  aria-haspopup="dialog"
+  class:list={[
+    'harness-item group min-w-0 rounded-md border text-left text-[13px] transition-colors',
+    inline ? 'inline-flex max-w-full items-center h-9 px-3' : 'flex w-full flex-col justify-center gap-0.5 min-h-[52px] px-3 py-2',
+    gone
+      ? 'border-dashed border-[var(--color-border)] text-[var(--color-text-tertiary)]'
+      : 'border-[var(--color-border)] bg-[var(--color-surface-1)] text-[var(--color-text-primary)] hover:border-[var(--color-border-strong)] hover:bg-[var(--color-surface-2)]',
+  ]}
+>
+  <span class:list={['block max-w-full truncate', gone && 'line-through', inline && label && 'font-mono text-[12px]', !inline && 'font-medium']}>{label ?? entry.name}</span>
+  {!inline && (entry.category || gone) && (
+    <span class="block max-w-full truncate text-[11px] text-[var(--color-text-tertiary)]">{gone ? 'No longer in the catalog' : entry.category}</span>
+  )}
+</button>

@@ -176,6 +176,7 @@ const totalComponents = items.length;
         ><code>$ {installCmd}</code></pre>
         <button
           id="copyBtn"
+          data-item-count={totalComponents}
           class="absolute top-3 right-3 px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all duration-200 opacity-0 group-hover:opacity-100"
           style="background: var(--color-surface-3); color: var(--color-text-secondary); border: 1px solid var(--color-border);"
         >
@@ -269,14 +270,19 @@ const totalComponents = items.length;
       .catch(function() {});
   </script>
 
-  <!-- Copy button -->
-  <script is:inline>
-    document.getElementById('copyBtn')?.addEventListener('click', function() {
-      var cmd = document.getElementById('installCmd')?.textContent?.replace(/^\$\s*/, '') ?? '';
-      navigator.clipboard.writeText(cmd);
-      this.textContent = 'Copied!';
-      var btn = this;
-      setTimeout(function() { btn.textContent = 'Copy'; }, 2000);
-    });
+  <!-- Copy button (GA4 gets the number of components only, never the collection's name) -->
+  <script>
+    import { track } from '../../lib/analytics';
+
+    const copyBtn = document.getElementById('copyBtn');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', () => {
+        const cmd = document.getElementById('installCmd')?.textContent?.replace(/^\$\s*/, '') ?? '';
+        navigator.clipboard.writeText(cmd);
+        track('copy_stack_command', { item_count: Number(copyBtn.dataset.itemCount) || 0, source: 'collection' });
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => { copyBtn.textContent = 'Copy'; }, 2000);
+      });
+    }
   </script>
 </DashboardLayout>

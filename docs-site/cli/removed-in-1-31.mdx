@@ -1,0 +1,18 @@
+---
+title: "Removed in 1.31.0"
+description: "Flags removed from the CLI in version 1.31.0 (2026-11-02), what replaced each one, and how to run the old version if you still need it."
+---
+
+import RemovedFlags from "/snippets/removed-flags.mdx";
+
+Version 1.31.0 removed seventeen flags that saw little or no use (0 to 65 runs each in the 30 days before, against 16.8K npm downloads). Running one now prints what replaced it and exits with code 1.
+
+<RemovedFlags />
+
+## Still need one?
+
+`npx claude-code-templates@1.30.0 <flag>` runs the last version that had them, with one exception: `--tunnel` published your conversation history on an unauthenticated public URL, which is why it was removed. Use SSH port forwarding instead.
+
+Global agents created with `--create-agent` are standalone scripts and keep working without the CLI.
+
+The sandbox launchers (E2B, Cloudflare, Docker) are no longer in the npm package, but their code is still in [`cli-tool/components/sandbox/`](https://github.com/davila7/claude-code-templates/tree/main/cli-tool/components/sandbox) as a reference.

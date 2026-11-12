@@ -69,7 +69,7 @@ A withheld reply keeps its tool calls: only the text is replaced. Tool safety is
 
 Only the main conversation is screened unless `screenSubagents` is on. A subagent's prompt is a tool call's argument, not a `prompt.submit`, so only its replies can be.
 
-**Failure is open by default.** A non-2xx, a timeout past `timeoutMs`, a malformed body, a thrown error: the message goes through untouched and the log says why. `failClosed` turns that around for prompts alone — one that could not be screened is dropped — for a setup where an unscreened prompt is worse than a stalled session. Replies are never dropped for this: a reply already generated and lost to a backend outage costs more than a reply the next screening catches.
+**Failure is open by default.** A non-2xx, a timeout past `timeoutMs`, a malformed body, a thrown error: the message goes through untouched and the log says why. `failClosed` turns that around for prompts alone — one that could not be screened is dropped — for a setup where an unscreened prompt is worse than a stalled session. That includes the hook itself running past its budget. Replies are never dropped for this: a reply already generated and lost to a backend outage costs more than a reply the next screening catches.
 
 ## What you see in the transcript
 

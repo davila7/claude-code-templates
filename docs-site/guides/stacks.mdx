@@ -1,0 +1,43 @@
+---
+title: "Install a stack"
+description: "Set up a project in one command: combine agents, commands, skills, MCP servers, settings and hooks, from the aitmpl.com stack builder or by hand."
+---
+
+A stack is several components installed in one run. The CLI shows one plan, asks once where settings and hooks go, and reports each result.
+
+## From aitmpl.com
+
+1. Open [aitmpl.com](https://www.aitmpl.com) and add components to your stack with the **+** button on each card.
+2. Open the stack panel and copy the generated command.
+3. Run it in your project.
+
+## By hand
+
+```bash
+npx claude-code-templates@latest \
+  --agent development-team/backend-architect,security/security-auditor \
+  --command testing/generate-tests,security/security-audit \
+  --skill development/test-driven-development \
+  --mcp database/supabase \
+  --setting statusline/context-monitor \
+  --hook security/secret-scanner
+```
+
+Add `--dry-run` to see the files first, and `--yes` for a run without prompts (CI, scripts, agents).
+
+## Ideas
+
+| Goal | Stack |
+| --- | --- |
+| Safer reviews | `--agent security/security-auditor --command security/security-audit --hook security/secret-scanner --setting permissions/read-only-mode` |
+| Test-first work | `--skill development/test-driven-development,development/systematic-debugging --command testing/generate-tests` |
+| Better context | `--mcp devtools/context7 --setting statusline/context-monitor` |
+
+## Install, then prompt
+
+`--prompt` starts Claude Code with a prompt once the install finishes:
+
+```bash
+npx claude-code-templates@latest --agent security/security-auditor \
+  --prompt "Use the security-auditor agent to review this repository"
+```

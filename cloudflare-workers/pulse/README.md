@@ -1,6 +1,6 @@
 # Pulse — Weekly KPI Report (Cloudflare Worker)
 
-Collects metrics from GitHub, Discord, Supabase, Vercel, and Google Analytics every Sunday at 14:00 UTC and sends a consolidated report via Telegram.
+Collects metrics from GitHub, Supabase, Vercel, and Google Analytics every Sunday at 14:00 UTC and sends a consolidated report via Telegram.
 
 ## Setup
 
@@ -26,10 +26,6 @@ wrangler secret put GITHUB_TOKEN          # PAT with public_repo scope
 # Supabase
 wrangler secret put SUPABASE_URL          # https://xxx.supabase.co
 wrangler secret put SUPABASE_SERVICE_ROLE_KEY
-
-# Discord
-wrangler secret put DISCORD_BOT_TOKEN
-wrangler secret put DISCORD_GUILD_ID
 
 # Vercel
 wrangler secret put VERCEL_TOKEN          # Personal access token
@@ -96,16 +92,18 @@ npm run test             # Test cron trigger locally
 ├ Issues: 12 open (3 new, 2 closed)
 └ PRs: 5 opened, 4 merged
 
-💬 DISCORD
-├ Members: 890 (+23)
-├ Active: ~145
-└ Messages: 312
-
 📦 DOWNLOADS
 ├ Total: 45,678 (+1,234)
 ├ Top: frontend-developer (89)
 ├ By type: agents 65% | commands 20% | settings 15%
 └ Countries: US 40% | DE 15% | BR 10% | UK 8% | CL 5%
+
+RETURNING INSTALLERS (week of Oct 26)
+├ Returning: 361 of 3,098 active (11.7%) (-86)
+├ 4-week avg: 444 (12.7%)
+├ New installers: 2,737
+├ New installers back: next week 3.8% (week of Oct 19), within 4 weeks 8.4% (week of Sep 28)
+└ This week so far: 323 of 2,341 (13.8%)
 
 🚀 VERCEL
 ├ Deploys: 12 (11 ✅ 1 ❌)
@@ -119,3 +117,11 @@ npm run test             # Test cron trigger locally
 ```
 
 Sources that fail gracefully show `⚠️ Unavailable` instead.
+
+`RETURNING INSTALLERS` (`?source=returning`) calls the Supabase function
+`public.weekly_returning_installers()` from
+`database/migrations/005_weekly_returning_installers.sql`, which has the
+definitions (installer, ISO week, returning, new, class split). Apply that
+migration before deploying, or the section shows `Unavailable` (HTTP 404).
+The cron runs before the week ends, so the headline is the last complete week
+and the current week is the "so far" line.

@@ -6,7 +6,14 @@ We welcome contributions! Help us make Claude Code even better for everyone.
 
 ## 🧩 Contributing Components
 
-The easiest way to contribute is by adding individual components like agents, commands, MCPs, settings, or hooks.
+The easiest way to contribute is by adding individual components: agents, commands, skills, MCPs, settings, hooks, mods or loops.
+
+### ✅ Before you open a pull request
+
+- **Only commit your component.** Do not run `scripts/generate_components_json.py` and do not commit `docs/components.json` or anything under `dashboard/public/`. Those files are regenerated automatically after merge, and a PR that touches them fails the `generated-files-guard` check.
+- **One component (or one small set of related components) per PR.** Large PRs and PRs that mix unrelated components take much longer to review.
+- **What reviews your PR:** automated checks run Claude Code's own validator (`claude plugin validate`), [NVIDIA SkillSpector](https://github.com/NVIDIA/skillspector) security scanning and AI code review. A maintainer or the daily triage then labels it `triage:accept`, `triage:changes` (see the comment for what to fix), `triage:human` (needs a maintainer's manual review: hooks with scripts, mods, anything that runs code or sends data off the machine) or `triage:reject` (with the reason).
+- **Paid placements never apply here.** Sponsoring a component on aitmpl.com does not change review, ranking or search.
 
 ### 🤖 Adding Agents
 
@@ -288,6 +295,35 @@ Hooks provide automation triggers for different development events.
    cd your-new-category/
    touch your-hook-name.json
    ```
+
+### 🧠 Adding Skills
+
+Skills are folders under `cli-tool/components/skills/{category}/{name}/` with a `SKILL.md` (YAML frontmatter with `name` and `description`) and any supporting files.
+
+- `name` in the frontmatter must match the folder name (kebab-case).
+- The `description` says what the skill does **and when Claude should use it**.
+- Do not put skills under `.claude-plugin/` or `.claude/skills/`: those paths are not part of the catalog.
+- Every changed skill is scanned by SkillSpector; a HIGH or CRITICAL score blocks the PR.
+- A skill whose code lives in your own repository can be listed with a `source.json` pinned to a commit instead of copying it (see "External skills" in [CLAUDE.md](CLAUDE.md)).
+
+Test it with `npx claude-code-templates@latest --skill {category}/{name} --dry-run`.
+
+### 🧩 Adding Mods
+
+Mods (Claude Mods) are plugin directories under `cli-tool/components/mods/{category}/{name}/`: `.claude-plugin/plugin.json`, `hooks/hooks.json`, the hooks modules under `hooks/`, a `README.md`, and optionally `commands/`, `types/` and `tests/`. Before opening the PR:
+
+```bash
+cd cli-tool/components/mods
+npx -y -p typescript@5 tsc -p tsconfig.json          # must typecheck against types/claude-code.d.ts
+claude plugin validate {category}/{name}
+claude plugin test {category}/{name}                 # if the mod ships tests
+```
+
+The README must state the command, the options and the minimum Claude Code version. Mods always get a maintainer's manual review because they run inside Claude Code.
+
+### 🔁 Adding Loops
+
+Loops are autonomous workflows (goal + interval + stop condition) under `cli-tool/components/loops/{category}/{name}.md`. They may reference other catalog components, which are installed with the loop, so every referenced component must already exist in the catalog.
 
 ## 📦 Contributing Templates
 

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { marked } from 'marked';
-import { sanitizeHtml, codeLang } from '../lib/sanitize-html';
+import { sanitizeHtml, codeLang, demoteH1, type DocBase } from '../lib/sanitize-html';
 
 interface Heading {
   level: number;
@@ -18,9 +18,11 @@ interface SearchMatch {
 interface MarkdownViewerProps {
   content: string;
   headings: Heading[];
+  /** Resolves the document's relative image and link URLs (a README's `docs/x.svg`). */
+  docBase?: DocBase | null;
 }
 
-function renderMarkdown(content: string): string {
+function renderMarkdown(content: string, docBase?: DocBase | null): string {
   const stripped = content.replace(/^---\s*\n[\s\S]*?\n---\s*\n?/, '');
 
   marked.setOptions({ gfm: true, breaks: false });
@@ -28,14 +30,17 @@ function renderMarkdown(content: string): string {
   const renderer = new marked.Renderer();
   renderer.heading = ({ text, depth }: { text: string; depth: number }) => {
     const id = text.toLowerCase().replace(/[^\w]+/g, '-').replace(/^-|-$/g, '');
-    return `<h${depth} id="${id}" class="md-heading">${text}</h${depth}>`;
+    // The page owns the only <h1>: a document's headings go one level down
+    // (# → h2), keeping their look through the md-hN class.
+    const tag = `h${Math.min(depth + 1, 6)}`;
+    return `<${tag} id="${id}" class="md-heading md-h${depth}">${text}</${tag}>`;
   };
 
   renderer.code = ({ text, lang }: { text: string; lang?: string }) => {
     return `<div class="md-code-block"><div class="md-code-lang">${codeLang(lang)}</div><pre><code class="language-${codeLang(lang)}">${text.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre></div>`;
   };
 
-  return sanitizeHtml(marked.parse(stripped, { renderer }) as string);
+  return demoteH1(sanitizeHtml(marked.parse(stripped, { renderer }) as string, docBase));
 }
 
 /** Build a searchable index: map each paragraph/line to its nearest preceding heading */
@@ -72,7 +77,7 @@ function buildSearchIndex(content: string, headings: Heading[]): { text: string;
   return entries;
 }
 
-export default function MarkdownViewer({ content, headings }: MarkdownViewerProps) {
+export default function MarkdownViewer({ content, headings, docBase }: MarkdownViewerProps) {
   const [mode, setMode] = useState<'code' | 'preview'>('preview');
   const [expanded, setExpanded] = useState(false);
   const [activeHeading, setActiveHeading] = useState('');
@@ -84,7 +89,7 @@ export default function MarkdownViewer({ content, headings }: MarkdownViewerProp
   const codeRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  const html = useMemo(() => renderMarkdown(content), [content]);
+  const html = useMemo(() => renderMarkdown(content, docBase), [content, docBase]);
   const searchIndex = useMemo(() => buildSearchIndex(content, headings), [content, headings]);
 
   // Search results

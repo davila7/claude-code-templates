@@ -1,0 +1,36 @@
+---
+title: "MCP servers"
+description: "Model Context Protocol servers for Claude Code: connect Claude to databases, GitHub, browsers and documentation through .mcp.json."
+---
+
+An MCP server gives Claude new tools backed by an external service: query a database, open GitHub issues, drive a browser, read current library docs. The catalog entry is the server's configuration.
+
+```bash
+npx claude-code-templates@latest --mcp devtools/context7
+```
+
+Merged into `.mcp.json` at the project root. Servers already there are kept.
+
+## Anatomy
+
+```json database/supabase.json
+{
+  "mcpServers": {
+    "supabase": {
+      "command": "npx",
+      "args": ["-y", "@supabase/mcp-server-supabase@latest", "--read-only", "--project-ref=<project-ref>"],
+      "env": { "SUPABASE_ACCESS_TOKEN": "<personal-access-token>" }
+    }
+  }
+}
+```
+
+Values in angle brackets are placeholders. Replace them in `.mcp.json` after the install; the CLI never writes real keys. Keep tokens out of git: reference an environment variable (`"${SUPABASE_ACCESS_TOKEN}"`) and set it in your shell.
+
+Some servers are remote (`"type": "http"` with a `url`) and sign you in with OAuth the first time you use them in Claude Code.
+
+## After installing
+
+Restart Claude Code and run `/mcp` to see the server, its status and its tools. Claude Code asks before it uses a project MCP server for the first time.
+
+Browse all MCP servers at [aitmpl.com/mcps](https://www.aitmpl.com/mcps/).

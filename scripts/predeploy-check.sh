@@ -143,7 +143,6 @@ echo "------------------------------------"
 # Check critical API endpoints exist
 CRITICAL_ENDPOINTS=(
     "api/track-download-supabase.js"
-    "api/claude-code-check.js"
 )
 
 for endpoint in "${CRITICAL_ENDPOINTS[@]}"; do

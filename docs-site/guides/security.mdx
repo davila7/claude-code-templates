@@ -1,0 +1,23 @@
+---
+title: "How components are checked"
+description: "What happens to every component before it reaches the catalog: Claude Code's plugin validator, NVIDIA SkillSpector scans and review, and how to report a problem."
+---
+
+Hooks, MCP servers, status lines, mods and skill scripts run code with your permissions. These are the checks every component goes through before it appears on aitmpl.com.
+
+| Check | What it does | When |
+| --- | --- | --- |
+| `claude plugin validate` | Claude Code's own validator on the component's format | Every pull request; the whole catalog weekly |
+| [NVIDIA SkillSpector](https://github.com/NVIDIA/skillspector) | Static analysis with 64 patterns: prompt injection, data exfiltration, dangerous code, supply chain | Every pull request; results shown on each component page |
+| Mods type check | Every mod module must type-check against Claude Code's API | Every pull request |
+| Review | Automated review plus a maintainer | Every pull request |
+
+A pull request that adds or changes a skill with a SkillSpector score above 50 (high or critical) is blocked until it is fixed. For other types the scan is reported on the pull request without blocking, because it raises more false positives there.
+
+Each component page shows a "Scanned by NVIDIA SkillSpector" seal and the scan's findings. The scan is information, not a verdict: read the files before you install, especially for anything that runs commands.
+
+External skills and plugins are pinned to a full commit, so the code you install is the code that was scanned.
+
+## Report a problem
+
+Found a malicious or unsafe component, or a vulnerability in the CLI? Follow [SECURITY.md](https://github.com/davila7/claude-code-templates/blob/main/SECURITY.md) and report it privately. Please do not open a public issue for a vulnerability.

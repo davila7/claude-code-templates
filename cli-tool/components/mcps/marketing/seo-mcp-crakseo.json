@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "crakseo-seo": {
+      "description": "SEO MCP by CrakSEO: keyword research with search volume, keyword difficulty and CPC, live Google and Bing SERPs with AI Overview sources, Google rank tracking and competitor keyword gaps, backlinks and referring domains, technical SEO audits with Core Web Vitals, Google Maps rankings and brand mentions in ChatGPT and Perplexity. OAuth sign-in; pay per call from prepaid credits, with the price shown before each call and no subscription.",
+      "type": "http",
+      "url": "https://crakseo.com/mcp/seo"
+    }
+  }
+}

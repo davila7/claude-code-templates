@@ -12,6 +12,12 @@ permissions:
   # to start deploy.yml once the refreshed data is pushed
   actions: write
 
+# One run at a time: each run resets to main and re-merges its own fetch cache,
+# so two overlapping runs could overwrite each other's results. Queue, don't cancel.
+concurrency:
+  group: update-json-data
+  cancel-in-progress: false
+
 jobs:
   update-json:
     runs-on: ubuntu-latest
@@ -25,6 +31,9 @@ jobs:
         docs/components.json
         docs/trending-data.json
         docs/claude-jobs.json
+        docs/claude-jobs-discovered-boards.json
+        docs/certifications-pipeline.json
+        dashboard/public/certifications.json
         dashboard/public/components.json
         dashboard/public/counts.json
         dashboard/public/search-index.json
@@ -33,12 +42,17 @@ jobs:
         dashboard/public/components
         dashboard/public/component-content
         dashboard/public/api/v1
+        dashboard/public/marketplace.json
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          # Full history (trees only) for each component's last commit and
+          # date added on its page; a shallow clone keeps the previous values.
+          fetch-depth: 0
+          filter: blob:none
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -93,6 +107,18 @@ jobs:
 
       - name: Generate claude-jobs.json
         run: python scripts/generate_claude_jobs.py
+        env:
+          # Optional: Firecrawl Search discovers more job boards (~24
+          # credits a run). Without it the step still scans every known board.
+          FIRECRAWL_API_KEY: ${{ secrets.FIRECRAWL_API_KEY }}
+
+      - name: Refresh certifications.json
+        # Microsoft Learn needs no key; the Firecrawl sources (~10 credits a
+        # run) are skipped without FIRECRAWL_API_KEY and keep their entries.
+        # A failing source never fails the run: its previous entries stay.
+        run: python scripts/generate_certifications.py
+        env:
+          FIRECRAWL_API_KEY: ${{ secrets.FIRECRAWL_API_KEY }}
 
       - name: Copy data to dashboard
         run: |
@@ -124,7 +150,7 @@ jobs:
           git config --local user.name "github-actions[bot]"
           fresh="$RUNNER_TEMP/fresh-data"
           mkdir -p "$fresh"
-          cp docs/components.json docs/trending-data.json docs/claude-jobs.json "$fresh/"
+          cp docs/components.json docs/trending-data.json docs/claude-jobs.json docs/claude-jobs-discovered-boards.json docs/certifications-pipeline.json "$fresh/"
 
           for attempt in 1 2 3 4 5; do
             git fetch origin main
@@ -135,6 +161,11 @@ jobs:
             cp "$fresh/trending-data.json" dashboard/public/trending-data.json
             cp "$fresh/claude-jobs.json" docs/claude-jobs.json
             cp "$fresh/claude-jobs.json" dashboard/public/claude-jobs.json
+            cp "$fresh/claude-jobs-discovered-boards.json" docs/claude-jobs-discovered-boards.json
+            # Re-merge this run's fetched entries onto main's certifications.json,
+            # so hand-written entries merged during the run are kept.
+            cp "$fresh/certifications-pipeline.json" docs/certifications-pipeline.json
+            python scripts/generate_certifications.py --from-cache docs/certifications-pipeline.json
 
             git add -A -- $DATA_PATHS
             if git diff --cached --quiet -- $DATA_PATHS; then

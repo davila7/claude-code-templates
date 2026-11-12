@@ -1,6 +1,6 @@
 # Protect CI/CD and security-sensitive paths
-.github/                @danipower
-scripts/                @danipower
-.npmrc                  @danipower
-CLAUDE.md               @danipower
-dashboard/src/pages/api/ @danipower
+.github/                @davila7
+scripts/                @davila7
+.npmrc                  @davila7
+CLAUDE.md               @davila7
+dashboard/src/pages/api/ @davila7
