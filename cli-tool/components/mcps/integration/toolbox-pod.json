@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "toolbox-pod": {
+      "description": "Toolbox POD's official hosted MCP server: design custom tees and hoodies, see mockups, and order prints made and shipped from Utah, with a link to pay on toolboxpod.com (Claude never pays). OAuth sign-in: run /mcp, pick toolbox-pod, Authenticate, then sign in or sign up to Toolbox POD. No API key. US addresses only.",
+      "type": "http",
+      "url": "https://mcp.toolboxpod.com/mcp"
+    }
+  }
+}
