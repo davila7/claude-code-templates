@@ -15,6 +15,7 @@ export type ContinueText = {
   /** Only `after-compaction` follows a compaction. The others keep the compacted line out. */
   kind: 'after-compaction' | 'below-floor' | 'after-skip';
   source: CompactionSource;
+  resetsAtEnd?: number;
 };
 
 /**
@@ -26,7 +27,7 @@ export async function submitContinuePrompt(
   turns: TurnCounter,
   turnsBefore: number,
   text: ContinueText,
-): Promise<boolean> {
+): Promise<boolean | undefined> {
   // Read at each send, so an edit to the file works without a restart.
   const prompt = await readContinuePrompt(engine);
 
@@ -34,17 +35,23 @@ export async function submitContinuePrompt(
     return false;
   }
 
+  const shaped = text.kind === 'after-compaction' ? prompt : withoutCompactedLine(prompt);
+
+  if (shaped.trim() === '') {
+    return undefined;
+  }
+
+  const filled = await fillPlaceholders(engine, shaped, text.next);
   const startedAt = await engine.now();
 
-  if (turns.hasChangedSince(turnsBefore)) {
-    logEvent(engine, 'continue-dropped', { reason: 'new turn started', waitedMs: 0 });
+  if (turns.hasResetSince(text.resetsAtEnd) || turns.hasChangedSince(turnsBefore)) {
+    logEvent(engine, 'continue-dropped', { reason: turns.hasResetSince(text.resetsAtEnd) ? 'session reset' : 'new turn started', waitedMs: 0 });
+    await showTimedStatus(engine, 'dropped');
 
     return false;
   }
 
-  const shaped = text.kind === 'after-compaction' ? prompt : withoutCompactedLine(prompt);
-
-  return submitAndReport(engine, await fillPlaceholders(engine, shaped, text.next), text, startedAt);
+  return submitAndReport(engine, filled, text, startedAt);
 }
 
 // Without a compaction the shipped first line would be wrong. Any other first line stays.

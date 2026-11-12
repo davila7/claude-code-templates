@@ -1,5 +1,7 @@
 import type { Engine } from '../hooks/engine.ts';
 
+declare function setTimeout(callback: () => void, delay: number): unknown;
+
 /** How the engine words a call that a mode such as `claude -p` does not offer. */
 export function notInThisMode(call: string): string {
   return `smartcompact: ${call} is not available in this mode: no session is bound in this process`;
@@ -70,11 +72,9 @@ export function stubLoggedLines(record: StubRecord): Record<string, unknown>[] {
   return log.split('\n').filter((line) => line !== '').map((line) => JSON.parse(line));
 }
 
-/** Lets the background log writes finish. Every stub call resolves at once, so a few rounds are enough. */
+/** Lets background log writes finish even when they need more promise rounds. */
 export async function settleStub(): Promise<void> {
-  for (let round = 0; round < 200; round++) {
-    await Promise.resolve();
-  }
+  await new Promise<void>((resolve) => setTimeout(resolve, 0));
 }
 
 const LOG_FILE = 'C:/log.jsonl';

@@ -24,10 +24,10 @@ export type JudgeInput = {
 export function buildJudgeInput(messages: readonly SessionMessage[], answer: string): JudgeInput {
   const promptIndex = messages.findLastIndex(isHumanPrompt);
   const prompt = promptIndex >= 0 ? (messages[promptIndex]?.text ?? '') : '';
-  const assistantMessage = answer || lastAssistantText(messages);
+  const assistantMessage = answer || lastAssistantText(messages.slice(promptIndex + 1));
 
   return {
-    userPrompt: prompt.slice(0, MAX_PROMPT_CHARS),
+    userPrompt: prompt.length <= MAX_PROMPT_CHARS ? prompt : `${prompt.slice(0, 996)}\n[...]\n${prompt.slice(-997)}`,
     assistantMessage: assistantMessage.slice(-MAX_ASSISTANT_CHARS),
     toolCalls: toolCallsAfter(messages, promptIndex),
   };

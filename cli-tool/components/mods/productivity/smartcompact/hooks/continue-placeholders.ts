@@ -8,20 +8,14 @@ const FALLBACK_NEXT = 'Continue where you left off. If the next step is clear, d
  * A prompt without placeholders is returned unchanged.
  */
 export async function fillPlaceholders(engine: Engine, prompt: string, next: string): Promise<string> {
-  const withFile = prompt.includes('{choicesFile}')
-    ? replaceAllAsTyped(prompt, '{choicesFile}', await choicesFilePath(engine))
-    : prompt;
-  const withHeading = withFile.includes('{choicesHeading}')
-    ? replaceAllAsTyped(withFile, '{choicesHeading}', await choicesHeading(engine))
-    : withFile;
+  const values = {
+    choicesFile: prompt.includes('{choicesFile}') ? await choicesFilePath(engine) : '',
+    choicesHeading: prompt.includes('{choicesHeading}') ? await choicesHeading(engine) : '',
+    next: next === '' ? FALLBACK_NEXT : next,
+  };
 
-  // Filled last, so a tag that quotes a placeholder keeps it as typed.
-  return replaceAllAsTyped(withHeading, '{next}', next === '' ? FALLBACK_NEXT : next);
-}
-
-// A plain string would expand `$&` or `$$` in the value. A function hands it over as typed.
-function replaceAllAsTyped(text: string, placeholder: string, value: string): string {
-  return text.replaceAll(placeholder, () => value);
+  // Replacement values can quote placeholders or contain dollar signs and must stay as typed.
+  return prompt.replace(/\{(choicesFile|choicesHeading|next)\}/g, (_match, key: keyof typeof values) => values[key]);
 }
 
 // Time of sending, folder and session, so a dashboard can split the file into one block per continue.

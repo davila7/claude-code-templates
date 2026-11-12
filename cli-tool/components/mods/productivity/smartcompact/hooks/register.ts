@@ -46,8 +46,10 @@ export const register: Register = (on, options) => {
 
   // Every main loop turn counts: typed, queued, from a task notification or from this plugin.
   on('turn.start', ($, e, next) => {
-    turns.noteTurnStarted();
-    void compaction.drop(engineOf($), 'new turn started');
+    if (e.agentId === undefined) {
+      turns.noteTurnStarted();
+      void compaction.drop(engineOf($), 'new turn started');
+    }
 
     return next(e);
   });
@@ -69,10 +71,11 @@ export const register: Register = (on, options) => {
   // The judge or the tag's request runs after the turn has settled, so the turn never waits on it.
   on('turn.complete', async ($, e, next) => {
     const turnsAtEnd = turns.count();
+    const resetsAtEnd = turns.resets();
     const completed = await next(e);
 
-    if (isMainLoopAnswer(e)) {
-      const turn = { answer: e.answer, turnsAtEnd };
+    if (isMainLoopAnswer(e) && !turns.hasResetSince(resetsAtEnd)) {
+      const turn = { answer: e.answer, turnsAtEnd, resetsAtEnd };
       const request = readCompactRequest(e.answer);
 
       void (request === null
@@ -117,6 +120,7 @@ export const register: Register = (on, options) => {
   // A /compact typed by hand or Claude's own auto-compact already did the work.
   on('session.compact', async ($, e, next) => {
     if (e.agentId === undefined && (e.trigger === 'manual' || e.trigger === 'auto')) {
+      turns.noteReset();
       const engine = engineOf($);
       // A missing count leaves the tokens field out of the row.
       logEvent(engine, 'compact-other', { trigger: e.trigger, tokens: await contextTokens(engine) });
@@ -125,7 +129,7 @@ export const register: Register = (on, options) => {
 
     const compacted = await next(e);
 
-    if (e.agentId === undefined) {
+    if (e.agentId === undefined && compacted.skip === undefined) {
       floor.restartAfterCompaction();
       await saveFloorState(engineOf($), floor);
     }
@@ -135,12 +139,14 @@ export const register: Register = (on, options) => {
 
   // A /clear fires no session.start, so the floor and its countdown start over here.
   on('session.end', async ($, e, next) => {
+    turns.noteReset();
     await compaction.drop(engineOf($), `session ${e.reason}`);
 
     if (e.reason === 'clear') {
       floor.startNewSession();
       nudge.startCountOver();
       showJudgeCountdown(engineOf($), settings.minTokens);
+      await registerPromptCommand(engineOf($));
     }
 
     return next(e);

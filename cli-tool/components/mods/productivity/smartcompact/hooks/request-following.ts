@@ -51,7 +51,7 @@ export class RequestFollowing {
   /** Runs in the background after the turn. It never throws: a failure is logged as `request-error`. */
   async followRequest(engine: Engine, turn: FinishedTurn, request: CompactRequest): Promise<void> {
     try {
-      await this.#follow(engine, turn, request);
+      await this.#follow(engine, { ...turn, resetsAtEnd: turn.resetsAtEnd ?? this.#turns.resets() }, request);
     } catch (error) {
       // A mode such as `claude -p` lacks calls the request needs. That is no fault.
       if (isUnavailableInThisMode(error)) {
@@ -68,6 +68,10 @@ export class RequestFollowing {
   async #follow(engine: Engine, turn: FinishedTurn, request: CompactRequest): Promise<void> {
     const tokens = await contextTokens(engine);
 
+    if (this.#turns.hasResetSince(turn.resetsAtEnd)) {
+      return;
+    }
+
     // Without a size the floor rules cannot pick between a compaction and a continue, so nothing runs.
     if (tokens === undefined) {
       logEvent(engine, 'usage-missing', { hook: 'turn.complete' });
@@ -77,7 +81,7 @@ export class RequestFollowing {
     }
 
     const isFirstTurn = await this.#takeFirstTurn(engine, tokens);
-    const added = this.#floor.addedTokens(tokens);
+    const added = isFirstTurn ? 0 : this.#floor.addedTokens(tokens);
 
     const agents = await runningSubagentIds(engine);
 
@@ -88,7 +92,7 @@ export class RequestFollowing {
     }
 
     // A first turn always counts as 0 added. Counted from its own start, one turn of work could pass the floor.
-    const isBelowFloor = (isFirstTurn ? 0 : added) < this.#settings.minTokens;
+    const isBelowFloor = added < this.#settings.minTokens;
 
     if (this.#wouldLoop(turn, isBelowFloor)) {
       logEvent(engine, 'request-ignored', { reason: 'loop guard', tokens, added });
@@ -108,6 +112,7 @@ export class RequestFollowing {
       source: 'request',
       tokens,
       turnsAtEnd: turn.turnsAtEnd,
+      resetsAtEnd: turn.resetsAtEnd,
       instructions: instructionsForRequest(request.next, agents),
       next: request.next,
       continueWhenSkipped: true,
@@ -164,6 +169,7 @@ export class RequestFollowing {
     const sent = await submitContinuePrompt(engine, this.#turns, turn.turnsAtEnd, {
       next: request.next,
       kind: 'below-floor',
+      resetsAtEnd: turn.resetsAtEnd,
       source: 'request',
     });
 

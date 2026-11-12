@@ -12,7 +12,7 @@ After each turn of the main conversation:
 2. Below the [token floor](#token-floor) it does nothing.
 3. While [subagents run](#running-subagents) it waits.
 4. It asks a small judge model whether this is a good moment to compact. A good moment is a finished piece of work, for example when Claude offers to push or to start the next task. The turn never waits for the judge.
-5. On a yes it checks that no new turn and no new subagent started meanwhile. Then it waits until the prompt box is empty and no dialog is open, and compacts with the instructions `Keep the current goal, the next step and open decisions.` A new turn before the compaction runs drops it, and the next finished turn is judged again. So does a dialog that stays open for two minutes.
+5. On a yes it checks that no new turn and no new subagent started meanwhile. Then it waits until the prompt box is empty and no dialog is open, and compacts with the instructions `Keep the current goal, the next step and open decisions.` A new main-loop turn, a `/clear` or a manual `/compact` drops pending judge and tag work, including a continue prompt still being prepared. Subagent turns do not drop it. A new turn before the compaction runs drops it, and the next finished turn is judged again. So does a dialog that stays open for two minutes.
 6. After its own compaction it sends the [continue prompt](#continue-prompt), so Claude goes on with the work. It never sends one after a compaction it did not start, such as `/compact` typed by hand or Claude Code's own auto-compact.
 
 During a turn above the floor, the plugin also adds a hidden [nudge](#the-nudge) after a tool result, so a busy session picks a moment itself.
@@ -41,7 +41,7 @@ A line under the prompt box shows what the plugin is doing, for example `smartco
 
 | Status | Meaning |
 | --- | --- |
-| `judge in 48k` | Below the floor. The judge is asked once the conversation has grown 48k more tokens. A new session, a `/clear` and the first turn after them or after a compaction show the full floor. |
+| `judge in 48k` | Below the floor. The judge is asked once the conversation has grown 48k more tokens. A new session, a `/clear` and the first turn after them or after a completed compaction show the full floor. A skipped compaction keeps the floor. |
 | `judge after next turn` | The floor is reached. The judge is asked when the next turn ends. |
 | `waiting for subagents` | Subagents still run, so the judge was not asked. |
 | `nudged 14:02` | The session was asked to compact at the next good moment. |
@@ -66,7 +66,7 @@ Only a tag at the very end of a main answer counts. Whitespace may follow it. A 
 
 1. The tag misses a running agent id: the request is ignored and logged with the running and missing ids. A hidden note `compaction skipped, N subagent(s) still running (<ids>)` asks Claude to tag again with each id and what to do with its report, or once they finish. Each id must match literally, with no letter, digit, `_` or `-` touching either side. So `agent-1.` and `(agent-1)` name `agent-1`, but `agent-10` does not.
 2. Loop guard: the request is ignored and logged as `loop guard` when this turn came right after a continue prompt the plugin sent without a compaction. Without it a session that tags again at once loops. It holds when the previous continue prompt followed a compaction Claude Code skipped, at any token count. It also holds when the previous continue prompt was sent below the floor and this turn is below the floor too.
-3. Below the floor: nothing is compacted and the continue prompt is sent at once. The first turn of a new session and the first turn after a compaction always count as below the floor.
+3. Below the floor: nothing is compacted and the continue prompt is sent at once. The first turn of a new session and the first turn after a compaction count as 0 added tokens. With `minTokens: 0`, a tagged first turn can compact.
 4. Else the compaction waits as after a judge yes, with the instructions `Keep the current goal, open decisions and what this next step needs: <text>`. With running agents it adds `Keep the ids of the subagents still running (<ids>) and what to do with each report when it arrives.` When Claude Code skips the compaction, the continue prompt is still sent.
 
 The text in the tag fills `{next}` in the continue prompt.
@@ -112,7 +112,7 @@ A plugin loaded with `--plugin-dir` uses the key `smartcompact` instead of `smar
 
 The plugin sends a continue prompt after its own compaction and after a tag below the floor. It reads the text from a file each time, so an edit works at once:
 
-- `~/.claude/smartcompact/continue-prompt.md` when it exists. This is your own copy. An empty file turns the continue prompt off.
+- `~/.claude/smartcompact/continue-prompt.md` when it exists. This is your own copy. An empty file turns the continue prompt off. A prompt that becomes empty when its compacted line is removed is also left unsent.
 - Else `continue-prompt.md` in the plugin folder, the shipped default.
 
 Run `/smartcompact-prompt` to copy the default to your own file. It prints the path and says when it just made the file. A file that exists stays as it is.
@@ -127,7 +127,7 @@ When nothing was compacted, a first line `Context was compacted automatically.` 
 
 ### Choices file
 
-Your own continue prompt can ask Claude to write the choices it made for you to `~/.claude/smartcompact/choices.md`. It sits in the same folder as the log, so `SMARTCOMPACT_LOG` moves it too. For example:
+Your own continue prompt can ask Claude to write the choices it made for you to `~/.claude/smartcompact/choices.md`. The plugin folder is the default location for the choices file. With `SMARTCOMPACT_LOG` set, it sits next to that log file. A bare log filename uses the current folder, and `{choicesFile}` is always an absolute path. For example:
 
 ```
 Append your choices to {choicesFile}. Create the file if it is missing and never overwrite earlier text. Start with this line:
@@ -141,7 +141,7 @@ A filled heading looks like `## 2026-10-04T10:00:00.000Z | C:/work | session-1`.
 
 The mod sends nothing to the author or to any server of its own. The only call that leaves the session is the judge, through the engine's own model call (`claudeModel`). The mod reads no credentials. The engine's call does the sign-in. After a turn above the floor, the judge gets:
 
-- the first 2000 characters of the person's last prompt
+- up to 2000 characters of the person's last prompt, keeping the head and tail with a short marker between when it is longer
 - the last 4000 characters of the last answer
 - a one-line summary of the last 40 tool calls since that prompt, 150 characters each
 
@@ -149,16 +149,16 @@ The mod sends nothing to the author or to any server of its own. The only call t
 
 The continue prompt is the text of your `continue-prompt.md` or the shipped default. `{next}` is filled with the tag text the session wrote, or the fixed judge-yes line. `{choicesFile}` is filled with the choices path. `{choicesHeading}` is filled with a line holding the time, the working folder and the session id. Nothing else goes in.
 
-**It writes two files**, both in `~/.claude/smartcompact/`:
+**It writes these files** under `~/.claude/smartcompact/` by default:
 
-- `log.jsonl`, or the file `SMARTCOMPACT_LOG` names. See [Log](#log) below.
+- `logs/<session id>.jsonl`, capped at 300 KB and trimmed to the newest 150 KB, or the file `SMARTCOMPACT_LOG` names. See [Log](#log) below.
 - `continue-prompt.md`, a prompt the mod sends to Claude. It is written only when you run `/smartcompact-prompt` and the file does not exist.
 
 Apart from `continue-prompt.md`, it edits no settings, instructions, hooks, build or start-up file. It reads its own files, the session's messages and token count, the prompt box and the list of running subagents. It lists `projects/` under the Claude config folder, reads `agent-*.meta.json` and reads the modification time of `agent-*.jsonl`. It reads no subagent transcript content.
 
 ## Log
 
-Each decision is one JSON line in `~/.claude/smartcompact/log.jsonl`. It stays on your machine and keeps only its newest 2 MB. It keeps no text from the conversation and no text the judge wrote. A line holds the event, the time and details such as token counts, the length of the judge's reason (`reasonChars`) or an error message. The rows of a compaction carry `source`: `judge` or `request` (the session's tag). A `compact-started` row shows that the compact call began.
+Each decision is one JSON line in `~/.claude/smartcompact/logs/<session id>.jsonl`. Each session writes its own file, with only letters, digits, dash and underscore kept in the file name. It stays on your machine. Each file is capped at 300 KB and trimmed to the newest 150 KB of whole lines when it exceeds the cap. Old session files stay because the engine cannot delete files. `SMARTCOMPACT_LOG` overrides the path and makes all sessions share that file. It keeps no text from the conversation and no text the judge wrote. A line holds the event, the time and details such as token counts, the length of the judge's reason (`reasonChars`) or an error message. The rows of a compaction carry `source`: `judge` or `request` (the session's tag). A `compact-started` row shows that the compact call began.
 
 ## Development
 

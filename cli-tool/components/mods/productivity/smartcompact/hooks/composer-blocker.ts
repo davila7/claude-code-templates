@@ -19,5 +19,5 @@ export async function composerBlocker(engine: Engine): Promise<ComposerBlocker |
 async function isDialogOpen(engine: Engine): Promise<boolean> {
   const filled = await engine.fillPrompt({ text: '', mode: 'append' }).catch(() => undefined);
 
-  return filled !== undefined && !filled.isFilled && filled.refusal !== 'no_composer';
+  return filled === undefined || (!filled.isFilled && filled.refusal !== 'no_composer');
 }

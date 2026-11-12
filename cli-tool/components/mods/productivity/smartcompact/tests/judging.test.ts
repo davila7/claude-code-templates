@@ -8,7 +8,7 @@ describe('token floor', () => {
   test('shows the countdown from the current context as soon as the session starts', async ($, on) => {
     mock.clock(on, { now: START });
     mock.env(on, HOME);
-    const session = fakeSession(on, { floors: { 'session-1': { baseline: 0, waitingFor: null, savedAt: START } } });
+    const session = fakeSession(on, { 'floor:session-1': { baseline: 0, waitingFor: null, savedAt: START } });
 
     session.tokens = 25000;
     await $.session.start({ cwd: 'C:/work', surface: 'terminal', isInteractive: true });
@@ -19,7 +19,7 @@ describe('token floor', () => {
   test('a resumed session above the floor is judged after its next turn', async ($, on) => {
     const clock = mock.clock(on, { now: START });
     mock.env(on, HOME);
-    const session = fakeSession(on, { floors: { 'session-1': { baseline: 0, waitingFor: null, savedAt: START } } });
+    const session = fakeSession(on, { 'floor:session-1': { baseline: 0, waitingFor: null, savedAt: START } });
 
     session.tokens = 188000;
     await $.session.start({ cwd: 'C:/work', surface: 'terminal', isInteractive: true });
@@ -315,7 +315,7 @@ describe('a missing token count', () => {
     expect(session.compacts).toEqual([]);
     expect(session.statuses).toEqual(['judge in 60k']);
     expect(loggedLines(session)).toMatchObject([{ event: 'usage-missing', hook: 'turn.complete' }]);
-    expect(session.store.get('floors')).toBeUndefined();
+    expect(session.store.get('floor:session-1')).toBeUndefined();
   });
 
   test('the next turn with a count is the first turn', async ($, on) => {
@@ -397,7 +397,7 @@ describe('first turn of a session', () => {
     mock.clock(on, { now: START });
     mock.env(on, HOME);
     const saved = { 'session-1': { baseline: 80000, waitingFor: null, savedAt: START } };
-    const session = fakeSession(on, { floors: saved });
+    const session = fakeSession(on, { 'floor:session-1': saved['session-1'] });
 
     session.tokens = 110000;
     await $.session.start(START_ARGS);
@@ -409,7 +409,7 @@ describe('first turn of a session', () => {
     mock.clock(on, { now: START });
     mock.env(on, HOME);
     const saved = { 'session-1': { baseline: 0, waitingFor: 'first turn of session', savedAt: START } };
-    const session = fakeSession(on, { floors: saved });
+    const session = fakeSession(on, { 'floor:session-1': saved['session-1'] });
 
     session.tokens = 90000;
     await $.session.start(START_ARGS);
@@ -421,7 +421,7 @@ describe('first turn of a session', () => {
     mock.clock(on, { now: START });
     mock.env(on, HOME);
     const saved = { 'session-1': { baseline: 80000, waitingFor: null, savedAt: START } };
-    const session = fakeSession(on, { floors: saved });
+    const session = fakeSession(on, { 'floor:session-1': saved['session-1'] });
 
     session.messages = [];
     session.tokens = 100000;
@@ -483,7 +483,7 @@ describe('first turn of a session', () => {
     const clock = mock.clock(on, { now: START });
     mock.env(on, HOME);
     const saved = { 'session-1': { baseline: 10000, waitingFor: null, savedAt: START } };
-    const session = fakeSession(on, { floors: saved });
+    const session = fakeSession(on, { 'floor:session-1': saved['session-1'] });
 
     session.tokens = 90000;
     await $.session.start(START_ARGS);
@@ -499,7 +499,7 @@ describe('first turn of a session', () => {
     mock.clock(on, { now: START });
     mock.env(on, HOME);
     const saved = { 'session-1': { baseline: 10000, waitingFor: null, savedAt: START } };
-    const session = fakeSession(on, { floors: saved });
+    const session = fakeSession(on, { 'floor:session-1': saved['session-1'] });
 
     session.tokens = 35000;
     await $.session.start(START_ARGS);
@@ -515,7 +515,7 @@ describe('first turn of a session', () => {
     const clock = mock.clock(on, { now: START });
     mock.env(on, HOME);
     const saved = { 'session-1': { baseline: 10000, waitingFor: null, savedAt: START } };
-    const session = fakeSession(on, { floors: saved });
+    const session = fakeSession(on, { 'floor:session-1': saved['session-1'] });
 
     session.tokens = 35000;
     await $.session.start(START_ARGS);
@@ -558,8 +558,8 @@ describe('first turn of a session', () => {
     await $.turn.complete(finishedTurn());
     await clock.settle();
 
-    expect(session.store.get('floors')).toEqual({
-      'session-1': { baseline: 80000, waitingFor: null, savedAt: START },
+    expect(session.store.get('floor:session-1')).toEqual({
+      baseline: 80000, waitingFor: null, savedAt: START,
     });
   });
 
@@ -567,10 +567,9 @@ describe('first turn of a session', () => {
     const clock = mock.clock(on, { now: START });
     mock.env(on, HOME);
     const stored = {
-      floors: {
-        old: { baseline: 1, waitingFor: null, savedAt: START - 31 * DAY_MS },
-        recent: { baseline: 2, waitingFor: null, savedAt: START - 29 * DAY_MS },
-      },
+      'floor-index': { old: START - 31 * DAY_MS, recent: START - 29 * DAY_MS },
+      'floor:old': { baseline: 1, waitingFor: null, savedAt: START - 31 * DAY_MS },
+      'floor:recent': { baseline: 2, waitingFor: null, savedAt: START - 29 * DAY_MS },
     };
     const session = fakeSession(on, stored);
 
@@ -580,6 +579,7 @@ describe('first turn of a session', () => {
     await $.turn.complete(finishedTurn());
     await clock.settle();
 
-    expect(Object.keys(session.store.get('floors') as object).sort()).toEqual(['recent', 'session-1']);
+    expect(Object.keys(session.store.get('floor-index') as object).sort()).toEqual(['recent', 'session-1']);
+    expect(session.store.get('floor:old')).toBeUndefined();
   });
 });

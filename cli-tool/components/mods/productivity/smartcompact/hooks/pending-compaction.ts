@@ -28,6 +28,7 @@ export type CompactionRequest = {
   tokens: number;
   /** The turn count when the asking turn ended. A higher count when it is held means a new turn took over. */
   turnsAtEnd: number;
+  resetsAtEnd?: number;
   /** What the summarizer is told to keep. */
   instructions: string;
   /** The text for `{next}` in the continue prompt. Empty gets the fallback text. */
@@ -64,6 +65,10 @@ export class PendingCompaction {
 
   /** Holds the request and tries to compact right away. */
   async holdAndTry(engine: Engine, request: CompactionRequest): Promise<void> {
+    if (this.#turns.hasResetSince(request.resetsAtEnd)) {
+      return;
+    }
+
     if (this.#turns.hasChangedSince(request.turnsAtEnd)) {
       await this.#dropBeforeHold(engine, request);
 
@@ -71,7 +76,19 @@ export class PendingCompaction {
     }
 
     this.#take()?.timer?.cancel();
-    this.#held = { ...request, heldAt: await engine.now(), retries: 0 };
+    const held = { ...request, resetsAtEnd: request.resetsAtEnd ?? this.#turns.resets(), heldAt: 0, retries: 0 };
+    this.#held = held;
+    held.heldAt = await engine.now();
+
+    if (this.#held !== held || this.#turns.hasResetSince(held.resetsAtEnd)) {
+      return;
+    }
+
+    if (this.#turns.hasChangedSince(held.turnsAtEnd)) {
+      await this.drop(engine, 'new turn started');
+
+      return;
+    }
 
     await this.#attempt(engine);
   }
@@ -150,21 +167,23 @@ export class PendingCompaction {
     // Shows that the compact call began, also when no outcome row follows.
     logEvent(engine, 'compact-started', { source: held.source, tokens: held.tokens, retries: held.retries });
 
+    let result;
+
     try {
-      const result = await engine.compact({ instructions: held.instructions });
-
-      if (result.skip !== undefined) {
-        logEvent(engine, 'compact-failed', { source: held.source, message: result.skip });
-        await showTimedStatus(engine, 'compact skipped');
-
-        if (held.continueWhenSkipped) {
-          await this.#continueAfterSkip(engine, held, turnsAtCompact);
-        }
-
-        return;
-      }
+      result = await engine.compact({ instructions: held.instructions });
     } catch (error) {
       await this.#handleCompactError(engine, held, turnsAtCompact, error);
+
+      return;
+    }
+
+    if (result.skip !== undefined) {
+      logEvent(engine, 'compact-failed', { source: held.source, message: result.skip });
+      await showTimedStatus(engine, 'compact skipped');
+
+      if (held.continueWhenSkipped) {
+        await this.#continueAfterSkip(engine, held, turnsAtCompact);
+      }
 
       return;
     }
@@ -178,6 +197,7 @@ export class PendingCompaction {
     await showTimedStatus(engine, 'compacted');
     await submitContinuePrompt(engine, this.#turns, turnsAtCompact, {
       next: held.next,
+      resetsAtEnd: held.resetsAtEnd,
       kind: 'after-compaction',
       source: held.source,
     });
@@ -187,6 +207,7 @@ export class PendingCompaction {
   async #continueAfterSkip(engine: Engine, held: HeldRequest, turnsAtCompact: number): Promise<void> {
     const sent = await submitContinuePrompt(engine, this.#turns, turnsAtCompact, {
       next: held.next,
+      resetsAtEnd: held.resetsAtEnd,
       kind: 'after-skip',
       source: held.source,
     });
@@ -200,6 +221,10 @@ export class PendingCompaction {
   // cancel by the person is a drop too, since a retry cannot work or would undo the cancel. Anything else is a wait.
   async #handleCompactError(engine: Engine, held: HeldRequest, turnsAtCompact: number, error: unknown): Promise<void> {
     const { source } = held;
+
+    if (this.#turns.hasResetSince(held.resetsAtEnd)) {
+      return;
+    }
 
     if (this.#turns.hasChangedSince(turnsAtCompact)) {
       logEvent(engine, 'compact-dropped', { source, reason: 'new turn started', waitedMs: await waitedMs(engine, held) });

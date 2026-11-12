@@ -1,19 +1,24 @@
 import type { ContextFloor, FirstTurnReason, FloorState } from './context-floor.ts';
 import type { Engine } from './engine.ts';
 
-// One store key holds every session's floor state, keyed by session id.
-const STORE_KEY = 'floors';
+const INDEX_KEY = 'floor-index';
 const MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000;
 
 type SavedFloor = FloorState & { savedAt: number };
 
-type SavedFloors = Record<string, SavedFloor>;
-
 /** Reads the state saved for this session id. Returns undefined when none is saved. */
 export async function loadFloorState(engine: Engine, sessionId: string): Promise<FloorState | undefined> {
-  const saved = (await readSavedFloors(engine))[sessionId];
+  let saved = await engine.store.get(`floor:${sessionId}`);
 
+  // Read legacy state only when no new key exists, so old sessions still resume.
   if (saved === undefined) {
+    const legacy = await engine.store.get('floors');
+    if (typeof legacy === 'object' && legacy !== null) {
+      saved = (legacy as Record<string, unknown>)[sessionId];
+    }
+  }
+
+  if (!isSavedFloor(saved) || (await engine.now()) - saved.savedAt > MAX_AGE_MS) {
     return undefined;
   }
 
@@ -24,25 +29,27 @@ export async function loadFloorState(engine: Engine, sessionId: string): Promise
 export async function saveFloorState(engine: Engine, floor: ContextFloor): Promise<void> {
   const now = await engine.now();
   const sessionId = await engine.sessionId();
-  const floors = withoutOldEntries(await readSavedFloors(engine), now);
+  await engine.store.set(`floor:${sessionId}`, { ...floor.state(), savedAt: now });
 
-  floors[sessionId] = { ...floor.state(), savedAt: now };
+  // Index races may leave a small key behind but cannot overwrite another session's floor.
+  const value = await engine.store.get(INDEX_KEY);
+  const index: Record<string, number> = {};
 
-  await engine.store.set(STORE_KEY, floors);
-}
-
-async function readSavedFloors(engine: Engine): Promise<SavedFloors> {
-  const value = await engine.store.get(STORE_KEY);
-
-  if (typeof value !== 'object' || value === null) {
-    return {};
+  if (typeof value === 'object' && value !== null) {
+    for (const [id, savedAt] of Object.entries(value)) {
+      if (id === sessionId || typeof savedAt !== 'number') {
+        continue;
+      }
+      if (now - savedAt > MAX_AGE_MS) {
+        await engine.store.delete(`floor:${id}`);
+      } else {
+        index[id] = savedAt;
+      }
+    }
   }
 
-  return Object.fromEntries(Object.entries(value).filter(([, entry]) => isSavedFloor(entry)));
-}
-
-function withoutOldEntries(floors: SavedFloors, now: number): SavedFloors {
-  return Object.fromEntries(Object.entries(floors).filter(([, saved]) => now - saved.savedAt <= MAX_AGE_MS));
+  index[sessionId] = now;
+  await engine.store.set(INDEX_KEY, index);
 }
 
 function isSavedFloor(entry: unknown): entry is SavedFloor {

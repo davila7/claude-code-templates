@@ -313,8 +313,8 @@ describe('saved floor after a compaction', () => {
     await $.turn.complete(finishedTurn());
     await clock.settle();
 
-    expect(session.store.get('floors')).toEqual({
-      'session-1': { baseline: 0, waitingFor: 'first turn after compaction', savedAt: START },
+    expect(session.store.get('floor:session-1')).toEqual({
+      baseline: 0, waitingFor: 'first turn after compaction', savedAt: START,
     });
   });
 });

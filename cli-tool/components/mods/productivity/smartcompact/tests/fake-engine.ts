@@ -16,7 +16,6 @@ import type { Engine as TestEngine } from 'claude-code/testing';
 export const FAKE_HOME = '/home/test';
 /** A fake CLAUDE_CONFIG_DIR. */
 export const FAKE_CONFIG_DIR = '/config';
-const LOG_FILE = `${FAKE_HOME}/.claude/smartcompact/log.jsonl`;
 // The fake cannot read the disk, so it serves the shipped prompt for the plugin folder under test itself.
 // The test kit's `$.plugin.root` is a temp folder and a hooks module cannot import node:url, so any other
 // continue-prompt.md counts as the shipped one. The user's override lives under the fake home.
@@ -64,6 +63,8 @@ export type FakeSession = {
   mtimes: Map<string, number>;
   /** Paths whose read fails, as a locked or broken file would. */
   unreadableFiles: Set<string>;
+  /** When set, pauses a file read before the fake returns its contents. */
+  beforeRead?: (path: string) => Promise<void>;
   store: Map<string, unknown>;
   /** Texts of the rows the plugin appended. */
   notes: string[];
@@ -116,7 +117,7 @@ export function loggedEvents(session: FakeSession): string[] {
 }
 
 export function loggedLines(session: FakeSession): Record<string, unknown>[] {
-  const log = session.files.get(LOG_FILE) ?? '';
+  const log = session.files.get(`${FAKE_HOME}/.claude/smartcompact/logs/${session.id.replace(/[^A-Za-z0-9_-]/g, '')}.jsonl`) ?? '';
 
   return log.split('\n').filter((line) => line !== '').map((line) => JSON.parse(line));
 }
@@ -155,9 +156,9 @@ export function seedSubagent(session: FakeSession, id: string, finished: boolean
 }
 
 /** Runs one model request of a turn to its end: of the main session, or of a subagent when `agentId` is given. */
-export async function runStep($: TestEngine, index: number, agentId?: string): Promise<void> {
+export async function runStep($: TestEngine, index: number, agentId?: string, turnId = 'turn-1'): Promise<void> {
   const stream = $.turn.step({
-    turnId: 'turn-1',
+    turnId,
     index,
     model: 'opus',
     messageCount: 1,
@@ -357,7 +358,9 @@ function answerFiles(on: On, session: FakeSession): void {
       isLink: false,
     } };
   });
-  on('fs.read', (_$, e) => {
+  on('fs.read', async (_$, e) => {
+    await session.beforeRead?.(e.path);
+
     if (session.unreadableFiles.has(slashed(e.path))) {
       throw new Error(`cannot read ${e.path}`);
     }

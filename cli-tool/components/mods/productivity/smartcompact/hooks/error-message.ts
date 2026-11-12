@@ -1,4 +1,4 @@
-/** A short message for the log, from anything a promise rejected with. */
+/** Keeps the full message so error classification can read its ending. */
 export function messageOf(error: unknown): string {
-  return (error instanceof Error ? error.message : String(error)).slice(0, 200);
+  return error instanceof Error ? error.message : String(error);
 }

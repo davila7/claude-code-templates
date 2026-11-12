@@ -73,9 +73,11 @@ async function isStale(engine: Engine, transcriptPath: string, now: number): Pro
 async function subagentsFolder(engine: Engine): Promise<string | undefined> {
   const sessionId = await engine.sessionId();
 
-  if (cachedFolder?.sessionId === sessionId) {
-    if (cachedFolder.path !== undefined || (await engine.now()) < cachedFolder.retryAt) {
-      return cachedFolder.path;
+  const cached = cachedFolder;
+
+  if (cached?.sessionId === sessionId) {
+    if (cached.path !== undefined || (await engine.now()) < cached.retryAt) {
+      return cached.path;
     }
   }
 

@@ -21,6 +21,8 @@ export type FinishedTurn = {
   answer: string;
   /** The turn count when the turn ended. A higher count later means a new turn began. */
   turnsAtEnd: number;
+  /** A clear or compaction invalidates work even when no new turn started. */
+  resetsAtEnd?: number;
 };
 
 /**
@@ -43,11 +45,12 @@ export class TurnJudging {
   /** Runs in the background after the turn. It never throws: a failure is logged as `judge-error`. */
   async judgeTurn(engine: Engine, turn: FinishedTurn): Promise<void> {
     try {
-      await this.#judgeWhenWorthIt(engine, turn);
+      await this.#judgeWhenWorthIt(engine, { ...turn, resetsAtEnd: turn.resetsAtEnd ?? this.#turns.resets() });
     } catch (error) {
       // A mode such as `claude -p` lacks calls the judging needs. That is no fault.
       if (isUnavailableInThisMode(error)) {
         logEvent(engine, 'judge-skipped', { reason: NOT_IN_THIS_MODE });
+        engine.status(undefined);
 
         return;
       }
@@ -59,6 +62,10 @@ export class TurnJudging {
 
   async #judgeWhenWorthIt(engine: Engine, turn: FinishedTurn): Promise<void> {
     const tokens = await contextTokens(engine);
+
+    if (this.#turns.hasResetSince(turn.resetsAtEnd)) {
+      return;
+    }
 
     // A /clear or exit right after the turn can land before the count. The floor keeps waiting.
     if (tokens === undefined) {
@@ -153,6 +160,7 @@ export class TurnJudging {
       source: 'judge',
       tokens,
       turnsAtEnd: turn.turnsAtEnd,
+      resetsAtEnd: turn.resetsAtEnd,
       instructions: JUDGE_INSTRUCTIONS,
       next: '',
       continueWhenSkipped: false,
@@ -170,6 +178,10 @@ export class TurnJudging {
 
   /** The race guard: a turn that started or a subagent that runs since the turn ended cancels the yes. */
   async #isCancelled(engine: Engine, turn: FinishedTurn, tokens: number): Promise<boolean> {
+    if (this.#turns.hasResetSince(turn.resetsAtEnd)) {
+      return true;
+    }
+
     if (this.#turns.hasChangedSince(turn.turnsAtEnd)) {
       logEvent(engine, 'judge-cancelled', { tokens, reason: 'new turn started' });
       await showTimedStatus(engine, 'yes cancelled');

@@ -14,7 +14,7 @@ Answer YES only when the current unit of work is finished and nothing in flight 
   Saved handoff notes (bead, spec, commit) make this stronger.
 - The assistant or the user said this is a good moment to compact.
 - The assistant summed up the work and listed what is left for the user: buy something, push, review,
-  say go, or pick from options with a recommendation.
+  say go, or pick from options that need no detailed context, with a recommendation.
 
 An offer to push, open a PR or pick the next task is a clean handoff.
 The user's answer needs no fine detail, so it counts as YES.

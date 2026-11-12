@@ -254,7 +254,7 @@ describe('a tag below the floor', () => {
     await $.turn.complete(finishedTurn('turn-2'));
     await clock.settle();
 
-    expect(session.store.get('floors')).toMatchObject({ 'session-1': { baseline: 80000, waitingFor: null } });
+    expect(session.store.get('floor:session-1')).toMatchObject({ baseline: 80000, waitingFor: null });
     expect(loggedEvents(session)).toEqual(['compact-requested', 'continue-typed', 'judge-skipped']);
     expect(loggedLines(session).at(-1)).toMatchObject({ reason: 'below floor', added: 10000 });
   });
@@ -509,7 +509,7 @@ describe('a tag without a token count', () => {
     expect(session.submitted).toEqual([]);
     expect(loggedLines(session)).toMatchObject([{ event: 'usage-missing', hook: 'turn.complete' }]);
     expect(withoutTime(session.statuses.at(-1))).toBe('request ignored');
-    expect(session.store.get('floors')).toBeUndefined();
+    expect(session.store.get('floor:session-1')).toBeUndefined();
   });
 });
 
