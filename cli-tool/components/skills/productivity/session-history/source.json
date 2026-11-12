@@ -1,0 +1,12 @@
+{
+  "repo": "rohitg00/agentmemory",
+  "path": "plugin/skills/session-history",
+  "commit": "0da38f1d5067a479a6e5c4653de342ba43ca22b2",
+  "license": "Apache-2.0",
+  "author": "Rohit Ghumare",
+  "include": [
+    "SKILL.md",
+    "EXAMPLES.md",
+    "TROUBLESHOOTING.md"
+  ]
+}

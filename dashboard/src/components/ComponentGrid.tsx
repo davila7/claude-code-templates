@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import type { Component } from '../lib/types';
 import { TYPE_CONFIG } from '../lib/icons';
 import { ITEMS_PER_PAGE } from '../lib/constants';
@@ -6,6 +6,8 @@ import { fetchComponentsByType } from '../lib/data';
 import SkillSpectorBadge from './SkillSpectorBadge';
 import { fetchActiveAds, findSponsoredIndex, type ActiveAd } from '../lib/ads';
 import SaveToCollectionButton from './SaveToCollectionButton';
+import { componentRef, track } from '../lib/analytics';
+import { componentPath, pluralType } from '../lib/component-url';
 
 type GridComponent = Component & { sponsored?: boolean };
 
@@ -104,6 +106,22 @@ export default function ComponentGrid({ initialType }: Props) {
       const saved = localStorage.getItem('claudeCodeCart');
       if (saved) setCart(JSON.parse(saved));
     } catch {}
+    // Keep in sync with the Stack sidebar (same tab) and other tabs, so the
+    // page button's Add/Remove choice reflects the current stack.
+    const onCartUpdated = (e: Event) => {
+      const detail = (e as CustomEvent<CartState>).detail;
+      if (detail) setCart(detail);
+    };
+    const onStorage = (e: StorageEvent) => {
+      if (e.key !== 'claudeCodeCart') return;
+      try { setCart(e.newValue ? JSON.parse(e.newValue) : {}); } catch {}
+    };
+    window.addEventListener('cart-updated', onCartUpdated);
+    window.addEventListener('storage', onStorage);
+    return () => {
+      window.removeEventListener('cart-updated', onCartUpdated);
+      window.removeEventListener('storage', onStorage);
+    };
   }, []);
 
 
@@ -165,6 +183,18 @@ export default function ComponentGrid({ initialType }: Props) {
 
   useEffect(() => { setPage(1); }, [category, search, activeType, selectedCategories, minDownloads]);
 
+  // One 'search' event per settled query (1 s without typing), with the number
+  // of results only, never the text.
+  const filteredCount = useRef(0);
+  filteredCount.current = filtered.length;
+  useEffect(() => {
+    if (!search.trim()) return;
+    const timer = setTimeout(() => {
+      track('search', { results_count: filteredCount.current, scope: 'grid', component_type: pluralType(activeType) });
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [search, activeType]);
+
   // Sidebar counts come from /counts.json (see Sidebar.astro); the grid no
   // longer loads every type, so it can't (and doesn't need to) emit them.
 
@@ -210,6 +240,40 @@ export default function ComponentGrid({ initialType }: Props) {
       return newItems;
     });
   }, []);
+
+  // Adds or removes a set of components in one write (one localStorage save,
+  // one cart-updated event), used by the page-level Add/Remove button.
+  const setManyInCart = useCallback((components: Component[], add: boolean) => {
+    setCart((prev) => {
+      const next: CartState = { ...prev };
+      for (const component of components) {
+        const typePlural = component.type.endsWith('s') ? component.type : component.type + 's';
+        const items = next[typePlural] ?? [];
+        const exists = items.some((i) => i.path === component.path);
+        if (add && !exists) {
+          next[typePlural] = [...items, {
+            name: component.name, path: component.path, category: component.category ?? '',
+            description: component.description ?? '', icon: typePlural,
+          }];
+        } else if (!add && exists) {
+          next[typePlural] = items.filter((i) => i.path !== component.path);
+        }
+      }
+      localStorage.setItem('claudeCodeCart', JSON.stringify(next));
+      window.dispatchEvent(new CustomEvent('cart-updated', { detail: next }));
+      return next;
+    });
+  }, []);
+
+  // A card adds or removes one component; only an add is an analytics event.
+  const addOrRemove = (component: Component) => {
+    if (!isInCart(component.path, component.type)) {
+      track('add_to_stack', { ...componentRef(component.type, component.path), source: 'grid' });
+    }
+    toggleCart(component);
+  };
+
+  const pageInStack = paged.length > 0 && paged.every((comp) => isInCart(comp.path, comp.type));
 
   if (loading) {
     return (
@@ -512,17 +576,12 @@ export default function ComponentGrid({ initialType }: Props) {
           {filtered.length > 0 && (
             <div className="hidden sm:flex items-center gap-2 ml-4">
               <button
-                onClick={() => {
-                  paged.forEach(comp => {
-                    if (!isInCart(comp.path, comp.type)) {
-                      toggleCart(comp);
-                    }
-                  });
-                }}
+                onClick={() => setManyInCart(paged, !pageInStack)}
                 className="text-[11px] font-semibold px-3 py-1.5 rounded-lg bg-[var(--color-surface-2)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-3)] border border-[var(--color-border)] hover:border-[var(--color-border-hover)] transition-all active:scale-95"
-                title="Add all visible components to stack"
+                title={pageInStack ? 'Remove the components on this page from your stack' : 'Add all visible components to stack'}
+                aria-pressed={pageInStack}
               >
-                + Add Page to Stack
+                {pageInStack ? '− Remove Page from Stack' : '+ Add Page to Stack'}
               </button>
             </div>
           )}
@@ -559,7 +618,7 @@ export default function ComponentGrid({ initialType }: Props) {
                   animationFillMode: 'both'
                 }}
                 onClick={() => {
-                  window.location.href = `/component/${component.type}/${cleanPath(component.path ?? component.name)}`;
+                  window.location.href = componentPath(component.type, component.path ?? component.name);
                 }}
               >
                 {/* Icon */}
@@ -577,7 +636,9 @@ export default function ComponentGrid({ initialType }: Props) {
                 {/* Info */}
                 <div className="flex-1 min-w-0">
                   <h3 className="font-mono text-[14px] font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-accent)] transition-colors mb-1">
-                    {formatName(component.name)}
+                    <a href={componentPath(component.type, component.path ?? component.name)} onClick={(e) => e.stopPropagation()}>
+                      {formatName(component.name)}
+                    </a>
                   </h3>
                   <p className="text-[12px] text-[var(--color-text-secondary)] line-clamp-1 leading-relaxed">
                     {component.description || component.content?.slice(0, 150) || 'No description'}
@@ -616,7 +677,7 @@ export default function ComponentGrid({ initialType }: Props) {
                     componentCategory={component.category}
                   />
                   <button
-                    onClick={(e) => { e.stopPropagation(); toggleCart(component); }}
+                    onClick={(e) => { e.stopPropagation(); addOrRemove(component); }}
                     className={`w-8 h-8 rounded flex items-center justify-center transition-all duration-150 ${
                       inCart
                         ? 'bg-[var(--color-accent)] text-white border border-[var(--color-accent)]'
@@ -653,7 +714,7 @@ export default function ComponentGrid({ initialType }: Props) {
                 animationFillMode: 'both'
               }}
               onClick={() => {
-                window.location.href = `/component/${component.type}/${cleanPath(component.path ?? component.name)}`;
+                window.location.href = componentPath(component.type, component.path ?? component.name);
               }}
             >
               {/* Icon — flat, no glow */}
@@ -671,7 +732,9 @@ export default function ComponentGrid({ initialType }: Props) {
               {/* Info */}
               <div className="min-w-0 flex-1">
                 <h3 className="font-mono text-[14px] font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-accent)] transition-colors leading-tight mb-1.5">
-                  {formatName(component.name)}
+                  <a href={componentPath(component.type, component.path ?? component.name)} onClick={(e) => e.stopPropagation()}>
+                    {formatName(component.name)}
+                  </a>
                 </h3>
                 <p className="text-[12px] text-[var(--color-text-secondary)] line-clamp-2 leading-[1.6]">
                   {component.description || component.content?.slice(0, 120) || 'No description'}
@@ -708,7 +771,7 @@ export default function ComponentGrid({ initialType }: Props) {
                   componentCategory={component.category}
                 />
                 <button
-                  onClick={(e) => { e.stopPropagation(); toggleCart(component); }}
+                  onClick={(e) => { e.stopPropagation(); addOrRemove(component); }}
                   className={`w-8 h-8 rounded flex items-center justify-center transition-all duration-150 ${
                     inCart
                       ? 'bg-[var(--color-accent)] text-white border border-[var(--color-accent)]'

@@ -147,6 +147,9 @@ export const register: Register = (on, options) => {
   })
 
   on('turn.start', async ($, e, next) => {
+    // Since Claude Code 2.1.299 a subagent's or teammate's turn starts here too (its prompt in `e.text`).
+    // Subagents enter the flow through agent.spawn.
+    if (e.agentId !== undefined) return next(e)
     mainTurn(flow, e.text, Date.now())
     if (isOpen) {
       $.ui.status(statusText())
@@ -170,6 +173,7 @@ export const register: Register = (on, options) => {
           fork: e.fork,
           background: e.background,
           model: r.model,
+          resumed: e.resume !== undefined,
         },
         Date.now(),
       )

@@ -84,7 +84,7 @@ with Python's `gzip` (Cloudflare may serve Brotli, which is smaller).
 | `https://www.aitmpl.com/search-index.json` | `dashboard/public/search-index.json` | 1.17 MB | 308 KB | `SearchModal.tsx` |
 | `https://www.aitmpl.com/component-content/{type}/{category}/{name}.json` | `dashboard/public/component-content/**` | per file | | detail pages, Send-to-repo |
 | `https://www.aitmpl.com/trending-data.json` | `dashboard/public/trending-data.json` | 30 KB | 4 KB | `TrendingView.tsx`, home counters, WebMCP, **`/aitmpl` mod** |
-| `https://raw.githubusercontent.com/davila7/claude-code-templates/main/docs/components.json` | `docs/components.json` | 3.32 MB | 476 KB | **niche-db**, `daily-component-discord.yml` (jq), legacy `docs/` site |
+| `https://raw.githubusercontent.com/davila7/claude-code-templates/main/docs/components.json` | `docs/components.json` | 3.32 MB | 476 KB | **niche-db**, legacy `docs/` site |
 | `https://davila7.github.io/claude-code-templates/components.json` | `docs/components.json` via GitHub Pages | same | | legacy site only (as far as found) |
 | `https://aitmpl.com/api/agents.json` | none on Cloudflare Pages | | | first-party CLI fallback, see §4 |
 
@@ -267,7 +267,6 @@ First-party consumers found in this repo, which a format change also breaks:
 |---|---|
 | Dashboard islands (`ComponentGrid`, `SearchModal`, `Sidebar`, `TrendingView`, `SendToRepoModal`, `MyComponentsView`), SSR `lib/data.ts`, `llms.txt.ts`, `sitemap.xml.ts`, `home-stats.ts` | `/components.json`, `/components/{type}.json`, `/counts.json`, `/search-index.json`, `/component-content/**`, `/trending-data.json` |
 | WebMCP tools (`dashboard/src/lib/webmcp.ts`), exposed to browser agents | `/components/{type}.json`, `/counts.json`, `/trending-data.json` |
-| `.github/workflows/daily-component-discord.yml` | `jq` over `docs/components.json` groups `agents, commands, mcps, settings, hooks` |
 | CLI `getAvailableAgentsFromGitHub()` (`cli-tool/src/index.js:1439`) | `../../docs/components.json`, which the npm package does not ship, then **`https://aitmpl.com/api/agents.json`, which does not exist on Cloudflare Pages** (it was `docs/api/agents.json` on the old Vercel/GitHub Pages site; today it hits the `/api/*` JSON 404), then the GitHub contents API (60 req/h unauthenticated). A dead URL in a released CLI, unrelated to this proposal but found by it. |
 | `cli-tool/src/sandbox-server.js` | `../../docs/components.json` (same packaging gap) |
 
@@ -287,7 +286,7 @@ First-party consumers found in this repo, which a format change also breaks:
 | Wrap per-type arrays in an envelope | n/a (reads `docs/`) | **throws**: "catalog body is not an array", pane unusable | breaks |
 | Change trending `id` format | n/a | **silent**: trending column empty | |
 | Rename a CLI flag / type (as `--function-hook` → `--mod`) | install commands they publish stop working (silent) | install button fails (loud, in the terminal) | |
-| Move or delete `docs/components.json` (e.g. retiring the legacy `docs/` site) | **loud on their side, invisible to us**: every pull fails | n/a | Discord daily workflow breaks |
+| Move or delete `docs/components.json` (e.g. retiring the legacy `docs/` site) | **loud on their side, invisible to us**: every pull fails | n/a | none |
 | Move dashboard files (e.g. `/components/*` → `/data/*`) | n/a | loud error in pane | breaks until updated |
 | Change `/component/{type}/...` route | n/a | open-in-browser 404s | internal links |
 | File grows (1,922 components today, 3.3 MB) | 6 × 3.3 MB per cycle from GitHub | per-type file per pane open | |

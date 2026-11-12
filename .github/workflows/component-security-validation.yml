@@ -60,8 +60,68 @@ jobs:
           path: cli-tool/security-report.json
           retention-days: 30
 
+      - name: Add report to job summary
+        if: always()
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const fs = require('fs');
+            const reportPath = 'cli-tool/security-report.json';
+
+            if (!fs.existsSync(reportPath)) {
+              core.info('No security report found.');
+              return;
+            }
+
+            const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+            const { passed, failed, warnings, total } = report.summary;
+            const status = failed === 0 ? '✅ PASSED' : '❌ FAILED';
+
+            await core.summary
+              .addHeading(`Security Audit Report: ${status}`)
+              .addTable([
+                [
+                  { data: 'Metric', header: true },
+                  { data: 'Count', header: true },
+                ],
+                ['Total Components', String(total)],
+                ['✅ Passed', String(passed)],
+                ['❌ Failed', String(failed)],
+                ['⚠️ Warnings', String(warnings)],
+              ])
+              .addRaw(`\n[View the full report artifact](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}).\n`)
+              .write();
+
+            if (failed > 0) {
+              const failedComponents = report.components
+                .filter(component => !component.overall.valid)
+                .sort((a, b) => b.overall.errorCount - a.overall.errorCount);
+              const rows = failedComponents.slice(0, 5).map(component => [
+                component.component.path.split('/').pop().replace(/\.md$/, ''),
+                String(component.overall.errorCount),
+                String(component.overall.warningCount),
+                `${component.overall.score}/100`,
+              ]);
+
+              await core.summary
+                .addHeading('Failed Components (Top 5)', 3)
+                .addTable([
+                  [
+                    { data: 'Component', header: true },
+                    { data: 'Errors', header: true },
+                    { data: 'Warnings', header: true },
+                    { data: 'Score', header: true },
+                  ],
+                  ...rows,
+                ])
+                .addRaw(failedComponents.length > 5
+                  ? `\n_${failedComponents.length - 5} more failed component(s) are included in the report artifact._\n`
+                  : '')
+                .write();
+            }
+
       - name: Comment PR with Results
-        if: github.event_name == 'pull_request' && always()
+        if: github.event_name == 'pull_request' && always() && github.event.pull_request.head.repo.full_name == github.repository
         uses: actions/github-script@v9
         with:
           script: |
@@ -125,4 +185,3 @@ jobs:
               repo: context.repo.repo,
               body: comment
             });
-

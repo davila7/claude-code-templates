@@ -1,0 +1,61 @@
+name: CodeQL
+
+# Advanced setup instead of GitHub's default setup, so the scan covers only
+# the code we ship and run (CLI, dashboard, scripts, workers, workflows) and
+# not the ~1,900 catalog components under cli-tool/components/, which are
+# reviewed by SkillSpector and the component validators instead.
+# The repository's CodeQL "Default setup" must be disabled for this workflow's
+# uploads to be accepted (Settings → Code security → CodeQL analysis).
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '27 5 * * 3'  # Wednesdays 05:27 UTC
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    name: Analyze (${{ matrix.language }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [javascript-typescript, python, actions]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: none
+          config: |
+            paths:
+              - cli-tool/src
+              - cli-tool/bin
+              - cli-tool/analytics-ui/src
+              - dashboard/src
+              - scripts
+              - cloudflare-workers
+              - .github/workflows
+            paths-ignore:
+              - '**/node_modules'
+              - '**/dist'
+              - '**/tests'
+              - '**/test'
+
+      - name: Analyze
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: /language:${{ matrix.language }}

@@ -3,7 +3,7 @@
     "n8n-mcp": {
       "description": "Build and manage n8n workflows directly from Claude. Includes a pre-built database with all n8n node documentation for workflow automation.",
       "command": "npx",
-      "args": ["-y", "n8n-mcp"],
+      "args": ["-y", "n8n-mcp@2.101.4"],
       "env": {
         "MCP_MODE": "stdio"
       }

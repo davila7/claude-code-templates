@@ -1,5 +1,7 @@
 import { defineMiddleware } from 'astro:middleware';
 import { MARKDOWN_CONTENT_TYPE, notFoundMarkdown, prefersMarkdown } from './lib/agent-readiness';
+import { SECURITY_HEADERS, isHtml } from './lib/security-headers';
+import { NOINDEX_HEADER, isNoindexPath } from './lib/robots';
 
 /**
  * Injects Cloudflare Pages runtime env bindings into process.env so that
@@ -14,6 +16,13 @@ import { MARKDOWN_CONTENT_TYPE, notFoundMarkdown, prefersMarkdown } from './lib/
  * Markdown body when the client asks for text/markdown, and `Vary: Accept`
  * either way so caches keep the two variants apart. /api/* 404s are JSON
  * (src/pages/api/[...path].ts) and are left alone.
+ *
+ * SSR HTML responses get the security headers (src/lib/security-headers.ts):
+ * Cloudflare Pages applies public/_headers only to static files and
+ * prerendered pages, so without this SSR pages had none of them.
+ *
+ * Private pages and the API get `X-Robots-Tag: noindex` (src/lib/robots.ts)
+ * instead of a robots.txt Disallow, which Google needs to crawl to drop them.
  */
 export const onRequest = defineMiddleware(async (context, next) => {
   const runtime = (context.locals as { runtime?: { env?: Record<string, string> } }).runtime;
@@ -27,6 +36,16 @@ export const onRequest = defineMiddleware(async (context, next) => {
   }
 
   const response = await next();
+
+  if (isHtml(response.headers.get('content-type'))) {
+    for (const [name, value] of Object.entries(SECURITY_HEADERS)) {
+      if (!response.headers.has(name)) response.headers.set(name, value);
+    }
+  }
+
+  if (isNoindexPath(context.url.pathname)) {
+    response.headers.set('X-Robots-Tag', NOINDEX_HEADER);
+  }
 
   if (response.status !== 404 || context.url.pathname.startsWith('/api/')) {
     return response;

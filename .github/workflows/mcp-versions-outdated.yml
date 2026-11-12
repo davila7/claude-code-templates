@@ -1,0 +1,60 @@
+# Weekly check of MCP package pins (scripts/mcp_versions.py).
+#
+# Every MCP component pins its npm/PyPI package to an exact version, so new
+# releases never reach users on their own. This job lists the pins behind the
+# registry and keeps one open issue with that list. A maintainer bumps them in a
+# PR after reading the changelog. (A PR opened here with GITHUB_TOKEN would not
+# trigger the component checks, which is why this job only reports.)
+name: MCP versions outdated
+
+on:
+  schedule:
+    - cron: '30 13 * * 1'  # Mondays 13:30 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  outdated:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: List outdated MCP pins
+        id: list
+        run: |
+          python3 scripts/mcp_versions.py outdated > outdated.tsv
+          count=$(wc -l < outdated.tsv | tr -d ' ')
+          echo "count=$count" >> "$GITHUB_OUTPUT"
+          {
+            echo "## MCP packages with newer releases: $count"
+            echo
+            if [ "$count" -gt 0 ]; then
+              echo "| Component | Package | Pinned | Latest |"
+              echo "|---|---|---|---|"
+              awk -F'\t' '{printf "| %s | %s | %s | %s |\n", $1, $2, $3, $4}' outdated.tsv
+              echo
+              echo "Bump the version in each component's \`args\` with a PR, after reading the package's changelog."
+            fi
+          } > summary.md
+          cat summary.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Open or update the tracking issue
+        if: steps.list.outputs.count != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          title="MCP packages have newer releases"
+          number=$(gh issue list --state open --search "in:title \"$title\"" --json number --jq '.[0].number')
+          if [ -n "$number" ]; then
+            gh issue edit "$number" --body-file summary.md
+          else
+            gh issue create --title "$title" --body-file summary.md
+          fi

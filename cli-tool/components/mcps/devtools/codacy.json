@@ -3,7 +3,7 @@
     "codacy": {
       "description":"MCP Server for the Codacy API, enabling access to repositories, files, quality, coverage, security and more.",
       "command": "npx",
-      "args": ["-y", "@codacy/codacy-mcp"],
+      "args": ["-y", "@codacy/codacy-mcp@0.7.2"],
       "env": {
         "CODACY_ACCOUNT_TOKEN": "<YOUR_TOKEN>"
       }
