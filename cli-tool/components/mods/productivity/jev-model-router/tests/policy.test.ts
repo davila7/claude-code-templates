@@ -235,20 +235,23 @@ test('builtin ignores every key', () => {
 // answer shape as TypeSafe. What differs is the request: `input` instead of
 // `state`, and the key in `x-goog-api-key` rather than a bearer token.
 
+// The distributions' maxima (0.70, 0.55) deliberately differ from the
+// reported confidences (0.88, 0.62), so a reader that fell back to the
+// highest probability, as it must for the Gateway, would fail these tests.
 const geminiAnswer = (tier: string, confidence: number, noul = 0.02) =>
   JSON.stringify({
     answers: {
       tier: {
         type: 'choice',
         choice: tier,
-        probabilities: { fast: 0.05, balanced: 0.05, deep: 0.05, [tier]: confidence },
+        probabilities: { fast: 0.15, balanced: 0.15, deep: 0.15, [tier]: 0.7 },
         confidence,
       },
       effort: {
         type: 'score',
         score: 0.4,
         legend: { '0': 'almost none', '1': 'some', '2': 'a lot', '3': 'as much as possible' },
-        probabilities: { '0': 0.62, '1': 0.36, '2': 0.01, '3': 0.01 },
+        probabilities: { '0': 0.55, '1': 0.4, '2': 0.03, '3': 0.02 },
         confidence: 0.62,
       },
       risky: { type: 'noul', noul, confidence: 0.98 },

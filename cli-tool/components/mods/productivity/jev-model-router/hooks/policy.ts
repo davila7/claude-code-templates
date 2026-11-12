@@ -190,10 +190,11 @@ function isTier(value: unknown): value is Tier {
  * Reads a response from any backend.
  *
  * TypeSafe's and Gemini's own APIs answer in the same shape: a `confidence`
- * per answer and a `noul` number for a yes/no question. The Gateway reports neither: confidence has to come
- * from the highest probability of a distribution that is itself optional, and
- * a yes/no answer arrives as `probability`. Both are handled, and a missing
- * confidence reads as null rather than as a number the policy would trust.
+ * per answer and a `noul` number for a yes/no question. The Gateway reports
+ * neither: confidence has to come from the highest probability of a
+ * distribution that is itself optional, and a yes/no answer arrives as
+ * `probability`. Both shapes are handled, and a missing confidence reads as
+ * null rather than as a number the policy would trust.
  */
 export function readDecision(responseText: string): Decision | null {
   let parsed: unknown
@@ -227,8 +228,9 @@ export function readDecision(responseText: string): Decision | null {
 }
 
 /**
- * How sure an answer is. TypeSafe reports it; the Gateway does not, so there
- * it is the highest probability of a distribution that is itself optional.
+ * How sure an answer is. TypeSafe and Gemini report it, and a reported value
+ * always wins; the Gateway does not, so there it is the highest probability
+ * of a distribution that is itself optional.
  */
 function confidenceOf(answer: Record<string, unknown>): number | null {
   if (typeof answer.confidence === 'number') return answer.confidence
