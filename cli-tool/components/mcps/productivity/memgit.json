@@ -5,7 +5,7 @@
       "command": "npx",
       "args": [
         "-y",
-        "memgit-mcp"
+        "memgit-mcp@0.16.0"
       ]
     }
   }
