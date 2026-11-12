@@ -7,9 +7,10 @@
  *
  * Jev is reached one of two ways, whichever key is configured: TypeSafe's
  * own API (`typesafeApiKey`), which reports a calibrated confidence per
- * answer, or the Vercel AI Gateway (`gatewayApiKey`), which does not. With
- * neither, the engine's own `$.model.classify` stands in, so the mod is
- * useful without any account.
+ * answer, or the Vercel AI Gateway (`gatewayApiKey`), which does not.
+ * Google's Gemini Decision (`geminiApiKey`) can answer the same questions
+ * instead, with a confidence per answer too. With no key, the engine's own
+ * `$.model.classify` stands in, so the mod is useful without any account.
  *
  * Three things it can set, each on its own switch:
  *   agent.spawn  — the model of each subagent (on by default)
@@ -32,8 +33,8 @@
  * Every failure path is fail-open: a classification that errors or runs past
  * the latency budget leaves the request exactly as the engine built it.
  *
- * The API key comes from the plugin's options (userConfig "typesafeApiKey"
- * or "gatewayApiKey"). Never hardcode it in this file.
+ * The API key comes from the plugin's options (userConfig "typesafeApiKey",
+ * "geminiApiKey" or "gatewayApiKey"). Never hardcode it in this file.
  *
  * Needs Claude Code >= 2.1.287. Typed
  * against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
@@ -45,6 +46,7 @@ import type { Register } from 'claude-code'
 import {
   DEFAULT_BASE_URL,
   DEFAULT_MODEL,
+  decisionModelLabel,
   describeDecision,
   describeSetup,
   describeStatus,
@@ -69,27 +71,23 @@ export const register: Register = (on, options) => {
   const flag = (key: string, fallback: boolean) =>
     typeof options[key] === 'boolean' ? (options[key] as boolean) : fallback
 
-  // TypeSafe's own API is preferred when both keys are set: it is the only
-  // one that reports a calibrated confidence, which the policy's threshold
-  // reads. `provider` forces one, including "builtin" to use neither.
-  const typesafeKey = text('typesafeApiKey', '')
-  const gatewayKey = text('gatewayApiKey', '')
+  // `auto` takes TypeSafe, then Gemini, then the Gateway: the first two report
+  // a confidence per answer, which the policy's thresholds read. `provider`
+  // forces one, including "builtin" to use none.
+  const keys: Record<Provider, string> = {
+    typesafe: text('typesafeApiKey', ''),
+    gemini: text('geminiApiKey', ''),
+    gateway: text('gatewayApiKey', ''),
+  }
   const forced = text('provider', 'auto')
-  const active: Provider | null = selectProvider(forced, typesafeKey, gatewayKey)
+  const active: Provider | null = selectProvider(forced, keys)
+  const label = decisionModelLabel(active)
 
   // Each backend keeps its own URL and model, so an override written for one
-  // can never be sent to the other when `auto` picks differently than expected.
-  const apiKey = active === 'typesafe' ? typesafeKey : active === 'gateway' ? gatewayKey : ''
-  const modelId = !active
-    ? ''
-    : active === 'typesafe'
-      ? text('typesafeModel', DEFAULT_MODEL.typesafe)
-      : text('gatewayModel', DEFAULT_MODEL.gateway)
-  const url = !active
-    ? ''
-    : active === 'typesafe'
-      ? endpoint('typesafe', text('typesafeBaseUrl', DEFAULT_BASE_URL.typesafe))
-      : endpoint('gateway', text('gatewayBaseUrl', DEFAULT_BASE_URL.gateway))
+  // can never be sent to another when `auto` picks differently than expected.
+  const apiKey = active ? keys[active] : ''
+  const modelId = active ? text(`${active}Model`, DEFAULT_MODEL[active]) : ''
+  const url = active ? endpoint(active, text(`${active}BaseUrl`, DEFAULT_BASE_URL[active])) : ''
 
   // A backend named in the options but missing its key degrades to the
   // built-in classifier, which is silent; say so once, when a hook first runs.
@@ -202,7 +200,7 @@ export const register: Register = (on, options) => {
     // does with it. This is the line that proves the classification ran.
     if (logDecisions) {
       const ms = (await $.clock.now()) - startedAt
-      $.ui.log(`[jev-model-router] jev: ${describeDecision(decision, ms)}`)
+      $.ui.log(`[jev-model-router] ${label}: ${describeDecision(decision, ms)}`)
     }
 
     pending.put(decision)
@@ -229,7 +227,7 @@ export const register: Register = (on, options) => {
     appliedTurnId = e.turnId
     applied = Object.keys(change).length > 0 ? change : null
     // A row in the transcript scrolls away; this line stays on screen.
-    if (logDecisions) $.ui.status(describeStatus(decision, applied))
+    if (logDecisions) $.ui.status(describeStatus(decision, applied, label))
 
     if (!applied) {
       // A turn left alone is the common case, and it used to be silent, which
@@ -270,12 +268,8 @@ export const register: Register = (on, options) => {
       }
     }
 
-    // A fork inherits its parent's model; `model` is ignored for it. A resumed
-    // agent keeps the model it started on (2.1.299: a hook can only refuse a
-    // resume), and its `prompt` is the resuming message, not the task. A
-    // workflow agent is routed like any other: its `model` rewrite applies
-    // since 2.1.300.
-    if (!routeSubagentModel || e.fork || e.resume) return next(e)
+    // A fork inherits its parent's model; `model` is ignored for it.
+    if (!routeSubagentModel || e.fork) return next(e)
 
     if (!unusableReported) {
       unusableReported = true
@@ -323,7 +317,7 @@ export const register: Register = (on, options) => {
 
     if (logDecisions) {
       const ms = (await $.clock.now()) - startedAt
-      $.ui.log(`[jev-model-router] jev (${e.subagentType}): ${describeDecision(decision, ms)}`)
+      $.ui.log(`[jev-model-router] ${label} (${e.subagentType}): ${describeDecision(decision, ms)}`)
     }
 
     // The subagent's own model wins when the caller named one; otherwise it

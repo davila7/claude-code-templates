@@ -2,14 +2,17 @@
 
 Picks the model and the reasoning effort each task runs with, using [Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev), TypeSafe's System One decision model: unstructured state in, a typed choice with a probability distribution out, no free-form text.
 
-Two backends, chosen by whichever key is set:
+It can also ask Google's [Gemini Decision](https://aistudio.google.com/docs/decisions-api) (`gemini-decision-1`), a decision model of the same kind that takes the same three question types.
+
+Three backends, chosen by whichever key is set:
 
 | Backend | Endpoint | Model | Confidence |
 |---|---|---|---|
 | `typesafe` | `POST api.typesafe.ai/v1/systemone` | `jev-latest` | reported per answer |
+| `gemini` | `POST generativelanguage.googleapis.com/v1beta/decisions` | `gemini-decision-1` | reported per answer |
 | `gateway` | `POST ai-gateway.vercel.sh/v4/ai/evaluation-model` | `typesafe-ai/jev` | derived from an optional distribution |
 
-TypeSafe's own API wins when both keys are set: it is the only one that reports a calibrated confidence, which is what the confidence bars below read. Set `provider` to force one, or to `builtin` to use neither. Each backend keeps its own URL and model option, so an override written for one is never sent to the other. A `provider` forced onto a backend whose key is missing degrades to the built-in classifier and says so once in the log.
+With several keys set, `auto` takes TypeSafe, then Gemini, then the Gateway. The first two report a confidence per answer, which is what the confidence bars below read. TypeSafe comes first because the question wording was tuned against Jev's answers. Set `provider` to force one, or to `builtin` to use none. Each backend keeps its own URL and model option, so an override written for one is never sent to the other. A `provider` forced onto a backend whose key is missing degrades to the built-in classifier and says so once in the log.
 
 Three switches, and they are not equally safe:
 
@@ -21,7 +24,7 @@ Three switches, and they are not equally safe:
 
 A subagent starts with its own context, so routing its model costs nothing beyond the classification. Changing the main loop's *model* mid-session is the expensive one: it invalidates the prompt cache, and on a long context re-caching can cost more than the cheaper tier saves. Turn it on once you have measured your own sessions, not before.
 
-The Agent tool has no effort parameter, so a subagent's effort is not this mod's to set. Forks (which inherit the parent's model) and resumed agents (which keep the model they started on) are left alone; a workflow script's `agent()` is routed like any other subagent (Claude Code 2.1.300+ applies its model rewrite).
+The Agent tool has no effort parameter, so a subagent's effort is not this mod's to set.
 
 **Both directions, both dimensions.** A task read as mechanical is routed down; one read as hard is routed up — model and effort alike.
 
@@ -35,11 +38,13 @@ One request, three questions evaluated in parallel:
 
 - `tier` — a `choice` between three descriptions of the *work* (mechanical and local / ordinary engineering / hard or high-stakes). The decision model never sees a model name.
 - `effort` — a `score` on a four-level rubric, for how much step-by-step reasoning the task needs.
-- `risky` — whether the task touches production, money, credentials, or state that cannot be undone. A `noul` on TypeSafe's API, a `boolean` on the Gateway: the same question under two names.
+- `risky` — whether the task touches production, money, credentials, or state that cannot be undone. A `noul` on TypeSafe's and Gemini's APIs, a `boolean` on the Gateway: the same question under two names.
+
+On Gemini the state (the prompt, or the subagent's prompt, description and type) goes as a JSON string in `input`, as Google's docs advise for structured data, and the key goes in `x-goog-api-key`.
 
 ## How it decides
 
-TypeSafe's API reports a `confidence` per answer. The Gateway's answer shape carries **no `confidence` field**, so on that backend confidence is read as the highest probability in the distribution — and that distribution is itself optional in the schema, in which case confidence is absent and the threshold does not fire.
+TypeSafe's and Gemini's APIs report a `confidence` per answer. The Gateway's answer shape carries **no `confidence` field**, so on that backend confidence is read as the highest probability in the distribution — and that distribution is itself optional in the schema, in which case confidence is absent and the threshold does not fire.
 
 The two mistakes do not cost the same, so they do not clear the same bar:
 
@@ -122,11 +127,14 @@ With a key set, the prompt text leaves the machine and goes to whichever backend
 ## Options
 
 ```
-  typesafeApiKey:         string  TypeSafe API key (preferred: it reports a confidence)
+  typesafeApiKey:         string  TypeSafe API key (preferred when several are set)
+  geminiApiKey:           string  Gemini Developer API key (for Gemini Decision)
   gatewayApiKey:          string  Vercel AI Gateway key
-  provider:               string  "auto" | "typesafe" | "gateway" | "builtin"
+  provider:               string  "auto" | "typesafe" | "gemini" | "gateway" | "builtin"
   typesafeBaseUrl:        string  empty uses https://api.typesafe.ai
   typesafeModel:          string  empty uses jev-latest
+  geminiBaseUrl:          string  empty uses https://generativelanguage.googleapis.com
+  geminiModel:            string  empty uses gemini-decision-1
   gatewayBaseUrl:         string  empty uses https://ai-gateway.vercel.sh/v4/ai
   gatewayModel:           string  empty uses typesafe-ai/jev
   fastModel:              string  fast tier, alias or full id (default "haiku")
@@ -195,4 +203,4 @@ bun test cli-tool/components/mods/productivity/jev-model-router/tests
 
 **Requirements.** Mods are on by default in Claude Code 2.1.287+. Typed against Anthropic's declarations: https://github.com/anthropics/claude-code/tree/main/mods
 
-A mod runs without `node_modules`, so neither `@typesafe-ai/sdk` nor the AI SDK is available here: both backends are spoken to over HTTP through `$.http.fetch`. The TypeSafe wire shape was read from `@typesafe-ai/sdk` v0.6.0; the Gateway's, which is `experimental` in the AI SDK (`experimental_evaluate`, 7.0.105+) and not documented publicly, from `@ai-sdk/gateway` v4.0.86 and `@ai-sdk/provider` v4.0.17. Either may change.
+A mod runs without `node_modules`, so neither `@typesafe-ai/sdk`, the AI SDK nor a Google SDK is available here: every backend is spoken to over HTTP through `$.http.fetch`. The TypeSafe wire shape was read from `@typesafe-ai/sdk` v0.6.0; Gemini's from Google's Decisions API docs (v1beta); the Gateway's, which is `experimental` in the AI SDK (`experimental_evaluate`, 7.0.105+) and not documented publicly, from `@ai-sdk/gateway` v4.0.86 and `@ai-sdk/provider` v4.0.17. Either may change.
