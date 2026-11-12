@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "specstream": {
+      "description": "Remote MCP for live web data. search_web returns web results (title, URL, snippet, and a published date where the page states one), read_pages returns the text of pages you name, and compile builds a list or table from the web with a source on each row; it runs only after you approve a quoted maximum. Your queries and the URLs you ask it to read are sent to api.specstream.ai. Requires a SpecStream account: run /mcp in Claude Code and sign in with OAuth, so no key is stored in .mcp.json. Paid: search $5 per 1,000 searches, page reading $0.80 per 1,000 pages. Docs: https://specstream.ai/docs/mcp",
+      "type": "http",
+      "url": "https://api.specstream.ai/mcp"
+    }
+  }
+}
