@@ -1,4 +1,4 @@
 {
-  "description": "Configure Claude Code to use Claude Haiku 4.5 model for faster responses.",
-  "model": "claude-haiku-4-5-20251001"
+  "description": "Use Claude Haiku 5.5 as the main model, the fastest and lowest-cost option for simple, well-scoped tasks. Pinned to the full model ID (claude-haiku-5-5), so it stays on Haiku 5.5 instead of following the 'haiku' alias. Requires Claude Code v2.1.293+; on Bedrock, Vertex or Foundry use your provider's model name instead.",
+  "model": "claude-haiku-5-5"
 }
