@@ -1,5 +1,6 @@
 import { expect, test } from 'claude-code/testing'
 import {
+  decisionModelLabel,
   effortLevel,
   effortRank,
   endpoint,
@@ -208,19 +209,98 @@ test('each backend gets its own endpoint, question type and model placement', ()
 
 // --- backend selection -------------------------------------------------------
 
-test('auto prefers TypeSafe, since it is the only backend that reports a confidence', () => {
-  expect(selectProvider('auto', 'ts-key', 'gw-key')).toBe('typesafe')
-  expect(selectProvider('auto', '', 'gw-key')).toBe('gateway')
-  expect(selectProvider('auto', '', '')).toBeNull()
+const keys = (typesafe = '', gemini = '', gateway = '') => ({ typesafe, gemini, gateway })
+
+test('auto takes TypeSafe, then Gemini, then the Gateway: confidence-reporting backends first', () => {
+  expect(selectProvider('auto', keys('ts-key', 'g-key', 'gw-key'))).toBe('typesafe')
+  expect(selectProvider('auto', keys('', 'g-key', 'gw-key'))).toBe('gemini')
+  expect(selectProvider('auto', keys('', '', 'gw-key'))).toBe('gateway')
+  expect(selectProvider('auto', keys())).toBeNull()
 })
 
-test('a forced backend without its own key falls back to the built-in classifier, never to the other key', () => {
-  expect(selectProvider('typesafe', '', 'gw-key')).toBeNull()
-  expect(selectProvider('gateway', 'ts-key', '')).toBeNull()
+test('a forced backend without its own key falls back to the built-in classifier, never to another key', () => {
+  expect(selectProvider('typesafe', keys('', 'g-key', 'gw-key'))).toBeNull()
+  expect(selectProvider('gemini', keys('ts-key', '', 'gw-key'))).toBeNull()
+  expect(selectProvider('gateway', keys('ts-key', 'g-key', ''))).toBeNull()
+  expect(selectProvider('gemini', keys('ts-key', 'g-key', ''))).toBe('gemini')
 })
 
-test('builtin ignores both keys', () => {
-  expect(selectProvider('builtin', 'ts-key', 'gw-key')).toBeNull()
+test('builtin ignores every key', () => {
+  expect(selectProvider('builtin', keys('ts-key', 'g-key', 'gw-key'))).toBeNull()
+})
+
+// --- Gemini Decision -----------------------------------------------------------
+//
+// Google's decision model, not Jev, but the same question types and the same
+// answer shape as TypeSafe. What differs is the request: `input` instead of
+// `state`, and the key in `x-goog-api-key` rather than a bearer token.
+
+// The distributions' maxima (0.70, 0.55) deliberately differ from the
+// reported confidences (0.88, 0.62), so a reader that fell back to the
+// highest probability, as it must for the Gateway, would fail these tests.
+const geminiAnswer = (tier: string, confidence: number, noul = 0.02) =>
+  JSON.stringify({
+    answers: {
+      tier: {
+        type: 'choice',
+        choice: tier,
+        probabilities: { fast: 0.15, balanced: 0.15, deep: 0.15, [tier]: 0.7 },
+        confidence,
+      },
+      effort: {
+        type: 'score',
+        score: 0.4,
+        legend: { '0': 'almost none', '1': 'some', '2': 'a lot', '3': 'as much as possible' },
+        probabilities: { '0': 0.55, '1': 0.4, '2': 0.03, '3': 0.02 },
+        confidence: 0.62,
+      },
+      risky: { type: 'noul', noul, confidence: 0.98 },
+    },
+    usage: {
+      total_input_tokens: 180,
+      input_tokens_by_modality: [{ modality: 'text', tokens: 180 }],
+      total_output_tokens: 0,
+      total_tokens: 180,
+    },
+  })
+
+test('Gemini posts to its decisions endpoint with the model and the state as input text', () => {
+  expect(endpoint('gemini', 'https://generativelanguage.googleapis.com/')).toBe(
+    'https://generativelanguage.googleapis.com/v1beta/decisions',
+  )
+  const body = JSON.parse(requestBody('gemini', { prompt: 'rename foo' }, 'gemini-decision-1'))
+  expect(body.model).toBe('gemini-decision-1')
+  expect(body.state).toBeUndefined()
+  expect(typeof body.input).toBe('string')
+  expect(JSON.parse(body.input)).toEqual({ prompt: 'rename foo' })
+  expect(Object.keys(body.questions)).toEqual(['tier', 'effort', 'risky'])
+  expect(body.questions.risky.type).toBe('noul')
+})
+
+test('Gemini takes its key in x-goog-api-key and never as a bearer token', () => {
+  const headers = requestHeaders('gemini', 'g-key', 'gemini-decision-1')
+  expect(headers['x-goog-api-key']).toBe('g-key')
+  expect(headers.authorization).toBeUndefined()
+  expect(headers['ai-model-id']).toBeUndefined()
+})
+
+test('a Gemini answer is read from its confidence and noul fields', () => {
+  const decision = readDecision(geminiAnswer('fast', 0.88, 0.03))
+  expect(decision?.tier).toBe('fast')
+  expect(Math.abs((decision?.confidence) - (0.88)) < 0.005).toBe(true)
+  expect(Math.abs((decision?.effort) - (0.4)) < 0.005).toBe(true)
+  expect(Math.abs((decision?.effortConfidence) - (0.62)) < 0.005).toBe(true)
+  expect(Math.abs((decision?.risky) - (0.03)) < 0.005).toBe(true)
+  // Confident enough to spend less.
+  expect(route(decision, on('claude-sonnet-5'), config).model).toBe('haiku')
+})
+
+test('the log label names the decision model that answered', () => {
+  expect(decisionModelLabel('gemini')).toBe('gemini')
+  expect(decisionModelLabel('typesafe')).toBe('jev')
+  expect(decisionModelLabel(null)).toBe('jev')
+  const decision = readDecision(geminiAnswer('fast', 0.88))
+  expect(describeStatus(decision, null, 'gemini')).toBe('gemini · fast 0.88 · unchanged')
 })
 
 // --- the two ways a downgrade could have slipped the bar ---------------------

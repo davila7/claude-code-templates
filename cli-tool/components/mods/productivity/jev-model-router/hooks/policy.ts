@@ -5,7 +5,7 @@
  * API takes, reads its answer, and turns that answer into a model id. The
  * hooks module does every call on `$` at its own call site.
  *
- * Two backends speak to the same model with different wire shapes:
+ * Three backends, two decision models, three wire shapes:
  *
  *   typesafe  POST https://api.typesafe.ai/v1/systemone
  *             `{ model, state, questions }`; a yes/no question is a `noul`
@@ -14,12 +14,17 @@
  *             `{ state, questions }` with the model in a header; a yes/no
  *             question is a `boolean`, and there is no `confidence` field —
  *             it has to be derived from an optional distribution.
+ *   gemini    POST https://generativelanguage.googleapis.com/v1beta/decisions
+ *             Google's Gemini Decision (`gemini-decision-1`), not Jev, but the
+ *             same question types: `{ model, input, questions }`, where
+ *             `input` is a string (the state goes as serialised JSON), the key
+ *             goes in `x-goog-api-key`, and every answer carries `confidence`.
  *
  * The Gateway shape is not documented publicly; it was read from
  * @ai-sdk/gateway and @ai-sdk/provider.
  */
 
-export type Provider = 'typesafe' | 'gateway'
+export type Provider = 'typesafe' | 'gemini' | 'gateway'
 
 export type Tier = 'fast' | 'balanced' | 'deep'
 
@@ -63,6 +68,7 @@ const EFFORT_RUBRIC = ['almost none', 'some', 'a lot', 'as much as possible'] as
 
 export const DEFAULT_BASE_URL: Record<Provider, string> = {
   typesafe: 'https://api.typesafe.ai',
+  gemini: 'https://generativelanguage.googleapis.com',
   gateway: 'https://ai-gateway.vercel.sh/v4/ai',
 }
 
@@ -74,32 +80,38 @@ const AI_GATEWAY_PROTOCOL_VERSION = '0.0.1'
 
 export const DEFAULT_MODEL: Record<Provider, string> = {
   typesafe: 'jev-latest',
+  gemini: 'gemini-decision-1',
   gateway: 'typesafe-ai/jev',
 }
 
 /**
  * Which backend a configuration asks for, or null for the built-in
- * classifier. `auto` prefers TypeSafe, since it is the only one that reports
- * a calibrated confidence; a forced backend whose key is missing resolves to
- * null rather than falling through to the other one's key.
+ * classifier. `auto` takes TypeSafe, then Gemini, then the Gateway: the first
+ * two report a confidence per answer, which the policy's bars read, and
+ * TypeSafe comes first because the questions were tuned against Jev. A forced
+ * backend whose key is missing resolves to null rather than falling through
+ * to another one's key.
  */
 export function selectProvider(
   forced: string,
-  typesafeKey: string,
-  gatewayKey: string,
+  keys: { typesafe: string; gemini: string; gateway: string },
 ): Provider | null {
   if (forced === 'builtin') return null
-  if (forced === 'typesafe') return typesafeKey ? 'typesafe' : null
-  if (forced === 'gateway') return gatewayKey ? 'gateway' : null
-  if (typesafeKey) return 'typesafe'
-  if (gatewayKey) return 'gateway'
+  if (forced === 'typesafe' || forced === 'gemini' || forced === 'gateway') {
+    return keys[forced] ? forced : null
+  }
+  if (keys.typesafe) return 'typesafe'
+  if (keys.gemini) return 'gemini'
+  if (keys.gateway) return 'gateway'
   return null
 }
 
 /** The full endpoint a backend posts to. */
 export function endpoint(provider: Provider, baseUrl: string): string {
   const root = baseUrl.replace(/\/+$/, '')
-  return provider === 'typesafe' ? `${root}/v1/systemone` : `${root}/evaluation-model`
+  if (provider === 'typesafe') return `${root}/v1/systemone`
+  if (provider === 'gemini') return `${root}/v1beta/decisions`
+  return `${root}/evaluation-model`
 }
 
 /** The `questions` map, in the shape the backend's schema names. */
@@ -116,9 +128,9 @@ export function questions(provider: Provider): Record<string, unknown> {
       criteria: EFFORT_RUBRIC,
     },
     risky: {
-      // The same question under two names: `noul` on TypeSafe's own API,
-      // `boolean` in the AI SDK's evaluation schema.
-      type: provider === 'typesafe' ? 'noul' : 'boolean',
+      // The same question under two names: `noul` on TypeSafe's and
+      // Gemini's own APIs, `boolean` in the AI SDK's evaluation schema.
+      type: provider === 'gateway' ? 'boolean' : 'noul',
       // Asked about the act, not the subject. The first wording ("the task
       // touches production, money, credentials") scored 0.96 on "add a
       // refund endpoint that calls Stripe" — ordinary code that happens to be
@@ -130,17 +142,22 @@ export function questions(provider: Provider): Record<string, unknown> {
   }
 }
 
-/** The request body. The Gateway carries the model in a header instead. */
+/**
+ * The request body. The Gateway carries the model in a header instead, and
+ * Gemini takes no `state` object: its `input` is a string or content blocks,
+ * and its docs say to pass structured data as serialised JSON text, so that
+ * the payload's keys are read as data and never as content blocks.
+ */
 export function requestBody(
   provider: Provider,
   state: Record<string, unknown>,
   model: string,
 ): string {
-  const body =
-    provider === 'typesafe'
-      ? { model, state, questions: questions(provider) }
-      : { state, questions: questions(provider) }
-  return JSON.stringify(body)
+  if (provider === 'typesafe') return JSON.stringify({ model, state, questions: questions(provider) })
+  if (provider === 'gemini') {
+    return JSON.stringify({ model, input: JSON.stringify(state), questions: questions(provider) })
+  }
+  return JSON.stringify({ state, questions: questions(provider) })
 }
 
 /** The request headers. */
@@ -149,6 +166,8 @@ export function requestHeaders(
   apiKey: string,
   model: string,
 ): Record<string, string> {
+  // Google's API takes its key in its own header, not as a bearer token.
+  if (provider === 'gemini') return { 'content-type': 'application/json', 'x-goog-api-key': apiKey }
   const common = { 'content-type': 'application/json', authorization: `Bearer ${apiKey}` }
   if (provider === 'typesafe') return common
   return {
@@ -168,13 +187,14 @@ function isTier(value: unknown): value is Tier {
 }
 
 /**
- * Reads a response from either backend.
+ * Reads a response from any backend.
  *
- * TypeSafe's own API reports a `confidence` per answer and a `noul` number
- * for a yes/no question. The Gateway reports neither: confidence has to come
- * from the highest probability of a distribution that is itself optional, and
- * a yes/no answer arrives as `probability`. Both are handled, and a missing
- * confidence reads as null rather than as a number the policy would trust.
+ * TypeSafe's and Gemini's own APIs answer in the same shape: a `confidence`
+ * per answer and a `noul` number for a yes/no question. The Gateway reports
+ * neither: confidence has to come from the highest probability of a
+ * distribution that is itself optional, and a yes/no answer arrives as
+ * `probability`. Both shapes are handled, and a missing confidence reads as
+ * null rather than as a number the policy would trust.
  */
 export function readDecision(responseText: string): Decision | null {
   let parsed: unknown
@@ -208,8 +228,9 @@ export function readDecision(responseText: string): Decision | null {
 }
 
 /**
- * How sure an answer is. TypeSafe reports it; the Gateway does not, so there
- * it is the highest probability of a distribution that is itself optional.
+ * How sure an answer is. TypeSafe and Gemini report it, and a reported value
+ * always wins; the Gateway does not, so there it is the highest probability
+ * of a distribution that is itself optional.
  */
 function confidenceOf(answer: Record<string, unknown>): number | null {
   if (typeof answer.confidence === 'number') return answer.confidence
@@ -508,10 +529,20 @@ export function describeDecision(decision: Decision | null, ms: number | null): 
 export function describeStatus(
   decision: Decision | null,
   change: { model?: string; effort?: Effort } | null,
+  label = 'jev',
 ): string {
-  if (!decision) return 'jev · no answer'
+  if (!decision) return `${label} · no answer`
   const asked = `${decision.tier} ${reported(decision.confidence)}`
-  if (!change) return `jev · ${asked} · unchanged`
+  if (!change) return `${label} · ${asked} · unchanged`
   const to = [change.model, change.effort].filter(Boolean).join('/')
-  return `jev · ${asked} → ${to}`
+  return `${label} · ${asked} → ${to}`
+}
+
+/**
+ * Which decision model answers on a backend, for the log and status lines:
+ * Gemini Decision on Google's API, Jev on the other two. The built-in
+ * classifier keeps the `jev` label it has always had.
+ */
+export function decisionModelLabel(provider: Provider | null): string {
+  return provider === 'gemini' ? 'gemini' : 'jev'
 }
