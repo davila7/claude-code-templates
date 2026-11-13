@@ -1,4 +1,4 @@
 {
-  "description": "Use Claude Opus 5.5 as the advisor your main model consults at decision points (before committing to an approach, on a recurring error, before declaring a task done). It can advise any main model except Fable (Haiku, Sonnet and Opus up to 5.5). Pinned to the full model ID, so it stays on 5.5. Requires Claude Code v2.1.280+ and the Anthropic API or Claude Platform on AWS; the advisor stays off when DISABLE_TELEMETRY or CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC is set.",
+  "description": "Use Claude Opus 5.5 as the advisor your main model consults at decision points (before committing to an approach, on a recurring error, before declaring a task done). It can advise any main model except Fable (Haiku, Sonnet and Opus up to 5.5). Pinned to the full model ID, so it stays on 5.5. Requires Claude Code v2.1.280+ on the Anthropic API or v2.1.300+ on Claude Platform on AWS; on the Anthropic API, the advisor stays off when DISABLE_TELEMETRY or CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC is set.",
   "advisorModel": "claude-opus-5-5"
 }
