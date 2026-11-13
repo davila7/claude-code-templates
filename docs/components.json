@@ -30525,6 +30525,102 @@
       }
     },
     {
+      "name": "haiku-5-5-advisor",
+      "path": "model/haiku-5-5-advisor.json",
+      "category": "model",
+      "type": "setting",
+      "description": "Use Claude Haiku 5.5 as the advisor your main model consults at decision points (before committing to an approach, on a recurring error, before declaring a task done). The cheapest advisor, for these main models: Haiku 4.5 or 5.5, Sonnet 4.6 or 5, and Opus 4.6. Claude Code does not attach it to Sonnet 5.5, Opus 4.7 or later, or Fable. Pinned to the full model ID. Requires Claude Code v2.1.293+ on the Anthropic API or v2.1.300+ on Claude Platform on AWS; on the Anthropic API, the advisor stays off when DISABLE_TELEMETRY or CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC is set.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "hash": "2826f1739b35c660",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-13T03:21:21Z"
+      }
+    },
+    {
+      "name": "opus-5-5-advisor",
+      "path": "model/opus-5-5-advisor.json",
+      "category": "model",
+      "type": "setting",
+      "description": "Use Claude Opus 5.5 as the advisor your main model consults at decision points (before committing to an approach, on a recurring error, before declaring a task done). It can advise any main model except Fable (Haiku, Sonnet and Opus up to 5.5). Pinned to the full model ID, so it stays on 5.5. Requires Claude Code v2.1.280+ on the Anthropic API or v2.1.300+ on Claude Platform on AWS; on the Anthropic API, the advisor stays off when DISABLE_TELEMETRY or CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC is set.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "hash": "0d8be4e3b1b4b0cd",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-13T03:21:21Z"
+      }
+    },
+    {
+      "name": "sonnet-5-5-advisor",
+      "path": "model/sonnet-5-5-advisor.json",
+      "category": "model",
+      "type": "setting",
+      "description": "Use Claude Sonnet 5.5 as the advisor your main model consults at decision points (before committing to an approach, on a recurring error, before declaring a task done). A lower-cost second opinion for these main models: Haiku 4.5 or 5.5, Sonnet 4.6, 5 or 5.5, and Opus 4.6, 4.7 or 4.8. Claude Code does not attach it to Opus 5 or later, or to Fable. Pinned to the full model ID, so it stays on 5.5. Requires Claude Code v2.1.287+ on the Anthropic API or v2.1.300+ on Claude Platform on AWS; on the Anthropic API, the advisor stays off when DISABLE_TELEMETRY or CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC is set.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "hash": "c3827eef4d654d6f",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-13T03:21:21Z"
+      }
+    },
+    {
       "name": "sonnet-opus-advisor-haiku-subagents",
       "path": "model/sonnet-opus-advisor-haiku-subagents.json",
       "category": "model",
@@ -30561,7 +30657,7 @@
       "path": "model/use-haiku.json",
       "category": "model",
       "type": "setting",
-      "description": "Configure Claude Code to use Claude Haiku 4.5 model for faster responses.",
+      "description": "Use Claude Haiku 5.5 as the main model, the fastest and lowest-cost option for simple, well-scoped tasks. Pinned to the full model ID (claude-haiku-5-5), so it stays on Haiku 5.5 instead of following the 'haiku' alias. Requires Claude Code v2.1.293+; on Bedrock, Vertex or Foundry use your provider's model name instead.",
       "author": "",
       "repo": "",
       "version": "",
@@ -30583,9 +30679,41 @@
         "issueCount": 0,
         "analysis": "complete",
         "findings": [],
-        "hash": "98545ea84127a507",
+        "hash": "78c45c30a7bcabec",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-13T03:21:21Z"
+      }
+    },
+    {
+      "name": "use-opus",
+      "path": "model/use-opus.json",
+      "category": "model",
+      "type": "setting",
+      "description": "Use Claude Opus 5.5 as the main model, for complex reasoning, large refactors and long agentic tasks. Pinned to the full model ID (claude-opus-5-5), so it stays on Opus 5.5 instead of following the 'opus' alias. Requires Claude Code v2.1.280+; on Bedrock, Vertex or Foundry use your provider's model name instead.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "hash": "1f07f938b6734daa",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-13T03:21:21Z"
       }
     },
     {
@@ -30593,7 +30721,7 @@
       "path": "model/use-sonnet.json",
       "category": "model",
       "type": "setting",
-      "description": "Configure Claude Code to use Claude Sonnet 4.6 model.",
+      "description": "Use Claude Sonnet 5.5 as the main model, for day-to-day coding with a 1M token context window. Pinned to the full model ID (claude-sonnet-5-5), so it stays on Sonnet 5.5 instead of following the 'sonnet' alias. Requires Claude Code v2.1.284+; on Bedrock, Vertex or Foundry use your provider's model name instead.",
       "author": "",
       "repo": "",
       "version": "",
@@ -30615,9 +30743,9 @@
         "issueCount": 0,
         "analysis": "complete",
         "findings": [],
-        "hash": "345544b5b758bb39",
+        "hash": "18182d8e4510bca5",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-13T03:21:21Z"
       }
     },
     {
