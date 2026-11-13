@@ -171,14 +171,14 @@ test('saving keeps a floor that another session just saved under an expired inde
   const { engine, store } = storageEngine('current', {
     'floor:stale': stale,
     'floor:fresh': fresh,
-    'floor:missing-floor': 'invalid',
-    'floor-index': { stale: stale.savedAt, fresh: stale.savedAt, 'missing-floor': stale.savedAt },
+    'floor:invalid-floor': 'invalid',
+    'floor-index': { stale: stale.savedAt, fresh: stale.savedAt, 'invalid-floor': stale.savedAt },
   });
 
   await saveFloorState(engine, new ContextFloor());
 
   expect(store.has('floor:stale')).toBe(false);
-  expect(store.has('floor:missing-floor')).toBe(false);
+  expect(store.has('floor:invalid-floor')).toBe(false);
   expect(store.get('floor:fresh')).toEqual(fresh);
   expect(store.get('floor-index')).toEqual({ fresh: fresh.savedAt, current: NOW });
 });
