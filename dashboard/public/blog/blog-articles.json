@@ -1,6 +1,25 @@
 {
   "articles": [
     {
+      "id": "read-only-security-audit",
+      "title": "Read-Only Security Audit in Claude Code: Security Auditor Agent + Subagent Read-Only Guard",
+      "description": "Combine the Security Auditor agent, the Subagent Read-Only Guard hook and the Subagents Explore-Only setting so Claude Code can audit your repository without ever being able to change it.",
+      "url": "read-only-security-audit/",
+      "image": "assets/read-only-security-audit-cover.png",
+      "category": "Security",
+      "readTime": "6 min read",
+      "tags": [
+        "Claude Code",
+        "Security",
+        "Subagents",
+        "Hooks",
+        "Workflow"
+      ],
+      "difficulty": "intermediate",
+      "featured": true,
+      "order": 29
+    },
+    {
       "id": "edit-audit-log-hook",
       "title": "Edit Audit Log Hook for Claude Code: Track Every File Edit with Timestamps",
       "description": "Install the Edit Audit Log hook for Claude Code to record every Edit tool call with a timestamp in a project-local file. A PostToolUse hook for change tracking across sessions.",
@@ -569,11 +588,11 @@
     }
   ],
   "metadata": {
-    "lastUpdated": "2026-10-20",
-    "totalArticles": 29,
+    "lastUpdated": "2026-11-10",
+    "totalArticles": 31,
     "difficultyLevels": {
-      "basic": 13,
-      "intermediate": 11,
+      "basic": 14,
+      "intermediate": 12,
       "advanced": 5
     }
   }
