@@ -1,0 +1,4 @@
+{
+  "description": "Use Claude Sonnet 5.5 as the advisor your main model consults at decision points (before committing to an approach, on a recurring error, before declaring a task done). A lower-cost second opinion for these main models: Haiku 4.5 or 5.5, Sonnet 4.6, 5 or 5.5, and Opus 4.6, 4.7 or 4.8. Claude Code does not attach it to Opus 5 or later, or to Fable. Pinned to the full model ID, so it stays on 5.5. Requires Claude Code v2.1.287+ on the Anthropic API or v2.1.300+ on Claude Platform on AWS; on the Anthropic API, the advisor stays off when DISABLE_TELEMETRY or CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC is set.",
+  "advisorModel": "claude-sonnet-5-5"
+}
