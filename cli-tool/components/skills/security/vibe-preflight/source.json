@@ -1,0 +1,11 @@
+{
+  "repo": "atokim4/vibe-preflight",
+  "path": "skills/vibe-preflight",
+  "commit": "600c103692d814701ae4d273390f68bcb41d702e",
+  "license": "MIT",
+  "author": "atokim4",
+  "include": [
+    "SKILL.md",
+    "scripts/preflight.mjs"
+  ]
+}
