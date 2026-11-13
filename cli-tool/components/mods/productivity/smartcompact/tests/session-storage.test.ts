@@ -164,3 +164,21 @@ test('saving a session with an expired index entry keeps its refreshed floor', a
   expect(await loadFloorState(engine, 'current')).toEqual(floor.state());
   expect(store.get('floor-index')).toEqual({ current: NOW });
 });
+
+test('saving keeps a floor that another session just saved under an expired index entry', async () => {
+  const stale = { baseline: 1, waitingFor: null, savedAt: NOW - 31 * DAY };
+  const fresh = { baseline: 2, waitingFor: null, savedAt: NOW - DAY };
+  const { engine, store } = storageEngine('current', {
+    'floor:stale': stale,
+    'floor:fresh': fresh,
+    'floor:missing-floor': 'invalid',
+    'floor-index': { stale: stale.savedAt, fresh: stale.savedAt, 'missing-floor': stale.savedAt },
+  });
+
+  await saveFloorState(engine, new ContextFloor());
+
+  expect(store.has('floor:stale')).toBe(false);
+  expect(store.has('floor:missing-floor')).toBe(false);
+  expect(store.get('floor:fresh')).toEqual(fresh);
+  expect(store.get('floor-index')).toEqual({ fresh: fresh.savedAt, current: NOW });
+});

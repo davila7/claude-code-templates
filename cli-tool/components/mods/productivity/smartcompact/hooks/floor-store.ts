@@ -31,7 +31,8 @@ export async function saveFloorState(engine: Engine, floor: ContextFloor): Promi
   const sessionId = await engine.sessionId();
   await engine.store.set(`floor:${sessionId}`, { ...floor.state(), savedAt: now });
 
-  // Index races may leave a small key behind but cannot overwrite another session's floor.
+  // Another session may have saved its floor but not yet its index entry, so an old index
+  // timestamp is not proof. Delete a floor key only when its own savedAt is also old.
   const value = await engine.store.get(INDEX_KEY);
   const index: Record<string, number> = {};
 
@@ -40,10 +41,15 @@ export async function saveFloorState(engine: Engine, floor: ContextFloor): Promi
       if (id === sessionId || typeof savedAt !== 'number') {
         continue;
       }
-      if (now - savedAt > MAX_AGE_MS) {
-        await engine.store.delete(`floor:${id}`);
-      } else {
+      if (now - savedAt <= MAX_AGE_MS) {
         index[id] = savedAt;
+        continue;
+      }
+      const saved = await engine.store.get(`floor:${id}`);
+      if (isSavedFloor(saved) && now - saved.savedAt <= MAX_AGE_MS) {
+        index[id] = saved.savedAt;
+      } else {
+        await engine.store.delete(`floor:${id}`);
       }
     }
   }
