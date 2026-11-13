@@ -1,0 +1,3 @@
+# bun runs the unit specs only; engine/*.test.ts runs under `claude plugin test`.
+[test]
+root = "tests"
