@@ -1,4 +1,4 @@
 {
-  "description": "Configure Claude Code to use Claude Sonnet 4.6 model.",
-  "model": "claude-sonnet-4-6"
+  "description": "Use Claude Sonnet 5.5 as the main model, for day-to-day coding with a 1M token context window. Pinned to the full model ID (claude-sonnet-5-5), so it stays on Sonnet 5.5 instead of following the 'sonnet' alias. Requires Claude Code v2.1.284+; on Bedrock, Vertex or Foundry use your provider's model name instead.",
+  "model": "claude-sonnet-5-5"
 }
