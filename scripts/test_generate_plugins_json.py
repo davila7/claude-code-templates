@@ -1,6 +1,11 @@
+import base64
+import contextlib
 import importlib.util
+import io
 import json
 from pathlib import Path
+import subprocess
+import tempfile
 import unittest
 from unittest.mock import patch
 
@@ -134,6 +139,98 @@ class CohesivityPluginGenerationTest(unittest.TestCase):
                 "mcpServers": ["cohesivity", "cohesivity-local"],
             },
         )
+
+
+class GitHubFailureHandlingTest(unittest.TestCase):
+    def setUp(self):
+        self.output = contextlib.redirect_stdout(io.StringIO())
+        self.output.__enter__()
+        self.addCleanup(self.output.__exit__, None, None, None)
+
+    def test_genuine_missing_resource_is_not_retried(self):
+        response = subprocess.CompletedProcess([], 1, stdout="", stderr="HTTP 404 Not Found")
+        with patch.object(generator.subprocess, "run", return_value=response) as request:
+            self.assertIsNone(generator.gh_api("repos/example/missing"))
+        request.assert_called_once()
+
+    def test_exhausted_api_failure_is_not_a_missing_resource(self):
+        response = subprocess.CompletedProcess([], 1, stdout="", stderr="HTTP 503 Service Unavailable")
+        with (
+            patch.object(generator.subprocess, "run", return_value=response),
+            patch.object(generator.time, "sleep"),
+        ):
+            with self.assertRaises(RuntimeError):
+                generator.gh_api("repos/example/plugin")
+
+    def test_file_fetch_recovers_after_rate_limit(self):
+        attempts = 0
+
+        def request(command, **kwargs):
+            nonlocal attempts
+            if "rate_limit" in command:
+                return subprocess.CompletedProcess(command, 0, stdout="0", stderr="")
+            attempts += 1
+            if attempts == 1:
+                return subprocess.CompletedProcess(command, 1, stdout="", stderr="API rate limit exceeded")
+            return subprocess.CompletedProcess(
+                command, 0, stdout=base64.b64encode(b"manifest contents").decode(), stderr=""
+            )
+
+        with (
+            patch.object(generator.subprocess, "run", side_effect=request),
+            patch.object(generator.time, "sleep"),
+        ):
+            self.assertEqual(generator.gh_file_content("example/plugin", "plugin.json"), "manifest contents")
+
+    def test_exhausted_file_failure_is_not_a_missing_file(self):
+        response = subprocess.CompletedProcess([], 1, stdout="", stderr="API rate limit exceeded")
+        with (
+            patch.object(generator.subprocess, "run", return_value=response),
+            patch.object(generator.time, "sleep"),
+        ):
+            with self.assertRaises(RuntimeError):
+                generator.gh_file_content("example/plugin", "plugin.json")
+
+    def test_failed_generation_keeps_existing_output(self):
+        def process(repo, website):
+            if repo == "example/unavailable":
+                raise RuntimeError("GitHub unavailable")
+            return {"name": repo, "stars": 2, "type": "plugin"}
+
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "plugins.json"
+            original = b'[ { "last": "complete catalog" } ]\n'
+            output.write_bytes(original)
+            with (
+                patch.object(generator, "REPOS", [("example/available", None), ("example/unavailable", None)]),
+                patch.object(generator, "OUTPUT_PATH", str(output)),
+                patch.object(generator, "process_repo", side_effect=process),
+                patch.object(generator.subprocess, "run", return_value=subprocess.CompletedProcess([], 0, stdout="5000", stderr="")),
+            ):
+                with self.assertRaises(SystemExit) as stopped:
+                    generator.main()
+                self.assertEqual(stopped.exception.code, 1)
+            self.assertEqual(output.read_bytes(), original)
+
+    def test_retry_publishes_both_repositories_after_recovery(self):
+        attempts = {}
+
+        def process(repo, website):
+            attempts[repo] = attempts.get(repo, 0) + 1
+            if repo == "example/recovered" and attempts[repo] == 1:
+                raise RuntimeError("GitHub unavailable")
+            return {"name": repo, "stars": 2 if repo.endswith("available") else 1, "type": "plugin"}
+
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "plugins.json"
+            with (
+                patch.object(generator, "REPOS", [("example/available", None), ("example/recovered", None)]),
+                patch.object(generator, "OUTPUT_PATH", str(output)),
+                patch.object(generator, "process_repo", side_effect=process),
+                patch.object(generator.subprocess, "run", return_value=subprocess.CompletedProcess([], 0, stdout="5000", stderr="")),
+            ):
+                generator.main()
+            self.assertEqual([item["name"] for item in json.loads(output.read_text())], ["example/available", "example/recovered"])
 
 
 if __name__ == "__main__":
