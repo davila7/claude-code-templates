@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "adkit-meta-ads": {
+      "description": "Meta Ads MCP Server by AdKit: hosted MCP server. Create and edit Facebook and Instagram campaigns, ad sets and ads, and read reports from Claude Code. Sign in with your AdKit account through OAuth; there is no key to paste. Every change is saved as a draft until you approve it. Docs: https://adkit.so/features/ads-mcp/meta",
+      "type": "http",
+      "url": "https://mcp.adkit.so/meta-ads"
+    }
+  }
+}

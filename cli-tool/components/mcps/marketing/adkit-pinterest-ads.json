@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "adkit-pinterest-ads": {
+      "description": "Pinterest Ads MCP Server by AdKit: hosted MCP server. Read Pinterest Ads analytics and draft campaign changes (beta) from Claude Code. Sign in with your AdKit account through OAuth; there is no key to paste. Every change is saved as a draft until you approve it. Docs: https://adkit.so/features/ads-mcp/pinterest",
+      "type": "http",
+      "url": "https://mcp.adkit.so/pinterest-ads"
+    }
+  }
+}
