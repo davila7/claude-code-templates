@@ -49,7 +49,7 @@ The Atlas Cloud backend uses only the Python standard library.
 ## Environment
 - Default OpenAI calls require `OPENAI_API_KEY`.
 - Optional Atlas Cloud calls require `ATLASCLOUD_API_KEY`.
-- `OPENAI_BASE_URL` (read by the OpenAI SDK) points `scripts/text_to_speech.py` at any OpenAI-compatible speech server. `OPENAI_API_KEY` is then sent to that server as its key (any non-empty value if it doesn't check keys).
+- `OPENAI_BASE_URL` (read by the OpenAI SDK) points `scripts/text_to_speech.py` at any OpenAI-compatible speech server. `OPENAI_API_KEY` is then sent to that server, so set it to that server's key (any non-empty value if it doesn't check keys), not an OpenAI key.
 - `OPENAI_TTS_MODEL` and `OPENAI_TTS_VOICE` set the default model and voice of `scripts/text_to_speech.py`. `--model` and `--voice` still override them.
 
 If the selected provider key is missing, give the user these steps:

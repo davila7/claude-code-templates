@@ -163,6 +163,21 @@ class TextToSpeechTests(unittest.TestCase):
         result, _, _ = _batch({}, [{"input": "One", "voice": "af_bella"}])
         self.assertEqual(result, 1)
 
+    def test_unused_batch_voice_is_not_checked(self):
+        env = {"OPENAI_TTS_VOICE": "af_bella"}
+        jobs = [{"input": "One", "voice": "cedar"}, {"input": "Two", "voice": "Marin"}]
+        self.assertEqual(self.batch(env, jobs), ["cedar", "marin"])
+        result, _, stderr = _batch(env, [*jobs, {"input": "Three"}])
+        self.assertEqual(result, 1)
+        self.assertIn("'af_bella' (from OPENAI_TTS_VOICE)", stderr)
+
+    def test_non_string_job_voice_is_checked_not_inherited(self):
+        for voice in (0, False):
+            with self.subTest(voice=voice):
+                result, _, stderr = _batch({}, [{"input": "One", "voice": voice}])
+                self.assertEqual(result, 1)
+                self.assertIn(f"{str(voice)!r} must be one of", stderr)
+
     def test_list_voices_warns_only_when_another_server_is_set(self):
         result, stdout, stderr = _run(["list-voices"], OTHER_SERVER)
         self.assertEqual(result, 0)

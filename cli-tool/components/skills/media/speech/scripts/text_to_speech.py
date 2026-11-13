@@ -110,7 +110,7 @@ def _uses_openai_api() -> bool:
 
 
 def _normalize_voice(voice: Optional[str]) -> str:
-    value = str(voice or "").strip() or _default_voice()
+    value = ("" if voice is None else str(voice)).strip() or _default_voice()
     if value.lower() not in ALLOWED_VOICES:
         if not _uses_openai_api():
             # Other servers name their own voices, so the id is sent as given.
@@ -392,7 +392,7 @@ def _run_speak_batch(args: argparse.Namespace) -> int:
 
     base_payload = {
         "model": str(args.model).strip(),
-        "voice": _normalize_voice(args.voice),
+        "voice": args.voice,
         "response_format": _normalize_format(args.response_format),
         "speed": _normalize_speed(args.speed),
         "instructions": base_instructions,
@@ -416,8 +416,8 @@ def _run_speak_batch(args: argparse.Namespace) -> int:
         overrides: Dict[str, Any] = {}
         if "model" in job:
             overrides["model"] = str(job["model"]).strip()
-        if str(job.get("voice") or "").strip():
-            overrides["voice"] = _normalize_voice(job["voice"])
+        if job.get("voice") is not None and str(job["voice"]).strip():
+            overrides["voice"] = job["voice"]
         if "response_format" in job or "format" in job:
             overrides["response_format"] = _normalize_format(job.get("response_format") or job.get("format"))
         if "speed" in job and job["speed"] is not None:
@@ -426,6 +426,8 @@ def _run_speak_batch(args: argparse.Namespace) -> int:
             overrides["instructions"] = str(job["instructions"]).strip()
 
         job_payload = _merge_non_null(job_payload, overrides)
+        # Checked after the job's override, so an unused batch voice can't fail the run.
+        job_payload["voice"] = _normalize_voice(job_payload["voice"])
         job_payload["instructions"] = _maybe_drop_instructions(
             job_payload["model"], job_payload.get("instructions")
         )
