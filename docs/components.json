@@ -30483,6 +30483,48 @@
       }
     },
     {
+      "name": "fable-5-2-advisor",
+      "path": "model/fable-5-2-advisor.json",
+      "category": "model",
+      "type": "setting",
+      "description": "Use Claude Fable 5.2 as the advisor your main model consults at decision points (before committing to an approach, on a recurring error, before declaring a task done). It can advise any main model that supports the advisor. Pinned to the full model ID, so it stays on 5.2 and does not follow future Fable releases. Requires Claude Code v2.1.321+, Fable access and the Anthropic API or Claude Platform on AWS; the advisor stays off when DISABLE_TELEMETRY or CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC is set. If your plan bills Fable to usage credits, run /model fable once to accept that first.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 7,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 1,
+        "analysis": "complete",
+        "findings": [
+          {
+            "id": "TR2",
+            "category": "Trigger Abuse",
+            "severity": "MEDIUM",
+            "title": "Shadow Command Trigger",
+            "file": "SKILL.md",
+            "line": 1,
+            "count": 1
+          }
+        ],
+        "hash": "be7d83cbaa9484ed",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-13T02:52:50Z"
+      }
+    },
+    {
       "name": "sonnet-opus-advisor-haiku-subagents",
       "path": "model/sonnet-opus-advisor-haiku-subagents.json",
       "category": "model",
