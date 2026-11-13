@@ -13,7 +13,9 @@ version only moves through a PR that bumps it.
   outdated           TSV of pins behind the registry: file, package, pinned, latest
 
 npm packages are pinned as name@1.2.3, PyPI packages as name==1.2.3 (pipx)
-or name@1.2.3 (uvx). Docker images and local binaries are out of scope.
+or name@1.2.3 (uvx). A package npx installs from GitHub is pinned to a full
+commit sha, github:owner/repo#<40 hex> (a tag or branch can move); `pin` and
+`outdated` leave those alone. Docker images and local binaries are out of scope.
 """
 
 import json
@@ -29,6 +31,7 @@ MCPS = ROOT / 'cli-tool' / 'components' / 'mcps'
 
 NPM_RUNNERS = {'npx', 'pnpx'}
 EXACT = re.compile(r'^\d+\.\d+\.\d+([-+][0-9A-Za-z.-]+)?$')
+COMMIT = re.compile(r'^[0-9a-f]{40}$')
 # uvx options that take a value; the value is not the package
 UVX_VALUE_OPTS = {'--python', '-p', '--with', '--index', '--index-url', '--extra-index-url'}
 
@@ -78,6 +81,9 @@ def server_package(command, args):
 def split_spec(registry, spec):
     """(name, version or None)."""
     if registry == 'npm':
+        if spec.startswith('github:'):
+            name, _, ref = spec.partition('#')
+            return name, ref or None
         at = spec.rfind('@')
         if at > 0:
             return spec[:at], spec[at + 1:]
@@ -87,6 +93,13 @@ def split_spec(registry, spec):
             name, ver = spec.split(sep, 1)
             return name, ver
     return spec, None
+
+
+def is_pinned(registry, spec):
+    name, ver = split_spec(registry, spec)
+    if not ver:
+        return False
+    return bool(COMMIT.match(ver)) if name.startswith('github:') else bool(EXACT.match(ver))
 
 
 def pinned_spec(registry, name, version):
@@ -126,8 +139,7 @@ def rel(path):
 def cmd_check(files):
     bad = []
     for path, registry, spec in entries(files):
-        _, ver = split_spec(registry, spec)
-        if not (ver and EXACT.match(ver)):
+        if not is_pinned(registry, spec):
             bad.append(f'{rel(path)}: "{spec}" is not pinned to an exact version')
     for line in bad:
         print(f'::error::{line}' if '--github' in sys.argv else line)
@@ -141,8 +153,12 @@ def cmd_check(files):
 def cmd_pin(files):
     failed = 0
     for path, registry, spec in entries(files):
-        name, ver = split_spec(registry, spec)
-        if ver and EXACT.match(ver):
+        name, _ = split_spec(registry, spec)
+        if is_pinned(registry, spec):
+            continue
+        if name.startswith('github:'):
+            print(f'FAIL {rel(path)}: {spec}: pin it to a full commit sha by hand')
+            failed += 1
             continue
         try:
             new = pinned_spec(registry, name, latest(registry, name))

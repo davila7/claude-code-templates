@@ -3,7 +3,7 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from mcp_versions import EXACT, pinned_spec, server_package, split_spec  # noqa: E402
+from mcp_versions import EXACT, is_pinned, pinned_spec, server_package, split_spec  # noqa: E402
 
 
 class ServerPackage(unittest.TestCase):
@@ -41,6 +41,16 @@ class Specs(unittest.TestCase):
             self.assertTrue(EXACT.match(ok), ok)
         for bad in ('latest', '^1.2.3', '1.x', '1.2', ''):
             self.assertFalse(EXACT.match(bad), bad)
+
+    def test_github_specs(self):
+        sha = 'f8842dae3fe793da51885699df2ec929bff0748d'
+        self.assertEqual(split_spec('npm', f'github:owner/repo#{sha}'), ('github:owner/repo', sha))
+        self.assertEqual(split_spec('npm', 'github:owner/repo'), ('github:owner/repo', None))
+        self.assertTrue(is_pinned('npm', f'github:owner/repo#{sha}'))
+        for bad in ('github:owner/repo', 'github:owner/repo#v1.2.3', 'github:owner/repo#main', 'github:owner/repo#f8842da'):
+            self.assertFalse(is_pinned('npm', bad), bad)
+        self.assertTrue(is_pinned('npm', 'a@1.0.0'))
+        self.assertFalse(is_pinned('npm', 'a@latest'))
 
     def test_pinned_spec(self):
         self.assertEqual(pinned_spec('npm', 'a', '1.0.0'), 'a@1.0.0')
