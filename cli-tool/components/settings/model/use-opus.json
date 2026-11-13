@@ -1,0 +1,4 @@
+{
+  "description": "Use Claude Opus 5.5 as the main model, for complex reasoning, large refactors and long agentic tasks. Pinned to the full model ID (claude-opus-5-5), so it stays on Opus 5.5 instead of following the 'opus' alias. Requires Claude Code v2.1.280+; on Bedrock, Vertex or Foundry use your provider's model name instead.",
+  "model": "claude-opus-5-5"
+}
