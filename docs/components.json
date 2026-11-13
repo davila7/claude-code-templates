@@ -3415,7 +3415,7 @@
       "path": "database/database-architect.md",
       "category": "database",
       "type": "agent",
-      "description": "Database architecture and design specialist. Use PROACTIVELY for database design decisions, data modeling, scalability planning, microservices data patterns, and database technology selection. This agent designs and plans; hand off PostgreSQL tuning to postgres-pro and Neon-specific work to neon-database-architect. Specifically:\n\n<example>\nContext: A startup is building a new SaaS platform for project management and needs to design the database from scratch.\nuser: \"We're starting a new multi-tenant project management app. We need a database schema that handles projects, tasks, comments, file attachments, and user permissions. What should we design?\"\nassistant: \"I'll use the database-architect agent to design a greenfield schema for your SaaS platform. I'll discover your access patterns, choose PostgreSQL with row-level security for multi-tenancy, produce DDL with constraints and indexes, and deliver an ER diagram with a migration baseline.\"\n<commentary>\nInvoke the database-architect for greenfield schema design. It gathers access patterns and consistency requirements first, then produces production-ready DDL with rollback scripts — not just a rough sketch.\n</commentary>\n</example>\n\n<example>\nContext: An engineering team is evaluating whether to use PostgreSQL, MongoDB, or a combination for a real-time analytics and recommendation engine.\nuser: \"We need to pick a database stack for a recommendation engine that stores user behavior events, runs ML feature queries, and serves personalized results under 100ms. What should we use?\"\nassistant: \"I'll use the database-architect agent to run a technology selection analysis. I'll map each workload (event ingestion, feature store, vector similarity search, low-latency reads) to the best-fit technology and produce a polyglot persistence architecture with rationale and tradeoff documentation.\"\n<commentary>\nUse the database-architect for technology selection decisions. It evaluates relational, document, vector, graph, and serverless-relational options against your specific access patterns and SLAs — not generic pros/cons lists.\n</commentary>\n</example>\n\n<example>\nContext: A company needs to migrate a legacy MySQL monolith to a microservices architecture with separate databases per service, including a live cutover with zero downtime.\nuser: \"We have a 500GB MySQL monolith and need to split it into 5 service databases with a live migration — no downtime allowed. How do we plan this?\"\nassistant: \"I'll use the database-architect agent to plan your decomposition migration. I'll identify bounded contexts, design the strangler-fig extraction sequence, write dual-write migration scripts with rollback, and produce a cutover runbook with data-consistency checkpoints.\"\n<commentary>\nInvoke database-architect for data migration planning across service boundaries. It produces sequenced migration scripts with rollback steps — not just a high-level plan.\n</commentary>\n</example>",
+      "description": "MUST BE USED for any database schema work, including small changes and rushed requests: designing tables for a new feature or app, writing or reviewing migrations, multi-tenant isolation (row-level security), indexes and constraints, choosing a database, or reviewing a schema before launch. Produces migrations that apply cleanly, keep data correct under concurrency and tenancy, and do not lock production tables, and it tests them against a real database before handing them back. Defaults to PostgreSQL; hands query tuning to postgres-pro and Neon-specific work to neon-database-architect.\n\n<example>\nuser: \"Design the schema for our multi-tenant task app and write the first migration.\"\nassistant: \"I'll use the database-architect agent: it will model tenants, memberships and tasks with same-tenant foreign keys and row-level security, then apply the migration to a scratch Postgres and prove one tenant cannot read another's rows.\"\n</example>\n\n<example>\nuser: \"Add a required status column to orders and rename total to amount. The table has 50M rows.\"\nassistant: \"I'll use the database-architect agent to write an online migration: lock timeouts, a constant default, concurrent indexes, and an expand/contract rename so the running app does not break.\"\n</example>\n\n<example>\nuser: \"Review our schema before launch.\"\nassistant: \"I'll use the database-architect agent to review it for tenant leaks, integrity gaps, types and missing indexes, most severe first.\"\n</example>",
       "author": "",
       "repo": "",
       "version": "",
@@ -3431,25 +3431,15 @@
         "lastValidated": null
       },
       "skillspector": {
-        "score": 9,
+        "score": 0,
         "severity": "LOW",
-        "recommendation": "CAUTION",
-        "issueCount": 1,
-        "analysis": "partial",
-        "findings": [
-          {
-            "id": "EA5",
-            "category": "Excessive Agency",
-            "severity": "MEDIUM",
-            "title": "External Model or Provider Selection",
-            "file": "database-architect.md",
-            "line": 5,
-            "count": 1
-          }
-        ],
-        "hash": "4bed8803fdebd9ce",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "hash": "6ba62f6aa2fa1d47",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-13T02:45:35Z"
       }
     },
     {
