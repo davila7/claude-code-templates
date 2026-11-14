@@ -1,0 +1,6 @@
+{
+  "description": "Install in User settings (~/.claude/settings.json): Claude Code ignores this variable in project and local settings. Turns on Code Mode (experimental, Claude Code 2.1.323+), where Claude writes JavaScript that makes several tool calls in one step (parallel commands, chained results, filtered output) instead of calling Bash, Read or Edit one at a time. Interactive terminal sessions only, on the native build, with Opus 5.5, Sonnet 5.5, Haiku 5.5 or Fable 5.2; the first session asks you to confirm and Ctrl+O shows the code. Sessions started in Code Mode resume only with it on. Docs: https://code.claude.com/docs/en/code-mode",
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_CODE_MODE": "1"
+  }
+}
