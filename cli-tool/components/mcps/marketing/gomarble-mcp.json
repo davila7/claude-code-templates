@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "gomarble": {
+      "description": "Hosted remote MCP server by GoMarble for paid media and marketing data. One OAuth connector for 400+ tools across Meta Ads, Google Ads, TikTok, LinkedIn, Microsoft Ads, GA4, Search Console, Shopify and Klaviyo, with campaign changes made within the permissions you set. Requires a GoMarble account; sign in through the MCP client's OAuth flow. Docs: https://www.gomarble.ai/mcp",
+      "type": "http",
+      "url": "https://apps.gomarble.ai/mcp-api/mcp"
+    }
+  }
+}
