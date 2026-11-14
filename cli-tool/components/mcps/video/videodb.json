@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "videodb": {
+      "description": "VideoDB - Video tools for agents: watch, search, clip and caption video, and monitor live streams. A hosted MCP server that gives any agent video tools: summarize a video and answer questions about it, search one video or a library by what is said or shown, cut clips and highlight reels, add burned-in subtitles, reframe for Shorts and Reels, and connect RTSP camera feeds for alerts. Results come back as playable stream links. Videos you work with are processed by the hosted VideoDB service. Requires a VideoDB account (videodb.io): free to start with $20 of credits, no credit card. Uses OAuth 2.1 browser sign-in, so no API key is needed. Install steps: https://videodb.io/agents. Docs: https://docs.videodb.io.",
+      "type": "http",
+      "url": "https://mcp.videodb.io/mcp"
+    }
+  }
+}
