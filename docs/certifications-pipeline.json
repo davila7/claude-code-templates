@@ -71,8 +71,8 @@
         "eligibility": "public",
         "topics": [
           "Claude",
-          "Work Tasks",
-          "Core Features"
+          "AI",
+          "Work Tasks"
         ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
@@ -91,7 +91,7 @@
         "eligibility": "public",
         "topics": [
           "Claude Code",
-          "Development Workflow"
+          "Development"
         ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
@@ -110,6 +110,7 @@
         "eligibility": "public",
         "topics": [
           "Claude Platform",
+          "Development",
           "API"
         ],
         "source": "anthropic-academy",
@@ -129,7 +130,8 @@
         "eligibility": "public",
         "topics": [
           "Claude Cowork",
-          "Collaborative Work"
+          "Hands-on",
+          "Productivity"
         ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
@@ -156,7 +158,7 @@
         "id": "anthropic-claude-code-in-action",
         "kind": "course",
         "title": "Claude Code in Action",
-        "description": "Run long, hands-off Claude Code sessions you can trust: steer, configure, automate, and verify",
+        "description": "Run long, hands-off Claude Code sessions you can trust: steer, configure, automate, and verify.",
         "url": "https://anthropic.skilljar.com/claude-code-in-action"
       },
       {
@@ -167,7 +169,8 @@
         "eligibility": "public",
         "topics": [
           "AI Fluency",
-          "Collaboration"
+          "Collaboration",
+          "Ethics"
         ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
@@ -175,7 +178,7 @@
         "id": "anthropic-ai-fluency-framework-foundations",
         "kind": "course",
         "title": "AI Fluency: Framework & Foundations",
-        "description": "Learn to collaborate with AI systems effectively, efficiently, ethically, and safely",
+        "description": "Learn to collaborate with AI systems effectively, efficiently, ethically, and safely.",
         "url": "https://anthropic.skilljar.com/ai-fluency-framework-foundations"
       },
       {
@@ -194,7 +197,7 @@
         "id": "anthropic-claude-with-the-anthropic-api",
         "kind": "course",
         "title": "Building with the Claude API",
-        "description": "This comprehensive course covers the full spectrum of working with Anthropic models using the Claude API",
+        "description": "This comprehensive course covers the full spectrum of working with Anthropic models using the Claude API.",
         "url": "https://anthropic.skilljar.com/claude-with-the-anthropic-api"
       },
       {
@@ -205,7 +208,8 @@
         "eligibility": "public",
         "topics": [
           "Model Context Protocol",
-          "Python"
+          "Python",
+          "Servers"
         ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
@@ -213,7 +217,7 @@
         "id": "anthropic-introduction-to-model-context-protocol",
         "kind": "course",
         "title": "Introduction to Model Context Protocol",
-        "description": "Learn to build Model Context Protocol servers and clients from scratch using Python. Master MCP's three core primitives—tools, resources, and prompts—to connect Claude with external services",
+        "description": "Learn to build Model Context Protocol servers and clients from scratch using Python. Master MCP's three core primitives—tools, resources, and prompts—to connect Claude with external services.",
         "url": "https://anthropic.skilljar.com/introduction-to-model-context-protocol"
       },
       {
@@ -243,7 +247,8 @@
         "eligibility": "public",
         "topics": [
           "AI Fluency",
-          "Student Success"
+          "Students",
+          "Collaboration"
         ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
@@ -280,8 +285,9 @@
         ],
         "eligibility": "public",
         "topics": [
+          "Claude",
           "Amazon Bedrock",
-          "AWS"
+          "Training"
         ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
@@ -299,8 +305,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Google Cloud",
-          "Anthropic Models"
+          "Claude",
+          "Google Cloud"
         ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
@@ -376,7 +382,8 @@
         "eligibility": "public",
         "topics": [
           "Subagents",
-          "Claude Code"
+          "Claude Code",
+          "Workflows"
         ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
@@ -395,7 +402,8 @@
         "eligibility": "public",
         "topics": [
           "AI",
-          "Capabilities and Limitations"
+          "Capabilities",
+          "Limitations"
         ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
@@ -403,7 +411,7 @@
         "id": "anthropic-ai-capabilities-and-limitations",
         "kind": "course",
         "title": "AI Capabilities and Limitations",
-        "description": "An introductory course about how AI works",
+        "description": "An introductory course about how AI works.",
         "url": "https://anthropic.skilljar.com/ai-capabilities-and-limitations"
       },
       {
@@ -491,17 +499,18 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI Tools",
-          "Software Development",
-          "Programming",
-          "AI Models"
+          "AI models",
+          "programming",
+          "software development",
+          "AI tools",
+          "developer tools"
         ],
         "source": "cursor-learn",
         "price": null,
         "id": "cursor-ai-foundations",
         "kind": "course",
         "title": "AI Foundations",
-        "description": "This course will teach you how to use AI to be more effective as a programmer. It focuses on developers writing software using AI models and tools, providing an understanding of how the models work, their limitations, and practical patterns for building software using AI.",
+        "description": "This course will teach you about how to use AI to be more effective as a programmer. It’s not a course to teach about machine learning or how to train your own models, but instead a course focused on developers writing software using AI models and tools.",
         "url": "https://cursor.com/learn"
       }
     ],
@@ -514,9 +523,7 @@
         "eligibility": "public",
         "topics": [
           "AI",
-          "Foundations",
-          "Large Language Models",
-          "ChatGPT"
+          "Foundations"
         ],
         "source": "openai-academy",
         "price": null,
@@ -533,9 +540,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Applied AI",
-          "Workflows",
-          "ChatGPT"
+          "AI",
+          "Applied AI"
         ],
         "source": "openai-academy",
         "price": null,
@@ -552,9 +558,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Agents",
-          "Workflows",
-          "ChatGPT"
+          "AI",
+          "Agents"
         ],
         "source": "openai-academy",
         "price": null,
@@ -571,8 +576,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "OpenAI API",
-          "AI Solutions"
+          "AI",
+          "Solutions"
         ],
         "source": "openai-academy",
         "price": null,
@@ -589,8 +594,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "OpenAI API",
-          "AI Applications"
+          "AI",
+          "Evaluation"
         ],
         "source": "openai-academy",
         "price": null,
@@ -607,7 +612,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "OpenAI API",
+          "AI",
+          "Design",
           "Agentic Systems"
         ],
         "source": "openai-academy",
@@ -625,7 +631,7 @@
         ],
         "eligibility": "public",
         "topics": [
-          "OpenAI API",
+          "AI",
           "Retrieval-Augmented Generation"
         ],
         "source": "openai-academy",
@@ -643,8 +649,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "OpenAI API",
-          "Performance Optimization"
+          "AI",
+          "Optimization"
         ],
         "source": "openai-academy",
         "price": null,
@@ -712,8 +718,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI Leadership",
-          "AI Strategy"
+          "AI",
+          "Leadership"
         ],
         "source": "openai-academy",
         "price": null,
@@ -731,8 +737,7 @@
         "eligibility": "public",
         "topics": [
           "AI",
-          "Education",
-          "ChatGPT"
+          "Education"
         ],
         "source": "openai-academy",
         "price": null,
@@ -750,8 +755,7 @@
         "eligibility": "public",
         "topics": [
           "AI",
-          "Education",
-          "ChatGPT"
+          "Education"
         ],
         "source": "openai-academy",
         "price": null,
@@ -788,7 +792,7 @@
         "id": "vercel-build-and-launch-with-ai",
         "kind": "course",
         "title": "Build and Launch with AI",
-        "description": "Build and launch a website for Small Hours Studio with AI. Start in v0, add workshop pages and an email inquiry form, and learn to publish your own updates with fx, GitHub, and Vercel. No coding experience required.",
+        "description": "Build and launch a website for Small Hours Studio with AI. Start in v0, add workshop pages and an email inquiry form, and learn to publish your own updates with fx, GitHub, and Vercel.",
         "url": "https://vercel.com/academy/build-and-launch-with-ai"
       },
       {
@@ -1136,8 +1140,7 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI Infrastructure",
-          "Professional"
+          "AI Infrastructure"
         ],
         "source": "nvidia-certification",
         "level": "Advanced",
@@ -1154,8 +1157,7 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI Operations",
-          "Professional"
+          "AI Operations"
         ],
         "source": "nvidia-certification",
         "level": "Advanced",
@@ -1172,8 +1174,7 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI Networking",
-          "Professional"
+          "AI Networking"
         ],
         "source": "nvidia-certification",
         "level": "Advanced",
@@ -1190,8 +1191,7 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI Rack and Interconnect",
-          "Professional"
+          "AI Rack and Interconnect"
         ],
         "source": "nvidia-certification",
         "level": "Advanced",
@@ -1208,8 +1208,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI Infrastructure and Operations",
-          "Associate"
+          "AI Infrastructure",
+          "Operations"
         ],
         "source": "nvidia-certification",
         "level": "Entry",
@@ -1226,8 +1226,7 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Accelerated Data Science",
-          "Professional"
+          "Accelerated Data Science"
         ],
         "source": "nvidia-certification",
         "role": "Data",
@@ -1245,8 +1244,7 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Accelerated Data Science",
-          "Associate"
+          "Accelerated Data Science"
         ],
         "source": "nvidia-certification",
         "role": "Data",
@@ -1264,8 +1262,7 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Generative AI LLMs",
-          "Professional"
+          "Generative AI"
         ],
         "source": "nvidia-certification",
         "level": "Advanced",
@@ -1282,8 +1279,7 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Agentic AI",
-          "Professional"
+          "Agentic AI"
         ],
         "source": "nvidia-certification",
         "level": "Advanced",
@@ -1300,8 +1296,7 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Generative AI LLM",
-          "Associate"
+          "Generative AI"
         ],
         "source": "nvidia-certification",
         "level": "Entry",
@@ -1318,8 +1313,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Generative AI Multimodal",
-          "Associate"
+          "Generative AI",
+          "Multimodal"
         ],
         "source": "nvidia-certification",
         "level": "Entry",
@@ -1336,15 +1331,15 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI Models and Application Development",
-          "Associate"
+          "AI Models",
+          "Application Development"
         ],
         "source": "nvidia-certification",
         "level": "Entry",
         "id": "nvidia-ai-model-application-development-associate",
         "kind": "certification",
         "title": "NVIDIA-Certified Associate AI Models and Application Development",
-        "description": "Validates foundational skills in building, customizing, deploying, and evaluating AI models and applications on NVIDIA’s platform.",
+        "description": "Validates foundational skills in building, customizing, deploying, and evaluating AI models and applications on NVIDIA’s platform, including retrieval pipelines, inference optimization, and agentic systems.",
         "url": "https://www.nvidia.com/en-us/learn/certification/ai-model-application-development-associate"
       },
       {
@@ -1354,8 +1349,7 @@
         ],
         "eligibility": "public",
         "topics": [
-          "OpenUSD Development",
-          "Professional"
+          "OpenUSD"
         ],
         "source": "nvidia-certification",
         "level": "Advanced",
