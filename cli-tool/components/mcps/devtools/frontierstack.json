@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "frontierstack": {
+      "description": "Guarded server administration from your Mac. Lets Claude check and manage the services, Docker containers, websites, TLS certificates and linked Linux, Windows and Mac hosts that FrontierStack runs, without putting server credentials in the prompt, the model's memory or this config. Read-only by default: changes need FrontierStack's Allow changes switch, App Lock and caller scope, and destructive actions stop for approval in the app. Requires the FrontierStack Mac app (macOS 13+) and Node.js. Turning on FrontierStack's MCP Server pane creates this owner-only bridge; `frontierstack mcp` prints its path. FrontierStack is made by Enfour, Inc. (https://www.frontierstack.app).",
+      "command": "${HOME}/Library/Application Support/FrontierStack/mcp-bridge",
+      "args": []
+    }
+  }
+}
