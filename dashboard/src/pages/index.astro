@@ -13,6 +13,7 @@ import HomeStats from '../components/HomeStats.tsx';
 import fs from 'node:fs';
 import path from 'node:path';
 import { totalComponents } from '../lib/agent-readiness';
+import { homePageMeta } from '../lib/list-page-meta';
 
 export const prerender = true;
 
@@ -20,17 +21,18 @@ let total = 2000;
 try {
   total = totalComponents(JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public', 'counts.json'), 'utf-8')));
 } catch {}
+const meta = homePageMeta(total);
 ---
 
 <DashboardLayout
-  title="Claude Code Templates: 1000+ Agents, Commands, Skills & MCP Integrations"
-  description="Browse and install 1000+ pre-built components for Claude Code. AI agents, slash commands, MCP integrations, hooks, and settings. Free, open-source CLI tool."
+  title={meta.title}
+  description={meta.description}
 >
   <script type="application/ld+json" set:html={JSON.stringify({
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     "name": "Claude Code Templates",
-    "description": "CLI tool and marketplace for managing Claude Code components. Over 1,000 pre-built agents, commands, skills, settings, hooks, and MCP integrations.",
+    "description": meta.schemaDescription,
     "url": "https://www.aitmpl.com/",
     "applicationCategory": "DeveloperApplication",
     "operatingSystem": "Windows, macOS, Linux",

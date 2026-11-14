@@ -29,3 +29,26 @@ test('skills title stays within what Google shows, with the current count', () =
   assert.ok(meta.title.length <= 60, meta.title);
   assert.ok(meta.description.length <= 220, String(meta.description.length));
 });
+
+import { homePageMeta } from '../src/lib/list-page-meta.ts';
+import { totalComponents } from '../src/lib/agent-readiness.ts';
+
+test('home meta rounds the total down to the ten', () => {
+  const meta = homePageMeta(1987);
+  assert.equal(meta.title, 'Claude Code Templates: 1,980+ Agents, Commands, Skills & MCP Integrations');
+  assert.match(meta.description, /^Browse and install 1,980\+ pre-built components/);
+  assert.match(meta.schemaDescription, /Over 1,980 agents/);
+});
+
+test('home meta drops the figure when the total is missing', () => {
+  for (const c of [undefined, 0, Number.NaN]) {
+    assert.doesNotMatch(homePageMeta(c).title, /\d/);
+  }
+});
+
+test('home meta with the current counts', () => {
+  const counts = JSON.parse(fs.readFileSync(path.join(import.meta.dirname, '..', 'public', 'counts.json'), 'utf-8'));
+  const meta = homePageMeta(totalComponents(counts));
+  assert.match(meta.title, /\d,\d{3}\+/);
+  assert.ok(meta.description.length <= 220, String(meta.description.length));
+});

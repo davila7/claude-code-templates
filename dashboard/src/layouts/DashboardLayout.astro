@@ -15,7 +15,7 @@ interface Props {
 
 const {
   title = 'Claude Code Templates',
-  description = 'Browse and install 1000+ components for Claude Code: AI agents, slash commands, MCP integrations, hooks, settings, and skills. Free, open-source CLI tool.',
+  description = 'Browse and install open-source components for Claude Code: AI agents, slash commands, MCP integrations, hooks, settings, and skills. Free, open-source CLI tool.',
   ogImage = '/og/site.png',
   ogImageAlt,
   noindex = false,
@@ -50,8 +50,15 @@ const schemaData = JSON.stringify({
       },
       "sameAs": [
         "https://github.com/davila7/claude-code-templates",
-        "https://www.npmjs.com/package/claude-code-templates"
+        "https://www.npmjs.com/package/claude-code-templates",
+        "https://docs.aitmpl.com",
+        "https://x.com/dani_avila7"
       ],
+      "founder": {
+        "@type": "Person",
+        "name": "Daniel Avila",
+        "sameAs": ["https://x.com/dani_avila7", "https://github.com/davila7"]
+      },
       "contactPoint": {
         "@type": "ContactPoint",
         "contactType": "technical support",
