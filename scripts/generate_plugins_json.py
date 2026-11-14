@@ -69,12 +69,14 @@ REPOS = [
     ("firecrawl/firecrawl-claude-plugin", "https://www.firecrawl.dev/integrations/claude-code?utm_source=claude-code-templates&utm_medium=integration"),
     ("annavetech/kumi", "https://docs.annave.tech/kumi/"),
     ("lliu56/minicut-skills", "https://www.minicut.ai/?utm_source=claude-code-templates&utm_medium=integration"),
+    ("lexio-rent-git/lexio-api-skill", "https://lexio.rent/logiciel-location-voiture"),
 ]
 
 DESCRIPTION_OVERRIDES = {
     "cohesivity-org/cohesivity-plugin": "cohesivity.ai offers free agent native backend services. Anonymous account (no-signup) to get started through MCP or API. Hosting, postgres, email, storage, containers, LLMs, voice and third-party APIs. Includes free tiers and 5 USD/mo in AI and Search credits. topups through x402.",
     "firecrawl/firecrawl-claude-plugin": "Search the web, developer sources, and scientific papers with Firecrawl.",
     "lliu56/minicut-skills": "Make AI short dramas from Claude Code: MiniCut writes the script, plans every shot, makes the video and edits the episode.",
+    "lexio-rent-git/lexio-api-skill": "Build integrations with the Lexio Rent API, the REST API of a vehicle rental management software: availability and prices, quotes, rentals, payments, fleet and event sync. One documentation skill that asks before any write that changes a booking or money.",
 }
 
 OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "..", "dashboard", "public", "plugins.json")
