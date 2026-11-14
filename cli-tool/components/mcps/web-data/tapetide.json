@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "tapetide": {
+      "description": "Tapetide Indian Stock Market MCP — research data for about 8,000 NSE and BSE listed stocks: quarterly and annual financials, a 326-ratio screener, technical indicators, FII/DII flows, index option chains (end-of-day snapshots), shareholding, filings, IPOs and portfolio research records. 48 tools (55 including aliases). Not a live trading feed and places no orders; research and information only, not investment advice. Requires a free Tapetide account (50 tool calls a day; paid plans at https://tapetide.com/pricing). Uses OAuth (Google sign-in) — no API key needed, the MCP client will prompt you to sign in on first use. Prefer a local server? Run `npx -y tapetide-mcp` with TAPETIDE_TOKEN from https://tapetide.com/settings/tokens. Docs: https://tapetide.com/mcp",
+      "type": "http",
+      "url": "https://mcp.tapetide.com/mcp"
+    }
+  }
+}
