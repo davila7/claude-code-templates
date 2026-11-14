@@ -49,6 +49,8 @@ The Atlas Cloud backend uses only the Python standard library.
 ## Environment
 - Default OpenAI calls require `OPENAI_API_KEY`.
 - Optional Atlas Cloud calls require `ATLASCLOUD_API_KEY`.
+- `OPENAI_BASE_URL` (read by the OpenAI SDK) points `scripts/text_to_speech.py` at any OpenAI-compatible speech server. `OPENAI_API_KEY` is then sent to that server, so set it to that server's key (any non-empty value if it doesn't check keys), not an OpenAI key.
+- `OPENAI_TTS_MODEL` and `OPENAI_TTS_VOICE` set the default model and voice of `scripts/text_to_speech.py`. `--model` and `--voice` still override them.
 
 If the selected provider key is missing, give the user these steps:
 1. Create an API key in that provider's console.
@@ -60,9 +62,9 @@ If installation isn't possible in this environment, tell the user which dependen
 
 ## Defaults & rules
 - Keep OpenAI as the default provider. Do not switch to Atlas Cloud unless the user requests it.
-- Use `gpt-4o-mini-tts-2025-12-15` unless the user requests another model.
-- Default voice: `cedar`. If the user wants a brighter tone, prefer `marin`.
-- Built-in voices only. Custom voices are out of scope for this skill.
+- Use `gpt-4o-mini-tts-2025-12-15` unless the user requests another model or `OPENAI_TTS_MODEL` is set.
+- Default voice: `cedar` (or `OPENAI_TTS_VOICE`). If the user wants a brighter tone, prefer `marin`.
+- Built-in voices only: OpenAI's list on OpenAI's API, or the server's own voice ids when `OPENAI_BASE_URL` points elsewhere. Custom voice creation is out of scope for this skill.
 - `instructions` are supported for GPT-4o mini TTS models, but not for `tts-1` or `tts-1-hd`.
 - Input length must be <= 4096 characters per request. Split longer text into chunks.
 - Enforce 50 requests/minute. The CLI caps `--rpm` at 50.
@@ -73,6 +75,12 @@ If installation isn't possible in this environment, tell the user which dependen
 - Provide a clear disclosure to end users that the voice is AI-generated.
 - Use the OpenAI Python SDK (`openai` package) for default OpenAI calls; the dedicated Atlas CLI uses its asynchronous HTTP contract.
 - Prefer the matching bundled CLI over writing new one-off scripts.
+
+## Model retirement
+- OpenAI removes `tts-1`, `tts-1-hd` and `gpt-4o-mini-tts` (with its dated snapshots, including the default `gpt-4o-mini-tts-2025-12-15`) from its API on January 6, 2027 ([deprecations](https://developers.openai.com/api/docs/deprecations)).
+- Its suggested replacement, `gpt-realtime-2.1-mini`, uses the Realtime API, not `/v1/audio/speech`, so the default OpenAI path stops working that day.
+- Until then, mention the date when the user sets up a recurring or long-lived workflow on the default model.
+- After it, point `OPENAI_BASE_URL` at an OpenAI-compatible speech server and set `OPENAI_TTS_MODEL` and `OPENAI_TTS_VOICE` (or pass `--model` and `--voice`), or use another backend this skill documents.
 
 ## Instruction augmentation
 Reformat user direction into a short, labeled spec. Only make implicit details explicit; do not invent new requirements.
