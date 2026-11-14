@@ -23432,9 +23432,9 @@
     },
     "highlights": [
       "39 plugins in marketplace",
-      "Web UI: https://lookbk.dev/?utm_source=github&utm_medium=repo&utm_campaign=repo-website"
+      "Web UI: https://lookbk.dev/"
     ],
-    "website": "https://lookbk.dev/?utm_source=claude-code-templates&utm_medium=integration",
+    "website": "https://lookbk.dev/",
     "marketplace_name": "lookbk-skills",
     "plugins_list": [
       {

@@ -69,7 +69,7 @@ REPOS = [
     ("firecrawl/firecrawl-claude-plugin", "https://www.firecrawl.dev/integrations/claude-code?utm_source=claude-code-templates&utm_medium=integration"),
     ("annavetech/kumi", "https://docs.annave.tech/kumi/"),
     ("lliu56/minicut-skills", "https://www.minicut.ai/?utm_source=claude-code-templates&utm_medium=integration"),
-    ("lookbkdev/lookbk-skills", "https://lookbk.dev/?utm_source=claude-code-templates&utm_medium=integration"),
+    ("lookbkdev/lookbk-skills", "https://lookbk.dev/"),
 ]
 
 DESCRIPTION_OVERRIDES = {
