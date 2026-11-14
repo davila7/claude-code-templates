@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "govisit-tools": {
+      "description": "GoVisit Tools is a hosted, read-only MCP server for travel discovery. Search destinations and places, and read published destination, place, category, collection, activity, FAQ, statistics, and documentation data. Streamable HTTP; no API key required. MCP setup: https://govisit.ai/en/docs/developers/mcp/overview. Agent Skills: https://govisit.ai/en/docs/developers/agent-skills/overview.",
+      "type": "http",
+      "url": "https://govisit.ai/mcp"
+    }
+  }
+}

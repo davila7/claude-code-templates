@@ -1,0 +1,10 @@
+{
+  "repo": "inhotel-io/govisit-toolkit",
+  "path": "skills/govisit-list-related-places",
+  "commit": "81e415d756cdf3e95d66281bd0243df07bf509a2",
+  "license": "MIT",
+  "author": "inHotel S\u00e0rl",
+  "include": [
+    "SKILL.md"
+  ]
+}
