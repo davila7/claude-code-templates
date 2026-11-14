@@ -42,7 +42,10 @@ test('home meta rounds the total down to the ten', () => {
 
 test('home meta drops the figure when the total is missing', () => {
   for (const c of [undefined, 0, Number.NaN]) {
-    assert.doesNotMatch(homePageMeta(c).title, /\d/);
+    const meta = homePageMeta(c);
+    assert.doesNotMatch(meta.title, /\d/);
+    assert.doesNotMatch(meta.description, /\d/);
+    assert.doesNotMatch(meta.schemaDescription, /\d/);
   }
 });
 

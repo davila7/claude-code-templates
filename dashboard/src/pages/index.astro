@@ -17,11 +17,13 @@ import { homePageMeta } from '../lib/list-page-meta';
 
 export const prerender = true;
 
-let total = 2000;
+// undefined when counts.json is missing: the title then carries no figure.
+let counted: number | undefined;
 try {
-  total = totalComponents(JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public', 'counts.json'), 'utf-8')));
+  counted = totalComponents(JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public', 'counts.json'), 'utf-8')));
 } catch {}
-const meta = homePageMeta(total);
+const total = counted ?? 2000;
+const meta = homePageMeta(counted);
 ---
 
 <DashboardLayout
