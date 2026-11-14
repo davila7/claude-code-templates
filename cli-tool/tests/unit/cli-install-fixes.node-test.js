@@ -253,5 +253,19 @@ test('--setting keeps the hooks already configured for the same event', async ()
 
   const { hooks } = JSON.parse(fs.readFileSync(settingsFile, 'utf8'));
   assert.deepEqual(hooks.PreToolUse, [mine, theirs], 'the existing hook stays and installing twice adds the setting\'s hook once');
+
+  // Same entry with its keys in another order (hand edit, formatter) is not added again.
+  fs.writeFileSync(settingsFile, JSON.stringify({ hooks: { PreToolUse: [mine, { hooks: theirs.hooks, matcher: theirs.matcher }] } }));
+  global.fetch = async url => String(url).endsWith('/settings/demo/guard.json')
+    ? new Response(JSON.stringify({ description: 'demo', hooks: { PreToolUse: [theirs] } }))
+    : new Response('not found', { status: 404 });
+  console.log = () => {};
+  try {
+    await createClaudeConfig({ setting: 'demo/guard', directory: dir, yes: true });
+  } finally {
+    global.fetch = realFetch;
+    console.log = realLog;
+  }
+  assert.equal(JSON.parse(fs.readFileSync(settingsFile, 'utf8')).hooks.PreToolUse.length, 2);
   fs.rmSync(dir, { recursive: true, force: true });
 });

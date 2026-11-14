@@ -840,7 +840,7 @@ async function installIndividualSetting(settingName, targetDir, options) {
             mergedConfig.hooks[event] = entries;
             return;
           }
-          const added = entries.filter(entry => !current.some(e => JSON.stringify(e) === JSON.stringify(entry)));
+          const added = entries.filter(entry => !current.some(e => require('util').isDeepStrictEqual(e, entry)));
           mergedConfig.hooks[event] = [...current, ...added];
         });
       }
