@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "adkit-microsoft-ads": {
+      "description": "Microsoft Ads MCP Server by AdKit: hosted MCP server. Read Microsoft Advertising (Bing Ads) reports and draft campaign changes from Claude Code. Sign in with your AdKit account through OAuth; there is no key to paste. Every change is saved as a draft until you approve it. Docs: https://adkit.so/features/ads-mcp/microsoft",
+      "type": "http",
+      "url": "https://mcp.adkit.so/microsoft-ads"
+    }
+  }
+}

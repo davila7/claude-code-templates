@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "adkit-tiktok-ads": {
+      "description": "TikTok Ads MCP Server by AdKit: hosted MCP server. Create and edit TikTok Ads campaigns, ad groups and ads, and read reports from Claude Code. Sign in with your AdKit account through OAuth; there is no key to paste. Every change is saved as a draft until you approve it. Docs: https://adkit.so/features/ads-mcp/tiktok",
+      "type": "http",
+      "url": "https://mcp.adkit.so/tiktok-ads"
+    }
+  }
+}

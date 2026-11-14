@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "adkit-google-ads": {
+      "description": "Google Ads MCP Server by AdKit: hosted MCP server. Run Google Ads Search, Display, Demand Gen and Performance Max campaigns and read reports from Claude Code. Sign in with your AdKit account through OAuth; there is no key to paste. Every change is saved as a draft until you approve it. Docs: https://adkit.so/features/ads-mcp/google",
+      "type": "http",
+      "url": "https://mcp.adkit.so/google-ads"
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "adkit": {
+      "description": "Ads MCP Server by AdKit: hosted MCP server. Run ads on Meta, Google, TikTok, LinkedIn, Microsoft, Reddit, X and Pinterest from Claude Code. Sign in with your AdKit account through OAuth; there is no key to paste. Every change is saved as a draft until you approve it. Docs: https://adkit.so/features/ads-mcp",
+      "type": "http",
+      "url": "https://mcp.adkit.so"
+    }
+  }
+}
