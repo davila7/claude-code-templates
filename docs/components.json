@@ -28370,6 +28370,38 @@
       }
     },
     {
+      "name": "marcora",
+      "path": "marketing/marcora.json",
+      "category": "marketing",
+      "type": "mcp",
+      "description": "Official MCP server for Marcora, the context layer for go-to-market teams: your positioning, brand voice, and product facts in one source of truth that your AI tools read from. Hosted remote server with OAuth sign-in, so there's nothing to install. Free and paid plans.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "hash": "76c012dc064af0d5",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-15T17:40:27Z"
+      }
+    },
+    {
       "name": "pageree",
       "path": "marketing/pageree.json",
       "category": "marketing",
@@ -29183,6 +29215,38 @@
         "hash": "ee938c8fbf500a35",
         "version": "2.12.0",
         "scannedAt": "2026-11-08T03:26:50Z"
+      }
+    },
+    {
+      "name": "scrapingbee",
+      "path": "web-data/scrapingbee.json",
+      "category": "web-data",
+      "type": "mcp",
+      "description": "ScrapingBee MCP server — fetch any web page as text, markdown, HTML or a screenshot with JavaScript rendering and anti-bot handling done for you, extract structured data by describing the fields in plain English, and get JSON results from Google search, Amazon products and pricing, Walmart, YouTube metadata and subtitles, ChatGPT and Gemini. Paid plans; get an API key at https://app.scrapingbee.com/account/register (1,000 free API credits on signup, no credit card) and set it as the SCRAPINGBEE_API_KEY environment variable before connecting.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "hash": "81d5098c0af51c89",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-15T17:40:27Z"
       }
     },
     {
