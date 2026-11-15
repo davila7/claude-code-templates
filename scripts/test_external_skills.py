@@ -211,6 +211,38 @@ class LocalDirIncludeTest(unittest.TestCase):
         self.assertEqual(self.files(full), ["SKILL.md", "demo/big.gif", "scripts/run.sh"])
 
 
+class LocalDirLegalFilesTest(LocalDirIncludeTest):
+    """The upstream LICENSE/NOTICE travel with the skill (Apache-2.0 4(a)/4(d), MIT)."""
+
+    def setUp(self):
+        super().setUp()
+        work = Path(self.tmp.name) / "work"
+        (work / "LICENSE").write_text("root licence\n")
+        (work / "NOTICE.txt").write_text("root notice\n")
+        (work / "skills/other").mkdir()
+        (work / "skills/other/SKILL.md").write_text("---\nname: other\n---\n")
+        (work / "skills/other/LICENSE.md").write_text("own licence\n")
+        git("-c", "user.email=t@t", "-c", "user.name=t", "add", "-A", cwd=work)
+        git("-c", "user.email=t@t", "-c", "user.name=t", "commit", "-qm", "y", cwd=work)
+        self.commit = git("rev-parse", "HEAD", cwd=work)
+        bare = ext.CACHE_ROOT / "git" / "owner__name"
+        git("--git-dir", str(bare), "fetch", "-q", str(work), "HEAD", cwd=work)
+
+    def test_without_include_everything_is_kept(self):
+        out = ext.local_dir(self.manifest_dir("all"))
+        self.assertEqual(self.files(out), ["LICENSE", "NOTICE.txt", "SKILL.md", "demo/big.gif", "scripts/run.sh"])
+        self.assertEqual((out / "LICENSE").read_text(), "root licence\n")
+
+    def test_include_filters_and_gets_its_own_cache(self):
+        out = ext.local_dir(self.manifest_dir("some", include=["SKILL.md", "scripts"]))
+        self.assertEqual(self.files(out), ["LICENSE", "NOTICE.txt", "SKILL.md", "scripts/run.sh"])
+
+    def test_the_skill_folder_licence_wins_even_when_include_drops_it(self):
+        out = ext.local_dir(self.manifest_dir("other", path="skills/other", include=["SKILL.md"]))
+        self.assertEqual(self.files(out), ["LICENSE.md", "NOTICE.txt", "SKILL.md"])
+        self.assertEqual((out / "LICENSE.md").read_text(), "own licence\n")
+
+
 class MarketplaceTest(unittest.TestCase):
     """Catalog plugins -> the aitmpl marketplace, against a local repo (no network)."""
 

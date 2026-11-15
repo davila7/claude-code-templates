@@ -191,7 +191,8 @@ def local_dir(skill_dir: Path) -> Path:
     """Folder holding the external skill's files at its pinned commit (fetched once, then cached)."""
     m = read_manifest(skill_dir)
     repo, commit, path = m["repo"], m["commit"], m["path"]
-    dest = CACHE_ROOT / "trees" / repo.replace("/", "__") / commit / (path or "_root")
+    # "trees-v2": v1 folders lack the upstream LICENSE/NOTICE added below.
+    dest = CACHE_ROOT / "trees-v2" / repo.replace("/", "__") / commit / (path or "_root")
     if m["include"]:
         # A different include is a different file set: give it its own cache folder.
         digest = hashlib.sha256("\0".join(sorted(m["include"])).encode()).hexdigest()[:12]
@@ -224,6 +225,7 @@ def local_dir(skill_dir: Path) -> Path:
     entry = PLUGIN_MANIFEST if plugin else "SKILL.md"
     if not any(rel == entry for rel, *_ in entries):
         raise ManifestError(f"no {entry} in {repo}/{path} at {commit[:7]}")
+    entries += _legal_files(git_dir, commit, path, listing, entries)
     if len(entries) > MAX_FILES or sum(e[3] for e in entries) > MAX_TOTAL_BYTES:
         raise ManifestError(f"{repo}/{path} is over the size limit ({MAX_FILES} files / {MAX_TOTAL_BYTES} bytes)")
     shutil.rmtree(dest, ignore_errors=True)
@@ -237,6 +239,43 @@ def local_dir(skill_dir: Path) -> Path:
             out.chmod(0o755)
     done.write_text("")
     return dest
+
+
+# Apache-2.0 4(a)/4(d) and MIT ask that the licence (and NOTICE) travel with the
+# code. Upstream usually keeps them at the repo root, outside the skill folder,
+# so they are added to the installed set. Same order as the CLI's
+# LEGAL_FILE_GROUPS (cli-tool/src/external-skill.js).
+NOTICE_NAMES = ("NOTICE", "NOTICE.md", "NOTICE.txt")
+
+
+def _legal_files(git_dir: Path, commit: str, path: str, listing: str, entries: list) -> list:
+    """LICENSE/NOTICE entries to add: the skill folder's own (even if `include`
+    leaves it out), else the repo root's. Nothing when the set already has one."""
+    have = {rel for rel, *_ in entries}
+    folder = {}
+    for line in filter(None, listing.split("\0")):
+        meta, full = line.split("\t", 1)
+        mode, otype, sha, size = meta.split()
+        rel = full[len(path) + 1:] if path else full
+        if otype == "blob" and mode != "120000" and "/" not in rel:
+            folder[rel] = (sha, mode, int(size))
+    root = {}
+    if path:
+        for line in filter(None, _git("--git-dir", str(git_dir), "ls-tree", "-l", "-z", commit).split("\0")):
+            meta, name = line.split("\t", 1)
+            mode, otype, sha, size = meta.split()
+            if otype == "blob" and mode != "120000":
+                root[name] = (sha, mode, int(size))
+    added = []
+    for names in (LICENSE_NAMES, NOTICE_NAMES):
+        if any(n in have for n in names):
+            continue
+        for source in (folder, root):
+            hit = next((n for n in names if n in source), None)
+            if hit:
+                added.append((hit, *source[hit]))
+                break
+    return added
 
 
 def is_plugin(local: Path) -> bool:

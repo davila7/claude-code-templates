@@ -234,6 +234,12 @@ after filtering) for repos whose skill folder also holds demos or tests. First o
   raw.githubusercontent at that commit and checks each against its git blob sha.
   `requires` skills are installed too; downloads count under `skill` +
   `{category}/{name}` like any skill.
+- The upstream LICENSE (and NOTICE) always travels with the skill, since MIT and
+  Apache-2.0 require it and most repos keep it at the root, outside `path`: the
+  skill folder's own copy first (even if `include` leaves it out), else the repo
+  root's. The CLI probes the root names on raw.githubusercontent (no extra API
+  call); `local_dir()` adds the same file, so the site's content file shows it.
+  Keep `LEGAL_FILE_GROUPS` (CLI) and `LICENSE_NAMES`/`NOTICE_NAMES` in sync.
 - Add one with `python scripts/external_skills.py add OWNER/REPO PATH CATEGORY
   [--requires a/b ...] [--author NAME]` (resolves HEAD, checks the license).
   `check` validates manifests (license allowlist + matches the repo's LICENSE at
