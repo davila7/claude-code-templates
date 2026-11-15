@@ -289,6 +289,44 @@ def previous_download_stats(catalog_path='docs/components.json'):
     return counts
 
 
+def previous_component(ctype, path, catalog_path='docs/components.json',
+                       content_dir='dashboard/public/component-content', _cache={}):
+    """The component as the last catalog published it (index entry + its content file), or None.
+
+    Used when an external skill's repo cannot be fetched this run (deleted, made
+    private, or GitHub down): the catalog keeps what it already showed instead
+    of the whole regeneration failing.
+    """
+    if catalog_path not in _cache:
+        try:
+            with open(catalog_path, 'r', encoding='utf-8') as f:
+                _cache[catalog_path] = json.load(f)
+        except (OSError, ValueError):
+            _cache[catalog_path] = {}
+    entry = next((dict(c) for c in _cache[catalog_path].get(ctype) or []
+                  if isinstance(c, dict) and c.get('path') == path), None)
+    if entry is None:
+        return None
+    try:
+        with open(os.path.join(content_dir, ctype, path + '.json'), 'r', encoding='utf-8') as f:
+            payload = json.load(f)
+    except (OSError, ValueError):
+        return None
+    if not payload.get('content'):
+        return None
+    entry['content'] = payload['content']
+    if payload.get('files'):
+        entry['files'] = payload['files']
+    return entry
+
+
+def warn(message):
+    """Print a warning that GitHub Actions also shows as an annotation on the run."""
+    print(f"⚠️ Warning: {message}")
+    if os.environ.get('GITHUB_ACTIONS') == 'true':
+        print(f"::warning::{message}")
+
+
 def fetch_download_stats():
     """
     Fetch download statistics from Supabase
@@ -548,6 +586,7 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
         download_stats = previous_download_stats(output_path)
     component_types = ['agents', 'commands', 'mcps', 'settings', 'hooks', 'sandbox', 'skills', 'loops', 'mods', 'plugins']
     marketplace_dirs = []  # catalog plugins that made it into the catalog
+    kept_previous = set()  # "type/path" of components copied from the last catalog (upstream unreachable)
 
     print(f"Starting scan of {components_base_path} and {templates_base_path}...")
 
@@ -573,8 +612,20 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
                             source = None
                             skill_root = skill_dir_path
                             if external_skills.is_external(Path(skill_dir_path)):
-                                manifest = external_skills.read_manifest(Path(skill_dir_path))
-                                skill_root = str(external_skills.local_dir(Path(skill_dir_path)))
+                                try:
+                                    manifest = external_skills.read_manifest(Path(skill_dir_path))
+                                    skill_root = str(external_skills.local_dir(Path(skill_dir_path)))
+                                except (OSError, ValueError) as e:
+                                    # One unreachable upstream repo must not stop the whole catalog.
+                                    kept = previous_component('skills', f"{category}/{skill_dir}", output_path)
+                                    if kept:
+                                        kept['downloads'] = download_stats.get(f"skills/{category}/{skill_dir}", kept.get('downloads', 0))
+                                        components_data[component_type].append(kept)
+                                        kept_previous.add(f"skills/{category}/{skill_dir}")
+                                        warn(f"external skill {category}/{skill_dir} could not be fetched, keeping its previous catalog entry: {e}")
+                                    else:
+                                        warn(f"external skill {category}/{skill_dir} could not be fetched and has no previous catalog entry, leaving it out: {e}")
+                                    continue
                                 source = {
                                     'repo': manifest['repo'],
                                     'path': manifest['path'],
@@ -1074,14 +1125,22 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
                 # Mods: the whole plugin (every text file) rides in the content file
                 content_payload['files'] = component['files']
             previous_meta = {}
-            if git_history is None:
+            if f"{ctype}/{component['path']}" in kept_previous:
+                # Upstream unreachable: the file list cannot be rebuilt, so the page keeps the last one.
                 try:
                     with open(content_file_path, 'r', encoding='utf-8') as f:
-                        previous_meta = json.load(f).get('meta') or {}
+                        content_payload['meta'] = json.load(f).get('meta') or {}
                 except (OSError, ValueError):
-                    pass
-            # Shown on the component page: file list, language bar, last commit and date added.
-            content_payload['meta'] = component_page_meta(components_base_path, ctype, component, git_history, previous_meta)
+                    content_payload['meta'] = {}
+            else:
+                if git_history is None:
+                    try:
+                        with open(content_file_path, 'r', encoding='utf-8') as f:
+                            previous_meta = json.load(f).get('meta') or {}
+                    except (OSError, ValueError):
+                        pass
+                # Shown on the component page: file list, language bar, last commit and date added.
+                content_payload['meta'] = component_page_meta(components_base_path, ctype, component, git_history, previous_meta)
             # Loops that install this component, for the page's "Next step" block.
             loops = used_by_loops.get(f"{ctype}/{slug}")
             if loops:
