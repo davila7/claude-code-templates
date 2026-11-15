@@ -130,6 +130,39 @@ class ValidateManifestTest(unittest.TestCase):
             self.assertEqual(inv["agents"], ["kit-design", "scout"])
             self.assertEqual(inv["commands"], ["go"])
 
+    def test_invalid_skill_frontmatter_name_falls_back_to_the_folder(self):
+        # google-labs-code/stitch-skills names skills "stitch::code-to-design";
+        # Claude Code lists them by folder (/stitch-design:code-to-design).
+        with tempfile.TemporaryDirectory() as tmp:
+            plug = Path(tmp) / "kit"
+            (plug / ".claude-plugin").mkdir(parents=True)
+            (plug / ".claude-plugin/plugin.json").write_text('{"name": "kit"}')
+            (plug / "skills/code-to-design").mkdir(parents=True)
+            (plug / "skills/code-to-design/SKILL.md").write_text("---\nname: stitch::code-to-design\n---\n")
+            self.assertEqual(ext.plugin_inventory(plug)["skills"], ["code-to-design"])
+
+    def test_root_plugin_json(self):
+        # The Agent Skills `plugins` layout: plugin.json at the root, no .claude-plugin/.
+        # It counts for the name and display fields; its component keys do not, because
+        # Claude Code never reads that file and loads only the default folders.
+        with tempfile.TemporaryDirectory() as tmp:
+            plug = Path(tmp) / "kit"
+            (plug / "skills/a").mkdir(parents=True)
+            (plug / "skills/a/SKILL.md").write_text("---\nname: a\n---\n")
+            (plug / "more").mkdir()
+            (plug / "more/x.md").write_text("")
+            self.assertFalse(ext.is_plugin(plug))
+            (plug / "plugin.json").write_text(json.dumps(
+                {"name": "kit", "description": "A kit", "commands": ["./more/x.md"]}))
+            self.assertTrue(ext.is_plugin(plug))
+            self.assertEqual(ext.manifest_file(plug), "plugin.json")
+            self.assertEqual(ext.plugin_manifest(plug)["description"], "A kit")
+            self.assertEqual(ext.plugin_inventory(plug), {"skills": ["a"]})
+            # Claude Code's own manifest wins when both exist.
+            (plug / ".claude-plugin").mkdir()
+            (plug / ".claude-plugin/plugin.json").write_text('{"name": "kit", "description": "own"}')
+            self.assertEqual(ext.plugin_manifest(plug)["description"], "own")
+
     def test_the_site_lists_every_kind_the_inventory_writes(self):
         # dashboard/src/lib/component-page.ts PLUGIN_KINDS renders `contains`; a kind
         # missing there would vanish from the plugin page and its summary.

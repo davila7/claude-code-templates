@@ -254,8 +254,10 @@ into its own folders (decided 2026-11-07, PR #1429).
 - Catalog folder: `cli-tool/components/plugins/{category}/{name}/source.json`,
   the external-skill manifest without `include`/`requires` (Claude Code installs
   the whole plugin root, and a plugin declares its own dependencies). `path` is
-  the plugin root (`.claude-plugin/plugin.json`); its `name` must equal the
-  folder name and be unique across `plugins/`; symlinks and submodules are
+  the plugin root (`.claude-plugin/plugin.json`, or a `plugin.json` at the root as
+  in google-labs-code/stitch-skills: Claude Code ignores that file and loads the
+  default folders, so the catalog reads it only for `name` and display fields);
+  its `name` must equal the folder name and be unique across `plugins/`; symlinks and submodules are
   refused. Add one with `python scripts/external_skills.py add OWNER/REPO PATH
   CATEGORY --plugin`. Upstream changes reach users only through a PR that bumps
   `commit` (`external-skills-outdated.yml` lists plugins too).
