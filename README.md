@@ -11,6 +11,17 @@
 <h1 align="center">Claude Code Templates</h1>
 
 <p align="center">
+  <sub>Supported by
+  <a href="https://www.nvidia.com/en-us/startups/">NVIDIA Inception</a>
+  &nbsp;·&nbsp;
+  <a href="https://claude.com/contact-sales/claude-for-oss">Claude for Open Source</a>
+  &nbsp;·&nbsp;
+  <a href="https://vercel.com/oss">Vercel OSS</a>
+  &nbsp;·&nbsp;
+  <a href="https://get.neon.com/4eCjZDz">Neon Open Source</a></sub>
+</p>
+
+<p align="center">
   An open catalog of components for Claude Code, installable with one command.
 </p>
 
