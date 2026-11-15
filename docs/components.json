@@ -29855,6 +29855,57 @@
       }
     },
     {
+      "name": "code-mode",
+      "path": "environment/code-mode.json",
+      "category": "environment",
+      "type": "setting",
+      "description": "Install in User settings (~/.claude/settings.json): Claude Code ignores this variable in project and local settings. Turns on Code Mode (experimental, Claude Code 2.1.323+), where Claude writes JavaScript that makes several tool calls in one step (parallel commands, chained results, filtered output) instead of calling Bash, Read or Edit one at a time. Interactive terminal sessions only, on the native build, with Opus 5.5, Sonnet 5.5, Haiku 5.5 or Fable 5.2; the first session asks you to confirm and Ctrl+O shows the code. Sessions started in Code Mode resume only with it on. Docs: https://code.claude.com/docs/en/code-mode",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 33,
+        "severity": "MEDIUM",
+        "recommendation": "CAUTION",
+        "issueCount": 2,
+        "analysis": "complete",
+        "findings": [
+          {
+            "id": "AS1",
+            "category": "Agent Snooping",
+            "severity": "HIGH",
+            "title": "Agent Config Directory Access",
+            "file": "SKILL.md",
+            "line": 3,
+            "count": 1
+          },
+          {
+            "id": "AS1",
+            "category": "Agent Snooping",
+            "severity": "HIGH",
+            "title": "Agent Config Directory Access",
+            "file": "code-mode.json",
+            "line": 2,
+            "count": 1
+          }
+        ],
+        "hash": "08e33485b280eb57",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-15T01:31:06Z"
+      }
+    },
+    {
       "name": "development-utils",
       "path": "environment/development-utils.json",
       "category": "environment",
