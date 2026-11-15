@@ -68830,6 +68830,218 @@
       }
     },
     {
+      "name": "recommerce-buy",
+      "path": "productivity/recommerce-buy",
+      "category": "productivity",
+      "type": "skill",
+      "description": "Find and compare new and pre-owned listings against the buyer's needs, complete cost, compatibility, and collection or delivery constraints. Use for item searches, supplied shortlists, and rechecking options before a decision. Produces an evidence-backed shortlist; does not contact sellers or transact.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "MIT",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "LICENSE",
+        "references/budna.md",
+        "references/discovery.md"
+      ],
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "hash": "82035bdd42567418",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-15T16:23:21Z"
+      }
+    },
+    {
+      "name": "recommerce-collect",
+      "path": "productivity/recommerce-collect",
+      "category": "productivity",
+      "type": "skill",
+      "description": "Assess whether a new or pre-owned item can realistically be collected and moved from the seller's pickup location to the buyer's destination. Use for dimensions, access, transport, disassembly, handling needs, costs, and collection constraints. Produces a conditional collection plan and prioritized missing measurements; does not book transport or arrange collection.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "MIT",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "LICENSE"
+      ],
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "hash": "cc4dc1e8fa53f2b5",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-15T16:23:21Z"
+      }
+    },
+    {
+      "name": "recommerce-inspect",
+      "path": "productivity/recommerce-inspect",
+      "category": "productivity",
+      "type": "skill",
+      "description": "Assess a supplied new or pre-owned listing against the buyer's needs and prepare a concise inspection card before purchase or collection. Use for listing-specific suitability, missing essentials, cost, and inspection questions; does not perform marketplace-wide discovery or transact.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "MIT",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "LICENSE"
+      ],
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "hash": "ebe31f742bf42e82",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-15T16:23:21Z"
+      }
+    },
+    {
+      "name": "recommerce-keep",
+      "path": "productivity/recommerce-keep",
+      "category": "productivity",
+      "type": "skill",
+      "description": "Compare keeping, repairing, or upgrading an owned item with a new or pre-owned replacement. Use when deciding whether an existing item still meets the owner's needs or whether a repair is worthwhile. Produces a conditional recommendation grounded in costs, suitability, and uncertainty; does not diagnose faults or arrange repairs or purchases.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "MIT",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "LICENSE"
+      ],
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "hash": "61fe9e3178ffcfb4",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-15T16:23:21Z"
+      }
+    },
+    {
+      "name": "recommerce-kits",
+      "path": "productivity/recommerce-kits",
+      "category": "productivity",
+      "type": "skill",
+      "description": "Assemble a complete setup from new or pre-owned items for an outcome such as recording a podcast, starting photography, or equipping a workshop. Use when several components must work together within one budget, including gear the buyer already owns. Produces a compatible bill of materials, alternatives, and acquisition dependencies; does not purchase or reserve items.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "MIT",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "LICENSE"
+      ],
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "hash": "4a6ebad06aab83ff",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-15T16:23:21Z"
+      }
+    },
+    {
+      "name": "recommerce-second-look",
+      "path": "productivity/recommerce-second-look",
+      "category": "productivity",
+      "type": "skill",
+      "description": "Reassess an existing shortlist of new or pre-owned items or a planned purchase against newer evidence before commitment. Use to check changed availability, complete costs, contents, compatibility, logistics, and buyer requirements. Produces a concise account of what changed and an updated recommendation; does not reserve, contact sellers, or transact.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "MIT",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "LICENSE"
+      ],
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "hash": "65a0d552d704d6ab",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-15T16:23:21Z"
+      }
+    },
+    {
       "name": "reducing-entropy",
       "path": "productivity/reducing-entropy",
       "category": "productivity",
