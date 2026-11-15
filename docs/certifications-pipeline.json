@@ -69,11 +69,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "Claude",
-          "AI",
-          "Work Tasks"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -89,10 +85,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "Claude Code",
-          "Development"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -108,11 +101,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "Claude Platform",
-          "Development",
-          "API"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -128,11 +117,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "Claude Cowork",
-          "Hands-on",
-          "Productivity"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -148,10 +133,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "Claude Code",
-          "Automation"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -167,11 +149,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "AI Fluency",
-          "Collaboration",
-          "Ethics"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -187,10 +165,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "Claude API",
-          "Anthropic Models"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -206,11 +181,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "Model Context Protocol",
-          "Python",
-          "Servers"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -226,10 +197,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "AI Fluency",
-          "Education"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -245,11 +213,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "AI Fluency",
-          "Students",
-          "Collaboration"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -265,10 +229,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "Model Context Protocol",
-          "Advanced Topics"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -284,11 +245,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "Claude",
-          "Amazon Bedrock",
-          "Training"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -304,10 +261,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "Claude",
-          "Google Cloud"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -323,10 +277,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "AI Fluency",
-          "Teaching"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -342,10 +293,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "AI Fluency",
-          "Nonprofits"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -361,10 +309,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "Agent Skills",
-          "Claude Code"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -380,11 +325,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "Subagents",
-          "Claude Code",
-          "Workflows"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -400,11 +341,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "AI",
-          "Capabilities",
-          "Limitations"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -420,10 +357,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "AI Fluency",
-          "Small Businesses"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -439,10 +373,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "AI Fluency",
-          "Builders"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -458,10 +389,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "AI Fluency",
-          "Creative Work"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -477,10 +405,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "Claude Enterprise",
-          "Deployment"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -499,18 +424,17 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI models",
-          "programming",
-          "software development",
-          "AI tools",
-          "developer tools"
+          "AI",
+          "Programming",
+          "Software Development",
+          "Machine Learning"
         ],
         "source": "cursor-learn",
         "price": null,
         "id": "cursor-ai-foundations",
         "kind": "course",
         "title": "AI Foundations",
-        "description": "This course will teach you about how to use AI to be more effective as a programmer. It’s not a course to teach about machine learning or how to train your own models, but instead a course focused on developers writing software using AI models and tools.",
+        "description": "This course will teach you about how to use AI to be more effective as a programmer. It focuses on developers writing software using AI models and tools, rather than teaching about machine learning or how to train models.",
         "url": "https://cursor.com/learn"
       }
     ],
@@ -523,7 +447,9 @@
         "eligibility": "public",
         "topics": [
           "AI",
-          "Foundations"
+          "Foundations",
+          "Large Language Models",
+          "ChatGPT"
         ],
         "source": "openai-academy",
         "price": null,
@@ -540,8 +466,9 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI",
-          "Applied AI"
+          "Applied AI",
+          "Workflows",
+          "ChatGPT"
         ],
         "source": "openai-academy",
         "price": null,
@@ -558,8 +485,9 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI",
-          "Agents"
+          "Agents",
+          "Workflows",
+          "ChatGPT"
         ],
         "source": "openai-academy",
         "price": null,
@@ -576,8 +504,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI",
-          "Solutions"
+          "OpenAI API",
+          "AI Solutions"
         ],
         "source": "openai-academy",
         "price": null,
@@ -594,7 +522,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI",
+          "OpenAI API",
+          "AI Applications",
           "Evaluation"
         ],
         "source": "openai-academy",
@@ -612,8 +541,7 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI",
-          "Design",
+          "OpenAI API",
           "Agentic Systems"
         ],
         "source": "openai-academy",
@@ -631,7 +559,7 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI",
+          "OpenAI API",
           "Retrieval-Augmented Generation"
         ],
         "source": "openai-academy",
@@ -649,8 +577,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI",
-          "Optimization"
+          "OpenAI API",
+          "AI Performance"
         ],
         "source": "openai-academy",
         "price": null,
@@ -684,7 +612,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Codex"
+          "Codex",
+          "Workflows"
         ],
         "source": "openai-academy",
         "price": null,
@@ -701,7 +630,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Codex"
+          "Codex",
+          "Team Coordination"
         ],
         "source": "openai-academy",
         "price": null,
@@ -718,15 +648,16 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI",
-          "Leadership"
+          "AI Leadership",
+          "Strategy",
+          "Governance"
         ],
         "source": "openai-academy",
         "price": null,
         "id": "openai-ai-leadership-kaf7k",
         "kind": "course",
         "title": "AI Leadership",
-        "description": "Learn how to choose AI opportunities worth backing and guide initiatives from business priority to responsible adoption.",
+        "description": "Learn how to choose AI opportunities worth backing and guide initiatives from business priority to responsible adoption. You’ll strengthen your judgment around evidence, plan clear next actions, and build an AI Strategy Brief Pack others can use to move the work forward.",
         "url": "https://academy.openai.com/public/courses/ai-leadership-kaf7k"
       },
       {
@@ -736,15 +667,16 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI",
-          "Education"
+          "Education",
+          "ChatGPT",
+          "Teaching"
         ],
         "source": "openai-academy",
         "price": null,
         "id": "openai-ai-for-educators-lc8j1",
         "kind": "course",
         "title": "AI for Educators",
-        "description": "Learn how to use ChatGPT to develop teaching materials that align with learning objectives and student needs.",
+        "description": "Learn how to use ChatGPT to develop teaching materials that align with learning objectives and student needs. You’ll use your own materials to plan lessons, create activities or assessments, and review responses to decide what belongs in your teaching.",
         "url": "https://academy.openai.com/public/courses/ai-for-educators-lc8j1"
       },
       {
@@ -754,15 +686,16 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI",
-          "Education"
+          "Education",
+          "ChatGPT",
+          "Career"
         ],
         "source": "openai-academy",
         "price": null,
         "id": "openai-ai-for-college-students-gxgmr",
         "kind": "course",
         "title": "AI for College Students",
-        "description": "Learn how to use ChatGPT for practical study and career tasks.",
+        "description": "Learn how to use ChatGPT for practical study and career tasks. You’ll practice planning study and group work, reviewing responses critically, improving drafts, and preparing for applications and interviews, guided by your own judgment and your institution’s rules.",
         "url": "https://academy.openai.com/public/courses/ai-for-college-students-gxgmr"
       }
     ],
@@ -1209,7 +1142,7 @@
         "eligibility": "public",
         "topics": [
           "AI Infrastructure",
-          "Operations"
+          "AI Operations"
         ],
         "source": "nvidia-certification",
         "level": "Entry",
@@ -1349,7 +1282,7 @@
         ],
         "eligibility": "public",
         "topics": [
-          "OpenUSD"
+          "OpenUSD Development"
         ],
         "source": "nvidia-certification",
         "level": "Advanced",
