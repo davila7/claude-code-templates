@@ -92,6 +92,10 @@ class ManifestError(ValueError):
     pass
 
 
+class FetchError(ManifestError):
+    """The pinned commit could not be fetched (repo deleted, made private, or GitHub down)."""
+
+
 def is_external(skill_dir: Path) -> bool:
     return (skill_dir / MANIFEST_NAME).is_file() and not (skill_dir / "SKILL.md").is_file()
 
@@ -182,8 +186,11 @@ def _fetch_commit(repo: str, commit: str) -> Path:
     has = subprocess.run(["git", "--git-dir", str(git_dir), "cat-file", "-e", f"{commit}^{{commit}}"],
                          capture_output=True).returncode == 0
     if not has:
-        _git("--git-dir", str(git_dir), "fetch", "-q", "--depth", "1",
-             f"https://github.com/{repo}.git", commit)
+        try:
+            _git("--git-dir", str(git_dir), "fetch", "-q", "--depth", "1",
+                 f"https://github.com/{repo}.git", commit)
+        except ManifestError as e:
+            raise FetchError(str(e)) from e
     return git_dir
 
 
