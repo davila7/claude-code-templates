@@ -28030,6 +28030,38 @@
       }
     },
     {
+      "name": "scalekit",
+      "path": "integration/scalekit.json",
+      "category": "integration",
+      "type": "mcp",
+      "description": "Hosted Scalekit MCP server for managing auth for AI agents and MCP servers: environments, organizations, users, OIDC connections, roles, scopes, and MCP server registrations. Sign in with OAuth in the browser. Requires a Scalekit account: free tier available, paid plans from $99/month.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "hash": "f53210dd5d5d6167",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-15T17:14:14Z"
+      }
+    },
+    {
       "name": "asobeast",
       "path": "marketing/asobeast.json",
       "category": "marketing",
