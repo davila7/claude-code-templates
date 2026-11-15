@@ -244,6 +244,38 @@ class LocalDirIncludeTest(unittest.TestCase):
         self.assertEqual(self.files(full), ["SKILL.md", "demo/big.gif", "scripts/run.sh"])
 
 
+class LocalDirLegalFilesTest(LocalDirIncludeTest):
+    """The upstream LICENSE/NOTICE travel with the skill (Apache-2.0 4(a)/4(d), MIT)."""
+
+    def setUp(self):
+        super().setUp()
+        work = Path(self.tmp.name) / "work"
+        (work / "LICENSE").write_text("root licence\n")
+        (work / "NOTICE.txt").write_text("root notice\n")
+        (work / "skills/other").mkdir()
+        (work / "skills/other/SKILL.md").write_text("---\nname: other\n---\n")
+        (work / "skills/other/LICENSE.md").write_text("own licence\n")
+        git("-c", "user.email=t@t", "-c", "user.name=t", "add", "-A", cwd=work)
+        git("-c", "user.email=t@t", "-c", "user.name=t", "commit", "-qm", "y", cwd=work)
+        self.commit = git("rev-parse", "HEAD", cwd=work)
+        bare = ext.CACHE_ROOT / "git" / "owner__name"
+        git("--git-dir", str(bare), "fetch", "-q", str(work), "HEAD", cwd=work)
+
+    def test_without_include_everything_is_kept(self):
+        out = ext.local_dir(self.manifest_dir("all"))
+        self.assertEqual(self.files(out), ["LICENSE", "NOTICE.txt", "SKILL.md", "demo/big.gif", "scripts/run.sh"])
+        self.assertEqual((out / "LICENSE").read_text(), "root licence\n")
+
+    def test_include_filters_and_gets_its_own_cache(self):
+        out = ext.local_dir(self.manifest_dir("some", include=["SKILL.md", "scripts"]))
+        self.assertEqual(self.files(out), ["LICENSE", "NOTICE.txt", "SKILL.md", "scripts/run.sh"])
+
+    def test_the_skill_folder_licence_wins_even_when_include_drops_it(self):
+        out = ext.local_dir(self.manifest_dir("other", path="skills/other", include=["SKILL.md"]))
+        self.assertEqual(self.files(out), ["LICENSE.md", "NOTICE.txt", "SKILL.md"])
+        self.assertEqual((out / "LICENSE.md").read_text(), "own licence\n")
+
+
 class MarketplaceTest(unittest.TestCase):
     """Catalog plugins -> the aitmpl marketplace, against a local repo (no network)."""
 
@@ -357,6 +389,28 @@ class MarketplaceTest(unittest.TestCase):
             self.assertTrue((out / ".claude-plugin" / "plugin.json").is_file())
             skill = Path(other) / "cli-tool" / "components" / "skills" / "plugins" / "kit"
             self.assertEqual(ext.kind_of(skill), "skill", "a skill category named plugins is still a skill")
+
+
+class FetchErrorTest(unittest.TestCase):
+    """An unreachable repo raises FetchError, which callers may tolerate; other errors stay ManifestError."""
+
+    def test_failed_fetch_is_a_fetch_error(self):
+        from unittest.mock import patch
+        saved = ext.CACHE_ROOT
+        ext.CACHE_ROOT = Path(tempfile.mkdtemp())
+        real_git = ext._git
+
+        def fake_git(*args, **kw):
+            if "fetch" in args:
+                raise ext.ManifestError("git fetch failed: could not read Username")
+            return real_git(*args, **kw)
+        try:
+            with patch.object(ext, "_git", side_effect=fake_git):
+                with self.assertRaises(ext.FetchError):
+                    ext._fetch_commit("owner/gone", "a" * 40)
+        finally:
+            ext.CACHE_ROOT = saved
+        self.assertTrue(issubclass(ext.FetchError, ext.ManifestError))
 
 
 if __name__ == "__main__":

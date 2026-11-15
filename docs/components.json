@@ -48256,7 +48256,9 @@
         "warningCount": 0,
         "lastValidated": null
       },
-      "references": [],
+      "references": [
+        "LICENSE"
+      ],
       "source": {
         "repo": "navedux/illos-skills",
         "path": "skills/illos-library",
@@ -48291,9 +48293,9 @@
             "count": 3
           }
         ],
-        "hash": "32ad2441332a9f85",
+        "hash": "1b7e735b9cb70d2a",
         "version": "2.12.0",
-        "scannedAt": "2026-11-07T20:14:17Z"
+        "scannedAt": "2026-11-15T21:04:11Z"
       }
     },
     {
@@ -50179,6 +50181,7 @@
         "lastValidated": null
       },
       "references": [
+        "LICENSE",
         "references/backup-restore.md",
         "references/bulk-loading.md",
         "references/connection-pooling.md",
@@ -50245,9 +50248,9 @@
             "count": 2
           }
         ],
-        "hash": "365cf036b191cb25",
+        "hash": "5938b9ff38a71205",
         "version": "2.12.0",
-        "scannedAt": "2026-11-15T18:33:16Z"
+        "scannedAt": "2026-11-15T21:04:11Z"
       }
     },
     {
@@ -65496,6 +65499,7 @@
         "lastValidated": null
       },
       "references": [
+        "LICENSE",
         "scripts/pr-wait"
       ],
       "source": {
@@ -65525,9 +65529,9 @@
             "count": 1
           }
         ],
-        "hash": "fe72d9cd46c12bd0",
+        "hash": "72cd446e9e16b31c",
         "version": "2.12.0",
-        "scannedAt": "2026-11-03T21:08:15Z"
+        "scannedAt": "2026-11-15T21:04:11Z"
       }
     },
     {
@@ -65583,7 +65587,9 @@
         "warningCount": 0,
         "lastValidated": null
       },
-      "references": [],
+      "references": [
+        "LICENSE"
+      ],
       "source": {
         "repo": "t3dotgg/tstack",
         "path": "skills/council",
@@ -65599,9 +65605,9 @@
         "issueCount": 0,
         "analysis": "complete",
         "findings": [],
-        "hash": "e71eb254da151f5c",
+        "hash": "9df3c5030bd2354f",
         "version": "2.12.0",
-        "scannedAt": "2026-11-03T21:08:15Z"
+        "scannedAt": "2026-11-15T21:04:11Z"
       }
     },
     {
@@ -65624,7 +65630,9 @@
         "warningCount": 0,
         "lastValidated": null
       },
-      "references": [],
+      "references": [
+        "LICENSE"
+      ],
       "source": {
         "repo": "t3dotgg/tstack",
         "path": "skills/file-pr",
@@ -65652,9 +65660,9 @@
             "count": 1
           }
         ],
-        "hash": "a9bd9b4848e6ae09",
+        "hash": "6f9c171f42502877",
         "version": "2.12.0",
-        "scannedAt": "2026-11-03T21:08:15Z"
+        "scannedAt": "2026-11-15T21:04:11Z"
       }
     },
     {
@@ -65678,6 +65686,7 @@
         "lastValidated": null
       },
       "references": [
+        "LICENSE",
         "agents/openai.yaml"
       ],
       "source": {
@@ -65709,9 +65718,9 @@
             "count": 1
           }
         ],
-        "hash": "d68bfb4263f0fa40",
+        "hash": "75f44c88bb38f199",
         "version": "2.12.0",
-        "scannedAt": "2026-11-03T21:08:15Z"
+        "scannedAt": "2026-11-15T21:04:11Z"
       }
     },
     {
@@ -65735,6 +65744,7 @@
         "lastValidated": null
       },
       "references": [
+        "LICENSE",
         "agents/openai.yaml"
       ],
       "source": {
@@ -65754,9 +65764,9 @@
         "issueCount": 0,
         "analysis": "complete",
         "findings": [],
-        "hash": "a80d6ff05955d443",
+        "hash": "da03fb77de26591f",
         "version": "2.12.0",
-        "scannedAt": "2026-11-03T21:08:15Z"
+        "scannedAt": "2026-11-15T21:04:11Z"
       }
     },
     {
@@ -65816,6 +65826,7 @@
         "lastValidated": null
       },
       "references": [
+        "LICENSE",
         "agents/openai.yaml"
       ],
       "source": {
@@ -65833,9 +65844,9 @@
         "issueCount": 0,
         "analysis": "complete",
         "findings": [],
-        "hash": "73f0aa350b388010",
+        "hash": "3003666837e09fbd",
         "version": "2.12.0",
-        "scannedAt": "2026-11-03T21:08:15Z"
+        "scannedAt": "2026-11-15T21:04:11Z"
       }
     },
     {
@@ -65859,6 +65870,7 @@
         "lastValidated": null
       },
       "references": [
+        "LICENSE",
         "agents/openai.yaml"
       ],
       "source": {
@@ -65878,9 +65890,9 @@
         "issueCount": 0,
         "analysis": "complete",
         "findings": [],
-        "hash": "253f5814152822d1",
+        "hash": "3da08c28cd8209f8",
         "version": "2.12.0",
-        "scannedAt": "2026-11-03T21:08:15Z"
+        "scannedAt": "2026-11-15T21:04:11Z"
       }
     },
     {
@@ -65903,7 +65915,9 @@
         "warningCount": 0,
         "lastValidated": null
       },
-      "references": [],
+      "references": [
+        "LICENSE"
+      ],
       "source": {
         "repo": "t3dotgg/tstack",
         "path": "skills/sol-loop",
@@ -65919,9 +65933,9 @@
         "issueCount": 0,
         "analysis": "partial",
         "findings": [],
-        "hash": "ee15b470e3cb1a3d",
+        "hash": "171c60e2bbc4e418",
         "version": "2.12.0",
-        "scannedAt": "2026-11-03T21:08:15Z"
+        "scannedAt": "2026-11-15T21:04:11Z"
       }
     },
     {
@@ -66017,7 +66031,9 @@
         "warningCount": 0,
         "lastValidated": null
       },
-      "references": [],
+      "references": [
+        "LICENSE"
+      ],
       "source": {
         "repo": "t3dotgg/tstack",
         "path": "skills/takeover",
@@ -66038,9 +66054,9 @@
         "issueCount": 0,
         "analysis": "complete",
         "findings": [],
-        "hash": "eaa2e43572cb2d71",
+        "hash": "4eb0e4f4a5970cdd",
         "version": "2.12.0",
-        "scannedAt": "2026-11-03T21:08:15Z"
+        "scannedAt": "2026-11-15T21:04:11Z"
       }
     },
     {
@@ -67764,6 +67780,7 @@
       },
       "references": [
         "EXAMPLES.md",
+        "LICENSE",
         "TROUBLESHOOTING.md"
       ],
       "source": {
@@ -67809,9 +67826,9 @@
             "count": 1
           }
         ],
-        "hash": "a992f9a6e27df98c",
+        "hash": "02a09883892b9191",
         "version": "2.12.0",
-        "scannedAt": "2026-11-07T20:16:38Z"
+        "scannedAt": "2026-11-15T21:04:11Z"
       }
     },
     {
@@ -67871,6 +67888,7 @@
       },
       "references": [
         "EXAMPLES.md",
+        "LICENSE",
         "TROUBLESHOOTING.md"
       ],
       "source": {
@@ -67907,9 +67925,9 @@
             "count": 1
           }
         ],
-        "hash": "9bf511c7f066a5e4",
+        "hash": "41e40feece1f3086",
         "version": "2.12.0",
-        "scannedAt": "2026-11-07T20:16:38Z"
+        "scannedAt": "2026-11-15T21:04:11Z"
       }
     },
     {
@@ -68063,6 +68081,7 @@
         "lastValidated": null
       },
       "references": [
+        "LICENSE",
         "TROUBLESHOOTING.md"
       ],
       "source": {
@@ -68099,9 +68118,9 @@
             "count": 1
           }
         ],
-        "hash": "e90c8d4b820b27bc",
+        "hash": "7fe92047b22a6861",
         "version": "2.12.0",
-        "scannedAt": "2026-11-07T20:16:38Z"
+        "scannedAt": "2026-11-15T21:04:11Z"
       }
     },
     {
@@ -68268,6 +68287,7 @@
         "lastValidated": null
       },
       "references": [
+        "LICENSE",
         "TROUBLESHOOTING.md"
       ],
       "source": {
@@ -68304,9 +68324,9 @@
             "count": 1
           }
         ],
-        "hash": "c6cad73148c5ac0b",
+        "hash": "5d76143c4282bef7",
         "version": "2.12.0",
-        "scannedAt": "2026-11-07T20:16:38Z"
+        "scannedAt": "2026-11-15T21:04:11Z"
       }
     },
     {
@@ -68977,6 +68997,7 @@
       },
       "references": [
         "EXAMPLES.md",
+        "LICENSE",
         "TROUBLESHOOTING.md"
       ],
       "source": {
@@ -69013,9 +69034,9 @@
             "count": 1
           }
         ],
-        "hash": "b090673618e4f2e2",
+        "hash": "79bf47a032c15910",
         "version": "2.12.0",
-        "scannedAt": "2026-11-07T20:16:38Z"
+        "scannedAt": "2026-11-15T21:04:11Z"
       }
     },
     {
@@ -69040,6 +69061,7 @@
       },
       "references": [
         "EXAMPLES.md",
+        "LICENSE",
         "TROUBLESHOOTING.md"
       ],
       "source": {
@@ -69076,9 +69098,9 @@
             "count": 1
           }
         ],
-        "hash": "cc9da5d07a0ad89d",
+        "hash": "bfe140e1a784732e",
         "version": "2.12.0",
-        "scannedAt": "2026-11-07T20:16:38Z"
+        "scannedAt": "2026-11-15T21:04:11Z"
       }
     },
     {
@@ -69355,6 +69377,7 @@
       },
       "references": [
         "EXAMPLES.md",
+        "LICENSE",
         "TROUBLESHOOTING.md"
       ],
       "source": {
@@ -69391,9 +69414,9 @@
             "count": 1
           }
         ],
-        "hash": "c4aa18703d4efbb8",
+        "hash": "1b368087cc7ed665",
         "version": "2.12.0",
-        "scannedAt": "2026-11-07T20:16:38Z"
+        "scannedAt": "2026-11-15T21:04:11Z"
       }
     },
     {
@@ -69526,6 +69549,7 @@
       },
       "references": [
         "EXAMPLES.md",
+        "LICENSE",
         "TROUBLESHOOTING.md"
       ],
       "source": {
@@ -69562,9 +69586,9 @@
             "count": 1
           }
         ],
-        "hash": "0996f041d2fe5059",
+        "hash": "457cde8fc03c11f9",
         "version": "2.12.0",
-        "scannedAt": "2026-11-07T20:16:38Z"
+        "scannedAt": "2026-11-15T21:04:11Z"
       }
     },
     {
@@ -79015,6 +79039,7 @@
         "DATA-ISOLATION-AND-LIFECYCLE.md",
         "DESKTOP-MOBILE-AND-LOCAL-IPC.md",
         "HUNTING.md",
+        "LICENSE",
         "MEMORY-SAFETY-AND-BINARY.md",
         "PROTOCOLS-RPC-AND-MESSAGING.md",
         "RECONNAISSANCE.md",
@@ -79087,9 +79112,9 @@
             "count": 1
           }
         ],
-        "hash": "54c4c1e3782c3b43",
+        "hash": "d2ced42c44c7f779",
         "version": "2.12.0",
-        "scannedAt": "2026-11-04T19:33:37Z"
+        "scannedAt": "2026-11-15T21:04:11Z"
       }
     },
     {
@@ -82873,6 +82898,7 @@
         "lastValidated": null
       },
       "references": [
+        "LICENSE",
         "references/actions.md",
         "templates/async-poll.md",
         "templates/schema-extraction.md",
@@ -82939,9 +82965,9 @@
             "count": 2
           }
         ],
-        "hash": "e95911e8bf02c673",
+        "hash": "294ee21569d44a45",
         "version": "2.12.0",
-        "scannedAt": "2026-11-08T04:02:27Z"
+        "scannedAt": "2026-11-15T21:04:11Z"
       }
     },
     {
@@ -82965,6 +82991,7 @@
         "lastValidated": null
       },
       "references": [
+        "LICENSE",
         "references/failure-classification.md",
         "templates/rerun-with-capture.md"
       ],
@@ -82993,9 +83020,9 @@
             "count": 2
           }
         ],
-        "hash": "c1332afcff4dd683",
+        "hash": "bf8b354cc494fe29",
         "version": "2.12.0",
-        "scannedAt": "2026-11-08T04:02:27Z"
+        "scannedAt": "2026-11-15T21:04:11Z"
       }
     },
     {
@@ -83019,6 +83046,7 @@
         "lastValidated": null
       },
       "references": [
+        "LICENSE",
         "templates/loop.md"
       ],
       "source": {
@@ -83055,9 +83083,9 @@
             "count": 4
           }
         ],
-        "hash": "186d3d1b7fe10938",
+        "hash": "467036be4794d545",
         "version": "2.12.0",
-        "scannedAt": "2026-11-08T04:02:27Z"
+        "scannedAt": "2026-11-15T21:04:11Z"
       }
     },
     {
@@ -83081,6 +83109,7 @@
         "lastValidated": null
       },
       "references": [
+        "LICENSE",
         "agents/openai.yaml"
       ],
       "source": {
@@ -83098,9 +83127,9 @@
         "issueCount": 0,
         "analysis": "partial",
         "findings": [],
-        "hash": "3de7a593331b3ccb",
+        "hash": "f4091ccbdbdba91a",
         "version": "2.12.0",
-        "scannedAt": "2026-11-08T04:02:27Z"
+        "scannedAt": "2026-11-15T21:04:11Z"
       }
     },
     {
@@ -92023,6 +92052,7 @@
       "downloads": 0,
       "references": [
         ".codex-plugin/plugin.json",
+        "LICENSE",
         "plugin.json",
         "skills/react-components/README.md",
         "skills/react-components/SKILL.md",
@@ -92133,9 +92163,9 @@
             "count": 1
           }
         ],
-        "hash": "dc0e4d1c3f8dcbee",
+        "hash": "b628ecd0c2c4b341",
         "version": "2.12.0",
-        "scannedAt": "2026-11-15T20:06:28Z"
+        "scannedAt": "2026-11-15T21:21:00Z"
       }
     },
     {
@@ -92161,6 +92191,7 @@
       "downloads": 0,
       "references": [
         ".codex-plugin/plugin.json",
+        "LICENSE",
         "plugin.json",
         "skills/code-to-design/SKILL.md",
         "skills/extract-design-md/SKILL.md",
@@ -92254,9 +92285,9 @@
             "count": 1
           }
         ],
-        "hash": "3ec067df92ea7690",
+        "hash": "976875fbdb2f78ee",
         "version": "2.12.0",
-        "scannedAt": "2026-11-15T20:06:28Z"
+        "scannedAt": "2026-11-15T21:21:00Z"
       }
     },
     {
@@ -92282,6 +92313,7 @@
       "downloads": 0,
       "references": [
         ".codex-plugin/plugin.json",
+        "LICENSE",
         "plugin.json",
         "skills/design-md/README.md",
         "skills/design-md/SKILL.md",
@@ -92368,9 +92400,9 @@
             "count": 1
           }
         ],
-        "hash": "09acb05285bf0d0e",
+        "hash": "5b82561239e6604c",
         "version": "2.12.0",
-        "scannedAt": "2026-11-15T20:06:28Z"
+        "scannedAt": "2026-11-15T21:21:00Z"
       }
     },
     {
