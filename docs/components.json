@@ -26064,6 +26064,38 @@
       }
     },
     {
+      "name": "brewpage",
+      "path": "devtools/brewpage.json",
+      "category": "devtools",
+      "type": "mcp",
+      "description": "BrewPage remote MCP server (streamable HTTP, no account or API key). Free: no paid plans, no sign-up needed. Tools publish HTML pages, Markdown, JSON documents, key-value data and files to brewpage.app and return a shareable HTTPS link, plus an owner token to update or delete them. Content is temporary (expires, up to 30 days). Docs: https://kochetkov-ma.github.io/brewpage-openapi/",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "hash": "99b945810e9cda0c",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-15T18:33:16Z"
+      }
+    },
+    {
       "name": "chrome-devtools",
       "path": "devtools/chrome-devtools.json",
       "category": "devtools",
@@ -27835,6 +27867,38 @@
         "hash": "a79d6157cf6f9d74",
         "version": "2.12.0",
         "scannedAt": "2026-10-17T20:36:45Z"
+      }
+    },
+    {
+      "name": "alphayou",
+      "path": "integration/alphayou.json",
+      "category": "integration",
+      "type": "mcp",
+      "description": "AI models guess at insider sales and fund filings. This server returns SEC Form 4 insider trades, 13F fund holdings, company SEC filings and Hyperliquid wallet positions, each with a source link and date. Free, read-only research, no key or sign-in.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "hash": "6c7e5d9f7e3a77cd",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-15T18:33:16Z"
       }
     },
     {
@@ -50092,6 +50156,98 @@
         "hash": "1fcbc00ace22115c",
         "version": "2.12.0",
         "scannedAt": "2026-10-17T20:36:45Z"
+      }
+    },
+    {
+      "name": "neon-postgres-best-practices",
+      "path": "database/neon-postgres-best-practices",
+      "category": "database",
+      "type": "skill",
+      "description": "Best practices and guidelines for working with Postgres. Covers schema design, indexing strategies, query optimization, migrations, and common pitfalls. Use when writing SQL, designing database schemas, optimizing queries, or setting up a Postgres database.",
+      "author": "Neon",
+      "repo": "https://github.com/neondatabase/postgres-skills",
+      "version": "",
+      "license": "Apache-2.0",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "references/backup-restore.md",
+        "references/bulk-loading.md",
+        "references/connection-pooling.md",
+        "references/hot-standby.md",
+        "references/indexing.md",
+        "references/logical-replication.md",
+        "references/major-version-upgrades.md",
+        "references/performance-diagnostics.md",
+        "references/query-optimization.md",
+        "references/query-patterns.md",
+        "references/schema-design.md",
+        "references/security-roles.md",
+        "references/transaction-isolation.md"
+      ],
+      "source": {
+        "repo": "neondatabase/postgres-skills",
+        "path": "skills/postgres-best-practices",
+        "commit": "27fe45e0f71ea89a6eaf9ea4d2e4068957c81c26",
+        "license": "Apache-2.0",
+        "url": "https://github.com/neondatabase/postgres-skills/tree/27fe45e0f71ea89a6eaf9ea4d2e4068957c81c26/skills/postgres-best-practices",
+        "requires": []
+      },
+      "skillspector": {
+        "score": 78,
+        "severity": "HIGH",
+        "recommendation": "DO_NOT_INSTALL",
+        "issueCount": 6,
+        "analysis": "partial",
+        "findings": [
+          {
+            "id": "AE1",
+            "category": "analysis-evasion",
+            "severity": "HIGH",
+            "title": "Incomplete referenced artifact analysis",
+            "file": "SKILL.md",
+            "line": 42,
+            "count": 1
+          },
+          {
+            "id": "TM1",
+            "category": "Tool Misuse",
+            "severity": "HIGH",
+            "title": "Tool Parameter Abuse",
+            "file": "references/major-version-upgrades.md",
+            "line": 312,
+            "count": 2
+          },
+          {
+            "id": "EA2",
+            "category": "Excessive Agency",
+            "severity": "MEDIUM",
+            "title": "Autonomous Decision Making",
+            "file": "references/query-optimization.md",
+            "line": 196,
+            "count": 1
+          },
+          {
+            "id": "EA4",
+            "category": "Excessive Agency",
+            "severity": "MEDIUM",
+            "title": "Unbounded Resource Access",
+            "file": "references/connection-pooling.md",
+            "line": 69,
+            "count": 2
+          }
+        ],
+        "hash": "365cf036b191cb25",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-15T18:33:16Z"
       }
     },
     {
