@@ -136,5 +136,19 @@ class PreviousComponentTest(unittest.TestCase):
         self.assertIsNone(self.find("git/y"))
 
 
+class SkillSpectorKeepsResultTest(unittest.TestCase):
+    """A component whose files cannot be read this run keeps its last SkillSpector result."""
+
+    def test_unreadable_component_keeps_previous_result(self):
+        import skillspector_catalog
+        prev = {"score": 10, "hash": "abc", "version": "2.12.0"}
+        data = {"skills": [{"name": "x", "path": "git/x"}, {"name": "new", "path": "git/new"}]}
+        with patch.object(skillspector_catalog, "previous_results", return_value={"skills/git/x": prev}), \
+             patch.object(skillspector_catalog, "source_files", side_effect=ValueError("repo gone")):
+            skillspector_catalog.attach_skillspector(data, scan_enabled=False)
+        self.assertEqual(data["skills"][0]["skillspector"], prev)
+        self.assertNotIn("skillspector", data["skills"][1])
+
+
 if __name__ == "__main__":
     unittest.main()
