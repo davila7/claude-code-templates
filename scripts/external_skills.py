@@ -25,7 +25,8 @@ instead, which fetches the commit with git into .cache/external-skills/ and
 returns the skill's folder there. The code is never committed to this repo.
 
 Plugins: cli-tool/components/plugins/{category}/{name}/source.json pins a whole
-Claude Code plugin (a folder with .claude-plugin/plugin.json) with the same
+Claude Code plugin (a folder with .claude-plugin/plugin.json, or a plugin.json at
+its root: see ROOT_MANIFEST) with the same
 manifest, minus `include` and `requires`: Claude Code installs the whole folder,
 and a plugin declares its own dependencies. The folder name must equal the
 plugin's `name` and be unique across plugins/. Nothing copies plugin files into a
@@ -73,6 +74,17 @@ ALLOWED_LICENSES = {
 MAX_FILES = 200
 MAX_TOTAL_BYTES = 5 * 1024 * 1024
 PLUGIN_MANIFEST = ".claude-plugin/plugin.json"
+# A plugin.json at the plugin root, the layout of the Agent Skills `plugins` CLI
+# (google-labs-code/stitch-skills). Claude Code does not read it: with no
+# .claude-plugin/plugin.json it names the plugin after the marketplace entry and
+# loads the default folders (skills/, agents/, ...), which works on 2.1.288 and
+# 2.1.325. The catalog reads it only for the name check and the display fields,
+# never for component paths.
+ROOT_MANIFEST = "plugin.json"
+# A skill `name` Claude Code can show after the plugin prefix. Anything else
+# (google-labs-code/stitch-skills uses "stitch::code-to-design") is listed under
+# the skill's folder name, which is also what Claude Code lists.
+SKILL_NAME_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 
 # The Claude Code marketplace built from plugins/. The name is what users type
 # after @ (champion-kit@aitmpl); the CLI (cli-tool/src/plugin-install.js) and the
@@ -229,9 +241,9 @@ def local_dir(skill_dir: Path) -> Path:
         if not _safe_rel(rel):
             raise ManifestError(f"unsafe path in {repo}: {full}")
         entries.append((rel, sha, mode, int(size)))
-    entry = PLUGIN_MANIFEST if plugin else "SKILL.md"
-    if not any(rel == entry for rel, *_ in entries):
-        raise ManifestError(f"no {entry} in {repo}/{path} at {commit[:7]}")
+    wanted = (PLUGIN_MANIFEST, ROOT_MANIFEST) if plugin else ("SKILL.md",)
+    if not any(rel in wanted for rel, *_ in entries):
+        raise ManifestError(f"no {' or '.join(wanted)} in {repo}/{path} at {commit[:7]}")
     entries += _legal_files(git_dir, commit, path, listing, entries)
     if len(entries) > MAX_FILES or sum(e[3] for e in entries) > MAX_TOTAL_BYTES:
         raise ManifestError(f"{repo}/{path} is over the size limit ({MAX_FILES} files / {MAX_TOTAL_BYTES} bytes)")
@@ -285,18 +297,27 @@ def _legal_files(git_dir: Path, commit: str, path: str, listing: str, entries: l
     return added
 
 
+def manifest_file(local: Path) -> str | None:
+    """The plugin.json a materialized plugin folder has: Claude Code's own one first."""
+    for rel in (PLUGIN_MANIFEST, ROOT_MANIFEST):
+        if (local / rel).is_file():
+            return rel
+    return None
+
+
 def is_plugin(local: Path) -> bool:
     """True when a materialized external folder is a whole plugin (it has a plugin.json)."""
-    return (local / PLUGIN_MANIFEST).is_file()
+    return manifest_file(local) is not None
 
 
 def plugin_manifest(local: Path) -> dict:
+    rel = manifest_file(local) or PLUGIN_MANIFEST
     try:
-        data = json.loads((local / PLUGIN_MANIFEST).read_text(encoding="utf-8"))
+        data = json.loads((local / rel).read_text(encoding="utf-8"))
     except (OSError, ValueError) as e:  # ValueError covers JSONDecodeError and UnicodeDecodeError
-        raise ManifestError(f"{PLUGIN_MANIFEST} is not valid UTF-8 JSON: {e}") from e
+        raise ManifestError(f"{rel} is not valid UTF-8 JSON: {e}") from e
     if not isinstance(data, dict):
-        raise ManifestError(f"{PLUGIN_MANIFEST} must be a JSON object")
+        raise ManifestError(f"{rel} must be a JSON object")
     return data
 
 
@@ -343,6 +364,11 @@ def _frontmatter_name(path: Path) -> str | None:
     return m.group(1).strip() if m else None
 
 
+def _skill_name(skill_dir: Path) -> str:
+    name = _frontmatter_name(skill_dir / "SKILL.md")
+    return name if name and SKILL_NAME_RE.match(name) else skill_dir.name
+
+
 def _md_names(local: Path, default_dir: str, value: object, use_frontmatter: bool = False) -> list[str]:
     """Names of the Markdown components (commands, agents, output styles) Claude Code loads:
     the manifest key replaces the default folder; subfolders join with ':'. With
@@ -379,6 +405,9 @@ def plugin_inventory(local: Path) -> dict:
     (/{plugin}:{skill}, {plugin}:{agent}); kinds with nothing are left out.
     Display only: Claude Code itself decides what loads."""
     meta = plugin_manifest(local)
+    if manifest_file(local) != PLUGIN_MANIFEST:
+        # Claude Code ignores a root plugin.json: only the default folders load.
+        meta = {"name": meta.get("name")}
     skills = set()
     roots = ["skills"] + _component_paths(meta.get("skills"))
     for rel in roots:
@@ -386,9 +415,8 @@ def plugin_inventory(local: Path) -> dict:
         if p is None or not p.is_dir():
             continue
         if p != local.resolve() and (p / "SKILL.md").is_file():
-            skills.add(_frontmatter_name(p / "SKILL.md") or p.name)
-        skills.update(_frontmatter_name(d / "SKILL.md") or d.name
-                      for d in p.iterdir() if d.is_dir() and (d / "SKILL.md").is_file())
+            skills.add(_skill_name(p))
+        skills.update(_skill_name(d) for d in p.iterdir() if d.is_dir() and (d / "SKILL.md").is_file())
     if not skills and "skills" not in meta and (local / "SKILL.md").is_file():
         skills.add(str(meta.get("name") or local.name))  # a single skill at the plugin root
     inv = {
@@ -555,7 +583,7 @@ def check(dirs: list[Path]) -> list[str]:
             local = local_dir(d)
             if kind_of(d) == "plugin":
                 if not is_plugin(local):
-                    raise ManifestError(f"a plugin needs {PLUGIN_MANIFEST}")
+                    raise ManifestError(f"a plugin needs {PLUGIN_MANIFEST} (or {ROOT_MANIFEST} at its root)")
                 pname = plugin_manifest(local).get("name")
                 if pname != d.name:
                     raise ManifestError(f'plugin name {pname!r} must equal the folder name {d.name!r}')
@@ -616,7 +644,7 @@ def add(repo: str, path: str, category: str, name: str | None, requires: list[st
     try:
         local = local_dir(dest)
         if plugin and plugin_manifest(local).get("name") != name:
-            raise ManifestError(f"{PLUGIN_MANIFEST} names the plugin {plugin_manifest(local).get('name')!r}; "
+            raise ManifestError(f"{manifest_file(local)} names the plugin {plugin_manifest(local).get('name')!r}; "
                                 f"pass --name with that name")
     except ManifestError:
         shutil.rmtree(dest, ignore_errors=True)
