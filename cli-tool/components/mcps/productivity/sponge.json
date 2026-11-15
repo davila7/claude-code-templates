@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "sponge": {
+      "description": "Sponge keeps saved articles and PDFs in a reading library on your own computer. This local stdio server lets an agent search the library, read saved items, save a URL and add highlights or notes (tools: search_library, list_items, read_item, save_url, queue_save, add_highlight, add_comment, sync). Requires the separately installed Sponge CLI (npm i -g @hraness/sponge, Node.js 24.20 or later) and an existing library; it serves your default library, or pass --library /absolute/path in args. Reading and search run locally without an account; queue_save and sync contact your Sponge account only when you have connected one. The Sponge application is proprietary (free local library); see https://sponge.computer/docs/mcp.",
+      "command": "sponge",
+      "args": ["mcp"]
+    }
+  }
+}
