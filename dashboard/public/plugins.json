@@ -23414,6 +23414,542 @@
     "highlights": []
   },
   {
+    "slug": "lookbk-skills",
+    "name": "Lookbk free skills",
+    "author": "lookbkdev",
+    "description": "Free visual skills from Lookbk: Claude Code renders title videos, a slide deck, link-preview images, landing pages, page sections and animated hero sections on your machine.",
+    "github": "https://github.com/lookbkdev/lookbk-skills",
+    "stars": 4,
+    "type": "marketplace",
+    "tags": [
+      "skills"
+    ],
+    "contains": {
+      "plugins": 39,
+      "components": {
+        "skills": 38
+      }
+    },
+    "highlights": [
+      "39 plugins in marketplace",
+      "Web UI: https://lookbk.dev/"
+    ],
+    "website": "https://lookbk.dev/",
+    "marketplace_name": "lookbk-skills",
+    "plugins_list": [
+      {
+        "name": "lookbk",
+        "description": "All 38 free Lookbk skills in one plugin: two videos, a slide deck, link-preview images, an architecture diagram, two landing pages, 24 Page Kits for website sections and pages, and seven animated hero sections.",
+        "source": "./",
+        "tags": [
+          "video",
+          "slides",
+          "images",
+          "landing-page",
+          "diagram",
+          "hero-section",
+          "page-kits",
+          "web"
+        ],
+        "components": {
+          "skills": 38
+        },
+        "components_items": {
+          "skills": [
+            {
+              "name": "about-story-kit",
+              "description": "Build a company or studio About page from one about.json, where nothing is claimed without a receipt. A founding sentence with a record card (founded, where, headcount as of a date, who wrote the page); a dated record of milestones, each with what changed and a lettered evidence note, drawn as you scroll; the people as a contact sheet or index, each with what they do and one dated decision; how we work as rules with the year they started; up to four footnoted numbers with as-of dates; and a close that names who to talk to. Your own portraits are shown in the palette's duotone, with designed fallback tiles and never stock faces. The build refuses unsourced numbers, milestones without evidence, future as-of dates and a headcount the page does not add up to. Builds a self-contained page and a paste-in embed, with checks at four widths and a frame-by-frame recorder for the preview video. Use for a company, studio or team About page."
+            },
+            {
+              "name": "aperture-reveal-hero",
+              "description": "Build a website hero that looks through a real lens iris whose aperture lives in the headline - nine curved blades, each turning on its own pin, centred in the counter of an O so that at f/22 the opening fits inside the letter and opened up the scene pours out of it. The scene behind is re-rendered for every f-number (depth of field, bokeh in the iris's own shape, diffraction stars stopped down, exposure), the ring clicks from stop to stop and the pointer turns it. Two scenes: a timber pier with lanterns at night (dark), or a stone cloister at noon. One self-contained HTML page plus a paste-in embed on the Motion Heroes kit v2 lockup or editorial composition, checked at four widths for text size, contrast and clearance, with a baked still picture for WebGL failure and reduced motion, and a 1080p MP4 of one 12 s loop. Use for camera and lens makers, photographers, eyewear, opticians, studios, cafes, hotels or any brand whose promise is seeing clearly or letting the light in."
+            },
+            {
+              "name": "blueprint-architecture",
+              "description": "Draw a system architecture diagram in a technical-drawing blueprint style - services, databases, queues, caches and clients laid out automatically, with labelled request and event flows and moving data-flow dots - from a description or by reading a repository. Outputs an HTML page, an SVG and a PNG. Use when someone wants an architecture diagram, a system design drawing, a service map or a data-flow diagram."
+            },
+            {
+              "name": "booking-slots-kit",
+              "description": "Build the appointment booking section for a local service business (clinic, salon, barber, studio, repair shop) from one booking.json. The visitor picks a service, optionally a person, then a day and start time from real availability, then confirms with a name and a mobile or email. Availability is worked out in the page from the config in the shop's time zone (hours, shifts, away days, service lengths plus buffers, existing bookings, closed days, notice, horizon) and shown in the visitor's zone too, correct across clock changes. The week is drawn on one time scale so busy days look busy. Designed states for a full week, an honest hold countdown, a taken slot, a failed send, an email fallback, and a booked card with an .ics file. Phone layout first. A self-contained page and a paste-in embed, a property test of the availability rules against a minute-by-minute reference, checks at four widths, and a frame-by-frame recorder. Use for appointment booking on a local service business site."
+            },
+            {
+              "name": "closing-cta-kit",
+              "description": "Build the last call to action before the footer from one cta.json - a band that asks for the click once and puts the real reason to act in plain sight. Three layouts from the same config - stub (an admission ticket whose stub carries the fact, with a rubber stamp that covers no text), poster (the fact set as the poster's figure, with a price window between the day a price opened and the day it ends) and sentence (the form is the headline, with empty, typing, error, sending and sent states). The fact is validated, day counts are worked out from real dates, and after the deadline the band switches to its own after-close copy. One entrance, then it holds still; reduced motion gets the settled band. Builds a self-contained page and a paste-in embed, with checks at four widths (text size, measured contrast, overflow, the stamp, the form's states, the after-close switch) and a frame-by-frame recorder. Use for the final call to action band above a landing page's footer."
+            },
+            {
+              "name": "compare-table-kit",
+              "description": "Build the \\\"us against the alternatives\\\" section (a vs page, an alternatives page, or the comparison on a pricing page) from one compare.json, set as a fact-checked brief. The product is compared with 2 to 4 alternatives, including doing it yourself or the tool they already have. Every cell is a short fact with a numbered source and a date, never a tick or a cross; rows are grouped by the buyer's real questions, each group states its assumptions, and every row gets a verdict in words. The build refuses a table where nothing else ever wins, unsourced or yes/no cells, a typed tally, and claims about named competitors without dated, linked sources. A tally computed from the verdicts, a \\\"who should pick the other one\\\" row, sticky head row and product column, a swipeable two-at-a-time view on phones, a print layout with every source, a paste-in embed, checks at four widths and a frame-by-frame recorder. Use for vs pages, alternatives pages and pricing-page comparisons."
+            },
+            {
+              "name": "contact-kit",
+              "description": "Build the contact section or contact page for a studio, practice or small company from one contact.json, designed like a good front desk. The visitor first says what it is about (3 to 5 reasons, each naming who answers and how fast) and the form shapes itself to that reason. Each reason promises a reply time worked out from the real working hours of its people in their own time zones, shown in the visitor's time; a 24-hour rota shows who is at their desk now, and each office gets a drawn plan of the last hundred metres to its door with numbered arrival steps. Every form state is designed (empty, typing, invalid, sending, sent, offline, failed), with a spam trap instead of a CAPTCHA and an email fallback. One JSON in, a self-contained page and a paste-in embed out, with checks at four widths and a frame-by-frame recorder. Use whenever someone wants a contact page, contact section, support page, \\\"get in touch\\\" form, office or studio locations with hours, or \\\"who to contact\\\" routing."
+            },
+            {
+              "name": "editorial-og-card",
+              "description": "Make 1200×630 link-preview images (Open Graph / social cards, PNG) for blog posts, docs or newsletters in one editorial look - a serif headline set as real text, a byline and a generated block composition - from Markdown front matter or a list, and wire them into the site's meta tags. Use when someone wants OG images, social cards, link previews or Twitter/X cards for their posts."
+            },
+            {
+              "name": "event-page-kit",
+              "description": "Build the page for a one-day to three-day event from one event.json, set like a festival programme booklet. The programme is a real multi-room timetable drawn to scale, with breaks as hatched bands and a code on every session that the speakers, tickets and calendar files point back to. On the day it shows a now line and past/now/next per room; before and after it counts down or says it has ended; visitors abroad see their own time beside the venue's. Speakers, tickets with sales-end countdowns, the venue with a drawn plan, and an .ics per session. On a phone the grid shows one room at a time; printed, one A4 page per day. The build refuses double-booked rooms, sessions across breaks, a speaker in two places, nonexistent clock times and tickets on sale after their end. A self-contained page and a paste-in embed, checks at four widths and a frame-by-frame recorder. Use for conference, festival, screening or meetup pages."
+            },
+            {
+              "name": "falling-leaves-hero",
+              "description": "Build a website hero that reads as one frame from a long lens at a quarter speed - sugar maple or ginkgo leaves painted in code falling through real light, with the headline as a sign standing in the focal plane. Leaves bend, twist, glow when backlit and blur by distance from focus; they flutter, spiral and tumble, a few land on the letters' top edges (solved from the glyph outlines), rest and slide off, and the pointer is a gust. Two worlds: golden hour in a maple wood (centred lockup) and a ginkgo avenue at night under one street lamp (editorial grid). One self-contained HTML page plus a paste-in embed on the Motion Heroes kit v2, checked at four widths for text size, contrast and clearance, with a check that no leaf sits over a letter at any still, a baked still picture when WebGL is off, and a seamless 20-second 1080p loop. Use for autumn stays, bookshops, cafes, gardens, wine and anything seasonal."
+            },
+            {
+              "name": "faq-kit",
+              "description": "Build the questions section of a landing or pricing page from one faq.json - a FAQ you can read closed. Every question carries its short answer (28 characters at most) in a ruled column beside it, so a sceptical visitor gets the verdict on every objection by scanning down and opens only what needs detail. Answers have real structure (paragraphs, numbered steps, small tables whose computed cells are checked against their arithmetic, links to docs). Search narrows the list as you type and finds text inside answers, shown as a snippet. Topic groups get a sticky contents rail; a flat list gets ruled column heads. It closes on named people, a stated response time and a live status in their time zone. The FAQPage JSON-LD is written at build time from the same text, and checked against the page. Native details/summary, so everything reads with JavaScript off. Builds a page and a paste-in embed, with checks at four widths, reduced motion and no-JS, and a frame-by-frame recorder."
+            },
+            {
+              "name": "feature-tabs-kit",
+              "description": "Build the \\\"how it works\\\" features section of a product page from one features.json - 3 to 6 features in a tab rail (numbered lines on desktop, a sticky row of chips on phones) and one large stage that shows the product doing each thing, drawn from the config as real UI (a list, a before/after match, a bar chart, an email, a form, a code request, a timeline) rather than a screenshot box. A tab switch keeps what two views share and moves it from where it was to where it goes, so each switch looks caused. The tour advances on a visible clock and stops on any input; the tabs are a real tablist with keyboard keys, swipe on phones, and a stacked page without JavaScript. The build checks the numbers add up across views. Builds a self-contained page and a paste-in embed, with checks at four widths and a frame-by-frame recorder for the preview video. Use for the features or \\\"how it works\\\" section of a product page."
+            },
+            {
+              "name": "fee-calculator-kit",
+              "description": "Build the calculator section of a fintech or service landing page (money transfer, payroll, card processing, invoice financing) from one calculator.json. The visitor types an amount in either number format and sees the whole sum - every fee as its own line, the exchange margin shown as money against a timestamped mid-market rate, the total cost in money and as a percentage, and an optional comparison column the build refuses without a source and date. A time strip shows now, the cut-off and the arrival across time zones, skipping nights, weekends and bank holidays. Exact integer money with stated rounding and disclosures as numbered notes. It fetches nothing; a rate adapter is documented. Two layouts (statement and receipt), a self-contained page and a paste-in embed, a check at four widths with a property test against an independent reference, and a frame-by-frame recorder. Use for fee or transfer calculators on fintech and service pages."
+            },
+            {
+              "name": "footer-kit",
+              "description": "Build the end of a landing page from one footer.json - a closing call to action and a footer as one composed finale. The page above is a sheet lying on a coloured board; at the end the sheet lifts off and the brand's name, set across the full measure (fitted to the letters' real ink, kerning kept), rises through the gap. Four layouts from the same config - wordmark, index (links set like a book's index with leader dots), dispatch (a newsletter-led footer with designed form states) and place (a drawn street map with a route to the door and live opening hours). On phones the name stacks onto two lines at a syllable; reduced motion gets the finished footer. Builds a self-contained page and a paste-in embed, with checks at four widths (text size, measured contrast, overflow, the name's ink fit, focus rings, form states) and a frame-by-frame recorder for the preview video. Use for the closing call to action and footer of a landing page."
+            },
+            {
+              "name": "integrations-kit",
+              "description": "Build the integrations section and directory of a software product from one integrations.json. Instead of a wall of app icons, choosing an integration draws its wiring like a terminal strip - your product on one side, the other app on the other, one wire per record with its direction, trigger and cadence, and records that never cross drawn as open switches with the reason - next to a setup bar drawn to its minutes, who built it, which plans include it and which side wins on conflict. Below it, a directory with search, category and status filters with counts that follow each other, and an honest not-supported list. Every number is counted from the lists; the build refuses typed numbers that disagree. On a phone the wiring stacks vertically. Self-contained page and paste-in embed, a check at four widths (text size, contrast, no colliding labels, keyboard, filters, reduced motion, no JavaScript) and a frame-by-frame recorder. Use for a software product's integrations section or directory."
+            },
+            {
+              "name": "itinerary-kit",
+              "description": "Build the itinerary page for a guided trip, tour or retreat that a travel company sells, from one trip.json, a route file and a map file. The page is drawn like a surveyor's sheet - one route shown three ways that move together: a map drawn in the page's own type and colours from coordinates (no map tiles, no map service), a whole-trip height strip, and a day-by-day ledger with measured distance, climb, where you sleep, meals, an effort grade by a stated rule and a note. Scrolling through the days moves the map and strip; tapping the strip jumps to a day. Then what is included, departures with places left, and the price. On a phone the map becomes a sticky strip. Every figure is measured or counted by the build, never typed; a stated distance that disagrees with the track stops it. One self-contained page plus a paste-in embed, a check at four widths, and a frame-exact video. Use for walking holidays, cycling or driving tours, photography trips, retreats and expeditions."
+            },
+            {
+              "name": "journal-index-kit",
+              "description": "Build a journal or blog front page and article pages from a folder of Markdown files, set like a printed magazine rather than a blog theme. The index is a numbered register (issue number, title and dek, section, reading time drawn as a rule, date) grouped by year, with section filters that work in place and as real links, a preview slot showing the lead image of the row under the pointer or focus, a lead story and a series band. Articles get editorial typography - drop caps, pull quotes, sidenotes on wide screens and end notes on narrow ones, numbered figures, charts from data, highlighted code, and a contents rail and progress bar that share one reading-time model. The build writes RSS with full text, a sitemap, Article JSON-LD and a paste-in embed, and the check verifies text size, contrast, overflow, layout shift, sidenotes, filters, keyboard, no-JavaScript pages, the feed and the structured data. Use for a journal, blog or magazine section of a website."
+            },
+            {
+              "name": "kinetic-title-drop",
+              "description": "Make a 6-second 1080p kinetic-type title video (MP4) from three short lines, a chip, a footer and three colours. Use for launch openers, release announcements, social posts and reel intros when someone asks for an animated title, title drop, kinetic typography or a short type-only video."
+            },
+            {
+              "name": "laser-etch-hero",
+              "description": "Build a website hero where a laser engraver cuts the headline into a real plate - a vector contour pass, then a gantry raster line by line or a galvo hatching glyph by glyph - and one low raking lamp shows the cut's depth: char, smoke and a glowing front on maple, sparks and frosted metal on black anodised aluminium, or a pale frost on slate; the pointer moves the lamp. Two art-directed layouts: a maple board on a bench with the copy on a clamp bar (centred lockup), or a full-bleed anodised plate with the headline across the width (type as the effect). One self-contained HTML page plus a paste-in embed on the Motion Heroes kit v2, checked at four widths for text size, contrast and clearance, with a baked still picture if WebGL fails and a frame-exact looping 1080p MP4 that opens on the settled plate. Use for makers, engravers, workshops, tools, instruments, gifts or any product that is made, marked or personalised."
+            },
+            {
+              "name": "mono-editorial-landing",
+              "description": "Build a black-and-white editorial landing page - a large serif headline, a drop-cap introduction, numbered ruled columns, feature spreads with framed figures (screenshots, an app window drawn in HTML, true numbers or terminal commands), a pull quote, questions and a closing line - as one responsive HTML file, drafted from the project's README, with a waitlist form that really signs people up or buttons to get started. Checks layout, contrast and accessibility in headless Chrome. Use when someone wants a landing page, product homepage, launch page or waitlist page that looks like a magazine rather than a SaaS template."
+            },
+            {
+              "name": "newsletter-kit",
+              "description": "Build a newsletter signup from one letter.json that earns the address by showing the letter itself - the latest real issue opened in a neutral inbox, the cadence drawn as a send calendar (the next issue's date in the reader's time zone), a subscriber count that cannot appear without its source and date, an archive dated from the send log, and a privacy ledger beside the field. One email field with every state designed (empty, typing, invalid, sending, double opt-in, already subscribed, subscribed, error) and no layout jump; while you type, the sample email's \\\"to:\\\" line shows your address. Posts to any endpoint, with presets for common list services and a server-function recipe for keys; the build refuses anything key-shaped. Two layouts (a standalone page or an inline section), a self-contained page and a paste-in embed, checks at four widths and a frame-by-frame recorder. Use for a newsletter signup page or section."
+            },
+            {
+              "name": "parallax-depth-hero",
+              "description": "Build a centred-lockup website hero that works like a multiplane camera - a scene painted in code on 6 plates at real distances from the lens (a mountain range at first light, or a city at night), with the headline as the plate between them: far plates drift against the pointer, near ones move with it, the words never move, and near plates pass in front of the foot of the letters. Scrolling raises the camera over 1.25 screen heights. Air, mist, defocus and light are computed, and no near plate ever covers more than 30% of any letter (measured per letter in the real font). One self-contained HTML page plus a paste-in embed on the Motion Heroes kit v2, checked at four widths, with a baked still when WebGL is off and a 1080p MP4 of the scroll. Use for walking holidays, guesthouses, outdoor brands, rooftop restaurants, hotels and any brand whose pitch is a view."
+            },
+            {
+              "name": "phone-screen-showcase",
+              "description": "Build the hero section of a mobile app's landing page around one phone that walks through 3 to 5 real screens of the app, tap by tap. A fingertip ring lands beside the thing to tap (never over its label), and the next screen arrives the way the app itself moves (a push, a sheet rising, a tab change), while numbered chapters beside the phone fill a progress bar in step. The phone is drawn in HTML and CSS and stands in one light from the product's world. Screens are the buyer's screenshots or composed from a JSON spec. Scrolling drives the story and plays it backwards, or it runs on a timer; on a phone it becomes the phone plus a caption, and reduced motion gets a still stack. One page.json in, a self-contained index.html and a paste-in embed.html out, a check at four widths, and a frame-by-frame recorder. Use when someone wants an app landing page hero, an app walkthrough, a \\\"how it works\\\" phone, a scroll-driven phone mockup or an App Store style hero that tells a short story."
+            },
+            {
+              "name": "pixel-quest-promo",
+              "description": "Make a 20-second 1080p retro 8-bit promo video (MP4) for a product, app, game or side project - a title screen with a blinking \"PRESS START\", three short platformer stages where a pixel hero collects coins and knocks a power-up out of a block (one stage per feature, with its name and a line of text), a running score and coin counter, and an ending with the headline and link. Everything lands on a 120 BPM beat grid, and the skill writes a cue sheet for adding chiptune music. Use when someone wants a pixel-art, 8-bit, retro game or arcade-style promo, launch teaser or feature reel."
+            },
+            {
+              "name": "portfolio-index-kit",
+              "description": "Build a designer's, studio's or photographer's work index from one work.json - a typographic list of projects (number, client, discipline, year, one-line outcome) where pointing at a row slides that project's picture or loop out as a numbered plate that follows the pointer on a spring, never covers the line being read, and riffles as you move down the list. An Index/Grid switch with a FLIP transition, a discipline filter with live counts, and one case page per project. Phones open the plate inline, keyboard focus gets the same plate, reduced motion gets it without movement. Two row systems, your own pictures resized to WebP at five widths, a self-contained page plus a paste-in embed, checks at four widths (text size, contrast, overflow, the plate's placement on every row, filter counts, focus rings) and a frame-by-frame recorder. Use for type foundries, graphic designers, studios, illustrators, architects and photographers whose work list should read in 20 seconds."
+            },
+            {
+              "name": "pricing-kit",
+              "description": "Build a pricing section from one pricing.json - 2 to 4 plans hung from one shared price scale, a monthly/yearly switch whose prices roll digit by digit while each plan's dot slides along the scale and the hatched saving trails it, the arithmetic printed under every price, a recommended plan designed as its own object (filled, wider, raised into the scale, with a reason), a feature comparison that opens out of the cards and marks what is new at each plan, an optional usage calculator whose slider re-lights the cheapest plan and names the crossover, and a strip of questions. Two finished looks (light editorial, dark technical), phone layouts with folded plans and a sticky switch, reduced motion, a paste-in embed, a check at four widths and a frame-by-frame recorder. Use for SaaS, APIs, studios and services that want their real plans to look considered and trustworthy."
+            },
+            {
+              "name": "process-steps-kit",
+              "description": "Build the \\\"how it works / our process\\\" section of a service or product from one process.json - the schedule page of a signed proposal rather than numbered circles. Three to seven steps, each saying who does it, how long it really takes, what the buyer gives, gets and pays. A programme chart draws every step to scale on one calendar of working weeks, with a lane that adds up the hours the buyer is needed. As you scroll, the project day moves a cursor through the programme and changes the deliverable on a sticky desk. The build checks the arithmetic (no gaps or overlaps unless marked parallel, steps add up to the stated weeks, buyer hours match the rounding rule, payments add up to 100 % or the fixed fee). Self-contained page and paste-in embed, a check at four widths (text size and contrast, chart labels that never collide, bars to scale, reduced motion, no JavaScript) and a frame-by-frame recorder. Use for a \\\"how it works\\\" or \\\"our process\\\" section."
+            },
+            {
+              "name": "proof-band-kit",
+              "description": "Build the \\\"trusted by\\\" band that sits under a hero from one proof.json - customer logos and a few numbers, set like the figures page of an annual report. Every logo is measured from its own SVG (ink box, aspect, ink density) and sized to the same visual weight on one baseline per row. Every figure is in tabular numerals with a numbered note giving its basis, source and as-of date; the build refuses a figure without a source, a future date, \\\"+\\\" or \\\"up to\\\", and any number not tied to a note. Each logo opens on hover, focus or tap to one line on what that customer uses the product for. Three layouts, two finished looks (ledger and signal), an optional slow marquee that pauses, phone and tablet layouts, a paste-in embed, a check at four widths that re-measures the balance, and a frame-by-frame recorder. Use for customer logos, operating figures and \\\"in use at\\\" bands on product, SaaS and B2B pages."
+            },
+            {
+              "name": "services-menu-kit",
+              "description": "Build the services section of an agency, studio or consultancy from one services.json, set like a well-made menu instead of six icon cards. Every service says what the client is handed, how long it takes, what it costs (\"typically\" and \"from\"), what the client must bring and when not to buy it. Services sit in 2 to 4 courses (start here, the main work, ongoing); common combinations become set menus whose totals and weeks are worked out from their parts, overlap included, and printed as an itemised bill. A \"help me choose\" form takes a budget and a deadline and marks every service and set as fits, a stretch or not now, with one sentence of why, a polite live tally, a bar that keeps the choice in sight and an address that can be shared. Two layouts (a printed menu and a technical rate card, with a dense option), two type systems, phone layouts, reduced motion, a full no-JavaScript reading, a paste-in embed, a check at four widths that tries every budget and deadline pair, and a frame-by-frame recorder."
+            },
+            {
+              "name": "shop-collection-kit",
+              "description": "Build a small brand's collection or category page from one page.json - a collection header with the brand's point of view, a sticky filter bar whose chips re-lay the grid with a FLIP glide (no jump), numbered product plates that turn over on hover, focus or tap to show the reverse of the piece (the raw foot and maker's stamp, the hallmark inside a band), swatches that change the photograph, honest prices with their currency and one plain stock line (low, back soon with a date, sold out with Notify me), an editorial band in the grid, a quick-view sheet with options, sizes and per-option stock, and an Add to bag that turns into a bag slip. Phone layout with a 2-up grid, a sticky chip bar, a filter sheet and bottom sheets. Includes a three.js still-life renderer that makes true-scale product photographs (ceramics, jewellery) from the same config when the shop has no photos yet, a check at four widths and a frame-by-frame recorder. Use for independent shops: ceramics, jewellery, homewares, small-batch goods."
+            },
+            {
+              "name": "signal-glitch-hero",
+              "description": "Build a website hero where your own photograph and headline arrive through a corrupted broadcast signal that locks on - vertical hold, horizontal sync and colour burst lock in turn while a stream joined without a key frame smears its macroblocks until a refresh sweeps the frame clean - then holds a sharp, readable frame for about 70% of a 12-second loop; the pointer is interference that drags blocks and tears lines. Your photo, colours, fonts and copy; lockup or editorial layout; dark or light pages with on-brand failure colours. Raw WebGL1, no libraries. One self-contained HTML page plus a paste-in embed on the Motion Heroes kit v2, checked at four widths, a title-safe grade that guarantees the headline's contrast over the photo, a still picture for reduced motion and failures, and a frame-exact looping 1080p MP4. Use for a film, TV, streaming or radio brand, a festival, an audio or camera product, a launch or any brand whose photo deserves an entrance."
+            },
+            {
+              "name": "snow-globe-hero",
+              "description": "Build a website hero that is one still-life photograph of a glass snow globe on a stone plinth, ray traced in the browser - thick glass with Fresnel and total internal reflection, a water core that magnifies a handmade miniature, a caustic on the ledge - with the headline cut into the plinth as a V-cut inscription filled with paint or gilt and lit by the same light. Every loop the globe is shaken, flakes or glitter swirl, glint and settle, and the room goes still. Two art-directed sets on the editorial composition: a winter café in low sun, and a night observatory in moonlight with gold glitter. One self-contained HTML page plus a paste-in embed on the Motion Heroes kit v2, checked at four widths for text size, contrast and clearance, with a baked still picture if WebGL fails and a frame-exact seamless 14 s 1080p MP4. Use for cafés, bakeries, hotels, observatories, shops, gifts, seasonal launches or any brand that wants one quiet, real object instead of a decorated layout."
+            },
+            {
+              "name": "spec-sheet-kit",
+              "description": "Build the technical specifications section of a hardware product page from one spec.json, set as an engineering drawing and its schedule. The product is drawn in true orthographic views (plan, elevations, a 2:1 detail, a hatched section) with balloons, dimension lines and a title block; every balloon number is its line in the table, and pointing at a line lights its part on the drawing, and the reverse. Units switch between mm and inches and kg and pounds, with stated rounding rules. A compare mode sets 2 or 3 models side by side, writing shared values once and giving differences a delta. The build checks that every drawn dimension measures what the table says, that each part is the same size in every view, and that battery figures add up. Prints as one landscape A4 or Letter sheet. Builds a self-contained page and a paste-in embed, with checks at four widths and a frame-by-frame recorder. Use for the tech specs or model comparison of a hardware product."
+            },
+            {
+              "name": "story-rail-kit",
+              "description": "Build a horizontal rail of rich cards for a website from one rail.json done properly instead of as a janky carousel. Native scroll-snap, Previous and Next buttons that move by exactly one card whatever its width, and a scale under the rail drawn from the cards themselves with a bracket framing what is on screen, so a visitor always knows where they are and how much is left. Five card kinds in a rhythm the build checks (wide, tall, quote, number with its source, and a view-all end card), loops that play only on screen, keyboard support, a mouse drag that never opens a card by accident, and touch that never traps vertical scroll. No auto-advance unless you turn it on. A self-contained page plus a paste-in embed, a check at four widths including keyboard, drag and vertical scrolling, and a frame-by-frame recorder. Use for a home page band of case studies, recipes, articles, collections or products that leads to a \\\"view all\\\" page."
+            },
+            {
+              "name": "swiss-grid-deck",
+              "description": "Build a presentation in the Swiss grid style (eight-column grid, huge tight type, one accent colour) from an outline or notes, as an HTML deck that presents in the browser, a PDF, and an editable PowerPoint file (PPTX) with speaker notes. Use when someone wants slides, a deck, a pitch, a talk, a report presentation or a keynote that looks designed rather than templated."
+            },
+            {
+              "name": "testimonial-wall",
+              "description": "Build a social-proof section for a landing page from one wall.json - the rating with its real star distribution (the build refuses a score the stars don't add up to), a lead letter that turns over 2 to 6 featured quotes, each signed and carrying the measured result that person got, a wall of reviews in drifting columns, case cards with before/after figures, and a strip of press quotes. Set like a newspaper's letters page, with motion paced by reading time - the wall never moves faster than 24 px a second, hover, focus and a Pause button stop it, and reduced motion shows everything still. Two themes (letters and ledger), phone and tablet layouts, a self-contained page and a paste-in embed, checks at four widths, and a frame-by-frame recorder for a 1080p preview video. Use for customer reviews, testimonials, case studies or press mentions on a product, service or SaaS page."
+            },
+            {
+              "name": "waitlist-glow",
+              "description": "Make a one-screen waitlist or coming-soon page - a slowly breathing gradient glow, a serif headline, one email field that really signs people up (Formspree, Netlify Forms, Buttondown, Mailchimp or your own endpoint), an optional live countdown to launch - as a single HTML file, and test the sign-up end to end before it goes live. Use when someone wants a waitlist, coming-soon, pre-launch or early-access page."
+            },
+            {
+              "name": "washing-line-hero",
+              "description": "Build an interactive website hero where the brand's poster is printed on a cotton cloth pinned to a washing line with wooden pegs, under an open sky with drifting clouds - visitors press a soft dent into the cloth with the pointer, grab it anywhere and pull it, and when they let go it swings back and settles (a real cloth simulation, not a video), in the brand's colours, fonts, logo, headline and buttons. One self-contained HTML page plus a paste-in embed, checked for contrast and layout at four widths, with a still picture when WebGL or the network fails and for reduced motion, and a frame-perfect MP4 and poster recorded in headless Chrome in which a drawn pointer pulls the cloth. Use when someone wants a playful, touchable hero, a draggable flag or banner, a poster on a clothesline, a launch header people play with, or a hero for a textile, laundry, outdoor or \"light and simple\" product."
+            }
+          ]
+        }
+      },
+      {
+        "name": "kinetic-title-drop",
+        "description": "A 6-second 1080p kinetic-type title video (MP4) from three short lines and three colours. Only this skill; skip it if you installed lookbk.",
+        "source": "./skills/kinetic-title-drop",
+        "tags": [
+          "video"
+        ]
+      },
+      {
+        "name": "pixel-quest-promo",
+        "description": "A 20-second 1080p 8-bit promo video (MP4): a pixel hero runs one stage per feature on a 120 BPM grid. Only this skill; skip it if you installed lookbk.",
+        "source": "./skills/pixel-quest-promo",
+        "tags": [
+          "video"
+        ]
+      },
+      {
+        "name": "swiss-grid-deck",
+        "description": "A Swiss-grid slide deck from your notes: browser deck, PDF and editable PPTX with speaker notes. Only this skill; skip it if you installed lookbk.",
+        "source": "./skills/swiss-grid-deck",
+        "tags": [
+          "slides"
+        ]
+      },
+      {
+        "name": "editorial-og-card",
+        "description": "1200x630 link-preview images (PNG) for every post, with the meta tags wired up. Only this skill; skip it if you installed lookbk.",
+        "source": "./skills/editorial-og-card",
+        "tags": [
+          "images"
+        ]
+      },
+      {
+        "name": "blueprint-architecture",
+        "description": "A blueprint-style system architecture diagram from a description or a repository, as HTML, SVG and PNG. Only this skill; skip it if you installed lookbk.",
+        "source": "./skills/blueprint-architecture",
+        "tags": [
+          "images"
+        ]
+      },
+      {
+        "name": "mono-editorial-landing",
+        "description": "A black-and-white editorial landing page drafted from your README, with a working waitlist form. Only this skill; skip it if you installed lookbk.",
+        "source": "./skills/mono-editorial-landing",
+        "tags": [
+          "web"
+        ]
+      },
+      {
+        "name": "waitlist-glow",
+        "description": "A one-screen waitlist page with a breathing glow and a sign-up form tested end to end. Only this skill; skip it if you installed lookbk.",
+        "source": "./skills/waitlist-glow",
+        "tags": [
+          "web"
+        ]
+      },
+      {
+        "name": "washing-line-hero",
+        "description": "An interactive website hero: your poster on a cloth pinned to a washing line that visitors poke, grab and drag (three.js cloth simulation), plus a 1080p MP4. Only this skill; skip it if you installed lookbk.",
+        "source": "./skills/washing-line-hero",
+        "tags": [
+          "web",
+          "hero-section",
+          "interactive"
+        ]
+      },
+      {
+        "name": "phone-screen-showcase",
+        "description": "An app landing page hero: one phone that walks through 3 to 5 of your app's screens tap by tap as visitors scroll. Only this skill; skip it if you installed lookbk.",
+        "source": "./skills/phone-screen-showcase",
+        "tags": [
+          "web",
+          "page-kits"
+        ]
+      },
+      {
+        "name": "proof-band-kit",
+        "description": "A trusted-by band: customer logos balanced to the same visual weight and figures with sourced, dated notes. Only this skill; skip it if you installed lookbk.",
+        "source": "./skills/proof-band-kit",
+        "tags": [
+          "web",
+          "page-kits"
+        ]
+      },
+      {
+        "name": "feature-tabs-kit",
+        "description": "A features section: 3 to 6 tabs beside one stage drawn as real UI, where switching tabs moves the same objects into a new view. Only this skill; skip it if you installed lookbk.",
+        "source": "./skills/feature-tabs-kit",
+        "tags": [
+          "web",
+          "page-kits"
+        ]
+      },
+      {
+        "name": "process-steps-kit",
+        "description": "A how-it-works section set as a project schedule: 3 to 7 steps drawn to scale, with hours and payments that add up. Only this skill; skip it if you installed lookbk.",
+        "source": "./skills/process-steps-kit",
+        "tags": [
+          "web",
+          "page-kits"
+        ]
+      },
+      {
+        "name": "integrations-kit",
+        "description": "An integrations section and directory with a wiring diagram per app: what syncs, which way, how often and what doesn't. Only this skill; skip it if you installed lookbk.",
+        "source": "./skills/integrations-kit",
+        "tags": [
+          "web",
+          "page-kits"
+        ]
+      },
+      {
+        "name": "spec-sheet-kit",
+        "description": "A hardware product's spec section drawn as an engineering drawing whose balloons match the spec table. Only this skill; skip it if you installed lookbk.",
+        "source": "./skills/spec-sheet-kit",
+        "tags": [
+          "web",
+          "page-kits"
+        ]
+      },
+      {
+        "name": "testimonial-wall",
+        "description": "A social-proof section: real star distribution, a lead quote, a reading-paced review wall, case cards and press quotes. Only this skill; skip it if you installed lookbk.",
+        "source": "./skills/testimonial-wall",
+        "tags": [
+          "web",
+          "page-kits"
+        ]
+      },
+      {
+        "name": "compare-table-kit",
+        "description": "A vs or alternatives section set as a fact-checked brief: every cell a sourced, dated fact, with the rows you lose. Only this skill; skip it if you installed lookbk.",
+        "source": "./skills/compare-table-kit",
+        "tags": [
+          "web",
+          "page-kits"
+        ]
+      },
+      {
+        "name": "pricing-kit",
+        "description": "A pricing section where every plan hangs from one shared price scale, with a yearly switch, comparison and calculator. Only this skill; skip it if you installed lookbk.",
+        "source": "./skills/pricing-kit",
+        "tags": [
+          "web",
+          "page-kits"
+        ]
+      },
+      {
+        "name": "fee-calculator-kit",
+        "description": "A transfer or card-fee calculator section: every fee as a line, the margin as money, and the arrival time across time zones. Only this skill; skip it if you installed lookbk.",
+        "source": "./skills/fee-calculator-kit",
+        "tags": [
+          "web",
+          "page-kits"
+        ]
+      },
+      {
+        "name": "services-menu-kit",
+        "description": "An agency's services section set as a menu, with set menus that add up and a help-me-choose form. Only this skill; skip it if you installed lookbk.",
+        "source": "./skills/services-menu-kit",
+        "tags": [
+          "web",
+          "page-kits"
+        ]
+      },
+      {
+        "name": "booking-slots-kit",
+        "description": "An appointment booking section that works out every free time from hours, shifts, service lengths and bookings. Only this skill; skip it if you installed lookbk.",
+        "source": "./skills/booking-slots-kit",
+        "tags": [
+          "web",
+          "page-kits"
+        ]
+      },
+      {
+        "name": "story-rail-kit",
+        "description": "A horizontal rail of cards with native snapping and a scale drawn from the cards. Only this skill; skip it if you installed lookbk.",
+        "source": "./skills/story-rail-kit",
+        "tags": [
+          "web",
+          "page-kits"
+        ]
+      },
+      {
+        "name": "faq-kit",
+        "description": "A FAQ section you can read closed, with a short answer beside every question, search and FAQPage data. Only this skill; skip it if you installed lookbk.",
+        "source": "./skills/faq-kit",
+        "tags": [
+          "web",
+          "page-kits"
+        ]
+      },
+      {
+        "name": "newsletter-kit",
+        "description": "A newsletter signup that shows your latest real issue opened in an inbox, with a send calendar and every form state designed. Only this skill; skip it if you installed lookbk.",
+        "source": "./skills/newsletter-kit",
+        "tags": [
+          "web",
+          "page-kits"
+        ]
+      },
+      {
+        "name": "contact-kit",
+        "description": "A contact section with reasons, reply times from real working hours, a rota and a drawn way to the door. Only this skill; skip it if you installed lookbk.",
+        "source": "./skills/contact-kit",
+        "tags": [
+          "web",
+          "page-kits"
+        ]
+      },
+      {
+        "name": "closing-cta-kit",
+        "description": "The band above the footer in three layouts: a ticket, a poster or a sentence form, with real dates. Only this skill; skip it if you installed lookbk.",
+        "source": "./skills/closing-cta-kit",
+        "tags": [
+          "web",
+          "page-kits"
+        ]
+      },
+      {
+        "name": "footer-kit",
+        "description": "A landing page footer where the page lifts away to reveal your name edge to edge, in four layouts. Only this skill; skip it if you installed lookbk.",
+        "source": "./skills/footer-kit",
+        "tags": [
+          "web",
+          "page-kits"
+        ]
+      },
+      {
+        "name": "about-story-kit",
+        "description": "An About page with a dated record, evidence notes and a contact sheet of the team. Only this skill; skip it if you installed lookbk.",
+        "source": "./skills/about-story-kit",
+        "tags": [
+          "web",
+          "page-kits"
+        ]
+      },
+      {
+        "name": "portfolio-index-kit",
+        "description": "A typographic work index whose rows slide out their pictures, with case pages. Only this skill; skip it if you installed lookbk.",
+        "source": "./skills/portfolio-index-kit",
+        "tags": [
+          "web",
+          "page-kits"
+        ]
+      },
+      {
+        "name": "shop-collection-kit",
+        "description": "A small brand's collection page with plates that turn over, filters, a quick view and optional rendered stills. Only this skill; skip it if you installed lookbk.",
+        "source": "./skills/shop-collection-kit",
+        "tags": [
+          "web",
+          "page-kits"
+        ]
+      },
+      {
+        "name": "journal-index-kit",
+        "description": "A magazine-style journal front page and articles from Markdown, with RSS, sitemap and structured data. Only this skill; skip it if you installed lookbk.",
+        "source": "./skills/journal-index-kit",
+        "tags": [
+          "web",
+          "page-kits"
+        ]
+      },
+      {
+        "name": "event-page-kit",
+        "description": "A conference or festival page with a timetable drawn to scale, a now line, speakers, tickets and calendar files. Only this skill; skip it if you installed lookbk.",
+        "source": "./skills/event-page-kit",
+        "tags": [
+          "web",
+          "page-kits"
+        ]
+      },
+      {
+        "name": "itinerary-kit",
+        "description": "A guided trip itinerary page with a drawn route map, height strip and day ledger, all measured. Only this skill; skip it if you installed lookbk.",
+        "source": "./skills/itinerary-kit",
+        "tags": [
+          "web",
+          "page-kits"
+        ]
+      },
+      {
+        "name": "parallax-depth-hero",
+        "description": "A WebGL multiplane hero with the headline as one of the layers, moving with the pointer and scroll. Only this skill; skip it if you installed lookbk.",
+        "source": "./skills/parallax-depth-hero",
+        "tags": [
+          "web",
+          "hero-section"
+        ]
+      },
+      {
+        "name": "signal-glitch-hero",
+        "description": "A WebGL hero where your photo and headline lock on through a corrupted broadcast signal. Only this skill; skip it if you installed lookbk.",
+        "source": "./skills/signal-glitch-hero",
+        "tags": [
+          "web",
+          "hero-section"
+        ]
+      },
+      {
+        "name": "falling-leaves-hero",
+        "description": "A three.js hero of leaves falling through real light, landing on the headline and sliding off. Only this skill; skip it if you installed lookbk.",
+        "source": "./skills/falling-leaves-hero",
+        "tags": [
+          "web",
+          "hero-section"
+        ]
+      },
+      {
+        "name": "aperture-reveal-hero",
+        "description": "A WebGL hero where a lens iris in the headline's O clicks open to flood the frame. Only this skill; skip it if you installed lookbk.",
+        "source": "./skills/aperture-reveal-hero",
+        "tags": [
+          "web",
+          "hero-section"
+        ]
+      },
+      {
+        "name": "laser-etch-hero",
+        "description": "A WebGL hero where a laser engraver cuts your headline into maple or anodised aluminium. Only this skill; skip it if you installed lookbk.",
+        "source": "./skills/laser-etch-hero",
+        "tags": [
+          "web",
+          "hero-section"
+        ]
+      },
+      {
+        "name": "snow-globe-hero",
+        "description": "A ray-traced snow globe hero with your headline cut into the stone plinth. Only this skill; skip it if you installed lookbk.",
+        "source": "./skills/snow-globe-hero",
+        "tags": [
+          "web",
+          "hero-section"
+        ]
+      }
+    ]
+  },
+  {
     "slug": "ml-plugins",
     "name": "ML Research",
     "author": "krasserm",
