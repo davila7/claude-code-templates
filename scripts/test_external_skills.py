@@ -326,5 +326,27 @@ class MarketplaceTest(unittest.TestCase):
             self.assertEqual(ext.kind_of(skill), "skill", "a skill category named plugins is still a skill")
 
 
+class FetchErrorTest(unittest.TestCase):
+    """An unreachable repo raises FetchError, which callers may tolerate; other errors stay ManifestError."""
+
+    def test_failed_fetch_is_a_fetch_error(self):
+        from unittest.mock import patch
+        saved = ext.CACHE_ROOT
+        ext.CACHE_ROOT = Path(tempfile.mkdtemp())
+        real_git = ext._git
+
+        def fake_git(*args, **kw):
+            if "fetch" in args:
+                raise ext.ManifestError("git fetch failed: could not read Username")
+            return real_git(*args, **kw)
+        try:
+            with patch.object(ext, "_git", side_effect=fake_git):
+                with self.assertRaises(ext.FetchError):
+                    ext._fetch_commit("owner/gone", "a" * 40)
+        finally:
+            ext.CACHE_ROOT = saved
+        self.assertTrue(issubclass(ext.FetchError, ext.ManifestError))
+
+
 if __name__ == "__main__":
     unittest.main()

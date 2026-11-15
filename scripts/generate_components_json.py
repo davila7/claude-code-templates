@@ -612,14 +612,15 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
                             source = None
                             skill_root = skill_dir_path
                             if external_skills.is_external(Path(skill_dir_path)):
+                                # A broken source.json still fails the run; only an unreachable repo is tolerated.
+                                manifest = external_skills.read_manifest(Path(skill_dir_path))
                                 try:
-                                    manifest = external_skills.read_manifest(Path(skill_dir_path))
                                     skill_root = str(external_skills.local_dir(Path(skill_dir_path)))
-                                except (OSError, ValueError) as e:
+                                except external_skills.FetchError as e:
                                     # One unreachable upstream repo must not stop the whole catalog.
                                     kept = previous_component('skills', f"{category}/{skill_dir}", output_path)
                                     if kept:
-                                        kept['downloads'] = download_stats.get(f"skills/{category}/{skill_dir}", kept.get('downloads', 0))
+                                        kept['downloads'] = download_stats.get(f"skills/{category}/{skill_dir}", 0)
                                         components_data[component_type].append(kept)
                                         kept_previous.add(f"skills/{category}/{skill_dir}")
                                         warn(f"external skill {category}/{skill_dir} could not be fetched, keeping its previous catalog entry: {e}")
