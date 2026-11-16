@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "since-dev": {
+      "description": "Since.dev remote MCP server (streamable HTTP). Checks code before a change: retired or retiring AI model IDs, breaking changes between dependency versions, security advisories, and runtimes or CI runner images past end of life, each with its date, the file and line, and what to move to. Tools: whats_changed and check_code read; fix_code returns a patch for a snippet or opens fix pull requests on a connected GitHub repository for review. Uses OAuth: after installing, run /mcp in Claude Code to sign in with your browser. A free account covers lookups, checks and a snippet's patch; fix pull requests on a private repository need a paid plan. Docs: https://since.dev/docs#mcp",
+      "type": "http",
+      "url": "https://api.since.dev/mcp"
+    }
+  }
+}
