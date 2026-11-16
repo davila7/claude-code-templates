@@ -105,5 +105,50 @@ class DownloadStatsFallbackTableTest(DownloadStatsTestCase):
         self.assertEqual(counts["mods/games/pacman"], 5)
 
 
+class PreviousComponentTest(unittest.TestCase):
+    """An external skill whose repo cannot be fetched keeps its last catalog entry."""
+
+    def setUp(self):
+        import tempfile
+        self.tmp = Path(tempfile.mkdtemp())
+        self.catalog = self.tmp / "components.json"
+        self.content = self.tmp / "component-content"
+        self.catalog.write_text(json.dumps({"skills": [
+            {"name": "x", "path": "git/x", "category": "git", "downloads": 3, "source": {"repo": "a/b"}},
+            {"name": "y", "path": "git/y", "category": "git"},
+        ]}))
+        (self.content / "skills" / "git").mkdir(parents=True)
+        (self.content / "skills" / "git" / "x.json").write_text(json.dumps(
+            {"content": "# x", "files": {"SKILL.md": "# x"}, "meta": {"files": []}}))
+
+    def find(self, path):
+        return generator.previous_component("skills", path, str(self.catalog), str(self.content), _cache={})
+
+    def test_entry_and_content_are_rebuilt(self):
+        kept = self.find("git/x")
+        self.assertEqual(kept["source"], {"repo": "a/b"})
+        self.assertEqual(kept["content"], "# x")
+        self.assertEqual(kept["files"], {"SKILL.md": "# x"})
+        self.assertNotIn("meta", kept)
+
+    def test_missing_entry_or_content_file_gives_none(self):
+        self.assertIsNone(self.find("git/new"))
+        self.assertIsNone(self.find("git/y"))
+
+
+class SkillSpectorKeepsResultTest(unittest.TestCase):
+    """A component whose files cannot be read this run keeps its last SkillSpector result."""
+
+    def test_unreadable_component_keeps_previous_result(self):
+        import skillspector_catalog
+        prev = {"score": 10, "hash": "abc", "version": "2.12.0"}
+        data = {"skills": [{"name": "x", "path": "git/x"}, {"name": "new", "path": "git/new"}]}
+        with patch.object(skillspector_catalog, "previous_results", return_value={"skills/git/x": prev}), \
+             patch.object(skillspector_catalog, "source_files", side_effect=ValueError("repo gone")):
+            skillspector_catalog.attach_skillspector(data, scan_enabled=False)
+        self.assertEqual(data["skills"][0]["skillspector"], prev)
+        self.assertNotIn("skillspector", data["skills"][1])
+
+
 if __name__ == "__main__":
     unittest.main()

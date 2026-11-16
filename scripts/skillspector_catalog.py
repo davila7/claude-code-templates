@@ -246,12 +246,15 @@ def attach_skillspector(components_data: dict, catalog_path: str = "docs/compone
     for ctype in SCANNED_TYPES:
         for c in components_data.get(ctype, []):
             key = f"{ctype}/{c['path']}"
+            prev = cache.get(key)
             try:
                 root, files = source_files(ctype, c)
                 digest = content_hash(root, files)
             except (OSError, ValueError):
+                # Files unreadable this run (e.g. an external repo is down): keep the last result.
+                if prev:
+                    c["skillspector"] = prev
                 continue
-            prev = cache.get(key)
             fresh = prev and prev.get("hash") == digest and (version is None or prev.get("version") == version)
             if only is not None:
                 # Trial runs rescan exactly the listed components.

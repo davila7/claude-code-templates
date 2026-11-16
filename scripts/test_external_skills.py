@@ -130,6 +130,39 @@ class ValidateManifestTest(unittest.TestCase):
             self.assertEqual(inv["agents"], ["kit-design", "scout"])
             self.assertEqual(inv["commands"], ["go"])
 
+    def test_invalid_skill_frontmatter_name_falls_back_to_the_folder(self):
+        # google-labs-code/stitch-skills names skills "stitch::code-to-design";
+        # Claude Code lists them by folder (/stitch-design:code-to-design).
+        with tempfile.TemporaryDirectory() as tmp:
+            plug = Path(tmp) / "kit"
+            (plug / ".claude-plugin").mkdir(parents=True)
+            (plug / ".claude-plugin/plugin.json").write_text('{"name": "kit"}')
+            (plug / "skills/code-to-design").mkdir(parents=True)
+            (plug / "skills/code-to-design/SKILL.md").write_text("---\nname: stitch::code-to-design\n---\n")
+            self.assertEqual(ext.plugin_inventory(plug)["skills"], ["code-to-design"])
+
+    def test_root_plugin_json(self):
+        # The Agent Skills `plugins` layout: plugin.json at the root, no .claude-plugin/.
+        # It counts for the name and display fields; its component keys do not, because
+        # Claude Code never reads that file and loads only the default folders.
+        with tempfile.TemporaryDirectory() as tmp:
+            plug = Path(tmp) / "kit"
+            (plug / "skills/a").mkdir(parents=True)
+            (plug / "skills/a/SKILL.md").write_text("---\nname: a\n---\n")
+            (plug / "more").mkdir()
+            (plug / "more/x.md").write_text("")
+            self.assertFalse(ext.is_plugin(plug))
+            (plug / "plugin.json").write_text(json.dumps(
+                {"name": "kit", "description": "A kit", "commands": ["./more/x.md"]}))
+            self.assertTrue(ext.is_plugin(plug))
+            self.assertEqual(ext.manifest_file(plug), "plugin.json")
+            self.assertEqual(ext.plugin_manifest(plug)["description"], "A kit")
+            self.assertEqual(ext.plugin_inventory(plug), {"skills": ["a"]})
+            # Claude Code's own manifest wins when both exist.
+            (plug / ".claude-plugin").mkdir()
+            (plug / ".claude-plugin/plugin.json").write_text('{"name": "kit", "description": "own"}')
+            self.assertEqual(ext.plugin_manifest(plug)["description"], "own")
+
     def test_the_site_lists_every_kind_the_inventory_writes(self):
         # dashboard/src/lib/component-page.ts PLUGIN_KINDS renders `contains`; a kind
         # missing there would vanish from the plugin page and its summary.
@@ -209,6 +242,38 @@ class LocalDirIncludeTest(unittest.TestCase):
         self.assertTrue((out / "scripts/run.sh").stat().st_mode & 0o100)
         # The unfiltered checkout is untouched.
         self.assertEqual(self.files(full), ["SKILL.md", "demo/big.gif", "scripts/run.sh"])
+
+
+class LocalDirLegalFilesTest(LocalDirIncludeTest):
+    """The upstream LICENSE/NOTICE travel with the skill (Apache-2.0 4(a)/4(d), MIT)."""
+
+    def setUp(self):
+        super().setUp()
+        work = Path(self.tmp.name) / "work"
+        (work / "LICENSE").write_text("root licence\n")
+        (work / "NOTICE.txt").write_text("root notice\n")
+        (work / "skills/other").mkdir()
+        (work / "skills/other/SKILL.md").write_text("---\nname: other\n---\n")
+        (work / "skills/other/LICENSE.md").write_text("own licence\n")
+        git("-c", "user.email=t@t", "-c", "user.name=t", "add", "-A", cwd=work)
+        git("-c", "user.email=t@t", "-c", "user.name=t", "commit", "-qm", "y", cwd=work)
+        self.commit = git("rev-parse", "HEAD", cwd=work)
+        bare = ext.CACHE_ROOT / "git" / "owner__name"
+        git("--git-dir", str(bare), "fetch", "-q", str(work), "HEAD", cwd=work)
+
+    def test_without_include_everything_is_kept(self):
+        out = ext.local_dir(self.manifest_dir("all"))
+        self.assertEqual(self.files(out), ["LICENSE", "NOTICE.txt", "SKILL.md", "demo/big.gif", "scripts/run.sh"])
+        self.assertEqual((out / "LICENSE").read_text(), "root licence\n")
+
+    def test_include_filters_and_gets_its_own_cache(self):
+        out = ext.local_dir(self.manifest_dir("some", include=["SKILL.md", "scripts"]))
+        self.assertEqual(self.files(out), ["LICENSE", "NOTICE.txt", "SKILL.md", "scripts/run.sh"])
+
+    def test_the_skill_folder_licence_wins_even_when_include_drops_it(self):
+        out = ext.local_dir(self.manifest_dir("other", path="skills/other", include=["SKILL.md"]))
+        self.assertEqual(self.files(out), ["LICENSE.md", "NOTICE.txt", "SKILL.md"])
+        self.assertEqual((out / "LICENSE.md").read_text(), "own licence\n")
 
 
 class MarketplaceTest(unittest.TestCase):
@@ -324,6 +389,28 @@ class MarketplaceTest(unittest.TestCase):
             self.assertTrue((out / ".claude-plugin" / "plugin.json").is_file())
             skill = Path(other) / "cli-tool" / "components" / "skills" / "plugins" / "kit"
             self.assertEqual(ext.kind_of(skill), "skill", "a skill category named plugins is still a skill")
+
+
+class FetchErrorTest(unittest.TestCase):
+    """An unreachable repo raises FetchError, which callers may tolerate; other errors stay ManifestError."""
+
+    def test_failed_fetch_is_a_fetch_error(self):
+        from unittest.mock import patch
+        saved = ext.CACHE_ROOT
+        ext.CACHE_ROOT = Path(tempfile.mkdtemp())
+        real_git = ext._git
+
+        def fake_git(*args, **kw):
+            if "fetch" in args:
+                raise ext.ManifestError("git fetch failed: could not read Username")
+            return real_git(*args, **kw)
+        try:
+            with patch.object(ext, "_git", side_effect=fake_git):
+                with self.assertRaises(ext.FetchError):
+                    ext._fetch_commit("owner/gone", "a" * 40)
+        finally:
+            ext.CACHE_ROOT = saved
+        self.assertTrue(issubclass(ext.FetchError, ext.ManifestError))
 
 
 if __name__ == "__main__":

@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "brewpage": {
+      "description": "BrewPage remote MCP server (streamable HTTP, no account or API key). Free: no paid plans, no sign-up needed. Tools publish HTML pages, Markdown, JSON documents, key-value data and files to brewpage.app and return a shareable HTTPS link, plus an owner token to update or delete them. Content is temporary (expires, up to 30 days). Docs: https://kochetkov-ma.github.io/brewpage-openapi/",
+      "type": "http",
+      "url": "https://brewpage.app/mcp"
+    }
+  }
+}
