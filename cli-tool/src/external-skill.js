@@ -17,6 +17,11 @@
  * The files are downloaded from that exact commit and each one is checked
  * against the git blob sha of the tree, so what gets written is byte for byte
  * what SkillSpector scanned when the manifest was merged.
+ *
+ * The upstream LICENSE (and NOTICE, for Apache-2.0) is written next to the
+ * skill even when it lives outside the skill folder: the folder's own copy
+ * first, else the repo root's. Same rule as local_dir() in
+ * scripts/external_skills.py, so the site shows what the CLI installs.
  */
 const crypto = require('crypto');
 
@@ -27,6 +32,13 @@ const MAX_TOTAL_BYTES = 5 * 1024 * 1024;
 const REPO_RE = /^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})\/[A-Za-z0-9._-]{1,100}$/;
 const COMMIT_RE = /^[0-9a-f]{40}$/;
 const SKILL_REF_RE = /^[a-z0-9][a-z0-9-]*\/[a-z0-9][a-z0-9-]*$/i;
+
+// Checked in this order; the first name found in a group wins. Mirrors
+// LICENSE_NAMES / NOTICE_NAMES in scripts/external_skills.py.
+const LEGAL_FILE_GROUPS = [
+  ['LICENSE', 'LICENSE.md', 'LICENSE.txt', 'LICENCE', 'COPYING', 'license', 'License.md'],
+  ['NOTICE', 'NOTICE.md', 'NOTICE.txt']
+];
 
 const GITHUB_HEADERS = {
   'Accept': 'application/vnd.github.v3+json',
@@ -186,16 +198,57 @@ async function listSkillTree(manifest, fetchImpl = fetch) {
   if (data.truncated) throw new Error(`The tree of ${repo} is too large to list`);
 
   const files = [];
+  const legal = { folder: {}, root: prefix ? {} : null };
   for (const entry of data.tree || []) {
     if (entry.type !== 'blob') continue; // directories and submodules
+    if (entry.mode === '120000') continue; // symlinks are never written
+    const file = { sha: entry.sha, mode: entry.mode, size: entry.size ?? 0 };
+    if (prefix && !entry.path.includes('/')) legal.root[entry.path] = { path: entry.path, ...file };
     if (prefix && !entry.path.startsWith(prefix)) continue;
     const rel = entry.path.slice(prefix.length);
-    if (entry.mode === '120000') continue; // symlinks are never written
+    if (!rel.includes('/')) legal.folder[rel] = { path: rel, ...file };
     if (!isIncluded(rel, manifest.include)) continue;
     if (!isSafeRelativePath(rel)) throw new Error(`Unsafe path in ${repo}: ${entry.path}`);
-    files.push({ path: rel, sha: entry.sha, mode: entry.mode, size: entry.size ?? 0 });
+    files.push({ path: rel, ...file });
   }
+  files.legal = legal;
   return files;
+}
+
+/**
+ * The LICENSE/NOTICE files to add to a skill that does not ship its own:
+ * [{ path, sha | null, mode, rootPath }]. `sha` is null for a repo-root file
+ * found by probing raw.githubusercontent (no extra GitHub API call, which is
+ * rate limited); that URL names the full commit sha, so its content is fixed.
+ */
+async function findLegalFiles(manifest, files, fetchImpl = fetch) {
+  const have = new Set(files.map((f) => f.path));
+  const { folder, root } = files.legal || { folder: {}, root: null };
+  const out = [];
+  for (const names of LEGAL_FILE_GROUPS) {
+    if (names.some((n) => have.has(n))) continue;
+    const own = names.find((n) => folder[n]);
+    if (own) { out.push({ ...folder[own], rootPath: null }); continue; }
+    if (!manifest.path) continue; // the skill is the repo root: nothing above it
+    if (root) {
+      const hit = names.find((n) => root[n]);
+      if (hit) out.push({ ...root[hit], rootPath: hit });
+      continue;
+    }
+    // Probe every name at once and keep the first one, in order, that exists.
+    const base = `https://raw.githubusercontent.com/${manifest.repo}/${manifest.commit}/`;
+    const probes = await Promise.all(names.map(async (n) => {
+      try {
+        const r = await fetchImpl(base + encodeURIComponent(n), { headers: { 'User-Agent': 'claude-code-templates' } });
+        return r.ok ? { name: n, content: Buffer.from(await r.arrayBuffer()) } : null;
+      } catch {
+        return null;
+      }
+    }));
+    const found = probes.find(Boolean);
+    if (found) out.push({ path: found.name, sha: null, mode: '100644', rootPath: found.name, content: found.content });
+  }
+  return out;
 }
 
 /**
@@ -225,6 +278,24 @@ async function downloadExternalSkill(manifest, fetchImpl = fetch) {
     }
     out[file.path] = { content, executable: file.mode === '100755' };
   }
+
+  for (const file of await findLegalFiles(manifest, files, fetchImpl)) {
+    let content = file.content;
+    if (!content) {
+      const url = file.rootPath
+        ? `https://raw.githubusercontent.com/${manifest.repo}/${manifest.commit}/${encodeURIComponent(file.rootPath)}`
+        : base + encodeURIComponent(file.path);
+      const response = await fetchImpl(url, { headers: { 'User-Agent': 'claude-code-templates' } });
+      if (!response.ok) {
+        throw (await githubError(response, manifest.repo)) || new Error(`Could not download ${file.path} (HTTP ${response.status})`);
+      }
+      content = Buffer.from(await response.arrayBuffer());
+    }
+    if (file.sha && gitBlobSha(content) !== file.sha) {
+      throw new Error(`${file.path} does not match the pinned commit (blob sha mismatch)`);
+    }
+    out[file.path] = { content, executable: false };
+  }
   return out;
 }
 
@@ -236,5 +307,6 @@ module.exports = {
   gitBlobSha,
   fetchExternalManifest,
   listSkillTree,
+  findLegalFiles,
   downloadExternalSkill
 };

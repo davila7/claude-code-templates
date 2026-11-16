@@ -182,3 +182,57 @@ test('a 403 on a raw file download is an access refusal too', async () => {
 test('fetchExternalManifest: a 403 is not reported as a rate limit', async () => {
   await assert.rejects(fetchExternalManifest('git/babysit-pr', async () => reply(403, '')), /refused access to the catalog/);
 });
+
+// Upstream LICENSE / NOTICE: Apache-2.0 and MIT want them to travel with the code.
+function fakeGitHubWithRoot(files, rootFiles) {
+  const gh = fakeGitHub(files);
+  const rootPrefix = `https://raw.githubusercontent.com/t3dotgg/tstack/${COMMIT}/`;
+  const skillPrefix = `${rootPrefix}skills/babysit-pr/`;
+  const fetchImpl = async (url, opts) => {
+    if (url.startsWith(rootPrefix) && !url.startsWith(skillPrefix)) {
+      gh.calls.push(url);
+      const name = decodeURIComponent(url.slice(rootPrefix.length));
+      return name in rootFiles ? reply(200, rootFiles[name]) : reply(404, 'not found');
+    }
+    return gh.fetchImpl(url, opts);
+  };
+  return { fetchImpl, calls: gh.calls };
+}
+
+test('the repo root LICENSE and NOTICE are added when the skill folder has none', async () => {
+  const { fetchImpl } = fakeGitHubWithRoot(
+    { 'SKILL.md': { content: 'x' } },
+    { 'LICENSE.md': 'MIT text', COPYING: 'not this one', NOTICE: 'notice text' }
+  );
+  const files = await downloadExternalSkill(manifest, fetchImpl);
+  assert.deepEqual(Object.keys(files).sort(), ['LICENSE.md', 'NOTICE', 'SKILL.md']);
+  assert.equal(files['LICENSE.md'].content.toString(), 'MIT text');
+  assert.equal(files.NOTICE.content.toString(), 'notice text');
+  assert.equal(files['LICENSE.md'].executable, false);
+});
+
+test('a skill that ships its own LICENSE gets nothing from the root', async () => {
+  const { fetchImpl, calls } = fakeGitHubWithRoot(
+    { 'SKILL.md': { content: 'x' }, LICENSE: { content: 'own' }, NOTICE: { content: 'own notice' } },
+    { LICENSE: 'root' }
+  );
+  const files = await downloadExternalSkill(manifest, fetchImpl);
+  assert.equal(files.LICENSE.content.toString(), 'own');
+  assert.ok(!calls.some((u) => u.endsWith(`${COMMIT}/LICENSE`)), 'the root is not probed');
+});
+
+test('a LICENSE that include leaves out is still installed, checked against the tree', async () => {
+  const m = validateManifest({ ...manifest, include: ['SKILL.md'] });
+  const ok = fakeGitHubWithRoot({ 'SKILL.md': { content: 'x' }, LICENSE: { content: 'folder' } }, { LICENSE: 'root' });
+  const files = await downloadExternalSkill(m, ok.fetchImpl);
+  assert.equal(files.LICENSE.content.toString(), 'folder');
+
+  const bad = fakeGitHub({ 'SKILL.md': { content: 'x' }, LICENSE: { content: 'folder' } }, { tamper: 'LICENSE' });
+  await assert.rejects(downloadExternalSkill(m, bad.fetchImpl), /LICENSE does not match/);
+});
+
+test('no licence anywhere installs the skill as before', async () => {
+  const { fetchImpl } = fakeGitHubWithRoot({ 'SKILL.md': { content: 'x' } }, {});
+  const files = await downloadExternalSkill(manifest, fetchImpl);
+  assert.deepEqual(Object.keys(files), ['SKILL.md']);
+});

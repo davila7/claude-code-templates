@@ -10,6 +10,30 @@
 
 <h1 align="center">Claude Code Templates</h1>
 
+<p align="center"><sub>SUPPORTED BY</sub></p>
+
+<p align="center">
+  <a href="https://www.nvidia.com/en-us/startups/"><picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/readme/supporters/nvidia-dark.svg" />
+    <img src="docs/images/readme/supporters/nvidia-light.svg" alt="NVIDIA Inception" height="28" />
+  </picture></a>
+  &nbsp;&nbsp;&nbsp;
+  <a href="https://claude.com/contact-sales/claude-for-oss"><picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/readme/supporters/claude-dark.svg" />
+    <img src="docs/images/readme/supporters/claude-light.svg" alt="Claude for Open Source" height="28" />
+  </picture></a>
+  &nbsp;&nbsp;&nbsp;
+  <a href="https://vercel.com/oss"><picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/readme/supporters/vercel-dark.svg" />
+    <img src="docs/images/readme/supporters/vercel-light.svg" alt="Vercel OSS" height="28" />
+  </picture></a>
+  &nbsp;&nbsp;&nbsp;
+  <a href="https://get.neon.com/4eCjZDz"><picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/readme/supporters/neon-dark.svg" />
+    <img src="docs/images/readme/supporters/neon-light.svg" alt="Neon Open Source" height="28" />
+  </picture></a>
+</p>
+
 <p align="center">
   An open catalog of components for Claude Code, installable with one command.
 </p>

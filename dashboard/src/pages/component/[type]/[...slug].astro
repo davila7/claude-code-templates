@@ -462,7 +462,6 @@ const componentSchema = component
             <p class="lg:hidden -mt-2 font-mono text-[12.5px] leading-relaxed text-[var(--color-text-tertiary)]">
               {(component.downloads ?? 0) > 0 && `${formatCount(component.downloads ?? 0, 'download', 'downloads')} · `}
               {metaFiles.length > 0 && `${formatCount(fileTotals.files, 'file', 'files')} · ${formatBytes(fileTotals.bytes)} · `}
-              {pageMeta?.addedAt && `${formatDate(pageMeta.addedAt)} · `}
               <a href={sourceUrl} data-outbound="source" target="_blank" rel="noopener noreferrer" class="text-[var(--color-accent)] whitespace-nowrap">Source ↗</a>
             </p>
 
@@ -532,9 +531,6 @@ const componentSchema = component
                 </li>
                 {metaFiles.length > 0 && (
                   <li><b class="font-medium text-[var(--color-text-primary)]">{formatCount(fileTotals.files, 'file', 'files')}</b> · {formatBytes(fileTotals.bytes)}</li>
-                )}
-                {pageMeta?.addedAt && (
-                  <li>Added {formatDate(pageMeta.addedAt)}</li>
                 )}
                 <li>
                   <a href={sourceUrl} data-outbound="source" target="_blank" rel="noopener noreferrer" class="text-[var(--color-accent)] hover:underline underline-offset-4">View source on GitHub</a>
@@ -644,7 +640,7 @@ const componentSchema = component
                       )}
                       <span class="flex-1 md:hidden"></span>
                       <a href={`${REPO_URL}/commit/${lastCommit.sha}`} data-outbound="commit" target="_blank" rel="noopener noreferrer" class="shrink-0 text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)]">
-                        <span class="hidden md:inline font-mono text-[12px] mr-2">{lastCommit.sha.slice(0, 7)}</span>{formatDate(lastCommit.date)}
+                        <span class="font-mono text-[12px]">{lastCommit.sha.slice(0, 7)}</span>
                       </a>
                     </div>
                   )}
