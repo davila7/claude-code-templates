@@ -23,6 +23,8 @@ The script resolves your repository's current commit, checks the license and wri
 
 Limits after filtering: 200 files and 5 MB.
 
+Your LICENSE (and NOTICE, if you have one) is installed with the skill even when it sits at the root of your repository, outside `path`, and even when `include` leaves it out. A LICENSE inside the skill folder wins over the root one.
+
 ## Updating
 
 A new commit in your repository does not reach users on its own. Open a pull request that moves `commit`. A weekly job opens an issue listing skills whose upstream has newer commits.

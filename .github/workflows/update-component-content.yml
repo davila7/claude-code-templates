@@ -53,6 +53,13 @@ jobs:
         uses: actions/checkout@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          # Latest main, not the commit that triggered the run: runs queue in
+          # the concurrency group, and one that regenerated from its own older
+          # commit conflicted on `git pull --rebase` with the catalog commit
+          # the run before it had pushed (the BrewPage and ScrapingBee runs,
+          # 2026-11-15). The generator rebuilds everything, so the newest tree
+          # is always the right input.
+          ref: main
           # Full history (trees only) for each component's last commit and
           # date added on its page; a shallow clone keeps the previous values.
           fetch-depth: 0
@@ -92,27 +99,42 @@ jobs:
       - name: Refresh the docs tables (component counts) for docs.aitmpl.com
         run: python docs-site/scripts/generate_snippets.py
 
-      - name: Stage generated data and check for changes
+      # The generated files are single-line JSON blobs, so two commits that
+      # both touch them always conflict on a rebase. They are also fully
+      # reproducible, so when main moves during the run (another catalog
+      # commit, the daily cron, a maintainer PR that ships its own catalog)
+      # this regenerates on the new main and pushes again instead of
+      # rebasing, the same loop update-json-data.yml uses.
+      - name: Commit and push the generated data
         id: check_changes
-        run: |
-          git add -A -- $DATA_PATHS
-          if git diff --cached --quiet -- $DATA_PATHS; then
-            echo "No changes in the generated data."
-          else
-            echo "changed=true" >> $GITHUB_OUTPUT
-            git diff --cached --stat -- $DATA_PATHS
-          fi
-
-      - name: Commit and push changes
-        if: steps.check_changes.outputs.changed == 'true'
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git commit -m "chore: Update component content
+          for attempt in 1 2 3 4 5; do
+            if [ "$attempt" -gt 1 ]; then
+              git fetch origin main
+              git reset --hard origin/main
+              python scripts/generate_components_json.py --skip-downloads
+              python docs-site/scripts/generate_snippets.py
+            fi
+            git add -A -- $DATA_PATHS
+            if git diff --cached --quiet -- $DATA_PATHS; then
+              echo "No changes in the generated data."
+              exit 0
+            fi
+            git diff --cached --stat -- $DATA_PATHS
+            git commit -m "chore: Update component content
 
           🤖 Generated with [GitHub Actions](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
-          git pull --rebase origin main
-          git push
+            if git push origin HEAD:main; then
+              echo "changed=true" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+            echo "Push rejected (main moved), regenerating on the new main ($attempt/5)"
+            sleep $((attempt * 10))
+          done
+          echo "::error::Could not push the regenerated catalog after 5 attempts"
+          exit 1
 
       # The push above uses GITHUB_TOKEN, which GitHub never lets trigger
       # another workflow, so deploy.yml's `push: dashboard/**` does not fire
