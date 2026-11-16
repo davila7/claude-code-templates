@@ -6,7 +6,7 @@ import { NOINDEX_HEADER, isNoindexPath } from './lib/robots';
 /**
  * Injects Cloudflare Pages runtime env bindings into process.env so that
  * API routes and libs can use `import.meta.env.X || process.env.X` as a
- * unified pattern that works on both Vercel (Node.js) and Cloudflare Pages.
+ * unified pattern that works in local dev (Node.js) and on Cloudflare Pages.
  *
  * On Cloudflare Pages, secrets set via `wrangler pages secret put` are
  * available only through `context.locals.runtime.env`, not process.env.

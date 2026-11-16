@@ -28,8 +28,7 @@ cd dashboard && npx wrangler pages deploy dist --project-name=aitmpl-dashboard  
 ```
 
 > Deploys to production happen automatically via GitHub Actions on push to `main`
-> (changes in `dashboard/**`). Manual deploy uses `wrangler pages deploy`, not Vercel.
-> The root `npm run deploy` / `deploy:dashboard` still call `scripts/deploy.sh`, which is a stale **Vercel** deploy: do not use them.
+> (changes in `dashboard/**`). Manual deploy uses `wrangler pages deploy`. Nothing runs on Vercel any more: the aitmpl.com domains were removed from the old Vercel project on 2026-11-16.
 
 ## Security Guidelines
 
@@ -454,9 +453,9 @@ The `cloudflare-workers/` directory contains Cloudflare Worker projects that run
 
 ### crons
 
-Replaces the old Vercel cron jobs. On a schedule it calls the dashboard API endpoints (which stay on Cloudflare Pages) with a shared `TRIGGER_SECRET`.
+On a schedule it calls the dashboard API endpoints (which stay on Cloudflare Pages) with a shared `TRIGGER_SECRET`.
 
-- `0 * * * *` → `/api/health-check` (hourly; was every 15 min on Vercel, reduced to save invocations)
+- `0 * * * *` → `/api/health-check` (hourly)
 
 Errors and cron check-ins are reported to Sentry (`sentry.js`, DSN from the `aitmpl-workers` project — see Error Tracking below).
 
@@ -510,7 +509,7 @@ GA_PROPERTY_ID              # GA4 property ID (optional)
 GA_SERVICE_ACCOUNT_JSON     # Base64 service account (optional)
 ```
 
-**Graceful degradation:** Each source catches its own errors. Missing secrets or API failures show `⚠️ Unavailable` instead of crashing the report. Failed collectors are also reported to Sentry via `sentry.js` (see Error Tracking below). The Vercel collector was removed (2026-07) since the dashboard no longer deploys to Vercel.
+**Graceful degradation:** Each source catches its own errors. Missing secrets or API failures show `⚠️ Unavailable` instead of crashing the report. Failed collectors are also reported to Sentry via `sentry.js` (see Error Tracking below).
 
 ### newsletter (Weekly Community Components Email) — PAUSED 2026-09-20
 
@@ -623,7 +622,7 @@ A single Cloudflare Pages project (`aitmpl-dashboard`) serves all domains. Confi
 
 ### Deployment
 
-Deploying = merging to `main`. The deployer agent (`.claude/agents/deployer.md`) only verifies and troubleshoots deploy runs. Manual deploy only when CI cannot: `cd dashboard && npm run build && npx wrangler pages deploy dist --project-name=aitmpl-dashboard`. Root `npm run deploy` is the stale Vercel script.
+Deploying = merging to `main`. The deployer agent (`.claude/agents/deployer.md`) only verifies and troubleshoots deploy runs. Manual deploy only when CI cannot: `cd dashboard && npm run build && npx wrangler pages deploy dist --project-name=aitmpl-dashboard`.
 
 **CI/CD**: Pushes to `main` auto-deploy via GitHub Actions (`.github/workflows/deploy.yml`):
 - Changes in `dashboard/**` trigger tests, a build and `wrangler pages deploy dist --project-name=aitmpl-dashboard`
