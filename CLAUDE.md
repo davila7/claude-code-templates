@@ -472,6 +472,10 @@ npx wrangler deploy  # Deploy
 
 **Secrets (Cloudflare):** `DASHBOARD_URL` (e.g. `https://www.aitmpl.com`), `TRIGGER_SECRET`, `SENTRY_DSN` (optional).
 
+### mcp (aitmpl MCP server, mcp.aitmpl.com)
+
+Remote MCP server for the catalog (`cloudflare-workers/mcp/`, worker `aitmpl-mcp`, added 2026-11-16): `https://mcp.aitmpl.com/mcp`, Streamable HTTP, no auth, four read-only tools (`search_components`, `get_component`, `get_install_command`, `list_categories`). Built on Cloudflare's stateless `createMcpHandler` (`agents/mcp/server`) + MCP SDK v2 (`@modelcontextprotocol/server`, the exact version `agents` peers on). It reads only `/api/v1/` + `components/plugins.json` + `component-content/` from www.aitmpl.com, so a change to those shapes must keep it working (`cloudflare-workers/mcp/test/smoke.mjs`). It installs nothing: it returns the CLI command (`--yes`) and the client runs it. Search uses the CLI `--search` scoring (keep `scoreComponent` in sync with `cli-tool/src/catalog-lookup.js`); never let downloads, scans or ads change the order. Every tool needs `title`, `readOnlyHint`/`destructiveHint`, `outputSchema` + `structuredContent` (Anthropic directory requirements). Deploy by hand: `cd cloudflare-workers/mcp && npx wrangler deploy && node test/smoke.mjs https://mcp.aitmpl.com/mcp`. Docs: `docs-site/developers/mcp-server.mdx`; privacy: `/privacy#mcp-server`; catalog entry `mcps/devtools/aitmpl`.
+
 ### docs-monitor (DECOMMISSIONED 2026-07)
 
 Monitored https://code.claude.com/docs hourly with Telegram notifications. **Deleted from Cloudflare** to free a cron-trigger slot for the newsletter worker (the account's free plan allows 5 cron triggers total). The code remains in `cloudflare-workers/docs-monitor/` and can be redeployed if a slot frees up (`npx wrangler deploy`).
