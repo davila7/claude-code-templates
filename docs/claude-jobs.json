@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-11-15T03:15:22.115352+00:00",
-  "totalJobs": 876,
+  "lastUpdated": "2026-11-16T03:17:30.031832+00:00",
+  "totalJobs": 880,
   "sources": [
     "Anthropic",
     "Ashby",
@@ -24,7 +24,7 @@
       "applyUrl": "https://job-boards.greenhouse.io/deliveroo/jobs/8205846",
       "source": "Greenhouse",
       "sourceUrl": "https://job-boards.greenhouse.io/deliveroo/jobs/8205846",
-      "postedAt": "2026-11-14T22:14:06-05:00",
+      "postedAt": "2026-11-15T22:15:44-05:00",
       "tags": [
         "Claude Code",
         "Python",
@@ -33,6 +33,451 @@
         "Kubernetes",
         "Cursor",
         "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-binance-5025783101",
+      "company": "Binance",
+      "position": "Full Stack Engineer - Recommendation Engine (APAC Remote)",
+      "location": "Hong Kong · Japan · Singapore · Taiwan",
+      "locations": [
+        "Hong Kong",
+        "Japan",
+        "Singapore",
+        "Taiwan"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Binance is a leading global blockchain ecosystem behind the world’s largest cryptocurrency exchange by trading volume and registered users. We are trusted by 300+ million people in 100+ countries for our industry-leading security, user fund transparency, trading engine speed, deep liquidity, and an...",
+      "applyUrl": "https://job-boards.eu.greenhouse.io/binance/jobs/5025783101",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.eu.greenhouse.io/binance/jobs/5025783101",
+      "postedAt": "2026-11-15T21:47:43-05:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "Go",
+        "Cursor",
+        "Copilot",
+        "Java"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-binance-5028202101",
+      "company": "Binance",
+      "position": "Fullstack Engineer - Square (APAC Remote)",
+      "location": "Hong Kong · Singapore · Taiwan",
+      "locations": [
+        "Hong Kong",
+        "Singapore",
+        "Taiwan"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Binance is a leading global blockchain ecosystem behind the world’s largest cryptocurrency exchange by trading volume and registered users. We are trusted by 300+ million people in 100+ countries for our industry-leading security, user fund transparency, trading engine speed, deep liquidity, and an...",
+      "applyUrl": "https://job-boards.eu.greenhouse.io/binance/jobs/5028202101",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.eu.greenhouse.io/binance/jobs/5028202101",
+      "postedAt": "2026-11-15T21:47:43-05:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "Go",
+        "Cursor",
+        "Copilot",
+        "Java",
+        "Vue.js",
+        "Redis",
+        "MySQL"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-binance-5004445101",
+      "company": "Binance",
+      "position": "Data Analyst (12 months contract)",
+      "location": "Hong Kong · Malaysia · Singapore",
+      "locations": [
+        "Hong Kong",
+        "Malaysia",
+        "Singapore"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Binance is a leading global blockchain ecosystem behind the world’s largest cryptocurrency exchange by trading volume and registered users. We are trusted by 300+ million people in 100+ countries for our industry-leading security, user fund transparency, trading engine speed, deep liquidity, and an...",
+      "applyUrl": "https://job-boards.eu.greenhouse.io/binance/jobs/5004445101",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.eu.greenhouse.io/binance/jobs/5004445101",
+      "postedAt": "2026-11-15T21:47:39-05:00",
+      "tags": [
+        "Claude Code",
+        "Python"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-binance-5005781101",
+      "company": "Binance",
+      "position": "Fullstack Engineer",
+      "location": "Hong Kong",
+      "locations": [
+        "Hong Kong"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Binance is a leading global blockchain ecosystem behind the world’s largest cryptocurrency exchange by trading volume and registered users. We are trusted by 300+ million people in 100+ countries for our industry-leading security, user fund transparency, trading engine speed, deep liquidity, and an...",
+      "applyUrl": "https://job-boards.eu.greenhouse.io/binance/jobs/5005781101",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.eu.greenhouse.io/binance/jobs/5005781101",
+      "postedAt": "2026-11-15T21:47:39-05:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "Go",
+        "Node.js",
+        "Cursor",
+        "Copilot",
+        "Java"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-binance-5007086101",
+      "company": "Binance",
+      "position": "Full Stack Engineer (Web,Frontend Oriented) — AI Facial Recognition, Identity & Security",
+      "location": "Australia · Hong Kong · New Zealand · Singapore · Taiwan · United Arab Emirates",
+      "locations": [
+        "Australia",
+        "Hong Kong",
+        "New Zealand",
+        "Singapore",
+        "Taiwan",
+        "United Arab Emirates"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Binance is a leading global blockchain ecosystem behind the world’s largest cryptocurrency exchange by trading volume and registered users. We are trusted by 300+ million people in 100+ countries for our industry-leading security, user fund transparency, trading engine speed, deep liquidity, and an...",
+      "applyUrl": "https://job-boards.eu.greenhouse.io/binance/jobs/5007086101",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.eu.greenhouse.io/binance/jobs/5007086101",
+      "postedAt": "2026-11-15T21:47:39-05:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "TypeScript",
+        "JavaScript",
+        "Node.js",
+        "Cursor",
+        "Copilot"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-binance-5002673101",
+      "company": "Binance",
+      "position": "Java Backend Engineer, Global Travel Rule (GTR)",
+      "location": "Hong Kong · Singapore",
+      "locations": [
+        "Hong Kong",
+        "Singapore"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Binance is a leading global blockchain ecosystem behind the world’s largest cryptocurrency exchange by trading volume and registered users. We are trusted by 300+ million people in 100+ countries for our industry-leading security, user fund transparency, trading engine speed, deep liquidity, and an...",
+      "applyUrl": "https://job-boards.eu.greenhouse.io/binance/jobs/5002673101",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.eu.greenhouse.io/binance/jobs/5002673101",
+      "postedAt": "2026-11-15T21:47:37-05:00",
+      "tags": [
+        "Claude Code",
+        "AWS",
+        "Java"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-binance-5002609101",
+      "company": "Binance",
+      "position": "Pioneer Talent Program - Applied AI Agent/AI Productivity Engineer (Fully Remote) ",
+      "location": "Australia · Hong Kong · Malaysia · New Zealand · Singapore · Taiwan",
+      "locations": [
+        "Australia",
+        "Hong Kong",
+        "Malaysia",
+        "New Zealand",
+        "Singapore",
+        "Taiwan"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Binance is a leading global blockchain ecosystem behind the world’s largest cryptocurrency exchange by trading volume and registered users. We are trusted by 300+ million people in 100+ countries for our industry-leading security, user fund transparency, trading engine speed, deep liquidity, and an...",
+      "applyUrl": "https://job-boards.eu.greenhouse.io/binance/jobs/5002609101",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.eu.greenhouse.io/binance/jobs/5002609101",
+      "postedAt": "2026-11-15T21:47:36-05:00",
+      "tags": [
+        "TypeScript",
+        "JavaScript",
+        "Python",
+        "Go",
+        "Java",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-binance-5002565101",
+      "company": "Binance",
+      "position": "Pioneer Talent Program - Research Data Scientist (APAC Remote)",
+      "location": "Hong Kong · Singapore · Taiwan",
+      "locations": [
+        "Hong Kong",
+        "Singapore",
+        "Taiwan"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Binance is a leading global blockchain ecosystem behind the world’s largest cryptocurrency exchange by trading volume and registered users. We are trusted by 300+ million people in 100+ countries for our industry-leading security, user fund transparency, trading engine speed, deep liquidity, and an...",
+      "applyUrl": "https://job-boards.eu.greenhouse.io/binance/jobs/5002565101",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.eu.greenhouse.io/binance/jobs/5002565101",
+      "postedAt": "2026-11-15T21:47:36-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Cursor",
+        "Copilot"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-opswat-4731624005",
+      "company": "OPSWAT",
+      "position": "Senior AI Engineer, Marketing",
+      "location": "Ho Chi Minh City, Ho Chi Minh City, Vietnam",
+      "locations": [
+        "Ho Chi Minh City, Ho Chi Minh City, Vietnam"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "OPSWAT , a global leader in IT, OT , and ICS critical infrastructure cybersecurity, delivers an end-to-end platform that gives public and private sector organizations and enterprises the critical advantage needed to protect their complex networks, secure their devices, and ensure compliance. Over...",
+      "applyUrl": "https://www.opswat.com/jobs/4731624005?gh_jid=4731624005",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.opswat.com/jobs/4731624005?gh_jid=4731624005",
+      "postedAt": "2026-11-15T19:23:08-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "PostgreSQL",
+        "AWS",
+        "Azure",
+        "Cursor",
+        "Copilot",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-opswat-4724688005",
+      "company": "OPSWAT",
+      "position": "AI-Native Software Engineer - MD Core",
+      "location": "Ho Chi Minh City, Ho Chi Minh City, Vietnam",
+      "locations": [
+        "Ho Chi Minh City, Ho Chi Minh City, Vietnam"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "OPSWAT , a global leader in IT, OT , and ICS critical infrastructure cybersecurity, delivers an end-to-end platform that gives public and private sector organizations and enterprises the critical advantage needed to protect their complex networks, secure their devices, and ensure compliance. Over...",
+      "applyUrl": "https://www.opswat.com/jobs/4724688005?gh_jid=4724688005",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.opswat.com/jobs/4724688005?gh_jid=4724688005",
+      "postedAt": "2026-11-15T19:06:01-05:00",
+      "tags": [
+        "Claude Code",
+        "Rust",
+        "PostgreSQL",
+        "Copilot",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-opswat-4448237005",
+      "company": "OPSWAT",
+      "position": "SDET - Secure File Gateway",
+      "location": "Ho Chi Minh City, Ho Chi Minh City, Vietnam",
+      "locations": [
+        "Ho Chi Minh City, Ho Chi Minh City, Vietnam"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "OPSWAT , a global leader in IT, OT , and ICS critical infrastructure cybersecurity, delivers an end-to-end platform that gives public and private sector organizations and enterprises the critical advantage needed to protect their complex networks, secure their devices, and ensure compliance. Over...",
+      "applyUrl": "https://www.opswat.com/jobs/4448237005?gh_jid=4448237005",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.opswat.com/jobs/4448237005?gh_jid=4448237005",
+      "postedAt": "2026-11-15T19:06:01-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Cursor",
+        "Copilot",
+        "Java"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-opswat-4627720005",
+      "company": "OPSWAT",
+      "position": "Software Engineer C++",
+      "location": "Ho Chi Minh City, Ho Chi Minh City, Vietnam",
+      "locations": [
+        "Ho Chi Minh City, Ho Chi Minh City, Vietnam"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "OPSWAT , a global leader in IT, OT , and ICS critical infrastructure cybersecurity, delivers an end-to-end platform that gives public and private sector organizations and enterprises the critical advantage needed to protect their complex networks, secure their devices, and ensure compliance. Over...",
+      "applyUrl": "https://www.opswat.com/jobs/4627720005?gh_jid=4627720005",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.opswat.com/jobs/4627720005?gh_jid=4627720005",
+      "postedAt": "2026-11-15T19:06:01-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Docker",
+        "Copilot",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-opswat-4302497005",
+      "company": "OPSWAT",
+      "position": "AI Native Software Engineer - Secure File Gateway",
+      "location": "Ho Chi Minh City, Ho Chi Minh City, Vietnam",
+      "locations": [
+        "Ho Chi Minh City, Ho Chi Minh City, Vietnam"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "OPSWAT , a global leader in IT, OT , and ICS critical infrastructure cybersecurity, delivers an end-to-end platform that gives public and private sector organizations and enterprises the critical advantage needed to protect their complex networks, secure their devices, and ensure compliance. Over...",
+      "applyUrl": "https://www.opswat.com/jobs/4302497005?gh_jid=4302497005",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.opswat.com/jobs/4302497005?gh_jid=4302497005",
+      "postedAt": "2026-11-15T19:06:00-05:00",
+      "tags": [
+        "Claude Code",
+        "Rust",
+        "PostgreSQL",
+        "Java"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-opswat-4527452005",
+      "company": "OPSWAT",
+      "position": "Associate DevOps Engineer",
+      "location": "Ho Chi Minh City, Ho Chi Minh City, Vietnam",
+      "locations": [
+        "Ho Chi Minh City, Ho Chi Minh City, Vietnam"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "OPSWAT , a global leader in IT, OT , and ICS critical infrastructure cybersecurity, delivers an end-to-end platform that gives public and private sector organizations and enterprises the critical advantage needed to protect their complex networks, secure their devices, and ensure compliance. Over...",
+      "applyUrl": "https://www.opswat.com/jobs/4527452005?gh_jid=4527452005",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.opswat.com/jobs/4527452005?gh_jid=4527452005",
+      "postedAt": "2026-11-15T19:06:00-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "AWS",
+        "Docker",
+        "Kubernetes",
+        "Cursor",
+        "Copilot",
+        "Redis",
+        "MongoDB",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-opswat-4745443005",
+      "company": "OPSWAT",
+      "position": "Senior Agentic Software Engineer - Sales",
+      "location": "Ho Chi Minh City, Ho Chi Minh City, Vietnam",
+      "locations": [
+        "Ho Chi Minh City, Ho Chi Minh City, Vietnam"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "OPSWAT , a global leader in IT, OT , and ICS critical infrastructure cybersecurity, delivers an end-to-end platform that gives public and private sector organizations and enterprises the critical advantage needed to protect their complex networks, secure their devices, and ensure compliance. Over...",
+      "applyUrl": "https://www.opswat.com/jobs/4745443005?gh_jid=4745443005",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.opswat.com/jobs/4745443005?gh_jid=4745443005",
+      "postedAt": "2026-11-15T19:06:00-05:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "TypeScript",
+        "Python",
+        "PostgreSQL",
+        "AWS",
+        "Azure",
+        "Cursor",
+        "Copilot",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-opswat-4576146005",
+      "company": "OPSWAT",
+      "position": "Software Engineering Intern",
+      "location": "Ho Chi Minh City, Ho Chi Minh City, Vietnam",
+      "locations": [
+        "Ho Chi Minh City, Ho Chi Minh City, Vietnam"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "OPSWAT , a global leader in IT, OT , and ICS critical infrastructure cybersecurity, delivers an end-to-end platform that gives public and private sector organizations and enterprises the critical advantage needed to protect their complex networks, secure their devices, and ensure compliance. Over...",
+      "applyUrl": "https://www.opswat.com/jobs/4576146005?gh_jid=4576146005",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.opswat.com/jobs/4576146005?gh_jid=4576146005",
+      "postedAt": "2026-11-15T19:06:00-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Copilot"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-opswat-4750935005",
+      "company": "OPSWAT",
+      "position": "Software Engineer - SBOM",
+      "location": "Ho Chi Minh City, Ho Chi Minh City, Vietnam",
+      "locations": [
+        "Ho Chi Minh City, Ho Chi Minh City, Vietnam"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "OPSWAT , a global leader in IT, OT , and ICS critical infrastructure cybersecurity, delivers an end-to-end platform that gives public and private sector organizations and enterprises the critical advantage needed to protect their complex networks, secure their devices, and ensure compliance. Over...",
+      "applyUrl": "https://www.opswat.com/jobs/4750935005?gh_jid=4750935005",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.opswat.com/jobs/4750935005?gh_jid=4750935005",
+      "postedAt": "2026-11-15T19:05:59-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Rust",
+        "Go",
+        "Docker",
+        "Cursor",
+        "Copilot",
+        "Java"
       ],
       "companyIcon": ""
     },
@@ -645,28 +1090,6 @@
         "MCP"
       ],
       "companyIcon": ""
-    },
-    {
-      "id": "anth-5428790008",
-      "company": "Anthropic",
-      "position": "Sales Enablement Trainer, Claude Products",
-      "location": "San Francisco, CA · New York City, NY",
-      "locations": [
-        "San Francisco, CA",
-        "New York City, NY"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "As a Sales Enablement Trainer, Claude Products, you'll teach Anthropic's global sales team how to use our products, both to do their own work better and to position Claude credibly with customers. Anthropic ships quickly, and the surface area of what we build is growing faster than any individual...",
-      "applyUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5428790008",
-      "source": "Anthropic",
-      "sourceUrl": "https://job-boards.greenhouse.io/anthropic/jobs/5428790008",
-      "postedAt": "2026-11-13T14:22:16-05:00",
-      "tags": [
-        "Claude Code",
-        "Anthropic"
-      ],
-      "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
       "id": "le-provectus-643bfee8-9c9d-4281-b017-61c8a4e41957",
@@ -1408,222 +1831,6 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-binance-5028202101",
-      "company": "Binance",
-      "position": "Fullstack Engineer - Square (APAC Remote)",
-      "location": "Hong Kong · Singapore · Taiwan",
-      "locations": [
-        "Hong Kong",
-        "Singapore",
-        "Taiwan"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "Binance is a leading global blockchain ecosystem behind the world’s largest cryptocurrency exchange by trading volume and registered users. We are trusted by 300+ million people in 100+ countries for our industry-leading security, user fund transparency, trading engine speed, deep liquidity, and an...",
-      "applyUrl": "https://job-boards.eu.greenhouse.io/binance/jobs/5028202101",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.eu.greenhouse.io/binance/jobs/5028202101",
-      "postedAt": "2026-11-13T05:13:04-05:00",
-      "tags": [
-        "Claude Code",
-        "React",
-        "Go",
-        "Cursor",
-        "Copilot",
-        "Java",
-        "Vue.js",
-        "Redis",
-        "MySQL"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-binance-5025783101",
-      "company": "Binance",
-      "position": "Full Stack Engineer - Recommendation Engine (APAC Remote)",
-      "location": "Hong Kong · Japan · Singapore · Taiwan",
-      "locations": [
-        "Hong Kong",
-        "Japan",
-        "Singapore",
-        "Taiwan"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "Binance is a leading global blockchain ecosystem behind the world’s largest cryptocurrency exchange by trading volume and registered users. We are trusted by 300+ million people in 100+ countries for our industry-leading security, user fund transparency, trading engine speed, deep liquidity, and an...",
-      "applyUrl": "https://job-boards.eu.greenhouse.io/binance/jobs/5025783101",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.eu.greenhouse.io/binance/jobs/5025783101",
-      "postedAt": "2026-11-13T05:13:03-05:00",
-      "tags": [
-        "Claude Code",
-        "React",
-        "Go",
-        "Cursor",
-        "Copilot",
-        "Java"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-binance-5005781101",
-      "company": "Binance",
-      "position": "Fullstack Engineer",
-      "location": "Hong Kong",
-      "locations": [
-        "Hong Kong"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "Binance is a leading global blockchain ecosystem behind the world’s largest cryptocurrency exchange by trading volume and registered users. We are trusted by 300+ million people in 100+ countries for our industry-leading security, user fund transparency, trading engine speed, deep liquidity, and an...",
-      "applyUrl": "https://job-boards.eu.greenhouse.io/binance/jobs/5005781101",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.eu.greenhouse.io/binance/jobs/5005781101",
-      "postedAt": "2026-11-13T05:13:00-05:00",
-      "tags": [
-        "Claude Code",
-        "React",
-        "Go",
-        "Node.js",
-        "Cursor",
-        "Copilot",
-        "Java"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-binance-5007086101",
-      "company": "Binance",
-      "position": "Full Stack Engineer (Web,Frontend Oriented) — AI Facial Recognition, Identity & Security",
-      "location": "Australia · Hong Kong · New Zealand · Singapore · Taiwan · United Arab Emirates",
-      "locations": [
-        "Australia",
-        "Hong Kong",
-        "New Zealand",
-        "Singapore",
-        "Taiwan",
-        "United Arab Emirates"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "Binance is a leading global blockchain ecosystem behind the world’s largest cryptocurrency exchange by trading volume and registered users. We are trusted by 300+ million people in 100+ countries for our industry-leading security, user fund transparency, trading engine speed, deep liquidity, and an...",
-      "applyUrl": "https://job-boards.eu.greenhouse.io/binance/jobs/5007086101",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.eu.greenhouse.io/binance/jobs/5007086101",
-      "postedAt": "2026-11-13T05:13:00-05:00",
-      "tags": [
-        "Claude Code",
-        "React",
-        "TypeScript",
-        "JavaScript",
-        "Node.js",
-        "Cursor",
-        "Copilot"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-binance-5004445101",
-      "company": "Binance",
-      "position": "Data Analyst (12 months contract)",
-      "location": "Hong Kong · Malaysia · Singapore",
-      "locations": [
-        "Hong Kong",
-        "Malaysia",
-        "Singapore"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "Binance is a leading global blockchain ecosystem behind the world’s largest cryptocurrency exchange by trading volume and registered users. We are trusted by 300+ million people in 100+ countries for our industry-leading security, user fund transparency, trading engine speed, deep liquidity, and an...",
-      "applyUrl": "https://job-boards.eu.greenhouse.io/binance/jobs/5004445101",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.eu.greenhouse.io/binance/jobs/5004445101",
-      "postedAt": "2026-11-13T05:12:59-05:00",
-      "tags": [
-        "Claude Code",
-        "Python"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-binance-5002673101",
-      "company": "Binance",
-      "position": "Java Backend Engineer, Global Travel Rule (GTR)",
-      "location": "Hong Kong · Singapore",
-      "locations": [
-        "Hong Kong",
-        "Singapore"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "Binance is a leading global blockchain ecosystem behind the world’s largest cryptocurrency exchange by trading volume and registered users. We are trusted by 300+ million people in 100+ countries for our industry-leading security, user fund transparency, trading engine speed, deep liquidity, and an...",
-      "applyUrl": "https://job-boards.eu.greenhouse.io/binance/jobs/5002673101",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.eu.greenhouse.io/binance/jobs/5002673101",
-      "postedAt": "2026-11-13T05:12:58-05:00",
-      "tags": [
-        "Claude Code",
-        "AWS",
-        "Java"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-binance-5002609101",
-      "company": "Binance",
-      "position": "Pioneer Talent Program - Applied AI Agent/AI Productivity Engineer (Fully Remote) ",
-      "location": "Australia · Hong Kong · Malaysia · New Zealand · Singapore · Taiwan",
-      "locations": [
-        "Australia",
-        "Hong Kong",
-        "Malaysia",
-        "New Zealand",
-        "Singapore",
-        "Taiwan"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "Binance is a leading global blockchain ecosystem behind the world’s largest cryptocurrency exchange by trading volume and registered users. We are trusted by 300+ million people in 100+ countries for our industry-leading security, user fund transparency, trading engine speed, deep liquidity, and an...",
-      "applyUrl": "https://job-boards.eu.greenhouse.io/binance/jobs/5002609101",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.eu.greenhouse.io/binance/jobs/5002609101",
-      "postedAt": "2026-11-13T05:12:57-05:00",
-      "tags": [
-        "TypeScript",
-        "JavaScript",
-        "Python",
-        "Go",
-        "Java",
-        "MCP"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-binance-5002565101",
-      "company": "Binance",
-      "position": "Pioneer Talent Program - Research Data Scientist (APAC Remote)",
-      "location": "Hong Kong · Singapore · Taiwan",
-      "locations": [
-        "Hong Kong",
-        "Singapore",
-        "Taiwan"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "Binance is a leading global blockchain ecosystem behind the world’s largest cryptocurrency exchange by trading volume and registered users. We are trusted by 300+ million people in 100+ countries for our industry-leading security, user fund transparency, trading engine speed, deep liquidity, and an...",
-      "applyUrl": "https://job-boards.eu.greenhouse.io/binance/jobs/5002565101",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.eu.greenhouse.io/binance/jobs/5002565101",
-      "postedAt": "2026-11-13T05:12:56-05:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "Cursor",
-        "Copilot"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "gr-beauhurst-8375802002",
       "company": "Beauhurst",
       "position": "Junior Web Developer",
@@ -1739,19 +1946,19 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-celonis-8173186003",
+      "id": "gr-celonis-7815061003",
       "company": "Celonis",
       "position": "Lead Deployment Engineer",
-      "location": "Raleigh, US, North Carolina",
+      "location": "Bangalore, India",
       "locations": [
-        "Raleigh, US, North Carolina"
+        "Bangalore, India"
       ],
       "remote": false,
       "salary": "",
       "description": "Celonis is the trusted platform to industrialize Enterprise AI. At our core is the Celonis Context Model — which combines process data, business knowledge, and intelligence into a living digital twin of the enterprise that AI can actually understand, turning AI's operational blind spots into...",
-      "applyUrl": "https://job-boards.greenhouse.io/celonis/jobs/8173186003?gh_jid=8173186003",
+      "applyUrl": "https://job-boards.greenhouse.io/celonis/jobs/7815061003?gh_jid=7815061003",
       "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/celonis/jobs/8173186003?gh_jid=8173186003",
+      "sourceUrl": "https://job-boards.greenhouse.io/celonis/jobs/7815061003?gh_jid=7815061003",
       "postedAt": "2026-11-13T04:05:26-05:00",
       "tags": [
         "Claude Code",
@@ -1779,35 +1986,6 @@
         "Claude Code",
         "Python",
         "Cursor"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-celonis-7997059003",
-      "company": "Celonis",
-      "position": "(Senior) Backend Software Engineer (Java) - Metadata Platform DB",
-      "location": "Munich, Germany",
-      "locations": [
-        "Munich, Germany"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "Celonis is the trusted platform to industrialize Enterprise AI. At our core is the Celonis Context Model — which combines process data, business knowledge, and intelligence into a living digital twin of the enterprise that AI can actually understand, turning AI's operational blind spots into...",
-      "applyUrl": "https://job-boards.greenhouse.io/celonis/jobs/7997059003?gh_jid=7997059003",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/celonis/jobs/7997059003?gh_jid=7997059003",
-      "postedAt": "2026-11-13T04:05:26-05:00",
-      "tags": [
-        "Claude Code",
-        "Rust",
-        "PostgreSQL",
-        "AWS",
-        "Azure",
-        "Docker",
-        "Kubernetes",
-        "Cursor",
-        "Java",
-        "MySQL"
       ],
       "companyIcon": ""
     },
@@ -1869,6 +2047,28 @@
       "applyUrl": "https://job-boards.greenhouse.io/celonis/jobs/8173282003?gh_jid=8173282003",
       "source": "Greenhouse",
       "sourceUrl": "https://job-boards.greenhouse.io/celonis/jobs/8173282003?gh_jid=8173282003",
+      "postedAt": "2026-11-13T04:05:26-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-celonis-8173340003",
+      "company": "Celonis",
+      "position": "Senior Deployment Engineer - Health and Life Sciences",
+      "location": "New York, US, New York",
+      "locations": [
+        "New York, US, New York"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Celonis is the trusted platform to industrialize Enterprise AI. At our core is the Celonis Context Model — which combines process data, business knowledge, and intelligence into a living digital twin of the enterprise that AI can actually understand, turning AI's operational blind spots into...",
+      "applyUrl": "https://job-boards.greenhouse.io/celonis/jobs/8173340003?gh_jid=8173340003",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/celonis/jobs/8173340003?gh_jid=8173340003",
       "postedAt": "2026-11-13T04:05:26-05:00",
       "tags": [
         "Claude Code",
@@ -1952,24 +2152,23 @@
       "companyIcon": "https://perplexity.ai/favicon.ico"
     },
     {
-      "id": "gr-opswat-4576146005",
-      "company": "OPSWAT",
-      "position": "Software Engineering Intern",
-      "location": "Ho Chi Minh City, Ho Chi Minh City, Vietnam",
+      "id": "le-loadsmart-57d9cbd4-cecd-4b9f-9b68-a6f1511b5415",
+      "company": "Loadsmart",
+      "position": "Growth Design Manager",
+      "location": "Chicago",
       "locations": [
-        "Ho Chi Minh City, Ho Chi Minh City, Vietnam"
+        "Chicago"
       ],
       "remote": false,
       "salary": "",
-      "description": "OPSWAT , a global leader in IT, OT , and ICS critical infrastructure cybersecurity, delivers an end-to-end platform that gives public and private sector organizations and enterprises the critical advantage needed to protect their complex networks, secure their devices, and ensure compliance. Over...",
-      "applyUrl": "https://www.opswat.com/jobs/4576146005?gh_jid=4576146005",
-      "source": "Greenhouse",
-      "sourceUrl": "https://www.opswat.com/jobs/4576146005?gh_jid=4576146005",
-      "postedAt": "2026-11-12T22:01:20-05:00",
+      "description": "ARE YOU INTERESTED IN JOINING AN INNOVATIVE LOGISTICS TECHNOLOGY COMPANY?\n \nLoadsmart is a growth-stage technology company valued at over $1 billion (a true Tech Unicorn)!\n \nWe are a collection of industry veterans and user-centered engineers using innovative technology to fearlessly reinvent the...",
+      "applyUrl": "https://jobs.lever.co/loadsmart/57d9cbd4-cecd-4b9f-9b68-a6f1511b5415",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/loadsmart/57d9cbd4-cecd-4b9f-9b68-a6f1511b5415",
+      "postedAt": "2026-11-12T23:08:35.778000+00:00",
       "tags": [
         "Claude Code",
-        "Python",
-        "Copilot"
+        "Cursor"
       ],
       "companyIcon": ""
     },
@@ -2858,7 +3057,7 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-mongodb-8094387",
+      "id": "gr-mongodb-8094365",
       "company": "MongoDB",
       "position": "Senior Engineer - GTM Tech",
       "location": "Gurugram",
@@ -2867,10 +3066,10 @@
       ],
       "remote": false,
       "salary": "",
-      "description": "About Team The IT SaaS Engineering Team is the backbone of MongoDB's go-to-market operations. We build and run the Salesforce platform — with the automation, security, and governance that Sales Operations, Revenue Operations, Security, and Compliance rely on daily to manage customer relationships...",
-      "applyUrl": "https://www.mongodb.com/careers/job/?gh_jid=8094387",
+      "description": "The IT SaaS Engineering Team plays a critical role in optimizing MongoDB sales processes, streamlining customer interactions, and maximizing the efficiency of our sales efforts. By leveraging Salesforce, the team ensures that business users have the tools, automation, security, and governance...",
+      "applyUrl": "https://www.mongodb.com/careers/job/?gh_jid=8094365",
       "source": "Greenhouse",
-      "sourceUrl": "https://www.mongodb.com/careers/job/?gh_jid=8094387",
+      "sourceUrl": "https://www.mongodb.com/careers/job/?gh_jid=8094365",
       "postedAt": "2026-11-12T09:41:56-05:00",
       "tags": [
         "Claude Code",
@@ -2917,19 +3116,20 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-mongodb-7590735",
+      "id": "gr-mongodb-7392902",
       "company": "MongoDB",
       "position": "Senior Software Engineer, Forward Deployed AI Engineer",
-      "location": "Ireland",
+      "location": "Cork, Ireland · Dublin, Ireland",
       "locations": [
-        "Ireland"
+        "Cork, Ireland",
+        "Dublin, Ireland"
       ],
       "remote": false,
       "salary": "",
       "description": "MongoDB is looking for an outstanding person to join our newly created Forward Deployed Engineering team and take on a key role in our extended R&D organization. Forward Deployed Engineering is linking the work of teams engaged on application modernization roles with our Product and Engineering...",
-      "applyUrl": "https://www.mongodb.com/careers/job/?gh_jid=7590735",
+      "applyUrl": "https://www.mongodb.com/careers/job/?gh_jid=7392902",
       "source": "Greenhouse",
-      "sourceUrl": "https://www.mongodb.com/careers/job/?gh_jid=7590735",
+      "sourceUrl": "https://www.mongodb.com/careers/job/?gh_jid=7392902",
       "postedAt": "2026-11-12T09:41:56-05:00",
       "tags": [
         "Claude Code",
@@ -3049,35 +3249,6 @@
       "tags": [
         "Claude Code",
         "TypeScript"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-opswat-4527452005",
-      "company": "OPSWAT",
-      "position": "Associate DevOps Engineer",
-      "location": "Ho Chi Minh City, Ho Chi Minh City, Vietnam",
-      "locations": [
-        "Ho Chi Minh City, Ho Chi Minh City, Vietnam"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "OPSWAT , a global leader in IT, OT , and ICS critical infrastructure cybersecurity, delivers an end-to-end platform that gives public and private sector organizations and enterprises the critical advantage needed to protect their complex networks, secure their devices, and ensure compliance. Over...",
-      "applyUrl": "https://www.opswat.com/jobs/4527452005?gh_jid=4527452005",
-      "source": "Greenhouse",
-      "sourceUrl": "https://www.opswat.com/jobs/4527452005?gh_jid=4527452005",
-      "postedAt": "2026-11-11T22:21:31-05:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "AWS",
-        "Docker",
-        "Kubernetes",
-        "Cursor",
-        "Copilot",
-        "Redis",
-        "MongoDB",
-        "MCP"
       ],
       "companyIcon": ""
     },
@@ -3554,33 +3725,6 @@
       "companyIcon": "https://fivetran.com/favicon.ico"
     },
     {
-      "id": "gr-opswat-4751785005",
-      "company": "OPSWAT",
-      "position": "Senior AI Engineer, Marketing",
-      "location": "Tampa, Florida, United States",
-      "locations": [
-        "Tampa, Florida, United States"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "OPSWAT , a global leader in IT, OT , and ICS critical infrastructure cybersecurity, delivers an end-to-end platform that gives public and private sector organizations and enterprises the critical advantage needed to protect their complex networks, secure their devices, and ensure compliance. Over...",
-      "applyUrl": "https://www.opswat.com/jobs/4751785005?gh_jid=4751785005",
-      "source": "Greenhouse",
-      "sourceUrl": "https://www.opswat.com/jobs/4751785005?gh_jid=4751785005",
-      "postedAt": "2026-11-11T10:28:34-05:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "PostgreSQL",
-        "AWS",
-        "Azure",
-        "Cursor",
-        "Copilot",
-        "MCP"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "gr-boosta-5030381101",
       "company": "Boosta",
       "position": "Motion Designer",
@@ -3623,157 +3767,6 @@
         "Node.js",
         "AWS",
         "Azure",
-        "Java"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-opswat-4724688005",
-      "company": "OPSWAT",
-      "position": "AI-Native Software Engineer - MD Core",
-      "location": "Ho Chi Minh City, Ho Chi Minh City, Vietnam",
-      "locations": [
-        "Ho Chi Minh City, Ho Chi Minh City, Vietnam"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "OPSWAT , a global leader in IT, OT , and ICS critical infrastructure cybersecurity, delivers an end-to-end platform that gives public and private sector organizations and enterprises the critical advantage needed to protect their complex networks, secure their devices, and ensure compliance. Over...",
-      "applyUrl": "https://www.opswat.com/jobs/4724688005?gh_jid=4724688005",
-      "source": "Greenhouse",
-      "sourceUrl": "https://www.opswat.com/jobs/4724688005?gh_jid=4724688005",
-      "postedAt": "2026-11-11T05:35:53-05:00",
-      "tags": [
-        "Claude Code",
-        "Rust",
-        "PostgreSQL",
-        "Copilot",
-        "MCP"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-opswat-4302497005",
-      "company": "OPSWAT",
-      "position": "AI Native Software Engineer - Secure File Gateway",
-      "location": "Ho Chi Minh City, Ho Chi Minh City, Vietnam",
-      "locations": [
-        "Ho Chi Minh City, Ho Chi Minh City, Vietnam"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "OPSWAT , a global leader in IT, OT , and ICS critical infrastructure cybersecurity, delivers an end-to-end platform that gives public and private sector organizations and enterprises the critical advantage needed to protect their complex networks, secure their devices, and ensure compliance. Over...",
-      "applyUrl": "https://www.opswat.com/jobs/4302497005?gh_jid=4302497005",
-      "source": "Greenhouse",
-      "sourceUrl": "https://www.opswat.com/jobs/4302497005?gh_jid=4302497005",
-      "postedAt": "2026-11-11T05:35:53-05:00",
-      "tags": [
-        "Claude Code",
-        "Rust",
-        "PostgreSQL",
-        "Java"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-opswat-4448237005",
-      "company": "OPSWAT",
-      "position": "SDET - Secure File Gateway",
-      "location": "Ho Chi Minh City, Ho Chi Minh City, Vietnam",
-      "locations": [
-        "Ho Chi Minh City, Ho Chi Minh City, Vietnam"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "OPSWAT , a global leader in IT, OT , and ICS critical infrastructure cybersecurity, delivers an end-to-end platform that gives public and private sector organizations and enterprises the critical advantage needed to protect their complex networks, secure their devices, and ensure compliance. Over...",
-      "applyUrl": "https://www.opswat.com/jobs/4448237005?gh_jid=4448237005",
-      "source": "Greenhouse",
-      "sourceUrl": "https://www.opswat.com/jobs/4448237005?gh_jid=4448237005",
-      "postedAt": "2026-11-11T05:35:53-05:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "Cursor",
-        "Copilot",
-        "Java"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-opswat-4745443005",
-      "company": "OPSWAT",
-      "position": "Senior Agentic Software Engineer - Sales",
-      "location": "Ho Chi Minh City, Ho Chi Minh City, Vietnam",
-      "locations": [
-        "Ho Chi Minh City, Ho Chi Minh City, Vietnam"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "OPSWAT , a global leader in IT, OT , and ICS critical infrastructure cybersecurity, delivers an end-to-end platform that gives public and private sector organizations and enterprises the critical advantage needed to protect their complex networks, secure their devices, and ensure compliance. Over...",
-      "applyUrl": "https://www.opswat.com/jobs/4745443005?gh_jid=4745443005",
-      "source": "Greenhouse",
-      "sourceUrl": "https://www.opswat.com/jobs/4745443005?gh_jid=4745443005",
-      "postedAt": "2026-11-11T05:35:53-05:00",
-      "tags": [
-        "Claude Code",
-        "React",
-        "TypeScript",
-        "Python",
-        "PostgreSQL",
-        "AWS",
-        "Azure",
-        "Cursor",
-        "Copilot",
-        "MCP"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-opswat-4627720005",
-      "company": "OPSWAT",
-      "position": "Software Engineer C++",
-      "location": "Ho Chi Minh City, Ho Chi Minh City, Vietnam",
-      "locations": [
-        "Ho Chi Minh City, Ho Chi Minh City, Vietnam"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "OPSWAT , a global leader in IT, OT , and ICS critical infrastructure cybersecurity, delivers an end-to-end platform that gives public and private sector organizations and enterprises the critical advantage needed to protect their complex networks, secure their devices, and ensure compliance. Over...",
-      "applyUrl": "https://www.opswat.com/jobs/4627720005?gh_jid=4627720005",
-      "source": "Greenhouse",
-      "sourceUrl": "https://www.opswat.com/jobs/4627720005?gh_jid=4627720005",
-      "postedAt": "2026-11-11T05:35:53-05:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "Docker",
-        "Copilot",
-        "MCP"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-opswat-4750935005",
-      "company": "OPSWAT",
-      "position": "Software Engineer - SBOM",
-      "location": "Ho Chi Minh City, Ho Chi Minh City, Vietnam",
-      "locations": [
-        "Ho Chi Minh City, Ho Chi Minh City, Vietnam"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "OPSWAT , a global leader in IT, OT , and ICS critical infrastructure cybersecurity, delivers an end-to-end platform that gives public and private sector organizations and enterprises the critical advantage needed to protect their complex networks, secure their devices, and ensure compliance. Over...",
-      "applyUrl": "https://www.opswat.com/jobs/4750935005?gh_jid=4750935005",
-      "source": "Greenhouse",
-      "sourceUrl": "https://www.opswat.com/jobs/4750935005?gh_jid=4750935005",
-      "postedAt": "2026-11-11T05:35:53-05:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "Rust",
-        "Go",
-        "Docker",
-        "Cursor",
-        "Copilot",
         "Java"
       ],
       "companyIcon": ""
@@ -4905,19 +4898,19 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-samsara-8281491",
+      "id": "gr-samsara-8281489",
       "company": "Samsara",
       "position": "Senior AI Data & Analytics Engineer II",
-      "location": "Remote - MA",
+      "location": "Remote - Austin",
       "locations": [
-        "Remote - MA"
+        "Remote - Austin"
       ],
       "remote": true,
       "salary": "",
       "description": "Who we are Samsara (NYSE: IOT) is the pioneer of the Connected Operations™ Cloud, which is a platform that enables organizations that depend on physical operations to harness Internet of Things (IoT) data to develop actionable insights and improve their operations. At Samsara, we are helping...",
-      "applyUrl": "https://www.samsara.com/company/careers/roles/8281491?gh_jid=8281491",
+      "applyUrl": "https://www.samsara.com/company/careers/roles/8281489?gh_jid=8281489",
       "source": "Greenhouse",
-      "sourceUrl": "https://www.samsara.com/company/careers/roles/8281491?gh_jid=8281491",
+      "sourceUrl": "https://www.samsara.com/company/careers/roles/8281489?gh_jid=8281489",
       "postedAt": "2026-11-10T11:47:15-05:00",
       "tags": [
         "Claude Code",
@@ -9758,6 +9751,35 @@
       "companyIcon": ""
     },
     {
+      "id": "le-galatea-associates-9fc50e3e-dc79-4c7c-ae15-0dffb1ab1e4d",
+      "company": "Galatea Associates",
+      "position": "Lead Financial Software Consultant",
+      "location": "London, UK",
+      "locations": [
+        "London, UK"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": " Galatea Associates is seeking a Lead Financial Software Consultant to drive technical delivery, mentor junior consultants, and develop solutions for global financial services firms. This role combines hands-on software development with technical and project leadership. You will lead a team of 3–8...",
+      "applyUrl": "https://jobs.lever.co/galatea-associates/9fc50e3e-dc79-4c7c-ae15-0dffb1ab1e4d",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/galatea-associates/9fc50e3e-dc79-4c7c-ae15-0dffb1ab1e4d",
+      "postedAt": "2026-11-02T18:35:02.421000+00:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "PostgreSQL",
+        "AWS",
+        "Azure",
+        "Kubernetes",
+        "Copilot",
+        "Swift",
+        "Java",
+        "MongoDB"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "hn-50341328",
       "company": "Fredrin",
       "position": "GTM Engineer",
@@ -9774,6 +9796,35 @@
       "postedAt": "2026-11-02T18:30:35+00:00",
       "tags": [
         "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "le-galatea-associates-10cdf6b1-af83-4326-a280-b0fc2e42d1fb",
+      "company": "Galatea Associates",
+      "position": "Senior Financial Software Consultant",
+      "location": "London, UK",
+      "locations": [
+        "London, UK"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": " Galatea Associates is seeking a Senior Financial Software Consultant to join our growing team! In this role you will work closely with clients and teammates to understand business needs, develop technical solutions, and drive delivery across a range of technologies and client environments. Through...",
+      "applyUrl": "https://jobs.lever.co/galatea-associates/10cdf6b1-af83-4326-a280-b0fc2e42d1fb",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/galatea-associates/10cdf6b1-af83-4326-a280-b0fc2e42d1fb",
+      "postedAt": "2026-11-02T18:26:01.006000+00:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "PostgreSQL",
+        "AWS",
+        "Azure",
+        "Kubernetes",
+        "Copilot",
+        "Swift",
+        "Java",
+        "MongoDB"
       ],
       "companyIcon": ""
     },
@@ -13015,6 +13066,31 @@
       "companyIcon": ""
     },
     {
+      "id": "le-captivateiq-7eeba044-5350-427e-bfc4-af60d5679645",
+      "company": "Captivateiq",
+      "position": "GTM Engineer",
+      "location": "Remote USA · Poland",
+      "locations": [
+        "Remote USA",
+        "Poland"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "CaptivateIQ is transforming the way companies plan, manage, and optimize sales performance. We started by revolutionizing incentive compensation management, and now we’re expanding our platform to solve broader sales planning challenges. Recognized by industry analysts like Forrester and G2 and...",
+      "applyUrl": "https://jobs.lever.co/captivateiq/7eeba044-5350-427e-bfc4-af60d5679645",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/captivateiq/7eeba044-5350-427e-bfc4-af60d5679645",
+      "postedAt": "2026-10-26T20:44:40.915000+00:00",
+      "tags": [
+        "Claude Code",
+        "JavaScript",
+        "Python",
+        "Cursor",
+        "Copilot"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "as-Crusoe-ef99c43f-8aef-495c-84e7-36663cd73369",
       "company": "Crusoe",
       "position": "Data Scientist, Analytics",
@@ -15058,6 +15134,32 @@
         "React",
         "TypeScript",
         "JavaScript",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "le-capital-fa59350f-be43-4ed9-b0ae-cbb5110dd4eb",
+      "company": "Capital",
+      "position": "Platform Architect",
+      "location": "Warsaw, Mazowieckie, Poland · Limassol, Cyprus · Sofia City, Bulgaria",
+      "locations": [
+        "Warsaw, Mazowieckie, Poland",
+        "Limassol, Cyprus",
+        "Sofia City, Bulgaria"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": " Responsibilities: Build the AI platform architecture: the reference design for how LLM capabilities are accessed, governed, monitored, and extended across the organisation. Own every architectural decision for the AI platform, and document, justify, and stand behind each one. Evaluate and select...",
+      "applyUrl": "https://jobs.lever.co/capital/fa59350f-be43-4ed9-b0ae-cbb5110dd4eb",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/capital/fa59350f-be43-4ed9-b0ae-cbb5110dd4eb",
+      "postedAt": "2026-10-16T09:57:36.214000+00:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "AWS",
+        "GCP",
         "MCP"
       ],
       "companyIcon": ""
@@ -18986,19 +19088,19 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-babylist-6103791004",
+      "id": "gr-babylist-5678188004",
       "company": "Babylist",
       "position": "Staff Software Engineer",
-      "location": "United States",
+      "location": "Canada",
       "locations": [
-        "United States"
+        "Canada"
       ],
       "remote": false,
       "salary": "",
       "description": "What The Role Is As a Staff Engineer at Babylist, you own some of our hardest domains and decide where they go. Millions of families depend on what we build. Agents write most of the code now. So the hard part is yours: what to build, how it should work and whether what shipped was right. You're...",
-      "applyUrl": "https://job-boards.greenhouse.io/babylist/jobs/6103791004",
+      "applyUrl": "https://job-boards.greenhouse.io/babylist/jobs/5678188004",
       "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/babylist/jobs/6103791004",
+      "sourceUrl": "https://job-boards.greenhouse.io/babylist/jobs/5678188004",
       "postedAt": "2026-09-03T17:15:06-04:00",
       "tags": [
         "Claude Code",
