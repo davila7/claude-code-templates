@@ -33,3 +33,33 @@ export function skillsPageMeta(count: number | undefined): ListPageMeta {
     h1: `${n} Claude Skills`,
   };
 }
+
+export interface HomePageMeta {
+  title: string;
+  description: string;
+  /** SoftwareApplication JSON-LD description. */
+  schemaDescription: string;
+}
+
+/**
+ * Home page title/description with the catalog total (sum of the component
+ * types in counts.json, see totalComponents). Rounded down to the ten so the
+ * title does not change on every added component.
+ */
+export function homePageMeta(total: number | undefined): HomePageMeta {
+  if (!total || !Number.isFinite(total) || total < 10) {
+    return {
+      title: 'Claude Code Templates: Agents, Commands, Skills & MCP Integrations',
+      description:
+        'Browse and install pre-built components for Claude Code: AI agents, slash commands, skills, MCP integrations, hooks, and settings. Free, open-source CLI tool.',
+      schemaDescription:
+        'CLI tool and catalog of Claude Code components: agents, commands, skills, settings, hooks, and MCP integrations.',
+    };
+  }
+  const n = `${formatCount(Math.floor(total / 10) * 10)}+`;
+  return {
+    title: `Claude Code Templates: ${n} Agents, Commands, Skills & MCP Integrations`,
+    description: `Browse and install ${n} pre-built components for Claude Code: AI agents, slash commands, skills, MCP integrations, hooks, and settings. Free, open-source CLI tool.`,
+    schemaDescription: `CLI tool and catalog of Claude Code components. Over ${n.slice(0, -1)} agents, commands, skills, settings, hooks, and MCP integrations.`,
+  };
+}
