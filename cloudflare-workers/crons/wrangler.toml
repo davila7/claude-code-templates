@@ -3,7 +3,7 @@ main = "index.js"
 compatibility_date = "2024-09-23"
 
 # Cron triggers:
-# - health-check: every hour (was every 15 min on Vercel, reduced to save invocations)
+# - health-check: every hour
 [triggers]
 crons = ["0 * * * *"]
 

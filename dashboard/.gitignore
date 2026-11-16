@@ -2,8 +2,6 @@
 .astro/
 dist/
 
-# Vercel
-.vercel
 
 # Dependencies
 node_modules
