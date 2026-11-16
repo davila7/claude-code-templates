@@ -5,7 +5,7 @@ license: Apache-2.0
 source: https://github.com/pixeltable/pixeltable-skill
 metadata:
   author: Pixeltable
-  version: 2.14.0
+  version: 2.14.1
   promptSignals:
     phrases: ["pixeltable", "multimodal rag", "pdf rag", "video search", "image similarity", "image semantic search", "audio transcription search", "agent memory", "vector database", "embeddings with your data", "incremental pipeline", "dataset versioning", "computed column", "embedding index", "add_embedding_index", "TableModel", "create_view", "document_splitter", "invoke_tools", "pxt schema", "pxt service", "pxt shell", "pxt errors", "pxt dashboard"]
     minScore: 6
