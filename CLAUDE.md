@@ -8,6 +8,10 @@ Node.js CLI tool (`cli-tool/`) for managing Claude Code components (agents, comm
 
 `cli-rust/` (Rust port of the install core) is **in the backlog**: do not plan, change, test parity with or mention it unless Daniel resumes it.
 
+## GitHub Identity: the Owner Is @davila7
+
+The maintainer's GitHub account is **`@davila7`** (repo `davila7/claude-code-templates`). `danipower` is only the local macOS username (`$USER`, `/Users/danipower/...`), and `Dani` is only the git author name: neither is a GitHub handle, and `@danipower` may belong to a stranger who would be notified. Use `@davila7` everywhere a GitHub identity goes: `CODEOWNERS`, `@`-mentions, PR/issue assignees and reviewers, `gh` arguments, `github.com/davila7/...` URLs, `author`/`repository` fields. Never derive a handle from the machine (`whoami`, home directory, git config); if in doubt, `gh api user --jq .login` returns the real one. `git grep -i danipower` should match nothing outside local paths.
+
 ## Essential Commands
 
 ```bash
