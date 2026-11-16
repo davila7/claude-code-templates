@@ -1,7 +1,7 @@
 {
   "mcpServers": {
     "videodb": {
-      "description": "Video tools for agents from VideoDB's hosted MCP server. Summarize a video and answer questions about it, search one video or a library by what is said or shown, cut clips and highlight reels, add burned-in subtitles, reframe for Shorts and Reels, and connect RTSP camera feeds for alerts. Results come back as playable stream links. Videos you work with are processed by the hosted VideoDB service. Requires a VideoDB account. Uses OAuth 2.1 browser sign-in, so no API key is needed. Install steps: https://videodb.io/agents?utm_source=github.com/davila7/claude-code-templates&utm_medium=directory. Docs: https://docs.videodb.io.",
+      "description": "VideoDB lets an AI agent watch, search and clip video. Works in Claude, ChatGPT, Claude Code, Cursor and any MCP client. Uses OAuth 2.1 browser sign-in, so no API key is needed. Steps for every client: https://docs.videodb.io/pages/mcp/connect?utm_source=github.com/davila7/claude-code-templates&utm_medium=directory",
       "type": "http",
       "url": "https://mcp.videodb.io/mcp"
     }
