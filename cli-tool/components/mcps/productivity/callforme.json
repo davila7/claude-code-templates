@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "callforme": {
+      "description": "CallForMe gives Claude Code a phone. Ask it to get three quotes, book a table or cancel a membership, and a voice assistant calls the business, works the phone menu, waits on hold, checks back with your agent mid-call and returns the answers plus a transcript. Remote MCP server (Streamable HTTP) with OAuth and dynamic client registration: after installing, run /mcp and choose Authenticate. Connecting asks for nothing; the first real call returns a link to add credit. $1 per answered call including the first 2 minutes, then $0.40/min. Calls to businesses in the US and Canada. Demo line with no account: https://callforme.tel/demo",
+      "type": "http",
+      "url": "https://callforme.tel/mcp"
+    }
+  }
+}
