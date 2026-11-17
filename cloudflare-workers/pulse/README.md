@@ -1,6 +1,6 @@
 # Pulse — Weekly KPI Report (Cloudflare Worker)
 
-Collects metrics from GitHub, Supabase, Vercel, and Google Analytics every Sunday at 14:00 UTC and sends a consolidated report via Telegram.
+Collects metrics from GitHub, Supabase, npm, and Google Analytics every Sunday at 14:00 UTC and sends a consolidated report via Telegram.
 
 ## Setup
 
@@ -26,10 +26,6 @@ wrangler secret put GITHUB_TOKEN          # PAT with public_repo scope
 # Supabase
 wrangler secret put SUPABASE_URL          # https://xxx.supabase.co
 wrangler secret put SUPABASE_SERVICE_ROLE_KEY
-
-# Vercel
-wrangler secret put VERCEL_TOKEN          # Personal access token
-wrangler secret put VERCEL_PROJECT_ID     # aitmpl project ID
 
 # Manual trigger auth
 wrangler secret put TRIGGER_SECRET
@@ -104,10 +100,6 @@ RETURNING INSTALLERS (week of Oct 26)
 ├ New installers: 2,737
 ├ New installers back: next week 3.8% (week of Oct 19), within 4 weeks 8.4% (week of Sep 28)
 └ This week so far: 323 of 2,341 (13.8%)
-
-🚀 VERCEL
-├ Deploys: 12 (11 ✅ 1 ❌)
-└ Latest: 2h ago ✅
 
 📈 ANALYTICS
 ├ Visitors: 3,456

@@ -11,6 +11,12 @@ These docs are available as an MCP server, so Claude Code can search them while 
 claude mcp add --transport http aitmpl-docs https://docs.aitmpl.com/mcp
 ```
 
+To let Claude search and install catalog components (not the docs), connect the [aitmpl MCP server](/developers/mcp-server):
+
+```bash
+claude mcp add --transport http aitmpl https://mcp.aitmpl.com/mcp
+```
+
 Every page also has a menu (top right) to copy it as Markdown or open it in Claude, ChatGPT, Cursor or VS Code.
 
 ## llms.txt

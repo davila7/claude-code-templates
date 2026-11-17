@@ -17,7 +17,7 @@ We separate monitoring and automation tasks into Cloudflare Workers to:
 
 ### [`crons`](./crons/)
 
-Scheduled caller for the dashboard API (replaces the old Vercel cron jobs).
+Scheduled caller for the dashboard API.
 
 **Functionality:**
 - Calls `/api/health-check` every hour

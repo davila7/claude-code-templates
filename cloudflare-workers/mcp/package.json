@@ -1,0 +1,26 @@
+{
+  "name": "aitmpl-mcp",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Remote MCP server for the aitmpl.com catalog: search components, read them and get their install command.",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "vitest run",
+    "type-check": "tsc --noEmit",
+    "smoke": "node test/smoke.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/server": "2.4.0",
+    "agents": "0.33.0",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "5.20261116.1",
+    "@modelcontextprotocol/client": "2.4.0",
+    "typescript": "5.9.3",
+    "vitest": "3.2.7",
+    "wrangler": "4.163.0"
+  }
+}

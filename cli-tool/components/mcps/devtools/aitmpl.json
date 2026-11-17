@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "aitmpl": {
+      "description": "Official MCP server of the aitmpl.com catalog: lets Claude search Claude Code components (agents, commands, skills, hooks, MCP servers, settings, loops, mods and plugins), read one with its full content and SkillSpector scan, and get the claude-code-templates command that installs it. Remote, read-only, no sign-in; it installs nothing itself, Claude runs the returned command.",
+      "type": "http",
+      "url": "https://mcp.aitmpl.com/mcp"
+    }
+  }
+}
