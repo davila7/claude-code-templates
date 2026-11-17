@@ -1,0 +1,88 @@
+// What Clawd says about the notebook, in English or Chinese: the language of what it is about.
+// The commands themselves stay English. Pure, like scenes.ts.
+
+export type Lang = 'en' | 'zh'
+
+/** Chinese when `text` holds a Han character, else English. */
+export const langOf = (text: string): Lang => (/\p{Script=Han}/u.test(text) ? 'zh' : 'en')
+
+const EN = {
+  usageNote: 'Tell me what to remember: /clawd note <text>',
+  usageTodo: 'What is there to do? /clawd todo <text>',
+  usagePlan: 'List the jobs, split by ;  — /clawd plan a; b; c',
+  usageDone: 'Which one? /clawd done 2 (or just /clawd done for the next)',
+  usageRemind: 'When? /clawd remind 14:00 standup, or /clawd remind 30m call back',
+  notTime: (when: string) => `${when} is not a time of day.`,
+  passed: (when: string) => `${when} has already passed today.`,
+  rightNow: 'That is right now!',
+  todayOnly: 'I only keep reminders for today.',
+  noted: 'Noted!',
+  savedLater: 'Saved for later. /clawd plan picks from it.',
+  planned: (n: number) => `On today's list: ${n} more. /clawd list to see them.`,
+  remindSet: (at: string, text: string) => `I'll call it at ${at}: ${text}`,
+  empty: 'That came out empty. Try again with some words?',
+  noTodo: (n: number) => `There is no todo ${n} today.`,
+  nothingLeft: 'Nothing left to do today!',
+  already: (text: string) => `Already done: ${text}`,
+  doneLeft: (text: string, left: number) => `Done: ${text}! ${left} to go.`,
+  allDone: 'All done today!',
+  noNotebook: (why: string) => `My notebook will not open: ${why}`,
+  nothingWaiting: 'Nothing waiting. /clawd todo <text> saves one for later.',
+  offer: (list: string, why: string) => `${list} — /clawd plan ok to take them${why ? ` (${why})` : ''}`,
+  badPicks: 'Those numbers are not on my list.',
+  askFirst: 'Ask me first: /clawd plan',
+  taken: (n: number) => `${n} on today's list. Go get them!`,
+  takenAlready: 'Those were done or moved already.',
+  now: (text: string) => `Now: ${text}`,
+  missed: (at: string, text: string) => `Missed at ${at}: ${text}`,
+  inMin: (n: number, text: string) => `In ${n} min: ${text}`,
+  nextUp: (text: string) => `Next up: ${text}`,
+  today: (list: string) => `Today: ${list}`,
+  noTodos: 'No todos today.',
+  notes: (list: string) => `Notes: ${list}`,
+  noNotes: 'No notes today. /clawd note <text> jots one.',
+  later: (list: string) => `Later: ${list}`,
+  todos: (list: string) => `Todo: ${list} (/clawd plan to pick)`,
+}
+
+const ZH: typeof EN = {
+  usageNote: '要記什麼？/clawd note <內容>',
+  usageTodo: '要做什麼？/clawd todo <內容>',
+  usagePlan: '用 ; 分開每件事：/clawd plan a; b; c',
+  usageDone: '哪一項？/clawd done 2（只打 /clawd done 就是下一項）',
+  usageRemind: '什麼時候？/clawd remind 14:00 站會，或 /clawd remind 30分 回電',
+  notTime: when => `${when} 不是一天裡的時間。`,
+  passed: when => `今天的 ${when} 已經過了。`,
+  rightNow: '那就是現在！',
+  todayOnly: '我只記今天的提醒。',
+  noted: '記好了！',
+  savedLater: '存進待辦了，/clawd plan 會從裡面挑。',
+  planned: n => `今天的清單多了 ${n} 項，/clawd list 可以看。`,
+  remindSet: (at, text) => `${at} 會提醒你：${text}`,
+  empty: '內容是空的，再試一次？',
+  noTodo: n => `今天沒有第 ${n} 項。`,
+  nothingLeft: '今天的事都做完了！',
+  already: text => `已經做完了：${text}`,
+  doneLeft: (text, left) => `完成：${text}！還剩 ${left} 項。`,
+  allDone: '今天全部完成！',
+  noNotebook: why => `筆記本打不開：${why}`,
+  nothingWaiting: '目前沒有待辦，用 /clawd todo <內容> 先存起來。',
+  offer: (list, why) => `${list} — /clawd plan ok 收下${why ? `（${why}）` : ''}`,
+  badPicks: '清單上沒有這些編號。',
+  askFirst: '先用 /clawd plan 讓我挑一挑。',
+  taken: n => `${n} 項加進今天了，加油！`,
+  takenAlready: '這些已經做完或移走了。',
+  now: text => `現在：${text}`,
+  missed: (at, text) => `錯過了 ${at}：${text}`,
+  inMin: (n, text) => `${n} 分鐘後：${text}`,
+  nextUp: text => `下一件：${text}`,
+  today: list => `今天：${list}`,
+  noTodos: '今天還沒有待辦。',
+  notes: list => `筆記：${list}`,
+  noNotes: '今天還沒有筆記，/clawd note <內容> 記一筆。',
+  later: list => `稍後：${list}`,
+  todos: list => `待辦：${list}（/clawd plan 來挑）`,
+}
+
+/** Clawd's lines in `lang`. */
+export const say = (lang: Lang) => (lang === 'zh' ? ZH : EN)

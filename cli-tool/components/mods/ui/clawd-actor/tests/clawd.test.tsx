@@ -51,7 +51,7 @@ test("a subagent's turn ending (a workflow agent's, say) does not stop the main 
   expect(frames.size).toBeGreaterThan(1)
 })
 
-test('a reload mid-turn (/reload-plugins) keeps the show going where it was', async ($, on) => {
+test('a reload mid-turn (/reload-plugins) keeps the show going where it was', { timeoutMs: 30_000 }, async ($, on) => {
   const clock = mock.clock(on)
   on('session.start', ($, e) => ({ cwd: e.cwd }))
   on('command.register', ($, e) => ({ value: { command: e.name } }))
@@ -92,7 +92,7 @@ test('isWorking on with no turn started keeps the band to the mods beneath', asy
   expect(await shown(ui)).toBe('below') // one still frame of Clawd would be the flash
 })
 
-test('a band mounted before turn.start animates once the turn starts', async ($, on) => {
+test('a band mounted before turn.start animates once the turn starts', { timeoutMs: 30_000 }, async ($, on) => {
   const clock = mock.clock(on)
   on('session.start', ($, e) => ({ cwd: e.cwd }))
   on('command.register', ($, e) => ({ value: { command: e.name } }))

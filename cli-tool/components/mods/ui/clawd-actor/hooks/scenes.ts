@@ -149,7 +149,7 @@ const LENS = PURPLE
 const JERSEY = '#3D7BD9'
 const PERM = '#8C62B0'
 // Which quarters of a cell each block fills: a (top left), b (top right), c (bottom left), d (bottom right)
-const QUARTERS: Record<string, string> = { '▘': 'a', '▝': 'b', '▖': 'c', '▗': 'd', '▀': 'ab', '▄': 'cd', '▌': 'ac', '▐': 'bd', '▛': 'abc', '▜': 'abd', '▙': 'acd', '▟': 'bcd', '█': 'abcd' }
+export const QUARTERS: Record<string, string> = { '▘': 'a', '▝': 'b', '▖': 'c', '▗': 'd', '▀': 'ab', '▄': 'cd', '▌': 'ac', '▐': 'bd', '▛': 'abc', '▜': 'abd', '▙': 'acd', '▟': 'bcd', '█': 'abcd' }
 
 /** A hat brim over the top half of each cell from x, keeping the bottom half as drawn, so the eyes peek out under it. */
 const brow = (g: Grid, x: number, y: number, n: number) => {
@@ -263,6 +263,26 @@ Object.assign(COSTUMES, {
 } satisfies Record<string, Costume>)
 export const DRESSED = Object.keys(COSTUMES)
 
+// ---- Rewards: a badge earned dresses Clawd in scenes that have no costume of their own ----
+
+// marathon runner: a red headband and a race bib with 42 on it, for the 42 kilometres
+const RUNNER: Costume = {
+  dress: (g, x, y) => {
+    put(g, x + 1, y - 1, '▗▄▄▄▄▄▖', '#E06C75')
+    put(g, x + 3, y + 1, '42', INK, 'white')
+  },
+}
+/** Badge id → the costume it earns and the scenes Clawd wears it in. */
+export const REWARDS: Record<string, { scenes: string[]; costume: Costume }> = {
+  marathon: { scenes: ['run', 'walk'], costume: RUNNER },
+}
+/** The scene a badge's reward shows off in, for the cheer as it is earned. */
+export const rewardScene = (badge: string) => REWARDS[badge]?.scenes[0]
+const NO_PERKS: ReadonlySet<string> = new Set()
+/** The costume `scene` wears: its own, else one a badge in `perks` earned for it. */
+const costumeFor = (scene: string, perks: ReadonlySet<string>) =>
+  COSTUMES[scene] ?? Object.entries(REWARDS).find(([id, r]) => perks.has(id) && r.scenes.includes(scene))?.[1].costume
+
 type Scene = (g: Grid, t: number) => void
 
 const GRAY = 'gray'
@@ -270,6 +290,21 @@ const BOARD = '#2E4A3B'
 const WOOD = '#8B5A2B'
 // What Clawd works out on the blackboard, two lines a go (8 columns each)
 const LESSONS: [string, string][] = [['a+b=c', 'x^2+1=y'], ['f(x)=?', '  = 42'], ['1+1=2', 'Q.E.D.'], ['if (ok)', '  ship!']]
+const FLUSH = '#E0533A' // Clawd gone red in the face
+
+// sixseven's gears: frames a hand stays up, and how many 6-7 swings at that pace
+const GEARS: [number, number][] = [[6, 1], [5, 1], [4, 2], [3, 2], [2, 3], [1, 5]]
+export const SIXSEVEN_FRAMES = GEARS.reduce((n, [beat, swings]) => n + 2 * beat * swings, 0)
+/** Which gear sixseven is in at frame `t`, and whether the left hand is up. */
+export const sixSevenAt = (t: number) => {
+  let p = t % SIXSEVEN_FRAMES
+  for (let gear = 0; ; gear++) {
+    const [beat, swings] = GEARS[gear]
+    if (p < 2 * beat * swings) return { gear, left: Math.floor(p / beat) % 2 === 0 }
+    p -= 2 * beat * swings
+  }
+}
+
 const scenes: Record<string, Scene> = {
   idle: (g, t) => {
     // a little hop, then it lands with a squash and settles
@@ -587,6 +622,27 @@ const scenes: Record<string, Scene> = {
     else clawd(g, t, { x: end, eyes: 'smile', arms: q < 19 ? 'up' : 'down', lift: q === 17 ? 1 : 0, shade: 'none' })
   },
 
+  sixseven: (g, t) => {
+    // 6-7: palms up, weighing it out; the raised hand carries its number, which is gone once it drops.
+    // It speeds up through six gears, and every two gears the face strains harder: calm, > < with a sweat drop,
+    // then \ / with an anger mark and a flushed body
+    const { gear, left } = sixSevenAt(t)
+    const tier = Math.floor(gear / 2)
+    const color = tier === 2 ? FLUSH : ORANGE
+    clawd(g, t, { arms: left ? 'right' : 'left', eyes: tier || t % 24 === 0 ? 'blink' : 'open', shade: 'none', color })
+    if (tier) {
+      const [l, r] = tier === 1 ? ['>', '<'] : ['\\', '/']
+      put(g, 4, 1, l, INK, color)
+      put(g, 8, 1, r, INK, color)
+      put(g, tier === 1 || t % 2 ? 9 : 1, 0, "'", 'cyan') // sweat, flying off both sides once it snarls
+    }
+    if (tier === 2) put(g, 6, 0, '╬', 'red')
+    // the raised hand reaches up beside the head (its stub runs on from the shoulder's ▝/▘), the other hangs low
+    const [x, hand, n] = left ? [2, '▗', '6'] : [10, '▖', '7']
+    put(g, x, 1, hand, color)
+    put(g, x, 0, n, 'yellow')
+  },
+
   flow: (g, t) => {
     clawd(g, t, { lift: t % 6 < 3 ? 1 : 0 })
     const wave = '∿~'
@@ -633,6 +689,7 @@ export const REACTION_NAMES = Object.keys(reactions)
 // Spinner word → scene, by stem; the first match wins
 const VERBS: [RegExp, string][] = [
   [/moonwalk/, 'moonwalk'],
+  [/sixseven|seesaw|teeter|weigh/, 'sixseven'],
   [/shift|beam|dodg|sidestep|evad|evasi|flit/, 'shift'],
   [/campfir|bonfir|kindl|smolder|smoulder|stok|crackl|flicker|glow|fire/, 'campfire'],
   [/skat|glid|slid|skid|coast/, 'skate'],
@@ -693,14 +750,22 @@ export const wander = (t: number, width: number) => {
   return { dx: 0, ...atEnd(p - 2 * span - PAUSE), dir: -1 }
 }
 
-/** One frame of the stage, as rows of same-colour runs; `dressed` false leaves the scene's costume off. */
-export const frameRows = (word: string, mode: Mode, t: number, width: number = W, scene?: string, dressed = true) => {
+/**
+ * One frame of the stage as its grid of cells; `dressed` false leaves the scene's costume off;
+ * `perks`, the badges earned, dress Clawd in their rewards.
+ */
+export const frameGrid = (word: string, mode: Mode, t: number, width: number = W, scene?: string, dressed = true, perks = NO_PERKS): Grid => {
   const name = scene ?? sceneFor(word, mode)
   Object.assign(stride, WANDERS.has(name) ? wander(t, width) : STILL, { width })
-  wearing = dressed ? COSTUMES[name] : undefined
+  wearing = dressed ? costumeFor(name, perks) : undefined
   const g = blank(width)
   ;(scenes[name] ?? reactions[name] ?? scenes.idle)(g, t)
-  return g.map(row => {
+  return g
+}
+
+/** One frame of the stage, as rows of same-colour runs; `dressed` and `perks` as for frameGrid. */
+export const frameRows = (word: string, mode: Mode, t: number, width: number = W, scene?: string, dressed = true, perks = NO_PERKS) =>
+  frameGrid(word, mode, t, width, scene, dressed, perks).map(row => {
     const runs: { text: string; color?: string; bg?: string }[] = []
     for (const c of row) {
       const last = runs[runs.length - 1]
@@ -709,7 +774,6 @@ export const frameRows = (word: string, mode: Mode, t: number, width: number = W
     }
     return runs
   })
-}
 
 export const SCENE_NAMES = Object.keys(scenes)
 

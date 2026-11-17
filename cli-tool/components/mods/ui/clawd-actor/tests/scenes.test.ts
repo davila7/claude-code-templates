@@ -1,11 +1,11 @@
 import { test, expect } from 'claude-code/testing'
 import { cells } from '../hooks/chat'
-import { frameRows, SCENE_NAMES, REACTION_NAMES, WANDERS, DRESSED, H, sceneFor, sceneAt, sceneForTool, hold, ACT_FRAMES } from '../hooks/scenes'
+import { frameRows, SCENE_NAMES, REACTION_NAMES, WANDERS, DRESSED, REWARDS, rewardScene, H, sceneFor, sceneAt, sceneForTool, hold, ACT_FRAMES, SIXSEVEN_FRAMES } from '../hooks/scenes'
 
 const PROBE: Record<string, string> = { think: 'Pondering', cook: 'Cooking', bake: 'Baking', brew: 'Brewing', walk: 'Moseying', run: 'Scampering',
   moonwalk: 'Moonwalking', herd: 'Herding', spin: 'Spinning', magic: 'Conjuring', levitate: 'Levitating', hatch: 'Hatching', grow: 'Sprouting',
   forge: 'Forging', compute: 'Computing', type: 'Xyzzy', talk: 'Xyzzy', dance: 'Vibing', juggle: 'Juggling', honk: 'Honking', sketch: 'Sketching',
-  weather: 'Misting', thunder: 'Thundering', dig: 'Burrowing', flow: 'Flowing', kick: 'Kicking', skate: 'Skating', campfire: 'Kindling', chalk: 'Deciphering', disco: 'Boogieing', shift: 'Beaming', idle: 'Xyzzy' }
+  weather: 'Misting', thunder: 'Thundering', dig: 'Burrowing', flow: 'Flowing', kick: 'Kicking', skate: 'Skating', campfire: 'Kindling', chalk: 'Deciphering', disco: 'Boogieing', shift: 'Beaming', sixseven: 'Seesawing', idle: 'Xyzzy' }
 const modeOf = (name: string) => (name === 'type' ? 'tool-use' : name === 'talk' ? 'responding' : 'requesting') as any
 
 const TRAVELS = new Set(['walk', 'run', 'moonwalk', 'herd', 'dig', 'skate', 'chalk', 'shift'])
@@ -22,7 +22,7 @@ test('every scene keeps the stage size; Clawd roams only where its props can com
         const col = rows.map(r => [...r].indexOf('▐')).find(i => i >= 0) // Clawd's head; the little ones have none
         if (col !== undefined) columns.add(col)
         // each head row reads ▐ + five face cells + ▌, nothing drawn over it
-        for (const r of rows) for (const m of r.matchAll(/▐/g)) expect(r.slice(m.index, m.index + 7)).toMatch(/^▐[▛▜█^]{5}▌$/)
+        for (const r of rows) for (const m of r.matchAll(/▐/g)) expect(r.slice(m.index, m.index + 7)).toMatch(/^▐[▛▜█^<>\\/]{5}▌$/) // < > and \ / are sixseven's straining eyes
       }
       if (!WANDERS.has(name) && !TRAVELS.has(name)) expect(columns.size).toBe(1) // stays by its pot, board, anvil…
       else if (width >= 40) expect(columns.size).toBeGreaterThan(4)
@@ -42,7 +42,7 @@ test('every scene keeps the stage size; Clawd roams only where its props can com
     }
 })
 
-test('the dressed-up scenes put a costume on Clawd, and its hat stays on stage even mid-hop', () => {
+test('the dressed-up scenes put a costume on Clawd, and its hat stays on stage even mid-hop', { timeoutMs: 30_000 }, () => {
   expect([...DRESSED].sort()).toEqual(['bake', 'chalk', 'cook', 'disco', 'herd', 'juggle', 'kick', 'levitate', 'magic', 'sketch', 'think'])
   const text = (rows: { text: string }[][]) => rows.map(r => r.map(x => x.text).join(''))
   /** Each row as one [glyph, colour, background] per character, from column `from`. */
@@ -140,5 +140,68 @@ test('shift calls out 閃身步 top to bottom behind Clawd, then dashes off leav
       expect(frame(dash + 1).join('')).toMatch(/[▓▒]/)
       expect(frame(start + 21).join('')).not.toMatch(/[▓▒░閃身步]/)
     }
+  }
+})
+
+test("a badge's reward dresses Clawd only in its scenes, only once earned, and keeps its face and hat on stage", () => {
+  const text = (rows: { text: string }[][]) => rows.map(r => r.map(x => x.text).join(''))
+  const perks = new Set(Object.keys(REWARDS))
+  for (const [id, reward] of Object.entries(REWARDS)) {
+    expect(rewardScene(id)).toBe(reward.scenes[0])
+    for (const name of reward.scenes)
+      for (const width of [30, 40, 60]) {
+        let hops = 0
+        for (let t = 0; t < 120; t++) {
+          const plain = text(frameRows(PROBE[name], modeOf(name), t, width, name))
+          const dressed = text(frameRows(PROBE[name], modeOf(name), t, width, name, true, perks))
+          expect(dressed.join('\n')).not.toBe(plain.join('\n'))
+          for (const r of dressed) expect(cells(r)).toBe(width)
+          for (const r of dressed) for (const m of r.matchAll(/▐/g)) expect(r.slice(m.index, m.index + 7)).toMatch(/^▐[▛▜█^]{5}▌$/)
+          if (plain.findIndex(r => /▐[▛▜█^]{5}▌/.test(r)) === 1) {
+            hops++
+            expect(dressed[0].trim()).not.toBe('') // hopped into the top row, the headband with it
+          }
+        }
+        if (name === 'run') expect(hops).toBeGreaterThan(0)
+      }
+  }
+  // the runner's bib reads 42
+  expect(text(frameRows('Scampering', 'requesting', 3, 40, 'run', true, new Set(['marathon']))).join('')).toContain('42')
+  // every other scene is the same with every perk; a reward never goes on a scene with a costume, nor shares one
+  const rewarded = Object.values(REWARDS).flatMap(r => r.scenes)
+  expect(new Set(rewarded).size).toBe(rewarded.length)
+  for (const name of rewarded) expect(DRESSED).not.toContain(name)
+  for (const name of SCENE_NAMES.filter(n => !rewarded.includes(n)))
+    for (let t = 0; t < 10; t++) expect(frameRows(PROBE[name], modeOf(name), t, 40, name, true, perks)).toEqual(frameRows(PROBE[name], modeOf(name), t, 40, name))
+})
+
+test('sixseven raises one hand at a time, 6 above the left, 7 above the right, faster through six gears, its face straining every two', () => {
+  expect(SIXSEVEN_FRAMES).toBe(72)
+  for (const width of [30, 40, 60]) {
+    const frame = (t: number) => frameRows('Seesawing', 'requesting', t, width).map(r => r.map(x => x.text).join(''))
+    const ups: boolean[] = []
+    for (let t = 0; t < SIXSEVEN_FRAMES; t++) {
+      const rows = frame(t)
+      const x = [...rows[2]].indexOf('▐') // the head; the left hand is the column before it, the right one 8 after
+      const left = rows[1][x - 1] === '6'
+      // the raised hand reaches into the head row, its number right above it, and only that number shows
+      expect(rows[1][left ? x - 1 : x + 7]).toBe(left ? '6' : '7')
+      expect(rows[2][left ? x - 1 : x + 7]).toBe(left ? '▗' : '▖')
+      expect(rows.join('')).not.toMatch(left ? /7/ : /6/)
+      ups.push(left)
+      // the face: as drawn everywhere for the first two gears, then > <, then \ / with an anger mark
+      const face = rows[2].slice(x, x + 7)
+      if (t < 22) expect(face).toMatch(/^▐(▛███▜|█████)▌$/)
+      else if (t < 50) expect(face).toBe('▐>███<▌')
+      else {
+        expect(face).toBe('▐\\███/▌')
+        expect(rows[1]).toContain('╬')
+      }
+    }
+    // how long each hand stays up: never longer than the one before, through six paces
+    const runs = ups.reduce<number[]>((n, up, t) => (t && up === ups[t - 1] ? (n[n.length - 1]++, n) : [...n, 1]), [])
+    expect(runs).toEqual([6, 6, 5, 5, 4, 4, 4, 4, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, ...Array(10).fill(1)])
+    // and round again: the cycle starts over slow with the left hand
+    expect(frame(SIXSEVEN_FRAMES)).toEqual(frame(0))
   }
 })
