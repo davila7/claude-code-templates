@@ -82,7 +82,7 @@
         "groups": [
           {
             "group": "Data and integrations",
-            "pages": ["developers/catalog-api", "developers/download-tracking", "developers/ai-tools"]
+            "pages": ["developers/catalog-api", "developers/mcp-server", "developers/download-tracking", "developers/ai-tools"]
           }
         ]
       },

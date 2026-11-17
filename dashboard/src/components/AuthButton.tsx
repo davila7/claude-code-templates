@@ -51,11 +51,11 @@ function useGlobalAuth() {
     }
 
     function check() {
-      // If mock is enabled and not on Vercel, use mock data
-      const isVercel = window.location.hostname.includes('vercel.app') || 
+      // If mock is enabled and not on a deployed host, use mock data
+      const isDeployed = window.location.hostname.includes('pages.dev') || 
                        window.location.hostname.includes('claude.ai');
       
-      if (window.__authMockEnabled && !isVercel) {
+      if (window.__authMockEnabled && !isDeployed) {
         setState({
           isSignedIn: true,
           isLoaded: true,
@@ -174,10 +174,10 @@ function UserMenu({ user }: { user: ClerkUser }) {
           <div className="py-1">
             <button
               onClick={() => {
-                const isVercel = window.location.hostname.includes('vercel.app') || 
+                const isDeployed = window.location.hostname.includes('pages.dev') || 
                                  window.location.hostname.includes('claude.ai');
                 
-                if (window.__authMockEnabled && !isVercel) {
+                if (window.__authMockEnabled && !isDeployed) {
                   console.log('🔓 Mock sign out - disabling mock mode');
                   window.disableAuthMock?.();
                 } else {

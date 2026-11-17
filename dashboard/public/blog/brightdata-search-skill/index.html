@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bright Data Search Skill for Claude Code: Google Results as Structured JSON</title>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YWW6FV2SGN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-YWW6FV2SGN');
+    </script>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../../static/favicon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="../../static/favicon/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../../static/favicon/favicon-32x32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../../static/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="../../static/favicon/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="../../static/favicon/android-chrome-512x512.png">
+
+    <meta name="description" content="Install the Bright Data Search skill for Claude Code to run Google searches from your terminal session and get clean JSON results (title, link, description) through the Bright Data SERP API.">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://www.aitmpl.com/blog/brightdata-search-skill/">
+    <meta property="og:title" content="Bright Data Search Skill for Claude Code: Google Results as JSON">
+    <meta property="og:description" content="Install the Bright Data Search skill for Claude Code to run Google searches from your terminal session and get clean JSON results (title, link, description) through the Bright Data SERP API.">
+    <meta property="og:image" content="https://www.aitmpl.com/blog/assets/brightdata-search-skill-cover.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="article:author" content="Claude Code Templates">
+    <meta property="article:section" content="Skills">
+    <meta property="article:tag" content="Claude Code">
+    <meta property="article:tag" content="Skills">
+    <meta property="article:tag" content="Web Search">
+    <meta property="article:tag" content="Bright Data">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://www.aitmpl.com/blog/brightdata-search-skill/">
+    <meta name="twitter:title" content="Bright Data Search Skill for Claude Code: Google Results as JSON">
+    <meta name="twitter:description" content="Install the Bright Data Search skill for Claude Code to run Google searches from your terminal session and get clean JSON results (title, link, description) through the Bright Data SERP API.">
+    <meta name="twitter:image" content="https://www.aitmpl.com/blog/assets/brightdata-search-skill-cover.png">
+
+    <!-- Additional SEO -->
+    <meta name="keywords" content="Claude Code skill, Bright Data, Google search, SERP API, web search, Claude Code skills, structured JSON, jq, Claude Code web data">
+    <meta name="author" content="Claude Code Templates">
+    <link rel="canonical" href="https://www.aitmpl.com/blog/brightdata-search-skill/">
+
+    <link rel="stylesheet" href="../../css/styles.css">
+    <link rel="stylesheet" href="../../css/blog.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Hotjar Tracking Code for https://www.aitmpl.com -->
+    <script>
+        (function(h,o,t,j,a,r){
+            h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+            h._hjSettings={hjid:6519181,hjsv:6};
+            a=o.getElementsByTagName('head')[0];
+            r=o.createElement('script');r.async=1;
+            r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+            a.appendChild(r);
+        })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+    </script>
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Bright Data Search Skill for Claude Code: Google Results as Structured JSON",
+        "description": "Install the Bright Data Search skill for Claude Code to run Google searches from your terminal session and get clean JSON results (title, link, description) through the Bright Data SERP API.",
+        "image": "https://www.aitmpl.com/blog/assets/brightdata-search-skill-cover.png",
+        "author": {
+            "@type": "Organization",
+            "name": "Claude Code Templates"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Claude Code Templates",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://www.aitmpl.com/static/img/logo.svg"
+            }
+        },
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https://www.aitmpl.com/blog/brightdata-search-skill/"
+        },
+        "keywords": "Claude Code skill, Bright Data, Google search, SERP API, web search, structured JSON",
+        "wordCount": "850",
+        "articleSection": "Claude Code Skills",
+        "about": [
+            {
+                "@type": "Thing",
+                "name": "Claude Code"
+            },
+            {
+                "@type": "Thing",
+                "name": "Agent Skills"
+            },
+            {
+                "@type": "Thing",
+                "name": "Web Search"
+            },
+            {
+                "@type": "Thing",
+                "name": "SERP API"
+            },
+            {
+                "@type": "SoftwareApplication",
+                "name": "Claude Code",
+                "applicationCategory": "DeveloperApplication"
+            }
+        ]
+    }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="terminal-header">
+                    <div class="ascii-title">
+                        <pre class="ascii-art">
+██████╗ ██╗      ██████╗  ██████╗
+██╔══██╗██║     ██╔═══██╗██╔════╝
+██████╔╝██║     ██║   ██║██║  ███╗
+██╔══██╗██║     ██║   ██║██║   ██║
+██████╔╝███████╗╚██████╔╝╚██████╔╝
+╚═════╝ ╚══════╝ ╚═════╝  ╚═════╝</pre>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <a href="../../index.html" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z"/>
+                        </svg>
+                        Home
+                    </a>
+                    <a href="../index.html" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                        </svg>
+                        Blog
+                    </a>
+                    <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.30 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="terminal">
+        <header class="article-header">
+            <div class="container">
+                <!-- Copy Markdown Button -->
+                <button id="copy-markdown-btn" class="copy-markdown-button" title="Copy post as Markdown">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                    </svg>
+                    Copy as Markdown
+                </button>
+
+                <h1 class="article-title">Bright Data Search Skill for Claude Code: Google Results as Structured JSON</h1>
+                <p class="article-subtitle">Learn how to install the Bright Data Search skill, configure its two environment variables, and let Claude Code search Google and read the results as structured JSON.</p>
+                <div class="article-meta-full">
+                    <span class="read-time">5 min read</span>
+                    <div class="article-tags">
+                        <span class="tag">Claude Code</span>
+                        <span class="tag">Skill</span>
+                        <span class="tag">Web Search</span>
+                        <span class="tag">Bright Data</span>
+                        <span class="tag">SERP API</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <article class="article-body">
+            <img src="../assets/brightdata-search-skill-cover.png" alt="Bright Data Search Skill for Claude Code" class="article-cover" loading="lazy">
+
+            <div class="article-content-full">
+                <h2>What is the Bright Data Search Skill?</h2>
+
+                <p>The Search skill gives Claude Code a way to query Google and read the answer as data. It ships a small bash script that sends your query through the <a href="https://docs.brightdata.com" target="_blank" rel="noopener">Bright Data</a> SERP API and prints a compact JSON object with an <code>organic</code> array: one entry per result, each with a <code>title</code>, a <code>link</code> and a <code>description</code>. No HTML to parse, no ads or widgets to filter out.</p>
+
+                <!-- Mermaid Diagram -->
+                <div class="mermaid-diagram" style="background: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 2rem; margin: 2rem 0; text-align: center;">
+                    <pre class="mermaid">
+graph LR
+    A[💬 Your question] --> B[🔎 Search skill]
+    B --> C[⚡ Bright Data SERP API]
+    C --> D[✅ JSON: title, link, description]
+
+    style B fill:#F97316,stroke:#fff,color:#000
+                    </pre>
+                </div>
+
+                <h2>Key Capabilities</h2>
+                <ul>
+                    <li><strong>Structured results</strong> (an <code>organic</code> array with <code>title</code>, <code>link</code> and <code>description</code> for each hit)</li>
+                    <li><strong>Pagination</strong> (an optional 0-indexed page number: <code>1</code> returns results 11 to 20)</li>
+                    <li><strong>One readable script</strong> (about 50 lines of bash built on <code>curl</code> and <code>jq</code>, easy to audit)</li>
+                    <li><strong>Clear failure messages</strong> (the script stops and says which variable is missing instead of calling the API)</li>
+                    <li><strong>Model or manual invocation</strong> (Claude can pick it up when a task needs a web search, or you can call <code>/search</code> yourself)</li>
+                </ul>
+
+                <h2>Installation</h2>
+
+                <p>Install the skill using the Claude Code Templates CLI:</p>
+
+                <pre><code class="language-bash">npx claude-code-templates@latest --skill web-data/search</code></pre>
+
+                <p><strong>Where is the skill installed?</strong></p>
+                <p>Skills are saved in the <code>.claude/skills/</code> directory of your project, one folder per skill:</p>
+
+                <pre><code class="language-bash">your-project/
+├── .claude/
+│   └── skills/
+│       └── search/
+│           ├── SKILL.md          # ← Instructions Claude reads
+│           └── scripts/
+│               └── search.sh     # ← The script that calls the API
+├── src/
+└── package.json</code></pre>
+
+                <p>The script needs <code>curl</code> and <a href="https://jqlang.org" target="_blank" rel="noopener">jq</a> on your PATH, plus a Bright Data account. Searches go through your Bright Data zone and are billed by Bright Data according to your plan.</p>
+
+                <h2>How It Works</h2>
+
+                <p>The script builds a Google search URL from your query, posts it to <code>https://api.brightdata.com/request</code> with your zone name and <code>data_format: "parsed_light"</code>, and then uses <code>jq</code> to keep only the organic results that have both a link and a title:</p>
+
+                <pre><code class="language-json">{
+  "organic": [
+    {
+      "link": "https://example.com/article",
+      "title": "Article Title",
+      "description": "Brief description of the page..."
+    }
+  ]
+}</code></pre>
+
+                <p>Two environment variables drive it: <code>BRIGHTDATA_API_KEY</code> (sent as a Bearer token) and <code>BRIGHTDATA_UNLOCKER_ZONE</code> (the name of your Web Unlocker zone).</p>
+
+                <h2>Step-by-Step Workflow</h2>
+
+                <h3>Step 1: Install the skill</h3>
+                <pre><code class="language-bash">cd your-project
+npx claude-code-templates@latest --skill web-data/search</code></pre>
+
+                <h3>Step 2: Create a Bright Data key and zone</h3>
+                <p>In the <a href="https://brightdata.com/cp" target="_blank" rel="noopener">Bright Data control panel</a>, copy your API key, then click "Add" and create an "Unlocker zone". Note the zone name: the script needs it.</p>
+
+                <h3>Step 3: Give Claude Code the two variables</h3>
+                <p>Either export them in the shell before starting Claude Code:</p>
+
+                <pre><code class="language-bash">export BRIGHTDATA_API_KEY="your-api-key"
+export BRIGHTDATA_UNLOCKER_ZONE="your-zone-name"</code></pre>
+
+                <p>Or put them in <code>.claude/settings.local.json</code>, the personal settings file that is meant to stay out of git (add it to <code>.gitignore</code> if you create it by hand). Never put the key in the shared <code>.claude/settings.json</code>:</p>
+
+                <pre><code class="language-json">{
+  "env": {
+    "BRIGHTDATA_API_KEY": "your-api-key",
+    "BRIGHTDATA_UNLOCKER_ZONE": "your-zone-name"
+  }
+}</code></pre>
+
+                <h3>Step 4: Test the script on its own</h3>
+                <p>Run it from the project root before involving Claude, so you know the key and the zone work. A plain terminal does not read <code>.claude/settings.local.json</code>, so export both variables in that shell first (Step 3), or run the same command from inside Claude Code with the <code>!</code> prefix:</p>
+
+                <pre><code class="language-bash">bash .claude/skills/search/scripts/search.sh "claude code hooks documentation"
+
+# Page 2 of the same query
+bash .claude/skills/search/scripts/search.sh "claude code hooks documentation" 1</code></pre>
+
+                <p>The skill's own instructions write the command as <code>bash scripts/search.sh</code>, relative to the skill folder. Claude Code runs shell commands from your project directory, so the full path above is the one that resolves from the root.</p>
+
+                <h3>Step 5: Ask Claude to search</h3>
+                <pre><code class="language-bash">claude
+
+&gt; Search Google for the latest Astro 5 migration guides and summarize the top three results with their links</code></pre>
+
+                <p>Claude sees the skill's description, loads <code>SKILL.md</code> when the task calls for a search, runs the script and works from the JSON. You can also invoke it directly:</p>
+
+                <pre><code class="language-bash">&gt; /search "astro 5 migration guide"</code></pre>
+
+                <p>If <code>.claude/skills/</code> did not exist when the session started, run <code>/reload-skills</code> or restart Claude Code so the new skill is picked up.</p>
+
+                <h3>Step 6: Skip the permission prompt (optional)</h3>
+                <p>Claude asks before running a shell command it has not been allowed to run. To approve this script once and for all, add a rule to <code>.claude/settings.local.json</code>:</p>
+
+                <pre><code class="language-json">{
+  "permissions": {
+    "allow": [
+      "Bash(bash .claude/skills/search/scripts/search.sh *)"
+    ]
+  }
+}</code></pre>
+
+                <p>Permission rules match the command text, so keep the rule in the same form Claude uses to call the script.</p>
+
+                <h2>A Practical Use Case</h2>
+
+                <p>Search becomes useful when it feeds the next step of a task. A few prompts that work well:</p>
+
+                <ul>
+                    <li><strong>Dependency research:</strong> "Search for known issues upgrading Tailwind v3 to v4 and list the breaking changes that affect this repo."</li>
+                    <li><strong>Error triage:</strong> "Search for this exact error message and tell me which of the top results match our stack."</li>
+                    <li><strong>Source gathering:</strong> "Find five recent articles on Postgres connection pooling and write the links and one-line summaries to <code>docs/research.md</code>."</li>
+                </ul>
+
+                <p>The results contain titles, links and short descriptions only. When Claude needs the content of a page, pair this skill with its sibling, <code>web-data/scrape</code>, which fetches a URL as markdown through the same Bright Data zone:</p>
+
+                <pre><code class="language-bash">npx claude-code-templates@latest --skill web-data/search,web-data/scrape</code></pre>
+
+                <h2>Tips</h2>
+                <ul>
+                    <li>An empty <code>organic</code> array usually means the API returned an error instead of results: check the zone name and the key first.</li>
+                    <li>Ask for a specific number of results or pages so Claude does not page further than the task needs: each page is one billed request.</li>
+                    <li>Search results are untrusted text. Review what Claude plans to do with a page before letting it act on instructions found there.</li>
+                </ul>
+
+                <h2>Official Documentation</h2>
+                <p>For more information about skills in Claude Code, see the <a href="https://code.claude.com/docs/en/skills?utm_source=aitmpl&utm_medium=referral&utm_campaign=blog" target="_blank">official skills documentation</a>. The skill comes from the <a href="https://github.com/brightdata/skills" target="_blank" rel="noopener">Bright Data skills repository</a>.</p>
+
+                <p><strong>Created by <a href="https://x.com/dani_avila7" target="_blank" rel="noopener">Daniel Ávila</a></strong></p>
+
+                <!-- Explore Components Banner -->
+                <div class="explore-components-banner">
+                    <h3>Explore 800+ Claude Code Components</h3>
+                    <p>Discover agents, commands, MCPs, settings, hooks, skills and templates to supercharge your Claude Code workflow</p>
+                    <a href="../../index.html">Browse All Components</a>
+                </div>
+
+            </div>
+
+            <div class="article-nav">
+                <a href="../index.html" class="back-to-blog">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z"/>
+                    </svg>
+                    Back to Blog
+                </a>
+            </div>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <div class="footer-ascii">
+                        <pre class="footer-ascii-art"> █████╗ ██╗████████╗███╗   ███╗██████╗ ██╗
+██╔══██╗██║╚══██╔══╝████╗ ████║██╔══██╗██║
+███████║██║   ██║   ██╔████╔██║██████╔╝██║
+██╔══██║██║   ██║   ██║╚██╔╝██║██╔═══╝ ██║
+██║  ██║██║   ██║   ██║ ╚═╝ ██║██║     ███████╗
+╚═╝  ╚═╝╚═╝   ╚═╝   ╚═╝     ╚═╝╚═╝     ╚══════╝</pre>
+                        <p class="footer-tagline">Supercharge Anthropic's Claude Code</p>
+                    </div>
+                </div>
+
+                <div class="footer-right">
+                    <p class="footer-copyright">&copy; 2026 Claude Code Templates. Open source project.</p>
+                    <div class="footer-links">
+                        <a href="../../trending.html" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M16,6L18.29,8.29L13.41,13.17L9.41,9.17L2,16.59L3.41,18L9.41,12L13.41,16L19.71,9.71L22,12V6H16Z"/>
+                            </svg>
+                            Trending
+                        </a>
+                        <a href="https://docs.aitmpl.com/" target="_blank" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                            </svg>
+                            Documentation
+                        </a>
+                        <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.30 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                            GitHub
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Code Copy Functionality -->
+    <script>
+        // Code Copy Functionality for Blog Articles
+class CodeCopy {
+    constructor() {
+        this.initCodeBlocks();
+        this.setupCopyFunctionality();
+    }
+
+    initCodeBlocks() {
+        // Convert existing pre elements to new code-block structure
+        const preElements = document.querySelectorAll('.article-content-full pre:not(.converted)');
+
+        preElements.forEach(pre => {
+            const code = pre.querySelector('code');
+            if (!code) return;
+
+            // Detect language from class or content
+            const language = this.detectLanguage(code);
+            const isTerminal = language === 'bash' || language === 'terminal';
+
+            // Create new code block structure
+            const codeBlock = document.createElement('div');
+            codeBlock.className = isTerminal ? 'code-block terminal-block' : 'code-block';
+
+            // Create header
+            const header = document.createElement('div');
+            header.className = 'code-header';
+
+            const languageSpan = document.createElement('span');
+            languageSpan.className = 'code-language';
+            languageSpan.textContent = language;
+
+            const copyButton = document.createElement('button');
+            copyButton.className = 'copy-button';
+            copyButton.innerHTML = `
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                </svg>
+                Copy
+            `;
+
+            header.appendChild(languageSpan);
+            header.appendChild(copyButton);
+
+            // Clone and prepare the pre element
+            const newPre = pre.cloneNode(true);
+            newPre.classList.add('converted');
+
+            // Assemble new structure
+            codeBlock.appendChild(header);
+            codeBlock.appendChild(newPre);
+
+            // Replace original pre
+            pre.parentNode.replaceChild(codeBlock, pre);
+        });
+    }
+
+    detectLanguage(codeElement) {
+        // Check for class-based language detection
+        const className = codeElement.className;
+        if (className.includes('language-')) {
+            return className.match(/language-(\w+)/)[1];
+        }
+
+        // Check content patterns
+        const content = codeElement.textContent;
+
+        if (content.includes('npm ') || content.includes('$ ') || content.includes('claude-code ')) {
+            return 'bash';
+        }
+        if (content.includes('import ') && content.includes('from ')) {
+            return 'javascript';
+        }
+        if (content.includes('CREATE TABLE') || content.includes('SELECT ')) {
+            return 'sql';
+        }
+        if (content.includes('{') && content.includes('"')) {
+            return 'json';
+        }
+        if (content.includes('def ') || content.includes('import ')) {
+            return 'python';
+        }
+
+        return 'text';
+    }
+
+    setupCopyFunctionality() {
+        document.addEventListener('click', async (e) => {
+            if (!e.target.closest('.copy-button')) return;
+
+            const button = e.target.closest('.copy-button');
+            const codeBlock = button.closest('.code-block');
+            const pre = codeBlock.querySelector('pre');
+            const code = pre.querySelector('code');
+
+            if (!code) return;
+
+            try {
+                // Get clean text content
+                let textToCopy = code.textContent;
+
+                // Clean up terminal prompts if it's a terminal block
+                if (codeBlock.classList.contains('terminal-block')) {
+                    textToCopy = this.cleanTerminalOutput(textToCopy);
+                }
+
+                await navigator.clipboard.writeText(textToCopy);
+
+                // Update button state
+                const originalContent = button.innerHTML;
+                button.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                    Copied!
+                `;
+                button.classList.add('copied');
+
+                // Reset after 2 seconds
+                setTimeout(() => {
+                    button.innerHTML = originalContent;
+                    button.classList.remove('copied');
+                }, 2000);
+
+            } catch (err) {
+                console.error('Failed to copy code:', err);
+
+                // Fallback: select text
+                const selection = window.getSelection();
+                const range = document.createRange();
+                range.selectNodeContents(code);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+        });
+    }
+
+    cleanTerminalOutput(text) {
+        // Remove common terminal prompts and clean output
+        return text
+            .split('\n')
+            .map(line => {
+                // Remove prompts like "$ ", "❯ ", "claude-code> "
+                line = line.replace(/^[\$❯]\s*/, '').replace(/^claude-code>\s*/, '');
+
+                // Remove output/result comments (lines starting with # ✓)
+                if (line.trim().startsWith('# ✓') ||
+                    line.trim().startsWith('# Start using') ||
+                    line.trim().startsWith('# Your .claude') ||
+                    line.trim().startsWith('# This will') ||
+                    line.includes('Components will be installed') ||
+                    line.includes('directory now contains')) {
+                    return '';
+                }
+
+                return line;
+            })
+            .filter(line => line.trim() !== '') // Remove empty lines
+            .join('\n')
+            .trim();
+    }
+}
+
+// Initialize when DOM is loaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => new CodeCopy());
+} else {
+    new CodeCopy();
+}
+
+// Explore components banner hover effect
+document.addEventListener('DOMContentLoaded', () => {
+    const banner = document.querySelector('.explore-components-banner a');
+    if (banner) {
+        banner.addEventListener('mouseenter', () => {
+            banner.style.background = '#00cc33';
+            banner.style.transform = 'translateY(-2px)';
+        });
+        banner.addEventListener('mouseleave', () => {
+            banner.style.background = '#00ff41';
+            banner.style.transform = 'translateY(0)';
+        });
+    }
+});
+
+// Copy Markdown functionality
+class MarkdownCopier {
+    constructor() {
+        this.setupButton();
+    }
+
+    setupButton() {
+        const button = document.getElementById('copy-markdown-btn');
+        if (!button) return;
+
+        button.addEventListener('click', async () => {
+            const markdown = this.extractMarkdown();
+
+            try {
+                await navigator.clipboard.writeText(markdown);
+
+                // Update button state
+                const originalContent = button.innerHTML;
+                button.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                    ✓
+                `;
+                button.classList.add('copied');
+
+                // Reset after 2 seconds
+                setTimeout(() => {
+                    button.innerHTML = originalContent;
+                    button.classList.remove('copied');
+                }, 2000);
+
+            } catch (err) {
+                console.error('Failed to copy markdown:', err);
+            }
+        });
+    }
+
+    extractMarkdown() {
+        const title = document.querySelector('.article-title')?.textContent || '';
+        const subtitle = document.querySelector('.article-subtitle')?.textContent || '';
+        const date = document.querySelector('time')?.textContent || '';
+        const content = document.querySelector('.article-content-full');
+
+        let markdown = `# ${title}\n\n`;
+
+        if (subtitle) {
+            markdown += `${subtitle}\n\n`;
+        }
+
+        if (date) {
+            markdown += `*${date}*\n\n`;
+        }
+
+        if (!content) return markdown;
+
+        // Process content elements
+        const elements = content.children;
+
+        for (const element of elements) {
+            markdown += this.processElement(element) + '\n\n';
+        }
+
+        return markdown.trim();
+    }
+
+    processElement(element) {
+        const tagName = element.tagName.toLowerCase();
+
+        switch (tagName) {
+            case 'h2':
+                return `## ${element.textContent}`;
+            case 'h3':
+                return `### ${element.textContent}`;
+            case 'h4':
+                return `#### ${element.textContent}`;
+            case 'p':
+                return element.textContent;
+            case 'ul':
+                return this.processList(element, '-');
+            case 'ol':
+                return this.processList(element, '1.');
+            case 'table':
+                return this.processTable(element);
+            case 'pre':
+                return this.processCodeBlock(element);
+            case 'div':
+                if (element.classList.contains('code-block')) {
+                    return this.processCodeBlock(element.querySelector('pre'));
+                }
+                // Skip newsletter CTAs and other divs
+                if (element.classList.contains('newsletter-cta')) {
+                    return '';
+                }
+                return element.textContent || '';
+            case 'img':
+                const alt = element.getAttribute('alt') || '';
+                const src = element.getAttribute('src') || '';
+                return `![${alt}](${src})`;
+            default:
+                return element.textContent || '';
+        }
+    }
+
+    processList(listElement, marker) {
+        const items = listElement.querySelectorAll('li');
+        return Array.from(items)
+            .map(item => `${marker} ${item.textContent}`)
+            .join('\n');
+    }
+
+    processTable(table) {
+        const rows = table.querySelectorAll('tr');
+        if (rows.length === 0) return '';
+
+        let markdown = '';
+
+        // Process header
+        const headerRow = rows[0];
+        const headers = headerRow.querySelectorAll('th, td');
+        const headerText = Array.from(headers).map(h => h.textContent.trim()).join(' | ');
+        markdown += `| ${headerText} |\n`;
+
+        // Add separator
+        const separator = Array.from(headers).map(() => '---').join(' | ');
+        markdown += `| ${separator} |\n`;
+
+        // Process body rows
+        for (let i = 1; i < rows.length; i++) {
+            const row = rows[i];
+            const cells = row.querySelectorAll('td, th');
+            const cellText = Array.from(cells).map(c => c.textContent.trim()).join(' | ');
+            markdown += `| ${cellText} |\n`;
+        }
+
+        return markdown;
+    }
+
+    processCodeBlock(preElement) {
+        if (!preElement) return '';
+
+        const code = preElement.querySelector('code');
+        const codeText = code ? code.textContent : preElement.textContent;
+
+        // Detect language from parent code-block or code element classes
+        const codeBlock = preElement.closest('.code-block');
+        let language = '';
+
+        if (codeBlock) {
+            const languageSpan = codeBlock.querySelector('.code-language');
+            if (languageSpan) {
+                language = languageSpan.textContent.toLowerCase();
+            }
+        } else if (code && code.className.includes('language-')) {
+            language = code.className.match(/language-(\w+)/)?.[1] || '';
+        }
+
+        return `\`\`\`${language}\n${codeText}\n\`\`\``;
+    }
+}
+
+// Initialize markdown copier
+document.addEventListener('DOMContentLoaded', () => {
+    new MarkdownCopier();
+});
+    </script>
+
+    <!-- Mermaid Diagram Support -->
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: 'dark',
+        themeVariables: {
+          primaryColor: '#F97316',
+          primaryTextColor: '#fff',
+          primaryBorderColor: '#F97316',
+          lineColor: '#00ff41',
+          secondaryColor: '#1a1a1a',
+          tertiaryColor: '#2d2d2d'
+        }
+      });
+    </script>
+</body>
+</html>
