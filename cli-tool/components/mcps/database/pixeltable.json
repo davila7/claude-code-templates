@@ -5,12 +5,12 @@
       "command": "uvx",
       "args": [
         "--from",
-        "git+https://github.com/pixeltable/mcp-server-pixeltable-developer.git",
+        "mcp-server-pixeltable-developer==0.2.1",
         "mcp-server-pixeltable-developer"
       ],
       "env": {
-        "PIXELTABLE_MCP_PROJECT_ROOT": "<path-to-your-pixeltable-app>",
-        "PIXELTABLE_HOME": "<path-to-your-pixeltable-catalog>"
+        "PIXELTABLE_MCP_PROJECT_ROOT": "${PIXELTABLE_MCP_PROJECT_ROOT}",
+        "PIXELTABLE_HOME": "${PIXELTABLE_HOME}"
       }
     }
   }
