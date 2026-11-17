@@ -1,15 +1,16 @@
 ---
 name: witness
-description: Proves that an AI agent actually completed a coding task instead of only claiming it did. Use when about to claim a coding task is complete, when the user asks to verify an agent's work, or when acceptance criteria must be proven by deterministic checks instead of the model's own report.
+description: Proves that a coding task is actually complete instead of only claimed. Use at the start of a coding task to fix acceptance criteria with a human and capture a baseline, and before claiming the task is done to run deterministic checks. Also use when the user asks to verify an agent's work.
 ---
 
 # Witness: evidence instead of "done"
 
 ## When to use
 
+- **Before the work starts:** fix the acceptance criteria and capture a baseline, so the
+  criteria cannot later be bent to fit the result.
 - The agent finished a task and is about to say "done", "fixed", "passing".
 - The user asks whether the feature really works.
-- Acceptance criteria must be fixed **before** the agent starts, so they cannot be bent to fit the result.
 
 ## Hard rule
 
@@ -24,7 +25,9 @@ If the check was not run, say "not verified", not "should work".
    ```bash
    witness --version
    ```
-   If the command is missing, offer `npm i -g witness-cli` and install nothing without consent.
+   If the command is missing, stop. Do not install anything and do not run a package
+   manager: point the human to the install instructions in the project README and wait
+   for them to confirm. Installing software is the human's decision, not the agent's.
 
 2. **Initialise.**
    ```bash
@@ -47,6 +50,11 @@ If the check was not run, say "not verified", not "should work".
    The app must be running. For a non-default address use `--base-url http://127.0.0.1:<port>`.
    The baseline is what separates a real check from a tautology.
 
+   **If the work already started or finished before this skill was loaded**, an honest
+   baseline no longer exists. Say so explicitly, run the checks anyway, and report
+   "no baseline: before/after comparison unavailable". Never run `--baseline` after the
+   fact: that would present the finished app as the starting point and fake the differential.
+
 5. **After the work.**
    ```bash
    witness run
@@ -65,6 +73,7 @@ and immediately runs the check. The agent's code matters more than the check's c
 ## Forbidden
 
 - Weakening criteria after a run, deleting checks, setting `required: false` just to get green.
+- Running `--baseline` after the work to fabricate a before/after comparison.
 - Treating `skip` (manual steps) as proof of completion.
 - Checking a neighbouring route when the task names a different one.
 - Summarising the agent's report instead of the `witness run` output.
@@ -88,6 +97,9 @@ Failed:
 - <criterion>: <detail>
 Next step: <concrete action>
 ```
+
+If the checks ran without a baseline, keep the same format and append
+`(no baseline: before/after comparison unavailable)` to the verification line.
 
 Reply in the language the user writes in.
 
