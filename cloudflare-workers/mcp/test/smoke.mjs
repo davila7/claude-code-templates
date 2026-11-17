@@ -33,6 +33,10 @@ const typed = await call('search_components', { query: 'postgres', type: 'mcps',
 check(!typed.isError && typed.structuredContent.results.every((r) => r.type === 'mcps'), 'search filtered by type',
   typed.structuredContent?.results.map((r) => r.id).join(', '));
 
+const part = await call('search_components', { query: 'code review zzzqqqxxx', limit: 3 });
+check(!part.isError && part.structuredContent.match === 'partial' && part.structuredContent.results.length > 0,
+  'search_components falls back to partial matches', part.structuredContent?.match);
+
 const none = await call('search_components', { query: 'zzzqqqxxx' });
 check(!none.isError && none.structuredContent.total === 0, 'search with no matches');
 

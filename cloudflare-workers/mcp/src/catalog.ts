@@ -169,40 +169,67 @@ export function queryWords(query: string): string[] {
   return String(query || '').toLowerCase().split(/[^a-z0-9.+#-]+/).filter(Boolean);
 }
 
-export function scoreComponent(c: Component, words: string[]): number {
+/** Best score of one word against one component: 10 name word, 7 name, 5 path, 4/3 keyword, 1 description, 0 none. */
+export function wordScore(c: Component, word: string): number {
   const name = c.name.toLowerCase();
-  const nameWords = name.split(/[-_.]+/);
-  const path = c.installPath.toLowerCase();
+  if (name.split(/[-_.]+/).includes(word)) return 10;
+  if (name.includes(word)) return 7;
+  if (c.installPath.toLowerCase().includes(word)) return 5;
   const keywords = c.keywords.map((k) => String(k).toLowerCase());
-  const description = c.description.toLowerCase();
+  if (keywords.includes(word)) return 4;
+  if (keywords.some((k) => k.includes(word))) return 3;
+  if (c.description.toLowerCase().includes(word)) return 1;
+  return 0;
+}
+
+/** Same scoring as the CLI's --search: every word must match, else 0. */
+export function scoreComponent(c: Component, words: string[]): number {
   let score = 0;
   for (const word of words) {
-    let best = 0;
-    if (nameWords.includes(word)) best = 10;
-    else if (name.includes(word)) best = 7;
-    else if (path.includes(word)) best = 5;
-    else if (keywords.includes(word)) best = 4;
-    else if (keywords.some((k) => k.includes(word))) best = 3;
-    else if (description.includes(word)) best = 1;
+    const best = wordScore(c, word);
     if (best === 0) return 0;
     score += best;
   }
-  if (name === words.join('-')) score += 20;
+  if (c.name.toLowerCase() === words.join('-')) score += 20;
   return score;
 }
 
-export function search(catalog: Catalog, opts: { query: string; type?: ComponentType; category?: string; limit: number }) {
+export type SearchMatch = 'all' | 'partial';
+
+/**
+ * Every word must match (the CLI's --search). When that finds nothing and the
+ * query has several words, fall back to components matching some of them,
+ * most words matched first, and say so with match: 'partial'.
+ */
+export function search(catalog: Catalog, opts: { query: string; type?: ComponentType; category?: string; limit: number }):
+  { total: number; match: SearchMatch; results: Component[] } {
   const words = queryWords(opts.query);
   const category = opts.category?.toLowerCase();
+  const pool = catalog.components.filter((c) => (!opts.type || c.type === opts.type)
+    && (!category || c.category.toLowerCase() === category));
+
   const scored: Array<{ c: Component; score: number }> = [];
-  for (const c of catalog.components) {
-    if (opts.type && c.type !== opts.type) continue;
-    if (category && c.category.toLowerCase() !== category) continue;
+  for (const c of pool) {
     const score = scoreComponent(c, words);
     if (score > 0) scored.push({ c, score });
   }
-  scored.sort((a, b) => b.score - a.score || a.c.id.localeCompare(b.c.id));
-  return { total: scored.length, results: scored.slice(0, opts.limit).map((s) => s.c) };
+  if (scored.length > 0 || words.length < 2) {
+    scored.sort((a, b) => b.score - a.score || a.c.id.localeCompare(b.c.id));
+    return { total: scored.length, match: 'all', results: scored.slice(0, opts.limit).map((s) => s.c) };
+  }
+
+  const partial: Array<{ c: Component; matched: number; score: number }> = [];
+  for (const c of pool) {
+    let matched = 0;
+    let score = 0;
+    for (const word of words) {
+      const best = wordScore(c, word);
+      if (best > 0) { matched += 1; score += best; }
+    }
+    if (matched > 0) partial.push({ c, matched, score });
+  }
+  partial.sort((a, b) => b.matched - a.matched || b.score - a.score || a.c.id.localeCompare(b.c.id));
+  return { total: partial.length, match: 'partial', results: partial.slice(0, opts.limit).map((s) => s.c) };
 }
 
 // ---------- lookup ----------
