@@ -1,0 +1,17 @@
+# aitmpl MCP server: remote, read-only, no sign-in. Serves /mcp (Streamable HTTP).
+# No CI deploys this worker: `npx wrangler deploy` from this folder (see README.md).
+name = "aitmpl-mcp"
+main = "src/index.ts"
+compatibility_date = "2026-11-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Workers Custom Domain (Cloudflare creates the DNS record on the aitmpl.com zone).
+routes = [{ pattern = "mcp.aitmpl.com", custom_domain = true }]
+workers_dev = false
+
+[observability]
+enabled = true
+
+# Public hostnames the MCP endpoint answers on (Host/Origin checks against DNS rebinding).
+[vars]
+ALLOWED_HOSTNAMES = "mcp.aitmpl.com"

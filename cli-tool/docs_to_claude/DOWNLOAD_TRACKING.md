@@ -12,9 +12,9 @@ Este sistema rastrea las descargas e instalaciones de componentes de forma compl
 
 ## Arquitectura
 
-### Backend (Vercel + Supabase)
+### Backend (Cloudflare Pages + Supabase)
 
-1. **API Endpoint**: `/api/track-download-supabase.js`
+1. **API Endpoint**: `dashboard/src/pages/api/track-download-supabase.ts` (Astro API route)
    - Recibe requests POST con datos de descarga
    - Valida y almacena en Supabase (PostgreSQL)
    - Maneja rate limiting y validaciones
@@ -103,20 +103,16 @@ El tracking se desactiva automáticamente si:
    npm install
    ```
 
-2. Configurar Vercel:
+2. Levantar el dashboard (incluye el endpoint):
    ```bash
-   # Instalar Vercel CLI
-   npm i -g vercel
-   
-   # Configurar proyecto
-   vercel
+   cd dashboard && npm install && npx astro dev --port 4321
    ```
 
 3. Configurar base de datos (Supabase):
    ```bash
    # Crear proyecto en Supabase
    # Copiar SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY
-   # Agregar variables de entorno en Vercel Dashboard
+   # En producción: wrangler pages secret put SUPABASE_URL --project-name=aitmpl-dashboard (igual para SUPABASE_SERVICE_ROLE_KEY)
    ```
 
 ### Testing
@@ -137,8 +133,7 @@ curl -X POST https://www.aitmpl.com/api/track-download-supabase \
 ### Deployment
 
 ```bash
-# Deploy a Vercel
-vercel --prod
+# Deploy: automático al hacer merge a main (GitHub Actions, deploy.yml → Cloudflare Pages)
 
 # Verificar endpoints
 curl -X POST https://tu-dominio.com/api/track-download-supabase \
@@ -237,7 +232,7 @@ Los logs incluyen:
 2. **Base de datos no responde**:
    - Verificar `POSTGRES_URL`
    - Comprobar límites de conexión
-   - Revisar logs de Vercel
+   - Revisar logs: `npx wrangler pages deployment tail --project-name=aitmpl-dashboard`
 
 3. **Rate limiting activo**:
    - Espaciar requests
