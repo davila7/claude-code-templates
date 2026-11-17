@@ -36,6 +36,16 @@ describe('search', () => {
     expect(catalog.components.some((c) => (c.type as string) === 'templates')).toBe(false);
     expect(search(catalog, { query: 'champion', limit: 5 }).results[0].id).toBe('plugins/productivity/champion-kit');
   });
+
+  it('falls back to partial matches, most words first, only when nothing matches every word', () => {
+    expect(search(catalog, { query: 'code review', limit: 10 }).match).toBe('all');
+    const partial = search(catalog, { query: 'code review helm', limit: 10 });
+    expect(partial.match).toBe('partial');
+    expect(partial.results[0].id).toBe('commands/utilities/code-review');
+    expect(partial.results.map((c) => c.id)).toContain('hooks/git/pre-commit-review');
+    expect(search(catalog, { query: 'helm', limit: 10 })).toMatchObject({ total: 0, match: 'all' });
+    expect(search(catalog, { query: 'helm lint', limit: 10 })).toMatchObject({ total: 0, match: 'partial' });
+  });
 });
 
 describe('findComponent', () => {

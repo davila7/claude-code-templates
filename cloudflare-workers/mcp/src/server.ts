@@ -113,7 +113,8 @@ export function createServer(fetcher: Fetcher) {
       title: 'Search aitmpl components',
       description:
         'Search the aitmpl.com catalog of Claude Code components by text. Every word must appear in the name, path, keywords or description; '
-        + 'results are ordered by how well the text matches, then by id. Each result has its id, a one-line description, its page, '
+        + 'results are ordered by how well the text matches, then by id. If no component matches every word, it returns the ones matching '
+        + 'the most words, with match "partial": check that they fit before suggesting them. Each result has its id, a one-line description, its page, '
         + 'the CLI command that installs it, whether it runs code, and its SkillSpector scan.',
       inputSchema: z.object({
         query: z.string().trim().min(1).max(200).describe('Words to look for, e.g. "code review" or "postgres".'),
@@ -124,14 +125,17 @@ export function createServer(fetcher: Fetcher) {
       outputSchema: z.object({
         query: z.string(),
         total: z.number(),
+        match: z.enum(['all', 'partial']).describe('"partial" when no component matched every word and these match only some.'),
         results: z.array(summarySchema),
       }),
       annotations: { title: 'Search aitmpl components', ...READ_ONLY },
     },
     async ({ query, type, category, limit }) => withCatalog(fetcher, (catalog) => {
-      const { total, results } = search(catalog, { query, type: type as ComponentType | undefined, category, limit });
+      const { total, match, results } = search(catalog, { query, type: type as ComponentType | undefined, category, limit });
       const rows = results.map(summary);
-      return ok({ query, total, results: rows }, resultText(rows, total, query));
+      const text = resultText(rows, total, query);
+      return ok({ query, total, match, results: rows },
+        match === 'partial' ? `No component matches every word of "${query}"; these match some of them.\n${text}` : text);
     }),
   );
 

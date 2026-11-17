@@ -24,7 +24,7 @@ All four are read-only (`readOnlyHint: true`), declare `title`, `inputSchema` an
 returned command in a terminal (Claude Code), or the user copies it (claude.ai, Desktop, other clients
 without a shell). The CLI then tracks the install like any other, with the agent signal (CLI ≥ 1.32).
 
-**Ranking:** text match only, then id, the same scoring as the CLI's `--search`
+**Ranking:** text match only, then id, the same scoring as the CLI's `--search`. With no match for every word, it falls back to the components matching the most words (`match: "partial"`)
 (`cli-tool/src/catalog-lookup.js`). Downloads and sponsored placements never change the order, and the
 server does not read any ads data.
 
