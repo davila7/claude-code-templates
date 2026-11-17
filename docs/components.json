@@ -25968,6 +25968,38 @@
       }
     },
     {
+      "name": "aitmpl",
+      "path": "devtools/aitmpl.json",
+      "category": "devtools",
+      "type": "mcp",
+      "description": "Official MCP server of the aitmpl.com catalog: lets Claude search Claude Code components (agents, commands, skills, hooks, MCP servers, settings, loops, mods and plugins), read one with its full content and SkillSpector scan, and get the claude-code-templates command that installs it. Remote, read-only, no sign-in; it installs nothing itself, Claude runs the returned command.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "hash": "ebb3d02a230b1ebc",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-17T03:16:25Z"
+      }
+    },
+    {
       "name": "android-mcp",
       "path": "devtools/android-mcp.json",
       "category": "devtools",
