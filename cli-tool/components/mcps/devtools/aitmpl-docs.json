@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "aitmpl-docs": {
+      "description": "Official search MCP server of the Claude Code Templates docs (docs.aitmpl.com, hosted by Mintlify): lets Claude Code search and read the CLI, component and catalog documentation before installing or writing components. Remote, no sign-in required. Every tool is read-only except the feedback tool, which sends a report about a wrong or outdated page to the docs team.",
+      "type": "http",
+      "url": "https://docs.aitmpl.com/mcp"
+    }
+  }
+}

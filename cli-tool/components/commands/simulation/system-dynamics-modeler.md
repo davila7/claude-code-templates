@@ -1,6 +1,6 @@
 ---
 allowed-tools: Read, Write, Edit, WebSearch
-argument-hint: [system-type] | --business-ecosystem | --organizational-dynamics | --market-evolution | --feedback-loops
+argument-hint: "[system-type] | --business-ecosystem | --organizational-dynamics | --market-evolution | --feedback-loops"
 description: Model complex system dynamics with feedback loops, delays, and emergent behavior analysis
 ---
 

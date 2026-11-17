@@ -1,12 +1,13 @@
 ---
 name: railway-new
 description: Create Railway projects, services, and databases with proper configuration. Use when user says "setup", "deploy to railway", "initialize", "create project", "create service", or wants to deploy from GitHub. Handles initial setup AND adding services to existing projects. For databases, use railway-railway-database skill instead.
-version: 1.0.0
-author: Railway
 license: MIT
-tags: [Railway, Project, Service, Setup, Initialize, Deploy, Infrastructure, Scaffolding]
-dependencies: [railway-cli]
 allowed-tools: Bash(railway:*), Bash(which:*), Bash(command:*), Bash(npm:*), Bash(npx:*)
+metadata:
+  version: 1.0.0
+  author: Railway
+  tags: [Railway, Project, Service, Setup, Initialize, Deploy, Infrastructure, Scaffolding]
+  dependencies: [railway-cli]
 ---
 
 # New Project / Service / Database

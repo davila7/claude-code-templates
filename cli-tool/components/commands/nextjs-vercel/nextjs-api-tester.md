@@ -1,6 +1,6 @@
 ---
 allowed-tools: Read, Write, Edit, Bash
-argument-hint: [route-path] [--method=GET] [--data='{}'] [--headers='{}']
+argument-hint: "[route-path] [--method=GET] [--data='{}'] [--headers='{}']"
 description: Test and validate Next.js API routes with comprehensive test scenarios
 ---
 

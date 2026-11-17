@@ -1,0 +1,7 @@
+{
+  "repo": "google/elephant-goldfish-model",
+  "path": "distributions/claude",
+  "commit": "b3a35956759bf7f024af2ff061b2e0b44b438e4c",
+  "license": "Apache-2.0",
+  "author": "Google"
+}

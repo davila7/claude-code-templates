@@ -1,0 +1,57 @@
+---
+title: "Quickstart"
+description: "Install your first Claude Code component in two minutes, from the catalog browser or with one command."
+---
+
+You need Node.js 18 or newer (the CLI uses the built-in `fetch`) and Claude Code. Nothing is installed globally: `npx` runs the latest CLI each time.
+
+<Steps>
+  <Step title="Open the catalog browser">
+    Run the CLI with no arguments, from the root of your project:
+
+    ```bash
+    npx claude-code-templates@latest
+    ```
+
+    Pick a type, search, select one or more components (across types too), then confirm the install plan. Without a terminal (an AI agent, CI, a pipe) it prints a short usage text and exits instead of waiting for input.
+  </Step>
+  <Step title="Or install by path">
+    Every component has a path, `category/name`, shown on its page at [aitmpl.com](https://www.aitmpl.com):
+
+    ```bash
+    npx claude-code-templates@latest --agent development-team/frontend-developer
+    ```
+
+    Always pass the category. A bare name such as `frontend-developer`, without its category, is not found.
+  </Step>
+  <Step title="Use it in Claude Code">
+    Start `claude` in the same folder. An agent shows up in `/agents`, a command as `/name`, an MCP server in `/mcp`, a hook in `/hooks`. Skills and mods load on their own.
+  </Step>
+</Steps>
+
+## Install a whole stack at once
+
+Flags combine, and each takes a comma-separated list:
+
+```bash
+npx claude-code-templates@latest \
+  --agent development-team/frontend-developer,security/security-auditor \
+  --command testing/generate-tests \
+  --mcp devtools/context7 \
+  --setting permissions/read-only-mode \
+  --hook automation/simple-notifications \
+  --yes
+```
+
+`--yes` skips every prompt and writes settings and hooks to `.claude/settings.local.json`. The stack builder on aitmpl.com produces the same command for you. See [Stacks](/guides/stacks).
+
+## Next
+
+<CardGroup cols={2}>
+  <Card title="Where files are written" icon="folder-tree" href="/installation">
+    Project vs user scope, and how existing config is merged.
+  </Card>
+  <Card title="Component types" icon="layer-group" href="/components/overview">
+    Pick the right type for what you want Claude to do.
+  </Card>
+</CardGroup>

@@ -3,7 +3,7 @@
     "humanpen": {
       "description": "Document-level AI humanizer — rewrite a whole .docx/.pptx, selected passages, or Turnitin/iThenticate-flagged text in place, keeping formatting, tables, citations and formulas intact.",
       "command": "npx",
-      "args": ["-y", "humanpen-mcp"],
+      "args": ["-y", "humanpen-mcp@1.4.4"],
       "env": {
         "HUMANPEN_API_KEY": "<your-api-key>"
       }

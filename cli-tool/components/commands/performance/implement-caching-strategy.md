@@ -1,6 +1,6 @@
 ---
 allowed-tools: Read, Bash, Grep, Glob
-argument-hint: [cache-type] | --browser | --application | --database
+argument-hint: "[cache-type] | --browser | --application | --database"
 description: Design and implement comprehensive caching solutions for improved performance and scalability
 ---
 

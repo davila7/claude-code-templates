@@ -1,13 +1,14 @@
 ---
 name: pydantic-ai
 description: "Build production-ready AI agents with PydanticAI — type-safe tool use, structured outputs, dependency injection, and multi-model support."
-category: ai-agents
-risk: safe
-source: community
-date_added: "2026-03-18"
-author: suhaibjanjua
-tags: [pydantic-ai, ai-agents, llm, openai, anthropic, gemini, tool-use, structured-output, python]
-tools: [claude, cursor, gemini]
+metadata:
+  category: ai-agents
+  risk: safe
+  source: community
+  date_added: "2026-03-18"
+  author: suhaibjanjua
+  tags: [pydantic-ai, ai-agents, llm, openai, anthropic, gemini, tool-use, structured-output, python]
+  tools: [claude, cursor, gemini]
 ---
 
 # PydanticAI — Typed AI Agents in Python

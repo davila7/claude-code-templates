@@ -13,6 +13,11 @@
  *     changes: an idle, expired session costs nothing
  *   - a row above the prompt (the AbovePrompt component), an optional status
  *     line entry, and `/cache`, a pane with one row per turn
+ *   - idle compaction (Claude Code 2.1.290+): when Claude Code will compact
+ *     the conversation by itself before the 1-hour cache lapses, the band
+ *     counts down to that moment as well as to the expiry, and
+ *     `session.compact` (trigger "idle") says when it happened (see idlePolicy
+ *     in ./cache.ts for the conditions)
  *
  * The lifetime is counted from the start of the request that last wrote or read
  * the cache, as Anthropic documents it. Which lifetime Claude Code asked for
@@ -32,6 +37,7 @@
  *   band: boolean               row above the prompt (default true)
  *   status: boolean             entry under the prompt (default false)
  *   toast: boolean              toasts near expiry: at warnSeconds, then 10, 3, 2 and 1 s (default true)
+ *   idleCompact: boolean        idle compaction countdown and notice (default true)
  */
 import type { EngineInterface, Register } from 'claude-code'
 import {
@@ -43,6 +49,8 @@ import {
   fmtClock,
   fmtTokens,
   hitRatio,
+  idleCompactAt,
+  idlePolicy,
   isCachingDisabled,
   accountOf,
   decideTtl,
@@ -56,7 +64,7 @@ import {
   rowRatio,
   segments,
 } from './cache.ts'
-import type { Account, Advice, CacheEnv, Sample, Ttl } from './cache.ts'
+import type { Account, Advice, CacheEnv, IdleCompact, Sample, Ttl } from './cache.ts'
 
 const PANE = 'cache'
 const COMMAND = 'cache'
@@ -79,6 +87,9 @@ let lastKey = ''
 let toastedFor = 0
 let toastLevel = Infinity
 let isPaneOpen = false
+let idle: IdleCompact = idlePolicy({})
+// the last compaction of the main conversation: a cache entry older than it is gone
+let compacted: { at: number; trigger: string; before?: number; after?: number } | undefined
 
 type Policy = { warnMs: number; compactAtTokens: number }
 
@@ -86,10 +97,21 @@ function current(policy: Policy, now: number) {
   const last = samples[samples.length - 1]
   const prev = samples[samples.length - 2]
   const disabled = last ? isCachingDisabled(last.model, env) : isCachingDisabled('', env)
+  if (last && compacted && compacted.at > last.startedAt) {
+    // the conversation the last request cached is gone: the next one starts from the summary
+    const sizes = compacted.before && compacted.after ? ` (${fmtTokens(compacted.before)} → ${fmtTokens(compacted.after)})` : ''
+    const how = compacted.trigger === 'idle' ? 'compacted while idle' : 'compacted'
+    const advice: Advice = { kind: 'cold', text: `${how}${sizes}: the next message starts from the summary` }
+    return { last, advice, left: 0, idleAt: undefined }
+  }
   const advice: Advice = advise(last, prev, { ttl, ...policy }, now, disabled)
   const left = last ? remainingMs(last, ttl, now) : 0
-  return { last, advice, left }
+  const idleAt = disabled ? undefined : idleCompactAt(last, ttl, idle, now)
+  return { last, advice, left, idleAt }
 }
+
+// "⇣ 41:12" until Claude Code compacts on its own, "⇣ now" once that moment has come
+const idleClock = (idleAt: number, now: number) => (idleAt > now ? `⇣ ${fmtClock(idleAt - now)}` : '⇣ now')
 
 const COLOR: Record<Advice['kind'], string | undefined> = {
   warm: 'green',
@@ -108,21 +130,42 @@ function shortLine(policy: Policy, now: number): string {
   return `cache ${Math.round(hitRatio(last) * 100)}%${clock}`
 }
 
-// the promptCacheTtl setting, from the settings files that can carry it (local over project over user)
-async function readSetting($: EngineInterface): Promise<unknown> {
+type Settings = { promptCacheTtl?: unknown; idleCompaction?: unknown; autoCompactEnabled?: unknown }
+
+// the settings the mod follows, each from the first settings file that sets it (local over project over user)
+async function readSettings($: EngineInterface): Promise<Settings> {
   const home = await $.env.get('HOME').catch(() => undefined)
   const cwd = await $.session.cwd().catch(() => undefined)
   const files = [cwd && `${cwd}/.claude/settings.local.json`, cwd && `${cwd}/.claude/settings.json`, home && `${home}/.claude/settings.json`]
+  const out: Settings = {}
   for (const file of files) {
     if (!file) continue
     try {
-      const value = JSON.parse(await $.fs.read(file)).promptCacheTtl
-      if (value === '5m' || value === '1h') return value
+      const json = JSON.parse(await $.fs.read(file))
+      if (out.promptCacheTtl === undefined && (json.promptCacheTtl === '5m' || json.promptCacheTtl === '1h')) out.promptCacheTtl = json.promptCacheTtl
+      if (out.idleCompaction === undefined && typeof json.idleCompaction === 'boolean') out.idleCompaction = json.idleCompaction
+      if (out.autoCompactEnabled === undefined && typeof json.autoCompactEnabled === 'boolean') out.autoCompactEnabled = json.autoCompactEnabled
     } catch {
       // missing or unreadable: the next file
     }
   }
-  return undefined
+  return out
+}
+
+// Claude Code's global config: the cached idle-compaction rollout flag, and autoCompactEnabled as /config saves it.
+// Only those two keys are kept; nothing else in the file is held by the mod.
+async function readGlobalConfig($: EngineInterface): Promise<{ flag?: unknown; autoCompact?: unknown }> {
+  const dir = await $.env.get('CLAUDE_CONFIG_DIR').catch(() => undefined)
+  const home = await $.env.get('HOME').catch(() => undefined)
+  const file = dir ? `${dir}/.claude.json` : home ? `${home}/.claude.json` : undefined
+  if (!file) return {}
+  try {
+    const json = JSON.parse(await $.fs.read(file))
+    const flag = json?.cachedGrowthBookFeatures?.tengu_sunny_locket
+    return { flag: flag && typeof flag === 'object' ? flag : undefined, autoCompact: json?.autoCompactEnabled }
+  } catch {
+    return {}
+  }
 }
 
 export const register: Register = (on, options) => {
@@ -133,12 +176,14 @@ export const register: Register = (on, options) => {
   const showBand = options.band !== false
   const showStatus = options.status === true
   const wantToast = options.toast !== false
+  const showIdle = options.idleCompact !== false
 
   on('session.start', async ($, e, next) => {
     const r = await next(e)
     samples = []
     lastKey = ''
     toastedFor = 0
+    compacted = undefined
     const none = () => undefined
     env = {
       enable1h: await $.env.get('ENABLE_PROMPT_CACHING_1H').catch(none),
@@ -151,7 +196,17 @@ export const register: Register = (on, options) => {
     }
     pinned = options.ttl === '5m' || options.ttl === '1h'
     observed = undefined
-    setting = await readSetting($)
+    const settings = await readSettings($)
+    setting = settings.promptCacheTtl
+    const global = await readGlobalConfig($)
+    idle = idlePolicy({
+      minTokensVar: await $.env.get('CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS').catch(none),
+      disableAuto: await $.env.get('DISABLE_AUTO_COMPACT').catch(none),
+      disableAll: await $.env.get('DISABLE_COMPACT').catch(none),
+      setting: settings.idleCompaction,
+      autoCompact: settings.autoCompactEnabled ?? global.autoCompact,
+      flag: global.flag,
+    })
     account = accountOf((await $.session.usage().catch(() => undefined))?.rateLimits ?? [])
     const choice = decideTtl(options.ttl, env, setting, account)
     baseTtl = choice.ttl
@@ -168,12 +223,13 @@ export const register: Register = (on, options) => {
       })
       .catch(err => $.ui.log(`prompt-cache-control: /${COMMAND} not registered: ${err}`))
     $.ui.log(`prompt-cache-control loaded: ${ttl} cache (${ttlSource}), /${COMMAND} opens the table`, { to: 'debug' })
+    $.ui.log(`prompt-cache-control: idle compaction ${idle.on ? 'on' : 'off'}, ${idle.why}${idle.known ? '' : ' (rollout flag not found)'}`, { to: 'debug' })
 
     timer?.cancel()
     timer = $.clock.every(1000, () => {
       const now = Date.now()
-      const { last, advice, left } = current(policy, now)
-      const key = `${advice.kind}|${advice.text}|${left > 0 ? fmtClock(left) : ''}`
+      const { last, advice, left, idleAt } = current(policy, now)
+      const key = `${advice.kind}|${advice.text}|${left > 0 ? fmtClock(left) : ''}|${showIdle && idleAt ? idleClock(idleAt, now) : ''}`
       if (key !== lastKey) {
         lastKey = key
         if (showStatus) $.ui.status(shortLine(policy, now))
@@ -203,6 +259,7 @@ export const register: Register = (on, options) => {
       samples = []
       lastKey = ''
       toastedFor = 0
+      compacted = undefined
       observed = undefined
       ttl = baseTtl
       ttlSource = envSource
@@ -212,6 +269,25 @@ export const register: Register = (on, options) => {
     timer?.cancel()
     timer = undefined
     return next(e)
+  })
+
+  // a compaction of the main conversation replaces what the cache held; "idle" is Claude Code compacting on its own (2.1.290+)
+  on('session.compact', async ($, e, next) => {
+    const r = await next(e)
+    // a precompute only prepares a summary; the conversation is unchanged until it is used.
+    // "idle" is newer than the d.ts (2.1.283), hence the string: re-check when it is regenerated
+    const trigger = String(e.trigger)
+    if (e.agentId || trigger === 'precompute' || 'skip' in r) return r
+    compacted = { at: Date.now(), trigger, before: r.tokensBefore, after: r.tokensAfter }
+    lastKey = ''
+    if (trigger === 'idle') {
+      const sizes = r.tokensBefore && r.tokensAfter ? ` ${fmtTokens(r.tokensBefore)} → ${fmtTokens(r.tokensAfter)} tokens` : ''
+      $.ui.log(`prompt-cache-control: compacted while idle${sizes}, before the ${ttl} cache lapsed`)
+      if (showIdle && wantToast) $.ui.toast(`compacted while idle${sizes}: your next message starts from the summary`)
+    }
+    if (showStatus) $.ui.status(shortLine(policy, Date.now()))
+    $.ui.invalidate('ui.render')
+    return r
   })
 
   // each main-loop request: what the cache did with it
@@ -283,7 +359,8 @@ export const register: Register = (on, options) => {
 
   on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
     if (!showBand || e.props.hasSurvey || isPaneOpen) return next(e)
-    const { last, advice, left } = current(policy, Date.now())
+    const now = Date.now()
+    const { last, advice, left, idleAt } = current(policy, now)
     if (!last && advice.kind !== 'off') return next(e)
     const { Box, Text } = $.ui.resolve(e)
     const columns = e.viewport?.columns ?? 100
@@ -316,10 +393,11 @@ export const register: Register = (on, options) => {
         ) : (
           <Text dimColor>{`${fmtTokens(promptTokens(last))} tok`}</Text>
         )}
-        {advice.kind !== 'uncached' && advice.kind !== 'off' && (
+        {advice.kind !== 'uncached' && advice.kind !== 'off' && advice.kind !== 'cold' && (
           <Text bold color={left > 0 ? lifeColor(left, ttl, policy.warnMs) : 'red'}>{left > 0 ? `⏱ ${fmtClock(left)}` : '⏱ 0:00'}</Text>
         )}
-        <Text dimColor wrap="truncate-end">{`${ttl} · ${advice.text}`}</Text>
+        {showIdle && idleAt !== undefined && <Text bold color="magenta">{idleClock(idleAt, now)}</Text>}
+        <Text dimColor wrap="truncate-end">{`${ttl} · ${showIdle && idleAt !== undefined ? (idleAt > now ? 'left idle, Claude Code compacts it before the cache lapses' : 'compacting while idle') : advice.text}`}</Text>
       </Box>,
     )
   })
@@ -331,9 +409,9 @@ export const register: Register = (on, options) => {
     // HTML collapses runs of spaces and trims a text's ends; a no-break space keeps them
     const sp = (t: string) => (e.surface === 'terminal' ? t : t.replace(/ /g, ' '))
     const now = Date.now()
-    const { last, advice, left } = current(policy, now)
+    const { last, advice, left, idleAt } = current(policy, now)
     const all = byTurn(samples)
-    const counting = !!last && advice.kind !== 'uncached' && advice.kind !== 'off'
+    const counting = !!last && advice.kind !== 'uncached' && advice.kind !== 'off' && advice.kind !== 'cold'
     // the countdown goes green, then yellow, then red as the cache runs out
     const clockColor = counting ? lifeColor(left, ttl, policy.warnMs) : undefined
     const stateColor = advice.kind === 'expired' || advice.kind === 'miss' ? 'red' : (clockColor ?? COLOR[advice.kind])
@@ -355,6 +433,14 @@ export const register: Register = (on, options) => {
     const lifeFilled = Math.round(life * barW)
     const [sr, sw, sn] = last ? segments(last.read, last.write, last.fresh, barW) : [0, 0, 0]
     const rows = all.slice(-Math.max(3, (e.viewport?.rows ?? 24) - 16))
+    // why the idle-compaction line says what it says
+    const idleDetail = (at: number | undefined) => {
+      if (!idle.on) return `${idle.why}`
+      if (at !== undefined) return `if nobody types, Claude Code compacts at ${Math.round(idle.fraction * 100)}% of the 1h cache, ${idle.why}`
+      if (ttl !== '1h') return `needs the 1h cache; this session's is ${ttl}`
+      if (last && promptTokens(last) < idle.minTokens) return `waits for ${fmtTokens(idle.minTokens)} tokens; the prompt is ${fmtTokens(promptTokens(last))}`
+      return `armed while the cache is warm, ${idle.why}`
+    }
     const icon = advice.kind === 'warm' ? '●' : advice.kind === 'soon' ? '▲' : advice.kind === 'expired' || advice.kind === 'miss' ? '✖' : '○'
 
     return (
@@ -378,6 +464,15 @@ export const register: Register = (on, options) => {
           <Text bold color={stateColor}>{sp(`${icon} ${advice.text}`)}</Text>
           {last ? <Text dimColor>{sp(fit(`${last.model} · prompt ${fmtTokens(promptTokens(last))} tokens`, width))}</Text> : null}
         </Box>
+
+        {showIdle ? (
+          <Box key="idle" marginTop={1} flexDirection="column">
+            <Text bold color={idleAt !== undefined ? 'magenta' : undefined} dimColor={idleAt === undefined}>
+              {sp(idleAt !== undefined ? `${idleClock(idleAt, now)} idle compaction` : `⇣ idle compaction ${idle.on ? 'on' : 'off'}`)}
+            </Text>
+            <Text dimColor>{sp(fit(idleDetail(idleAt), width))}</Text>
+          </Box>
+        ) : null}
 
         {last ? (
           <Box key="stack" flexDirection="column" marginTop={1}>

@@ -24,7 +24,7 @@ Untrusted input enters through:
   the user's browser can reach them.
 - **The public dashboard API** (`dashboard/src/pages/api/`, Astro routes on Cloudflare Pages,
   serving www.aitmpl.com). Every request body, query string and header is untrusted; some
-  routes use Clerk auth, a shared trigger secret, or Discord request signatures.
+  routes use Clerk auth or a shared trigger secret.
 
 ## Components that matter most / least
 
@@ -70,7 +70,7 @@ Out of scope:
   dashboard API or CI.
 - High: writing outside `.claude/`, the project directory or `~/.claude/` without code
   execution; reading local files through a dashboard server; auth bypass in API routes;
-  leaking Supabase, Neon, Clerk or Discord credentials.
+  leaking Supabase, Neon or Clerk credentials.
 - Medium: issues needing a local attacker already running as the user, stored or reflected
   XSS on aitmpl.com without session impact, open redirects.
 - Low: denial of service, missing hardening headers, telemetry privacy issues.

@@ -1,7 +1,8 @@
 ---
 name: rag-implementation
 description: "Retrieval-Augmented Generation patterns including chunking, embeddings, vector stores, and retrieval optimization Use when: rag, retrieval augmented, vector search, embeddings, semantic search."
-source: vibeship-spawner-skills (Apache 2.0)
+metadata:
+  source: vibeship-spawner-skills (Apache 2.0)
 ---
 
 # RAG Implementation

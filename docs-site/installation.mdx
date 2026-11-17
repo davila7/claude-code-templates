@@ -1,0 +1,46 @@
+---
+title: "Installation and file locations"
+description: "Where the CLI writes each component type, which scope it uses, and how it merges into existing Claude Code configuration."
+---
+
+The CLI writes into the current folder unless you pass `--directory <path>`. It never deletes your files: JSON configuration is merged key by key, and Markdown components are written next to the ones you already have.
+
+## Where each type goes
+
+| Type | Flag | Written to |
+| --- | --- | --- |
+| Agent | `--agent` | `.claude/agents/<name>.md` |
+| Command | `--command` | `.claude/commands/<name>.md` |
+| Skill | `--skill` | `.claude/skills/<name>/` (the whole folder) |
+| Hook | `--hook` | merged into the `hooks` key of the settings file you choose; scripts go to `.claude/hooks/` |
+| MCP server | `--mcp` | merged into `.mcp.json` |
+| Setting | `--setting` | merged into the settings file you choose; status line scripts go to `.claude/scripts/` |
+| Loop | `--loop` | `.claude/loops/<name>.md`, plus every component the loop lists |
+| Mod | `--mod` | `.claude/skills/<name>/` (a complete plugin directory) |
+| Plugin | `--plugin` | installed by Claude Code itself into `~/.claude/plugins/cache/aitmpl/` |
+| Template | `--template` | `CLAUDE.md` and starter files in the project |
+
+## Settings scope
+
+Settings and hooks ask where to go. With `--yes`, or when there is no terminal to ask, they go to **local**.
+
+| Scope | File | Use it for |
+| --- | --- | --- |
+| Local (default) | `.claude/settings.local.json` | Personal settings, not committed |
+| Project | `.claude/settings.json` | Settings the whole team shares |
+| User | `~/.claude/settings.json` | Every project on your machine |
+| Enterprise | `managed-settings.json` in the system folder | Organisation policy; needs admin rights |
+
+Claude Code reads custom themes only from `~/.claude/themes/`, so a setting that ships a theme writes it there whatever scope you pick.
+
+## Preview before writing
+
+```bash
+npx claude-code-templates@latest --agent security/security-auditor --dry-run
+```
+
+`--dry-run` lists every file the install would write and changes nothing.
+
+## Updating a component
+
+Run the same install command again. The CLI downloads the current version from `main` and replaces the file. Your own edits to that file are overwritten, so commit them first or keep them under a different name.

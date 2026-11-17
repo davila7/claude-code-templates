@@ -344,7 +344,7 @@ buildFilter:
 
 ### Purpose
 
-Internal services accessible only within your Render account. Not exposed to the internet.
+Services that receive traffic only from other Render services on the same private network. They aren't exposed to the public internet.
 
 ### Use Cases
 
@@ -360,9 +360,9 @@ Internal services accessible only within your Render account. Not exposed to the
 - **No public URL**: Only accessible via internal DNS
 - **Internal networking**: Fast, low-latency connections
 - **Port binding required**: Must bind to `0.0.0.0:$PORT`
-- **Private DNS**: `[service-name].render-internal.com`
-- **Same-account only**: Only accessible from same account
-- **No internet access**: Traffic stays within Render network
+- **Private hostname**: Each service has a unique internal hostname
+- **Private-network scope**: The connecting service must be in the same workspace and region
+- **No public ingress**: Can't be accessed from the public internet
 
 ### Required Configuration
 
@@ -374,16 +374,15 @@ buildCommand: npm ci
 startCommand: npm start
 ```
 
-### Accessing Private Services
+### Internal Addresses
 
-From other services in the same account:
+Render gives each web service and private service a unique hostname on the private network. The hostname is stable and maps to instance IPs which can change between deploys. Free web services can't receive private traffic.
 
-```javascript
-// Use .render-internal.com domain
-const API_URL = 'http://internal-api.render-internal.com:10000';
-```
+Services can communicate over the private network when they belong to the same workspace and region. Find the internal address in the service's **Connect** menu under **Internal**. Private services also show it as the **Service Address**.
 
-Or use service references:
+An internal address has the form `internal-hostname:port`. Add the protocol when the client requires one, for example `http://internal-hostname:port`.
+
+In a Blueprint, use `fromService` to inject the address into another service:
 
 ```yaml
 services:
@@ -391,22 +390,22 @@ services:
     name: frontend
     runtime: node
     envVars:
-      - key: INTERNAL_API_URL
+      - key: API_URL
         fromService:
           name: internal-api
           type: pserv
           property: hostport
 ```
 
+For web services and private services, `host` provides the internal hostname and `hostport` provides the hostname and listening port as `host:port`.
+
 ### Best Practices
 
-1. **Use internal DNS**: Always use `.render-internal.com` domains
+1. **Use internal addresses**: Use the hostname from the Dashboard or inject it with a Blueprint service reference.
 
-2. **No authentication needed**: Already isolated to account
+2. **Fast communication**: Low latency between services
 
-3. **Fast communication**: Low latency between services
-
-4. **Simplify architecture**: No need for external load balancers
+3. **Simplify architecture**: No need for external load balancers
 
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: nemo-evaluator-sdk
+name: evaluation-nemo-evaluator
 description: Evaluates LLMs across 100+ benchmarks from 18+ harnesses (MMLU, HumanEval, GSM8K, safety, VLM) with multi-backend execution. Use when needing scalable evaluation on local Docker, Slurm HPC, or cloud platforms. NVIDIA's enterprise-grade platform with container-first architecture for reproducible benchmarking.
 version: 1.0.0
 author: Orchestra Research

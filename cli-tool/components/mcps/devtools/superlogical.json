@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "superlogical": {
+      "description": "Superlogical's Rex community MCP, for Rex beta testers: search the Rex terminal multiplexer docs, the release notes for every version from #changelog, and current and archived discussions from the Rex Beta Discord, including the Superlogical team's commentary on issues and design decisions. Requires membership in the Rex Beta Discord server and uses Discord OAuth: after installing, run /mcp in Claude Code to sign in. Docs: https://www.superlogical.com/rex/docs/beta/community-mcp",
+      "type": "http",
+      "url": "https://www.superlogical.com/rex/community-mcp"
+    }
+  }
+}

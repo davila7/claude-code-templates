@@ -1,6 +1,6 @@
 ---
 allowed-tools: Read, Edit, Bash
-argument-hint: [--build] [--analyze] [--report]
+argument-hint: "[--build] [--analyze] [--report]"
 description: Analyze and optimize Next.js bundle size with detailed recommendations
 ---
 

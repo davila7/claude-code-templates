@@ -1,0 +1,137 @@
+{
+  "name": "aitmpl",
+  "owner": {
+    "name": "aitmpl.com",
+    "url": "https://www.aitmpl.com"
+  },
+  "description": "Claude Code plugins listed on aitmpl.com, each pinned to the commit that was reviewed and scanned.",
+  "plugins": [
+    {
+      "name": "champion-kit",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/anthropics/claude-plugins-official.git",
+        "path": "plugins/champion-kit",
+        "sha": "0412be76f50ab4f4f8abff3753efa9269fbbca5b"
+      },
+      "description": "Help Claude Code champions run hackathons and office hours, find patterns worth sharing, help teammates climb the steps of AI adoption, and write a maturity report.",
+      "author": {
+        "name": "Anthropic",
+        "email": "support@anthropic.com"
+      },
+      "homepage": "https://code.claude.com/docs/en/champion-kit",
+      "keywords": [
+        "champions",
+        "adoption",
+        "enablement",
+        "onboarding",
+        "claude-code"
+      ],
+      "repository": "https://github.com/anthropics/claude-plugins-official",
+      "license": "Apache-2.0",
+      "category": "productivity"
+    },
+    {
+      "name": "egm",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/google/elephant-goldfish-model.git",
+        "path": "distributions/claude",
+        "sha": "b3a35956759bf7f024af2ff061b2e0b44b438e4c"
+      },
+      "displayName": "Elephant-Goldfish Model",
+      "description": "Draft specs, review designs, and check implementation drift.",
+      "author": {
+        "name": "Google"
+      },
+      "homepage": "https://egm.dev",
+      "repository": "https://github.com/google/elephant-goldfish-model",
+      "keywords": [
+        "spec-driven-development",
+        "design-documents",
+        "design-review"
+      ],
+      "license": "Apache-2.0",
+      "category": "documentation"
+    },
+    {
+      "name": "stitch-build",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/google-labs-code/stitch-skills.git",
+        "path": "plugins/stitch-build",
+        "sha": "0337446dadde6f8c94210444e2aa9d546126480f"
+      },
+      "description": "Code generation and build tools for Google Stitch — convert designs to React components, generate walkthrough videos with Remotion, and integrate shadcn/ui.",
+      "author": {
+        "name": "google-labs-code"
+      },
+      "homepage": "https://github.com/google-labs-code/stitch-skills",
+      "repository": "https://github.com/google-labs-code/stitch-skills",
+      "keywords": [
+        "stitch",
+        "react",
+        "components",
+        "remotion",
+        "shadcn-ui",
+        "react-vite-dashboard",
+        "code-generation",
+        "video"
+      ],
+      "license": "Apache-2.0",
+      "category": "design"
+    },
+    {
+      "name": "stitch-design",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/google-labs-code/stitch-skills.git",
+        "path": "plugins/stitch-design",
+        "sha": "0337446dadde6f8c94210444e2aa9d546126480f"
+      },
+      "description": "Design workflows for Google Stitch — convert code to designs, generate screens from text/images, manage design systems, extract static HTML, and upload assets.",
+      "author": {
+        "name": "google-labs-code"
+      },
+      "homepage": "https://github.com/google-labs-code/stitch-skills",
+      "repository": "https://github.com/google-labs-code/stitch-skills",
+      "keywords": [
+        "stitch",
+        "design",
+        "code-to-design",
+        "design-system",
+        "html-extraction",
+        "mcp",
+        "ui-generation"
+      ],
+      "license": "Apache-2.0",
+      "category": "design"
+    },
+    {
+      "name": "stitch-utilities",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/google-labs-code/stitch-skills.git",
+        "path": "plugins/stitch-utilities",
+        "sha": "0337446dadde6f8c94210444e2aa9d546126480f"
+      },
+      "description": "Design utilities and assistants for Google Stitch — generate DESIGN.md specs, enhance prompts, build multi-page sites with stitch-loop, and enforce premium design standards.",
+      "author": {
+        "name": "google-labs-code"
+      },
+      "homepage": "https://github.com/google-labs-code/stitch-skills",
+      "repository": "https://github.com/google-labs-code/stitch-skills",
+      "keywords": [
+        "stitch",
+        "design-system",
+        "prompt-engineering",
+        "design-md",
+        "site-md",
+        "website-generation",
+        "ui-standards"
+      ],
+      "license": "Apache-2.0",
+      "category": "design"
+    }
+  ]
+}

@@ -1,10 +1,13 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import type { Component } from '../lib/types';
 import { TYPE_CONFIG } from '../lib/icons';
 import { ITEMS_PER_PAGE } from '../lib/constants';
 import { fetchComponentsByType } from '../lib/data';
+import SkillSpectorBadge from './SkillSpectorBadge';
 import { fetchActiveAds, findSponsoredIndex, type ActiveAd } from '../lib/ads';
 import SaveToCollectionButton from './SaveToCollectionButton';
+import { componentRef, track } from '../lib/analytics';
+import { componentPath, pluralType } from '../lib/component-url';
 
 type GridComponent = Component & { sponsored?: boolean };
 
@@ -103,6 +106,22 @@ export default function ComponentGrid({ initialType }: Props) {
       const saved = localStorage.getItem('claudeCodeCart');
       if (saved) setCart(JSON.parse(saved));
     } catch {}
+    // Keep in sync with the Stack sidebar (same tab) and other tabs, so the
+    // page button's Add/Remove choice reflects the current stack.
+    const onCartUpdated = (e: Event) => {
+      const detail = (e as CustomEvent<CartState>).detail;
+      if (detail) setCart(detail);
+    };
+    const onStorage = (e: StorageEvent) => {
+      if (e.key !== 'claudeCodeCart') return;
+      try { setCart(e.newValue ? JSON.parse(e.newValue) : {}); } catch {}
+    };
+    window.addEventListener('cart-updated', onCartUpdated);
+    window.addEventListener('storage', onStorage);
+    return () => {
+      window.removeEventListener('cart-updated', onCartUpdated);
+      window.removeEventListener('storage', onStorage);
+    };
   }, []);
 
 
@@ -164,6 +183,18 @@ export default function ComponentGrid({ initialType }: Props) {
 
   useEffect(() => { setPage(1); }, [category, search, activeType, selectedCategories, minDownloads]);
 
+  // One 'search' event per settled query (1 s without typing), with the number
+  // of results only, never the text.
+  const filteredCount = useRef(0);
+  filteredCount.current = filtered.length;
+  useEffect(() => {
+    if (!search.trim()) return;
+    const timer = setTimeout(() => {
+      track('search', { results_count: filteredCount.current, scope: 'grid', component_type: pluralType(activeType) });
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [search, activeType]);
+
   // Sidebar counts come from /counts.json (see Sidebar.astro); the grid no
   // longer loads every type, so it can't (and doesn't need to) emit them.
 
@@ -209,6 +240,40 @@ export default function ComponentGrid({ initialType }: Props) {
       return newItems;
     });
   }, []);
+
+  // Adds or removes a set of components in one write (one localStorage save,
+  // one cart-updated event), used by the page-level Add/Remove button.
+  const setManyInCart = useCallback((components: Component[], add: boolean) => {
+    setCart((prev) => {
+      const next: CartState = { ...prev };
+      for (const component of components) {
+        const typePlural = component.type.endsWith('s') ? component.type : component.type + 's';
+        const items = next[typePlural] ?? [];
+        const exists = items.some((i) => i.path === component.path);
+        if (add && !exists) {
+          next[typePlural] = [...items, {
+            name: component.name, path: component.path, category: component.category ?? '',
+            description: component.description ?? '', icon: typePlural,
+          }];
+        } else if (!add && exists) {
+          next[typePlural] = items.filter((i) => i.path !== component.path);
+        }
+      }
+      localStorage.setItem('claudeCodeCart', JSON.stringify(next));
+      window.dispatchEvent(new CustomEvent('cart-updated', { detail: next }));
+      return next;
+    });
+  }, []);
+
+  // A card adds or removes one component; only an add is an analytics event.
+  const addOrRemove = (component: Component) => {
+    if (!isInCart(component.path, component.type)) {
+      track('add_to_stack', { ...componentRef(component.type, component.path), source: 'grid' });
+    }
+    toggleCart(component);
+  };
+
+  const pageInStack = paged.length > 0 && paged.every((comp) => isInCart(comp.path, comp.type));
 
   if (loading) {
     return (
@@ -280,10 +345,29 @@ export default function ComponentGrid({ initialType }: Props) {
   return (
     <div>
       {/* Enhanced Filter bar with view modes */}
-      <div className="border-b border-[var(--color-border)] bg-[var(--color-surface-0)] backdrop-blur-sm sticky top-14 z-10">
-        <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-2.5 px-6 py-4">
+      <div className="border-b border-[var(--color-border)] bg-[var(--color-surface-0)] backdrop-blur-sm sm:sticky sm:top-14 z-10">
+        {/* Type switcher for phones: the sidebar that lists the types is hidden below md */}
+        <nav className="md:hidden flex gap-1.5 overflow-x-auto px-4 pt-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Component types">
+          {Object.entries(TYPE_CONFIG).filter(([, cfg]) => !cfg.hidden).map(([type, cfg]) => (
+            <a
+              key={type}
+              href={`/${type}`}
+              aria-current={type === activeType ? 'page' : undefined}
+              // Keep the active chip in view when it sits past the fold (e.g. Mods)
+              ref={type === activeType ? (el) => { if (el?.parentElement) el.parentElement.scrollLeft = el.offsetLeft - 16; } : undefined}
+              className={`shrink-0 px-3 py-1.5 rounded-full border text-[12px] font-ui-mono font-semibold transition-colors ${
+                type === activeType
+                  ? 'bg-[var(--color-accent)] text-white border-[var(--color-accent)]'
+                  : 'bg-[var(--color-surface-2)] text-[var(--color-text-secondary)] border-[var(--color-border)] hover:text-[var(--color-text-primary)]'
+              }`}
+            >
+              {cfg.label}
+            </a>
+          ))}
+        </nav>
+        <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-2.5 px-4 sm:px-6 py-3 sm:py-4">
           {/* Search */}
-          <div className="relative w-full sm:w-auto sm:flex-1 sm:min-w-[140px] sm:max-w-md">
+          <div className="relative hidden sm:block sm:flex-1 sm:min-w-[140px] sm:max-w-md">
             <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text-tertiary)] pointer-events-none transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
               <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
@@ -314,7 +398,7 @@ export default function ComponentGrid({ initialType }: Props) {
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="flex-1 sm:flex-none min-w-0 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg text-[13px] text-[var(--color-text-secondary)] font-medium px-3.5 py-2.5 pr-9 outline-none focus:bg-[var(--color-surface-3)] focus:border-[var(--color-primary-500)] focus:ring-2 focus:ring-[var(--color-primary-500)]/20 cursor-pointer transition-all appearance-none hover:border-[var(--color-border-hover)] hover:text-[var(--color-text-primary)] bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%23737373%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%208%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem] bg-[right_0.5rem_center] bg-no-repeat"
+              className="flex-1 sm:flex-none min-w-0 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg text-[16px] sm:text-[13px] text-[var(--color-text-secondary)] font-medium px-3.5 py-2 sm:py-2.5 pr-9 outline-none focus:bg-[var(--color-surface-3)] focus:border-[var(--color-primary-500)] focus:ring-2 focus:ring-[var(--color-primary-500)]/20 cursor-pointer transition-all appearance-none hover:border-[var(--color-border-hover)] hover:text-[var(--color-text-primary)] bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%23737373%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%208%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem] bg-[right_0.5rem_center] bg-no-repeat"
             >
               <option value="all">All categories</option>
               {categories.map((cat) => (
@@ -335,7 +419,8 @@ export default function ComponentGrid({ initialType }: Props) {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
               </svg>
               <span className="hidden sm:inline">Filters</span>
-              {hasActiveFilters && (
+              <span className="sr-only sm:hidden">Filters and sort</span>
+              {(hasActiveFilters || sortBy !== 'downloads') && (
                 <span className="w-2 h-2 rounded-full bg-white animate-pulse"></span>
               )}
             </button>
@@ -372,12 +457,12 @@ export default function ComponentGrid({ initialType }: Props) {
           </div>
 
           {/* Sort */}
-          <div className="flex items-center gap-2 w-full sm:w-auto sm:ml-auto">
+          <div className="hidden sm:flex items-center gap-2 sm:ml-auto">
             <span className="text-[11px] text-[var(--color-text-tertiary)] font-medium hidden sm:inline">Sort by</span>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as 'downloads' | 'name')}
-              className="flex-1 sm:flex-none font-mono bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded text-[13px] text-[var(--color-text-secondary)] font-medium px-3 py-2 pr-9 outline-none focus:border-[var(--color-accent)] cursor-pointer transition-all appearance-none hover:border-[var(--color-accent)] hover:text-[var(--color-text-primary)] bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%237d8590%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%208%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem] bg-[right_0.5rem_center] bg-no-repeat"
+              className="font-mono bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded text-[13px] text-[var(--color-text-secondary)] font-medium px-3 py-2 pr-9 outline-none focus:border-[var(--color-accent)] cursor-pointer transition-all appearance-none hover:border-[var(--color-accent)] hover:text-[var(--color-text-primary)] bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%237d8590%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%208%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem] bg-[right_0.5rem_center] bg-no-repeat"
             >
               <option value="downloads">Most Popular</option>
               <option value="name">Alphabetical</option>
@@ -387,8 +472,30 @@ export default function ComponentGrid({ initialType }: Props) {
 
         {/* Advanced Filters Panel */}
         {showFilters && (
-          <div className="px-6 py-5 border-t border-[var(--color-border)] bg-[var(--color-surface-1)] animate-fade-in-up">
-            <div className="flex items-start gap-6">
+          <div className="px-4 sm:px-6 py-4 sm:py-5 border-t border-[var(--color-border)] bg-[var(--color-surface-1)] animate-fade-in-up">
+            <div className="flex flex-col sm:flex-row sm:items-start gap-5 sm:gap-6">
+              {/* Sort: on phones it lives here instead of in the bar */}
+              <div className="sm:hidden">
+                <label className="text-[11px] font-bold text-[var(--color-text-tertiary)] uppercase tracking-wider mb-3 block">
+                  Sort by
+                </label>
+                <div className="flex gap-2">
+                  {([['downloads', 'Most Popular'], ['name', 'Alphabetical']] as const).map(([value, label]) => (
+                    <button
+                      key={value}
+                      onClick={() => setSortBy(value)}
+                      className={`px-3 py-1 text-[11px] font-mono font-semibold rounded border transition-all ${
+                        sortBy === value
+                          ? 'bg-[var(--color-accent)] text-white border-[var(--color-accent)]'
+                          : 'bg-[var(--color-surface-2)] text-[var(--color-text-secondary)] border-[var(--color-border)] hover:border-[var(--color-accent)] hover:text-[var(--color-text-primary)]'
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {/* Multi-category filter */}
               <div className="flex-1">
                 <label className="text-[11px] font-bold text-[var(--color-text-tertiary)] uppercase tracking-wider mb-3 block">
@@ -412,7 +519,7 @@ export default function ComponentGrid({ initialType }: Props) {
               </div>
 
               {/* Downloads filter */}
-              <div className="w-64">
+              <div className="w-full sm:w-64">
                 <label className="text-[11px] font-bold text-[var(--color-text-tertiary)] uppercase tracking-wider mb-3 block">
                   Min Downloads: {minDownloads}+
                 </label>
@@ -436,7 +543,7 @@ export default function ComponentGrid({ initialType }: Props) {
               {hasActiveFilters && (
                 <button
                   onClick={clearAllFilters}
-                  className="px-4 py-2 text-[12px] font-semibold text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 rounded-lg transition-all active:scale-95"
+                  className="self-start px-4 py-2 text-[12px] font-semibold text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 rounded-lg transition-all active:scale-95"
                 >
                   Clear All
                 </button>
@@ -447,7 +554,7 @@ export default function ComponentGrid({ initialType }: Props) {
       </div>
 
       {/* Results count with quick actions */}
-      <div className="px-6 pt-5 pb-3 flex items-center justify-between">
+      <div className="px-4 sm:px-6 pt-4 sm:pt-5 pb-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
             <span className="text-[13px] text-[var(--color-text-secondary)] font-medium">
@@ -467,19 +574,14 @@ export default function ComponentGrid({ initialType }: Props) {
           
           {/* Quick Actions */}
           {filtered.length > 0 && (
-            <div className="flex items-center gap-2 ml-4">
+            <div className="hidden sm:flex items-center gap-2 ml-4">
               <button
-                onClick={() => {
-                  paged.forEach(comp => {
-                    if (!isInCart(comp.path, comp.type)) {
-                      toggleCart(comp);
-                    }
-                  });
-                }}
+                onClick={() => setManyInCart(paged, !pageInStack)}
                 className="text-[11px] font-semibold px-3 py-1.5 rounded-lg bg-[var(--color-surface-2)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-3)] border border-[var(--color-border)] hover:border-[var(--color-border-hover)] transition-all active:scale-95"
-                title="Add all visible components to stack"
+                title={pageInStack ? 'Remove the components on this page from your stack' : 'Add all visible components to stack'}
+                aria-pressed={pageInStack}
               >
-                + Add Page to Stack
+                {pageInStack ? '− Remove Page from Stack' : '+ Add Page to Stack'}
               </button>
             </div>
           )}
@@ -494,8 +596,8 @@ export default function ComponentGrid({ initialType }: Props) {
 
       {/* Grid or List View */}
       <div className={viewMode === 'grid'
-        ? "grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-5 px-6 pb-6"
-        : "flex flex-col gap-4 px-6 pb-6"
+        ? "grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4 sm:gap-5 px-4 sm:px-6 pb-6"
+        : "flex flex-col gap-4 px-4 sm:px-6 pb-6"
       }>
         {paged.map((component, idx) => {
           const inCart = isInCart(component.path, component.type);
@@ -516,7 +618,7 @@ export default function ComponentGrid({ initialType }: Props) {
                   animationFillMode: 'both'
                 }}
                 onClick={() => {
-                  window.location.href = `/component/${component.type}/${cleanPath(component.path ?? component.name)}`;
+                  window.location.href = componentPath(component.type, component.path ?? component.name);
                 }}
               >
                 {/* Icon */}
@@ -534,7 +636,9 @@ export default function ComponentGrid({ initialType }: Props) {
                 {/* Info */}
                 <div className="flex-1 min-w-0">
                   <h3 className="font-mono text-[14px] font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-accent)] transition-colors mb-1">
-                    {formatName(component.name)}
+                    <a href={componentPath(component.type, component.path ?? component.name)} onClick={(e) => e.stopPropagation()}>
+                      {formatName(component.name)}
+                    </a>
                   </h3>
                   <p className="text-[12px] text-[var(--color-text-secondary)] line-clamp-1 leading-relaxed">
                     {component.description || component.content?.slice(0, 150) || 'No description'}
@@ -561,6 +665,7 @@ export default function ComponentGrid({ initialType }: Props) {
                       {component.downloads?.toLocaleString()}
                     </span>
                   )}
+                  <SkillSpectorBadge result={component.skillspector} />
                 </div>
 
                 {/* Actions */}
@@ -572,7 +677,7 @@ export default function ComponentGrid({ initialType }: Props) {
                     componentCategory={component.category}
                   />
                   <button
-                    onClick={(e) => { e.stopPropagation(); toggleCart(component); }}
+                    onClick={(e) => { e.stopPropagation(); addOrRemove(component); }}
                     className={`w-8 h-8 rounded flex items-center justify-center transition-all duration-150 ${
                       inCart
                         ? 'bg-[var(--color-accent)] text-white border border-[var(--color-accent)]'
@@ -609,7 +714,7 @@ export default function ComponentGrid({ initialType }: Props) {
                 animationFillMode: 'both'
               }}
               onClick={() => {
-                window.location.href = `/component/${component.type}/${cleanPath(component.path ?? component.name)}`;
+                window.location.href = componentPath(component.type, component.path ?? component.name);
               }}
             >
               {/* Icon — flat, no glow */}
@@ -627,12 +732,14 @@ export default function ComponentGrid({ initialType }: Props) {
               {/* Info */}
               <div className="min-w-0 flex-1">
                 <h3 className="font-mono text-[14px] font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-accent)] transition-colors leading-tight mb-1.5">
-                  {formatName(component.name)}
+                  <a href={componentPath(component.type, component.path ?? component.name)} onClick={(e) => e.stopPropagation()}>
+                    {formatName(component.name)}
+                  </a>
                 </h3>
                 <p className="text-[12px] text-[var(--color-text-secondary)] line-clamp-2 leading-[1.6]">
                   {component.description || component.content?.slice(0, 120) || 'No description'}
                 </p>
-                <div className="flex items-center gap-2 mt-3">
+                <div className="flex flex-wrap items-center gap-2 mt-3">
                   {component.sponsored && (
                     <span className="font-mono text-[10px] font-semibold px-2 py-0.5 rounded border border-[var(--color-primary-500)]/40 bg-[var(--color-primary-500)]/10 text-[var(--color-primary-500)]">
                       Sponsored
@@ -651,6 +758,7 @@ export default function ComponentGrid({ initialType }: Props) {
                       {component.downloads?.toLocaleString()}
                     </span>
                   )}
+                  <SkillSpectorBadge result={component.skillspector} />
                 </div>
               </div>
 
@@ -663,7 +771,7 @@ export default function ComponentGrid({ initialType }: Props) {
                   componentCategory={component.category}
                 />
                 <button
-                  onClick={(e) => { e.stopPropagation(); toggleCart(component); }}
+                  onClick={(e) => { e.stopPropagation(); addOrRemove(component); }}
                   className={`w-8 h-8 rounded flex items-center justify-center transition-all duration-150 ${
                     inCart
                       ? 'bg-[var(--color-accent)] text-white border border-[var(--color-accent)]'

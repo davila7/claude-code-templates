@@ -1,6 +1,6 @@
 const inquirer = require('inquirer');
 const chalk = require('chalk');
-const { select, isCancel, cancel } = require('@clack/prompts');
+const { cancel } = require('@clack/prompts');
 const fs = require('fs-extra');
 const path = require('path');
 const ora = require('ora');
@@ -10,35 +10,17 @@ const { createPrompts, interactivePrompts } = require('./prompts');
 const { copyTemplateFiles, runPostInstallationValidation } = require('./file-operations');
 const { getHooksForLanguage, getMCPsForLanguage } = require('./hook-scanner');
 const { installAgents } = require('./agents');
-const { runCommandStats } = require('./command-stats');
-const { runHookStats } = require('./hook-stats');
-const { runMCPStats } = require('./mcp-stats');
 const { runAnalytics } = require('./analytics');
 const { startChatsMobile } = require('./chats-mobile');
 const { runHealthCheck } = require('./health-check');
-const { runPluginDashboard } = require('./plugin-dashboard');
-const { runSkillDashboard } = require('./skill-dashboard');
-const { runTeamsDashboard } = require('./teams-dashboard');
 const { trackingService } = require('./tracking-service');
+const { fetchExternalManifest, downloadExternalSkill } = require('./external-skill');
+const { fetchModFiles } = require('./component-content');
+const { unsafeTarget, unsafeTargetMessage } = require('./target-guard');
+const { resolveItems, runSearch, stackCommand } = require('./catalog-lookup');
 const { createInstallUI } = require('./install-ui');
-const { createGlobalAgent, listGlobalAgents, removeGlobalAgent, updateGlobalAgent } = require('./sdk/global-agent-manager');
-const SessionSharing = require('./session-sharing');
-const ConversationAnalyzer = require('./analytics/core/ConversationAnalyzer');
-
-/**
- * Get platform-appropriate Python command candidates
- * Returns array of commands to try in order
- * @returns {string[]} Array of Python commands to try
- */
-function getPlatformPythonCandidates() {
-  if (process.platform === 'win32') {
-    // Windows: Try py launcher (PEP 397) first, then python, then python3
-    return ['py', 'python', 'python3'];
-  } else {
-    // Unix/Linux/Mac: Try python3 first, then python
-    return ['python3', 'python'];
-  }
-}
+const { findRemovedCommands, reportRemovedCommands } = require('./removed-commands');
+const { spawnClaude, claudeCommandLine } = require('./claude-launcher');
 
 /**
  * Replace python3 commands with platform-appropriate Python command in configuration
@@ -61,90 +43,87 @@ function replacePythonCommands(config) {
   return config;
 }
 
-async function showMainMenu() {
-  const action = await select({
-    message: 'What would you like to do?',
-    options: [
-      { value: 'analytics', label: '📊 Analytics Dashboard', hint: 'Monitor Claude Code usage and sessions' },
-      { value: 'setup',     label: '⚙️  Project Setup',      hint: 'Configure Claude Code for your project' },
-      { value: 'agents',   label: '🤖 Agents Dashboard',    hint: 'View multi-agent collaboration sessions' },
-      { value: 'chats',    label: '💬 Chats Mobile',         hint: 'AI-first mobile interface for conversations' },
-      { value: 'health',   label: '🔍 Health Check',         hint: 'Verify your Claude Code setup' },
-    ],
-  });
-
-  if (isCancel(action)) {
-    cancel('Cancelled.');
-    process.exit(0);
-  }
-
-  if (action === 'analytics') {
-    trackingService.trackAnalyticsDashboard({ page: 'dashboard', source: 'interactive_menu' });
-    await runAnalytics({});
+async function runCatalogBrowser(options, targetDir) {
+  const { browseCatalog, printNonInteractiveHelp } = require('./catalog-browser');
+  const version = require('../package.json').version;
+  const interactive = Boolean(process.stdout.isTTY && process.stdin.isTTY) && !process.env.CI;
+  if (!interactive) {
+    printNonInteractiveHelp(version);
     return;
   }
-
-  if (action === 'chats') {
-    trackingService.trackAnalyticsDashboard({ page: 'chats-mobile', source: 'interactive_menu' });
-    await startChatsMobile({});
+  trackingService.trackCommandExecution('catalog-browser');
+  const selection = await browseCatalog({ version, targetDir });
+  if (!selection) {
+    cancel('Nothing installed.');
     return;
   }
+  console.log(chalk.gray('│'));
+  await installMultipleComponents({ ...selection, skipHeader: true }, targetDir);
+}
 
-  if (action === 'agents') {
-    trackingService.trackAnalyticsDashboard({ page: 'agents', source: 'interactive_menu' });
-    await runAnalytics({ openTo: 'agents' });
-    return;
+const INSTALL_FLAGS = ['agent', 'command', 'mcp', 'setting', 'hook', 'skill', 'loop', 'mod', 'plugin'];
+
+/** Every component named on the command line, as [{ type, name }] in flag order. */
+function requestedItems(options) {
+  const items = [];
+  for (const type of INSTALL_FLAGS) {
+    // --function-hook is kept as an alias of --mod
+    const values = type === 'mod' ? [options.mod, options.functionHook] : [options[type]];
+    const names = values.filter(v => typeof v === 'string' || Array.isArray(v)).flat().join(',')
+      .split(',').map(n => n.trim()).filter(Boolean);
+    for (const name of names) items.push({ type, name });
   }
+  return items;
+}
 
-  if (action === 'health') {
-    const healthResult = await runHealthCheck();
-    trackingService.trackHealthCheck({
-      setup_recommended: healthResult.runSetup,
-      issues_found: healthResult.issues || 0
-    });
-    if (healthResult.runSetup) {
-      return await createClaudeConfig({});
-    } else {
-      return await showMainMenu();
-    }
-  }
-
-  // 'setup'
-  return await createClaudeConfig({ setupFromMenu: true });
+/** No arguments in a terminal: the catalog browser, which installs what is picked. */
+function isBareInteractiveRun(options) {
+  const anyOption = ['search', 'workflow', 'analytics', 'chats', 'healthCheck', 'health', 'check', 'verify', 'yes', 'language', 'framework', 'template', 'dryRun', 'setupFromMenu']
+    .some(key => options[key] !== undefined && options[key] !== false);
+  return !anyOption && Boolean(process.stdout.isTTY && process.stdin.isTTY) && !process.env.CI;
 }
 
 async function createClaudeConfig(options = {}) {
   const targetDir = options.directory || process.cwd();
-  
-  // Validate --tunnel usage
-  if (options.tunnel && !options.analytics && !options.chats && !options.agents && !options.chatsMobile && !options['2025']) {
-    console.log(chalk.red('❌ Error: --tunnel can only be used with --analytics, --chats, --2025, or --chats-mobile'));
-    console.log(chalk.yellow('💡 Examples:'));
-    console.log(chalk.gray('  cct --analytics --tunnel'));
-    console.log(chalk.gray('  cct --chats --tunnel'));
-    console.log(chalk.gray('  cct --2025 --tunnel'));
-    console.log(chalk.gray('  cct --chats-mobile'));
-    return;
-  }
-  
-  // Handle Claude Code Studio launch
-  if (options.studio) {
-    await launchClaudeCodeStudio(options, targetDir);
+
+  // Flags removed in 1.31.0 answer with what replaced them and exit non-zero.
+  const removedCommands = findRemovedCommands(options);
+  if (removedCommands.length > 0) {
+    await reportRemovedCommands(removedCommands);
+    process.exitCode = 1;
     return;
   }
 
-  // Handle sandbox execution FIRST (before individual components)
-  if (options.sandbox) {
-    trackingService.trackCommandExecution('sandbox', {
-      provider: options.sandbox,
-      hasPrompt: !!options.prompt
-    });
-    await executeSandbox(options, targetDir);
+  // --search "<words>": top matches with their page and install command; writes nothing.
+  if (options.search !== undefined) {
+    const shown = await runSearch(options.search === true ? '' : options.search);
+    // The words are never sent, only that a search ran and how many results it showed.
+    trackingService.trackCommandExecution('search', { results: shown });
     return;
   }
-  
+
+  const requested = requestedItems(options);
+  const isComponentInstall = requested.length > 0 || Boolean(options.agent || options.command || options.mcp || options.setting || options.hook || options.skill || options.loop || options.mod || options.functionHook || options.plugin);
+  // A user-scope plugin install writes nothing into this folder, so it may run from anywhere.
+  const onlyUserPlugins = requested.length > 0 && options.scope === 'user' && requested.every(i => i.type === 'plugin');
+  const isTemplateSetup = !options.dryRun && Boolean(options.yes || options.language || options.framework || options.template);
+  const writesHere = (isComponentInstall && !onlyUserPlugins) || Boolean(options.workflow) || isTemplateSetup || isBareInteractiveRun(options);
+  if (writesHere) {
+    const unsafe = unsafeTarget(targetDir);
+    if (unsafe) {
+      for (const l of unsafeTargetMessage(unsafe)) console.log(chalk.red(l));
+      if (isComponentInstall) {
+        for (const { type, name } of requested) {
+          trackingService.trackInstallationOutcome(type, name, 'failure', { errorType: 'unsafe_directory', errorMessage: unsafe.reason });
+        }
+      }
+      process.exitCode = 1;
+      return;
+    }
+  }
+
   // Handle multiple components installation (new approach)
-  if (options.agent || options.command || options.mcp || options.setting || options.hook || options.skill || options.loop || options.mod || options.functionHook) {
+  if (options.agent || options.command || options.mcp || options.setting || options.hook || options.skill || options.loop || options.mod || options.functionHook || options.plugin) {
     // If --workflow is used with components, treat it as YAML
     if (options.workflow) {
       options.yaml = options.workflow;
@@ -159,155 +138,17 @@ async function createClaudeConfig(options = {}) {
     return;
   }
   
-  // Handle global agent creation
-  if (options.createAgent) {
-    await createGlobalAgent(options.createAgent, options);
-    return;
-  }
-  
-  // Handle global agent listing
-  if (options.listAgents) {
-    await listGlobalAgents(options);
-    return;
-  }
-  
-  // Handle global agent removal
-  if (options.removeAgent) {
-    await removeGlobalAgent(options.removeAgent, options);
-    return;
-  }
-  
-  // Handle global agent update
-  if (options.updateAgent) {
-    await updateGlobalAgent(options.updateAgent, options);
-    return;
-  }
-  
-  // (Sandbox execution handled earlier)
-  
-  // Handle command stats analysis (both singular and plural)
-  if (options.commandStats || options.commandsStats) {
-    trackingService.trackCommandExecution('command-stats');
-    await runCommandStats(options);
-    return;
-  }
-
-  // Handle hook stats analysis (both singular and plural)
-  if (options.hookStats || options.hooksStats) {
-    trackingService.trackCommandExecution('hook-stats');
-    await runHookStats(options);
-    return;
-  }
-
-  // Handle MCP stats analysis (both singular and plural)
-  if (options.mcpStats || options.mcpsStats) {
-    trackingService.trackCommandExecution('mcp-stats');
-    await runMCPStats(options);
-    return;
-  }
-  
   // Handle analytics dashboard
   if (options.analytics) {
-    trackingService.trackCommandExecution('analytics', { tunnel: options.tunnel || false });
-    trackingService.trackAnalyticsDashboard({ page: 'dashboard', source: 'command_line' });
+    trackingService.trackCommandExecution('analytics');
     await runAnalytics(options);
     return;
   }
 
-  // Handle 2025 Year in Review dashboard
-  if (options['2025']) {
-    trackingService.trackCommandExecution('2025-year-in-review');
-    trackingService.trackAnalyticsDashboard({ page: '2025', source: 'command_line' });
-    await runAnalytics({ ...options, openTo: '2025' });
-    return;
-  }
-
-  // Handle plugin dashboard
-  if (options.plugins) {
-    trackingService.trackCommandExecution('plugins');
-    trackingService.trackAnalyticsDashboard({ page: 'plugins', source: 'command_line' });
-    await runPluginDashboard(options);
-    return;
-  }
-
-  // Handle skills dashboard
-  if (options.skillsManager) {
-    trackingService.trackCommandExecution('skills-manager');
-    trackingService.trackAnalyticsDashboard({ page: 'skills-manager', source: 'command_line' });
-    await runSkillDashboard(options);
-    return;
-  }
-
-  // Handle teams dashboard
-  if (options.teams) {
-    trackingService.trackCommandExecution('teams');
-    trackingService.trackAnalyticsDashboard({ page: 'teams', source: 'command_line' });
-    await runTeamsDashboard(options);
-    return;
-  }
-
-  // Handle chats dashboard (now points to mobile chats interface)
+  // Handle the conversations viewer
   if (options.chats) {
-    trackingService.trackCommandExecution('chats', { tunnel: options.tunnel || false });
-    trackingService.trackAnalyticsDashboard({ page: 'chats-mobile', source: 'command_line' });
+    trackingService.trackCommandExecution('chats');
     await startChatsMobile(options);
-    return;
-  }
-
-  // Handle agents dashboard (separate from chats)
-  if (options.agents) {
-    trackingService.trackCommandExecution('agents', { tunnel: options.tunnel || false });
-    trackingService.trackAnalyticsDashboard({ page: 'agents', source: 'command_line' });
-    await runAnalytics({ ...options, openTo: 'agents' });
-    return;
-  }
-
-  // Handle mobile chats interface
-  if (options.chatsMobile) {
-    trackingService.trackCommandExecution('chats-mobile', { tunnel: options.tunnel || false });
-    trackingService.trackAnalyticsDashboard({ page: 'chats-mobile', source: 'command_line' });
-    await startChatsMobile(options);
-    return;
-  }
-
-  // Handle session clone (download and import shared session)
-  if (options.cloneSession) {
-    console.log(chalk.blue('📥 Cloning shared Claude Code session...'));
-
-    try {
-      const os = require('os');
-      const homeDir = os.homedir();
-      const claudeDir = path.join(homeDir, '.claude');
-
-      // Initialize ConversationAnalyzer and SessionSharing
-      const conversationAnalyzer = new ConversationAnalyzer(claudeDir);
-      const sessionSharing = new SessionSharing(conversationAnalyzer);
-
-      // Clone the session (cloneSession method handles all console output)
-      const result = await sessionSharing.cloneSession(options.cloneSession, {
-        projectPath: options.directory || process.cwd()
-      });
-
-      // Track session clone
-      trackingService.trackAnalyticsDashboard({
-        page: 'session-clone',
-        source: 'command_line',
-        success: true
-      });
-    } catch (error) {
-      console.error(chalk.red('❌ Failed to clone session:'), error.message);
-
-      // Track failed clone
-      trackingService.trackAnalyticsDashboard({
-        page: 'session-clone',
-        source: 'command_line',
-        success: false,
-        error: error.message
-      });
-
-      process.exit(1);
-    }
-
     return;
   }
 
@@ -316,26 +157,20 @@ async function createClaudeConfig(options = {}) {
   if (options.healthCheck || options.health || options.check || options.verify) {
     trackingService.trackCommandExecution('health-check');
     const healthResult = await runHealthCheck();
-
-    // Track health check usage
-    trackingService.trackHealthCheck({
-      setup_recommended: healthResult.runSetup,
-      issues_found: healthResult.issues || 0,
-      source: 'command_line'
-    });
     
     if (healthResult.runSetup) {
       console.log(chalk.blue('⚙️  Starting Project Setup...'));
       shouldRunSetup = true;
     } else {
-      console.log(chalk.green('👍 Health check completed. Returning to main menu...'));
-      return await showMainMenu();
+      console.log(chalk.green('👍 Health check completed.'));
+      return;
     }
   }
   
-  // Add initial choice prompt (only if no specific options are provided and not continuing from health check or menu)
-  if (!shouldRunSetup && !options.setupFromMenu && !options.yes && !options.language && !options.framework && !options.dryRun) {
-    return await showMainMenu();
+  // No arguments: browse the catalog in a terminal, print usage anywhere else
+  // (agents, CI, pipes), so the command never waits for input nobody can give.
+  if (!shouldRunSetup && !options.setupFromMenu && !options.yes && !options.language && !options.framework && !options.template && !options.dryRun) {
+    return await runCatalogBrowser(options, targetDir);
   } else {
     console.log(chalk.blue('🚀 Setting up Claude Code configuration...'));
   }
@@ -371,8 +206,10 @@ async function createClaudeConfig(options = {}) {
       mcps: defaultMCPs
     };
   } else {
-    // Interactive prompts with back navigation
-    config = await interactivePrompts(projectInfo, options);
+    // Interactive prompts with back navigation (--template preselects the language)
+    config = await interactivePrompts(projectInfo, options.template && !options.language
+      ? { ...options, language: options.template }
+      : options);
   }
   
   // Check if user confirmed the setup
@@ -468,13 +305,14 @@ async function createClaudeConfig(options = {}) {
     });
   }
   
-  // Run post-installation validation
-  if (!options.dryRun) {
+  // Offer a Claude Code review of the result; never with --yes or without a
+  // terminal, where nobody can answer the prompt.
+  if (!options.dryRun && !options.yes && process.stdin.isTTY) {
     await runPostInstallationValidation(targetDir, templateConfig);
   }
   
-  // Handle prompt execution if provided (but not in sandbox mode)
-  if (options.prompt && !options.sandbox) {
+  // Handle prompt execution if provided
+  if (options.prompt) {
     await handlePromptExecution(options.prompt, targetDir);
   }
 }
@@ -1011,8 +849,17 @@ async function installIndividualSetting(settingName, targetDir, options) {
           try {
             // A setting may only add files under the install location's .claude/
             // directory: no absolute paths, no ~, no `..` out of it.
-            const claudeRoot = path.resolve(currentTargetDir, '.claude');
-            const resolvedFilePath = path.resolve(currentTargetDir, filePath);
+            // Exception: Claude Code reads custom themes only from ~/.claude/themes/,
+            // while a `theme` key works from any settings file, so theme files always
+            // go to the user's home whatever location the setting is installed in.
+            const fileBaseDir = /^\.claude[\\/]themes[\\/]/.test(filePath)
+              ? require('os').homedir()
+              : currentTargetDir;
+            if (fileBaseDir !== currentTargetDir) {
+              console.log(chalk.gray(`🎨 Theme file goes to ~/.claude/themes/, the only folder Claude Code reads themes from`));
+            }
+            const claudeRoot = path.resolve(fileBaseDir, '.claude');
+            const resolvedFilePath = path.resolve(fileBaseDir, filePath);
             if (path.isAbsolute(filePath) || filePath.startsWith('~') ||
                 !resolvedFilePath.startsWith(claudeRoot + path.sep)) {
               console.log(chalk.red(`❌ Skipped file outside .claude/: ${filePath}`));
@@ -1572,6 +1419,13 @@ async function installIndividualSkill(skillName, targetDir, options) {
     // Extract the actual skill name (last part of the path)
     const skillBaseName = skillName.includes('/') ? skillName.split('/').pop() : skillName;
 
+    // External skill: the catalog folder holds only source.json and the code
+    // is downloaded from the pinned commit of the author's repository.
+    const manifest = await fetchExternalManifest(skillName);
+    if (manifest) {
+      return await installExternalSkill(skillName, skillBaseName, manifest, targetDir, options, startTime);
+    }
+
     // Use GitHub API to download ALL files and directories for the skill
     const githubApiUrl = `https://api.github.com/repos/davila7/claude-code-templates/contents/cli-tool/components/skills/${skillName}`;
 
@@ -1693,6 +1547,62 @@ async function installIndividualSkill(skillName, targetDir, options) {
   }
 }
 
+async function installExternalSkill(skillName, skillBaseName, manifest, targetDir, options, startTime) {
+  const shortCommit = manifest.commit.slice(0, 7);
+  console.log(chalk.gray(`📥 Downloading from ${manifest.repo}@${shortCommit} (external skill, ${manifest.license})...`));
+
+  let files;
+  try {
+    files = await downloadExternalSkill(manifest);
+  } catch (error) {
+    console.log(chalk.red(`❌ ${error.message}`));
+    trackingService.trackInstallationOutcome('skill', skillName, 'failure', { errorType: 'network_error', errorMessage: error.message, durationMs: Date.now() - startTime, batchId: options.batchId });
+    return false;
+  }
+
+  const skillDir = path.join(targetDir, '.claude', 'skills', skillBaseName);
+  for (const [relPath, file] of Object.entries(files)) {
+    const fullPath = path.join(skillDir, relPath);
+    // Paths were validated in downloadExternalSkill; keep the write inside the skill folder anyway.
+    if (!fullPath.startsWith(skillDir + path.sep)) continue;
+    await fs.ensureDir(path.dirname(fullPath));
+    await fs.writeFile(fullPath, file.content);
+    options.onWrite?.(fullPath);
+    if (file.executable) await fs.chmod(fullPath, '755');
+    if (!options.silent) console.log(chalk.green(`✓ Downloaded: ${relPath}`));
+  }
+
+  if (!options.silent) {
+    console.log(chalk.green(`✅ Skill "${skillName}" installed successfully!`));
+    console.log(chalk.cyan(`📁 Installed to: ${path.relative(targetDir, path.join(skillDir, 'SKILL.md'))}`));
+    console.log(chalk.cyan(`📦 Source: https://github.com/${manifest.repo}/tree/${manifest.commit}${manifest.path ? '/' + manifest.path : ''}`));
+  }
+
+  trackingService.trackDownload('skill', skillName, {
+    installation_type: 'individual_skill',
+    target_directory: path.relative(process.cwd(), targetDir),
+    source: 'external',
+    repo: manifest.repo,
+    commit: manifest.commit,
+    total_files: Object.keys(files).length
+  });
+  trackingService.trackInstallationOutcome('skill', skillName, 'success', { durationMs: Date.now() - startTime, batchId: options.batchId });
+
+  // Skills this one calls (e.g. full-send uses sol-loop). Each is installed once per run.
+  const installing = options.installingSkills || new Set();
+  installing.add(skillName);
+  const pending = manifest.requires.filter((ref) => !installing.has(ref));
+  if (pending.length > 0) {
+    console.log(chalk.blue(`🧩 Installing ${pending.length} skill(s) it uses: ${pending.join(', ')}`));
+    for (const ref of pending) {
+      if (installing.has(ref)) continue;
+      installing.add(ref);
+      await installIndividualSkill(ref, targetDir, { ...options, installingSkills: installing });
+    }
+  }
+  return true;
+}
+
 /**
  * Parse the `components:` frontmatter field of a loop into {type, path} refs.
  * The field is a flat bracketed list of `type:path` tokens, e.g.
@@ -1722,9 +1632,158 @@ function parseLoopReferencedComponents(loopContent) {
 }
 
 /**
+ * Install a catalog plugin (--plugin [category/]name, --scope project|user|local).
+ *
+ * A catalog plugin is an entry of the aitmpl Claude Code marketplace
+ * (https://www.aitmpl.com/marketplace.json), pinned to the commit that was
+ * reviewed; src/plugin-install.js has Claude Code install it with its own
+ * `claude plugin marketplace add` + `claude plugin install`, so the files live
+ * in ~/.claude/plugins/cache/aitmpl/{name}/{version}/ and /plugin manages them.
+ */
+async function installIndividualPlugin(pluginRef, targetDir, options = {}) {
+  const plugins = require('./plugin-install');
+  console.log(chalk.blue(`🧩 Installing plugin: ${pluginRef}`));
+  const startTime = Date.now();
+  let componentName = pluginRef;
+  const fail = (errorType, errorMessage) => {
+    trackingService.trackInstallationOutcome('plugin', componentName, 'failure', { errorType, errorMessage, durationMs: Date.now() - startTime, batchId: options.batchId });
+    return false;
+  };
+  // A batch install captures a step's output and shows only its result row, so
+  // warnings also go to options.pluginNotes, printed after the summary.
+  const warnLater = message => {
+    console.log(chalk.yellow(`⚠️  ${message}`));
+    options.pluginNotes?.push(message);
+  };
+
+  const ref = plugins.parsePluginRef(pluginRef);
+  if (!ref) {
+    console.log(chalk.red('❌ Invalid plugin name. Expected "name" or "category/name" (lowercase letters, digits, "." and "-"), e.g. champion-kit.'));
+    return fail('invalid_name');
+  }
+  const scope = plugins.normalizeScope(options.scope);
+  if (!scope) {
+    console.log(chalk.red(`❌ Invalid --scope "${options.scope}": use project, user or local.`));
+    return fail('invalid_scope');
+  }
+
+  let entry;
+  try {
+    const found = plugins.findEntry(await plugins.fetchMarketplace(), ref);
+    if (found.error === 'not_found' || found.error === 'wrong_category') {
+      console.log(chalk.red(found.error === 'not_found'
+        ? `❌ Plugin "${ref.name}" not found in the aitmpl marketplace`
+        : `❌ Plugin "${ref.name}" is listed as ${found.entry.category}/${ref.name}, not ${ref.category}/${ref.name}`));
+      console.log(chalk.gray('   Browse plugins at https://www.aitmpl.com/plugins'));
+      return fail('not_found');
+    }
+    if (found.error) {
+      console.log(chalk.red(`❌ The marketplace entry for "${ref.name}" is not pinned to a commit; not installing it`));
+      return fail('invalid_entry');
+    }
+    entry = found.entry;
+  } catch (error) {
+    console.log(chalk.red(`❌ ${error.message}`));
+    return fail('network_error', error.message);
+  }
+  componentName = `${entry.category || ref.category || 'uncategorized'}/${ref.name}`;
+  const pluginId = `${ref.name}@${plugins.MARKETPLACE_NAME}`;
+  console.log(chalk.gray(`📦 ${entry.source.url.replace(/^https:\/\/github\.com\//, '').replace(/\.git$/, '')}@${entry.source.sha.slice(0, 7)}, ${scope} scope`));
+
+  let outcome;
+  try {
+    outcome = await plugins.installWithClaude({ name: ref.name, scope, targetDir });
+    if (outcome.missing) {
+      // No claude command: declare it in settings; Claude Code fetches it on its next start.
+      outcome = await plugins.installWithSettings({ name: ref.name, scope, targetDir });
+    }
+  } catch (error) {
+    console.log(chalk.red(`❌ ${error.message}`));
+    if (error.code === 'claude_too_old') return fail('claude_too_old', error.message);
+    console.log(chalk.gray('   The same install by hand:'));
+    for (const command of plugins.manualCommands(ref.name, scope)) console.log(chalk.gray(`   ${command}`));
+    return fail('install_error', error.message);
+  }
+
+  options.onWrite?.(plugins.settingsFile(scope, targetDir));
+  if (outcome.method === 'claude') {
+    const installPath = await plugins.installedPath(ref.name, scope, targetDir);
+    if (installPath) options.onWrite?.(installPath);
+    console.log(chalk.green(`✅ ${pluginId} installed by Claude Code (${scope} scope)${installPath ? `: ${installPath}` : ''}`));
+  } else {
+    const where = scope === 'user' ? '' : ' in this folder, once you trust it';
+    const home = require('os').homedir();
+    const inProject = path.relative(targetDir, outcome.file);
+    const shown = !inProject.startsWith('..') && !path.isAbsolute(inProject) ? inProject
+      : outcome.file.startsWith(home + path.sep) ? `~${outcome.file.slice(home.length)}` : outcome.file;
+    warnLater(`The claude command was not found, so ${pluginId} is only enabled in ${shown}: Claude Code downloads it the next time it starts${where}.`);
+  }
+  const others = await plugins.sameNameElsewhere(ref.name, scope, targetDir);
+  if (others.length > 0) {
+    warnLater(`${others.join(', ')} is enabled too. Claude Code loads both, and only one copy's hooks run: disable one with "claude plugin disable <id>".`);
+  }
+  if (!options.silent) {
+    console.log(chalk.gray(`   Manage it in Claude Code with /plugin; update with: claude plugin update ${pluginId}`));
+  }
+
+  trackingService.trackDownload('plugin', componentName, {
+    installation_type: 'individual_plugin',
+    target_directory: path.relative(process.cwd(), targetDir),
+    source: 'marketplace',
+    scope,
+    method: outcome.method,
+    commit: entry.source.sha
+  });
+  trackingService.trackInstallationOutcome('plugin', componentName, 'success', { durationMs: Date.now() - startTime, batchId: options.batchId });
+  return true;
+}
+
+/**
  * Install a loop component (markdown) into .claude/loops/, then auto-install
  * every component it references (agents, skills, hooks, commands, settings, mcps).
  */
+/**
+ * A mod's directory through the GitHub contents API (the 1.32 path, now the
+ * fallback when aitmpl.com's copy is missing or does not match meta.files).
+ * Returns { files } or { notFound: true }; throws on other errors.
+ */
+async function downloadModFromGitHub(modName) {
+  const githubApiUrl = `https://api.github.com/repos/davila7/claude-code-templates/contents/cli-tool/components/mods/${modName}`;
+  console.log(chalk.gray(`📥 Downloading from GitHub (main branch)...`));
+  const files = {};
+  let notFound = false;
+
+  async function downloadDirectory(apiUrl, relativePath = '') {
+    const response = await fetch(apiUrl, {
+      headers: { 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'claude-code-templates' }
+    });
+    if (!response.ok) {
+      if (response.status === 404 && !relativePath) { notFound = true; return; }
+      const limited = (response.status === 403 || response.status === 429) && response.headers.get('x-ratelimit-remaining') === '0';
+      throw new Error(limited
+        ? 'GitHub API rate limit reached (60 requests/hour without a token); try again later'
+        : `HTTP ${response.status}: ${response.statusText} (${relativePath || '/'})`);
+    }
+    const contents = await response.json();
+    for (const item of contents) {
+      const itemPath = relativePath ? `${relativePath}/${item.name}` : item.name;
+      // Plugin files only: no path tricks, no hidden dirs other than .claude-plugin.
+      if (item.name.includes('..') || (item.name.startsWith('.') && item.name !== '.claude-plugin')) continue;
+      if (item.type === 'file') {
+        const fileResponse = await fetch(item.download_url);
+        if (!fileResponse.ok) throw new Error(`Could not download ${itemPath} (HTTP ${fileResponse.status})`);
+        files[itemPath] = await fileResponse.text();
+        console.log(chalk.green(`✓ ${itemPath}`));
+      } else if (item.type === 'dir') {
+        await downloadDirectory(item.url, itemPath);
+      }
+    }
+  }
+
+  await downloadDirectory(githubApiUrl);
+  return notFound ? { notFound: true } : { files };
+}
+
 /**
  * Install a Claude Mod as a local Claude Code plugin.
  *
@@ -1737,7 +1796,7 @@ function parseLoopReferencedComponents(loopContent) {
  * .claude-plugin/plugin.json (name, description, userConfig, ...),
  * hooks/hooks.json ("modules"), the hooks-modules under hooks/ (any number of
  * files, relative imports allowed), and optional types/, tests/ and README.md.
- * We download the whole directory (like a skill) and write it verbatim to
+ * We download the whole directory and write it verbatim to
  * .claude/skills/{name}/, which Claude Code auto-loads as "{name}@skills-dir"
  * once the workspace is trusted.
  */
@@ -1751,43 +1810,26 @@ async function installIndividualMod(modName, targetDir, options = {}) {
       throw new Error('Invalid mod name. Expected "category/name" (letters, digits and hyphens only), e.g. security/secret-redactor.');
     }
     const baseName = modName.split('/').pop();
-    const githubApiUrl = `https://api.github.com/repos/davila7/claude-code-templates/contents/cli-tool/components/mods/${modName}`;
-    console.log(chalk.gray(`📥 Downloading from GitHub (main branch)...`));
 
-    const downloadedFiles = {};
-    let notFound = false;
-
-    // Recursive download of the plugin directory (same approach as skills).
-    async function downloadDirectory(apiUrl, relativePath = '') {
-      const response = await fetch(apiUrl, {
-        headers: { 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'claude-code-templates' }
-      });
-      if (!response.ok) {
-        if (response.status === 404 && !relativePath) { notFound = true; return; }
-        throw new Error(`HTTP ${response.status}: ${response.statusText} (${relativePath || '/'})`);
+    // aitmpl.com's content file first (one request, no GitHub rate limit),
+    // checked against its meta.files; the GitHub contents API as the fallback.
+    let downloadedFiles = {};
+    let source = 'aitmpl_content';
+    const fromSite = await fetchModFiles(modName);
+    if (fromSite.files) {
+      downloadedFiles = fromSite.files;
+      console.log(chalk.gray(`📥 Downloaded from aitmpl.com (${Object.keys(downloadedFiles).length} files, checked against meta.files)`));
+    } else {
+      source = 'github_main';
+      if (!fromSite.notFound) console.log(chalk.gray(`   aitmpl.com copy not usable (${fromSite.error}), using GitHub`));
+      const fromGitHub = await downloadModFromGitHub(modName);
+      if (fromGitHub.notFound) {
+        console.log(chalk.red(`❌ Mod "${modName}" not found`));
+        console.log(chalk.gray('   Browse available mods at https://www.aitmpl.com/mods'));
+        trackingService.trackInstallationOutcome('mod', modName, 'failure', { errorType: 'not_found', durationMs: Date.now() - startTime, batchId: options.batchId });
+        return false;
       }
-      const contents = await response.json();
-      for (const item of contents) {
-        const itemPath = relativePath ? `${relativePath}/${item.name}` : item.name;
-        // Plugin files only: no path tricks, no hidden dirs other than .claude-plugin.
-        if (item.name.includes('..') || (item.name.startsWith('.') && item.name !== '.claude-plugin')) continue;
-        if (item.type === 'file') {
-          const fileResponse = await fetch(item.download_url);
-          if (!fileResponse.ok) throw new Error(`Could not download ${itemPath} (HTTP ${fileResponse.status})`);
-          downloadedFiles[itemPath] = await fileResponse.text();
-          console.log(chalk.green(`✓ ${itemPath}`));
-        } else if (item.type === 'dir') {
-          await downloadDirectory(item.url, itemPath);
-        }
-      }
-    }
-
-    await downloadDirectory(githubApiUrl);
-    if (notFound) {
-      console.log(chalk.red(`❌ Mod "${modName}" not found`));
-      console.log(chalk.gray('   Browse available mods at https://www.aitmpl.com/mods'));
-      trackingService.trackInstallationOutcome('mod', modName, 'failure', { errorType: 'not_found', durationMs: Date.now() - startTime, batchId: options.batchId });
-      return false;
+      downloadedFiles = fromGitHub.files;
     }
 
     // A mod is a plugin: the manifest and hooks/hooks.json must be there, and
@@ -1832,7 +1874,7 @@ async function installIndividualMod(modName, targetDir, options = {}) {
     trackingService.trackDownload('mod', modName, {
       installation_type: 'individual_mod',
       target_directory: path.relative(process.cwd(), targetDir),
-      source: 'github_main',
+      source,
       total_files: Object.keys(downloadedFiles).length
     });
     trackingService.trackInstallationOutcome('mod', modName, 'success', { durationMs: Date.now() - startTime, batchId: options.batchId });
@@ -1946,7 +1988,8 @@ async function installMultipleComponents(options, targetDir) {
       hooks: [],
       skills: [],
       loops: [],
-      mods: []
+      mods: [],
+      plugins: []
     };
     
     // Parse comma-separated values for each component type
@@ -1991,7 +2034,12 @@ async function installMultipleComponents(options, targetDir) {
       components.mods = modInputs.join(',').split(',').map(m => m.trim()).filter(m => m);
     }
 
-    const totalComponents = components.agents.length + components.commands.length + components.mcps.length + components.settings.length + components.hooks.length + components.skills.length + components.loops.length + components.mods.length;
+    if (options.plugin) {
+      const pluginsInput = Array.isArray(options.plugin) ? options.plugin.join(',') : options.plugin;
+      components.plugins = pluginsInput.split(',').map(p => p.trim()).filter(p => p);
+    }
+
+    const totalComponents = components.agents.length + components.commands.length + components.mcps.length + components.settings.length + components.hooks.length + components.skills.length + components.loops.length + components.mods.length + components.plugins.length;
     
     if (totalComponents === 0) {
       console.log(chalk.yellow('⚠️  No components specified to install.'));
@@ -2007,10 +2055,17 @@ async function installMultipleComponents(options, targetDir) {
       ...components.hooks.map(name => ({ type: 'hook', name })),
       ...components.skills.map(name => ({ type: 'skill', name })),
       ...components.loops.map(name => ({ type: 'loop', name })),
-      ...components.mods.map(name => ({ type: 'mod', name }))
+      ...components.mods.map(name => ({ type: 'mod', name })),
+      // A retry keeps a non-default --scope, or it would enable the plugin somewhere else.
+      ...components.plugins.map(name => ({ type: 'plugin', name, retryFlags: require('./plugin-install').cliScopeFlag(options.scope) }))
     ];
 
-    ui.header();
+    // Short names ("--agent frontend-developer") become catalog paths when
+    // exactly one component has that name; the others get suggestions for the
+    // summary. Best effort: without the catalog the names stay as typed.
+    await resolveItems(items);
+
+    if (!options.skipHeader) ui.header();
     ui.plan(items);
 
     // Ask for installation locations once for configuration components.
@@ -2029,10 +2084,14 @@ async function installMultipleComponents(options, targetDir) {
       hook: installIndividualHook,
       skill: installIndividualSkill,
       loop: installIndividualLoop,
-      mod: installIndividualMod
+      mod: installIndividualMod,
+      plugin: installIndividualPlugin
     };
     const usesLocations = new Set(['setting', 'hook', 'loop']);
 
+    // Skills listed here are not installed again as another skill's dependency.
+    const installingSkills = new Set(items.filter(i => i.type === 'skill').map(i => i.name));
+    const pluginNotes = [];
     const results = [];
     for (const item of items) {
       const result = await ui.runStep(item, onWrite => installers[item.type](item.name, targetDir, {
@@ -2040,6 +2099,8 @@ async function installMultipleComponents(options, targetDir) {
         silent: true,
         batchId,
         onWrite,
+        installingSkills,
+        pluginNotes,
         ...(usesLocations.has(item.type) ? { sharedInstallLocations } : {})
       }));
       results.push(result);
@@ -2081,11 +2142,15 @@ async function installMultipleComponents(options, targetDir) {
     if (options.yaml) {
       ui.note('Workflow file created in .claude/workflows/. Use it with Claude Code to run the complete setup.');
     }
+    if (items.some((item, i) => item.type === 'plugin' && results[i].ok)) {
+      ui.note('Plugins are managed by Claude Code: /plugin lists them, "claude plugin update <name>@aitmpl" updates one.');
+    }
+    for (const message of pluginNotes) ui.note(`Note: ${message}`);
 
     // Note: Individual components are already tracked separately in their installation functions
     
-    // Handle prompt execution if provided (but not in sandbox mode)
-    if (options.prompt && !options.sandbox) {
+    // Handle prompt execution if provided
+    if (options.prompt) {
       await handlePromptExecution(options.prompt, targetDir);
     }
     
@@ -2122,8 +2187,8 @@ async function showAvailableAgents() {
   });
   
   console.log(chalk.blue('Examples:'));
-  console.log(chalk.gray('  cct --agent api-security-audit'));
-  console.log(chalk.gray('  cct --agent deep-research-team/academic-researcher'));
+  console.log(chalk.gray('  npx claude-code-templates@latest --agent api-security-audit'));
+  console.log(chalk.gray('  npx claude-code-templates@latest --agent deep-research-team/academic-researcher'));
   console.log('');
 }
 
@@ -2242,19 +2307,17 @@ async function installWorkflow(workflowHash, targetDir, options) {
     console.log(chalk.cyan(`📄 Workflow file: ${path.relative(targetDir, workflowFile)}`));
     console.log(chalk.cyan(`🚀 Use the workflow file with Claude Code to execute the complete workflow`));
     
-    // Track successful workflow installation
-    trackingService.trackDownload('workflow', hash, {
-      installation_type: 'workflow',
-      workflow_name: workflowData.name,
+    // Count the workflow run in command usage (Neon). Its components come
+    // inline in the hash, so they are not counted as catalog downloads.
+    trackingService.trackCommandExecution('workflow', {
       components_count: workflowData.steps.length,
       agents_count: agents.length,
       commands_count: commands.length,
-      mcps_count: mcps.length,
-      target_directory: path.relative(process.cwd(), targetDir)
+      mcps_count: mcps.length
     });
     
-    // Handle prompt execution if provided (but not in sandbox mode)
-    if (options.prompt && !options.sandbox) {
+    // Handle prompt execution if provided
+    if (options.prompt) {
       await handlePromptExecution(options.prompt, targetDir);
     }
     
@@ -2647,7 +2710,15 @@ ${workflowData.steps.map((step, index) => `# ${index + 1}. ${step.description} (
  */
 async function handlePromptExecution(prompt, targetDir) {
   console.log(chalk.blue('\n🎯 Prompt execution requested...'));
-  
+
+  // Claude Code would start interactively: without a terminal nobody can
+  // use it, and the confirmation below would wait forever.
+  if (!process.stdin.isTTY || !process.stdout.isTTY) {
+    console.log(chalk.yellow('⏹️  No terminal, so Claude Code was not started. Run the prompt with:'));
+    console.log(chalk.cyan(`   ${claudeCommandLine([prompt])}`));
+    return;
+  }
+
   // Ask user if they want to execute the prompt in Claude Code
   const { shouldExecute } = await inquirer.prompt([{
     type: 'confirm',
@@ -2664,15 +2735,12 @@ async function handlePromptExecution(prompt, targetDir) {
   console.log(chalk.blue('🚀 Preparing to launch Claude Code with your prompt...'));
   
   try {
-    // Check if claude command is available in PATH
-    const { spawn } = require('child_process');
     const open = require('open');
-    
-    // First try to execute claude command directly
-    const claudeProcess = spawn('claude', [prompt], {
+
+    // The prompt is one argument, never shell syntax (see claude-launcher.js)
+    const claudeProcess = spawnClaude([prompt], {
       cwd: targetDir,
-      stdio: ['inherit', 'inherit', 'inherit'],
-      shell: true
+      stdio: ['inherit', 'inherit', 'inherit']
     });
     
     claudeProcess.on('error', async (error) => {
@@ -2717,937 +2785,5 @@ async function handlePromptExecution(prompt, targetDir) {
   }
 }
 
-async function launchClaudeCodeStudio(options, targetDir) {
-  console.log(chalk.blue('\n🎨 Claude Code Studio'));
-  console.log(chalk.cyan('═══════════════════════════════════════'));
-  console.log(chalk.white('🚀 Starting Claude Code Studio interface...'));
-  console.log(chalk.gray('💡 This interface supports both local and cloud execution'));
-  
-  const { spawn } = require('child_process');
-  const open = require('open');
-  const path = require('path');
-  
-  // Start the studio server
-  const serverPath = path.join(__dirname, 'sandbox-server.js');
-  const serverProcess = spawn('node', [serverPath], {
-    stdio: 'inherit'
-  });
-  
-  // Wait a moment for server to start, then open browser
-  setTimeout(async () => {
-    try {
-      await open('http://localhost:3444');
-      console.log(chalk.green('✅ Claude Code Studio launched at http://localhost:3444'));
-      console.log(chalk.gray('💡 Choose between Local Machine or E2B Cloud execution'));
-    } catch (error) {
-      console.log(chalk.yellow('💡 Please manually open: http://localhost:3444'));
-    }
-  }, 2000);
-  
-  // Handle process cleanup
-  process.on('SIGINT', () => {
-    console.log(chalk.yellow('\n🛑 Shutting down Claude Code Studio...'));
-    serverProcess.kill();
-    process.exit(0);
-  });
-  
-  return;
-}
-
-async function executeSandbox(options, targetDir) {
-  const { sandbox, command, mcp, setting, hook, e2bApiKey, anthropicApiKey, yes } = options;
-  let { agent, prompt } = options;
-
-  // Validate sandbox provider
-  if (sandbox !== 'e2b' && sandbox !== 'cloudflare' && sandbox !== 'docker') {
-    console.log(chalk.red('❌ Error: Invalid sandbox provider'));
-    console.log(chalk.yellow('💡 Available providers: e2b, cloudflare, docker'));
-    console.log(chalk.gray('   Example: --sandbox e2b --prompt "Create a web app"'));
-    console.log(chalk.gray('   Example: --sandbox cloudflare --prompt "Calculate factorial of 5"'));
-    console.log(chalk.gray('   Example: --sandbox docker --prompt "Write a function"'));
-    return;
-  }
-
-  // Interactive agent selection if not provided and --yes not used
-  if (!agent && !yes) {
-    const inquirer = require('inquirer');
-
-    console.log(chalk.blue('\n🤖 Agent Selection'));
-    console.log(chalk.cyan('═══════════════════════════════════════'));
-    console.log(chalk.gray('Select one or more agents for your task (use SPACE to select, ENTER to confirm).\n'));
-
-    // Fetch available agents
-    console.log(chalk.gray('⏳ Fetching available agents...'));
-    const agents = await getAvailableAgentsFromGitHub();
-
-    // Format agents for selection with full path
-    const agentChoices = agents.map(a => ({
-      name: `${a.path} ${chalk.gray(`- ${a.category}`)}`,
-      value: a.path,  // This already includes folder/agent-name format
-      short: a.path
-    }));
-
-    // First ask if they want to select agents
-    const { wantAgents } = await inquirer.prompt([{
-      type: 'confirm',
-      name: 'wantAgents',
-      message: 'Do you want to select specific agents for this task?',
-      default: true
-    }]);
-
-    if (wantAgents) {
-      const { selectedAgents } = await inquirer.prompt([{
-        type: 'checkbox',
-        name: 'selectedAgents',
-        message: 'Select agents (use SPACE to select, ENTER when done):',
-        choices: agentChoices,
-        pageSize: 15
-        // Removed validation - allow empty selection
-      }]);
-
-      if (selectedAgents && selectedAgents.length > 0) {
-        // Join multiple agents with comma
-        agent = selectedAgents.join(',');
-        console.log(chalk.green(`✅ Selected agents: ${chalk.cyan(selectedAgents.join(', '))}`));
-      } else {
-        // User didn't select any agents but pressed Enter
-        console.log(chalk.yellow('⚠️ Continuing without specific agents'));
-      }
-    } else {
-      console.log(chalk.yellow('⚠️ Continuing without specific agents'));
-    }
-  } else if (!agent && yes) {
-    // --yes flag used without --agent, proceed without agents
-    console.log(chalk.yellow('⚠️ No agent specified, continuing without specific agents'));
-  }
-  
-  // Get prompt from user if not provided
-  if (!prompt) {
-    console.log(chalk.blue('\n📝 Project Requirements'));
-    console.log(chalk.cyan('═══════════════════════════════════════'));
-    console.log(chalk.gray('Describe what you want to create in detail. The more specific you are,'));
-    console.log(chalk.gray('the better Claude Code will understand your requirements.\n'));
-    
-    const inquirer = require('inquirer');
-    
-    const { userPrompt } = await inquirer.prompt([{
-      type: 'input',
-      name: 'userPrompt',
-      message: 'What would you like to create?',
-      validate: (input) => {
-        if (!input || input.trim().length < 10) {
-          return 'Please provide a more detailed description (at least 10 characters)';
-        }
-        return true;
-      }
-    }]);
-    
-    prompt = userPrompt.trim();
-    console.log(chalk.green('✅ Project requirements captured!'));
-  }
-  
-  // Load .env file if it exists (for API keys)
-  try {
-    const fs = require('fs');
-    const path = require('path');
-    const envPath = path.join(targetDir, '.env');
-    
-    if (fs.existsSync(envPath)) {
-      const envContent = fs.readFileSync(envPath, 'utf8');
-      const envVars = envContent.split('\n')
-        .filter(line => line.trim() && !line.startsWith('#'))
-        .reduce((acc, line) => {
-          const [key, ...valueParts] = line.split('=');
-          if (key && valueParts.length > 0) {
-            const value = valueParts.join('=').trim();
-            acc[key.trim()] = value;
-          }
-          return acc;
-        }, {});
-      
-      // Set environment variables if not already set
-      Object.keys(envVars).forEach(key => {
-        if (!process.env[key]) {
-          process.env[key] = envVars[key];
-        }
-      });
-    }
-  } catch (error) {
-    // Ignore .env loading errors
-  }
-  
-  // Check for API keys based on sandbox provider
-  const anthropicKey = anthropicApiKey || process.env.ANTHROPIC_API_KEY;
-
-  if (sandbox === 'e2b') {
-    const e2bKey = e2bApiKey || process.env.E2B_API_KEY;
-
-    if (!e2bKey) {
-      console.log(chalk.red('❌ Error: E2B API key is required'));
-      console.log(chalk.yellow('💡 Options:'));
-      console.log(chalk.gray('   1. Set environment variable: E2B_API_KEY=your_key'));
-      console.log(chalk.gray('   2. Use CLI parameter: --e2b-api-key your_key'));
-      console.log(chalk.blue('   Get your key at: https://e2b.dev/dashboard'));
-      return;
-    }
-
-    if (!anthropicKey) {
-      console.log(chalk.red('❌ Error: Anthropic API key is required'));
-      console.log(chalk.yellow('💡 Options:'));
-      console.log(chalk.gray('   1. Set environment variable: ANTHROPIC_API_KEY=your_key'));
-      console.log(chalk.gray('   2. Use CLI parameter: --anthropic-api-key your_key'));
-      console.log(chalk.blue('   Get your key at: https://console.anthropic.com'));
-      return;
-    }
-
-    // Execute E2B sandbox
-    await executeE2BSandbox({ sandbox, agent, prompt, command, mcp, setting, hook, e2bKey, anthropicKey }, targetDir);
-
-  } else if (sandbox === 'cloudflare') {
-    if (!anthropicKey) {
-      console.log(chalk.red('❌ Error: Anthropic API key is required for Cloudflare sandbox'));
-      console.log(chalk.yellow('💡 Options:'));
-      console.log(chalk.gray('   1. Set environment variable: ANTHROPIC_API_KEY=your_key'));
-      console.log(chalk.gray('   2. Use CLI parameter: --anthropic-api-key your_key'));
-      console.log(chalk.blue('   Get your key at: https://console.anthropic.com'));
-      return;
-    }
-
-    // Execute Cloudflare sandbox
-    await executeCloudflareSandbox({ sandbox, agent, prompt, command, mcp, setting, hook, anthropicKey }, targetDir);
-
-  } else if (sandbox === 'docker') {
-    if (!anthropicKey) {
-      console.log(chalk.red('❌ Error: Anthropic API key is required for Docker sandbox'));
-      console.log(chalk.yellow('💡 Options:'));
-      console.log(chalk.gray('   1. Set environment variable: ANTHROPIC_API_KEY=your_key'));
-      console.log(chalk.gray('   2. Use CLI parameter: --anthropic-api-key your_key'));
-      console.log(chalk.blue('   Get your key at: https://console.anthropic.com'));
-      return;
-    }
-
-    // Execute Docker sandbox
-    await executeDockerSandbox({ sandbox, agent, prompt, command, mcp, setting, hook, anthropicKey, yes: options.yes }, targetDir);
-  }
-}
-
-async function executeCloudflareSandbox(options, targetDir) {
-  const { agent, command, mcp, setting, hook, prompt, anthropicKey } = options;
-
-  console.log(chalk.blue('\n☁️  Cloudflare Sandbox Execution'));
-  console.log(chalk.cyan('═══════════════════════════════════════'));
-
-  if (agent) {
-    const agentList = agent.split(',');
-    if (agentList.length > 1) {
-      console.log(chalk.white(`📋 Agents (${agentList.length}):`));
-      agentList.forEach(a => console.log(chalk.yellow(`   • ${a.trim()}`)));
-    } else {
-      console.log(chalk.white(`📋 Agent: ${chalk.yellow(agent)}`));
-    }
-  } else {
-    console.log(chalk.white(`📋 Agent: ${chalk.yellow('default')}`));
-  }
-
-  const truncatedPrompt = prompt.length > 80 ? prompt.substring(0, 80) + '...' : prompt;
-  console.log(chalk.white(`💭 Prompt: ${chalk.cyan('"' + truncatedPrompt + '"')}`));
-  console.log(chalk.white(`🌐 Provider: ${chalk.green('Cloudflare Workers')}`));
-  console.log(chalk.gray('\n🔧 Execution details:'));
-  console.log(chalk.gray('   • Uses Claude AI for code generation'));
-  console.log(chalk.gray('   • Executes in isolated Cloudflare sandbox'));
-  console.log(chalk.gray('   • Global edge deployment for low latency\n'));
-
-  const inquirer = require('inquirer');
-
-  const { shouldExecute } = await inquirer.prompt([{
-    type: 'confirm',
-    name: 'shouldExecute',
-    message: 'Execute this prompt in Cloudflare sandbox?',
-    default: true
-  }]);
-
-  if (!shouldExecute) {
-    console.log(chalk.yellow('⏹️  Cloudflare sandbox execution cancelled by user.'));
-    return;
-  }
-
-  try {
-    console.log(chalk.blue('🔮 Setting up Cloudflare sandbox environment...'));
-
-    const spinner = ora('Installing Cloudflare sandbox component...').start();
-
-    // Create .claude/sandbox/cloudflare directory
-    const sandboxDir = path.join(targetDir, '.claude', 'sandbox', 'cloudflare');
-    await fs.ensureDir(sandboxDir);
-
-    // Copy Cloudflare component files
-    const componentsDir = path.join(__dirname, '..', 'components', 'sandbox', 'cloudflare');
-
-    try {
-      if (await fs.pathExists(componentsDir)) {
-        console.log(chalk.gray('📦 Using local Cloudflare component files...'));
-        console.log(chalk.dim(`   Source: ${componentsDir}`));
-        console.log(chalk.dim(`   Target: ${sandboxDir}`));
-
-        // Copy all files from cloudflare directory
-        await fs.copy(componentsDir, sandboxDir, {
-          overwrite: true
-        });
-
-        // Verify files were copied
-        const copiedFiles = await fs.readdir(sandboxDir);
-        console.log(chalk.dim(`   Copied ${copiedFiles.length} items`));
-        if (copiedFiles.length === 0) {
-          throw new Error('No files were copied from Cloudflare component directory');
-        }
-      } else {
-        throw new Error(`Cloudflare component files not found at: ${componentsDir}`);
-      }
-    } catch (error) {
-      spinner.fail(`Failed to install Cloudflare component: ${error.message}`);
-      throw error;
-    }
-
-    spinner.succeed('Cloudflare sandbox component installed successfully');
-
-    // Check for Node.js
-    const nodeSpinner = ora('Checking Node.js environment...').start();
-
-    try {
-      const { spawn } = require('child_process');
-
-      // Check Node.js version
-      const checkNode = () => {
-        return new Promise((resolve) => {
-          const check = spawn('node', ['--version'], { stdio: 'pipe' });
-          check.on('close', (code) => resolve(code === 0));
-          check.on('error', () => resolve(false));
-        });
-      };
-
-      const nodeAvailable = await checkNode();
-      if (!nodeAvailable) {
-        nodeSpinner.fail('Node.js not found');
-        console.log(chalk.red('❌ Node.js 16.17.0+ is required for Cloudflare sandbox'));
-        console.log(chalk.yellow('💡 Please install Node.js and try again'));
-        console.log(chalk.blue('   Visit: https://nodejs.org'));
-        return;
-      }
-
-      nodeSpinner.succeed('Node.js environment ready');
-
-      // Install NPM dependencies
-      const depSpinner = ora('Installing Cloudflare dependencies...').start();
-
-      const npmInstall = spawn('npm', ['install'], {
-        cwd: sandboxDir,
-        stdio: 'pipe'
-      });
-
-      let npmOutput = '';
-      let npmError = '';
-
-      npmInstall.stdout.on('data', (data) => {
-        npmOutput += data.toString();
-      });
-
-      npmInstall.stderr.on('data', (data) => {
-        npmError += data.toString();
-      });
-
-      await new Promise((resolve, reject) => {
-        npmInstall.on('close', async (npmCode) => {
-          if (npmCode === 0) {
-            depSpinner.succeed('Cloudflare dependencies installed successfully');
-
-            // Build components string for installation inside sandbox
-            let componentsToInstall = '';
-            if (agent) componentsToInstall += ` --agent ${agent}`;
-            if (command) componentsToInstall += ` --command ${command}`;
-            if (mcp) componentsToInstall += ` --mcp ${mcp}`;
-            if (setting) componentsToInstall += ` --setting ${setting}`;
-            if (hook) componentsToInstall += ` --hook ${hook}`;
-
-            // Execute using launcher
-            console.log(chalk.blue('🚀 Launching Cloudflare sandbox...'));
-            console.log(chalk.gray(`📝 Prompt: "${prompt.substring(0, 100)}${prompt.length > 100 ? '...' : ''}"`));
-
-            if (componentsToInstall) {
-              console.log(chalk.gray(`📦 Components to install:${componentsToInstall}`));
-            }
-
-            // Use ts-node or tsx to execute TypeScript launcher
-            const launcherPath = path.join(sandboxDir, 'launcher.ts');
-
-            console.log(chalk.blue('🚀 Starting Cloudflare sandbox execution...'));
-
-            const sandboxExecution = spawn('npx', [
-              'tsx',
-              launcherPath,
-              prompt,
-              componentsToInstall.trim(),
-              anthropicKey,
-              'http://localhost:8787', // Local dev server URL
-              targetDir // Project root directory for file output
-            ], {
-              cwd: sandboxDir,
-              stdio: 'inherit',
-              timeout: 300000, // 5 minutes
-              env: {
-                ...process.env,
-                ANTHROPIC_API_KEY: anthropicKey
-              }
-            });
-
-            sandboxExecution.on('close', (code) => {
-              if (code === 0) {
-                console.log(chalk.green('🎉 Cloudflare sandbox execution completed successfully!'));
-                resolve();
-              } else if (code === null) {
-                console.log(chalk.yellow('⏹️  Sandbox execution was cancelled'));
-                resolve();
-              } else {
-                console.log(chalk.yellow(`⚠️  Sandbox execution finished with exit code ${code}`));
-                console.log(chalk.gray('💡 Check the output above for error details'));
-                resolve();
-              }
-            });
-
-            sandboxExecution.on('error', (error) => {
-              console.log(chalk.red(`❌ Error executing sandbox: ${error.message}`));
-              console.log(chalk.yellow('💡 Make sure you have set ANTHROPIC_API_KEY'));
-              reject(error);
-            });
-          } else {
-            depSpinner.fail('Failed to install Cloudflare dependencies');
-            console.log(chalk.red(`❌ npm install failed with exit code ${npmCode}`));
-            if (npmError) {
-              console.log(chalk.red('Error output:'));
-              console.log(chalk.gray(npmError.trim()));
-            }
-            reject(new Error('Failed to install dependencies'));
-          }
-        });
-      });
-
-    } catch (error) {
-      nodeSpinner.fail('Failed to check Node.js environment');
-      console.log(chalk.red(`❌ Error: ${error.message}`));
-      throw error;
-    }
-
-  } catch (error) {
-    console.log(chalk.red(`❌ Error setting up Cloudflare sandbox: ${error.message}`));
-    console.log(chalk.yellow('💡 Please check your internet connection and try again'));
-  }
-}
-
-async function executeDockerSandbox(options, targetDir) {
-  const { agent, command, mcp, setting, hook, prompt, anthropicKey, yes } = options;
-
-  console.log(chalk.blue('\n🐳 Docker Sandbox Execution'));
-  console.log(chalk.cyan('═══════════════════════════════════════'));
-
-  if (agent) {
-    const agentList = agent.split(',');
-    if (agentList.length > 1) {
-      console.log(chalk.white(`📋 Agents (${agentList.length}):`));
-      agentList.forEach(a => console.log(chalk.yellow(`   • ${a.trim()}`)));
-    } else {
-      console.log(chalk.white(`📋 Agent: ${chalk.yellow(agent)}`));
-    }
-  } else {
-    console.log(chalk.white(`📋 Agent: ${chalk.yellow('default')}`));
-  }
-
-  const truncatedPrompt = prompt.length > 80 ? prompt.substring(0, 80) + '...' : prompt;
-  console.log(chalk.white(`💭 Prompt: ${chalk.cyan('"' + truncatedPrompt + '"')}`));
-  console.log(chalk.white(`🐳 Provider: ${chalk.green('Docker Local')}`));
-  console.log(chalk.gray('\n🔧 Execution details:'));
-  console.log(chalk.gray('   • Uses Claude Agent SDK for execution'));
-  console.log(chalk.gray('   • Executes in isolated Docker container'));
-  console.log(chalk.gray('   • Local execution with full filesystem access\n'));
-
-  // Skip confirmation prompt if --yes flag is used
-  if (!yes) {
-    const inquirer = require('inquirer');
-
-    const { shouldExecute } = await inquirer.prompt([{
-      type: 'confirm',
-      name: 'shouldExecute',
-      message: 'Execute this prompt in Docker sandbox?',
-      default: true
-    }]);
-
-    if (!shouldExecute) {
-      console.log(chalk.yellow('⏹️  Docker sandbox execution cancelled by user.'));
-      return;
-    }
-  }
-
-  try {
-    console.log(chalk.blue('🔮 Setting up Docker sandbox environment...'));
-
-    const spinner = ora('Installing Docker sandbox component...').start();
-
-    // Create .claude/sandbox/docker directory
-    const sandboxDir = path.join(targetDir, '.claude', 'sandbox', 'docker');
-    await fs.ensureDir(sandboxDir);
-
-    // Copy Docker component files
-    const componentsDir = path.join(__dirname, '..', 'components', 'sandbox', 'docker');
-
-    try {
-      if (await fs.pathExists(componentsDir)) {
-        console.log(chalk.gray('📦 Using local Docker component files...'));
-        console.log(chalk.dim(`   Source: ${componentsDir}`));
-        console.log(chalk.dim(`   Target: ${sandboxDir}`));
-
-        // Copy all files from docker directory
-        await fs.copy(componentsDir, sandboxDir, {
-          overwrite: true
-        });
-
-        // Verify files were copied
-        const copiedFiles = await fs.readdir(sandboxDir);
-        console.log(chalk.dim(`   Copied ${copiedFiles.length} items`));
-        if (copiedFiles.length === 0) {
-          throw new Error('No files were copied from Docker component directory');
-        }
-      } else {
-        throw new Error(`Docker component files not found at: ${componentsDir}`);
-      }
-    } catch (error) {
-      spinner.fail(`Failed to install Docker component: ${error.message}`);
-      throw error;
-    }
-
-    spinner.succeed('Docker sandbox component installed successfully');
-
-    // Check for Docker
-    const dockerSpinner = ora('Checking Docker environment...').start();
-
-    try {
-      const { spawn } = require('child_process');
-
-      // Check Docker installation
-      const checkDocker = () => {
-        return new Promise((resolve) => {
-          const check = spawn('docker', ['--version'], { stdio: 'pipe' });
-          check.on('close', (code) => resolve(code === 0));
-          check.on('error', () => resolve(false));
-        });
-      };
-
-      const dockerAvailable = await checkDocker();
-      if (!dockerAvailable) {
-        dockerSpinner.fail('Docker not found');
-        console.log(chalk.red('❌ Docker is required for Docker sandbox'));
-        console.log(chalk.yellow('💡 Please install Docker and try again'));
-        console.log(chalk.blue('   Visit: https://docs.docker.com/get-docker/'));
-        return;
-      }
-
-      // Check Docker daemon
-      const checkDockerRunning = () => {
-        return new Promise((resolve) => {
-          const check = spawn('docker', ['ps'], { stdio: 'pipe' });
-          check.on('close', (code) => resolve(code === 0));
-          check.on('error', () => resolve(false));
-        });
-      };
-
-      const dockerRunning = await checkDockerRunning();
-      if (!dockerRunning) {
-        dockerSpinner.fail('Docker daemon not running');
-        console.log(chalk.red('❌ Docker daemon is not running'));
-        console.log(chalk.yellow('💡 Please start Docker and try again'));
-        return;
-      }
-
-      dockerSpinner.succeed('Docker environment ready');
-
-      // Build components string for installation inside sandbox
-      let componentsToInstall = '';
-      if (agent) {
-        const agentList = agent.split(',').map(a => `--agent ${a.trim()}`);
-        componentsToInstall += agentList.join(' ');
-      }
-      if (command) {
-        const commandList = command.split(',').map(c => ` --command ${c.trim()}`);
-        componentsToInstall += commandList.join(' ');
-      }
-      if (mcp) {
-        const mcpList = mcp.split(',').map(m => ` --mcp ${m.trim()}`);
-        componentsToInstall += mcpList.join(' ');
-      }
-      if (setting) {
-        const settingList = setting.split(',').map(s => ` --setting ${s.trim()}`);
-        componentsToInstall += settingList.join(' ');
-      }
-      if (hook) {
-        const hookList = hook.split(',').map(h => ` --hook ${h.trim()}`);
-        componentsToInstall += hookList.join(' ');
-      }
-
-      // Execute Docker launcher
-      const execSpinner = ora('Executing Docker sandbox...').start();
-
-      const launcherPath = path.join(sandboxDir, 'docker-launcher.js');
-
-      const dockerExec = spawn('node', [launcherPath, prompt, componentsToInstall.trim()], {
-        cwd: sandboxDir,
-        stdio: 'inherit',
-        env: {
-          ...process.env,
-          ANTHROPIC_API_KEY: anthropicKey
-        }
-      });
-
-      await new Promise((resolve, reject) => {
-        dockerExec.on('close', (dockerCode) => {
-          if (dockerCode === 0) {
-            execSpinner.succeed('Docker sandbox execution completed successfully');
-            console.log(chalk.green('\n✅ Docker sandbox execution finished!'));
-            console.log(chalk.white('📁 Output files are in the output/ directory'));
-            resolve();
-          } else {
-            execSpinner.fail(`Docker sandbox execution failed with code ${dockerCode}`);
-            reject(new Error(`Docker execution failed with code ${dockerCode}`));
-          }
-        });
-
-        dockerExec.on('error', (error) => {
-          execSpinner.fail('Failed to execute Docker sandbox');
-          reject(error);
-        });
-      });
-
-    } catch (error) {
-      dockerSpinner.fail('Failed to check Docker environment');
-      console.log(chalk.red(`❌ Error: ${error.message}`));
-      throw error;
-    }
-
-  } catch (error) {
-    console.log(chalk.red(`❌ Error setting up Docker sandbox: ${error.message}`));
-    console.log(chalk.yellow('💡 Please check your Docker installation and try again'));
-  }
-}
-
-async function executeE2BSandbox(options, targetDir) {
-  const { agent, prompt, command, mcp, setting, hook, e2bKey, anthropicKey } = options;
-
-  // Sandbox execution confirmation
-  console.log(chalk.blue('\n☁️ E2B Sandbox Execution'));
-  console.log(chalk.cyan('═══════════════════════════════════════'));
-  
-  // Display agents properly (handle multiple agents)
-  if (agent) {
-    const agentList = agent.split(',');
-    if (agentList.length > 1) {
-      console.log(chalk.white(`📋 Agents (${agentList.length}):`));
-      agentList.forEach(a => console.log(chalk.yellow(`   • ${a.trim()}`)));
-    } else {
-      console.log(chalk.white(`📋 Agent: ${chalk.yellow(agent)}`));
-    }
-  } else {
-    console.log(chalk.white(`📋 Agent: ${chalk.yellow('default')}`));
-  }
-  
-  const truncatedPrompt = prompt.length > 80 ? prompt.substring(0, 80) + '...' : prompt;
-  console.log(chalk.white(`💭 Prompt: ${chalk.cyan('"' + truncatedPrompt + '"')}`));
-  console.log(chalk.white(`🌐 Provider: ${chalk.green('E2B Cloud')}`));
-  console.log(chalk.gray('\n🔧 Execution details:'));
-  console.log(chalk.gray('   • Execution logs will be displayed in real-time'));
-  console.log(chalk.gray(`   • Files will be downloaded to: ${chalk.cyan(targetDir)}`));  
-  console.log(chalk.gray('   • Extended timeout: 15 minutes for complex operations'));
-  console.log(chalk.yellow('   • Press ESC anytime to cancel execution\n'));
-  
-  const inquirer = require('inquirer');
-  
-  const { shouldExecuteSandbox } = await inquirer.prompt([{
-    type: 'confirm',
-    name: 'shouldExecuteSandbox',
-    message: `Execute this agent in E2B sandbox?`,
-    default: true
-  }]);
-  
-  if (!shouldExecuteSandbox) {
-    console.log(chalk.yellow('⏹️  E2B sandbox execution cancelled by user.'));
-    return;
-  }
-  
-  try {
-    console.log(chalk.blue('🔮 Setting up E2B sandbox environment...'));
-    
-    // Install E2B sandbox component
-    const spinner = ora('Installing E2B sandbox component...').start();
-    
-    // Create .claude/sandbox directory
-    const sandboxDir = path.join(targetDir, '.claude', 'sandbox');
-    await fs.ensureDir(sandboxDir);
-    
-    // Copy E2B component files from the installed package
-    const componentsDir = path.join(__dirname, '..', 'components', 'sandbox', 'e2b');
-    
-    try {
-      // Check if files exist locally (from npm package)
-      if (await fs.pathExists(componentsDir)) {
-        // Copy files from local package
-        console.log(chalk.gray('📦 Using local E2B component files...'));
-        
-        const launcherPath = path.join(componentsDir, 'e2b-launcher.py');
-        const requirementsPath = path.join(componentsDir, 'requirements.txt');
-        const envExamplePath = path.join(componentsDir, '.env.example');
-        
-        if (await fs.pathExists(launcherPath)) {
-          await fs.copyFile(launcherPath, path.join(sandboxDir, 'e2b-launcher.py'));
-          await fs.chmod(path.join(sandboxDir, 'e2b-launcher.py'), 0o755);
-        } else {
-          throw new Error('e2b-launcher.py not found in package');
-        }
-        
-        if (await fs.pathExists(requirementsPath)) {
-          await fs.copyFile(requirementsPath, path.join(sandboxDir, 'requirements.txt'));
-        }
-        
-        if (await fs.pathExists(envExamplePath)) {
-          await fs.copyFile(envExamplePath, path.join(sandboxDir, '.env.example'));
-        }
-      } else {
-        // Fallback to downloading from GitHub if not found locally
-        console.log(chalk.gray('📥 Downloading E2B component files from GitHub...'));
-        
-        const baseUrl = 'https://raw.githubusercontent.com/davila7/claude-code-templates/main/cli-tool/components/sandbox/e2b';
-        
-        // Download launcher script
-        const launcherResponse = await fetch(`${baseUrl}/e2b-launcher.py`);
-        if (!launcherResponse.ok) {
-          throw new Error(`Failed to download e2b-launcher.py: ${launcherResponse.status} ${launcherResponse.statusText}`);
-        }
-        const launcherContent = await launcherResponse.text();
-        await fs.writeFile(path.join(sandboxDir, 'e2b-launcher.py'), launcherContent, { mode: 0o755 });
-        
-        // Download requirements.txt
-        const requirementsResponse = await fetch(`${baseUrl}/requirements.txt`);
-        if (!requirementsResponse.ok) {
-          throw new Error(`Failed to download requirements.txt: ${requirementsResponse.status} ${requirementsResponse.statusText}`);
-        }
-        const requirementsContent = await requirementsResponse.text();
-        await fs.writeFile(path.join(sandboxDir, 'requirements.txt'), requirementsContent);
-        
-        // Download .env.example
-        const envExampleResponse = await fetch(`${baseUrl}/.env.example`);
-        if (!envExampleResponse.ok) {
-          throw new Error(`Failed to download .env.example: ${envExampleResponse.status} ${envExampleResponse.statusText}`);
-        }
-        const envExampleContent = await envExampleResponse.text();
-        await fs.writeFile(path.join(sandboxDir, '.env.example'), envExampleContent);
-      }
-    } catch (error) {
-      spinner.fail(`Failed to install E2B component: ${error.message}`);
-      throw error;
-    }
-    
-    spinner.succeed('E2B sandbox component installed successfully');
-    
-    // Check for Python and install dependencies
-    const pythonSpinner = ora('Checking Python environment...').start();
-    
-    try {
-      const { spawn } = require('child_process');
-      
-      // Helper function to check Python version availability
-      const checkPythonVersion = (pythonCmd) => {
-        return new Promise((resolve) => {
-          const check = spawn(pythonCmd, ['--version'], { stdio: 'pipe' });
-          check.on('close', (code) => resolve(code === 0));
-          check.on('error', () => resolve(false));
-        });
-      };
-
-      // Try to find Python 3.11 first (recommended for E2B)
-      let pythonCmd = null;
-      const python311Available = await checkPythonVersion('python3.11');
-      if (python311Available) {
-        pythonCmd = 'python3.11';
-        console.log(chalk.blue('✓ Using Python 3.11 (recommended for E2B)'));
-      } else {
-        // Fall back to platform-appropriate Python commands
-        console.log(chalk.yellow('⚠ Python 3.11 not found, trying platform defaults...'));
-        const candidates = getPlatformPythonCandidates();
-
-        for (const candidate of candidates) {
-          if (await checkPythonVersion(candidate)) {
-            pythonCmd = candidate;
-            console.log(chalk.blue(`✓ Using ${candidate} for E2B`));
-            break;
-          }
-        }
-      }
-
-      // Verify we found a working Python installation
-      if (!pythonCmd) {
-        pythonSpinner.fail('Python not found');
-        console.log(chalk.red('❌ Python 3.11+ is required for E2B sandbox'));
-        console.log(chalk.yellow('💡 Please install Python 3.11+ and try again'));
-        console.log(chalk.blue('   Visit: https://python.org/downloads'));
-        return;
-      }
-      
-      pythonSpinner.succeed(`Python environment ready (${pythonCmd})`);
-      
-      // Install Python dependencies
-      const depSpinner = ora('Installing E2B Python SDK...').start();
-      
-      const pipInstall = spawn(pythonCmd, ['-m', 'pip', 'install', '-r', path.join(sandboxDir, 'requirements.txt')], {
-        cwd: sandboxDir,
-        stdio: 'pipe'
-      });
-      
-      let pipOutput = '';
-      let pipError = '';
-      
-      pipInstall.stdout.on('data', (data) => {
-        pipOutput += data.toString();
-      });
-      
-      pipInstall.stderr.on('data', (data) => {
-        pipError += data.toString();
-      });
-      
-      pipInstall.on('close', async (pipCode) => {
-        if (pipCode === 0) {
-          depSpinner.succeed('E2B Python SDK installed successfully');
-          
-          // Build components string for installation inside sandbox
-          let componentsToInstall = '';
-          if (agent) componentsToInstall += ` --agent ${agent}`;
-          if (command) componentsToInstall += ` --command ${command}`;
-          if (mcp) componentsToInstall += ` --mcp ${mcp}`;
-          if (setting) componentsToInstall += ` --setting ${setting}`;
-          if (hook) componentsToInstall += ` --hook ${hook}`;
-          
-          // Execute sandbox
-          console.log(chalk.blue('🚀 Launching E2B sandbox with Claude Code...'));
-          console.log(chalk.gray(`📝 Prompt: "${prompt.substring(0, 100)}${prompt.length > 100 ? '...' : ''}"`));
-          console.log(chalk.cyan('⏱️  Extended timeout: 15 minutes for complex operations'));
-          
-          if (componentsToInstall) {
-            console.log(chalk.gray(`📦 Components to install:${componentsToInstall}`));
-          }
-          
-          // Execute sandbox and wait for completion
-          console.log(chalk.blue('🚀 Starting E2B sandbox execution...'));
-          console.log(chalk.yellow('💡 Press ESC anytime to cancel the execution'));
-          
-          await new Promise((resolve, reject) => {
-            const sandboxExecution = spawn(pythonCmd, [
-              path.join(sandboxDir, 'e2b-launcher.py'),
-              prompt,
-              componentsToInstall.trim(),
-              e2bKey,
-              anthropicKey
-            ], {
-              cwd: targetDir, // Run from user's current directory to download files there
-              stdio: 'inherit',
-              timeout: 900000, // 15 minutes timeout for complex operations
-              env: { 
-                ...process.env,
-                E2B_API_KEY: e2bKey,
-                ANTHROPIC_API_KEY: anthropicKey
-              }
-            });
-            
-            // Setup ESC key listener for cancellation
-            process.stdin.setRawMode(true);
-            process.stdin.resume();
-            process.stdin.setEncoding('utf8');
-            
-            const keyListener = (key) => {
-              // ESC key (ASCII 27)
-              if (key === '\u001b') {
-                console.log(chalk.yellow('\n⏹️  Cancelling E2B sandbox execution...'));
-                sandboxExecution.kill('SIGTERM');
-                
-                // Cleanup
-                process.stdin.setRawMode(false);
-                process.stdin.pause();
-                process.stdin.removeListener('data', keyListener);
-                
-                resolve(); // Resolve to prevent hanging
-              }
-            };
-            
-            process.stdin.on('data', keyListener);
-            
-            sandboxExecution.on('close', (sandboxCode) => {
-              // Cleanup stdin listener
-              process.stdin.setRawMode(false);
-              process.stdin.pause();
-              process.stdin.removeListener('data', keyListener);
-              
-              if (sandboxCode === 0) {
-                console.log(chalk.green('🎉 Sandbox execution completed successfully!'));
-                console.log(chalk.blue('💡 Files were created inside the E2B sandbox environment'));
-                resolve();
-              } else if (sandboxCode === null) {
-                console.log(chalk.yellow('⏹️  Sandbox execution was cancelled'));
-                resolve();
-              } else {
-                console.log(chalk.yellow(`⚠️  Sandbox execution finished with exit code ${sandboxCode}`));
-                console.log(chalk.gray('💡 Check the output above for any error details'));
-                resolve(); // Still resolve even with non-zero exit code
-              }
-            });
-            
-            sandboxExecution.on('error', (error) => {
-              // Cleanup stdin listener
-              process.stdin.setRawMode(false);
-              process.stdin.pause();
-              process.stdin.removeListener('data', keyListener);
-              
-              if (error.code === 'TIMEOUT') {
-                console.log(chalk.yellow('⏱️  Sandbox execution timed out after 15 minutes'));
-                console.log(chalk.gray('💡 This may happen with very complex prompts or large projects'));
-                console.log(chalk.blue('💡 Try breaking down your prompt into smaller, more specific requests'));
-              } else {
-                console.log(chalk.red(`❌ Error executing sandbox: ${error.message}`));
-                console.log(chalk.yellow('💡 Make sure you have set E2B_API_KEY and ANTHROPIC_API_KEY environment variables'));
-                console.log(chalk.gray('   Create a .env file in the .claude/sandbox directory with your API keys'));
-              }
-              reject(error);
-            });
-          });
-          
-        } else {
-          depSpinner.fail('Failed to install E2B Python SDK');
-          console.log(chalk.red(`❌ pip install failed with exit code ${pipCode}`));
-          if (pipError) {
-            console.log(chalk.red('Error output:'));
-            console.log(chalk.gray(pipError.trim()));
-          }
-          if (pipOutput) {
-            console.log(chalk.blue('Full output:'));
-            console.log(chalk.gray(pipOutput.trim()));
-          }
-          console.log(chalk.yellow('💡 Please install dependencies manually:'));
-          console.log(chalk.gray(`   cd ${sandboxDir}`));
-          console.log(chalk.gray(`   ${pythonCmd} -m pip install -r requirements.txt`));
-          console.log(chalk.gray(`   ${pythonCmd} -m pip install e2b`));
-        }
-      });
-      
-    } catch (error) {
-      pythonSpinner.fail('Failed to check Python environment');
-      console.log(chalk.red(`❌ Error: ${error.message}`));
-    }
-    
-  } catch (error) {
-    console.log(chalk.red(`❌ Error setting up sandbox: ${error.message}`));
-    console.log(chalk.yellow('💡 Please check your internet connection and try again'));
-  }
-}
-
-module.exports = { createClaudeConfig, showMainMenu };
+// installIndividualSkill is exported for tests (cli-tool/tests/unit/skill-install.node-test.js).
+module.exports = { createClaudeConfig, installIndividualSkill };

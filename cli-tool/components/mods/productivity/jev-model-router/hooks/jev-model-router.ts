@@ -270,8 +270,12 @@ export const register: Register = (on, options) => {
       }
     }
 
-    // A fork inherits its parent's model; `model` is ignored for it.
-    if (!routeSubagentModel || e.fork) return next(e)
+    // A fork inherits its parent's model; `model` is ignored for it. A resumed
+    // agent keeps the model it started on (2.1.299: a hook can only refuse a
+    // resume), and its `prompt` is the resuming message, not the task. A
+    // workflow agent is routed like any other: its `model` rewrite applies
+    // since 2.1.300.
+    if (!routeSubagentModel || e.fork || e.resume) return next(e)
 
     if (!unusableReported) {
       unusableReported = true

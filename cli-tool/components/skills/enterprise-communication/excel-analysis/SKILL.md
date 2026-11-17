@@ -1,5 +1,5 @@
 ---
-name: Excel Analysis
+name: excel-analysis
 description: Analyze Excel spreadsheets, create pivot tables, generate charts, and perform data analysis. Use when analyzing Excel files, spreadsheets, tabular data, or .xlsx files.
 ---
 

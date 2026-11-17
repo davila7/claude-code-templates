@@ -18,6 +18,8 @@ on:
       - 'dashboard/public/search-index.json'
       - 'dashboard/public/components/**'
       - 'dashboard/public/component-content/**'
+      - 'dashboard/public/api/v1/**'
+      - 'dashboard/public/marketplace.json'
 
 permissions:
   pull-requests: write
@@ -62,6 +64,8 @@ jobs:
               /^dashboard\/public\/search-index\.json$/,
               /^dashboard\/public\/components\//,
               /^dashboard\/public\/component-content\//,
+              /^dashboard\/public\/api\/v1\//,
+              /^dashboard\/public\/marketplace\.json$/,
             ];
 
             const files = await github.paginate(github.rest.pulls.listFiles, {

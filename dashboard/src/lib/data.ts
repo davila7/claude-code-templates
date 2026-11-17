@@ -212,6 +212,18 @@ export function searchComponents(components: Component[], query: string): Compon
 export interface ComponentContentData {
   content: string;
   files?: Record<string, string>;  // mods only: { "hooks/register.ts": "...", ".claude-plugin/plugin.json": "..." }
+  meta?: ComponentPageMeta;
+  /** Loops that install this component (paths without .md), for the page's "Next step" block. */
+  usedByLoops?: string[];
+}
+
+/** Written by scripts/generate_components_json.py for the component page. */
+export interface ComponentPageMeta {
+  files: { path: string; bytes: number; lines: number | null }[];
+  languages: { name: string; bytes: number }[];
+  /** Absent when the catalog was generated without git history. */
+  lastCommit?: { sha: string; date: string; author: string; subject: string; pr: number | null };
+  addedAt?: string;
 }
 
 export async function fetchComponentContentData(type: string, slug: string): Promise<ComponentContentData> {
@@ -227,7 +239,7 @@ export async function fetchComponentContentData(type: string, slug: string): Pro
       const filePath = path.resolve(`public/component-content/${typePlural}/${slug}.json`);
       const raw = fs.readFileSync(filePath, 'utf-8');
       const data = JSON.parse(raw);
-      return { content: data.content ?? '', files: data.files };
+      return { content: data.content ?? '', files: data.files, meta: data.meta, usedByLoops: data.usedByLoops };
     } catch {
       // fall through to fetch
     }
@@ -248,7 +260,7 @@ export async function fetchComponentContentData(type: string, slug: string): Pro
     clearTimeout(timeoutId);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
-    return { content: data.content ?? '', files: data.files };
+    return { content: data.content ?? '', files: data.files, meta: data.meta, usedByLoops: data.usedByLoops };
   } catch {
     clearTimeout(timeoutId);
     return { content: '' };
@@ -297,6 +309,7 @@ export function getInstallCommand(component: Component): string {
     skill: '--skill',
     loop: '--loop',
     mod: '--mod',
+    plugin: '--plugin',
     template: '--template',
   };
   const flag = typeFlag[component.type] ?? '--agent';

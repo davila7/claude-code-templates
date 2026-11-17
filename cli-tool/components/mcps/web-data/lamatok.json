@@ -3,7 +3,7 @@
     "lamatok": {
       "description": "LamaTok MCP — TikTok data API tools auto-generated from the OpenAPI spec: users, videos, hashtags, comments, followers/following, playlists, search, plus music and watermark-free video downloads. Get an API key at https://lamatok.com (100 free requests on signup, no credit card).",
       "command": "npx",
-      "args": ["-y", "lamatok-mcp"],
+      "args": ["-y", "lamatok-mcp@1.1.2"],
       "env": {
         "LAMATOK_KEY": "<YOUR_LAMATOK_KEY>"
       }

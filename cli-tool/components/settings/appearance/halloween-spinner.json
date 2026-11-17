@@ -1,0 +1,20 @@
+{
+  "description": "Halloween words for the spinner that animates while Claude works: Conjuring, Brewing, Haunting, Summoning and more replace the built-in verbs. Uses the spinnerVerbs setting (mode replace). Remove the spinnerVerbs key to get the defaults back.",
+  "spinnerVerbs": {
+    "mode": "replace",
+    "verbs": [
+      "Conjuring",
+      "Brewing",
+      "Haunting",
+      "Summoning",
+      "Carving",
+      "Possessing",
+      "Cackling",
+      "Lurking",
+      "Bewitching",
+      "Hexing",
+      "Exhuming",
+      "Spellcasting"
+    ]
+  }
+}

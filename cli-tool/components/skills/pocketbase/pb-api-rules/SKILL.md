@@ -1,5 +1,5 @@
 ---
-name: "PocketBase API Rules"
+name: pb-api-rules
 description: "API rules and filter expressions for PocketBase access control. Use when setting permissions, writing filter expressions, configuring who can access what, or debugging 403/404 responses. Covers all 5 rule types, filter syntax, operators, request/collection macros, and field modifiers."
 ---
 

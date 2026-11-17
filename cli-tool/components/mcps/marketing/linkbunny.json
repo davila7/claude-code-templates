@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "linkbunny": {
+      "description": "Remote MCP for contextual nofollow link exchanges between relevant sites. Your coding agent proposes a placement on your own site; you approve before anything is published. Requires a LinkBunny account; first exchange free for one site.",
+      "type": "http",
+      "url": "https://mcp.getlinkbunny.com/exchange"
+    }
+  }
+}

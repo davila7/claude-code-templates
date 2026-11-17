@@ -1,7 +1,7 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [resource] [method] [flags]
-description: Google Sheets: Read and write spreadsheets.
+argument-hint: "[resource] [method] [flags]"
+description: "Google Sheets: Read and write spreadsheets."
 ---
 
 # Google Workspace Sheets

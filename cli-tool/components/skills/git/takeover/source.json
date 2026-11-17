@@ -1,0 +1,13 @@
+{
+  "repo": "t3dotgg/tstack",
+  "path": "skills/takeover",
+  "commit": "7de017b3fc9d50c03cf3ecb98fb71e0ca65a78bd",
+  "license": "MIT",
+  "author": "Theo Browne",
+  "requires": [
+    "git/modernize",
+    "git/file-pr",
+    "git/babysit-pr",
+    "git/leaving-pr-comments"
+  ]
+}

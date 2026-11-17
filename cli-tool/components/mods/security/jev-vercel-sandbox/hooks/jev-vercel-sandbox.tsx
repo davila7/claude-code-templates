@@ -878,7 +878,8 @@ export const register: Register = (on, options) => {
   })
 
   on('turn.start', async ($, e, next) => {
-    if (e.text.trim()) intent = e.text
+    // the person's prompt only: since Claude Code 2.1.299 a subagent's turn starts here too
+    if (e.agentId === undefined && e.text.trim()) intent = e.text
     now = await $.clock.now()
     if (isOpen) $.ui.invalidate('ui.render')
     return next(e)

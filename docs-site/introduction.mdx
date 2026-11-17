@@ -1,0 +1,42 @@
+---
+title: "Claude Code Templates"
+sidebarTitle: "Introduction"
+description: "An open catalog of Claude Code components and the CLI that installs them: agents, commands, skills, hooks, MCP servers, settings, loops, mods and plugins."
+---
+
+import ComponentCounts from "/snippets/component-counts.mdx";
+
+Claude Code is configured through small files: an agent is a Markdown file, a hook is a few lines of JSON, a skill is a folder with a `SKILL.md`. Claude Code Templates collects the good ones in one catalog at [aitmpl.com](https://www.aitmpl.com) and installs them into your project with one command.
+
+```bash
+npx claude-code-templates@latest --agent development-team/frontend-developer
+```
+
+Every component is a plain file you can read before installing and edit afterwards. Nothing is hidden in a binary.
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Install your first component in two minutes.
+  </Card>
+  <Card title="Browse the catalog" icon="grid-2" href="https://www.aitmpl.com">
+    Search every component, preview its files and build a stack.
+  </Card>
+  <Card title="Component types" icon="layer-group" href="/components/overview">
+    What each type does and where it is written.
+  </Card>
+  <Card title="CLI flags" icon="terminal" href="/cli/flags">
+    Every flag of `claude-code-templates`.
+  </Card>
+</CardGroup>
+
+## What you can install
+
+<ComponentCounts />
+
+## How it fits together
+
+1. **The catalog** lives in [`cli-tool/components/`](https://github.com/davila7/claude-code-templates/tree/main/cli-tool/components) on GitHub. Every pull request is checked by Claude Code's own plugin validator and scanned by [NVIDIA SkillSpector](https://github.com/NVIDIA/skillspector) before merge.
+2. **aitmpl.com** renders that catalog: search, file previews, security scan results and a stack builder that produces one install command.
+3. **The CLI** (`npx claude-code-templates`) downloads the files you ask for and writes them where Claude Code reads them, merging into existing configuration instead of overwriting it.
+
+The project is open source (MIT), maintained by [Daniel Avila](https://github.com/davila7) and contributors, and listed in Anthropic's Claude Code documentation.

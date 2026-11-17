@@ -1,6 +1,64 @@
 {
   "articles": [
     {
+      "id": "brightdata-search-skill",
+      "title": "Bright Data Search Skill for Claude Code: Google Results as Structured JSON",
+      "description": "Install the Bright Data Search skill for Claude Code to run Google searches from your terminal session and get clean JSON results (title, link, description) through the Bright Data SERP API.",
+      "url": "brightdata-search-skill/",
+      "image": "assets/brightdata-search-skill-cover.png",
+      "category": "Skills",
+      "publishDate": "2026-11-17",
+      "readTime": "5 min read",
+      "tags": [
+        "Claude Code",
+        "Skills",
+        "Web Search",
+        "Bright Data",
+        "SERP API"
+      ],
+      "difficulty": "basic",
+      "featured": true,
+      "order": 29
+    },
+    {
+      "id": "edit-audit-log-hook",
+      "title": "Edit Audit Log Hook for Claude Code: Track Every File Edit with Timestamps",
+      "description": "Install the Edit Audit Log hook for Claude Code to record every Edit tool call with a timestamp in a project-local file. A PostToolUse hook for change tracking across sessions.",
+      "url": "edit-audit-log-hook/",
+      "image": "assets/edit-audit-log-hook-cover.png",
+      "category": "Automation",
+      "readTime": "4 min read",
+      "tags": [
+        "Claude Code",
+        "Hooks",
+        "PostToolUse",
+        "Audit Log",
+        "Automation"
+      ],
+      "difficulty": "basic",
+      "featured": true,
+      "order": 28
+    },
+    {
+      "id": "spec-driven-quality-gates",
+      "title": "Spec-Driven Quality Gates for Claude Code: Plan Gate, TDD Gate and Scope Guard",
+      "description": "Combine three Claude Code hooks — Plan Gate, TDD Gate and Scope Guard — into a spec-driven workflow that warns before unplanned edits, blocks code without tests, and flags scope creep.",
+      "url": "spec-driven-quality-gates/",
+      "image": "assets/spec-driven-quality-gates-cover.png",
+      "category": "Automation",
+      "readTime": "6 min read",
+      "tags": [
+        "Claude Code",
+        "Hooks",
+        "Spec-Driven Development",
+        "TDD",
+        "Quality Gates"
+      ],
+      "difficulty": "intermediate",
+      "featured": true,
+      "order": 27
+    },
+    {
       "id": "task-move-command",
       "title": "Task Move Command for Claude Code: Automate Your Task Status Workflow",
       "description": "Install the Task Move command for Claude Code to move tasks between status folders (todos, in progress, QA, completed) with validation, bulk operations, and a full audit trail.",
@@ -531,11 +589,11 @@
     }
   ],
   "metadata": {
-    "lastUpdated": "2026-09-20",
-    "totalArticles": 28,
+    "lastUpdated": "2026-11-17",
+    "totalArticles": 31,
     "difficultyLevels": {
-      "basic": 13,
-      "intermediate": 10,
+      "basic": 15,
+      "intermediate": 11,
       "advanced": 5
     }
   }

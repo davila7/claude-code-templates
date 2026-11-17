@@ -1,6 +1,6 @@
 ---
 allowed-tools: Read, Write, Edit, WebSearch
-argument-hint: [twin-subject] | --manufacturing | --business-process | --customer-journey | --system-performance
+argument-hint: "[twin-subject] | --manufacturing | --business-process | --customer-journey | --system-performance"
 description: Create calibrated digital twins with real-world validation, scenario testing, and decision optimization
 ---
 

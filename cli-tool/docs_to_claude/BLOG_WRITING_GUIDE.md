@@ -259,22 +259,6 @@ npx claude-code-templates@latest --mcp [technology]</code></pre>
 </ul>
 ```
 
-#### Global Agents
-```html
-<h3>Create Global Agents (Available Anywhere)</h3>
-<pre><code class="language-bash"># Create global agents accessible from any project
-npx claude-code-templates@latest --create-agent [agent-name]
-
-# List all global agents
-npx claude-code-templates@latest --list-agents
-
-# Update global agents
-npx claude-code-templates@latest --update-agent [agent-name]
-
-# Remove global agents  
-npx claude-code-templates@latest --remove-agent [agent-name]</code></pre>
-```
-
 #### Multiple Components
 ```html
 <h3>Install Multiple Components at Once</h3>

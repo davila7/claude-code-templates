@@ -1,0 +1,154 @@
+# The check auto-merge waits on (see pr-automerge.yml).
+#
+# Most workflows here have `paths:` filters, so requiring each of them by name
+# would leave a PR waiting forever on the checks that never start. This job
+# runs on every PR instead, waits until every other check run and commit status
+# on the head commit has finished, and passes only if none of them failed.
+# pr-automerge.yml merges a PR labelled `automerge` once this passes.
+#
+# It also fails, on purpose, when a PR touches paths CI does not really cover:
+# (MANUAL_PATHS below; keep it identical in pr-automerge.yml):
+#   .github/**                 a PR could rewrite this gate or the deploy
+#   cli-tool/src/**, bin/**    the cli-tool jest suite does not run in CI
+#   scripts/**                 catalog generator, scanners, release tooling
+#   dashboard/src/pages/api/**, dashboard/src/lib/api/**, dashboard/src/middleware*,
+#   dashboard/src/lib/github-api.ts
+#                              auth, download tracking, CORS, secrets at runtime
+#   dashboard/wrangler.toml, astro.config.mjs, public/_headers, public/_redirects,
+#   cloudflare-workers/*/wrangler.toml
+#                              deploy config, caching and redirects of the live site
+#   any package.json, package-lock.json, Cargo.toml, Cargo.lock
+#                              dependency changes (supply chain)
+# Those PRs never auto-merge; Daniel merges them by hand. So does any PR with
+# the `needs-human` label, which anyone can add to stop one PR from merging
+# itself; removing the label runs the gate again.
+#
+# It also fails while the PR has unresolved review threads, so a finding from a
+# reviewer or a review bot (cubic, greptile) blocks the merge until it is fixed
+# or answered and resolved. Some bots only comment, with no check to wait on,
+# so the gate first lets at least 5 minutes pass since it started.
+#
+# A re-run of a failed check does not re-run this gate, and neither does
+# resolving a thread: re-run the gate, or remove and re-add the `automerge`
+# label, after resolving threads without a new push.
+
+name: PR Gate
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review, labeled, unlabeled]
+
+permissions:
+  contents: read
+  checks: read
+  statuses: read
+  pull-requests: read
+
+concurrency:
+  # Other labels (the welcome bot adds some) get their own group and are
+  # skipped, so they never cancel a gate run that is waiting. `needs-human`
+  # shares the head group, so adding it stops a waiting run at once.
+  group: pr-gate-${{ github.event.pull_request.number }}-${{ (github.event.action == 'labeled' || github.event.action == 'unlabeled') && github.event.label.name != 'needs-human' && format('{0}-{1}', github.event.action, github.event.label.name) || 'head' }}
+  cancel-in-progress: true
+
+jobs:
+  gate:
+    name: All checks green
+    if: >-
+      (github.event.action != 'labeled' && github.event.action != 'unlabeled') ||
+      (github.event.action == 'labeled' && github.event.label.name == 'automerge') ||
+      github.event.label.name == 'needs-human'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      PR: ${{ github.event.pull_request.number }}
+      SHA: ${{ github.event.pull_request.head.sha }}
+      SELF: All checks green
+      MANUAL_PATHS: '^(\.github/|cli-tool/src/|cli-tool/bin/|scripts/|dashboard/src/pages/api/|dashboard/src/lib/api/|dashboard/src/lib/github-api\.ts$|dashboard/src/middleware|dashboard/wrangler\.toml$|cloudflare-workers/[^/]+/wrangler\.toml$|dashboard/astro\.config\.mjs$|dashboard/public/_(headers|redirects)$|(.*/)?package(-lock)?\.json$|(.*/)?Cargo\.(toml|lock)$)'
+    steps:
+      - name: Refuse PRs labelled needs-human
+        run: |
+          # Assign first: under bash -e a failed lookup then stops the job,
+          # where a failed pipe into grep would just look like "no label".
+          labels=$(gh api --paginate "repos/$REPO/issues/$PR/labels?per_page=100" --jq '.[].name')
+          if printf '%s\n' "$labels" | grep -qx needs-human; then
+            echo "### Manual merge required" >> "$GITHUB_STEP_SUMMARY"
+            echo "Labelled \`needs-human\`: remove the label to let it auto-merge." >> "$GITHUB_STEP_SUMMARY"
+            echo "::error::Labelled needs-human: merge by hand."
+            exit 1
+          fi
+
+      - name: Refuse paths a human must merge
+        run: |
+          files=$(gh api --paginate "repos/$REPO/pulls/$PR/files?per_page=100" --jq '.[] | .filename, (.previous_filename // empty)')
+          hits=$(printf '%s\n' "$files" | grep -E "$MANUAL_PATHS" || true)
+          if [ -n "$hits" ]; then
+            {
+              echo "### Manual merge required"
+              echo "This PR touches paths that a human merges, so it never auto-merges:"
+              echo '```'
+              printf '%s\n' "$hits"
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "::error::Touches paths that need a human (see the job summary): merge by hand."
+            exit 1
+          fi
+
+      - name: Wait for every other check on the head commit
+        run: |
+          date +%s > "$RUNNER_TEMP/gate-start"
+          # Give workflows triggered by the same push time to register.
+          sleep 30
+          stable=0
+          while :; do
+            # Latest run per check name, excluding this gate.
+            runs=$(gh api --paginate "repos/$REPO/commits/$SHA/check-runs?per_page=100" \
+              --jq '.check_runs[] | [.id, .name, .status, (.conclusion // "")] | @tsv' \
+              | grep -v -P "^\d+\t\Q$SELF\E\t" \
+              | sort -t$'\t' -k2,2 -k1,1nr | awk -F'\t' '!seen[$2]++' || true)
+            statuses=$(gh api "repos/$REPO/commits/$SHA/status" \
+              --jq '.statuses[] | [.context, .state] | @tsv' || true)
+
+            pending=$(printf '%s\n' "$runs" | awk -F'\t' 'NF && $3!="completed"{print $2}')
+            pending+=$(printf '%s\n' "$statuses" | awk -F'\t' 'NF && $2=="pending"{print "\n"$1}')
+            failed=$(printf '%s\n' "$runs" | awk -F'\t' 'NF && $3=="completed" && $4!~/^(success|skipped|neutral)$/{print $2" ("$4")"}')
+            failed+=$(printf '%s\n' "$statuses" | awk -F'\t' 'NF && $2~/^(failure|error)$/{print "\n"$1" ("$2")"}')
+
+            if [ -n "$(echo "$failed" | tr -d '[:space:]')" ]; then
+              echo "::error::Failed checks:"; echo "$failed"
+              { echo "### Failed checks"; echo '```'; echo "$failed"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+              exit 1
+            fi
+            if [ -z "$(echo "$pending" | tr -d '[:space:]')" ]; then
+              # Two quiet polls in a row, so a late-starting workflow is not missed.
+              stable=$((stable + 1))
+              if [ "$stable" -ge 2 ]; then
+                echo "All checks finished green:"; printf '%s\n' "$runs" | cut -f2,4
+                exit 0
+              fi
+            else
+              stable=0
+              echo "Waiting on:"; echo "$pending"
+            fi
+            sleep 30
+          done
+
+      - name: No unresolved review threads
+        run: |
+          # Review bots that only comment have no check to wait on.
+          elapsed=$(( $(date +%s) - $(cat "$RUNNER_TEMP/gate-start") ))
+          [ "$elapsed" -lt 300 ] && sleep $(( 300 - elapsed ))
+          # Count unresolved review threads (humans and review bots alike).
+          open=$(gh api graphql -F owner="${REPO%/*}" -F name="${REPO#*/}" -F pr="$PR" -f query='
+            query($owner:String!,$name:String!,$pr:Int!){repository(owner:$owner,name:$name){
+              pullRequest(number:$pr){reviewThreads(first:100){nodes{isResolved path
+                comments(first:1){nodes{author{login}}}}}}}}' \
+            --jq '.data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved|not) | "\(.comments.nodes[0].author.login) on \(.path)"')
+          if [ -n "$open" ]; then
+            echo "::error::Unresolved review threads:"; echo "$open"
+            { echo "### Unresolved review threads"; echo '```'; echo "$open"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+          echo "No unresolved review threads."

@@ -1,11 +1,12 @@
 ---
 name: curviate
 description: "Entry point for driving LinkedIn work through the Curviate CLI: which skill answers which task, how to resolve the `curviate` binary, the retrieval-mode concept and the flags only four commands accept, and the rule that an agent branches on the exit code rather than on the message text. Use whenever a task involves LinkedIn profiles, companies, search, messages, posts, comments, reactions, connections, follows, job postings, Sales Navigator or Recruiter, or whenever a `curviate` command is about to run and it is not obvious which area covers it."
-version: 0.1.0
-author: Curviate
 license: MIT
-tags: [LinkedIn, CLI, Agents, Sales, Recruiting, Outreach]
-repository: https://github.com/Curviate/curviate-plugin
+metadata:
+  version: 0.1.0
+  author: Curviate
+  tags: [LinkedIn, CLI, Agents, Sales, Recruiting, Outreach]
+  repository: https://github.com/Curviate/curviate-plugin
 ---
 
 # Curviate: start here

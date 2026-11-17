@@ -1,0 +1,50 @@
+{
+  "name": "human-gate",
+  "version": "0.1.0",
+  "description": "Holds irreversible tool calls (deploy, publish, push to main, money, outbound messages, destructive SQL) for a person, so auto mode and allow rules cannot approve them, and lets read-only calls through without a prompt.",
+  "author": {
+    "name": "claude-code-templates",
+    "url": "https://www.aitmpl.com"
+  },
+  "repository": "https://github.com/davila7/claude-code-templates",
+  "license": "MIT",
+  "keywords": ["mod", "function-hooks", "security", "permissions", "auto-mode"],
+  "userConfig": {
+    "categories": {
+      "type": "string",
+      "title": "Categories",
+      "description": "Comma-separated categories held for a person: deploy, publish, push-main, money, outbound, data. Empty means all.",
+      "default": ""
+    },
+    "protectedBranches": {
+      "type": "string",
+      "title": "Protected branches",
+      "description": "Comma-separated branch names a push to is held. Empty means main, master, production, prod, release.",
+      "default": ""
+    },
+    "extraCommands": {
+      "type": "string",
+      "title": "Extra Bash patterns",
+      "description": "Comma-separated regex sources; a Bash command segment matching one is held, e.g. \\bansible-playbook\\b",
+      "default": ""
+    },
+    "extraTools": {
+      "type": "string",
+      "title": "Extra tool patterns",
+      "description": "Comma-separated regex sources on tool names, e.g. ^mcp__linear__save_issue$",
+      "default": ""
+    },
+    "readOnlyFastLane": {
+      "type": "boolean",
+      "title": "Read-only fast lane",
+      "description": "Allow calls the tool marks read-only without a prompt (a deny or ask rule in settings still wins).",
+      "default": true
+    },
+    "trustMcpReadOnly": {
+      "type": "boolean",
+      "title": "Trust MCP read-only",
+      "description": "Include MCP tools in the fast lane. Off by default: an MCP tool's read-only flag is its server's word.",
+      "default": false
+    }
+  }
+}

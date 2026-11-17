@@ -1,7 +1,7 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [resource] [method] [flags]
-description: Google Calendar: Show upcoming events across all calendars.
+argument-hint: "[resource] [method] [flags]"
+description: "Google Calendar: Show upcoming events across all calendars."
 ---
 
 # Google Workspace Calendar Agenda

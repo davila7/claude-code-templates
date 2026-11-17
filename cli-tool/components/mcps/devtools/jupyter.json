@@ -3,7 +3,7 @@
     "jupyter": {
       "description": "Model Context Protocol server for Jupyter notebooks. Execute code, manage notebooks, and interact with Jupyter kernels directly from Claude.",
       "command": "uvx",
-      "args": ["jupyter-mcp-server@latest"],
+      "args": ["jupyter-mcp-server@2.2.5"],
       "env": {
         "JUPYTER_URL": "<your-jupyter-url>",
         "JUPYTER_TOKEN": "<your-jupyter-token>"

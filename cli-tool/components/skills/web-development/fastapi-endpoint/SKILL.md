@@ -1,7 +1,8 @@
 ---
 name: fastapi-endpoint
 description: Plan and build production-ready FastAPI endpoints with async SQLAlchemy, Pydantic v2 models, dependency injection for auth, and pytest tests. Uses interview-driven planning to clarify data models, authentication method, pagination strategy, and caching before writing any code.
-tags: [fastapi, python, api, async, pydantic, sqlalchemy, backend]
+metadata:
+  tags: [fastapi, python, api, async, pydantic, sqlalchemy, backend]
 ---
 
 # FastAPI Endpoint Builder

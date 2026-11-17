@@ -1,0 +1,61 @@
+# Weekly check of external skills (cli-tool/components/skills/*/*/source.json).
+#
+# Each external skill is pinned to a reviewed commit of the author's repo, so
+# upstream changes never reach users on their own. This job lists the skills
+# whose repo has newer commits and keeps one open issue with that list. A
+# maintainer bumps "commit" in a PR, which runs the SkillSpector and license
+# checks on the new code. (A PR opened here with GITHUB_TOKEN would not trigger
+# those checks, which is why this job only reports.)
+name: External skills outdated
+
+on:
+  schedule:
+    - cron: '0 13 * * 1'  # Mondays 13:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  outdated:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: List outdated external skills
+        id: list
+        run: |
+          python3 scripts/external_skills.py outdated > outdated.tsv
+          count=$(wc -l < outdated.tsv | tr -d ' ')
+          echo "count=$count" >> "$GITHUB_OUTPUT"
+          {
+            echo "## External skills with newer upstream commits: $count"
+            echo
+            if [ "$count" -gt 0 ]; then
+              echo "| Skill | Repo | Pinned | Upstream HEAD |"
+              echo "|---|---|---|---|"
+              awk -F'\t' '{printf "| %s | %s | %s | %s |\n", $1, $2, substr($3,1,7), substr($4,1,7)}' outdated.tsv
+              echo
+              echo "Bump with a PR that changes \`commit\` in each \`source.json\` (compare: https://github.com/<repo>/compare/<pinned>...<head>)."
+            fi
+          } > summary.md
+          cat summary.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Open or update the tracking issue
+        if: steps.list.outputs.count != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          title="External skills have newer upstream commits"
+          number=$(gh issue list --state open --search "in:title \"$title\"" --json number --jq '.[0].number')
+          if [ -n "$number" ]; then
+            gh issue edit "$number" --body-file summary.md
+          else
+            gh issue create --title "$title" --body-file summary.md
+          fi

@@ -1,0 +1,6 @@
+{
+  "description": "bluesky-feed: /bsky opens a Pane with your Bluesky Following timeline; an Input posts, a Button per post likes or unlikes, and a clock.every poll refreshes it while open",
+  "modules": [
+    "./bluesky-feed.tsx"
+  ]
+}

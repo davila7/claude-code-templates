@@ -43,6 +43,8 @@ export type FlowNode = {
   tools: ToolUse[]
   startedAt: number
   durationMs?: number
+  /** a teammate between turns: drawn as done, but kept by trimming until it ends */
+  idle?: boolean
   /** the main-loop turn it was spawned in (1-based) */
   turn: number
   /** a loop the flow saw work but no spawn for (a workflow's agent, an engine fork) */
@@ -112,11 +114,14 @@ export type SpawnFacts = {
   fork: boolean
   background: boolean
   model?: string
+  /** A resumed subagent or a teammate back from disk (2.1.299): same node, its prompt is a message. */
+  resumed?: boolean
 }
 
 export function spawned(flow: Flow, s: SpawnFacts, now: number): FlowNode {
-  const parentId = s.parentAgentId && flow.nodes.has(s.parentAgentId) ? s.parentAgentId : MAIN
   const known = flow.nodes.get(s.agentId)
+  const parentId =
+    s.resumed && known ? known.parentId : s.parentAgentId && flow.nodes.has(s.parentAgentId) ? s.parentAgentId : MAIN
   const node: FlowNode = {
     ...(known ?? {
       outputTokens: 0,
@@ -130,10 +135,14 @@ export function spawned(flow: Flow, s: SpawnFacts, now: number): FlowNode {
     type: s.subagentType,
     description: s.description,
     model: s.model ?? known?.model,
-    status: known?.status ?? 'running',
+    status: s.resumed ? 'running' : (known?.status ?? 'running'),
+    // a resumed node is working again: its last answer and duration are no longer current
+    ...(s.resumed ? { answer: undefined, durationMs: undefined, idle: undefined } : {}),
     fork: s.fork,
     background: s.background,
-    prompt: s.prompt,
+    // a resume's prompt is the message that woke it, not its task: keep the task
+    // (a node trimmed or never seen keeps only the message, marked as one)
+    prompt: s.resumed ? (known ? known.prompt : `(resumed) ${s.prompt}`) : s.prompt,
     turn: flow.turn,
     unlisted: false,
   }
@@ -173,6 +182,7 @@ export function stepped(flow: Flow, agentId: string | undefined, usage: Usage | 
   const node = nodeFor(flow, agentId, now)
   node.steps += 1
   if (node.id !== MAIN && node.status !== 'running') node.status = 'running'
+  node.idle = undefined
   if (!usage) return
   const ctx = contextOf(usage)
   node.contextTokens = ctx
@@ -216,6 +226,11 @@ export function synced(flow: Flow, list: readonly { id: string; status: string; 
       if (info.status === 'completed') node.status = 'done'
       else if (info.status === 'failed') node.status = 'failed'
       else if (info.status === 'killed') node.status = 'aborted'
+      // a teammate between turns: its turn is done; the next step it takes marks it running again
+      else if (info.status === 'idle') {
+        node.status = 'done'
+        node.idle = true
+      }
     }
   }
 }
@@ -228,7 +243,7 @@ export function trimmed(flow: Flow, max: number): void {
     if (over <= 0) break
     if (!flow.nodes.has(id)) continue
     const branch = subtree(flow, id)
-    if (branch.some(x => flow.nodes.get(x)?.status === 'running')) continue
+    if (branch.some(x => flow.nodes.get(x)?.status === 'running' || flow.nodes.get(x)?.idle)) continue
     for (const gone of branch) {
       flow.nodes.delete(gone)
       flow.order = flow.order.filter(x => x !== gone)

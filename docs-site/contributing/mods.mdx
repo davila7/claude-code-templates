@@ -1,0 +1,48 @@
+---
+title: "Build a mod"
+description: "Contribute a Claude Mod: plugin layout, the engine rules every module must follow, type checking, validation and testing on the oldest supported Claude Code."
+---
+
+A mod is a complete plugin directory in Anthropic's `mods/` layout. Read Anthropic's [mods overview](https://code.claude.com/docs/en/plugins/mods/overview) and the three reference mods in [anthropics/claude-code/mods](https://github.com/anthropics/claude-code/tree/main/mods) first.
+
+## Layout
+
+```text
+cli-tool/components/mods/{category}/{name}/
+├── .claude-plugin/plugin.json   name (= folder), description, license, author, userConfig
+├── hooks/hooks.json             { "modules": ["register.ts"] }
+├── hooks/register.ts            export default function register(on, options) { … }
+├── commands/*.md                optional slash commands
+├── tests/                       optional, run by `claude plugin test`
+└── README.md                    shown on aitmpl.com
+```
+
+Names starting with `claude-`, `anthropic-` or `cc-plugin-` are reserved by Claude Code.
+
+## Engine rules
+
+- Import types only from `'claude-code'`; use relative imports for your own files.
+- Write `$` as `$.noun.event(...)` at the call site. Never pass `$` to a helper.
+- Treat the event `e` as frozen.
+- To block something, return `{ deny }` without calling `next`. Returning `{}` lets it through.
+- Options come from `plugin.json` `userConfig` and are read from user or managed settings, never project settings. Lists are comma-separated strings.
+- No secrets in code, no absolute paths, no `$.process.run` through a shell.
+
+## Before the pull request
+
+```bash
+cd cli-tool/components/mods
+npx -y -p typescript@5 tsc -p tsconfig.json   # must type-check against types/claude-code.d.ts
+claude plugin validate {category}/{name}
+claude plugin test {category}/{name}          # if the mod ships tests
+```
+
+Type-checking against the current API does not prove an older Claude Code draws your mod. Test a pane on the oldest supported engine too:
+
+```bash
+npm i @anthropic-ai/claude-code@2.1.287   # in a scratch folder
+# then, from cli-tool/components/mods:
+npx claude plugin test {category}/{name}
+```
+
+The README must state the command, the options, the minimum Claude Code version and, for vendored code, the license and attribution.

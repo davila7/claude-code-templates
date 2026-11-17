@@ -1,11 +1,12 @@
 ---
-name: tensorrt-llm
+name: inference-serving-tensorrt-llm
 description: Optimizes LLM inference with NVIDIA TensorRT for maximum throughput and lowest latency. Use for production deployment on NVIDIA GPUs (A100/H100), when you need 10-100x faster inference than PyTorch, or for serving models with quantization (FP8/INT4), in-flight batching, and multi-GPU scaling.
-version: 1.0.0
-author: Orchestra Research
 license: MIT
-tags: [Inference Serving, TensorRT-LLM, NVIDIA, Inference Optimization, High Throughput, Low Latency, Production, FP8, INT4, In-Flight Batching, Multi-GPU]
-dependencies: [tensorrt-llm, torch]
+metadata:
+  version: 1.0.0
+  author: Orchestra Research
+  tags: [Inference Serving, TensorRT-LLM, NVIDIA, Inference Optimization, High Throughput, Low Latency, Production, FP8, INT4, In-Flight Batching, Multi-GPU]
+  dependencies: [tensorrt-llm, torch]
 ---
 
 # TensorRT-LLM

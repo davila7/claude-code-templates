@@ -1,3 +1,7 @@
+---
+description: "Simulate system performance under various loads with capacity planning, bottleneck identification, and optimization strategies."
+---
+
 # System Behavior Simulator
 
 Simulate system performance under various loads with capacity planning, bottleneck identification, and optimization strategies.

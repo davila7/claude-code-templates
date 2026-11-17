@@ -1,0 +1,13 @@
+{
+  "description": "Ask before Claude runs a Stripe MCP tool that writes data, moves money or starts a Stripe Atlas company formation; read and docs tools still run freely. Stripe's MCP docs recommend client-side tool approval, since Stripe itself only confirms some writes (refunds, outbound payments). Only covers a server named 'stripe' (as installed by --mcp devtools/stripe); under any other name nothing is prompted.",
+  "permissions": {
+    "ask": [
+      "mcp__stripe__stripe_api_write",
+      "mcp__stripe__send_money",
+      "mcp__stripe__transfer_money",
+      "mcp__stripe__convert_currency",
+      "mcp__stripe__setup_recipient",
+      "mcp__stripe__atlas_company_formation"
+    ]
+  }
+}

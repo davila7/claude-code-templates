@@ -1,0 +1,6 @@
+{
+  "description": "rex-tty: tool.call on Bash sends a command that needs a terminal to a Rex pane (after tool.check and, on an ask, a question to the person), waits for it and answers with its output and exit code; tool.call serves the tty_run tool; session.start registers it when the session runs inside Rex",
+  "modules": [
+    "./rex-tty.ts"
+  ]
+}

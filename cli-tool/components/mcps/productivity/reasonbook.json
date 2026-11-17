@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "reasonbook": {
+      "description": "Keep project decisions, reasons and lessons in a local SQLite record that AI agents can read across sessions. Includes next steps, sprints and missions. No account is required for local use. Requires Node.js 20 or newer.",
+      "command": "npx",
+      "args": ["--prefer-offline", "-y", "@aquex/reasonbook@4.12.0"]
+    }
+  }
+}

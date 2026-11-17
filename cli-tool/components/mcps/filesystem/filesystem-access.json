@@ -5,7 +5,7 @@
       "command": "npx",
       "args": [
         "-y",
-        "@modelcontextprotocol/server-filesystem",
+        "@modelcontextprotocol/server-filesystem@2.2.0",
         "/path/to/allowed/files"
       ]
     }

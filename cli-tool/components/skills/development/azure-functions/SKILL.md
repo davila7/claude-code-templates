@@ -1,7 +1,8 @@
 ---
 name: azure-functions
 description: "Expert patterns for Azure Functions development including isolated worker model, Durable Functions orchestration, cold start optimization, and production patterns. Covers .NET, Python, and Node.js programming models. Use when: azure function, azure functions, durable functions, azure serverless, function app."
-source: vibeship-spawner-skills (Apache 2.0)
+metadata:
+  source: vibeship-spawner-skills (Apache 2.0)
 ---
 
 # Azure Functions

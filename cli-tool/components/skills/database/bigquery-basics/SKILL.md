@@ -1,7 +1,8 @@
 ---
 name: bigquery-basics
 description: Manages datasets, tables, and jobs in BigQuery, and integrates with BigQuery ML and Gemini for advanced data analytics and AI-driven insights. Use for SQL queries, resource management, data ingestion, or AI applications on BigQuery.
-source: google/skills (Apache 2.0)
+metadata:
+  source: google/skills (Apache 2.0)
 ---
 
 # BigQuery Basics

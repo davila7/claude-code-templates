@@ -528,26 +528,30 @@ export default function Dashboard() {
 
   useEffect(() => { loadData(); }, [loadData]);
 
-  // WebSocket + polling fallback
+  // One WebSocket for the life of the page. It must not depend on wsStatus:
+  // every status change would close the socket and open a new one, so the
+  // dashboard never stayed connected long enough to get live updates.
   useEffect(() => {
     wsClient.connect();
     const unsubStatus = wsClient.onStatus(setWsStatus);
     const unsubData   = wsClient.on('data_updates',         () => { api.invalidate(); loadData(); });
     const unsubConv   = wsClient.on('conversation_updates', () => { api.invalidate('/api/data'); loadData(); });
 
-    // Polling fallback: 30s if WS connected, 10s if not
-    const poll = setInterval(() => {
-      api.invalidate();
-      loadData();
-    }, wsStatus === 'connected' ? 30_000 : 10_000);
-
     return () => {
       unsubStatus();
       unsubData();
       unsubConv();
-      clearInterval(poll);
       wsClient.disconnect();
     };
+  }, [loadData]);
+
+  // Polling fallback: 30s if WS connected, 10s if not
+  useEffect(() => {
+    const poll = setInterval(() => {
+      api.invalidate();
+      loadData();
+    }, wsStatus === 'connected' ? 30_000 : 10_000);
+    return () => clearInterval(poll);
   }, [loadData, wsStatus]);
 
   const handleRefresh = useCallback(() => {

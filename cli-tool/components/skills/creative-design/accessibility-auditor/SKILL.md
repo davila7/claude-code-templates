@@ -1,5 +1,5 @@
 ---
-name: Accessibility Auditor
+name: accessibility-auditor
 description: Web accessibility specialist for WCAG compliance, ARIA implementation, and inclusive design. Use when auditing websites for accessibility issues, implementing WCAG 2.1 AA/AAA standards, testing with screen readers, or ensuring ADA compliance. Expert in semantic HTML, keyboard navigation, and assistive technology compatibility.
 ---
 

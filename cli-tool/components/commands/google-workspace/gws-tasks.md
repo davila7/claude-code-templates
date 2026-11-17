@@ -1,7 +1,7 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [resource] [method] [flags]
-description: Google Tasks: Manage task lists and tasks.
+argument-hint: "[resource] [method] [flags]"
+description: "Google Tasks: Manage task lists and tasks."
 ---
 
 # Google Workspace Tasks

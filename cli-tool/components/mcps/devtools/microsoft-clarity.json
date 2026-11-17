@@ -3,7 +3,7 @@
     "@microsoft/clarity-mcp-server": {
       "command": "npx",
       "args": [
-        "@microsoft/clarity-mcp-server",
+        "@microsoft/clarity-mcp-server@2.0.1",
         "--clarity_api_token=your-api-token-here"
       ]
     }

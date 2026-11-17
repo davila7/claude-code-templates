@@ -11,7 +11,7 @@ neon: created branch claude/3f9a1c2e; DATABASE_URL points at it
 
 | Moment | Action |
 | --- | --- |
-| `session.start` | creates the branch with an `expires_at` and a read-write endpoint, reads `GET /connection_uri`, sets `DATABASE_URL` and `NEON_BRANCH`. A branch is remembered by the session's id; a session started again under the same id reuses it if it still exists. |
+| `session.start` | creates the branch with an `expires_at` and a read-write endpoint, reads `GET /connection_uri`, sets `DATABASE_URL` and `NEON_BRANCH`. A branch is remembered by the session's id; a session started again under the same id reuses it if it still exists. If the engine holds the write (an organization that manages `DATABASE_URL`, Claude Code 2.1.301+), the toast says the branch exists but the variable is not set, and why. |
 | `/neon` | shows the branch and where `DATABASE_URL` points (host only) |
 | `/neon keep` | clears the expiry, so the branch stays |
 | `/neon delete` | deletes the branch and unsets both variables |

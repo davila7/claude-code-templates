@@ -1,0 +1,40 @@
+/* aitmpl.com look: warm dark surfaces, Geist, quiet borders.
+   Tokens mirror dashboard/src/styles/global.css (dark palette B). */
+
+:root {
+  --aitmpl-surface-1: #fafafa;
+  --aitmpl-surface-2: #f5f5f5;
+  --aitmpl-border: #e5e5e5;
+  --aitmpl-text-secondary: #525252;
+}
+
+:root.dark {
+  --aitmpl-surface-1: #141413;
+  --aitmpl-surface-2: #1c1c1a;
+  --aitmpl-border: #2a2926;
+  --aitmpl-text-secondary: #a3a197;
+}
+
+code,
+pre,
+kbd {
+  font-family: 'Geist Mono', 'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* Cards and code blocks sit on the same card surface as the catalog. */
+.card,
+.code-block {
+  background-color: var(--aitmpl-surface-1);
+  border-color: var(--aitmpl-border);
+  border-radius: 12px;
+}
+
+.card:hover {
+  border-color: #d57455;
+}
+
+/* White text on the orange accent fails WCAG AA (3.25:1): use near-black. */
+.dark a.bg-primary,
+.dark button.bg-primary {
+  color: #141413;
+}

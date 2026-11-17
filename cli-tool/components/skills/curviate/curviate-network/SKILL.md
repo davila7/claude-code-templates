@@ -1,11 +1,12 @@
 ---
 name: curviate-network
 description: "Grow and manage a LinkedIn network with the Curviate CLI. Covers `connect` (send with a note, sent, received, accept, decline, cancel), `profile follow`/`unfollow`, `profile relations`, `profile followers` and `profile following`, the de-duplication signal for a connect loop, and the invitation propagation delay. Use when sending or withdrawing connection requests, triaging received invitations, following a member, or listing connections and followers."
-version: 0.1.0
-author: Curviate
 license: MIT
-tags: [LinkedIn, CLI, Agents, Sales, Recruiting, Outreach]
-repository: https://github.com/Curviate/curviate-plugin
+metadata:
+  version: 0.1.0
+  author: Curviate
+  tags: [LinkedIn, CLI, Agents, Sales, Recruiting, Outreach]
+  repository: https://github.com/Curviate/curviate-plugin
 ---
 
 # Curviate: connections and following

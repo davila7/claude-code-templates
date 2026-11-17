@@ -5,7 +5,7 @@
       "command": "uvx",
       "args": [
         "--from",
-        "redis-mcp-server@latest",
+        "redis-mcp-server@0.5.1",
         "redis-mcp-server"
       ],
       "env": {

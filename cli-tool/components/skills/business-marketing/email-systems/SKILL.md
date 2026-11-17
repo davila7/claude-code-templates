@@ -1,7 +1,8 @@
 ---
 name: email-systems
 description: "Email has the highest ROI of any marketing channel. $36 for every $1 spent. Yet most startups treat it as an afterthought - bulk blasts, no personalization, landing in spam folders.  This skill covers transactional email that works, marketing automation that converts, deliverability that reaches inboxes, and the infrastructure decisions that scale. Use when: keywords, file_patterns, code_patterns."
-source: vibeship-spawner-skills (Apache 2.0)
+metadata:
+  source: vibeship-spawner-skills (Apache 2.0)
 ---
 
 # Email Systems

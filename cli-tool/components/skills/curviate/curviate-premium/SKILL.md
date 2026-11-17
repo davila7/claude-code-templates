@@ -1,11 +1,12 @@
 ---
 name: curviate-premium
 description: "Drive LinkedIn Sales Navigator and Recruiter through the Curviate CLI. Covers `sales-nav` (search, profile, message, lead and account lists, save-lead, save-account) and `recruiter` (projects, pipeline, talent-search, save-candidate, project jobs, applicants, message, profile, search), and what can refuse them: the LinkedIn subscription on the connected account, the Curviate seat, and the beta-operations gate. These commands carry no Curviate add-on paywall. Use when working a Sales Navigator or Recruiter seat, or when diagnosing why a premium command failed."
-version: 0.1.0
-author: Curviate
 license: MIT
-tags: [LinkedIn, CLI, Agents, Sales, Recruiting, Outreach]
-repository: https://github.com/Curviate/curviate-plugin
+metadata:
+  version: 0.1.0
+  author: Curviate
+  tags: [LinkedIn, CLI, Agents, Sales, Recruiting, Outreach]
+  repository: https://github.com/Curviate/curviate-plugin
 ---
 
 # Curviate: Sales Navigator and Recruiter

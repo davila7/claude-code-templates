@@ -9,7 +9,9 @@
     "build": "node scripts/generate-og-images.mjs && astro build",
     "og": "node scripts/generate-og-images.mjs",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "test": "node --experimental-strip-types --test tests/*.test.ts",
+    "check:agents": "node scripts/check-agent-endpoints.mjs"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^12.6.13",
@@ -22,12 +24,12 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "astro": "^5.17.2",
-    "discord-interactions": "^4.4.0",
     "gpt-tokenizer": "^3.4.0",
     "marked": "^17.0.4",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "tailwindcss": "^4.1.18"
+    "tailwindcss": "^4.1.18",
+    "xss": "1.0.17"
   },
   "devDependencies": {
     "@resvg/resvg-js": "^2.6.2",

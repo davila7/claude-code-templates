@@ -1,11 +1,12 @@
 ---
 name: react-best-practices
 description: Comprehensive React and Next.js performance optimization guide with 40+ rules for eliminating waterfalls, optimizing bundles, and improving rendering. Use when optimizing React apps, reviewing performance, or refactoring components.
-version: 1.0.0
-author: Vercel Engineering
 license: MIT
-tags: [React, Next.js, Performance, Optimization, Best Practices, Bundle Size, Rendering, Server Components]
-dependencies: []
+metadata:
+  version: 1.0.0
+  author: Vercel Engineering
+  tags: [React, Next.js, Performance, Optimization, Best Practices, Bundle Size, Rendering, Server Components]
+  dependencies: []
 ---
 
 # React Best Practices - Performance Optimization

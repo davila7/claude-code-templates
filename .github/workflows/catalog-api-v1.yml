@@ -1,0 +1,57 @@
+name: Catalog API v1
+
+# /api/v1/ on aitmpl.com is a public contract (docs/catalog-api/CHANGELOG.md):
+# within schemaVersion 1.x it only grows. This job runs the v1 writer's tests
+# and validates the committed catalog against the schema, so a change to the
+# writer, the schema or the generated files that breaks the contract fails on
+# the PR instead of on a consumer.
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/catalog_api_v1.py'
+      - 'scripts/catalog_api_v1.schema.json'
+      - 'scripts/test_catalog_api_v1.py'
+      - 'scripts/generate_components_json.py'
+      - 'dashboard/public/api/v1/**'
+      - '.github/workflows/catalog-api-v1.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'scripts/catalog_api_v1.py'
+      - 'scripts/catalog_api_v1.schema.json'
+      - 'dashboard/public/api/v1/**'
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    name: v1 tests and schema check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Install jsonschema
+        run: pip install jsonschema
+
+      - name: Run the v1 writer's tests (includes the committed catalog)
+        run: python -m unittest scripts/test_catalog_api_v1.py -v
+
+      - name: Published schema matches its source
+        run: |
+          python - <<'EOF'
+          import json, sys
+          src = json.load(open('scripts/catalog_api_v1.schema.json'))
+          pub = json.load(open('dashboard/public/api/v1/schema.json'))
+          if src != pub:
+              sys.exit('dashboard/public/api/v1/schema.json is stale: run scripts/generate_components_json.py --skip-downloads')
+          EOF

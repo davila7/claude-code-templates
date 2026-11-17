@@ -1,6 +1,6 @@
 ---
 allowed-tools: Read, Write, Edit
-argument-hint: [action] [task-description] | add | complete | remove | list
+argument-hint: "[action] [task-description] | add | complete | remove | list"
 description: Manage project todos in todos.md file
 ---
 

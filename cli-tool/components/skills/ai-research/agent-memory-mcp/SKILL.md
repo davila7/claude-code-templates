@@ -1,7 +1,8 @@
 ---
 name: agent-memory-mcp
-author: Amit Rathiesh
 description: A hybrid memory system that provides persistent, searchable knowledge management for AI agents (Architecture, Patterns, Decisions).
+metadata:
+  author: Amit Rathiesh
 ---
 
 # Agent Memory Skill

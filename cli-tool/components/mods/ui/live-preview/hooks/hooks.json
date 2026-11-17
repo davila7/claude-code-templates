@@ -1,0 +1,6 @@
+{
+  "description": "A pane with a real screenshot of your dev server, taken again after every turn in which Claude edits a frontend file, with a phone-sized view and a button that adds the capture to your prompt.",
+  "modules": [
+    "./live-preview.tsx"
+  ]
+}

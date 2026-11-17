@@ -1,5 +1,5 @@
 ---
-name: stable-diffusion-image-generation
+name: multimodal-stable-diffusion
 description: State-of-the-art text-to-image generation with Stable Diffusion models via HuggingFace Diffusers. Use when generating images from text prompts, performing image-to-image translation, inpainting, or building custom diffusion pipelines.
 version: 1.0.0
 author: Orchestra Research

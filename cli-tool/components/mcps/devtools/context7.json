@@ -3,7 +3,7 @@
     "context7": {
       "description": "Context7 by Upstash pulls up-to-date, version-specific documentation and code examples straight from the source and injects them into your prompt. Add 'use context7' to any prompt to activate.",
       "command": "npx",
-      "args": ["-y", "@upstash/context7-mcp@latest"],
+      "args": ["-y", "@upstash/context7-mcp@4.5.1"],
       "env": {
         "CONTEXT7_API_KEY": "<your-context7-api-key>"
       }

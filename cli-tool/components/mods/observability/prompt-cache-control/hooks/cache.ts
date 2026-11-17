@@ -315,3 +315,86 @@ export function observeTtl(prev: Sample | undefined, cur: Sample, known: Ttl | u
   const lapsed = cur.write > 0 && promptTokens(cur) >= before * 0.7 && gap < ttlMs('1h') + SLACK_MS
   return lapsed ? '5m' : known
 }
+
+/**
+ * Idle compaction (Claude Code 2.1.290+): a terminal conversation left idle is
+ * compacted shortly before its one-hour cache lapses, so the next message reads
+ * a summary instead of rewriting the whole prefix. Claude Code fires it at
+ * `fraction` of the cache lifetime (0.9 of an hour: about 54 minutes) when all
+ * of these hold, read from the 2.1.299 build:
+ *
+ *   - the rollout flag is on for the account (a server-side flag Claude Code
+ *     caches in ~/.claude.json; `mode: "off"` there means it never runs, and
+ *     `idleCompaction: true` does not turn it on)
+ *   - auto-compact is on (no DISABLE_COMPACT / DISABLE_AUTO_COMPACT,
+ *     autoCompactEnabled not false) and the idleCompaction setting is not false
+ *   - the main conversation's cache lives one hour and is still warm
+ *   - the prompt is at least minTokens: CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS,
+ *     never below 100K, 200K when unset
+ */
+export const IDLE_MIN_FLOOR = 100_000
+export const IDLE_MIN_DEFAULT = 200_000
+export const IDLE_FRACTION = 0.9
+
+export type IdleInputs = {
+  /** CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS */
+  minTokensVar?: string
+  /** the idleCompaction setting */
+  setting?: unknown
+  /** the autoCompactEnabled setting */
+  autoCompact?: unknown
+  /** DISABLE_AUTO_COMPACT */
+  disableAuto?: string
+  /** DISABLE_COMPACT */
+  disableAll?: string
+  /** the cached rollout flag, `{ mode, minTokens?, fireAtFraction? }`; undefined when not found */
+  flag?: unknown
+}
+
+export type IdleCompact = {
+  /** whether Claude Code will compact this session while idle */
+  on: boolean
+  /** false when the rollout flag could not be read (then `on` is false) */
+  known: boolean
+  minTokens: number
+  fraction: number
+  /** one phrase: why it is off, or where the threshold came from */
+  why: string
+}
+
+const finite = (v: unknown): number | undefined => {
+  const n = typeof v === 'string' && v.trim() !== '' ? Number(v) : v
+  return typeof n === 'number' && Number.isFinite(n) ? n : undefined
+}
+
+export function idlePolicy(i: IdleInputs): IdleCompact {
+  const flag = i.flag && typeof i.flag === 'object' ? (i.flag as Record<string, unknown>) : undefined
+  const fromVar = finite(i.minTokensVar)
+  const raw = fromVar ?? finite(flag?.minTokens)
+  const minTokens = raw === undefined ? IDLE_MIN_DEFAULT : Math.max(IDLE_MIN_FLOOR, raw)
+  const f = finite(flag?.fireAtFraction)
+  const fraction = f === undefined ? IDLE_FRACTION : Math.min(0.95, Math.max(0.5, f))
+  const base = { minTokens, fraction, known: flag !== undefined }
+  if (isOn(i.disableAll) || isOn(i.disableAuto)) return { ...base, on: false, why: 'auto-compact is off (DISABLE_*COMPACT)' }
+  if (i.autoCompact === false) return { ...base, on: false, why: 'auto-compact is off (autoCompactEnabled)' }
+  if (i.setting === false) return { ...base, on: false, why: 'turned off (idleCompaction: false)' }
+  // without the cached flag there is no telling: a countdown to something that may never happen is worse than none
+  if (!flag) return { ...base, on: false, why: 'rollout flag not found in ~/.claude.json' }
+  const mode = flag.mode
+  if (mode !== 'compact' && mode !== 'compact_on_return') {
+    return { ...base, on: false, why: `not rolled out to this account (mode ${String(mode ?? 'off')})` }
+  }
+  const source = fromVar !== undefined ? 'CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS' : 'default'
+  return { ...base, on: true, why: `from ${fmtTokens(minTokens)} tokens (${source})` }
+}
+
+/**
+ * When Claude Code will compact this conversation if nobody types, ms since
+ * the epoch; undefined when it will not (off, a 5-minute cache, a prompt under
+ * the threshold, or a cache already lapsed).
+ */
+export function idleCompactAt(last: Sample | undefined, ttl: Ttl, idle: IdleCompact, now: number): number | undefined {
+  if (!last || !idle.on || ttl !== '1h') return undefined
+  if (promptTokens(last) < idle.minTokens || remainingMs(last, ttl, now) <= 0) return undefined
+  return last.startedAt + ttlMs(ttl) * idle.fraction
+}

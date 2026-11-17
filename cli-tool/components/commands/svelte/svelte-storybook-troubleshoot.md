@@ -1,3 +1,7 @@
+---
+description: "Diagnose and fix common Storybook issues in SvelteKit projects, including build errors, module problems, and configuration issues."
+---
+
 # /svelte:storybook-troubleshoot
 
 Diagnose and fix common Storybook issues in SvelteKit projects, including build errors, module problems, and configuration issues.

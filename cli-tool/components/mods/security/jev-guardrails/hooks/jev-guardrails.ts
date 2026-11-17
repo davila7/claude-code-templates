@@ -266,6 +266,13 @@ export const register: Register = (on, options) => {
         return { drop: `jev-guardrails: prompt cancelled at review (${routing.hazard ?? 'flagged'}).` }
       }
     }
+  }).catch(async ($, e, next) => {
+    // The screening ran past its budget or threw. A prompt already let in stays in (a replay);
+    // otherwise `failClosed` decides, exactly as for a backend that did not answer.
+    if (next.called) return next(e)
+    $.ui.log(`[jev-guardrails] input screening failed (${next.error.kind})${failClosed ? '; dropped (failClosed)' : '; passed unscreened'}`)
+    if (failClosed) return { drop: `jev-guardrails could not screen this prompt (${next.error.kind}, failClosed is on); nothing entered.` }
+    return next(e)
   })
 
   on('turn.step', async function* ($, e, next) {

@@ -1,8 +1,9 @@
 {  
   "mcpServers": {  
     "jfrog": {  
-      "description":"JFrog MCP Server: providing your agents with direct access to JFrog Platform services.",
-      "url":"https://<​​JFROG_PLATFORM_URL​​>/mcp"
+      "description":"JFrog MCP Server: providing your agents with direct access to JFrog Platform services. Set the JFROG_PLATFORM_URL environment variable to your platform host (for example mycompany.jfrog.io).",
+      "type": "http",
+      "url":"https://${JFROG_PLATFORM_URL}/mcp"
     }  
   }  
 }

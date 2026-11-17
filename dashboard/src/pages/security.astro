@@ -1,0 +1,87 @@
+---
+import DashboardLayout from '../layouts/DashboardLayout.astro';
+import TopBar from '../components/TopBar.astro';
+import SearchModal from '../components/SearchModal.tsx';
+import SkillReviewFlow from '../components/SkillReviewFlow.tsx';
+
+export const prerender = true;
+
+const repo = 'https://github.com/davila7/claude-code-templates';
+const wf = (name: string) => `${repo}/blob/main/.github/workflows/${name}`;
+---
+
+<DashboardLayout
+  title="How skills are reviewed and scanned | aitmpl.com"
+  description="Every skill and plugin in the aitmpl.com catalog goes through Claude Code's validator, NVIDIA SkillSpector, a security audit and code review before it merges, and is rescanned on every catalog build."
+>
+  <TopBar />
+  <section class="max-w-6xl px-4 sm:px-6 py-10">
+    <h1 class="text-2xl font-bold text-[var(--color-text-primary)] mb-2">How skills are reviewed and scanned</h1>
+    <p class="text-[14px] leading-relaxed text-[var(--color-text-secondary)] max-w-3xl mb-6">
+      A skill reaches the catalog only through a pull request to the
+      <a href={repo} class="underline hover:text-[var(--color-text-primary)]">public repository</a>, and every pull request
+      runs the same checks. Pick a scenario to see what each check receives and what it passes on.
+    </p>
+
+    <SkillReviewFlow client:visible />
+
+    <div class="prose-sec max-w-3xl mt-10 text-[14px] leading-relaxed text-[var(--color-text-secondary)]">
+      <h2>The checks</h2>
+      <ul>
+        <li>
+          <strong>claude plugin validate.</strong> Claude Code's own validator, run on the components a pull request changes
+          and on the whole catalog every week. Errors block the merge.
+          <a href={wf('component-validate.yml')}>component-validate.yml</a>
+        </li>
+        <li>
+          <strong>NVIDIA SkillSpector.</strong> A static analyzer with 64 vulnerability patterns, run without an LLM. On a pull
+          request it scans the changed skills and plugins and blocks any that score above 50 (high or critical). After merge it
+          scans every component in the catalog, and the result is shown on each component page.
+          <a href={wf('skill-security-scan.yml')}>skill-security-scan.yml</a>
+        </li>
+        <li>
+          <strong>Pinned external code.</strong> Skills and plugins that live in their author's repository are listed by a
+          <code>source.json</code> pinned to a full commit sha with an allowed license. Upstream changes reach users only through a
+          new pull request that moves the commit and passes every check again.
+          <a href={wf('external-skills-outdated.yml')}>external-skills-outdated.yml</a>
+        </li>
+        <li>
+          <strong>Security audit.</strong> Five validators (structure, integrity, semantics, references, provenance) report on
+          every changed Markdown component.
+          <a href={wf('component-security-validation.yml')}>component-security-validation.yml</a>
+        </li>
+        <li>
+          <strong>Code review.</strong> Two review bots, cubic and greptile, comment on the diff. The PR gate does not pass while
+          any review thread is unresolved, and a pull request from a fork is always merged by a maintainer.
+          <a href={wf('pr-gate.yml')}>pr-gate.yml</a>
+        </li>
+      </ul>
+
+      <h2>Other component types</h2>
+      <p>
+        Agents, commands, hooks, MCP servers, settings and mods go through the same validator and code review, and SkillSpector
+        comments on them in the pull request. An MCP server's package must be pinned to an exact version, never
+        <code>@latest</code>, because it starts on every Claude Code launch.
+      </p>
+
+      <h2>What this does not promise</h2>
+      <p>
+        Static analysis finds patterns, not intent, and it reports observations that are often expected (a security tool reads
+        credentials, a hook runs commands). The scan result never changes ranking, search or recommendations, including for
+        sponsored placements. Read a component's files before you install it, especially one that runs code.
+      </p>
+    </div>
+  </section>
+  <SearchModal client:idle />
+</DashboardLayout>
+
+<style is:global>
+  .prose-sec h2 { color: var(--color-text-primary); font-size: 16px; font-weight: 600; margin: 2rem 0 0.5rem; }
+  .prose-sec p { margin: 0 0 0.75rem; }
+  .prose-sec ul { list-style: disc; padding-left: 1.25rem; margin: 0 0 0.75rem; }
+  .prose-sec li { margin: 0.5rem 0; }
+  .prose-sec a { text-decoration: underline; font-family: var(--font-mono); font-size: 12px; }
+  .prose-sec a:hover { color: var(--color-text-primary); }
+  .prose-sec strong { color: var(--color-text-primary); font-weight: 600; }
+  .prose-sec code { font-family: var(--font-mono); font-size: 12px; }
+</style>

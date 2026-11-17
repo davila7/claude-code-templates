@@ -1,5 +1,5 @@
 ---
-name: phoenix-observability
+name: observability-phoenix
 description: Open-source AI observability platform for LLM tracing, evaluation, and monitoring. Use when debugging LLM applications with detailed traces, running evaluations on datasets, or monitoring production AI systems with real-time insights.
 version: 1.0.0
 author: Orchestra Research

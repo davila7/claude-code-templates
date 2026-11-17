@@ -5,6 +5,141 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- **Pre-publish smoke test.** `prepublishOnly` now also runs
+  `npm run test:install-paths` and `scripts/prepublish-check.mjs`, which packs
+  the package and runs the prod smoke test's CLI checks (an install of every
+  component type, tracking off) against that tarball. A publish stops when any
+  install fails, as every `--skill` install did in 1.33.0.
+  `prod-smoke-test.mjs` takes `--cli-tarball <path>` for this.
+
+## [1.33.1] - Unreleased
+
+### Fixed
+- **`--skill` installs reported failure and were not counted** (regression in
+  1.33.0). The skill files were written, then a `ReferenceError: source is not
+  defined` in the tracking call made the install print `FAIL ... source is not
+  defined` and a `Retry:` line, skip the download count and exit 1 in a batch.
+  External skills (`source.json`) were not affected.
+
+### Removed
+- **The `cct` binary.** It only worked after a global install, and
+  `npx cct` never ran it: npm downloads the unrelated `cct` package, owned by
+  another account. Use `npx claude-code-templates@latest` (or, installed
+  globally, `claude-code-templates`). Anyone who used `cct` from a global
+  install must switch to one of those.
+
+### Added
+- **FLOSS/fund application** (#1359, #1361): `funding.json` (funding.json
+  v1.1.0) at the repository root, with `.well-known/funding-manifest-urls` in
+  the repository and served by aitmpl.com. Submitted to the FLOSS/fund
+  directory on 2026-11-02 as an application for a 25,000 USD/year grant; both
+  URLs show as verified in the
+  [listing](https://dir.floss.fund/view/project/@github.com/davila7/claude-code-templates).
+- `cli-ci.yml`: on PRs touching the CLI, installs its dependencies, runs a
+  `--skill` install against a stubbed GitHub (`npm run test:install-paths`) and
+  lints `cli-tool/src` and `cli-tool/bin` for undefined identifiers. The root
+  `npm test` runs without dependencies, so it never loaded `index.js`.
+
+## [1.33.0] - 2026-11-09
+
+### Changed
+- **Mods download from aitmpl.com** (`--mod`): one request to
+  `www.aitmpl.com/component-content/mods/{category}/{name}.json`, accepted only
+  when its files match `meta.files` exactly (same paths, same sizes in bytes).
+  The GitHub contents API, whose anonymous rate limit caused 85% of failed mod
+  installs, is now the fallback, and its rate-limit error says so. The
+  component-content shape is now a CLI contract (`cli-tool/src/component-content.js`).
+- **Short names resolve** through Catalog API v1: `--agent frontend-developer`
+  installs `development-team/frontend-developer` when exactly one agent has
+  that name. A name that matches several or none installs nothing new and the
+  summary prints `Did you mean:` commands (or a `--search` command) instead of
+  repeating the failing one.
+- **After an install** the CLI prints each installed component's page
+  (`utm_source=cli&utm_medium=install`) and, for two or more, a `Stack:` line
+  with the one command that installs them all. Plain lines in a fixed order, so
+  an agent running the CLI can relay them.
+- Help examples printed `cct --agent ...`; they now print
+  `npx claude-code-templates@latest --agent ...`. The no-terminal help lists
+  `--plugin` and `--search`.
+
+### Added
+- **`--search "<words>"`**: up to 5 components matching every word, ranked by
+  text match (never by downloads), each with its page and install command.
+  Counted as a `search` command event with the number of results, never the words.
+- **System-folder guard**: refuses to install into `C:\Windows` (and anything
+  under it) or the root of a drive, writes nothing, and says which folder to
+  open instead. About 18% of failed installs were EPERM in
+  `C:\Windows\System32`.
+
+## [1.31.0] - 2026-11-02
+
+Includes the changes prepared as 1.30.1 (#1334), which was never published to npm.
+
+### Removed
+- **CLI flags that saw little or no use** (0 to 65 runs each in the last 30
+  days, against 16.8K npm downloads): `--plugins`, `--skills-manager`,
+  `--command-stats`, `--hook-stats`, `--mcp-stats`, `--agents`,
+  `--chats-mobile`, `--teams`, `--2025`, `--studio`, `--sandbox` (with
+  `--e2b-api-key` and `--anthropic-api-key`), `--tunnel`, `--create-agent`,
+  `--list-agents`, `--update-agent`, `--remove-agent` and `--clone-session`.
+  Running one prints what replaced it (`/plugin`, `/hooks`, `/mcp`, the
+  `ui/stack-viewer` mod, `--analytics`, `--chats`) and exits with code 1;
+  `npx claude-code-templates@1.30.0 <flag>` still runs the old version, except
+  for `--tunnel`. Global agents created with `--create-agent` keep working.
+- The sandbox launchers are no longer in the npm package; they stay in
+  `cli-tool/components/sandbox/`.
+- Dependencies: `@supabase/supabase-js`, `axios`, `dotenv`, `qrcode`, `uuid`.
+
+### Added
+- **No arguments opens the catalog browser** (#1333): pick a type, search,
+  select across types, then the usual plan table and install. Without a
+  terminal it prints short usage text and exits 0.
+- A setting's `.claude/themes/` files go to `~/.claude/themes/`, the only
+  folder Claude Code reads custom themes from (#1338).
+
+### Security
+- `--analytics` and `--chats` listen on 127.0.0.1 only (they listened on every
+  interface) and answer only requests addressed to `localhost` from their own
+  page: a foreign `Host` (DNS rebinding) or `Origin` (another site) gets 403,
+  including the `/ws` WebSocket handshake. `Access-Control-Allow-Origin: *` is
+  gone.
+- `--prompt` starts `claude` without a shell, so the prompt is one argument and
+  never shell syntax.
+
+### Fixed
+- `--analytics` and `--chats` showed 0 conversations when `~/.claude` held a
+  dangling symlink, which Claude Code itself leaves at `~/.claude/debug/latest`
+  (#575, #621). The scan now reads only `~/.claude/projects`, skips entries it
+  cannot read and follows each linked folder once; the project count no longer
+  includes `debug/`, `todos/` and the other `~/.claude` folders.
+- `--analytics` never received live updates: the page reopened its WebSocket
+  on every status change, subscribed with a message the server ignored, and
+  routed messages by a field the server did not send. It now keeps one
+  connection and refreshes within a second of a conversation changing.
+- `--chats` loaded an empty page since June (`WebSocketService is not
+  defined`): its three scripts were deleted by the analytics UI build and are
+  back, also in `analytics-ui/public/` so the next build keeps them.
+- `--health-check` did not exit after the report: its connectivity check left
+  the connection to api.anthropic.com open. Without a terminal (CI, pipes,
+  agents) it also waited forever on its setup question; it now prints the
+  report and exits in under a second, without the 19 s of pauses between
+  sections. `--check` and `--verify` were rejected as unknown
+  options and work again. The placeholder "MCP Hooks: not implemented" warning
+  no longer lowers the score.
+- `--prompt` split the prompt into words (and failed on quotes), and without a
+  terminal waited on its confirmation; it now prints the `claude` command to
+  run instead. The template review prompt (`--template`) used `sh -c`, which
+  does not exist on Windows.
+- A dashboard whose port is taken reports it instead of crashing.
+- Usage tracking: `--analytics` and `--health-check` were also sent to the
+  download counter, which rejected them; `--workflow` runs and removed flags
+  are now counted as commands, and the dashboard API accepts installation
+  outcomes for mods and loops (until now always rejected). Tracking calls
+  return their request so a caller can wait for it before exiting.
+
 ## [1.30.0] - 2026-10-10
 
 ### Changed
@@ -59,7 +194,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Resolved `npx`/`claude` via their `.cmd` shims on Windows so removing
     `shell: true` does not break agent installation on win32.
 
-## [Unreleased]
+## Changes after 1.28.16 (not assigned to a release)
 
 ### Added
 - X/Twitter scraper skill (#390)
@@ -223,7 +358,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 For changes prior to v1.25.0, see the [commit history](https://github.com/davila7/claude-code-templates/commits/main).
 
-[Unreleased]: https://github.com/davila7/claude-code-templates/compare/v1.28.16...HEAD
+[Unreleased]: https://github.com/davila7/claude-code-templates/compare/v1.31.0...HEAD
 [1.28.16]: https://github.com/davila7/claude-code-templates/compare/v1.28.14...v1.28.16
 [1.28.14]: https://github.com/davila7/claude-code-templates/compare/v1.28.3...v1.28.14
 [1.28.3]: https://github.com/davila7/claude-code-templates/compare/v1.27.0...v1.28.3

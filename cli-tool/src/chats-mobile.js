@@ -4,7 +4,6 @@ const path = require('path');
 const express = require('express');
 const open = require('open');
 const os = require('os');
-const { spawn } = require('child_process');
 const ConversationAnalyzer = require('./analytics/core/ConversationAnalyzer');
 const StateCalculator = require('./analytics/core/StateCalculator');
 const FileWatcher = require('./analytics/core/FileWatcher');
@@ -12,6 +11,7 @@ const DataCache = require('./analytics/data/DataCache');
 const AgentAnalyzer = require('./analytics/core/AgentAnalyzer');
 const WebSocketServer = require('./analytics/notifications/WebSocketServer');
 const SessionSharing = require('./session-sharing');
+const { LISTEN_HOST, localOnly, verifyLocalWebSocket } = require('./local-server-guard');
 
 class ChatsMobile {
   constructor(options = {}) {
@@ -103,6 +103,9 @@ class ChatsMobile {
    * Setup Express middleware
    */
   setupMiddleware() {
+    // Conversation history is private: answer only requests addressed to
+    // http://localhost:<port> (see local-server-guard.js).
+    this.app.use(localOnly(this.port));
     this.app.use(express.json());
     
     // Serve static files from analytics-web directory (for services, components, etc.)
@@ -1045,128 +1048,34 @@ class ChatsMobile {
    * Start the mobile chats server
    */
   async startServer() {
-    return new Promise(async (resolve) => {
-      this.httpServer = this.app.listen(this.port, async () => {
+    return new Promise((resolve, reject) => {
+      this.httpServer = this.app.listen(this.port, LISTEN_HOST, async () => {
         this.localUrl = `http://localhost:${this.port}`;
-        console.log(chalk.green(`📱 Chats Mobile server started at ${this.localUrl}`));
-        
+        console.log(chalk.green(`📱 Chats server started at ${this.localUrl}`));
+
         // Initialize WebSocket server with HTTP server
         try {
           this.webSocketServer = new WebSocketServer(this.httpServer, {
             port: this.port,
-            path: '/ws'
+            path: '/ws',
+            verifyClient: verifyLocalWebSocket(this.port)
           });
           await this.webSocketServer.initialize();
           this.log('info', chalk.green('🌐 WebSocket server initialized'));
         } catch (error) {
           this.log('warn', chalk.yellow('⚠️  WebSocket server failed to initialize:', error.message));
         }
-        
-        // Setup Cloudflare Tunnel if requested
-        if (this.options.tunnel) {
-          await this.setupCloudflaredTunnel();
-        }
-        
+
         resolve();
       });
+      this.httpServer.once('error', (error) => {
+        if (error.code === 'EADDRINUSE') {
+          reject(new Error(`port ${this.port} is already in use (is another chats dashboard running?)`));
+        } else {
+          reject(error);
+        }
+      });
     });
-  }
-
-  /**
-   * Setup Cloudflare Tunnel for remote access
-   */
-  async setupCloudflaredTunnel() {
-    console.log(chalk.blue('☁️  Setting up Cloudflare Tunnel...'));
-    console.log(chalk.gray(`📡 Tunneling ${this.localUrl}...`));
-    
-    try {
-      const { spawn } = require('child_process');
-      
-      // Spawn cloudflared tunnel with more options for better compatibility
-      const cloudflared = spawn('cloudflared', [
-        'tunnel', 
-        '--url', this.localUrl,
-        '--no-autoupdate'  // Prevent update check that can cause delays
-      ], {
-        stdio: ['pipe', 'pipe', 'pipe'],
-        env: { ...process.env, NO_UPDATE_NOTIFIER: '1' } // Disable update notifier
-      });
-      
-      // Store process reference for cleanup
-      this.cloudflaredProcess = cloudflared;
-      
-      // Parse tunnel URL from cloudflared output
-      return new Promise((resolve) => {
-        let output = '';
-        
-        cloudflared.stdout.on('data', (data) => {
-          const str = data.toString();
-          output += str;
-          
-          // Always show cloudflared output for debugging tunnel issues
-          console.log(chalk.gray(`[cloudflared] ${str.trim()}`));
-          
-          // Look for various tunnel URL patterns
-          let urlMatch = str.match(/https:\/\/[a-zA-Z0-9-]+\.trycloudflare\.com/);
-          if (!urlMatch) {
-            // Try alternative patterns
-            urlMatch = str.match(/https:\/\/[a-zA-Z0-9-]+\.cfargotunnel\.com/);
-          }
-          if (!urlMatch) {
-            // Try to find any HTTPS URL in the output
-            urlMatch = str.match(/https:\/\/[a-zA-Z0-9.-]+\.(?:trycloudflare|cfargotunnel)\.com/);
-          }
-          
-          if (urlMatch) {
-            this.tunnelUrl = urlMatch[0];
-            console.log(chalk.green(`☁️  Cloudflare Tunnel ready: ${this.tunnelUrl}`));
-            resolve(this.tunnelUrl);
-          }
-        });
-        
-        cloudflared.stderr.on('data', (data) => {
-          const str = data.toString();
-          // Always show stderr for debugging
-          console.error(chalk.gray(`[cloudflared stderr] ${str.trim()}`));
-          
-          // Sometimes tunnel URLs appear in stderr
-          let urlMatch = str.match(/https:\/\/[a-zA-Z0-9-]+\.(?:trycloudflare|cfargotunnel)\.com/);
-          if (urlMatch && !this.tunnelUrl) {
-            this.tunnelUrl = urlMatch[0];
-            console.log(chalk.green(`☁️  Cloudflare Tunnel ready: ${this.tunnelUrl}`));
-            resolve(this.tunnelUrl);
-          }
-        });
-        
-        cloudflared.on('error', (error) => {
-          console.error(chalk.red('❌ Failed to start Cloudflare Tunnel:'), error.message);
-          console.log(chalk.yellow('💡 Make sure cloudflared is installed: https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/install-and-setup/installation/'));
-          resolve(null);
-        });
-        
-        cloudflared.on('close', (code) => {
-          console.log(chalk.yellow(`⚠️  Cloudflared process exited with code ${code}`));
-          if (!this.tunnelUrl) {
-            resolve(null);
-          }
-        });
-        
-        // Timeout after 45 seconds (increased from 30)
-        setTimeout(() => {
-          if (!this.tunnelUrl) {
-            console.warn(chalk.yellow('⚠️  Tunnel URL not detected within 45 seconds'));
-            console.log(chalk.gray('Full cloudflared output:'));
-            console.log(chalk.gray(output));
-            console.log(chalk.blue('💡 You can manually run: ') + chalk.white(`cloudflared tunnel --url ${this.localUrl}`));
-            console.log(chalk.blue('   Then copy the tunnel URL and access it in your browser.'));
-            resolve(null);
-          }
-        }, 45000);
-      });
-    } catch (error) {
-      console.error(chalk.red('❌ Error setting up Cloudflare Tunnel:'), error.message);
-      return null;
-    }
   }
 
   /**
@@ -1174,8 +1083,7 @@ class ChatsMobile {
    */
   async openBrowser() {
     try {
-      // Use tunnel URL if available, otherwise local URL
-      const url = this.tunnelUrl || this.localUrl || `http://localhost:${this.port}`;
+      const url = this.localUrl || `http://localhost:${this.port}`;
       console.log(chalk.cyan(`🌐 Opening browser to ${url}`));
       await open(url);
     } catch (error) {
@@ -1192,15 +1100,6 @@ class ChatsMobile {
       return;
     }
     this.isStopped = true;
-
-    if (this.cloudflaredProcess) {
-      try {
-        this.cloudflaredProcess.kill('SIGTERM');
-        this.log('info', chalk.gray('☁️  Cloudflare Tunnel stopped'));
-      } catch (error) {
-        this.log('warn', chalk.yellow('⚠️  Error stopping Cloudflare Tunnel:', error.message));
-      }
-    }
 
     if (this.webSocketServer) {
       try {
@@ -1231,7 +1130,7 @@ class ChatsMobile {
  * Start the mobile chats server
  */
 async function startChatsMobile(options = {}) {
-  console.log(chalk.blue('📱 Starting Claude Code Chats Mobile...'));
+  console.log(chalk.blue('📱 Starting Claude Code Chats...'));
   
   const chatsMobile = new ChatsMobile(options);
   
@@ -1243,14 +1142,10 @@ async function startChatsMobile(options = {}) {
       await chatsMobile.openBrowser();
     }
     
-    console.log(chalk.green('✅ Claude Code Chats Mobile is running!'));
+    console.log(chalk.green('✅ Claude Code Chats is running!'));
     
-    // Show access URLs
-    console.log(chalk.cyan(`📱 Local access: ${chatsMobile.localUrl}`));
-    if (chatsMobile.tunnelUrl) {
-      console.log(chalk.cyan(`☁️  Remote access: ${chatsMobile.tunnelUrl}`));
-      console.log(chalk.blue(`🌐 Opening remote URL: ${chatsMobile.tunnelUrl}`));
-    }
+    console.log(chalk.cyan(`📱 Access at: ${chatsMobile.localUrl}`));
+    console.log(chalk.gray('🏠 Local access only (listening on 127.0.0.1)'));
     
     console.log(chalk.gray('Press Ctrl+C to stop'));
 

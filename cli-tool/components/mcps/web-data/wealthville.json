@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "wealthville": {
+      "description": "Wealthville MCP — read-only DeFi liquidity-pool scoring. Answers \"is this pool worth providing liquidity to?\" with a 0-100 score and an ENTER/HOLD/EXIT/REDUCE/AVOID verdict, with confidence calibrated per protocol. Covers ~68,800 Solana pools (Meteora DLMM, Orca Whirlpool, Raydium AMM/CLMM/CPMM) and 575 EVM pools across Ethereum, Arbitrum, Base, Optimism, Polygon and BSC (Uniswap v2/v3/v4, Aave, Morpho, Pendle, Curve, Compound, Aerodrome). Four tools: get_pool_score, get_top_pools, get_signals_feed, get_track_record — the last returns a miss-inclusive 30-day track record so the scores can be judged before they are trusted. No API key and no signup required; an optional free partner key raises the rate limit from 60 to 600 req/min. Never touches a wallet and cannot sign or send transactions.",
+      "url": "https://wealthville.net/mcp"
+    }
+  }
+}

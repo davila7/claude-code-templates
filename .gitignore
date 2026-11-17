@@ -40,7 +40,7 @@ coverage
 
 # Sandbox output directories
 sandbox-*/
-cloudflare-*/
+/cloudflare-*/
 !cloudflare-workers/
 
 # Test directories (local only)
@@ -59,9 +59,6 @@ test-cloudflare/
 .idea/
 *.swp
 *.swo
-
-# Deployment
-.vercel
 
 # Local analysis (not for git)
 analysis/
@@ -87,3 +84,4 @@ service-account*.json
 
 # Build artifact: component content written directly to dashboard/public/
 docs/component-content/
+.cache/

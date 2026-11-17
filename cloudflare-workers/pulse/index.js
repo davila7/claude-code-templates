@@ -1,7 +1,7 @@
 /**
  * Cloudflare Worker: Pulse — Weekly KPI Report
  *
- * Collects metrics from GitHub, Discord, Supabase, npm, and Google Analytics,
+ * Collects metrics from GitHub, Supabase, npm, and Google Analytics,
  * then sends a consolidated report via Telegram every Sunday at 14:00 UTC.
  *
  * All source collectors are in this single file (no npm dependencies).
@@ -16,7 +16,6 @@ import { reportError, checkIn } from './sentry.js';
 const REPO = 'davila7/claude-code-templates';
 const NPM_PACKAGE = 'claude-code-templates';
 const GITHUB_API = 'https://api.github.com';
-const DISCORD_API = 'https://discord.com/api/v10';
 const NPM_API = 'https://api.npmjs.org';
 const GA4_API = 'https://analyticsdata.googleapis.com/v1beta';
 const TELEGRAM_API = 'https://api.telegram.org';
@@ -53,7 +52,7 @@ export default {
         status: 'running',
         worker: 'pulse-weekly-report',
         schedule: 'Sundays 14:00 UTC',
-        sources: ['github', 'discord', 'downloads', 'npm', 'analytics']
+        sources: ['github', 'downloads', 'returning', 'npm', 'analytics']
       });
     }
 
@@ -76,8 +75,8 @@ async function runReport(env, opts = {}) {
   if (onlySource) {
     const collectors = {
       github: collectGitHub,
-      discord: collectDiscord,
       downloads: collectDownloads,
+      returning: collectReturning,
       npm: collectNpm,
       analytics: collectAnalytics
     };
@@ -87,13 +86,13 @@ async function runReport(env, opts = {}) {
     }
     results[onlySource] = await collector(env);
   } else {
-    const [github, discord, downloads, npm] = await Promise.all([
+    const [github, downloads, returning, npm] = await Promise.all([
       collectGitHub(env),
-      collectDiscord(env),
       collectDownloads(env),
+      collectReturning(env),
       collectNpm(env)
     ]);
-    results = { github, discord, downloads, npm };
+    results = { github, downloads, returning, npm };
   }
 
   // Report any failed collectors to Sentry (they still degrade gracefully
@@ -212,77 +211,6 @@ async function collectGitHub(env) {
   }
 }
 
-// ─── Source: Discord ─────────────────────────────────────────────────────────
-
-async function collectDiscord(env) {
-  try {
-    if (!env.DISCORD_BOT_TOKEN || !env.DISCORD_GUILD_ID) {
-      return { error: 'DISCORD_BOT_TOKEN or DISCORD_GUILD_ID not configured' };
-    }
-
-    const headers = {
-      Authorization: `Bot ${env.DISCORD_BOT_TOKEN}`,
-      'Content-Type': 'application/json'
-    };
-    const guildId = env.DISCORD_GUILD_ID;
-
-    // Fetch guild info with approximate counts
-    const guild = await fetchJSON(
-      `${DISCORD_API}/guilds/${guildId}?with_counts=true`,
-      { headers }
-    );
-
-    const totalMembers = guild.approximate_member_count || 0;
-    const activeMembers = guild.approximate_presence_count || 0;
-
-    // Estimate new members this week from audit log
-    let newMembersWeek = null;
-    try {
-      const since = weekAgo();
-      const auditRes = await fetchJSON(
-        `${DISCORD_API}/guilds/${guildId}/audit-logs?action_type=1&limit=100`,
-        { headers }
-      );
-      const entries = auditRes.audit_log_entries || [];
-      newMembersWeek = entries.filter(e => {
-        const timestamp = Number(BigInt(e.id) >> 22n) + 1420070400000;
-        return timestamp >= since.getTime();
-      }).length;
-    } catch { /* Audit log access may not be available */ }
-
-    // Count messages in last 7 days across text channels
-    let messagesWeek = null;
-    try {
-      const channels = await fetchJSON(
-        `${DISCORD_API}/guilds/${guildId}/channels`,
-        { headers }
-      );
-      const textChannels = channels.filter(c => c.type === 0);
-
-      const since = weekAgo();
-      const sinceSnowflake = String((BigInt(since.getTime()) - 1420070400000n) << 22n);
-
-      let total = 0;
-      // Sample up to 10 channels to avoid rate limits
-      for (const ch of textChannels.slice(0, 10)) {
-        try {
-          const msgs = await fetchJSON(
-            `${DISCORD_API}/channels/${ch.id}/messages?after=${sinceSnowflake}&limit=100`,
-            { headers }
-          );
-          total += msgs.length;
-        } catch { /* Channel may not be accessible */ }
-      }
-      messagesWeek = total;
-    } catch { /* ignore */ }
-
-    return { totalMembers, activeMembers, newMembersWeek, messagesWeek };
-  } catch (error) {
-    console.error('Discord source error:', error.message);
-    return { error: error.message };
-  }
-}
-
 // ─── Source: Supabase Downloads (PostgREST) ──────────────────────────────────
 
 async function collectDownloads(env) {
@@ -369,6 +297,85 @@ async function collectDownloads(env) {
     console.error('Supabase downloads source error:', error.message);
     return { error: error.message };
   }
+}
+
+// ─── Source: Returning installers (Supabase RPC) ─────────────────────────────
+
+// The north star of the traction plan: installers active in an ISO week (UTC)
+// who had installed in any of the 8 previous weeks. Postgres computes it in
+// public.weekly_returning_installers() (database/migrations/005_...sql), one
+// row per week, oldest first, with new installers, the agent/person/script
+// split (CLI >= 1.32) and how many of each week's new installers came back.
+const RETURNING_WEEKS = 10;
+
+async function collectReturning(env) {
+  try {
+    if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) {
+      return { error: 'SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY not configured' };
+    }
+
+    const rows = await fetchJSON(`${env.SUPABASE_URL}/rest/v1/rpc/weekly_returning_installers`, {
+      method: 'POST',
+      headers: {
+        apikey: env.SUPABASE_SERVICE_ROLE_KEY,
+        Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ p_weeks: RETURNING_WEEKS })
+    });
+
+    return summarizeReturning(Array.isArray(rows) ? rows : []);
+  } catch (error) {
+    console.error('Returning installers source error:', error.message);
+    return { error: error.message };
+  }
+}
+
+// The cron runs on Sunday, before the current week ends, so the headline is the
+// last complete week and the current one is shown apart as "so far".
+function summarizeReturning(rows) {
+  const complete = rows.filter((r) => r.week_complete);
+  if (complete.length === 0) {
+    return { error: 'weekly_returning_installers returned no complete week' };
+  }
+
+  const num = (v) => (v == null ? null : Number(v));
+  const sum = (list, key) => list.reduce((acc, r) => acc + Number(r[key] || 0), 0);
+  const latestWith = (key) => [...complete].reverse().find((r) => r[key] != null) || null;
+
+  const last = complete[complete.length - 1];
+  const prev = complete.length > 1 ? complete[complete.length - 2] : null;
+  const last4 = complete.slice(-4);
+  const w1 = latestWith('new_back_w1_pct');
+  const w4 = latestWith('new_back_w4_pct');
+  const current = rows.find((r) => !r.week_complete) || null;
+
+  return {
+    week: last.week_start,
+    active: num(last.active_installers),
+    returning: num(last.returning_installers),
+    returningPct: num(last.returning_pct),
+    returningDelta: prev ? num(last.returning_installers) - num(prev.returning_installers) : null,
+    newInstallers: num(last.new_installers),
+    avgWeeks: last4.length,
+    avgReturning: sum(last4, 'returning_installers') / last4.length,
+    avgPct: (100 * sum(last4, 'returning_installers')) / Math.max(sum(last4, 'active_installers'), 1),
+    classes: ['agent', 'person', 'script', 'unknown'].map((cls) => ({
+      cls,
+      active: num(last[`${cls}_active`]) || 0,
+      returning: num(last[`${cls}_returning`]) || 0
+    })),
+    newBackW1: w1 ? { week: w1.week_start, pct: num(w1.new_back_w1_pct) } : null,
+    newBackW4: w4 ? { week: w4.week_start, pct: num(w4.new_back_w4_pct) } : null,
+    current: current
+      ? {
+          week: current.week_start,
+          active: num(current.active_installers),
+          returning: num(current.returning_installers),
+          returningPct: num(current.returning_pct)
+        }
+      : null
+  };
 }
 
 // ─── Source: npm Downloads ───────────────────────────────────────────────────
@@ -586,6 +593,38 @@ function formatReport(results) {
     sections.push(lines.join('\n'));
   }
 
+  // Returning installers (north star) and new installers
+  if (results.returning?.error) {
+    sections.push(`RETURNING INSTALLERS\n└ Unavailable: ${results.returning.error}`);
+  } else if (results.returning) {
+    const r = results.returning;
+    const lines = [
+      `RETURNING INSTALLERS (week of ${fmtWeek(r.week)})`,
+      `├ Returning: ${fmt(r.returning)} of ${fmt(r.active)} active (${fmtPct1(r.returningPct)})${fmtDelta(r.returningDelta)}`,
+      `├ ${r.avgWeeks}-week avg: ${fmt(Math.round(r.avgReturning))} (${fmtPct1(r.avgPct)})`,
+      `├ New installers: ${fmt(r.newInstallers)}`
+    ];
+    // The split exists only for rows sent by CLI >= 1.32 (since 2026-11-03).
+    if (r.classes.some((c) => c.cls !== 'unknown' && c.active > 0)) {
+      const split = r.classes
+        .filter((c) => c.active > 0)
+        .map((c) => `${c.cls} ${fmt(c.returning)} of ${fmt(c.active)}`)
+        .join(', ');
+      lines.push(`├ Returning by class: ${split}`);
+    }
+    const back = [];
+    if (r.newBackW1) back.push(`next week ${fmtPct1(r.newBackW1.pct)} (week of ${fmtWeek(r.newBackW1.week)})`);
+    if (r.newBackW4) back.push(`within 4 weeks ${fmtPct1(r.newBackW4.pct)} (week of ${fmtWeek(r.newBackW4.week)})`);
+    if (back.length > 0) {
+      lines.push(`├ New installers back: ${back.join(', ')}`);
+    }
+    if (r.current) {
+      lines.push(`├ This week so far: ${fmt(r.current.returning)} of ${fmt(r.current.active)} (${fmtPct1(r.current.returningPct)})`);
+    }
+    lines[lines.length - 1] = lines[lines.length - 1].replace('├', '└');
+    sections.push(lines.join('\n'));
+  }
+
   // npm
   if (results.npm?.error) {
     sections.push(`NPM (npmjs.com)\n└ ⚠️ Unavailable: ${results.npm.error}`);
@@ -618,19 +657,6 @@ function formatReport(results) {
       `├ Forks: ${fmt(g.forks)}${fmtDelta(g.forksWeek)}`,
       `├ Issues: ${fmt(g.openIssues)} open (${fmt(g.issuesOpenedWeek)} new, ${fmt(g.issuesClosedWeek)} closed)`,
       `└ PRs: ${fmt(g.prsOpenedWeek)} opened, ${fmt(g.prsMergedWeek)} merged`
-    ].join('\n'));
-  }
-
-  // Discord
-  if (results.discord?.error) {
-    sections.push(`DISCORD\n└ Unavailable: ${results.discord.error}`);
-  } else if (results.discord) {
-    const d = results.discord;
-    sections.push([
-      `DISCORD`,
-      `├ Members: ${fmt(d.totalMembers)}${fmtDelta(d.newMembersWeek)}`,
-      `├ Active: ~${fmt(d.activeMembers)}`,
-      `└ Messages: ${fmt(d.messagesWeek)}`
     ].join('\n'));
   }
 
@@ -741,6 +767,16 @@ function fmtDelta(n) {
 function fmtPct(n) {
   if (n == null) return '—';
   return `${Math.round(n)}%`;
+}
+
+function fmtPct1(n) {
+  if (n == null || Number.isNaN(n)) return '—';
+  return `${Number(n).toFixed(1)}%`;
+}
+
+// 'YYYY-MM-DD' (a Monday, UTC) -> 'Oct 26'
+function fmtWeek(isoDate) {
+  return new Date(`${isoDate}T00:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
 }
 
 function base64url(input) {

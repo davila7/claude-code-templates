@@ -1,7 +1,7 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [resource] [method] [flags]
-description: Google Workflow: Today's meetings + open tasks as a standup summary.
+argument-hint: "[resource] [method] [flags]"
+description: "Google Workflow: Today's meetings + open tasks as a standup summary."
 ---
 
 # Google Workspace Workflow Standup Report

@@ -13,6 +13,8 @@ import {
   fmtClock,
   fmtTokens,
   hitRatio,
+  idleCompactAt,
+  idlePolicy,
   isCachingDisabled,
   missReason,
   remainingMs,
@@ -146,9 +148,22 @@ describe('per-turn rows', () => {
 })
 
 // The module end to end: a main-loop request feeds the band, a subagent's does not.
-type Calls = { status: (string | undefined)[]; logs: string[] }
+type Calls = { status: (string | undefined)[]; logs: string[]; toasts?: string[] }
 
-function fakeEngine(on: On, env: Record<string, string>, calls: Calls, cache = { read: 80_000, write: 1_000 }, limits: { kind: string; percentUsed: number }[] = []) {
+function fakeEngine(
+  on: On,
+  env: Record<string, string>,
+  calls: Calls,
+  cache = { read: 80_000, write: 1_000 },
+  limits: { kind: string; percentUsed: number }[] = [],
+  files: Record<string, string> = {},
+) {
+  on('fs.read', ($, e) => {
+    const text = files[e.path]
+    if (text === undefined) throw new Error(`ENOENT ${e.path}`)
+    return { value: text }
+  })
+  on('session.compact', async ($, e) => ({ messages: [{ role: 'user', text: 'summary', toolUses: [], toolResults: [] }], tokensBefore: 240_000, tokensAfter: 30_000 }) as never)
   on('session.usage', () => ({ value: { startedAt: 0, context: {}, rateLimits: limits } }) as never)
   on('session.start', async ($, e) => ({ cwd: e.cwd }) as never)
   on('session.end', async () => ({ sessionId: 's1' }) as never)
@@ -158,7 +173,10 @@ function fakeEngine(on: On, env: Record<string, string>, calls: Calls, cache = {
   on('ui.open', () => ({ value: undefined }) as never)
   on('ui.close', () => ({ value: undefined }) as never)
   on('ui.invalidate', () => ({ value: undefined }) as never)
-  on('ui.toast', () => ({ value: undefined }))
+  on('ui.toast', ($, e) => {
+    calls.toasts?.push(String((e as { text: unknown }).text))
+    return { value: undefined }
+  })
   // what the plugins beneath draw above the prompt (another mod's band)
   on('ui.render', ($, e) => {
     const { Text } = $.ui.resolve(e)
@@ -363,5 +381,89 @@ describe('which lifetime Claude Code asks for', () => {
     expect(accountOf([{ kind: 'spend_limit', percentUsed: 10 }])).toBe('other')
     expect(accountOf([{ kind: 'five_hour', percentUsed: 20 }, { kind: 'seven_day', percentUsed: 5 }])).toBe('subscription')
     expect(accountOf([{ kind: 'five_hour', percentUsed: 100 }])).toBe('credits')
+  })
+})
+
+describe('idle compaction', () => {
+  const ON = { mode: 'compact' }
+  test('200k by default, never under 100k, the variable beats the flag', () => {
+    expect(idlePolicy({ flag: ON })).toEqual(expect.objectContaining({ on: true, known: true, minTokens: 200_000, fraction: 0.9 }))
+    expect(idlePolicy({ flag: ON, minTokensVar: '50000' }).minTokens).toBe(100_000)
+    expect(idlePolicy({ flag: { ...ON, minTokens: 150_000 }, minTokensVar: '120000' }).minTokens).toBe(120_000)
+    expect(idlePolicy({ flag: { ...ON, minTokens: 150_000 } }).minTokens).toBe(150_000)
+    expect(idlePolicy({ flag: { ...ON, fireAtFraction: 0.99 } }).fraction).toBe(0.95)
+  })
+  test('off: rollout flag off or log-only, the setting, auto-compact off', () => {
+    expect(idlePolicy({ flag: { mode: 'off' } })).toEqual(expect.objectContaining({ on: false, why: expect.stringMatching(/not rolled out/) }))
+    expect(idlePolicy({ flag: { mode: 'log' } }).on).toBe(false)
+    expect(idlePolicy({ flag: ON, setting: false }).why).toMatch(/idleCompaction: false/)
+    expect(idlePolicy({ flag: ON, autoCompact: false }).on).toBe(false)
+    expect(idlePolicy({ flag: ON, disableAuto: '1' }).on).toBe(false)
+    expect(idlePolicy({ flag: ON, setting: true }).on).toBe(true)
+  })
+  test('no cached flag means no countdown', () => {
+    expect(idlePolicy({})).toEqual(expect.objectContaining({ on: false, known: false, why: expect.stringMatching(/flag not found/) }))
+  })
+  test('fires at 90% of a warm 1h cache, only from the threshold up', () => {
+    const big = sample({ read: 230_000 })
+    const pol = idlePolicy({ flag: ON })
+    expect(idleCompactAt(big, '1h', pol, T0 + 1000)).toBe(T0 + 3_240_000)
+    expect(idleCompactAt(big, '5m', pol, T0 + 1000)).toBeUndefined()
+    expect(idleCompactAt(sample(), '1h', pol, T0 + 1000)).toBeUndefined()
+    expect(idleCompactAt(big, '1h', pol, T0 + 3_700_000)).toBeUndefined()
+    expect(idleCompactAt(big, '1h', idlePolicy({ flag: { mode: 'off' } }), T0)).toBeUndefined()
+  })
+
+  const config = (flag: unknown) => ({ '/home/me/.claude.json': JSON.stringify({ cachedGrowthBookFeatures: { tengu_sunny_locket: flag } }) })
+  const ENV = { HOME: '/home/me', ENABLE_PROMPT_CACHING_1H: '1' }
+
+  test('the band counts down to the idle compaction of a large 1h conversation', async ($, on) => {
+    const calls: Calls = { status: [], logs: [] }
+    fakeEngine(on, ENV, calls, { read: 230_000, write: 1_000 }, [], config(ON))
+    await $.session.start({ cwd: '/repo', surface: 'terminal', isInteractive: true } as never)
+    expect(calls.logs.join('\n')).toContain('idle compaction on')
+    await step($)
+    const ui = await band($)
+    expect(await ui.find({ type: 'Text', text: /^⇣ 5[34]:\d\d$/ })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: /beneath/ })).toBeDefined()
+    await ui.unmount()
+  })
+
+  test('no idle countdown when the account has not got it', async ($, on) => {
+    const calls: Calls = { status: [], logs: [] }
+    fakeEngine(on, ENV, calls, { read: 230_000, write: 1_000 }, [], config({ mode: 'off' }))
+    await $.session.start({ cwd: '/repo', surface: 'terminal', isInteractive: true } as never)
+    expect(calls.logs.join('\n')).toContain('not rolled out')
+    await step($)
+    const ui = await band($)
+    expect(await ui.find({ type: 'Text', text: /⇣/ })).toBeUndefined()
+    await ui.unmount()
+  })
+
+  test('an idle compaction is announced and the band stops counting down the old cache', async ($, on) => {
+    const calls: Calls = { status: [], logs: [], toasts: [] }
+    fakeEngine(on, ENV, calls, { read: 230_000, write: 1_000 }, [], config(ON))
+    await $.session.start({ cwd: '/repo', surface: 'terminal', isInteractive: true } as never)
+    await step($)
+    await new Promise(r => setTimeout(r, 5))
+    await $.session.compact({ trigger: 'idle', messages: [{ role: 'user', text: 'old', toolUses: [], toolResults: [] }] } as never)
+    expect(calls.toasts?.join('\n')).toMatch(/compacted while idle 240k → 30k tokens/)
+    const ui = await band($)
+    expect(await ui.find({ type: 'Text', text: /compacted while idle/ })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: /⏱ \d/ })).toBeUndefined()
+    await ui.unmount()
+  })
+
+  test('a precompute or a subagent compaction changes nothing', async ($, on) => {
+    const calls: Calls = { status: [], logs: [], toasts: [] }
+    fakeEngine(on, ENV, calls, { read: 230_000, write: 1_000 }, [], config(ON))
+    await $.session.start({ cwd: '/repo', surface: 'terminal', isInteractive: true } as never)
+    await step($)
+    await $.session.compact({ trigger: 'precompute', messages: [{ role: 'user', text: 'old', toolUses: [], toolResults: [] }] } as never)
+    await $.session.compact({ trigger: 'auto', agentId: 'a1', messages: [{ role: 'user', text: 'old', toolUses: [], toolResults: [] }] } as never)
+    expect(calls.toasts).toEqual([])
+    const ui = await band($)
+    expect(await ui.find({ type: 'Text', text: /^⇣ / })).toBeDefined()
+    await ui.unmount()
   })
 })

@@ -1,9 +1,10 @@
 ---
 name: grafana-dashboards
 description: "Create and manage production-ready Grafana dashboards for comprehensive system observability."
-risk: unknown
-source: community
-date_added: "2026-02-27"
+metadata:
+  risk: unknown
+  source: community
+  date_added: "2026-02-27"
 ---
 
 # Grafana Dashboards

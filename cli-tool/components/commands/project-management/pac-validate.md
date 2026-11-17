@@ -1,6 +1,6 @@
 ---
 allowed-tools: Read, Bash
-argument-hint: [scope] | --file | --epic | --fix | --pre-commit
+argument-hint: "[scope] | --file | --epic | --fix | --pre-commit"
 description: Validate Product as Code project structure and files for PAC specification compliance
 ---
 

@@ -1,12 +1,13 @@
 ---
 name: railway-projects
 description: List, switch, and configure Railway projects. Use when user wants to list all projects, switch projects, rename a project, enable/disable PR deploys, make a project public/private, or modify project settings.
-version: 1.0.0
-author: Railway
 license: MIT
-tags: [Railway, Projects, Workspace, Management, Settings, Infrastructure]
-dependencies: [railway-cli]
 allowed-tools: Bash(railway:*)
+metadata:
+  version: 1.0.0
+  author: Railway
+  tags: [Railway, Projects, Workspace, Management, Settings, Infrastructure]
+  dependencies: [railway-cli]
 ---
 
 # Railway Project Management

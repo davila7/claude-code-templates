@@ -1,0 +1,34 @@
+---
+title: "Download tracking"
+description: "What the CLI sends when you install a component, what the server stores, how the counts are used and how to turn it off."
+---
+
+Each install sends one anonymous request so the catalog can show download counts and trending components. Turn it off with `CCT_NO_TRACKING=true` (or `CCT_NO_ANALYTICS=true`). Runs with `CI=true` are never tracked.
+
+## What the CLI sends
+
+Up to three small requests per run, all to `www.aitmpl.com`:
+
+| Request | Fields |
+| --- | --- |
+| Download (`/api/track-download-supabase`), one per component | type, name, category, CLI version; the install folder relative to where you ran the CLI when you pass `--directory`; and, from CLI 1.32.0, the three client signals below |
+| Install outcome (`/api/track-installation-outcome`) | type, name, success or failure, error type and message, duration, CLI and Node.js versions, OS, architecture |
+| Command usage (`/api/track-command-usage`) | which CLI command ran (for example `--analytics`), CLI and Node.js versions, OS, architecture, a random id for that run |
+
+Client signals:
+
+| Signal | Example |
+| --- | --- |
+| AI agent that ran the CLI | `claude`, `cursor`, or none |
+| How Claude Code was started | the value of `CLAUDE_CODE_ENTRYPOINT`, such as `cli` |
+| Whether output was a terminal | `true` / `false` |
+
+The agent signal is read from environment markers that tools set themselves (`AI_AGENT`, `CLAUDECODE` and similar). It is self-reported and used only for the "Agents vs humans" statistic on [aitmpl.com/trending](https://www.aitmpl.com/trending#agents).
+
+The CLI never sends file contents, your account email, account id or Claude Code session id. An install error message can include a file path from your machine; set `CCT_NO_TRACKING=true` if that matters to you.
+
+## What the server stores
+
+With each download, the endpoint also stores the request's IP address, country and user agent, as received by Cloudflare. They are used to count unique installs and filter bulk traffic. Counts are public on each component page; individual rows are not.
+
+The endpoint is `POST https://www.aitmpl.com/api/track-download-supabase`. Its source is in [`dashboard/src/pages/api/track-download-supabase.ts`](https://github.com/davila7/claude-code-templates/blob/main/dashboard/src/pages/api/track-download-supabase.ts).

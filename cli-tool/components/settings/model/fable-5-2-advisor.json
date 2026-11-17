@@ -1,0 +1,4 @@
+{
+  "description": "Use Claude Fable 5.2 as the advisor your main model consults at decision points (before committing to an approach, on a recurring error, before declaring a task done). It can advise any main model that supports the advisor. Pinned to the full model ID, so it stays on 5.2 and does not follow future Fable releases. Requires Claude Code v2.1.321+, Fable access and the Anthropic API or Claude Platform on AWS; the advisor stays off when DISABLE_TELEMETRY or CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC is set. If your plan bills Fable to usage credits, run /model fable once to accept that first.",
+  "advisorModel": "claude-fable-5-2"
+}

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { openSignIn } from '../lib/sign-in';
 
 interface ClerkUser {
   fullName?: string | null;
@@ -50,11 +51,11 @@ function useGlobalAuth() {
     }
 
     function check() {
-      // If mock is enabled and not on Vercel, use mock data
-      const isVercel = window.location.hostname.includes('vercel.app') || 
+      // If mock is enabled and not on a deployed host, use mock data
+      const isDeployed = window.location.hostname.includes('pages.dev') || 
                        window.location.hostname.includes('claude.ai');
       
-      if (window.__authMockEnabled && !isVercel) {
+      if (window.__authMockEnabled && !isDeployed) {
         setState({
           isSignedIn: true,
           isLoaded: true,
@@ -173,10 +174,10 @@ function UserMenu({ user }: { user: ClerkUser }) {
           <div className="py-1">
             <button
               onClick={() => {
-                const isVercel = window.location.hostname.includes('vercel.app') || 
+                const isDeployed = window.location.hostname.includes('pages.dev') || 
                                  window.location.hostname.includes('claude.ai');
                 
-                if (window.__authMockEnabled && !isVercel) {
+                if (window.__authMockEnabled && !isDeployed) {
                   console.log('🔓 Mock sign out - disabling mock mode');
                   window.disableAuthMock?.();
                 } else {
@@ -216,7 +217,7 @@ export default function AuthButton() {
 
   return (
     <button
-      onClick={() => (window as any).Clerk?.openSignIn?.()}
+      onClick={() => openSignIn('sidebar')}
       className="flex items-center gap-2.5 px-2.5 py-[6px] rounded-md text-[13px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-2)] transition-colors w-full"
     >
       <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">

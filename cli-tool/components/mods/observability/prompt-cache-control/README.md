@@ -50,11 +50,28 @@ Other switches read from the environment at session start:
 | --- | --- |
 | `DISABLE_PROMPT_CACHING=1` (and `_HAIKU`, `_SONNET`, `_OPUS`) | the band says caching is off for that model |
 
+## Idle compaction (Claude Code 2.1.290+)
+
+Claude Code can compact a large terminal conversation by itself while you are away, shortly before its one-hour cache lapses, so your next message reads a summary instead of rewriting the whole prompt. When that will happen, the band adds a magenta `⇣ 41:12` next to the cache countdown: the time until Claude Code compacts if nobody types. After it happens, a toast and the band say `compacted while idle (240k → 30k)`, and the old countdown stops.
+
+It fires at 90% of the cache lifetime (about 54 minutes) only when all of these hold (read from the 2.1.299 build, not from documentation):
+
+| Condition | Where the mod reads it |
+| --- | --- |
+| The feature is rolled out to your account | the `tengu_sunny_locket` flag Claude Code caches in `~/.claude.json`; `mode: "off"` means it never runs, and `"idleCompaction": true` does not turn it on |
+| Auto-compact is on | `DISABLE_COMPACT`, `DISABLE_AUTO_COMPACT`, `autoCompactEnabled` |
+| Idle compaction is not turned off | `"idleCompaction": false` in settings.json |
+| The cache lives one hour and is still warm | the same lifetime as the main countdown |
+| The prompt is at least the threshold | `CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS`, never below 100K, 200K when unset |
+
+The mod reads only those two keys from `~/.claude.json` (or `$CLAUDE_CONFIG_DIR/.claude.json`); without the cached flag it shows no idle countdown. `/cache` shows a line saying whether it is armed and, if not, why (for example `not rolled out to this account (mode off)` or `waits for 200k tokens; the prompt is 80k`). Two settings in the catalog set it up: `environment/idle-compaction-early` (from 100K) and `environment/idle-compaction-off`.
+
 ## What it hooks
 
 - `turn.step`: reads each main-loop request's usage (subagents have their own prefixes and are left out)
 - `$.clock.every(1000)`: redraws the countdown, and only while its text changes, so an idle expired session costs nothing
 - `ui.render` on `AbovePrompt` (the band) and on `Pane` (`/cache`)
+- `session.compact`: notes a compaction of the main conversation, and announces one with trigger `idle`
 - `$.ui.toast`: once per cache entry at the warning threshold (60 s by default) and again at 10, 3, 2 and 1 seconds left, for prompts of 20k tokens or more
 
 ## Options
@@ -66,6 +83,7 @@ Other switches read from the environment at session start:
   band: boolean             row above the prompt (default true)
   status: boolean           entry under the prompt, "cache 98% · 3:41" (default false)
   toast: boolean            toasts at the threshold, 10, 3, 2 and 1 s (default true)
+  idleCompact: boolean      idle compaction countdown and notice (default true)
 ```
 
 The 100k `compactAtTokens` is a judgement, not a figure from the documentation: lower it if your model's cache writes are expensive for you.

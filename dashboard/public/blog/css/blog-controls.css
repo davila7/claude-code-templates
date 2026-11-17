@@ -182,6 +182,7 @@
     }
 
     .search-container {
+        flex: none; /* flex-basis 400px became a 400px height in the column layout */
         width: 100%;
         min-width: auto;
     }

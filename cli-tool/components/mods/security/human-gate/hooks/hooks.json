@@ -1,0 +1,6 @@
+{
+  "description": "Holds irreversible tool calls (deploy, publish, push to main, money, outbound messages, destructive SQL) for a person, so auto mode and allow rules cannot approve them, and lets read-only calls through without a prompt.",
+  "modules": [
+    "./human-gate.ts"
+  ]
+}

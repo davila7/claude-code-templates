@@ -3,7 +3,7 @@ name: bettoredge-value-finder
 description: Find +EV betting opportunities on BettorEdge prediction markets with edge calculation, Kelly criterion sizing, and bankroll management
 tools: mcp__bettoredge__*
 model: sonnet
-color: "#10B981"
+color: green
 category: finance
 author: big_bettin
 version: 1.0.1

@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "myog-checker": {
+      "description": "Checks one public page's static Open Graph and Twitter Card metadata from your machine. The check_og_metadata tool reads the HTML head the page returns and reports explicit tags, effective fallbacks and findings such as missing or conflicting tags. No account or API key. It does not run JavaScript, fetch images or generate images. Needs Node 22.19 or later. Docs: https://github.com/MyOG-social/myog-checker-plugin",
+      "command": "npm",
+      "args": [
+        "exec",
+        "--yes",
+        "--package=myog-checker@0.1.1",
+        "--",
+        "myog-check-mcp"
+      ]
+    }
+  }
+}

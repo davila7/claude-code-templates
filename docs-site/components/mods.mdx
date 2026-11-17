@@ -1,0 +1,53 @@
+---
+title: "Mods"
+description: "Claude Mods: plugins that hook Claude Code's engine events to change its interface and behaviour. Installation, requirements, options and debugging."
+---
+
+A mod is a Claude Code plugin whose behaviour lives in a function-hooks module: TypeScript that registers middleware on engine events (`$.turn.step`, `$.tool.call`, `$.ui.render`…) to add a pane, a status line, a slash command, or to change a request before it is sent. Anthropic's reference is [anthropics/claude-code/mods](https://github.com/anthropics/claude-code/tree/main/mods) and the [mods documentation](https://code.claude.com/docs/en/plugins/mods/overview).
+
+```bash
+npx claude-code-templates@latest --mod ui/stack-viewer
+```
+
+Writes the complete plugin to `.claude/skills/stack-viewer/`, which Claude Code loads as `stack-viewer@skills-dir`. Then run `/stack` in Claude Code.
+
+## Requirements
+
+| Claude Code | Mods |
+| --- | --- |
+| 2.1.287 or newer | On by default |
+| 2.1.259 to 2.1.286 | Set `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1` |
+| Older | Not supported |
+
+The `$` API can change between Claude Code releases. Every mod in the catalog is type-checked against the current API in CI, and its README states the minimum version it was tested on.
+
+<Warning>
+A mod in a project's `.claude/skills/` loads only after you accept the trust prompt for that folder. `claude -p` never shows the prompt, so a headless run in a fresh folder will not load it. Open `claude` once in the folder, or install to `~/.claude/skills/`, which always loads.
+</Warning>
+
+## Options
+
+Options are declared in the mod's `.claude-plugin/plugin.json` (`userConfig`) and read from your **user** or managed settings, never from project settings:
+
+```json ~/.claude/settings.json
+{
+  "pluginConfigs": {
+    "stack-viewer@skills-dir": { "options": { } }
+  }
+}
+```
+
+The key is the plugin's full id: `<name>@skills-dir` when it is auto-loaded from `.claude/skills/`, plain `<name>` when you load it with `--plugin-dir`.
+
+## A mod that seems silent
+
+Check these before suspecting the mod's code:
+
+1. **Untrusted project.** See the warning above.
+2. **Wrong place to look.** `$.ui.log` writes a dim transcript line; in `claude -p` there is no transcript, so look in `~/.claude/debug/<session-id>.txt`. A mod that rewrites the model or effort changes each request, not the header or status line.
+3. **Options under the wrong key.** The debug log says `no pluginConfigs["<name>@skills-dir"].options` when it finds none.
+4. **Function hooks off** on Claude Code below 2.1.287.
+
+`claude --debug` shows `hooks module <name>@skills-dir loaded … events: …` when the mod is running.
+
+Browse all mods at [aitmpl.com/mods](https://www.aitmpl.com/mods/). To write one, see [Building a mod](/contributing/mods).

@@ -135,5 +135,40 @@ class ProcessDownloadsDataTest(unittest.TestCase):
         self.assertEqual([i["name"] for i in data["trending"]["all"]], ["a"])
 
 
+class ClientSplitTest(unittest.TestCase):
+    def row(self, agent=None, entrypoint=None, is_tty=None, days_ago=0):
+        r = download("agent", "frontend-developer", days_ago=days_ago)
+        r.update(client_agent=agent, client_entrypoint=entrypoint, client_is_tty=is_tty)
+        return r
+
+    def test_rows_are_split_by_who_ran_the_cli(self):
+        rows = [self.row("claude", "cli", False), self.row("claude", "sdk-ts", False),
+                self.row("cursor", None, False), self.row(None, None, True),
+                self.row(None, None, False), download("agent", "frontend-developer")]
+
+        split = generator.process_downloads_data(rows)["clientSplit"]
+
+        self.assertEqual(split["totals"], {"agent": 3, "human": 1, "nonInteractive": 1, "unknown": 1})
+        self.assertEqual(split["agents"], [{"name": "claude", "downloads": 2}, {"name": "cursor", "downloads": 1}])
+        self.assertEqual({e["name"] for e in split["entrypoints"]}, {"cli", "sdk-ts"})
+        self.assertEqual(sum(split["daily"]["agent"]), 3)
+        self.assertEqual(len(split["daily"]["dates"]), 30)
+
+    def test_old_cli_rows_only_count_as_unknown(self):
+        split = generator.process_downloads_data([download("agent", "a", days_ago=3)])["clientSplit"]
+
+        self.assertIsNone(split["since"])
+        self.assertEqual(split["totals"]["unknown"], 1)
+        self.assertEqual(split["agents"], [])
+
+    def test_since_is_the_first_reported_day(self):
+        rows = [self.row(None, None, True, days_ago=2), self.row("claude", None, False), download("agent", "a", days_ago=5)]
+
+        split = generator.process_downloads_data(rows)["clientSplit"]
+
+        expected = (datetime.now(timezone.utc) - timedelta(days=2, hours=1)).strftime("%Y-%m-%d")
+        self.assertEqual(split["since"], expected)
+
+
 if __name__ == "__main__":
     unittest.main()

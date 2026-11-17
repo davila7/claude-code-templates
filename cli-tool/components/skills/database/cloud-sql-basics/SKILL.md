@@ -1,7 +1,8 @@
 ---
 name: cloud-sql-basics
 description: Creates and manages Cloud SQL instances for MySQL, PostgreSQL, and SQL Server. Handles backups, high availability, and secure connectivity for relational database workloads on Google Cloud.
-source: google/skills (Apache 2.0)
+metadata:
+  source: google/skills (Apache 2.0)
 ---
 
 # Cloud SQL Basics

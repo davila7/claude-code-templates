@@ -4,7 +4,7 @@
       "description": "TestSprite’s MCP reads your intent, tests your code, and tells you what to fix.",
       "command": "npx",
       "args": [
-        "@testsprite/testsprite-mcp@latest"
+        "@testsprite/testsprite-mcp@0.0.48"
       ],
       "env": {
         "API_KEY": "your-api-key"

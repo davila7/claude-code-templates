@@ -1,12 +1,13 @@
 ---
 name: railway-environment
 description: Query, stage, and apply configuration changes for Railway environments. Use for ANY variable or env var operations, service configuration (source, build settings, deploy settings), lifecycle (delete service), and applying changes. Prefer over railway-status skill for any configuration or variable queries.
-version: 1.0.0
-author: Railway
 license: MIT
-tags: [Railway, Environment, Configuration, Variables, Build, Deploy, Infrastructure, Settings]
-dependencies: [railway-cli]
 allowed-tools: Bash(railway:*)
+metadata:
+  version: 1.0.0
+  author: Railway
+  tags: [Railway, Environment, Configuration, Variables, Build, Deploy, Infrastructure, Settings]
+  dependencies: [railway-cli]
 ---
 
 # Environment Configuration

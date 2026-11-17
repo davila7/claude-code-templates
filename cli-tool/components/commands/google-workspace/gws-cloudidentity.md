@@ -1,7 +1,7 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [resource] [method] [flags]
-description: Google Cloud Identity: Manage identity groups and memberships.
+argument-hint: "[resource] [method] [flags]"
+description: "Google Cloud Identity: Manage identity groups and memberships."
 ---
 
 # Google Workspace Cloudidentity

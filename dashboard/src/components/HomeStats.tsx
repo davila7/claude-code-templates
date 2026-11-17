@@ -87,7 +87,11 @@ function Digit({ digit, spins, delay }: DigitProps) {
         className="hs-strip"
         onTransitionEnd={handleTransitionEnd}
         style={{
-          transform: `translateY(calc(${-pos} * var(--hs-cell-h)))`,
+          // A share of the strip's own laid-out height, not a multiple of
+          // --hs-cell-h: iOS Safari can lay the cells out slightly taller than
+          // the em value, and the error grew with every cell, leaving the
+          // digits half scrolled out of their window.
+          transform: `translateY(${(-pos * 100) / STRIP_CELLS}%)`,
           transition: rolling
             ? `transform ${ROLL_MS}ms cubic-bezier(0.22, 1, 0.36, 1) ${delay}ms`
             : 'none',

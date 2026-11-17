@@ -1,12 +1,13 @@
 ---
 name: railway-status
 description: Check current Railway project status for this directory. Use when user asks "railway status", "is it running", "what's deployed", "deployment status", or about uptime. NOT for variables or configuration queries - use railway-environment skill for those.
-version: 1.0.0
-author: Railway
 license: MIT
-tags: [Railway, Status, Project, Environment, Deployment, Infrastructure]
-dependencies: [railway-cli]
 allowed-tools: Bash(railway:*), Bash(which:*), Bash(command:*)
+metadata:
+  version: 1.0.0
+  author: Railway
+  tags: [Railway, Status, Project, Environment, Deployment, Infrastructure]
+  dependencies: [railway-cli]
 ---
 
 # Railway Status

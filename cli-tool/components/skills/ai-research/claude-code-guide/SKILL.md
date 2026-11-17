@@ -1,5 +1,5 @@
 ---
-name: Claude Code Guide
+name: claude-code-guide
 description: Master guide for using Claude Code effectively. Includes configuration templates, prompting strategies "Thinking" keywords, debugging techniques, and best practices for interacting with the agent.
 ---
 

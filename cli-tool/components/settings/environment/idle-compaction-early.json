@@ -1,0 +1,6 @@
+{
+  "description": "Start idle compaction at 100K tokens instead of 200K (Claude Code 2.1.290+). A terminal conversation left idle for about 54 minutes is compacted before its one-hour prompt cache expires, so the next message does not reprocess it all. 100K is the lowest value Claude Code accepts. Idle compaction only runs when auto-compact is on and the session uses the one-hour prompt cache (the default on a Claude subscription; set ENABLE_PROMPT_CACHING_1H=1 on API billing). Do not combine with idle-compaction-off, which turns the feature off.",
+  "env": {
+    "CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS": "100000"
+  }
+}

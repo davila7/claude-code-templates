@@ -1,11 +1,12 @@
 ---
 name: curviate-jobs
 description: "Create, publish and manage classic LinkedIn job postings with the Curviate CLI, and read their applicants. Covers `job` (get, list, create, update, budget, publish, close) and `job applicants` / `job applicant get|resume`, the draft-then-publish flow, the subscription gate that stops a publish even on the free mode, and the read-back delay after an update. Use when drafting or updating a posting, pricing or publishing one, closing one, or pulling applicants and résumés."
-version: 0.1.0
-author: Curviate
 license: MIT
-tags: [LinkedIn, CLI, Agents, Sales, Recruiting, Outreach]
-repository: https://github.com/Curviate/curviate-plugin
+metadata:
+  version: 0.1.0
+  author: Curviate
+  tags: [LinkedIn, CLI, Agents, Sales, Recruiting, Outreach]
+  repository: https://github.com/Curviate/curviate-plugin
 ---
 
 # Curviate: job postings and applicants

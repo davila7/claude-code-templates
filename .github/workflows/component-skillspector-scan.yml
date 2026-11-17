@@ -1,0 +1,71 @@
+name: Component SkillSpector Scan
+
+# SkillSpector (NVIDIA, Apache-2.0) report for the non-skill components a PR
+# changes: agents, commands, hooks, MCPs, settings, loops, sandboxes and mods.
+# Same staging as the catalog scan (scripts/skillspector_catalog.py), so the PR
+# shows what the component page will show after merge. Skills are gated by
+# skill-security-scan.yml. This job only comments; it never blocks.
+
+on:
+  pull_request:
+    paths:
+      - 'cli-tool/components/agents/**'
+      - 'cli-tool/components/commands/**'
+      - 'cli-tool/components/hooks/**'
+      - 'cli-tool/components/mcps/**'
+      - 'cli-tool/components/settings/**'
+      - 'cli-tool/components/loops/**'
+      - 'cli-tool/components/sandbox/**'
+      - 'cli-tool/components/mods/**'
+      - 'scripts/skillspector_catalog.py'
+      - 'scripts/skillspector_components_pr.py'
+      - '.github/workflows/component-skillspector-scan.yml'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  scan:
+    name: SkillSpector (changed components)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      # Same pinned version as the catalog scan, so scores match the site.
+      - name: Install SkillSpector
+        run: pip install "git+https://github.com/NVIDIA/skillspector.git@v2.12.0"
+
+      - name: Scan changed components
+        run: |
+          python scripts/skillspector_components_pr.py \
+            --base-ref "origin/${{ github.base_ref }}" \
+            --output-md skillspector-components-report.md
+          cat skillspector-components-report.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Comment PR with results
+        # Fork PRs get a read-only token; the step summary still has the report.
+        if: always() && github.event.pull_request.head.repo.full_name == github.repository
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const fs = require('fs');
+            const path = 'skillspector-components-report.md';
+            if (!fs.existsSync(path)) return;
+            const body = fs.readFileSync(path, 'utf8');
+            const marker = '<!-- skillspector-components-report:v1 -->';
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+            const comments = await github.paginate(github.rest.issues.listComments, { owner, repo, issue_number, per_page: 100 });
+            const prev = comments.find(c => c.body && c.body.includes(marker));
+            if (prev) await github.rest.issues.updateComment({ owner, repo, comment_id: prev.id, body });
+            else await github.rest.issues.createComment({ owner, repo, issue_number, body });

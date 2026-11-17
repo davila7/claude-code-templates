@@ -1,11 +1,12 @@
 ---
-name: sentencepiece
+name: tokenization-sentencepiece
 description: Language-independent tokenizer treating text as raw Unicode. Supports BPE and Unigram algorithms. Fast (50k sentences/sec), lightweight (6MB memory), deterministic vocabulary. Used by T5, ALBERT, XLNet, mBART. Train on raw text without pre-tokenization. Use when you need multilingual support, CJK languages, or reproducible tokenization.
-version: 1.0.0
-author: Orchestra Research
 license: MIT
-tags: [Tokenization, SentencePiece, Language-Independent, BPE, Unigram, Multilingual, CJK Languages, Unicode, Deterministic, Google]
-dependencies: [sentencepiece, transformers]
+metadata:
+  version: 1.0.0
+  author: Orchestra Research
+  tags: [Tokenization, SentencePiece, Language-Independent, BPE, Unigram, Multilingual, CJK Languages, Unicode, Deterministic, Google]
+  dependencies: [sentencepiece, transformers]
 ---
 
 # SentencePiece - Language-Independent Tokenization

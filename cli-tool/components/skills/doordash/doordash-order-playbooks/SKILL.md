@@ -2,7 +2,8 @@
 name: doordash-order-playbooks
 description: Named, context-bound saved DoorDash orders ("post-gym", "late-night deploy") recalled through the DoorDash CLI (dd-cli) with a mandatory cart-diff before any checkout link is handed over. Use when the user names a saved order ("order my post-gym bowl", "the usual", "my Friday ramen"), wants to save the order they just placed as a playbook, or asks to list/remove saved orders. Persists name→order-uuid playbooks across sessions, catches silent menu/price drift on every recall, and self-heals stale playbooks when a restaurant's menu changes. Requires dd-cli (macOS Apple Silicon, waitlist-gated).
 allowed-tools: Bash(dd-cli:*), Bash(command -v:*), Bash(mkdir:*), Bash(cat:*), Bash(jq:*), Read, Write, Edit
-tags: [DoorDash, Food Delivery, CLI, Saved Orders, Reorder, Automation]
+metadata:
+  tags: [DoorDash, Food Delivery, CLI, Saved Orders, Reorder, Automation]
 ---
 
 # DoorDash Order Playbooks

@@ -1,0 +1,38 @@
+---
+title: "Edit these docs"
+description: "How docs.aitmpl.com is built: the docs-site folder of the repository, local preview, generated snippets and the checks that keep it in sync with the CLI."
+---
+
+These docs are the [`docs-site/`](https://github.com/davila7/claude-code-templates/tree/main/docs-site) folder of the main repository, published by Mintlify on every push to `main`. Change them in the same pull request as the code they describe.
+
+## Preview locally
+
+```bash
+cd docs-site
+npx mint dev            # http://localhost:3000
+npx mint broken-links   # check internal links
+```
+
+## Generated snippets
+
+Three tables come from the code and must not be edited by hand:
+
+| Snippet | Source |
+| --- | --- |
+| `snippets/component-counts.mdx` | `dashboard/public/counts.json` |
+| `snippets/cli-flags.mdx` | the CLI's `--help` |
+| `snippets/removed-flags.mdx` | `cli-tool/src/removed-commands.js` |
+
+Regenerate them after changing the CLI or the catalog:
+
+```bash
+(cd cli-tool && npm ci)
+python3 docs-site/scripts/generate_snippets.py
+```
+
+## Rules
+
+- Every install example uses a real `category/name` path. CI checks each one against `cli-tool/components/`.
+- Do not document a flag the CLI no longer has; link to [Removed in 1.31.0](/cli/removed-in-1-31) instead.
+- Lead each page with what the reader can do, then the details. Short sentences, no marketing.
+- Keep the colors, logo and fonts in `docs.json` and `style.css` in line with aitmpl.com (`dashboard/src/styles/global.css`).

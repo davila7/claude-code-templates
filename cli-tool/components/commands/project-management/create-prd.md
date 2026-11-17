@@ -1,6 +1,6 @@
 ---
 allowed-tools: Read, Write, Edit, Grep, Glob
-argument-hint: [feature-name] | --template | --interactive
+argument-hint: "[feature-name] | --template | --interactive"
 description: Create Product Requirements Document (PRD) for new features
 ---
 

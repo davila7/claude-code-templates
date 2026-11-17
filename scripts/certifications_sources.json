@@ -1,0 +1,183 @@
+{
+  "_doc": "Sources read by scripts/generate_certifications.py. Facts the provider page does not state reliably (provider, kind, price, category) are set here, not extracted. Add a source by copying one of the same type. Values in categories/role/level must be in the vocabularies of dashboard/src/lib/certifications.ts. rules (optional, firecrawl): for each of categories/level/role, the first rule whose `match` regex hits the title and sets that field overrides the source default.",
+  "providers": {
+    "GitHub": {
+      "icon": "https://github.com/favicon.ico"
+    },
+    "Cursor": {
+      "icon": "https://cursor.com/favicon.ico"
+    },
+    "Vercel": {
+      "icon": "https://vercel.com/favicon.ico"
+    },
+    "OpenAI": {
+      "icon": "https://openai.com/favicon.ico"
+    },
+    "NVIDIA": {
+      "icon": "https://www.nvidia.com/favicon.ico"
+    },
+    "Google Cloud": {
+      "icon": "https://www.gstatic.com/cgc/supercloud_favicon.ico"
+    }
+  },
+  "sources": [
+    {
+      "id": "microsoft-learn-github",
+      "type": "microsoft-learn",
+      "label": "Microsoft Learn",
+      "provider": "GitHub",
+      "categories": [
+        "AI & Agents"
+      ],
+      "uids": [
+        "certification.github-copilot",
+        "certification.agentic-ai-developer",
+        "certification.agentic-ai-business-professional"
+      ]
+    },
+    {
+      "id": "anthropic-academy",
+      "type": "firecrawl",
+      "label": "Anthropic Academy",
+      "url": "https://anthropic.skilljar.com/",
+      "provider": "Anthropic",
+      "platform": "Skilljar",
+      "kind": "course",
+      "price": null,
+      "categories": [
+        "AI & Agents"
+      ],
+      "urlPattern": "^https://anthropic\\.skilljar\\.com/[a-z0-9-]+/?$",
+      "prompt": "List every course in this catalog with its absolute URL. Skip certification exams and anything that is not a course page."
+    },
+    {
+      "id": "cursor-learn",
+      "type": "firecrawl",
+      "label": "Cursor Learn",
+      "url": "https://cursor.com/learn",
+      "provider": "Cursor",
+      "kind": "course",
+      "price": null,
+      "categories": [
+        "AI & Agents"
+      ],
+      "urlPattern": "^https://cursor\\.com/learn/?$",
+      "prompt": "This page is one course split into lessons. Return only the course itself (its overall title and description) with the page URL, not the individual lessons."
+    },
+    {
+      "id": "openai-academy",
+      "type": "firecrawl",
+      "label": "OpenAI Academy",
+      "url": "https://academy.openai.com/pages/courses",
+      "provider": "OpenAI",
+      "kind": "course",
+      "price": null,
+      "categories": [
+        "AI & Agents"
+      ],
+      "urlPattern": "^https://academy\\.openai\\.com/public/courses/[a-z0-9-]+$",
+      "prompt": "List every course on this page with its absolute URL (the 'Go to course' link). Skip events, livestreams and videos."
+    },
+    {
+      "id": "vercel-academy",
+      "type": "firecrawl",
+      "label": "Vercel Academy",
+      "url": "https://vercel.com/academy",
+      "provider": "Vercel",
+      "kind": "course",
+      "categories": [
+        "Frontend"
+      ],
+      "urlPattern": "^https://vercel\\.com/academy/[a-z0-9-]+$",
+      "prompt": "List every course in this catalog with its absolute URL. Skip lessons and blog posts.",
+      "rules": [
+        {
+          "match": "agent|\\bai\\b|ai sdk|\\bv0\\b|gateway|sandbox|workflow|\\bjev\\b|\\beve\\b|software factory",
+          "categories": [
+            "AI & Agents"
+          ]
+        },
+        {
+          "match": "next\\.js|react|nuxt|svelte|microfrontend|shadcn|tailwind",
+          "categories": [
+            "Frontend"
+          ]
+        },
+        {
+          "match": "deploy|infrastructure|monorepo|turborepo|optimize your vercel|python on vercel",
+          "categories": [
+            "Cloud & Infrastructure"
+          ]
+        },
+        {
+          "match": "stripe|subscription|store",
+          "categories": [
+            "Backend"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nvidia-certification",
+      "type": "firecrawl",
+      "label": "NVIDIA Certification",
+      "url": "https://www.nvidia.com/en-us/learn/certification/",
+      "provider": "NVIDIA",
+      "kind": "certification",
+      "categories": [
+        "AI & Agents"
+      ],
+      "urlPattern": "^https://www\\.nvidia\\.com/en-us/learn/certification/[a-z0-9-]+/?$",
+      "prompt": "List every certification exam on this page with its full official name and absolute URL.",
+      "rules": [
+        {
+          "match": "infrastructure|operations|networking|rack|interconnect",
+          "categories": [
+            "Cloud & Infrastructure"
+          ]
+        },
+        {
+          "match": "data science",
+          "categories": [
+            "Data & Analytics"
+          ],
+          "role": "Data"
+        },
+        {
+          "match": "\\bassociate\\b",
+          "level": "Entry"
+        },
+        {
+          "match": "\\bprofessional\\b",
+          "level": "Advanced"
+        }
+      ]
+    },
+    {
+      "id": "google-cloud-certification",
+      "type": "google-cloud",
+      "label": "Google Cloud Certification",
+      "url": "https://cloud.google.com/learn/certification",
+      "provider": "Google Cloud",
+      "platform": "Google Cloud",
+      "categories": [
+        "AI & Agents"
+      ],
+      "match": "agentic|\\bagents?\\b|generative ai|\\bgen ?ai\\b|machine learning|\\bml\\b|\\bai\\b|gemini",
+      "rules": [
+        {
+          "match": "agentic|architect",
+          "role": "Architect"
+        },
+        {
+          "match": "\\bleader\\b",
+          "role": "Business"
+        },
+        {
+          "match": "machine learning|\\bml\\b",
+          "role": "Developer"
+        }
+      ]
+    }
+  ]
+}

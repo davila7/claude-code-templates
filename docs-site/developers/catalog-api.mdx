@@ -1,0 +1,41 @@
+---
+title: "Catalog API"
+description: "Read the whole aitmpl.com catalog as versioned JSON: every component with its install command, files and scan result."
+---
+
+The catalog is published as static JSON under `https://www.aitmpl.com/api/v1/`. No key, no rate limit beyond normal CDN caching. The full reference and stability policy live at [aitmpl.com/developers/catalog-api](https://www.aitmpl.com/developers/catalog-api); this page is the short version.
+
+| File | Contents |
+| --- | --- |
+| [`catalog.json`](https://www.aitmpl.com/api/v1/catalog.json) | Every component |
+| `catalog/{type}.json` | One type: `agents`, `commands`, `mcps`, `settings`, `hooks`, `skills`, `loops`, `mods` |
+| [`version.json`](https://www.aitmpl.com/api/v1/version.json) | `schemaVersion`, `generatedAt`, `sha256`, counts. Poll this, then fetch the catalog only when `sha256` changes |
+| [`schema.json`](https://www.aitmpl.com/api/v1/schema.json) | JSON Schema (draft 2020-12) for all of the above |
+
+## A component
+
+```json
+{
+  "id": "agents/accessibility/accessibility-tester",
+  "type": "agents",
+  "name": "accessibility-tester",
+  "category": "accessibility",
+  "install": {
+    "command": "npx claude-code-templates@latest --agent accessibility/accessibility-tester",
+    "args": ["--agent", "accessibility/accessibility-tester"]
+  },
+  "urls": {
+    "page": "https://www.aitmpl.com/component/agents/accessibility/accessibility-tester",
+    "source": "https://github.com/davila7/claude-code-templates/blob/main/cli-tool/components/agents/accessibility/accessibility-tester.md"
+  }
+}
+```
+
+Other fields: `path`, `description`, `author`, `repo`, `version`, `license`, `keywords`, `downloads`, `files`, `scan` (the SkillSpector result) and `source` (the pinned repository of an external skill, otherwise `null`).
+
+## Stability
+
+- Within v1 every change is additive: fields are added, never removed or renamed.
+- A breaking change ships at `/api/v2/`, and v1 stays published for at least six months.
+- Components are ordered by `id`. Sponsored placements are never part of this API.
+- Every format change is recorded in the [Catalog API changelog](https://github.com/davila7/claude-code-templates/blob/main/docs/catalog-api/CHANGELOG.md).

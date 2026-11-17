@@ -1,11 +1,12 @@
 ---
 name: curviate-engage
 description: "Create and engage with LinkedIn content using the Curviate CLI. Covers `post` (get, create, react, unreact, reactions, delete, save, saved, unsave, user-posts, user-reactions), `comment` (list, add, reply, edit, delete, replies, react, unreact, reactions, user), `feed home` and `notification`. Carries the write-versus-read reaction vocabularies, post-identifier forms, and the pagination trap on reaction lists. Use when posting, commenting, reacting, reading the home feed, or working through notifications."
-version: 0.1.0
-author: Curviate
 license: MIT
-tags: [LinkedIn, CLI, Agents, Sales, Recruiting, Outreach]
-repository: https://github.com/Curviate/curviate-plugin
+metadata:
+  version: 0.1.0
+  author: Curviate
+  tags: [LinkedIn, CLI, Agents, Sales, Recruiting, Outreach]
+  repository: https://github.com/Curviate/curviate-plugin
 ---
 
 # Curviate: posts, comments, reactions, feed

@@ -1,0 +1,28 @@
+---
+title: "CLI flags"
+description: "Every flag of npx claude-code-templates, generated from the CLI's own --help."
+---
+
+import CliFlags from "/snippets/cli-flags.mdx";
+
+```bash
+npx claude-code-templates@latest [flags]
+```
+
+With no flags, in a terminal, the CLI opens the catalog browser. Without a terminal it prints a short usage text and exits with code 0, so agents and CI never hang waiting for input.
+
+<CliFlags />
+
+## Notes
+
+- **Paths.** Every install flag takes `category/name`, the path shown on the component's page. Separate several with commas: `--agent security/security-auditor,development-team/backend-architect`. Since 1.33.0 a name alone also works when exactly one component of that type has it (for example the value `frontend-developer` for an agent); otherwise the summary prints the closest paths as `Did you mean:` commands.
+- **`--search "<words>"`.** Since 1.33.0. Prints up to 5 components whose name, path, keywords or description match every word, best text match first (never by downloads), each with its page and install command. Installs nothing. Only the fact that a search ran is counted, never the words.
+- **After an install.** Each installed component's page is printed as a `Page:` line, and when two or more were installed, a `Stack:` line with the one command that installs them all again.
+- **System folders.** The CLI refuses to install into `C:\Windows` (and anything under it) or the root of a drive, where an administrator terminal often starts, and says which folder to open instead.
+- **Combining.** Install flags combine in one run: one plan, one location prompt for settings and hooks.
+- **`--yes`.** Skips every prompt. Settings and hooks go to `.claude/settings.local.json`.
+- **`--prompt`.** After installing, starts `claude` with that prompt as a single argument (never through a shell). Without a terminal it prints the command to run instead.
+- **`--analytics`, `--chats`, `--health-check`.** Local tools, see [Local dashboards](/guides/local-dashboards).
+- **Removed flags.** Seventeen flags were removed in 1.31.0 and now print their replacement. See [Removed in 1.31.0](/cli/removed-in-1-31).
+
+This table is generated from `--help` by `docs-site/scripts/generate_snippets.py`, and CI fails when it falls behind the code. Check yours with `npx claude-code-templates@latest --version`.

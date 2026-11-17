@@ -31,12 +31,17 @@ class WebSocketServer {
     try {
       console.log(chalk.blue('🔌 Initializing WebSocket server...'));
       
-      // Create WebSocket server
-      this.wss = new WebSocket.Server({
+      // Create WebSocket server. verifyClient (when given) rejects handshakes
+      // from other origins before they reach the connection handler.
+      const serverOptions = {
         server: this.httpServer,
         path: this.options.path,
         clientTracking: true
-      });
+      };
+      if (typeof this.options.verifyClient === 'function') {
+        serverOptions.verifyClient = this.options.verifyClient;
+      }
+      this.wss = new WebSocket.Server(serverOptions);
 
       this.setupEventHandlers();
       this.startHeartbeat();
@@ -151,11 +156,16 @@ class WebSocketServer {
       }
 
       switch (data.type) {
+        // { channel: 'x' } (chats page) or { channels: ['x', 'y'] } (analytics page)
         case 'subscribe':
-          this.handleSubscription(clientId, data.channel);
+          for (const channel of [].concat(data.channels || data.channel || [])) {
+            this.handleSubscription(clientId, channel);
+          }
           break;
         case 'unsubscribe':
-          this.handleUnsubscription(clientId, data.channel);
+          for (const channel of [].concat(data.channels || data.channel || [])) {
+            this.handleUnsubscription(clientId, channel);
+          }
           break;
         case 'ping':
           this.sendToClient(clientId, { type: 'pong', timestamp: Date.now() });
@@ -256,8 +266,11 @@ class WebSocketServer {
    * @param {string} channel - Optional channel filter
    */
   broadcast(message, channel = null) {
+    // The analytics page routes messages by `channel` (its handlers are per
+    // channel, not per message type), so a filtered broadcast says which one.
     const messageStr = JSON.stringify({
       ...message,
+      ...(channel ? { channel } : {}),
       timestamp: Date.now(),
       server: 'Claude Code Analytics'
     });

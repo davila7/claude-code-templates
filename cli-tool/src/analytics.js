@@ -4,9 +4,6 @@ const path = require('path');
 const express = require('express');
 const open = require('open');
 const os = require('os');
-const inquirer = require('inquirer');
-const boxen = require('boxen');
-const { spawn } = require('child_process');
 const packageJson = require('../package.json');
 const StateCalculator = require('./analytics/core/StateCalculator');
 const ProcessDetector = require('./analytics/core/ProcessDetector');
@@ -14,13 +11,11 @@ const ConversationAnalyzer = require('./analytics/core/ConversationAnalyzer');
 const FileWatcher = require('./analytics/core/FileWatcher');
 const SessionAnalyzer = require('./analytics/core/SessionAnalyzer');
 const AgentAnalyzer = require('./analytics/core/AgentAnalyzer');
-const YearInReview2025 = require('./analytics/core/YearInReview2025');
 const DataCache = require('./analytics/data/DataCache');
 const WebSocketServer = require('./analytics/notifications/WebSocketServer');
 const NotificationManager = require('./analytics/notifications/NotificationManager');
 const PerformanceMonitor = require('./analytics/utils/PerformanceMonitor');
-const ConsoleBridge = require('./console-bridge');
-const ClaudeAPIProxy = require('./claude-api-proxy');
+const { LISTEN_HOST, localOnly, verifyLocalWebSocket } = require('./local-server-guard');
 
 class ClaudeAnalytics {
   constructor(options = {}) {
@@ -33,7 +28,6 @@ class ClaudeAnalytics {
     this.fileWatcher = new FileWatcher();
     this.sessionAnalyzer = new SessionAnalyzer();
     this.agentAnalyzer = new AgentAnalyzer();
-    this.yearInReview2025 = new YearInReview2025();
     this.dataCache = new DataCache();
     this.performanceMonitor = new PerformanceMonitor({
       enabled: true,
@@ -43,10 +37,6 @@ class ClaudeAnalytics {
     this.webSocketServer = null;
     this.notificationManager = null;
     this.httpServer = null;
-    this.consoleBridge = null;
-    this.cloudflareProcess = null;
-    this.publicUrl = null;
-    this.claudeApiProxy = null;
     this.data = {
       conversations: [],
       summary: {},
@@ -617,20 +607,9 @@ class ClaudeAnalytics {
   }
 
   setupWebServer() {
-    // Add CORS middleware
-    this.app.use((req, res, next) => {
-      res.header('Access-Control-Allow-Origin', '*');
-      res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-      res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-      
-      // Handle preflight requests
-      if (req.method === 'OPTIONS') {
-        res.sendStatus(200);
-        return;
-      }
-      
-      next();
-    });
+    // The dashboard serves conversation history: answer only localhost requests
+    // from its own page (no CORS, Host and Origin checked).
+    this.app.use(localOnly(this.port));
     
     // Add performance monitoring middleware
     this.app.use(this.performanceMonitor.createExpressMiddleware());
@@ -1232,37 +1211,6 @@ class ClaudeAnalytics {
       }
     });
 
-    // Year in Review 2025 API endpoint
-    this.app.get('/api/2025', async (req, res) => {
-      try {
-        console.log('📅 Generating 2025 Year in Review...');
-
-        // Load all conversations for analysis
-        const allConversations = await this.conversationAnalyzer.loadConversations(this.stateCalculator);
-
-        // Generate year in review statistics
-        const yearInReview = await this.yearInReview2025.generateYearInReview(allConversations, this.claudeDir);
-
-        console.log(`✅ 2025 Year in Review generated with ${yearInReview.totalConversations} conversations`);
-
-        res.json({
-          ...yearInReview,
-          timestamp: new Date().toISOString()
-        });
-      } catch (error) {
-        console.error('Error generating 2025 year in review:', error);
-        res.status(500).json({
-          error: 'Failed to generate year in review',
-          message: error.message
-        });
-      }
-    });
-
-    // Year in Review 2025 page route
-    this.app.get('/2025', (req, res) => {
-      res.sendFile(path.join(__dirname, 'analytics-web', '2025.html'));
-    });
-
     // Main dashboard route
     this.app.get('/', (req, res) => {
       res.sendFile(path.join(__dirname, 'analytics-web', 'index.html'));
@@ -1270,225 +1218,36 @@ class ClaudeAnalytics {
   }
 
   async startServer() {
-    return new Promise(async (resolve) => {
-      this.httpServer = this.app.listen(this.port, async () => {
+    return new Promise((resolve, reject) => {
+      this.httpServer = this.app.listen(this.port, LISTEN_HOST, async () => {
         console.log(chalk.green(`🚀 Analytics dashboard started at http://localhost:${this.port}`));
-        
+
         // Initialize WebSocket server
         await this.initializeWebSocket();
-        
+
         resolve();
+      });
+      this.httpServer.once('error', (error) => {
+        if (error.code === 'EADDRINUSE') {
+          reject(new Error(`port ${this.port} is already in use (is another dashboard running?)`));
+        } else {
+          reject(error);
+        }
       });
       // Keep reference for compatibility
       this.server = this.httpServer;
     });
   }
 
-  async openBrowser(openTo = null) {
-    const baseUrl = this.publicUrl || `http://localhost:${this.port}`;
-    let fullUrl = baseUrl;
-
-    // Add fragment/hash or path for specific page
-    if (openTo === 'agents') {
-      fullUrl = `${baseUrl}/#agents`;
-      console.log(chalk.blue('🌐 Opening browser to Claude Code Chats...'));
-    } else if (openTo === '2025') {
-      fullUrl = `${baseUrl}/2025`;
-      console.log(chalk.blue('🎉 Opening browser to 2025 Year in Review...'));
-    } else {
-      console.log(chalk.blue('🌐 Opening browser to Claude Code Analytics...'));
-    }
+  async openBrowser() {
+    const url = `http://localhost:${this.port}`;
+    console.log(chalk.blue('🌐 Opening browser to Claude Code Analytics...'));
 
     try {
-      await open(fullUrl);
+      await open(url);
     } catch (error) {
       console.log(chalk.yellow('Could not open browser automatically. Please visit:'));
-      console.log(chalk.cyan(fullUrl));
-    }
-  }
-
-  /**
-   * Prompt user if they want to use Cloudflare Tunnel
-   */
-  async promptCloudflareSetup() {
-    console.log('');
-    console.log(chalk.yellow('🌐 Analytics Dashboard Access Options'));
-    console.log('');
-    console.log(chalk.cyan('🔒 About Cloudflare Tunnel:'));
-    console.log(chalk.gray('• Creates a secure connection between your localhost and the web'));
-    console.log(chalk.gray('• Only you will have access to the generated URL (not public)'));
-    console.log(chalk.gray('• The connection is end-to-end encrypted'));
-    console.log(chalk.gray('• Automatically closes when you end the session'));
-    console.log(chalk.gray('• No firewall or port configuration required'));
-    console.log('');
-    console.log(chalk.green('✅ It is completely secure - only you can access the dashboard'));
-    console.log('');
-    
-    const { useCloudflare } = await inquirer.prompt([{
-      type: 'confirm',
-      name: 'useCloudflare',
-      message: 'Enable Cloudflare Tunnel for secure remote access?',
-      default: true
-    }]);
-
-    return useCloudflare;
-  }
-
-  /**
-   * Start Cloudflare Tunnel
-   */
-  async startCloudflareTunnel() {
-    try {
-      console.log(chalk.blue('🔧 Starting Cloudflare Tunnel...'));
-      
-      // Check if cloudflared is installed
-      const checkProcess = spawn('cloudflared', ['version'], { stdio: 'pipe' });
-      
-      return new Promise((resolve, reject) => {
-        checkProcess.on('error', (error) => {
-          console.log(chalk.red('❌ Cloudflared is not installed.'));
-          console.log('');
-          console.log(chalk.yellow('📥 To install Cloudflare Tunnel:'));
-          console.log(chalk.gray('• macOS: brew install cloudflared'));
-          console.log(chalk.gray('• Windows: winget install --id Cloudflare.cloudflared'));
-          console.log(chalk.gray('• Linux: apt-get install cloudflared'));
-          console.log('');
-          console.log(chalk.blue('💡 More info: https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/'));
-          resolve(false);
-        });
-
-        checkProcess.on('close', (code) => {
-          if (code === 0) {
-            this.createCloudflareTunnel();
-            resolve(true);
-          } else {
-            resolve(false);
-          }
-        });
-      });
-    } catch (error) {
-      console.log(chalk.red(`❌ Error checking Cloudflare Tunnel: ${error.message}`));
-      return false;
-    }
-  }
-
-  /**
-   * Create the actual Cloudflare Tunnel
-   */
-  async createCloudflareTunnel() {
-    try {
-      console.log(chalk.blue('🚀 Creating secure tunnel...'));
-      
-      // Start cloudflared tunnel normally, but filter the output to capture URL
-      this.cloudflareProcess = spawn('cloudflared', [
-        'tunnel',
-        '--url', `http://localhost:${this.port}`
-      ], { 
-        stdio: ['pipe', 'pipe', 'pipe']
-      });
-
-      let tunnelEstablished = false;
-
-      return new Promise((resolve) => {
-        // Monitor stderr for the tunnel URL (cloudflared outputs most info to stderr)
-        this.cloudflareProcess.stderr.on('data', (data) => {
-          const output = data.toString();
-          
-          // Use the cleaner regex to extract URL from the logs
-          const urlMatch = output.match(/https:\/\/[a-zA-Z0-9.-]+\.trycloudflare\.com/);
-          
-          if (urlMatch && !tunnelEstablished) {
-            tunnelEstablished = true;
-            this.publicUrl = urlMatch[0];
-            
-            // Create a prominent, boxed display for the tunnel URL
-            const tunnelMessage = chalk.green.bold('🌍 CLOUDFLARE TUNNEL ACTIVE') + '\n\n' +
-              chalk.cyan.bold('Public URL: ') + chalk.white.underline(this.publicUrl) + '\n\n' +
-              chalk.yellow('🔗 Share this URL to access your dashboard remotely') + '\n' +
-              chalk.gray('🔒 This tunnel is private and secure - only accessible by you');
-            
-            console.log('\n');
-            console.log(boxen(tunnelMessage, {
-              padding: 1,
-              margin: 1,
-              borderStyle: 'double',
-              borderColor: 'cyan',
-              backgroundColor: '#1a1a1a'
-            }));
-            console.log('\n');
-            resolve(true);
-          }
-        });
-
-        // Also check stdout just in case
-        this.cloudflareProcess.stdout.on('data', (data) => {
-          const output = data.toString();
-          const urlMatch = output.match(/https:\/\/[a-zA-Z0-9.-]+\.trycloudflare\.com/);
-          
-          if (urlMatch && !tunnelEstablished) {
-            tunnelEstablished = true;
-            this.publicUrl = urlMatch[0];
-            
-            // Create a prominent, boxed display for the tunnel URL
-            const tunnelMessage = chalk.green.bold('🌍 CLOUDFLARE TUNNEL ACTIVE') + '\n\n' +
-              chalk.cyan.bold('Public URL: ') + chalk.white.underline(this.publicUrl) + '\n\n' +
-              chalk.yellow('🔗 Share this URL to access your dashboard remotely') + '\n' +
-              chalk.gray('🔒 This tunnel is private and secure - only accessible by you');
-            
-            console.log('\n');
-            console.log(boxen(tunnelMessage, {
-              padding: 1,
-              margin: 1,
-              borderStyle: 'double',
-              borderColor: 'cyan',
-              backgroundColor: '#1a1a1a'
-            }));
-            console.log('\n');
-            resolve(true);
-          }
-        });
-
-        this.cloudflareProcess.on('close', (code) => {
-          if (code !== 0) {
-            console.log(chalk.red(`❌ Cloudflare Tunnel terminated with code: ${code}`));
-          }
-          this.publicUrl = null;
-          this.cloudflareProcess = null;
-          if (!tunnelEstablished) {
-            resolve(false);
-          }
-        });
-
-        this.cloudflareProcess.on('error', (error) => {
-          console.log(chalk.red(`❌ Error with Cloudflare Tunnel: ${error.message}`));
-          this.publicUrl = null;
-          this.cloudflareProcess = null;
-          resolve(false);
-        });
-
-        // Timeout after 15 seconds if tunnel doesn't establish
-        setTimeout(() => {
-          if (!tunnelEstablished) {
-            console.log(chalk.red('❌ Timeout waiting for Cloudflare Tunnel to establish'));
-            resolve(false);
-          }
-        }, 15000);
-      });
-    } catch (error) {
-      console.log(chalk.red(`❌ Error creating Cloudflare Tunnel: ${error.message}`));
-      return false;
-    }
-  }
-
-  /**
-   * Stop Cloudflare Tunnel
-   */
-  stopCloudflareTunnel() {
-    if (this.cloudflareProcess) {
-      console.log(chalk.yellow('🛑 Closing Cloudflare Tunnel...'));
-      this.cloudflareProcess.kill('SIGTERM');
-      this.cloudflareProcess = null;
-      this.publicUrl = null;
+      console.log(chalk.cyan(url));
     }
   }
 
@@ -1500,7 +1259,8 @@ class ClaudeAnalytics {
       // Initialize WebSocket server with performance monitoring
       this.webSocketServer = new WebSocketServer(this.httpServer, {
         path: '/ws',
-        heartbeatInterval: 30000
+        heartbeatInterval: 30000,
+        verifyClient: verifyLocalWebSocket(this.port)
       }, this.performanceMonitor);
       await this.webSocketServer.initialize();
       
@@ -1511,88 +1271,15 @@ class ClaudeAnalytics {
       // Connect notification manager to file watcher for typing detection
       this.fileWatcher.setNotificationManager(this.notificationManager);
       
-      // Initialize Claude API Proxy for bidirectional communication
-      console.log(chalk.blue('🌉 Initializing Claude API Proxy...'));
-      this.claudeApiProxy = new ClaudeAPIProxy();
-      await this.claudeApiProxy.start();
-      console.log(chalk.green('✅ Claude API Proxy initialized on port 3335'));
-      
       // Setup notification subscriptions
       this.setupNotificationSubscriptions();
       
-      // Initialize Console Bridge for Claude Code interaction
-      await this.initializeConsoleBridge();
-      
-      console.log(chalk.green('✅ WebSocket, notifications, and console bridge initialized'));
+      console.log(chalk.green('✅ WebSocket and notifications initialized'));
     } catch (error) {
       console.error(chalk.red('❌ Failed to initialize WebSocket:'), error);
     }
   }
 
-  /**
-   * Initialize Console Bridge for Claude Code interaction
-   */
-  async initializeConsoleBridge() {
-    try {
-      console.log(chalk.blue('🌉 Initializing Console Bridge...'));
-      
-      // Create console bridge on a different port (3334)
-      this.consoleBridge = new ConsoleBridge({
-        port: 3334,
-        debug: false // Set to true for detailed debugging
-      });
-      
-      // Initialize the bridge
-      const success = await this.consoleBridge.initialize();
-      
-      if (success) {
-        console.log(chalk.green('✅ Console Bridge initialized on port 3334'));
-        console.log(chalk.cyan(`🔌 Web interface can connect to ws://localhost:3334/?token=${this.consoleBridge.authToken} for console interactions`));
-        
-        // Bridge console interactions to main WebSocket
-        this.setupConsoleBridgeIntegration();
-      } else {
-        console.warn(chalk.yellow('⚠️ Console Bridge failed to initialize - console interactions disabled'));
-      }
-      
-    } catch (error) {
-      console.warn(chalk.yellow('⚠️ Console Bridge initialization failed:'), error.message);
-      console.log(chalk.gray('Console interactions will not be available, but analytics will continue normally'));
-    }
-  }
-
-  /**
-   * Setup integration between Console Bridge and main WebSocket
-   */
-  setupConsoleBridgeIntegration() {
-    if (!this.consoleBridge || !this.webSocketServer) return;
-    
-    // Forward console interactions from bridge to main WebSocket
-    this.consoleBridge.on('console_interaction', (interactionData) => {
-      console.log(chalk.blue('📡 Forwarding console interaction to web interface'));
-      
-      // Broadcast to main WebSocket clients
-      this.webSocketServer.broadcast({
-        type: 'console_interaction',
-        data: interactionData
-      });
-    });
-    
-    // Listen for responses from main WebSocket and forward to bridge
-    this.webSocketServer.on('console_response', (responseData) => {
-      console.log(chalk.blue('📱 Forwarding console response to Claude Code'));
-      
-      if (this.consoleBridge) {
-        this.consoleBridge.handleWebMessage({
-          type: 'console_response',
-          data: responseData
-        });
-      }
-    });
-    
-    console.log(chalk.green('🔗 Console Bridge integration established'));
-  }
-  
   /**
    * Setup notification subscriptions
    */
@@ -2263,34 +1950,20 @@ class ClaudeAnalytics {
     // Stop file watchers
     this.fileWatcher.stop();
 
-    // Stop Cloudflare Tunnel
-    this.stopCloudflareTunnel();
-
-    // Stop server
     // Close WebSocket server
     if (this.webSocketServer) {
       this.webSocketServer.close();
     }
-    
+
     // Shutdown notification manager
     if (this.notificationManager) {
       this.notificationManager.shutdown();
     }
-    
-    // Shutdown console bridge
-    if (this.consoleBridge) {
-      this.consoleBridge.shutdown();
-    }
-    
-    // Stop Claude API Proxy
-    if (this.claudeApiProxy) {
-      this.claudeApiProxy.stop();
-    }
-    
+
     if (this.httpServer) {
       this.httpServer.close();
     }
-    
+
     // Keep compatibility
     if (this.server) {
       this.server.close();
@@ -2304,60 +1977,18 @@ class ClaudeAnalytics {
 }
 
 async function runAnalytics(options = {}) {
-  // Determine if we're opening to a specific page
-  const openTo = options.openTo;
-  
-  if (openTo === 'agents') {
-    console.log(chalk.blue('💬 Starting Claude Code Chats Dashboard...'));
-  } else {
-    console.log(chalk.blue('📊 Starting Claude Code Analytics Dashboard...'));
-  }
+  console.log(chalk.blue('📊 Starting Claude Code Analytics Dashboard...'));
 
   const analytics = new ClaudeAnalytics(options);
 
   try {
-    // Handle Cloudflare Tunnel prompt BEFORE initializing anything
-    let useCloudflare = false;
-    
-    if (options.tunnel) {
-      useCloudflare = await analytics.promptCloudflareSetup();
-    }
-
     await analytics.initialize();
-
-    // Create web dashboard files
-    // Web dashboard files are now static in analytics-web directory
-
     await analytics.startServer();
-    
-    // Start Cloudflare Tunnel BEFORE other services if requested and confirmed
-    if (useCloudflare) {
-      const cloudflareStarted = await analytics.startCloudflareTunnel();
-      if (!cloudflareStarted) {
-        console.log(chalk.yellow('⚠️  Continuing with localhost only...'));
-      }
-      // Wait a bit longer for tunnel to stabilize
-      await new Promise(resolve => setTimeout(resolve, 2000));
-    }
+    await analytics.openBrowser();
 
-    await analytics.openBrowser(openTo);
-
-    const accessUrl = analytics.publicUrl || `http://localhost:${analytics.port}`;
-    
-    if (openTo === 'agents') {
-      console.log(chalk.green('✅ Claude Code Chats dashboard is running!'));
-      console.log(chalk.cyan(`📱 Access at: ${accessUrl}/#agents`));
-    } else {
-      console.log(chalk.green('✅ Analytics dashboard is running!'));
-      console.log(chalk.cyan(`📱 Access at: ${accessUrl}`));
-    }
-    
-    if (analytics.publicUrl) {
-      console.log(chalk.gray('🔒 Secure access via Cloudflare Tunnel'));
-    } else {
-      console.log(chalk.gray('🏠 Local access only'));
-    }
-    
+    console.log(chalk.green('✅ Analytics dashboard is running!'));
+    console.log(chalk.cyan(`📱 Access at: http://localhost:${analytics.port}`));
+    console.log(chalk.gray('🏠 Local access only (listening on 127.0.0.1)'));
     console.log(chalk.gray('Press Ctrl+C to stop the server'));
 
     // Handle graceful shutdown

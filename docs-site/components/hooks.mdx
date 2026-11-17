@@ -1,0 +1,38 @@
+---
+title: "Hooks"
+description: "Claude Code hooks: shell commands that run on events such as before a tool call or when Claude stops, installed into your settings."
+---
+
+A hook is a shell command Claude Code runs on an event: before or after a tool call, when you submit a prompt, when Claude stops, when it needs your attention. Unlike an instruction, a hook always runs, so it is the right tool for checks that must never be skipped.
+
+```bash
+npx claude-code-templates@latest --hook automation/simple-notifications
+```
+
+The CLI asks which settings file to use (local, project, user or enterprise; local with `--yes`) and merges the hook into its `hooks` key. Hooks that need a script get it in `.claude/hooks/`.
+
+## Anatomy
+
+```json automation/simple-notifications.json
+{
+  "description": "Send desktop notifications when Claude Code finishes working or needs user input.",
+  "hooks": {
+    "Stop": [
+      { "hooks": [{ "type": "command", "command": "osascript -e 'display notification …'" }] }
+    ],
+    "Notification": [
+      { "hooks": [{ "type": "command", "command": "osascript -e 'display notification …'" }] }
+    ]
+  }
+}
+```
+
+The events, matchers and exit codes are Claude Code's own: see the [hooks reference](https://code.claude.com/docs/en/hooks). A `PreToolUse` hook that exits with code 2 blocks the tool call and shows its stderr to Claude.
+
+## Before you install a hook
+
+A hook runs with your permissions every time its event fires. Read the command on the component page, and prefer hooks that only read (linters, scanners, notifications) unless you trust the author.
+
+Run `/hooks` in Claude Code to see every hook that is active and which file it came from.
+
+Browse all hooks at [aitmpl.com/hooks](https://www.aitmpl.com/hooks/).

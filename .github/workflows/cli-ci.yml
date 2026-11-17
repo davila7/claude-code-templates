@@ -1,0 +1,56 @@
+name: CLI CI
+
+# The root `npm test` runs without dependencies (version-sync.yml), so nothing
+# exercised cli-tool/src/index.js before a release. 1.33.0 shipped a
+# ReferenceError in the skill install path ("source is not defined") that made
+# every --skill install report failure and skip download tracking. This job
+# installs the CLI's dependencies, runs the install-path tests that need them,
+# and lints the CLI for undefined identifiers.
+
+on:
+  pull_request:
+    paths:
+      - 'cli-tool/src/**'
+      - 'cli-tool/bin/**'
+      - 'cli-tool/tests/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/cli-ci.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'cli-tool/src/**'
+      - 'cli-tool/bin/**'
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: CLI install tests + no-undef lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Install-path tests
+        run: npm run test:install-paths
+
+      - name: Lint for undefined identifiers
+        # analytics-web/ is browser code served by the analytics server, not run by Node.
+        run: >
+          npx -y eslint@8.57.0 --no-eslintrc --env node,es2022
+          --parser-options=ecmaVersion:2022
+          --rule '{"no-undef":"error"}'
+          --ignore-pattern 'cli-tool/src/analytics-web/**'
+          cli-tool/src cli-tool/bin

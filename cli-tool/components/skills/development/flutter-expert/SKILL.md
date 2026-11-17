@@ -1,9 +1,10 @@
 ---
 name: flutter-expert
 description: Master Flutter development with Dart 3, advanced widgets, and multi-platform deployment.
-risk: unknown
-source: community
-date_added: '2026-02-27'
+metadata:
+  risk: unknown
+  source: community
+  date_added: '2026-02-27'
 ---
 
 ## Use this skill when

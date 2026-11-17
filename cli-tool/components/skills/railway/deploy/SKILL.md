@@ -1,12 +1,13 @@
 ---
 name: railway-deploy
 description: Deploy code to Railway using "railway up". Use when user wants to push code, says "railway up", "deploy", "ship", or "push". For initial setup or creating services, use railway-new skill. For Docker images, use railway-environment skill.
-version: 1.0.0
-author: Railway
 license: MIT
-tags: [Railway, Deploy, CI/CD, Push, Ship, Infrastructure, Deployment]
-dependencies: [railway-cli]
 allowed-tools: Bash(railway:*)
+metadata:
+  version: 1.0.0
+  author: Railway
+  tags: [Railway, Deploy, CI/CD, Push, Ship, Infrastructure, Deployment]
+  dependencies: [railway-cli]
 ---
 
 # Railway Deploy

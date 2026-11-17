@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "pageree": {
+      "description": "Hosted MCP server that lets Claude build, preview and publish landing pages with working lead forms, connect a custom domain, and read section-by-section visitor analytics to improve each page. Nothing goes live until you approve the preview. Sign in with your Pageree account through OAuth; there is no key to paste.",
+      "type": "http",
+      "url": "https://mcp.pageree.com"
+    }
+  }
+}

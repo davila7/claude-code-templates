@@ -1,5 +1,5 @@
 ---
-name: deepspeed
+name: distributed-training-deepspeed
 description: Expert guidance for distributed training with DeepSpeed - ZeRO optimization stages, pipeline parallelism, FP16/BF16/FP8, 1-bit Adam, sparse attention
 version: 1.0.0
 author: Orchestra Research

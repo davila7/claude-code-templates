@@ -11,7 +11,10 @@ const boxen = require('boxen');
  * Validates system requirements, configuration, and project setup
  */
 class HealthChecker {
-  constructor() {
+  constructor(options = {}) {
+    // Pauses between sections are for people watching the spinners; a CI
+    // log or a pipe gets the report straight away.
+    this.paced = options.interactive !== false;
     this.results = {
       system: [],
       claudeCode: [],
@@ -282,11 +285,6 @@ class HealthChecker {
     this.addResult('hooks', 'Hook Commands', hookCommands.status, hookCommands.message);
     hookSpinner.succeed(`${this.getStatusIcon(hookCommands.status)} Hook Commands        │ ${hookCommands.message}`);
 
-    // MCP hooks
-    const mcpSpinner = ora('Scanning MCP Hooks...').start();
-    const mcpHooks = this.checkMCPHooks();
-    this.addResult('hooks', 'MCP Hooks', mcpHooks.status, mcpHooks.message);
-    mcpSpinner.succeed(`${this.getStatusIcon(mcpHooks.status)} MCP Hooks            │ ${mcpHooks.message}`);
   }
 
   /**
@@ -363,21 +361,26 @@ class HealthChecker {
     try {
       const https = require('https');
       return new Promise((resolve) => {
+        // Close the connection once answered: an unread response kept the
+        // TLS socket open, and the CLI from exiting, long after the report.
         const req = https.get('https://api.anthropic.com', { timeout: 5000 }, (res) => {
+          res.resume();
+          req.destroy();
           resolve({
             status: 'pass',
             message: 'Connected to Anthropic API'
           });
         });
-        
+
         req.on('error', () => {
           resolve({
             status: 'fail',
             message: 'Cannot reach Anthropic API'
           });
         });
-        
+
         req.on('timeout', () => {
+          req.destroy();
           resolve({
             status: 'warn',
             message: 'Slow connection to Anthropic API'
@@ -1111,14 +1114,6 @@ class HealthChecker {
     }
   }
 
-  checkMCPHooks() {
-    // Placeholder for MCP hooks validation
-    return {
-      status: 'warn',
-      message: 'MCP hooks validation not implemented'
-    };
-  }
-
   checkUserSettings() {
     const homeDir = os.homedir();
     const userSettingsPath = path.join(homeDir, '.claude', 'settings.json');
@@ -1316,6 +1311,7 @@ class HealthChecker {
    * Sleep utility for pacing between categories
    */
   sleep(ms) {
+    if (!this.paced) return Promise.resolve();
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
@@ -1387,10 +1383,21 @@ class HealthChecker {
 /**
  * Main health check function
  */
+function isInteractiveTerminal() {
+  return Boolean(process.stdin.isTTY && process.stdout.isTTY) && !process.env.CI;
+}
+
 async function runHealthCheck() {
-  const checker = new HealthChecker();
+  const interactive = isInteractiveTerminal();
+  const checker = new HealthChecker({ interactive });
   const results = await checker.runHealthCheck();
-  
+
+  // Without a terminal (CI, a pipe, an agent's shell) nobody can answer the
+  // prompt: before 1.31.0 the command waited on it forever.
+  if (!interactive) {
+    return { results, runSetup: false };
+  }
+
   // Ask if user wants to run setup
   const inquirer = require('inquirer');
   const setupChoice = await inquirer.prompt([{
@@ -1399,7 +1406,7 @@ async function runHealthCheck() {
     message: 'Would you like to run the Project Setup?',
     default: results.percentage < 80
   }]);
-  
+
   return {
     results,
     runSetup: setupChoice.runSetup
@@ -1408,5 +1415,6 @@ async function runHealthCheck() {
 
 module.exports = {
   HealthChecker,
+  isInteractiveTerminal,
   runHealthCheck
 };

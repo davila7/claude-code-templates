@@ -1,0 +1,30 @@
+---
+title: "Troubleshooting"
+description: "Fixes for the most common problems: a component that is not found, a mod that stays silent, a removed flag, an empty dashboard."
+---
+
+<AccordionGroup>
+  <Accordion title="Component not found (404)">
+    Pass the full path, `category/name`: `--agent development-team/frontend-developer`, not just `frontend-developer`. Copy it from the component's page on [aitmpl.com](https://www.aitmpl.com) or from the [Catalog API](/developers/catalog-api). Names are lowercase with hyphens.
+  </Accordion>
+  <Accordion title="A flag prints 'was removed in 1.31.0'">
+    That flag no longer exists. The message names what replaced it, and [Removed in 1.31.0](/cli/removed-in-1-31) lists them all.
+  </Accordion>
+  <Accordion title="A mod installs but does nothing">
+    Check, in order: your Claude Code version is 2.1.287 or newer; the project is trusted (open `claude` in the folder once and accept the prompt, since `claude -p` never asks); you are looking at the right place (`$.ui.log` lines go to `~/.claude/debug/<session>.txt` in headless runs); and options are under `pluginConfigs["<name>@skills-dir"]`. Details in [Mods](/components/mods#a-mod-that-seems-silent).
+  </Accordion>
+  <Accordion title="An MCP server does not show up in /mcp">
+    Restart Claude Code after the install, and fill in any API key the server needs: the CLI writes placeholders, never real keys. Check `.mcp.json` in the project root.
+  </Accordion>
+  <Accordion title="The analytics or chats dashboard shows 0 conversations">
+    Update to 1.31.0 or newer. Older versions stopped at a dangling symlink that Claude Code leaves in `~/.claude/debug/`.
+  </Accordion>
+  <Accordion title="I need a dashboard from another machine">
+    Since 1.31.0 the dashboards listen on 127.0.0.1 only. Forward the port over SSH: `ssh -L 3333:localhost:3333 <host>` (9876 for `--chats`).
+  </Accordion>
+  <Accordion title="npx installs an old version">
+    Use `@latest` explicitly; `npx` may reuse a cached copy otherwise. `npx claude-code-templates@latest --version` prints the version you ran.
+  </Accordion>
+</AccordionGroup>
+
+Still stuck? [Open an issue](https://github.com/davila7/claude-code-templates/issues) with the command you ran and its output.

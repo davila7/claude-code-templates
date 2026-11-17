@@ -3,7 +3,7 @@
     "firecrawl-mcp": {
       "description": "A Model Context Protocol (MCP) server implementation that integrates with Firecrawl for web scraping capabilities.",
       "command": "npx",
-      "args": ["-y", "firecrawl-mcp"],
+      "args": ["-y", "firecrawl-mcp@3.38.0"],
       "env": {
         "FIRECRAWL_API_KEY": "YOUR-API-KEY"
       }

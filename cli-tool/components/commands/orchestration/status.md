@@ -1,3 +1,7 @@
+---
+description: "Check the current status of tasks in the orchestration system with various filtering and reporting options."
+---
+
 # Task Status Command
 
 Check the current status of tasks in the orchestration system with various filtering and reporting options.

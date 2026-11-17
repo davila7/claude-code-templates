@@ -1,0 +1,12 @@
+{
+  "name": "spooky-season",
+  "version": "0.1.0",
+  "description": "Halloween band above the prompt (a row of dripping blood and a pumpkin) and haunted end-of-turn words (Haunted for 4s). /halloween on|off. Pairs with the halloween-theme and halloween-spinner settings.",
+  "author": {
+    "name": "claude-code-templates",
+    "url": "https://www.aitmpl.com"
+  },
+  "repository": "https://github.com/davila7/claude-code-templates",
+  "license": "MIT",
+  "keywords": ["mod", "function-hooks", "ui", "halloween", "theme"]
+}

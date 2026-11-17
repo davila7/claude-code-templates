@@ -1,0 +1,6 @@
+{
+  "description": "Makes an organization's managed limits act as ceilings and floors over each person's settings (retention, model, effort, permission mode, sandbox) instead of fixed values, and shows in /policy what each layer asked and what the session runs with.",
+  "modules": [
+    "./policy-ceiling.tsx"
+  ]
+}

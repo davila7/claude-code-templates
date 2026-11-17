@@ -2,40 +2,7 @@ import type { APIRoute } from 'astro';
 import { corsResponse, jsonResponse } from '../../lib/api/cors';
 import { getNeonClient } from '../../lib/api/neon';
 import { captureApiError } from '../../lib/api/error-tracking';
-
-const VALID_COMMANDS = [
-  'chats',
-  'analytics',
-  'health-check',
-  'plugins',
-  'sandbox',
-  'agents',
-  'chats-mobile',
-  'studio',
-  'command-stats',
-  'hook-stats',
-  'mcp-stats',
-  'skills-manager',
-  '2025-year-in-review',
-];
-
-function validateCommandData(data: { command?: string }) {
-  const { command } = data;
-
-  if (!command) {
-    return { valid: false, error: 'Command name is required' };
-  }
-
-  if (!VALID_COMMANDS.includes(command)) {
-    return { valid: false, error: 'Invalid command name' };
-  }
-
-  if (command.length > 100) {
-    return { valid: false, error: 'Command name too long' };
-  }
-
-  return { valid: true, error: null };
-}
+import { validateCommandData } from '../../lib/api/usage-tracking';
 
 export const POST: APIRoute = async ({ request }) => {
   try {

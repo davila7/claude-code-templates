@@ -1,5 +1,5 @@
 ---
-name: autogpt-agents
+name: agents-autogpt
 description: Autonomous AI agent platform for building and deploying continuous agents. Use when creating visual workflow agents, deploying persistent autonomous agents, or building complex multi-step AI automation systems.
 version: 1.0.0
 author: Orchestra Research

@@ -4,7 +4,7 @@
       "description":"Enable AI agents to operate reliably within real workflows. This MCP is monday.com's open framework for connecting agents into your work OS - giving them secure access to structured data, tools to take action, and the context needed to make smart decisions.",
       "command": "npx",
       "args": [
-        "@mondaydotcomorg/monday-api-mcp",
+        "@mondaydotcomorg/monday-api-mcp@3.3.1",
         "-t",
         "your_monday_api_token"
       ],

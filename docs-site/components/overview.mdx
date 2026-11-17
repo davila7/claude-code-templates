@@ -1,0 +1,31 @@
+---
+title: "Component types"
+description: "The ten kinds of component in the catalog, what each one changes in Claude Code, and how to choose between them."
+---
+
+import ComponentCounts from "/snippets/component-counts.mdx";
+
+Every component is one or more plain files with a path of the form `type/category/name`. You install it with the flag of its type and its `category/name`.
+
+<ComponentCounts />
+
+## Which type do I need?
+
+| You want Claude to… | Use |
+| --- | --- |
+| Hand a task to a specialist with its own context and tool list | [Agent](/components/agents) |
+| Run the same prompt whenever you type `/something` | [Command](/components/commands) |
+| Know how to do something, loaded only when the task calls for it | [Skill](/components/skills) |
+| Always run a check or script when an event happens (before a tool, at the end of a turn) | [Hook](/components/hooks) |
+| Reach an external service: a database, GitHub, a browser, docs | [MCP server](/components/mcps) |
+| Behave differently by default: permissions, model, status line | [Setting](/components/settings) |
+| Keep working towards a goal on an interval until a condition is true | [Loop](/components/loops) |
+| Change Claude Code's own interface or request handling | [Mod](/components/mods) |
+| Get a complete, multi-part plugin from its author | [Plugin](/components/plugins) |
+| Start a project with a `CLAUDE.md` for its language | [Template](/components/templates) |
+
+Hooks and skills are often confused. A skill is advice Claude may follow; a hook is code that always runs. If something must happen every time, use a hook.
+
+## Before you install
+
+Components that run code (hooks, MCP servers, status lines, mods) run with your user's permissions. Read the files on the component page first: every page shows the exact files the CLI will write and the [SkillSpector](/guides/security) scan of them.

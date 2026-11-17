@@ -1,5 +1,5 @@
 {
-  "description": "Test-Driven Development enforcement hook. Blocks editing production code files (.cs, .py, .ts, .go, .rs, .rb, .php, .java, .kt, .swift, .dart) unless a corresponding test file exists. Forces the TDD workflow: write tests first, then implement. Automatically skips config files, migrations, DTOs, test files themselves, and infrastructure files. Looks for test files with common naming patterns (MyClassTest.ext, my-class.test.ext, my_class_test.ext, test_my_class.ext). Inspired by pm-workspace's Spec-Driven Development methodology.",
+  "description": "Enforces the red-green cycle of the test-driven-development skill. Blocks edits to production code (including shell writes such as `cat >`, `tee` and `sed -i`) until a test has been changed and a test run has failed in this session. After the change, it keeps Claude from finishing until the whole test suite has passed. Test files, docs and config are never blocked. Pairs with the skill development/test-driven-development: the skill teaches the cycle, the hook makes skipping it hard. Per-session state lives in the temp directory; the user can turn the gate off for a project by creating .claude/tdd-gate.off. Requires jq. Originally based on pm-workspace's tdd-gate (MIT).",
   "supportingFiles": [
     {
       "source": "tdd-gate.sh",
@@ -10,25 +10,39 @@
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "Edit",
+        "matcher": "Edit|Write|MultiEdit|Bash",
         "hooks": [
           {
             "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/tdd-gate.sh"
           }
         ]
-      },
+      }
+    ],
+    "PostToolUse": [
       {
-        "matcher": "MultiEdit",
+        "matcher": "Edit|Write|MultiEdit|Bash",
         "hooks": [
           {
             "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/tdd-gate.sh"
           }
         ]
-      },
+      }
+    ],
+    "PostToolUseFailure": [
       {
-        "matcher": "Write",
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/tdd-gate.sh"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
         "hooks": [
           {
             "type": "command",

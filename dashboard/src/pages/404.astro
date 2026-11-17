@@ -1,0 +1,36 @@
+---
+import DashboardLayout from '../layouts/DashboardLayout.astro';
+import TopBar from '../components/TopBar.astro';
+import SearchModal from '../components/SearchModal.tsx';
+
+// Rendered on demand (not prerendered) so src/middleware.ts can answer
+// `Accept: text/markdown` with a Markdown body. public/404.html exists only to
+// switch Cloudflare Pages out of its SPA fallback (which served the home page
+// with 200 for every unknown path).
+export const prerender = false;
+---
+
+<DashboardLayout
+  title="Page not found | Claude Code Templates"
+  description="This page does not exist on aitmpl.com. Browse the Claude Code Templates catalog of agents, commands, skills, hooks, MCPs and settings."
+>
+  <TopBar />
+  <div class="flex flex-col items-center justify-center py-32 px-6">
+    <div class="w-24 h-24 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-border)] flex items-center justify-center mb-6 shadow-lg">
+      <svg class="w-12 h-12 text-[var(--color-text-tertiary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    </div>
+    <h1 class="text-lg font-bold text-[var(--color-text-primary)] mb-2">Page not found</h1>
+    <p class="text-[14px] text-[var(--color-text-secondary)] text-center max-w-md mb-8 leading-relaxed">
+      There is nothing at this address. The component may have been renamed or removed. Search the catalog or start from the home page.
+    </p>
+    <a
+      href="/"
+      class="px-5 py-2.5 text-[13px] font-semibold rounded-lg bg-[var(--color-primary-500)] text-white hover:bg-[var(--color-primary-600)] hover:shadow-lg transition-all duration-150 active:scale-95"
+    >
+      Browse components
+    </a>
+  </div>
+  <SearchModal client:idle />
+</DashboardLayout>

@@ -2,34 +2,7 @@ import type { APIRoute } from 'astro';
 import { corsResponse, jsonResponse } from '../../lib/api/cors';
 import { getNeonClient } from '../../lib/api/neon';
 import { captureApiError } from '../../lib/api/error-tracking';
-
-function validateOutcomeData(data: {
-  componentType?: string;
-  componentName?: string;
-  outcome?: string;
-}) {
-  const { componentType, componentName, outcome } = data;
-
-  if (!componentType || !componentName || !outcome) {
-    return { valid: false, error: 'componentType, componentName, and outcome are required' };
-  }
-
-  const validTypes = ['agent', 'command', 'mcp', 'setting', 'hook', 'skill', 'template'];
-  if (!validTypes.includes(componentType)) {
-    return { valid: false, error: 'Invalid component type' };
-  }
-
-  const validOutcomes = ['success', 'failure', 'partial'];
-  if (!validOutcomes.includes(outcome)) {
-    return { valid: false, error: 'Invalid outcome. Must be: success, failure, or partial' };
-  }
-
-  if (componentName.length > 255) {
-    return { valid: false, error: 'Component name too long' };
-  }
-
-  return { valid: true, error: null };
-}
+import { validateOutcomeData } from '../../lib/api/usage-tracking';
 
 export const POST: APIRoute = async ({ request }) => {
   try {

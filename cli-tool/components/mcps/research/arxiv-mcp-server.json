@@ -4,7 +4,7 @@
       "description": "Search, download, and analyze academic papers from arXiv. Supports full-text search, paper retrieval, and local storage for research workflows.",
       "command": "uvx",
       "args": [
-        "arxiv-mcp-server"
+        "arxiv-mcp-server@0.8.2"
       ]
     }
   }
