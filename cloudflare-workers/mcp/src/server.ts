@@ -114,7 +114,7 @@ export function createServer(fetcher: Fetcher) {
       description:
         'Search the aitmpl.com catalog of Claude Code components by text. Every word must appear in the name, path, keywords or description; '
         + 'results are ordered by how well the text matches, then by id. If no component matches every word, it returns the ones matching '
-        + 'the most words, with match "partial": check that they fit before suggesting them. Each result has its id, a one-line description, its page, '
+        + 'the most words, with match "partial". Each result has its id, a one-line description, its page, '
         + 'the CLI command that installs it, whether it runs code, and its SkillSpector scan.',
       inputSchema: z.object({
         query: z.string().trim().min(1).max(200).describe('Words to look for, e.g. "code review" or "postgres".'),
@@ -225,7 +225,7 @@ export function createServer(fetcher: Fetcher) {
       description:
         'Return the single claude-code-templates CLI command that installs the given components (up to 20 ids) into the project in the current directory, '
         + 'with --yes so it does not stop for prompts, '
-        + 'plus what each one writes and whether it runs code. It installs nothing: the command has to be run in a terminal in that project. '
+        + 'plus what each one writes and whether it runs code. The server installs nothing; the command runs in a terminal in that project. '
         + 'Plugins also get the two /plugin commands that install them from inside Claude Code.',
       inputSchema: z.object({
         ids: z.array(z.string().trim().min(1).max(300)).min(1).max(20).describe('Catalog ids from search_components.'),
@@ -278,7 +278,7 @@ export function createServer(fetcher: Fetcher) {
       title: 'List aitmpl categories',
       description:
         'List the component types in the aitmpl.com catalog with their counts, and the categories of one type (or all types) with their counts. '
-        + 'Use the category slugs to narrow search_components.',
+        + 'The category slugs are the values accepted by the category filter of search_components.',
       inputSchema: z.object({ type: typeSchema.optional() }),
       outputSchema: z.object({
         catalogVersion: z.string(),
