@@ -47,4 +47,4 @@ cd dashboard && npm install && npx astro dev --port 4321
 
 ## Deployment
 
-Always use the `deployer` agent. Never deploy manually. Hosted on Cloudflare Pages — `vercel.json` was removed after migration, do not recreate it.
+Always use the `deployer` agent. Never deploy manually. Hosted on Cloudflare Pages.

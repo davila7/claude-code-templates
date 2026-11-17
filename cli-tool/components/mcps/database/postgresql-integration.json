@@ -1,12 +1,13 @@
 {
   "mcpServers": {
     "postgresql": {
-      "description": "Connect to PostgreSQL databases for advanced data operations, complex queries, and enterprise database management.",
+      "description": "Read-only SQL queries and table schemas for a PostgreSQL database. Set POSTGRES_CONNECTION_STRING (postgresql://user:password@host:5432/dbname) in your environment before starting Claude Code. The upstream package is archived and unmaintained (npm deprecation notice); for an actively maintained server see database/dbhub.",
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-postgres@0.6.2"],
-      "env": {
-        "POSTGRES_CONNECTION_STRING": "postgresql://user:password@localhost:5432/dbname"
-      }
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-postgres@0.6.2",
+        "${POSTGRES_CONNECTION_STRING}"
+      ]
     }
   }
 }

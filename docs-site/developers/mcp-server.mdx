@@ -1,0 +1,75 @@
+---
+title: "aitmpl MCP server"
+description: "Connect Claude to the aitmpl.com catalog: search components, read them with their security scan and get the command that installs them."
+---
+
+The aitmpl MCP server gives Claude read-only access to the aitmpl.com catalog: agents, commands, skills, hooks, MCP servers, settings, loops, mods and plugins. Claude can find a component for the task at hand, read its full content and its SkillSpector scan, and get the exact command that installs it.
+
+| | |
+| --- | --- |
+| URL | `https://mcp.aitmpl.com/mcp` |
+| Transport | Streamable HTTP |
+| Sign-in | None |
+| Tools | 4, all read-only |
+
+## Connect
+
+<Tabs>
+  <Tab title="Claude Code">
+    ```bash
+    claude mcp add --transport http aitmpl https://mcp.aitmpl.com/mcp
+    ```
+
+    Or install it from the catalog, which writes it to the project's `.mcp.json`:
+
+    ```bash
+    npx claude-code-templates@latest --mcp devtools/aitmpl
+    ```
+  </Tab>
+  <Tab title="claude.ai and Claude Desktop">
+    Open **Settings > Connectors**, select **Add custom connector** and paste `https://mcp.aitmpl.com/mcp`.
+  </Tab>
+  <Tab title="Other clients">
+    Any client with Streamable HTTP support, for example Cursor (`.cursor/mcp.json`):
+
+    ```json
+    {
+      "mcpServers": {
+        "aitmpl": { "url": "https://mcp.aitmpl.com/mcp" }
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Tools
+
+| Tool | Input | Returns |
+| --- | --- | --- |
+| `search_components` | `query`, optional `type`, `category`, `limit` (1-25, default 10) | Matching components: id, one-line description, page, install command, whether it runs code, SkillSpector scan |
+| `get_component` | `id` | One component: full content (first 12,000 characters), files it ships, what it writes on install, license, upstream pin, scan and top findings |
+| `get_install_command` | `ids` (1-20) | One `npx claude-code-templates@latest … --yes` command for all of them, what each writes, and the `/plugin` commands for plugins |
+| `list_categories` | optional `type` | Types and categories with their counts |
+
+Ids have the form `{type}/{category}/{name}`, for example `agents/development-team/frontend-developer` or `plugins/productivity/champion-kit`.
+
+## How installing works
+
+The server installs nothing. It runs on Cloudflare and cannot write to your machine, so it hands back the command and the command does the install:
+
+- **Claude Code** runs it with its Bash tool, which asks for your permission like any other command.
+- **claude.ai, Claude Desktop and clients without a shell** show you the command; run it in a terminal from your project's root folder.
+
+The command is the same CLI as everywhere else on aitmpl.com, so the install merges into your existing configuration and counts as a download.
+
+Hooks, MCP servers, settings with scripts, mods and plugins let code run on your machine. Their search results say so (`runsCode`), and `get_component` returns the exact configuration and commands they run, so you can read them before installing. The SkillSpector scan is the same one the component page shows.
+
+## Ordering
+
+Results are ordered by how well the text matches, then by id: the same scoring as `npx claude-code-templates@latest --search`. Every word must match; when no component matches them all, the tool returns the components that match the most words and marks the result `match: "partial"`. Downloads, scan results and sponsored placements never change the order.
+
+## Data and privacy
+
+The server reads only what aitmpl.com already publishes: the [Catalog API](/developers/catalog-api), the plugin list and each component's content file. It stores nothing and does not log what you search for. See the [privacy policy](https://www.aitmpl.com/privacy#mcp-server).
+
+The source is in [`cloudflare-workers/mcp`](https://github.com/davila7/claude-code-templates/tree/main/cloudflare-workers/mcp). Report problems in [GitHub issues](https://github.com/davila7/claude-code-templates/issues).

@@ -424,9 +424,10 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI Tools",
-          "Programming with AI",
-          "Understanding AI Models"
+          "AI",
+          "Programming",
+          "Software Development",
+          "AI Tools"
         ],
         "source": "cursor-learn",
         "price": null,
@@ -445,9 +446,9 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI Basics",
-          "Large Language Models",
-          "ChatGPT"
+          "AI",
+          "Foundations",
+          "Large Language Models"
         ],
         "source": "openai-academy",
         "price": null,
@@ -464,9 +465,9 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Workflow Design",
-          "ChatGPT",
-          "Applied AI"
+          "AI",
+          "Applied Foundations",
+          "Workflows"
         ],
         "source": "openai-academy",
         "price": null,
@@ -483,9 +484,9 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Agent Management",
-          "Workflow Improvement",
-          "Structured Work"
+          "AI",
+          "Agents",
+          "Workflows"
         ],
         "source": "openai-academy",
         "price": null,
@@ -502,8 +503,9 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI Opportunities",
-          "Solution Planning"
+          "AI",
+          "Solutions",
+          "Planning"
         ],
         "source": "openai-academy",
         "price": null,
@@ -520,8 +522,9 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Evaluation Techniques",
-          "Quality Assurance"
+          "AI",
+          "Applications",
+          "Evaluation"
         ],
         "source": "openai-academy",
         "price": null,
@@ -538,8 +541,9 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Agent Design",
-          "System Development"
+          "AI",
+          "Agents",
+          "Design"
         ],
         "source": "openai-academy",
         "price": null,
@@ -556,8 +560,9 @@
         ],
         "eligibility": "public",
         "topics": [
+          "AI",
           "Retrieval-Augmented Generation",
-          "Answer Quality"
+          "Build"
         ],
         "source": "openai-academy",
         "price": null,
@@ -574,8 +579,9 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Performance Optimization",
-          "Application Management"
+          "AI",
+          "Application Performance",
+          "Optimization"
         ],
         "source": "openai-academy",
         "price": null,
@@ -592,8 +598,9 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Codex Usage",
-          "Task Management"
+          "Codex",
+          "Getting Started",
+          "Verification"
         ],
         "source": "openai-academy",
         "price": null,
@@ -610,8 +617,9 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Codex Workflows",
-          "Team Management"
+          "Codex",
+          "Workflows",
+          "Extension"
         ],
         "source": "openai-academy",
         "price": null,
@@ -628,8 +636,9 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Codex Scaling",
-          "Team Coordination"
+          "Codex",
+          "Scaling",
+          "Coordination"
         ],
         "source": "openai-academy",
         "price": null,
@@ -646,8 +655,9 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI Strategy",
-          "Leadership Skills"
+          "AI",
+          "Leadership",
+          "Strategy"
         ],
         "source": "openai-academy",
         "price": null,
@@ -664,8 +674,9 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Teaching Strategies",
-          "Educational Resources"
+          "AI",
+          "Educators",
+          "Teaching Materials"
         ],
         "source": "openai-academy",
         "price": null,
@@ -682,15 +693,16 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Study Skills",
-          "Career Preparation"
+          "AI",
+          "College Students",
+          "Practical Tasks"
         ],
         "source": "openai-academy",
         "price": null,
         "id": "openai-ai-for-college-students-gxgmr",
         "kind": "course",
         "title": "AI for College Students",
-        "description": "Learn how to use ChatGPT for practical study and career tasks, including planning study, reviewing responses, and preparing for applications.",
+        "description": "Learn how to use ChatGPT for practical study and career tasks.",
         "url": "https://academy.openai.com/public/courses/ai-for-college-students-gxgmr"
       }
     ],
@@ -702,9 +714,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Vercel",
           "APIs",
-          "Coding"
+          "Documentation"
         ],
         "source": "vercel-academy",
         "id": "vercel-agent-friendly-apis",
@@ -721,14 +732,13 @@
         "eligibility": "public",
         "topics": [
           "AI",
-          "Web Development",
-          "Vercel"
+          "Web Development"
         ],
         "source": "vercel-academy",
         "id": "vercel-build-and-launch-with-ai",
         "kind": "course",
         "title": "Build and Launch with AI",
-        "description": "Build and launch a website for Small Hours Studio with AI. No coding experience required.",
+        "description": "Build and launch a website for Small Hours Studio with AI. Start in v0, add workshop pages and an email inquiry form, and learn to publish your own updates with fx, GitHub, and Vercel.",
         "url": "https://vercel.com/academy/build-and-launch-with-ai"
       },
       {
@@ -738,15 +748,14 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Workflow SDK",
-          "Vercel",
-          "Coding"
+          "Workflows",
+          "SDK"
         ],
         "source": "vercel-academy",
         "id": "vercel-workflow-foundations",
         "kind": "course",
         "title": "Build Durable Workflows",
-        "description": "Learn the foundations of the Workflow SDK by building a pizza order tracker.",
+        "description": "Learn the foundations of the Workflow SDK by building a pizza order tracker. Durable, resumable code with two directives and no state machines.",
         "url": "https://vercel.com/academy/workflow-foundations"
       },
       {
@@ -756,15 +765,14 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Vercel",
-          "Plugins",
-          "Workflow"
+          "Visual Workflows",
+          "APIs"
         ],
         "source": "vercel-academy",
         "id": "vercel-visual-workflow-builder-on-vercel",
         "kind": "course",
         "title": "Build Visual Workflow Plugins on Vercel",
-        "description": "Deploy a visual workflow builder on Vercel and extend it with plugins.",
+        "description": "Deploy a visual workflow builder on Vercel and extend it with plugins for the APIs you actually use. Learn Vercel Workflow fundamentals along the way.",
         "url": "https://vercel.com/academy/visual-workflow-builder-on-vercel"
       },
       {
@@ -775,14 +783,13 @@
         "eligibility": "public",
         "topics": [
           "Next.js",
-          "Vercel",
           "Web Development"
         ],
         "source": "vercel-academy",
         "id": "vercel-nextjs-foundations",
         "kind": "course",
         "title": "Build with Next.js",
-        "description": "Learn Next.js by building real apps. Deploy everything to Vercel.",
+        "description": "Learn Next.js by building real apps. Work through routing, data fetching, caching, forms, and error handling, then deploy everything to Vercel.",
         "url": "https://vercel.com/academy/nextjs-foundations"
       },
       {
@@ -792,9 +799,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Vercel",
-          "Web Development",
-          "No Code"
+          "v0",
+          "Web Development"
         ],
         "source": "vercel-academy",
         "id": "vercel-v0-foundations",
@@ -811,14 +817,13 @@
         "eligibility": "public",
         "topics": [
           "AI",
-          "Vercel",
-          "Coding"
+          "SDK"
         ],
         "source": "vercel-academy",
         "id": "vercel-build-ai-agent-harness",
         "kind": "course",
         "title": "Build Your Own AI Coding Agent Harness",
-        "description": "Build an AI coding agent harness from scratch using AI SDK and Vercel Sandbox.",
+        "description": "Build an AI coding agent harness from scratch using AI SDK, Vercel Sandbox, and just-bash. Covers the tool loop, tool design, system prompts, sandbox abstraction, context pruning, subagent delegation, lifecycle management, and extensibility.",
         "url": "https://vercel.com/academy/build-ai-agent-harness"
       },
       {
@@ -828,15 +833,14 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI SDK",
-          "Next.js",
-          "Vercel"
+          "AI",
+          "SDK"
         ],
         "source": "vercel-academy",
         "id": "vercel-ai-sdk",
         "kind": "course",
         "title": "Builders Guide to the AI SDK",
-        "description": "Build production-ready AI features with the AI SDK & Next.js.",
+        "description": "Build production-ready AI features with the AI SDK & Next.js. Learn LLMs, prompting, extraction, streaming, & more.",
         "url": "https://vercel.com/academy/ai-sdk"
       },
       {
@@ -846,15 +850,14 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Vercel",
           "Agents",
-          "Coding"
+          "Eve"
         ],
         "source": "vercel-academy",
         "id": "vercel-building-agents-with-eve",
         "kind": "course",
         "title": "Building Agents with eve",
-        "description": "Build a production bike shop dispatcher agent with eve.",
+        "description": "Build a production bike shop dispatcher agent with eve, from its first typed tool to a deployed app behind Slack, a web dashboard, real auth, and human approval.",
         "url": "https://vercel.com/academy/building-agents-with-eve"
       },
       {
@@ -864,15 +867,14 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Vercel",
           "Filesystem",
-          "Agents"
+          "Sandbox"
         ],
         "source": "vercel-academy",
         "id": "vercel-filesystem-agents",
         "kind": "course",
         "title": "Building Filesystem Agents",
-        "description": "Build a filesystem agent that explores call transcripts and answers questions.",
+        "description": "Build a filesystem agent that uses bash tools and Vercel Sandbox to explore call transcripts and answer questions.",
         "url": "https://vercel.com/academy/filesystem-agents"
       },
       {
@@ -882,15 +884,14 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Software Development",
-          "Vercel",
-          "Factory"
+          "Software Factory",
+          "Risk Management"
         ],
         "source": "vercel-academy",
         "id": "vercel-creating-a-software-factory",
         "kind": "course",
         "title": "Creating a Software Factory",
-        "description": "Build a risk-routed software factory requiring human control over decisions.",
+        "description": "Build a risk-routed software factory that requires evidence before code changes and preserves human control over consequential decisions.",
         "url": "https://vercel.com/academy/creating-a-software-factory"
       },
       {
@@ -901,14 +902,13 @@
         "eligibility": "public",
         "topics": [
           "AI",
-          "Next.js",
-          "Vercel"
+          "Next.js"
         ],
         "source": "vercel-academy",
         "id": "vercel-ai-summary-app-with-nextjs",
         "kind": "course",
         "title": "Creating an AI Summary App with Next.js",
-        "description": "Build an AI-powered summary application using Next.js and Vercel AI SDK.",
+        "description": "Build an AI-powered summary application using Next.js App Router and the Vercel AI SDK. Implement text summarization, structured output, caching, and production-ready patterns.",
         "url": "https://vercel.com/academy/ai-summary-app-with-nextjs"
       },
       {
@@ -919,14 +919,13 @@
         "eligibility": "public",
         "topics": [
           "Vercel",
-          "Deployment",
-          "Video Series"
+          "Deployment"
         ],
         "source": "vercel-academy",
         "id": "vercel-foundations",
         "kind": "course",
         "title": "Deploy on Vercel",
-        "description": "A 1-hour video series covering the most important Vercel concepts.",
+        "description": "A 1-hour video series covering the most important Vercel concepts. Nine short sessions to get you productive on the platform.",
         "url": "https://vercel.com/academy/vercel-foundations"
       },
       {
@@ -936,15 +935,14 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI",
-          "Vercel",
-          "Enterprise"
+          "Enterprise",
+          "AI"
         ],
         "source": "vercel-academy",
         "id": "vercel-enterprise-apps-agents",
         "kind": "course",
         "title": "Enterprise Apps and Agents",
-        "description": "Take an internal AI prototype from demo to rollout with ownership and access control.",
+        "description": "Take an internal AI prototype from demo to rollout: assign owners, restrict access, test model behavior, and add human approval.",
         "url": "https://vercel.com/academy/enterprise-apps-agents"
       },
       {
@@ -955,14 +953,13 @@
         "eligibility": "public",
         "topics": [
           "E-commerce",
-          "Next.js",
-          "Vercel"
+          "Stripe"
         ],
         "source": "vercel-academy",
         "id": "vercel-subscription-store",
         "kind": "course",
         "title": "Launch a Subscription Store with Vercel and Stripe",
-        "description": "Build a production-ready subscription storefront with Next.js and Stripe.",
+        "description": "Build a production-ready subscription storefront with Next.js 16, React 19, Supabase Auth, and Stripe. Learn authentication, payments, and access control.",
         "url": "https://vercel.com/academy/subscription-store"
       },
       {
@@ -972,15 +969,14 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Vercel",
-          "AI",
-          "Routing"
+          "Decision Making",
+          "Jev"
         ],
         "source": "vercel-academy",
         "id": "vercel-make-decisions-with-jev",
         "kind": "course",
         "title": "Make Decisions with Jev",
-        "description": "Use Jev to route customer messages to the right team and test your rules.",
+        "description": "Use Jev to route customer messages to the right team. Start with a working contact form, teach it who handles cancellations, and test your rules with different requests.",
         "url": "https://vercel.com/academy/make-decisions-with-jev"
       },
       {
@@ -990,15 +986,14 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Vercel",
           "Microfrontends",
-          "Web Development"
+          "Frontend Development"
         ],
         "source": "vercel-academy",
         "id": "vercel-microfrontends-on-vercel",
         "kind": "course",
         "title": "Microfrontends on Vercel",
-        "description": "Build scalable, independent frontend applications with Vercel's platform.",
+        "description": "Build scalable, independent frontend applications with Vercel's microfrontends platform.",
         "url": "https://vercel.com/academy/microfrontends-on-vercel"
       },
       {
@@ -1008,15 +1003,14 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Vercel",
           "Nuxt",
-          "Web Development"
+          "Translating Skills"
         ],
         "source": "vercel-academy",
         "id": "vercel-nuxt-on-vercel",
         "kind": "course",
         "title": "Nuxt on Vercel",
-        "description": "Translate your React and Next.js skills to Nuxt and build a finder app.",
+        "description": "Translate your React and Next.js skills to Nuxt. Build a hot springs finder app using idiomatic Nuxt patterns, from reactivity to auth to deployment.",
         "url": "https://vercel.com/academy/nuxt-on-vercel"
       },
       {
@@ -1026,15 +1020,14 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Vercel",
           "Optimization",
-          "Account Management"
+          "Accounts"
         ],
         "source": "vercel-academy",
         "id": "vercel-optimize-your-vercel-account",
         "kind": "course",
         "title": "Optimize Your Vercel Account",
-        "description": "Audit and tune your Vercel account for security and cost.",
+        "description": "Audit and tune your Vercel account for security, cost, and operations.",
         "url": "https://vercel.com/academy/optimize-your-vercel-account"
       },
       {
@@ -1044,15 +1037,14 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Turborepo",
-          "Vercel",
-          "Monorepo"
+          "Monorepos",
+          "Turborepo"
         ],
         "source": "vercel-academy",
         "id": "vercel-production-monorepos",
         "kind": "course",
         "title": "Production Monorepos with Turborepo",
-        "description": "Build a production monorepo from idea to enterprise scale with Turborepo.",
+        "description": "Build a production monorepo from idea to enterprise scale with Turborepo and Next.js.",
         "url": "https://vercel.com/academy/production-monorepos"
       },
       {
@@ -1063,14 +1055,13 @@
         "eligibility": "public",
         "topics": [
           "Python",
-          "Vercel",
-          "Web Development"
+          "FastAPI"
         ],
         "source": "vercel-academy",
         "id": "vercel-python-on-vercel",
         "kind": "course",
         "title": "Python on Vercel",
-        "description": "Build a FastAPI + Next.js furniture app deployed as one Vercel project.",
+        "description": "Keep your Python stack and ship it with your frontend. Build a FastAPI + Next.js furniture app deployed as one Vercel project.",
         "url": "https://vercel.com/academy/python-on-vercel"
       },
       {
@@ -1080,15 +1071,14 @@
         ],
         "eligibility": "public",
         "topics": [
-          "React",
           "UI Development",
-          "Vercel"
+          "React"
         ],
         "source": "vercel-academy",
         "id": "vercel-shadcn-ui",
         "kind": "course",
         "title": "React UI with shadcn/ui + Radix + Tailwind",
-        "description": "Learn modern UI development with shadcn/ui and build production-ready interfaces.",
+        "description": "Learn the fundamentals of modern UI development with shadcn/ui. Master component libraries, Radix primitives, and build production-ready interfaces.",
         "url": "https://vercel.com/academy/shadcn-ui"
       },
       {
@@ -1098,15 +1088,14 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI SDK",
           "Slack",
-          "Vercel"
+          "AI"
         ],
         "source": "vercel-academy",
         "id": "vercel-slack-agents",
         "kind": "course",
         "title": "Slack Agents on Vercel with the AI SDK",
-        "description": "Step-by-step course to build and deploy a Slack bot on Vercel using the AI SDK.",
+        "description": "Step-by-step course to build, deploy, and run a real Slack bot on Vercel using the AI SDK, with logging, safeguards, and an ops runbook for your team’s workspace.",
         "url": "https://vercel.com/academy/slack-agents"
       },
       {
@@ -1116,15 +1105,14 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Vercel",
           "Svelte",
-          "Web Development"
+          "SvelteKit"
         ],
         "source": "vercel-academy",
         "id": "vercel-svelte-on-vercel",
         "kind": "course",
         "title": "Svelte on Vercel",
-        "description": "Build production-ready SvelteKit applications on Vercel.",
+        "description": "Build production-ready SvelteKit applications on Vercel. Learn deployment, AI integration, workflows, and performance optimization.",
         "url": "https://vercel.com/academy/svelte-on-vercel"
       },
       {
@@ -1134,15 +1122,14 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI Gateway",
-          "Authentication",
-          "Vercel"
+          "AI",
+          "Gateway"
         ],
         "source": "vercel-academy",
         "id": "vercel-ai-gateway",
         "kind": "course",
         "title": "Using AI Gateway in Production",
-        "description": "Learn how AI Gateway handles model access and production authentication.",
+        "description": "Learn how AI Gateway handles model access, routing, spend, privacy, developer tools, and production authentication.",
         "url": "https://vercel.com/academy/ai-gateway"
       },
       {
@@ -1153,14 +1140,13 @@
         "eligibility": "public",
         "topics": [
           "Sandbox",
-          "Vercel",
-          "Coding"
+          "Code Review"
         ],
         "source": "vercel-academy",
         "id": "vercel-sandbox",
         "kind": "course",
         "title": "Vercel Sandbox",
-        "description": "Learn to execute untrusted code using Vercel Sandbox.",
+        "description": "Learn how to safely execute untrusted code using Vercel Sandbox. Build a CLI code review agent that clones repositories, runs tests, and uses AI to analyze code for security and quality issues, all in an isolated environment.",
         "url": "https://vercel.com/academy/vercel-sandbox"
       }
     ],
@@ -1258,7 +1244,7 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Data Science"
+          "Accelerated Data Science"
         ],
         "source": "nvidia-certification",
         "role": "Data",
@@ -1276,7 +1262,7 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Data Science"
+          "Accelerated Data Science"
         ],
         "source": "nvidia-certification",
         "role": "Data",
@@ -1311,7 +1297,7 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Generative AI"
+          "Agentic AI"
         ],
         "source": "nvidia-certification",
         "level": "Advanced",
