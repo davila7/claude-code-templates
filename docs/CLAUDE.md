@@ -275,10 +275,6 @@ Before committing:
 - Aggregates download statistics
 - Powers trending components
 
-### Vercel
-- Handles routing for SPA-style URLs
-- Configured in `vercel.json`
-
 ### Analytics
 - Hotjar for user behavior tracking
 - Counter.dev for page view analytics

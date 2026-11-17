@@ -60,9 +60,6 @@ test-cloudflare/
 *.swp
 *.swo
 
-# Deployment
-.vercel
-
 # Local analysis (not for git)
 analysis/
 

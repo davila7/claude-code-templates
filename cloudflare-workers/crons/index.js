@@ -1,8 +1,7 @@
 /**
  * aitmpl-crons — Cloudflare Worker
  *
- * Replaces Vercel cron jobs by calling the dashboard API endpoints
- * on a schedule. Cron: hourly (health-check).
+ * Calls the dashboard API endpoints on a schedule. Cron: hourly (health-check).
  *
  * Secrets (wrangler secret put):
  *   DASHBOARD_URL    — e.g. https://www.aitmpl.com

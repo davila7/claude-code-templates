@@ -130,7 +130,7 @@ body {
   transition: background-color 200ms ease, color 200ms ease;
 }
 
-/* Scrollbar - Vercel thin style */
+/* Scrollbar - thin style */
 ::-webkit-scrollbar {
   width: 4px;
   height: 4px;

@@ -18,9 +18,7 @@
     "prepublishOnly": "npm run check:version-sync && npm run test:install-paths && node scripts/prepublish-check.mjs",
     "version": "node scripts/sync-package-versions.js && git add package.json package-lock.json cli-tool/package.json cli-tool/package-lock.json",
     "version:set": "node scripts/sync-package-versions.js",
-    "agent:security-auditor": "security-auditor 'Security audit covering codebase, dependencies, and deployment configuration'",
-    "deploy": "./scripts/deploy.sh",
-    "deploy:dashboard": "./scripts/deploy.sh"
+    "agent:security-auditor": "security-auditor 'Security audit covering codebase, dependencies, and deployment configuration'"
   },
   "dependencies": {
     "@clack/core": "^1.4.3",

@@ -8,6 +8,10 @@ Node.js CLI tool (`cli-tool/`) for managing Claude Code components (agents, comm
 
 `cli-rust/` (Rust port of the install core) is **in the backlog**: do not plan, change, test parity with or mention it unless Daniel resumes it.
 
+## GitHub Identity: the Owner Is @davila7
+
+The maintainer's GitHub account is **`@davila7`** (repo `davila7/claude-code-templates`). `danipower` is only the local macOS username (`$USER`, `/Users/danipower/...`), and `Dani` is only the git author name: neither is a GitHub handle, and `@danipower` may belong to a stranger who would be notified. Use `@davila7` everywhere a GitHub identity goes: `CODEOWNERS`, `@`-mentions, PR/issue assignees and reviewers, `gh` arguments, `github.com/davila7/...` URLs, `author`/`repository` fields. Never derive a handle from the machine (`whoami`, home directory, git config); if in doubt, `gh api user --jq .login` returns the real one. `git grep -i danipower` should match nothing outside local paths.
+
 ## Essential Commands
 
 ```bash
@@ -28,8 +32,7 @@ cd dashboard && npx wrangler pages deploy dist --project-name=aitmpl-dashboard  
 ```
 
 > Deploys to production happen automatically via GitHub Actions on push to `main`
-> (changes in `dashboard/**`). Manual deploy uses `wrangler pages deploy`, not Vercel.
-> The root `npm run deploy` / `deploy:dashboard` still call `scripts/deploy.sh`, which is a stale **Vercel** deploy: do not use them.
+> (changes in `dashboard/**`). Manual deploy uses `wrangler pages deploy`. Nothing runs on Vercel any more: the aitmpl.com domains were removed from the old Vercel project on 2026-11-16.
 
 ## Security Guidelines
 
@@ -454,9 +457,9 @@ The `cloudflare-workers/` directory contains Cloudflare Worker projects that run
 
 ### crons
 
-Replaces the old Vercel cron jobs. On a schedule it calls the dashboard API endpoints (which stay on Cloudflare Pages) with a shared `TRIGGER_SECRET`.
+On a schedule it calls the dashboard API endpoints (which stay on Cloudflare Pages) with a shared `TRIGGER_SECRET`.
 
-- `0 * * * *` → `/api/health-check` (hourly; was every 15 min on Vercel, reduced to save invocations)
+- `0 * * * *` → `/api/health-check` (hourly)
 
 Errors and cron check-ins are reported to Sentry (`sentry.js`, DSN from the `aitmpl-workers` project — see Error Tracking below).
 
@@ -467,6 +470,10 @@ npx wrangler deploy  # Deploy
 ```
 
 **Secrets (Cloudflare):** `DASHBOARD_URL` (e.g. `https://www.aitmpl.com`), `TRIGGER_SECRET`, `SENTRY_DSN` (optional).
+
+### mcp (aitmpl MCP server, mcp.aitmpl.com)
+
+Remote MCP server for the catalog (`cloudflare-workers/mcp/`, worker `aitmpl-mcp`, added 2026-11-16): `https://mcp.aitmpl.com/mcp`, Streamable HTTP, no auth, four read-only tools (`search_components`, `get_component`, `get_install_command`, `list_categories`). Built on Cloudflare's stateless `createMcpHandler` (`agents/mcp/server`) + MCP SDK v2 (`@modelcontextprotocol/server`, the exact version `agents` peers on). It reads only `/api/v1/` + `components/plugins.json` + `component-content/` from www.aitmpl.com, so a change to those shapes must keep it working (`cloudflare-workers/mcp/test/smoke.mjs`). It installs nothing: it returns the CLI command (`--yes`) and the client runs it. Search uses the CLI `--search` scoring (keep `scoreComponent` in sync with `cli-tool/src/catalog-lookup.js`); never let downloads, scans or ads change the order. Every tool needs `title`, `readOnlyHint`/`destructiveHint`, `outputSchema` + `structuredContent` (Anthropic directory requirements). Deploy by hand: `cd cloudflare-workers/mcp && npx wrangler deploy && node test/smoke.mjs https://mcp.aitmpl.com/mcp`. Docs: `docs-site/developers/mcp-server.mdx`; privacy: `/privacy#mcp-server`; catalog entry `mcps/devtools/aitmpl`.
 
 ### docs-monitor (DECOMMISSIONED 2026-07)
 
@@ -510,7 +517,7 @@ GA_PROPERTY_ID              # GA4 property ID (optional)
 GA_SERVICE_ACCOUNT_JSON     # Base64 service account (optional)
 ```
 
-**Graceful degradation:** Each source catches its own errors. Missing secrets or API failures show `⚠️ Unavailable` instead of crashing the report. Failed collectors are also reported to Sentry via `sentry.js` (see Error Tracking below). The Vercel collector was removed (2026-07) since the dashboard no longer deploys to Vercel.
+**Graceful degradation:** Each source catches its own errors. Missing secrets or API failures show `⚠️ Unavailable` instead of crashing the report. Failed collectors are also reported to Sentry via `sentry.js` (see Error Tracking below).
 
 ### newsletter (Weekly Community Components Email) — PAUSED 2026-09-20
 
@@ -623,7 +630,7 @@ A single Cloudflare Pages project (`aitmpl-dashboard`) serves all domains. Confi
 
 ### Deployment
 
-Deploying = merging to `main`. The deployer agent (`.claude/agents/deployer.md`) only verifies and troubleshoots deploy runs. Manual deploy only when CI cannot: `cd dashboard && npm run build && npx wrangler pages deploy dist --project-name=aitmpl-dashboard`. Root `npm run deploy` is the stale Vercel script.
+Deploying = merging to `main`. The deployer agent (`.claude/agents/deployer.md`) only verifies and troubleshoots deploy runs. Manual deploy only when CI cannot: `cd dashboard && npm run build && npx wrangler pages deploy dist --project-name=aitmpl-dashboard`.
 
 **CI/CD**: Pushes to `main` auto-deploy via GitHub Actions (`.github/workflows/deploy.yml`):
 - Changes in `dashboard/**` trigger tests, a build and `wrangler pages deploy dist --project-name=aitmpl-dashboard`
