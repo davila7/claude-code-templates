@@ -13865,7 +13865,7 @@
       "path": "security/api-security-audit.md",
       "category": "security",
       "type": "agent",
-      "description": "API security audit specialist. Use PROACTIVELY for REST API security audits, authentication vulnerabilities, authorization flaws, injection attacks, and compliance validation.",
+      "description": "Use for any security review of an API's code: before launch, after adding endpoints or auth, or when asked whether an API is safe. Works on REST and GraphQL backends (Express, Fastify, NestJS, Next.js routes, FastAPI, Django, Flask, Rails, Spring, Go). Maps every endpoint to its authentication and authorization checks, traces user input to dangerous sinks, checks each endpoint against the OWASP API Security Top 10 (2023), tries to refute every candidate before reporting it, and returns only findings with a concrete attack: file and line, the request an attacker would send, and the fix as a patch. Read-only: it never edits files.\n\n<example>\nuser: \"Review the security of our API before we ship it.\"\nassistant: \"I'll use the api-security-audit agent: it will build an inventory of every route with its auth and ownership checks, then report the exploitable issues, most severe first, each with the attack request and the fix.\"\n</example>\n\n<example>\nuser: \"I added invoice endpoints. Can a user read someone else's invoices?\"\nassistant: \"I'll use the api-security-audit agent to check object-level authorization on the new endpoints and on every sibling handler that loads an invoice by id.\"\n</example>\n\n<example>\nuser: \"Is our JWT setup safe?\"\nassistant: \"I'll use the api-security-audit agent to trace how tokens are issued, verified and trusted across the API, including fallback secrets and routes that decode without verifying.\"\n</example>",
       "author": "",
       "repo": "",
       "version": "",
@@ -13881,15 +13881,34 @@
         "lastValidated": null
       },
       "skillspector": {
-        "score": 0,
+        "score": 11,
         "severity": "LOW",
-        "recommendation": "SAFE",
-        "issueCount": 0,
-        "analysis": "complete",
-        "findings": [],
-        "hash": "42f5e2d2b36325d5",
+        "recommendation": "CAUTION",
+        "issueCount": 2,
+        "analysis": "partial",
+        "findings": [
+          {
+            "id": "OH3",
+            "category": "Output Handling",
+            "severity": "MEDIUM",
+            "title": "Unbounded Output",
+            "file": "api-security-audit.md",
+            "line": 96,
+            "count": 1
+          },
+          {
+            "id": "PE1",
+            "category": "Privilege Escalation",
+            "severity": "LOW",
+            "title": "Excessive Permissions",
+            "file": "api-security-audit.md",
+            "line": 226,
+            "count": 1
+          }
+        ],
+        "hash": "6d04f6844f03cae0",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-17T04:45:31Z"
       }
     },
     {
