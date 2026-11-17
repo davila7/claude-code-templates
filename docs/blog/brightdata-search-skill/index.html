@@ -279,7 +279,7 @@ export BRIGHTDATA_UNLOCKER_ZONE="your-zone-name"</code></pre>
 }</code></pre>
 
                 <h3>Step 4: Test the script on its own</h3>
-                <p>Run it from the project root before involving Claude, so you know the key and the zone work:</p>
+                <p>Run it from the project root before involving Claude, so you know the key and the zone work. A plain terminal does not read <code>.claude/settings.local.json</code>, so export both variables in that shell first (Step 3), or run the same command from inside Claude Code with the <code>!</code> prefix:</p>
 
                 <pre><code class="language-bash">bash .claude/skills/search/scripts/search.sh "claude code hooks documentation"
 
