@@ -12,7 +12,7 @@ export const prerender = true;
   description="What data aitmpl.com and the claude-code-templates CLI collect, why, who processes it, and how to opt out."
 >
   <TopBar />
-  <ProsePage heading="Privacy Policy" updated="November 8, 2026">
+  <ProsePage heading="Privacy Policy" updated="November 16, 2026">
     <p>
       This page explains what data Claude Code Templates collects through the website at aitmpl.com and the
       <code>claude-code-templates</code> command-line tool, why, and how to opt out. The project does not sell personal data
@@ -78,6 +78,16 @@ export const prerender = true;
       set <code>CCT_ERROR_REPORTING=true</code>.
     </p>
 
+    <h2 id="mcp-server">MCP server</h2>
+    <p>
+      The aitmpl MCP server at <code>mcp.aitmpl.com</code> lets Claude and other AI tools search the catalog, read a component and
+      get the command that installs it. It has no accounts and needs no sign-in. The words you search for and the components you
+      look up are used only to answer that request: the server does not store or log them, and it never receives your
+      conversation, your files or any account details from the AI tool. Cloudflare, which runs the server, processes the request's
+      IP address and metadata to deliver it and protect it from abuse. The server installs nothing; a component is installed only
+      when you or your agent runs the returned command, and then the CLI usage statistics described above apply.
+    </p>
+
     <h2>Accounts and collections</h2>
     <p>
       Signing in is optional for browsing the catalog and handled by Clerk. You need an account to save collections and to open
@@ -123,7 +133,7 @@ export const prerender = true;
 
     <h2>Service providers</h2>
     <ul>
-      <li>Cloudflare: hosting and content delivery.</li>
+      <li>Cloudflare: hosting, content delivery and the MCP server.</li>
       <li>Supabase and Neon: databases for usage statistics, collections, email records and placements.</li>
       <li>Clerk: sign-in.</li>
       <li>GitHub: OAuth for "Send to repo", the public source repository, and the files the CLI downloads.</li>

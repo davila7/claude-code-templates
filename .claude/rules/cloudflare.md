@@ -11,6 +11,7 @@ Independent worker projects, deployed separately from the dashboard Pages projec
 
 - **crons**: Calls dashboard API endpoints on a schedule — `/api/health-check` (hourly)
 - **docs-monitor**: Monitors code.claude.com/docs changes hourly, sends Telegram notifications
+- **mcp**: Remote MCP server for the catalog at mcp.aitmpl.com (TypeScript, `agents` + MCP SDK v2; its own README)
 - **pulse**: Weekly KPI report (GitHub, Supabase, npm, GA) every Sunday 14:00 UTC via Telegram
 
 ## Architecture
