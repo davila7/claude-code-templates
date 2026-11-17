@@ -70,6 +70,7 @@ REPOS = [
     ("annavetech/kumi", "https://docs.annave.tech/kumi/"),
     ("lliu56/minicut-skills", "https://www.minicut.ai/?utm_source=claude-code-templates&utm_medium=integration"),
     ("fainir/frugal", None),
+    ("doronp/nogpu-mcp", "https://nogpu.dev"),
 ]
 
 DESCRIPTION_OVERRIDES = {
