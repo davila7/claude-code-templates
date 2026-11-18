@@ -3437,9 +3437,9 @@
         "issueCount": 0,
         "analysis": "complete",
         "findings": [],
-        "hash": "6ba62f6aa2fa1d47",
+        "hash": "751af8d92ad45370",
         "version": "2.12.0",
-        "scannedAt": "2026-11-13T02:45:35Z"
+        "scannedAt": "2026-11-18T06:08:29Z"
       }
     },
     {
@@ -3751,7 +3751,7 @@
       "path": "database/supabase-schema-architect.md",
       "category": "database",
       "type": "agent",
-      "description": "Supabase database schema design specialist. Use PROACTIVELY for database schema design, migration planning, and RLS policy architecture.",
+      "description": "MUST BE USED for database work in a Supabase project (a supabase/ folder, @supabase/supabase-js, or the user says Supabase), including small changes and rushed fixes: designing tables, writing migrations, Row Level Security policies, auth.users triggers and profiles, Storage bucket policies, views and RPC functions, fixing 'infinite recursion detected in policy' or 'permission denied' errors, and reviewing a schema before launch. Writes migrations whose grants and policies hold when the browser talks straight to the database, and proves them as two different users before handing them back.\n\n<example>\nuser: \"Set up the Supabase schema for our team app: organizations, members with roles, projects and tasks.\"\nassistant: \"I'll use the supabase-schema-architect agent: it will write the migration with grants and RLS for every table, a recursion-free membership check, and then prove as two users in two organizations that neither can read or move the other's rows.\"\n</example>\n\n<example>\nuser: \"Prod says 'infinite recursion detected in policy for relation memberships'. Fix it fast.\"\nassistant: \"I'll use the supabase-schema-architect agent to replace the self-referencing policy with a locked-down security definer helper and test that members still see only their own organizations.\"\n</example>\n\n<example>\nuser: \"Review our Supabase migrations before launch.\"\nassistant: \"I'll use the supabase-schema-architect agent to check what the anon and authenticated roles can actually reach: tables without RLS, policies, views, RPC functions and Storage, most severe first.\"\n</example>",
       "author": "",
       "repo": "",
       "version": "",
@@ -3769,13 +3769,13 @@
       "skillspector": {
         "score": 0,
         "severity": "LOW",
-        "recommendation": "SAFE",
+        "recommendation": "CAUTION",
         "issueCount": 0,
-        "analysis": "complete",
+        "analysis": "partial",
         "findings": [],
-        "hash": "6c69e20ada8a5457",
+        "hash": "82fbe77ddc130df0",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-18T06:08:29Z"
       }
     },
     {
