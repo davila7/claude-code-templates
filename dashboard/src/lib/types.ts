@@ -55,6 +55,31 @@ export interface SkillSpectorResult {
   scannedAt?: string;
 }
 
+// NVIDIA SkillEvaluator Harness Check per skill, written by scripts/harness_catalog.py.
+// Display-only, like SkillSpector: never used for ordering, search or ranking.
+export interface HarnessNote {
+  id: string;
+  effect: string;
+  message: string;
+  fix: string;
+}
+
+export interface HarnessAgent {
+  /** claude-code | codex | copilot-cli | opencode | hermes | openclaw */
+  id: string;
+  /** loads | degraded | not_loaded */
+  status: string;
+  /** Agent release the loading rules were verified on. */
+  verified: string;
+  notes: HarnessNote[];
+}
+
+export interface HarnessResult {
+  agents: HarnessAgent[];
+  version?: string;
+  checkedAt?: string;
+}
+
 export interface ComponentsData {
   agents: Component[];
   commands: Component[];

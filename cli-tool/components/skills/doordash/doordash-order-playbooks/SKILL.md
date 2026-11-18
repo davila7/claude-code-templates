@@ -84,9 +84,9 @@ User says something like "order my post-gym bowl" / "the usual after the gym":
 
    | | Stored | Current |
    |---|---|---|
-   | Harvest Bowl | $13.95 | $14.95 ⬆ |
-   | Lemonade | $3.50 | ❌ missing |
-   | **Subtotal** | **$17.45** | **$14.95** |
+   | Harvest Bowl | USD 13.95 | USD 14.95 ⬆ |
+   | Lemonade | USD 3.50 | ❌ missing |
+   | **Subtotal** | **USD 17.45** | **USD 14.95** |
 
    Present the diff table to the user. Never skip this step, even when
    everything matches — say "matches your baseline" explicitly.

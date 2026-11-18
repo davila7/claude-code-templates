@@ -844,7 +844,7 @@ app.on('web-contents-created', (_event, contents) => {
 - Not suitable for apps where minimal install size is critical (consider Tauri instead)
 - Single-window apps are simpler to architect; multi-window state synchronization requires careful IPC design
 - Auto-update on Linux requires distributing via Snap, Flatpak, or custom mechanisms — `electron-updater` has limited Linux support
-- macOS notarization requires an Apple Developer account ($99/year) and is mandatory for distribution outside the Mac App Store
+- macOS notarization requires an Apple Developer account (USD 99/year) and is mandatory for distribution outside the Mac App Store
 - Debugging main process issues requires VS Code or Chrome DevTools via `--inspect` flag — there is no integrated debugger in Electron itself
 
 ## Related Skills

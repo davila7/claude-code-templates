@@ -366,6 +366,10 @@ in every workflow, so PR scores match the catalog; it is not published to PyPI.
 Bump the tag in all five workflows together. Risk bands: 0-20 LOW, 21-50 MEDIUM, 51-80 HIGH,
 81-100 CRITICAL.
 
+#### Agent compatibility (SkillEvaluator Harness Check)
+
+`scripts/harness_catalog.py` runs `skillevaluator harness-check` ([NVIDIA SkillEvaluator](https://github.com/NVIDIA/SkillEvaluator), Apache-2.0, pinned `skillevaluator==1.0.1` via pipx, no API key, no agent run) on every skill: whether Claude Code, Codex, Copilot CLI, OpenCode, Hermes and OpenClaw load it as written, rewrite part of it or drop it. The generator stores a `harness` object per skill in `docs/components.json` (with its cache hash) and in the skill's content file, which the component page's Compatibility tab shows (`HarnessReport.tsx`); it is stripped from the dashboard index. Same cache rule as SkillSpector (file hash + version, so a version bump rechecks every skill, ~3 min); `--skip-harness` keeps the previous results. On PRs, the `harness-check` job of `skill-security-scan.yml` comments on changed skills and never blocks. Display-only: never use it for ordering, search or ranking. Only Harness Check is adopted: SkillEvaluator's Tier 1 gate and quality score flag our layout and semver (43 of 80 sampled skills "failed" on 2026-11-18), and Tiers 2/3 need API keys. Write amounts in skills as `USD 10`, not `$10`: Claude Code and OpenCode read `$<number>` as an argument placeholder.
+
 #### Statuslines with Python Scripts
 
 Statuslines can reference Python scripts that are auto-downloaded to `.claude/scripts/`:

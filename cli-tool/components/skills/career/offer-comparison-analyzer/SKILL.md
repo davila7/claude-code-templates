@@ -78,36 +78,36 @@ Systematic comparison framework that considers:
 OFFER A - TOTAL COMPENSATION
 
 CASH
-Base Salary:                    $150,000
-Signing Bonus (year 1 only):     $25,000
-Target Bonus (15%):              $22,500
+Base Salary:                    USD 150,000
+Signing Bonus (year 1 only):     USD 25,000
+Target Bonus (15%):              USD 22,500
 --------------------------------
-Cash Compensation:              $197,500 (year 1)
-                               $172,500 (ongoing)
+Cash Compensation:              USD 197,500 (year 1)
+                               USD 172,500 (ongoing)
 
 EQUITY
-RSU Grant: $200,000 over 4 years
-Annual Value:                    $50,000
+RSU Grant: USD 200,000 over 4 years
+Annual Value:                    USD 50,000
 --------------------------------
-Equity Compensation:             $50,000/year
+Equity Compensation:             USD 50,000/year
 
 BENEFITS
-401(k) Match (4%):               $6,000
-Health Insurance:                $15,000 (employer portion)
-HSA Contribution:                 $1,000
+401(k) Match (4%):               USD 6,000
+Health Insurance:                USD 15,000 (employer portion)
+HSA Contribution:                 USD 1,000
 --------------------------------
-Benefits Value:                  $22,000/year
+Benefits Value:                  USD 22,000/year
 
 PERKS
 Vacation: 20 days (vs 10 standard)
-  Extra 10 days × ~$575/day:      $5,750 value
-Remote Work Savings:              $3,000 (commute, lunch)
-Professional Dev:                 $2,000 budget
+  Extra 10 days × ~USD 575/day:   USD 5,750 value
+Remote Work Savings:              USD 3,000 (commute, lunch)
+Professional Dev:                 USD 2,000 budget
 --------------------------------
-Perks Value:                     $10,750/year
+Perks Value:                     USD 10,750/year
 
-TOTAL YEAR 1:        $280,250
-TOTAL ONGOING:       $255,250/year
+TOTAL YEAR 1:        USD 280,250
+TOTAL ONGOING:       USD 255,250/year
 ```
 
 ## Side-by-Side Comparison Template
@@ -115,25 +115,25 @@ TOTAL ONGOING:       $255,250/year
 ```markdown
 # OFFER COMPARISON
 
-|                          | Company A | Company B | Notes |
-|--------------------------|-----------|-----------|-------|
-| **CASH**                 |           |           |       |
-| Base Salary              | $150,000  | $160,000  | B +$10K |
-| Signing Bonus            | $25,000   | $10,000   | A +$15K |
-| Target Bonus             | 15%       | 10%       | A +$6.5K |
-| **Cash Total (Yr 1)**    | $197,500  | $186,000  | A +$11.5K |
-|                          |           |           |       |
-| **EQUITY**               |           |           |       |
-| Grant Value (4yr)        | $200,000  | $300,000  | B +$100K |
-| Annual Equity            | $50,000   | $75,000   | B +$25K |
-|                          |           |           |       |
-| **BENEFITS**             |           |           |       |
-| 401(k) Match             | 4%        | 6%        | B +$3.2K |
-| Health Insurance         | Good      | Premium   | B better |
-| PTO                      | 20 days   | Unlimited | Varies |
-|                          |           |           |       |
-| **TOTAL COMP (Yr 1)**    | $280,250  | $285,000  | B +$4.7K |
-| **TOTAL COMP (Ongoing)** | $255,250  | $275,000  | B +$19.7K |
+|                          | Company A   | Company B   | Notes        |
+|--------------------------|-------------|-------------|--------------|
+| **CASH**                 |             |             |              |
+| Base Salary              | USD 150,000 | USD 160,000 | B +USD 10K   |
+| Signing Bonus            | USD 25,000  | USD 10,000  | A +USD 15K   |
+| Target Bonus             | 15%         | 10%         | A +USD 6.5K  |
+| **Cash Total (Yr 1)**    | USD 197,500 | USD 186,000 | A +USD 11.5K |
+|                          |             |             |              |
+| **EQUITY**               |             |             |              |
+| Grant Value (4yr)        | USD 200,000 | USD 300,000 | B +USD 100K  |
+| Annual Equity            | USD 50,000  | USD 75,000  | B +USD 25K   |
+|                          |             |             |              |
+| **BENEFITS**             |             |             |              |
+| 401(k) Match             | 4%          | 6%          | B +USD 3.2K  |
+| Health Insurance         | Good        | Premium     | B better     |
+| PTO                      | 20 days     | Unlimited   | Varies       |
+|                          |             |             |              |
+| **TOTAL COMP (Yr 1)**    | USD 280,250 | USD 285,000 | B +USD 4.7K  |
+| **TOTAL COMP (Ongoing)** | USD 255,250 | USD 275,000 | B +USD 19.7K |
 ```
 
 ## Non-Monetary Factor Framework
@@ -190,7 +190,7 @@ Average: 7.75/10
 - Funding runway
 - Market position
 - Company trajectory
-- Equity risk (could be worth $0)
+- Equity risk (could be worth USD 0)
 
 **Questions:**
 - What happens if company struggles?

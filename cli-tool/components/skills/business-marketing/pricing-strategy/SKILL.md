@@ -62,22 +62,22 @@ Price should be based on value delivered, not cost to serve:
 ┌─────────────────────────────────────────────────────────┐
 │                                                         │
 │  Customer's perceived value of your solution            │
-│  ────────────────────────────────────────────── $1000   │
+│  ───────────────────────────────────────────── USD 1000 │
 │                                                         │
 │  ↑ Value captured (your opportunity)                    │
 │                                                         │
 │  Your price                                             │
-│  ────────────────────────────────────────────── $500    │
+│  ────────────────────────────────────────────── USD 500 │
 │                                                         │
 │  ↑ Consumer surplus (value customer keeps)              │
 │                                                         │
 │  Next best alternative                                  │
-│  ────────────────────────────────────────────── $300    │
+│  ────────────────────────────────────────────── USD 300 │
 │                                                         │
 │  ↑ Differentiation value                                │
 │                                                         │
 │  Your cost to serve                                     │
-│  ────────────────────────────────────────────── $50     │
+│  ────────────────────────────────────────────── USD 50  │
 │                                                         │
 └─────────────────────────────────────────────────────────┘
 ```
@@ -123,13 +123,13 @@ Ask each respondent:
 ```
 Price Sensitivity Analysis Results:
 ─────────────────────────────────
-Point of Marginal Cheapness:  $29/mo
-Optimal Price Point:          $49/mo
-Indifference Price Point:     $59/mo
-Point of Marginal Expensiveness: $79/mo
+Point of Marginal Cheapness:  USD 29/mo
+Optimal Price Point:          USD 49/mo
+Indifference Price Point:     USD 59/mo
+Point of Marginal Expensiveness: USD 79/mo
 
-Recommended range: $49-59/mo
-Current price: $39/mo (below optimal)
+Recommended range: USD 49-59/mo
+Current price: USD 39/mo (below optimal)
 Opportunity: 25-50% price increase without significant demand impact
 ```
 
@@ -259,7 +259,7 @@ Track how customers use your product:
 ```
 Usage-Value Correlation Analysis:
 ─────────────────────────────────
-Segment: High-LTV customers (>$10k ARR)
+Segment: High-LTV customers (>USD 10k ARR)
 Average monthly active users: 15
 Average projects: 8
 Average integrations: 4
@@ -339,7 +339,7 @@ Recommendation: Price per user, gate integrations to higher tiers
 ```
 ┌────────────────┬─────────────────┬─────────────────┬─────────────────┐
 │                │ Starter         │ Pro             │ Business        │
-│                │ $29/mo          │ $79/mo          │ $199/mo         │
+│                │ USD 29/mo       │ USD 79/mo       │ USD 199/mo      │
 ├────────────────┼─────────────────┼─────────────────┼─────────────────┤
 │ Users          │ Up to 5         │ Up to 20        │ Unlimited       │
 │ Projects       │ 10              │ Unlimited       │ Unlimited       │
@@ -377,9 +377,9 @@ Different customers have different:
 
 | Persona | Size | Needs | WTP | Example |
 |---------|------|-------|-----|---------|
-| Freelancer | 1 person | Basic features | Low | $19/mo |
-| Small Team | 2-10 | Collaboration | Medium | $49/mo |
-| Growing Co | 10-50 | Scale, integrations | Higher | $149/mo |
+| Freelancer | 1 person | Basic features | Low | USD 19/mo |
+| Small Team | 2-10 | Collaboration | Medium | USD 49/mo |
+| Growing Co | 10-50 | Scale, integrations | Higher | USD 149/mo |
 | Enterprise | 50+ | Security, support | High | Custom |
 
 **Step 2: Map features to personas**
@@ -571,8 +571,8 @@ We appreciate your continued support of [Product].
 
 - **Anchoring:** Show higher-priced option first
 - **Decoy effect:** Middle tier should be obviously best value
-- **Charm pricing:** $49 vs. $50 (for value-focused)
-- **Round pricing:** $50 vs. $49 (for premium)
+- **Charm pricing:** USD 49 vs. USD 50 (for value-focused)
+- **Round pricing:** USD 50 vs. USD 49 (for premium)
 - **Annual savings:** Show monthly price but offer annual discount (17-20%)
 
 ---
@@ -622,7 +622,7 @@ We appreciate your continued support of [Product].
 ### When to Add Custom Pricing
 
 Add "Contact Sales" when:
-- Deal sizes exceed $10k+ ARR
+- Deal sizes exceed USD 10k+ ARR
 - Customers need custom contracts
 - Implementation/onboarding required
 - Security/compliance requirements
@@ -648,12 +648,12 @@ Add "Contact Sales" when:
 
 **Per-seat at scale:**
 - Volume discounts for large teams
-- Example: $15/user (standard) → $10/user (100+)
+- Example: USD 15/user (standard) → USD 10/user (100+)
 
 **Platform fee + usage:**
 - Base fee for access
 - Usage-based above thresholds
-- Example: $500/mo base + $0.01 per API call
+- Example: USD 500/mo base + USD 0.01 per API call
 
 **Value-based contracts:**
 - Price tied to customer's revenue/outcomes

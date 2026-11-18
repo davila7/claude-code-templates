@@ -70,15 +70,15 @@ ssh -i ~/.ssh/lambda_key ubuntu@<INSTANCE-IP>
 
 | GPU | VRAM | Price/GPU/hr | Best For |
 |-----|------|--------------|----------|
-| B200 SXM6 | 180 GB | $4.99 | Largest models, fastest training |
-| H100 SXM | 80 GB | $2.99-3.29 | Large model training |
-| H100 PCIe | 80 GB | $2.49 | Cost-effective H100 |
-| GH200 | 96 GB | $1.49 | Single-GPU large models |
-| A100 80GB | 80 GB | $1.79 | Production training |
-| A100 40GB | 40 GB | $1.29 | Standard training |
-| A10 | 24 GB | $0.75 | Inference, fine-tuning |
-| A6000 | 48 GB | $0.80 | Good VRAM/price ratio |
-| V100 | 16 GB | $0.55 | Budget training |
+| B200 SXM6 | 180 GB | USD 4.99 | Largest models, fastest training |
+| H100 SXM | 80 GB | USD 2.99-3.29 | Large model training |
+| H100 PCIe | 80 GB | USD 2.49 | Cost-effective H100 |
+| GH200 | 96 GB | USD 1.49 | Single-GPU large models |
+| A100 80GB | 80 GB | USD 1.79 | Production training |
+| A100 40GB | 40 GB | USD 1.29 | Standard training |
+| A10 | 24 GB | USD 0.75 | Inference, fine-tuning |
+| A6000 | 48 GB | USD 0.80 | Good VRAM/price ratio |
+| V100 | 16 GB | USD 0.55 | Budget training |
 
 ### Instance configurations
 

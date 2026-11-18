@@ -495,7 +495,7 @@ Always exclude:
 - [ ] Lead gen form templates created
 - [ ] Document assets uploaded (for Document Ads)
 - [ ] Audience size validated (not too narrow)
-- [ ] Budget realistic for LinkedIn CPCs ($8-15+)
+- [ ] Budget realistic for LinkedIn CPCs (USD 8-15+)
 
 ---
 

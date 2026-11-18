@@ -91,9 +91,9 @@ Pricing Notion templates for profit
 ### Price Anchoring
 | Tier | Price Range | What to Include |
 |------|-------------|-----------------|
-| Basic | $15-29 | Core template only |
-| Pro | $39-79 | Template + extras |
-| Ultimate | $99-199 | Everything + updates |
+| Basic | USD 15-29 | Core template only |
+| Pro | USD 39-79 | Template + extras |
+| Ultimate | USD 99-199 | Everything + updates |
 
 ### Pricing Factors
 ```
@@ -104,14 +104,14 @@ Value created:
 
 Example:
 - Saves 5 hours/month
-- 5 hours × $50/hour × 12 = $3000 value
-- Price at $49-99 (1-3% of value)
+- 5 hours × USD 50/hour × 12 = USD 3000 value
+- Price at USD 49-99 (1-3% of value)
 ```
 
 ### Bundle Strategy
-- Individual templates: $29-49
-- Bundle of 3-5: $79-129 (30% off)
-- All-access: $149-299 (best value)
+- Individual templates: USD 29-49
+- Bundle of 3-5: USD 79-129 (30% off)
+- All-access: USD 149-299 (best value)
 
 ### Free vs Paid
 | Free Template | Purpose |

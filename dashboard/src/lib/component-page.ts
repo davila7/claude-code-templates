@@ -164,3 +164,39 @@ export function nextStepItems<T extends Linkable>(current: T, siblings: T[], loo
   }
   return items;
 }
+
+// Agent compatibility (NVIDIA SkillEvaluator Harness Check) on the skill page.
+export const HARNESS_AGENT_NAMES: Record<string, string> = {
+  'claude-code': 'Claude Code',
+  codex: 'Codex',
+  'copilot-cli': 'Copilot CLI',
+  opencode: 'OpenCode',
+  hermes: 'Hermes',
+  openclaw: 'OpenClaw',
+};
+
+export function harnessAgentName(id: string): string {
+  return HARNESS_AGENT_NAMES[id] ?? id;
+}
+
+/** "Loads in 6 agents" / "Loads in 5 of 6 agents", plus how many agents change part of the text. */
+export function harnessSummary(agents: { status: string; notes: unknown[] }[] | undefined): {
+  label: string;
+  loads: number;
+  total: number;
+  notes: number;
+} {
+  const list = agents ?? [];
+  const total = list.length;
+  const loads = list.filter((a) => a.status !== 'not_loaded').length;
+  const notes = list.reduce((n, a) => n + a.notes.length, 0);
+  const label = total === 0 ? '' : loads === total ? `Loads in ${total} agents` : `Loads in ${loads} of ${total} agents`;
+  return { label, loads, total, notes };
+}
+
+/** What the agent card says under the agent's name. */
+export function harnessStatusText(status: string, notes: number): string {
+  if (status === 'not_loaded') return 'not loaded';
+  if (notes > 0) return `loads · ${formatCount(notes, 'note', 'notes')}`;
+  return 'loads';
+}
