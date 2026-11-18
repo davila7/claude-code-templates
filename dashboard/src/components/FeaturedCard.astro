@@ -1,15 +1,20 @@
 ---
 import type { FeaturedItem } from '../lib/types';
+import { featuredPlacement } from '../lib/placements';
 
 interface Props {
   item: FeaturedItem;
 }
 
 const { item } = Astro.props;
+// Impressions and clicks for sponsor reporting (lib/placement-tracking.ts).
+const placement = featuredPlacement(item.url);
 ---
 
 <a
   href={item.url}
+  data-spot={placement ?? undefined}
+  data-spot-surface={placement ? 'home' : undefined}
   class="group flex items-center gap-3 p-4 bg-[var(--color-card-bg)] rounded-md border border-[var(--color-border)] hover:bg-[var(--color-card-hover)] hover:border-[var(--color-accent)] transition-all duration-150"
 >
   <div class="w-11 h-11 rounded-sm bg-[var(--color-surface-2)] border border-[var(--color-border)] flex items-center justify-center shrink-0 p-2">
