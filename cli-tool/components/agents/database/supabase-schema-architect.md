@@ -16,7 +16,7 @@ hooks:
             except Exception:
                 print("Blocked: the Supabase guard could not read this tool call.", file=sys.stderr)
                 sys.exit(2)
-            if re.search(r"\bsupabase\b[^;&|\n]*?\b(db\s+push\b(?![^;&|\n]*--(local|dry-run)\b)|db\s+reset\b[^;&|\n]*--(linked|db-url)|migration\s+(repair|(up|squash)\b[^;&|\n]*--(linked|db-url))|functions\s+(deploy|delete)|secrets\s+(set|unset)|config\s+push|(projects|orgs)\s+create|projects\s+delete|branches\s+(create|update|delete))\b|\bdb\.[a-z0-9]{10,}\.supabase\.co\b|pooler\.supabase\.com", c.replace("\\\n", " "), re.I):
+            if re.search(r"\bsupabase\b[^;&|\n]*?\b(db\s+push\b(?![^;&|\n]*--(local|dry-run)(=true)?(?=[\s;&|)]|$))|db\s+reset\b[^;&|\n]*--(linked|db-url)|migration\s+(repair|(up|squash)\b[^;&|\n]*--(linked|db-url))|seed\s+buckets\b[^;&|\n]*--(linked|db-url)|storage\s+(rm|mv|cp)\b(?![^;&|\n]*--local(=true)?(?=[\s;&|)]|$))|functions\s+(deploy|delete)|secrets\s+(set|unset)|config\s+push|(projects|orgs)\s+create|projects\s+delete|branches\s+(create|update|delete|pause|unpause)|(domains|vanity-subdomains|network-restrictions|network-bans|ssl-enforcement|postgres-config|sso|backups|encryption)\s+(create|update|delete|remove|add|activate|reverify|restore|set))\b|\bdb\.[a-z0-9]{10,}\.supabase\.co\b|pooler\.supabase\.com", c.replace("\\\n", " "), re.I):
                 print("Blocked: this command writes to or connects to a hosted Supabase project. Work locally; if the person wants it run, tell them the command to run themselves (! <command>).", file=sys.stderr)
                 sys.exit(2)
             '
