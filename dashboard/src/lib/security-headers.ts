@@ -11,7 +11,6 @@
  * Third parties:
  * - Clerk (custom FAPI host clerk.aitmpl.com, Turnstile on sign-in)
  * - Google Analytics (gtag; with Google signals it also sends to www.google.com)
- * - Hotjar: only the blog articles load it (NPS survey)
  * - jsDelivr: mermaid in some blog articles
  * - Google Fonts
  * Images may come from any https host: component markdown embeds them.
@@ -31,11 +30,10 @@ const DIRECTIVES: Record<string, string[]> = {
     'https://www.googletagmanager.com',
     'https://clerk.aitmpl.com',
     'https://challenges.cloudflare.com',
-    'https://*.hotjar.com',
     'https://cdn.jsdelivr.net',
   ],
-  'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com', 'https://*.hotjar.com'],
-  'font-src': ["'self'", 'data:', 'https://fonts.gstatic.com', 'https://*.hotjar.com'],
+  'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+  'font-src': ["'self'", 'data:', 'https://fonts.gstatic.com'],
   'img-src': ["'self'", 'data:', 'blob:', 'https:'],
   'connect-src': [
     "'self'",
@@ -45,12 +43,9 @@ const DIRECTIVES: Record<string, string[]> = {
     'https://*.google-analytics.com',
     'https://*.analytics.google.com',
     'https://www.google.com',
-    'https://*.hotjar.com',
-    'https://*.hotjar.io',
-    'wss://*.hotjar.com',
     'https://cdn.jsdelivr.net',
   ],
-  'frame-src': ['https://challenges.cloudflare.com', 'https://*.hotjar.com'],
+  'frame-src': ['https://challenges.cloudflare.com'],
   'worker-src': ["'self'", 'blob:'],
   'object-src': ["'none'"],
   'base-uri': ["'self'"],
