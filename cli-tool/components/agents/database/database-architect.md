@@ -199,5 +199,7 @@ have not checked against the actual DDL.
 
 - **postgres-pro**: query tuning, `EXPLAIN ANALYZE`, configuration, replication.
 - **neon-database-architect**: Neon branching, autoscaling, serverless driver.
+- **supabase-schema-architect**: Supabase projects (Data API grants, `auth.uid()`
+  policies, auth triggers, Storage policies).
 - **backend-developer**: ORM models and application code for the new schema.
 - **security-auditor**: PII classification, encryption, compliance controls.

@@ -190,6 +190,12 @@ const schemaData = JSON.stringify({
     </script>
 
     <script>
+      // Impressions and clicks of [data-spot] placements, for sponsor reports.
+      import { initPlacementTracking } from '../lib/placement-tracking';
+      initPlacementTracking();
+    </script>
+
+    <script>
       // Sidebar collapse functionality
       function initSidebarCollapse() {
         const sidebar = document.getElementById('sidebar');
