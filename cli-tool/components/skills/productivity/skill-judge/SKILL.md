@@ -18,14 +18,14 @@ A Skill is NOT a tutorial. A Skill is a **knowledge externalization mechanism**.
 Traditional AI knowledge is locked in model parameters. To teach new capabilities:
 ```
 Traditional: Collect data → GPU cluster → Train → Deploy new version
-Cost: $10,000 - $1,000,000+
+Cost: USD 10,000 - 1,000,000+
 Timeline: Weeks to months
 ```
 
 Skills change this:
 ```
 Skill: Edit SKILL.md → Save → Takes effect on next invocation
-Cost: $0
+Cost: USD 0
 Timeline: Instant
 ```
 

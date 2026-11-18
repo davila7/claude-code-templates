@@ -671,7 +671,7 @@ Example: "I stopped posting daily and my engagement doubled"
 Why it works: Curiosity gap + contrarian
 
 Pattern: "[Specific number] [things] that [outcome]:"
-Example: "7 pricing mistakes that cost me $50K:"
+Example: "7 pricing mistakes that cost me USD 50K:"
 Why it works: Specificity + loss aversion
 
 Pattern: "[Controversial take]"
@@ -703,7 +703,7 @@ Take proven patterns and make them yours with these voice principles:
 **Specific > Vague**
 ```
 ❌ "I made good revenue"
-✅ "I made $47,329"
+✅ "I made USD 47,329"
 
 ❌ "It took a while"
 ✅ "It took 47 days"

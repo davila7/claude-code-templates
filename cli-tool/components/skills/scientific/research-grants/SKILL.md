@@ -85,7 +85,7 @@ For detailed guidance on creating schematics, refer to the scientific-schematics
 - Significance, Innovation, Approach as core review criteria
 - Preliminary data typically required for R01s
 - Emphasis on rigor, reproducibility, and clinical relevance
-- Modular budgets ($250K increments) for most R01s
+- Modular budgets (USD 250K increments) for most R01s
 - Multiple resubmission opportunities
 
 ### DOE (Department of Energy)
@@ -464,7 +464,7 @@ Develop realistic budgets that align with the proposed work and agency guideline
 
 **Budget Categories** (typical):
 - **Personnel**: Salary and fringe for PI, co-Is, postdocs, students, staff
-- **Equipment**: Items >$5,000 (varies by agency)
+- **Equipment**: Items >USD 5,000 (varies by agency)
 - **Travel**: Conferences, collaborations, fieldwork
 - **Materials and Supplies**: Consumables, reagents, software
 - **Other Direct Costs**: Publication costs, participant incentives, consulting
@@ -480,9 +480,9 @@ Develop realistic budgets that align with the proposed work and agency guideline
 - Graduate student support encouraged
 
 **NIH**:
-- Modular budgets for ≤$250K direct costs per year (R01)
-- Detailed budgets for >$250K or complex awards
-- Salary cap applies (~$221,900 for 2024)
+- Modular budgets for ≤USD 250K direct costs per year (R01)
+- Detailed budgets for >USD 250K or complex awards
+- Salary cap applies (~USD 221,900 for 2024)
 - Limited to 1 month (8.33% FTE) for most PIs
 
 **DOE**:
@@ -685,18 +685,18 @@ For detailed review criteria by agency, refer to `references/review_criteria.md`
 
 ### NSF Proposal Types
 
-- **Standard Research Proposals**: Most common, up to $500K and 5 years
-- **CAREER Awards**: Early career faculty, integrated research/education, $400-500K over 5 years
+- **Standard Research Proposals**: Most common, up to USD 500K and 5 years
+- **CAREER Awards**: Early career faculty, integrated research/education, USD 400-500K over 5 years
 - **Collaborative Research**: Multiple institutions, separately submitted, shared research plan
-- **RAPID**: Urgent research opportunities, up to $200K, no preliminary data required
-- **EAGER**: High-risk, high-reward exploratory research, up to $300K
+- **RAPID**: Urgent research opportunities, up to USD 200K, no preliminary data required
+- **EAGER**: High-risk, high-reward exploratory research, up to USD 300K
 - **EArly-concept Grants for Exploratory Research (EAGER)**: Early-stage exploratory work
 
 ### NIH Award Mechanisms
 
-- **R01**: Research Project Grant, $250K+ per year, 3-5 years, most common
-- **R21**: Exploratory/Developmental Research, up to $275K over 2 years, no preliminary data
-- **R03**: Small Grant Program, up to $100K over 2 years
+- **R01**: Research Project Grant, USD 250K+ per year, 3-5 years, most common
+- **R21**: Exploratory/Developmental Research, up to USD 275K over 2 years, no preliminary data
+- **R03**: Small Grant Program, up to USD 100K over 2 years
 - **R15**: Academic Research Enhancement Awards (AREA), for primarily undergraduate institutions
 - **R35**: MIRA (Maximizing Investigators' Research Award), program-specific
 - **P01**: Program Project Grant, multi-project integrated research
@@ -720,7 +720,7 @@ For detailed review criteria by agency, refer to `references/review_criteria.md`
 
 - **Varies by Office**: BTO, DSO, I2O, MTO, STO, TTO
 - **Program-Specific BAAs**: Broad Agency Announcements for specific thrusts
-- **Young Faculty Award (YFA)**: Early career researchers, up to $500K
+- **Young Faculty Award (YFA)**: Early career researchers, up to USD 500K
 - **Director's Fellowship**: High-risk, paradigm-shifting research
 
 For detailed program guidance, refer to `references/funding_mechanisms.md`.

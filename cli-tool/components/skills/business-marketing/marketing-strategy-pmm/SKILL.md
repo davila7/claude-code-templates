@@ -54,9 +54,9 @@ This skill serves:
 **Current State Analysis**:
 ```
 Stage: Series A
-Funding: $5-15M raised
+Funding: USD 5-15M raised
 Team Size: 20-50 people
-Revenue: $1-5M ARR
+Revenue: USD 1-5M ARR
 Market Position: Challenger/Niche leader
 Growth Rate Target: 3-5x YoY
 
@@ -83,7 +83,7 @@ Key Challenges:
 - Company size: 50-5000 employees (Series A sweet spot)
 - Industry: SaaS, Tech, Professional Services
 - Geography: US, Canada, UK, Germany, France (prioritize by TAM)
-- Revenue: $5M-$500M annual
+- Revenue: USD 5M-500M annual
 - Funding stage: Seed to Growth (avoid pre-product)
 
 **Technographics**:
@@ -137,9 +137,9 @@ Key Challenges:
 **Segmentation Dimensions**:
 
 **By Company Size** (recommend starting with one):
-- **SMB** (10-200 employees) - Self-serve PLG, low touch, $100-$2k ACV
-- **Mid-Market** (200-2000 employees) - Hybrid, inside sales, $2k-$50k ACV
-- **Enterprise** (2000+ employees) - Sales-led, field sales, $50k+ ACV
+- **SMB** (10-200 employees) - Self-serve PLG, low touch, USD 100-2k ACV
+- **Mid-Market** (200-2000 employees) - Hybrid, inside sales, USD 2k-50k ACV
+- **Enterprise** (2000+ employees) - Sales-led, field sales, USD 50k+ ACV
 
 **By Vertical** (choose 2-3 focus verticals):
 - Horizontal: Broad appeal (e.g., project management for any industry)
@@ -164,7 +164,7 @@ Key Challenges:
 Segment: US Mid-Market SaaS Companies (200-2000 employees)
 Priority: 1 (Highest)
 Rationale:
-  - Largest TAM ($5B)
+  - Largest TAM (USD 5B)
   - Fastest sales cycle (60 days avg)
   - Highest win rate (35%)
   - Strong product fit (use cases align)
@@ -269,7 +269,7 @@ LEVEL 2: Key Benefits (3-5 bullet points)
 - Benefit 1: [Speed] → Ship products 2x faster
 - Benefit 2: [Quality] → Reduce bugs by 50%
 - Benefit 3: [Collaboration] → Align teams in real-time
-- Benefit 4: [Cost] → Save $100k/year on tools
+- Benefit 4: [Cost] → Save USD 100k/year on tools
 
 LEVEL 3: Features (supporting evidence)
 - Feature → Benefit → Outcome
@@ -288,7 +288,7 @@ LEVEL 4: Proof Points
 **Economic Buyer** (VP/Director):
 - Primary concern: ROI, business outcomes
 - Tone: Professional, data-driven, results-focused
-- Key message: "Increase revenue by 25% while reducing costs by $200k/year"
+- Key message: "Increase revenue by 25% while reducing costs by USD 200k/year"
 - Proof: ROI calculator, case studies with $ impact
 
 **Technical Buyer** (Engineer/Architect):
@@ -340,7 +340,7 @@ LEVEL 4: Proof Points
 ### 3.1 Competitive Analysis Framework
 
 **Tier 1: Direct Competitors** (head-to-head, same category)
-- [Competitor A]: Market leader, $100M+ ARR
+- [Competitor A]: Market leader, USD 100M+ ARR
 - [Competitor B]: Fast-growing challenger, Series B
 - [Competitor C]: Open-source alternative
 
@@ -374,11 +374,11 @@ COMPETITOR: [Competitor A]
 
 OVERVIEW:
 - Founded: 2015
-- Funding: Series C, $75M raised
+- Funding: Series C, USD 75M raised
 - HQ: San Francisco
 - Size: 200 employees
 - Customers: 5,000+ companies
-- Pricing: $50-$500/user/month
+- Pricing: USD 50-500/user/month
 
 POSITIONING:
 - They say: "All-in-one platform for modern teams"
@@ -508,21 +508,21 @@ Action Items:
 - Entry: Free trial or freemium
 - Buyer: End user → Manager → VP
 - Sales: Low touch or self-serve
-- ACV: <$10k
+- ACV: <USD 10k
 - Example: Slack, Notion, Figma
 
 **Sales-Led Growth**:
 - Entry: Demo request → Sales qualification
 - Buyer: VP → C-level
 - Sales: High touch, consultative
-- ACV: $25k+
+- ACV: USD 25k+
 - Example: Salesforce, Workday, SAP
 
 **Hybrid (PLG + Sales)**:
 - Entry: Free trial for SMB, demo for Enterprise
 - Buyer: End user (PLG) or Executive (Sales-Led)
 - Sales: Self-serve → Assisted → Enterprise
-- ACV: $5k-$100k
+- ACV: USD 5k-100k
 - Example: HubSpot, Atlassian, Zoom
 
 **Series A Recommendation**: Start with **Hybrid**
@@ -599,7 +599,7 @@ Week 9-12: Scale
   - Paid ads (Google + LinkedIn) targeting US companies
   - Partnerships with US-based tech companies
 - Budget: 50% of total marketing spend
-- Target: $1M ARR from US by Month 6
+- Target: USD 1M ARR from US by Month 6
 
 **Phase 2: UK Market** (Months 4-9)
 - Why: English-speaking, gateway to EU, similar to US
@@ -609,7 +609,7 @@ Week 9-12: Scale
   - Content localization (British spelling, cultural nuances)
   - UK partnerships (local SaaS companies)
 - Budget: 20% of marketing spend
-- Target: $500k ARR from UK by Month 9
+- Target: USD 500k ARR from UK by Month 9
 
 **Phase 3: DACH (Germany/Austria/Switzerland)** (Months 7-12)
 - Why: Largest EU economy, high data privacy standards
@@ -620,7 +620,7 @@ Week 9-12: Scale
   - Partnerships with German tech companies
   - Local case studies and testimonials
 - Budget: 15% of marketing spend
-- Target: $300k ARR from DACH by Month 12
+- Target: USD 300k ARR from DACH by Month 12
 
 **Phase 4: France** (Months 10-15)
 - Why: Second largest EU market, localization critical
@@ -630,7 +630,7 @@ Week 9-12: Scale
   - French partnerships and case studies
   - Comply with French data regulations
 - Budget: 10% of marketing spend
-- Target: $200k ARR from France by Month 15
+- Target: USD 200k ARR from France by Month 15
 
 **Phase 5: Canada** (Months 7-12)
 - Why: Similar to US, easier entry, smaller market
@@ -639,7 +639,7 @@ Week 9-12: Scale
   - Leverage US sales team (similar buying behavior)
   - Canadian partnerships
 - Budget: 5% of marketing spend
-- Target: $100k ARR from Canada by Month 12
+- Target: USD 100k ARR from Canada by Month 12
 
 **Localization Checklist (per market)**:
 
@@ -655,13 +655,13 @@ Week 9-12: Scale
 **Budget Allocation** (international expansion):
 ```
 Year 1 (Series A):
-- US: 50% ($200k)
-- UK: 20% ($80k)
-- DACH: 15% ($60k)
-- France: 10% ($40k)
-- Canada: 5% ($20k)
+- US: 50% (USD 200k)
+- UK: 20% (USD 80k)
+- DACH: 15% (USD 60k)
+- France: 10% (USD 40k)
+- Canada: 5% (USD 20k)
 
-Total: $400k marketing spend (international)
+Total: USD 400k marketing spend (international)
 Expected ROI: 3:1 (marketing-sourced pipeline : spend)
 ```
 
@@ -675,21 +675,21 @@ Expected ROI: 3:1 (marketing-sourced pipeline : spend)
 - Scope: New product, major feature, platform expansion
 - Audience: Existing customers + new prospects + press
 - Effort: 6-8 weeks prep, full cross-functional launch
-- Budget: $50k-$100k (Series A)
+- Budget: USD 50k-100k (Series A)
 - Activities: Press release, webinar, email series, paid ads, sales blitz
 
 **Tier 2: Standard Launch** (monthly, medium impact)
 - Scope: Significant feature, integration, improvement
 - Audience: Existing customers + select prospects
 - Effort: 3-4 weeks prep, core team involvement
-- Budget: $10k-$25k
+- Budget: USD 10k-25k
 - Activities: Blog post, email announcement, product update, sales enablement
 
 **Tier 3: Minor Launch** (weekly, low impact)
 - Scope: Small feature, bug fix, optimization
 - Audience: Existing customers only
 - Effort: 1 week prep, product + marketing only
-- Budget: <$5k
+- Budget: <USD 5k
 - Activities: In-app notification, changelog, support docs
 
 ### 5.2 Major Launch Playbook (Tier 1)
@@ -810,16 +810,16 @@ WEEK 1 RESULTS:
 Traffic: 10,000 visitors (goal: 8,000) ✅
 MQLs: 250 (goal: 200) ✅
 SQLs: 40 (goal: 50) ⚠️
-Pipeline: $800k (goal: $1M) ⚠️
+Pipeline: USD 800k (goal: USD 1M) ⚠️
 Demos: 80 (goal: 100) ⚠️
 
 TOP CHANNELS:
-1. LinkedIn Ads: 120 MQLs, $150 CPL
-2. Email: 80 MQLs, $25 CPL
-3. Organic: 40 MQLs, $0 CPL
+1. LinkedIn Ads: 120 MQLs, USD 150 CPL
+2. Email: 80 MQLs, USD 25 CPL
+3. Organic: 40 MQLs, USD 0 CPL
 
 UNDERPERFORMING:
-- Google Search: 10 MQLs, $400 CPL (pause and optimize)
+- Google Search: 10 MQLs, USD 400 CPL (pause and optimize)
 - Webinar: 50 registrants, 20% show rate (improve email reminders)
 
 NEXT ACTIONS:
@@ -897,7 +897,7 @@ Demo Tips:
 **6. ROI Calculator** (spreadsheet or web tool)
 - Input: Customer's current costs, time spent, team size
 - Output: Savings with your product, payback period, 3-year ROI
-- Example: "Save $150k/year, 6-month payback, 500% ROI"
+- Example: "Save USD 150k/year, 6-month payback, 500% ROI"
 
 ### 6.2 Sales Training Program
 
@@ -1007,8 +1007,8 @@ Insight: Which assets are most used by sales
 **Slide 1: Executive Summary**
 ```
 Q2 2025 Highlights:
-- Launched Product X (pipeline: $2M, 500 MQLs)
-- Entered UK market (20 new customers, $400k ARR)
+- Launched Product X (pipeline: USD 2M, 500 MQLs)
+- Entered UK market (20 new customers, USD 400k ARR)
 - Improved win rate by 15% (competitive positioning)
 - Published 3 case studies (2x sales usage vs. Q1)
 ```
@@ -1019,9 +1019,9 @@ KPI             Q2 Target   Q2 Actual   Status
 ─────────────────────────────────────────────
 MQLs            800         950         ✅ +19%
 SQLs            150         140         ⚠️ -7%
-Pipeline $      $4M         $3.8M       ⚠️ -5%
+Pipeline $      USD 4M      USD 3.8M    ⚠️ -5%
 Win Rate        30%         35%         ✅ +17%
-Deal Size       $45k        $52k        ✅ +16%
+Deal Size       USD 45k     USD 52k     ✅ +16%
 Sales Velocity  75 days     68 days     ✅ -9%
 ```
 
@@ -1030,7 +1030,7 @@ Sales Velocity  75 days     68 days     ✅ -9%
 What Worked:
 1. Product X launch exceeded MQL target by 19%
 2. Improved competitive positioning → 35% win rate
-3. UK market entry on track ($400k ARR in 3 months)
+3. UK market entry on track (USD 400k ARR in 3 months)
 
 What Didn't Work:
 1. SQL conversion rate dropped from 20% to 15%
@@ -1046,13 +1046,13 @@ Action Items:
 **Slide 4: Next Quarter Plan**
 ```
 Q3 2025 Priorities:
-1. Launch Product Y (pipeline target: $3M)
+1. Launch Product Y (pipeline target: USD 3M)
 2. Enter DACH market (Germany, Austria, Switzerland)
 3. Refresh messaging and website (new positioning)
 4. Scale partnerships (3 new strategic partners)
 5. Build customer advocacy program (10 case studies)
 
-Budget: $150k (up from $120k in Q2)
+Budget: USD 150k (up from USD 120k in Q2)
 Headcount: +1 PMM, +1 Content Marketer
 ```
 
