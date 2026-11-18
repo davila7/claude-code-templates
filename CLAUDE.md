@@ -435,6 +435,9 @@ webhook and were deleted, as were the bot, the Discord workflows and pulse's Dis
 source. Its Neon tables (`claude_code_versions`, `claude_code_changes`,
 `discord_notifications_log`, `monitoring_metadata`) are left in place, unread.
 
+**`/api/spot`** (placement impressions and clicks, for sponsor reports)
+- Elements with `data-spot="featured/<slug>|sponsored/<uuid>"` + `data-spot-surface` are counted by `lib/placement-tracking.ts` (IAB viewability: half visible for 1 s) and added to daily counters in Supabase `placement_daily` (`database/migrations/006_supabase_placement_daily.sql`): no IP, user agent or id. Keep the path and attribute names free of words ad blockers match (`ad`, `sponsor`, `track`, `beacon`). Full guide: `dashboard/docs/sponsor-metrics.md`
+
 ### Shared API Libraries
 
 - `dashboard/src/lib/api/cors.ts` — CORS headers, `corsResponse()`, `jsonResponse()`
@@ -481,7 +484,7 @@ Monitored https://code.claude.com/docs hourly with Telegram notifications. **Del
 
 ### pulse (Weekly KPI Report)
 
-Collects metrics from GitHub, Supabase, npm, and Google Analytics every Sunday at 14:00 UTC and sends a consolidated report via Telegram. The `RETURNING INSTALLERS` section calls the Supabase function `weekly_returning_installers()` (see API Architecture), so migration 005 must exist before a deploy. The GA4 collector runs only with `?source=analytics`, and its two secrets were not set as of 2026-11-08.
+Collects metrics from GitHub, Supabase, npm, and Google Analytics every Sunday at 14:00 UTC and sends a consolidated report via Telegram. The `RETURNING INSTALLERS` section calls the Supabase function `weekly_returning_installers()` (see API Architecture), so migration 005 must exist before a deploy. The `SPONSOR KIT` section (last 30 complete days: GA4 users, US share of users and of engaged sessions, home views, and per-placement impressions/clicks from `placement_report()`, migration 006) answers what sponsors ask before paying; `?source=sponsors&send=false` gives it on demand. See `dashboard/docs/sponsor-metrics.md`. The GA4 collector runs only with `?source=analytics`, and its two secrets were not set as of 2026-11-08.
 
 **Architecture:** Single `index.js` file (no npm dependencies at runtime). All source collectors, formatter, and Telegram sender in one file.
 
