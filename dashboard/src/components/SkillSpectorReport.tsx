@@ -1,5 +1,6 @@
 import type { SkillSpectorResult } from '../lib/types';
 import { ShieldCheckIcon } from './SkillSpectorBadge';
+import { NvidiaMark } from './HarnessReport';
 
 // SkillSpector report on the component page. Informative, not alarming:
 // neutral colors, no severity labels or install verdicts. Rendered on the
@@ -23,7 +24,9 @@ export default function SkillSpectorReport({ result }: Props) {
             <ShieldCheckIcon className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-[15px] font-semibold text-[var(--color-text-primary)]">Scanned by NVIDIA SkillSpector</h3>
+            <h3 className="text-[15px] font-semibold text-[var(--color-text-primary)]">
+              Scanned by <NvidiaMark className="h-4 w-4 mx-0.5" /> NVIDIA SkillSpector
+            </h3>
             <p className="mt-1 text-[12px] text-[var(--color-text-tertiary)]">
               Automated static analysis (no LLM)
               {result.version ? ` · v${result.version}` : ''}

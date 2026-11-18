@@ -1,5 +1,5 @@
 import type { HarnessResult } from '../lib/types';
-import { harnessAgentName, harnessStatusText, harnessSummary } from '../lib/component-page';
+import { harnessAgentLogo, harnessAgentName, harnessStatusText, harnessSummary, NVIDIA_LOGO } from '../lib/component-page';
 
 // Agent compatibility on the skill page, from NVIDIA SkillEvaluator's Harness
 // Check. Informative like the SkillSpector report: it says how each agent reads
@@ -19,6 +19,26 @@ interface Props {
   result: HarnessResult;
 }
 
+function AgentLogo({ id, className }: { id: string; className: string }) {
+  const logo = harnessAgentLogo(id);
+  if (!logo) return null;
+  return (
+    <img
+      src={logo.src}
+      alt=""
+      width={16}
+      height={16}
+      loading="lazy"
+      className={`${className} shrink-0${logo.mono ? ' oss-icon' : ''}`}
+    />
+  );
+}
+
+/** The NVIDIA eye next to the tool's name, in its official green (never inverted). */
+export function NvidiaMark({ className = 'h-3.5 w-3.5' }: { className?: string }) {
+  return <img src={NVIDIA_LOGO} alt="" width={14} height={14} className={`${className} inline-block shrink-0 align-[-2px]`} />;
+}
+
 export default function HarnessReport({ result }: Props) {
   const summary = harnessSummary(result.agents);
   const withNotes = result.agents.filter((a) => a.notes.length > 0);
@@ -35,7 +55,7 @@ export default function HarnessReport({ result }: Props) {
           <div>
             <h3 className="text-[15px] font-semibold text-[var(--color-text-primary)]">Agent compatibility</h3>
             <p className="mt-1 text-[12px] text-[var(--color-text-tertiary)]">
-              Checked by NVIDIA SkillEvaluator Harness Check
+              Checked by <NvidiaMark className="h-3 w-3" /> NVIDIA SkillEvaluator Harness Check
               {result.version ? ` · v${result.version}` : ''}
               {result.checkedAt ? ` · ${result.checkedAt.slice(0, 10)}` : ''}
             </p>
@@ -56,13 +76,14 @@ export default function HarnessReport({ result }: Props) {
         {result.agents.map((a) => (
           <li key={a.id} className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-0)] px-3 py-2.5 min-w-0">
             <div className="flex items-center gap-2 text-[13px] font-semibold text-[var(--color-text-primary)]">
+              <AgentLogo id={a.id} className="h-4 w-4" />
+              <span className="truncate">{harnessAgentName(a.id)}</span>
+            </div>
+            <div className="mt-1 flex items-center gap-1.5 font-mono text-[11px] text-[var(--color-text-tertiary)]">
               <span
                 className={`w-1.5 h-1.5 rounded-full shrink-0 ${a.notes.length || a.status !== 'loads' ? 'bg-[var(--color-accent)]' : 'bg-[var(--color-success)]'}`}
                 aria-hidden="true"
               />
-              <span className="truncate">{harnessAgentName(a.id)}</span>
-            </div>
-            <div className="mt-0.5 font-mono text-[11px] text-[var(--color-text-tertiary)]">
               {harnessStatusText(a.status, a.notes.length)}
             </div>
           </li>
@@ -75,6 +96,7 @@ export default function HarnessReport({ result }: Props) {
             a.notes.map((n) => (
               <li key={`${a.id}-${n.id}`} className="py-3 min-w-0">
                 <div className="text-[13px] text-[var(--color-text-primary)]">
+                  <AgentLogo id={a.id} className="inline-block h-3.5 w-3.5 mr-1.5 align-[-2px]" />
                   <span className="font-semibold">{harnessAgentName(a.id)}:</span> {n.message}
                 </div>
                 {n.fix && <div className="mt-1 text-[12.5px] text-[var(--color-text-secondary)]">Fix: {n.fix}</div>}

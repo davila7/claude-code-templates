@@ -179,6 +179,27 @@ export function harnessAgentName(id: string): string {
   return HARNESS_AGENT_NAMES[id] ?? id;
 }
 
+/**
+ * Agent marks under public/logos/agents/ (sources in public/logos/README.md).
+ * `mono` files are white and take the `oss-icon` class, which inverts them in light mode.
+ */
+export const HARNESS_AGENT_LOGOS: Record<string, { mono: boolean }> = {
+  'claude-code': { mono: false },
+  codex: { mono: true },
+  'copilot-cli': { mono: true },
+  opencode: { mono: true },
+  hermes: { mono: true },
+  openclaw: { mono: false },
+};
+
+export function harnessAgentLogo(id: string): { src: string; mono: boolean } | null {
+  const logo = HARNESS_AGENT_LOGOS[id];
+  return logo ? { src: `/logos/agents/${id}.svg`, mono: logo.mono } : null;
+}
+
+/** NVIDIA eye in its official green: never recolor or invert it (NVIDIA brand guidelines). */
+export const NVIDIA_LOGO = '/logos/nvidia.svg';
+
 /** "Loads in 6 agents" / "Loads in 5 of 6 agents", plus how many agents change part of the text. */
 export function harnessSummary(agents: { status: string; notes: unknown[] }[] | undefined): {
   label: string;

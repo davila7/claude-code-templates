@@ -1,8 +1,13 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { existsSync } from 'node:fs';
 import {
   commitTitle,
+  harnessAgentLogo,
   harnessAgentName,
+  HARNESS_AGENT_LOGOS,
+  HARNESS_AGENT_NAMES,
+  NVIDIA_LOGO,
   harnessStatusText,
   harnessSummary,
   formatBytes,
@@ -125,4 +130,14 @@ test('harnessStatusText and harnessAgentName', () => {
   assert.equal(harnessStatusText('not_loaded', 1), 'not loaded');
   assert.equal(harnessAgentName('copilot-cli'), 'Copilot CLI');
   assert.equal(harnessAgentName('new-agent'), 'new-agent');
+});
+
+test('every agent has a logo file, and the NVIDIA mark exists', () => {
+  assert.deepEqual(Object.keys(HARNESS_AGENT_LOGOS).sort(), Object.keys(HARNESS_AGENT_NAMES).sort());
+  for (const id of Object.keys(HARNESS_AGENT_NAMES)) {
+    const logo = harnessAgentLogo(id);
+    assert.ok(logo && existsSync(new URL(`../public${logo.src}`, import.meta.url)), `missing logo for ${id}`);
+  }
+  assert.equal(harnessAgentLogo('unknown-agent'), null);
+  assert.ok(existsSync(new URL(`../public${NVIDIA_LOGO}`, import.meta.url)));
 });
