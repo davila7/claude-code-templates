@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 from pathlib import Path
 from generate_trending_data import fetch_with_retry
 from skillspector_catalog import attach_skillspector
+from harness_catalog import attach_harness
 import external_skills
 from catalog_api_v1 import write_catalog_api_v1
 
@@ -565,7 +566,7 @@ def loops_by_component(loops):
                 out[key].append(loop_path)
     return {k: sorted(v) for k, v in out.items()}
 
-def generate_components_json(skip_downloads=False, skip_skillspector=False, skillspector_only=None):
+def generate_components_json(skip_downloads=False, skip_skillspector=False, skillspector_only=None, skip_harness=False):
     """
     Scans the cli-tool/components and cli-tool/templates directories and generates a components.json file
     for the static website, including the content of each file and download statistics.
@@ -1103,6 +1104,9 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
     # --skip-skillspector still copies the previous results across.
     attach_skillspector(components_data, output_path, only=skillspector_only,
                         scan_enabled=not skip_skillspector)
+    # Agent compatibility per skill (NVIDIA SkillEvaluator Harness Check), same
+    # cache rules; shown only on the component page, never used for ordering.
+    attach_harness(components_data, output_path, scan_enabled=not skip_harness)
 
     # Component types that carry a 'content' field
     content_bearing_types = ['agents', 'commands', 'mcps', 'settings', 'hooks', 'sandbox', 'skills', 'loops', 'mods', 'plugins']
@@ -1125,6 +1129,9 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
             if component.get('files'):
                 # Mods: the whole plugin (every text file) rides in the content file
                 content_payload['files'] = component['files']
+            if component.get('harness'):
+                # Only the component page shows it; the hash is the generator's cache key.
+                content_payload['harness'] = {k: v for k, v in component['harness'].items() if k != 'hash'}
             previous_meta = {}
             if f"{ctype}/{component['path']}" in kept_previous:
                 # Upstream unreachable: the file list cannot be rebuilt, so the page keeps the last one.
@@ -1185,7 +1192,7 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
     #   components/{type}.json   → per-type slice (grid loads only active type)
     #   search-index.json        → flat [{type,name,path,description,category}]
     # ---------------------------------------------------------------------------
-    STRIP_KEYS = {'content', 'security', 'files'}
+    STRIP_KEYS = {'content', 'security', 'files', 'harness'}
 
     def strip_for_dashboard(component):
         out = {key: val for key, val in component.items() if key not in STRIP_KEYS}
@@ -1316,9 +1323,12 @@ if __name__ == '__main__':
                         help='do not run SkillSpector; keep the results already in docs/components.json')
     parser.add_argument('--skillspector-only', nargs='+', metavar='TYPE/PATH',
                         help='scan only these components (e.g. agents/security/x.md skills/security/y); the rest keep their previous result')
+    parser.add_argument('--skip-harness', action='store_true',
+                        help='do not run SkillEvaluator Harness Check; keep the results already in docs/components.json')
     args = parser.parse_args()
     generate_components_json(
         skip_downloads=args.skip_downloads,
         skip_skillspector=args.skip_skillspector,
         skillspector_only=set(args.skillspector_only) if args.skillspector_only else None,
+        skip_harness=args.skip_harness,
     )

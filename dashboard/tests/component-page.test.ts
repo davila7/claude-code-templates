@@ -2,6 +2,9 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   commitTitle,
+  harnessAgentName,
+  harnessStatusText,
+  harnessSummary,
   formatBytes,
   formatDate,
   initials,
@@ -101,4 +104,25 @@ test('nextStepItems: loops first, then the category alphabetically from the curr
   const all = nextStepItems(c('mid'), siblings, [], 6).map((i) => i.component.name);
   assert.deepEqual(all, ['zeta', 'alpha', 'beta', 'gamma']);
   assert.equal(nextStepItems(c('zeta'), siblings, [], 6)[0].component.name, 'alpha');
+});
+
+test('harnessSummary counts agents that load the skill and their notes', () => {
+  const note = { id: 'CC-DOLLAR-N', effect: 'degraded', message: '', fix: '' };
+  const all = [
+    { status: 'loads', notes: [] },
+    { status: 'degraded', notes: [note] },
+    { status: 'loads', notes: [] },
+  ];
+  assert.deepEqual(harnessSummary(all), { label: 'Loads in 3 agents', loads: 3, total: 3, notes: 1 });
+  const dropped = [{ status: 'not_loaded', notes: [note] }, { status: 'loads', notes: [] }];
+  assert.equal(harnessSummary(dropped).label, 'Loads in 1 of 2 agents');
+  assert.equal(harnessSummary(undefined).label, '');
+});
+
+test('harnessStatusText and harnessAgentName', () => {
+  assert.equal(harnessStatusText('loads', 0), 'loads');
+  assert.equal(harnessStatusText('degraded', 2), 'loads · 2 notes');
+  assert.equal(harnessStatusText('not_loaded', 1), 'not loaded');
+  assert.equal(harnessAgentName('copilot-cli'), 'Copilot CLI');
+  assert.equal(harnessAgentName('new-agent'), 'new-agent');
 });
