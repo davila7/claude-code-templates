@@ -29439,6 +29439,38 @@
       }
     },
     {
+      "name": "searchapi",
+      "path": "web/searchapi.json",
+      "category": "web",
+      "type": "mcp",
+      "description": "SearchApi MCP Server - Real-time search results as structured data from Google (web, Maps, Shopping, Flights, Hotels, News, Scholar, Images, Jobs, Trends), Bing, YouTube, Amazon and 100+ other engines, for Claude Code and other MCP clients. Remote server hosted by searchapi.io. Requires a SearchApi account (free tier available). Uses OAuth authentication; a static MCP token in the X-MCP-Token header is also supported.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "hash": "e4a00833d6536154",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-18T14:31:15Z"
+      }
+    },
+    {
       "name": "searxng",
       "path": "web/searxng.json",
       "category": "web",
