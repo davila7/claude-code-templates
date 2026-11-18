@@ -67,10 +67,12 @@ and an untested policy is a guess.
 - **Wrap auth calls in a subselect** so Postgres evaluates them once per query,
   not once per row: `(select auth.uid())`, `(select auth.jwt())`. The same for
   helper functions that do not take a column argument.
-- **UPDATE needs both clauses**: `using` says which rows may be changed,
-  `with check` says what they may become. Without a matching `with check` a
-  user can move a row into another tenant. UPDATE and DELETE also need a SELECT
-  policy that lets the user see the row, or they silently affect 0 rows.
+- **UPDATE**: `using` says which rows may be changed, `with check` says what
+  they may become. When `with check` is omitted Postgres reuses `using` for the
+  new row, which is safe. The leak is a `with check` looser than `using`
+  (`with check (true)`): then a user can move a row into another tenant. Write
+  both explicitly so the intent is visible. UPDATE and DELETE also need a
+  SELECT policy that lets the user see the row, or they silently affect 0 rows.
 - **`insert ... returning`** (supabase-js `.insert().select()`) checks the new
   row against the SELECT policy during the insert, before any `after insert`
   trigger runs. So "create an organization and become its owner" fails with
@@ -196,7 +198,8 @@ Before you report, apply the migrations and act as real users.
     $$ select (nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'sub')::uuid $$;
   create function auth.jwt() returns jsonb language sql stable as
     $$ select coalesce(nullif(current_setting('request.jwt.claims', true), ''), '{}')::jsonb $$;
-  grant usage on schema auth to anon, authenticated;
+  grant usage on schema auth to anon, authenticated, supabase_auth_admin;
+  grant insert, select on auth.users to supabase_auth_admin;
   grant usage on schema public to anon, authenticated, service_role;
   ```
 
@@ -243,8 +246,8 @@ user of org A can ...") and the exact SQL fix:
    or without their own check; Storage policies that check the bucket but not
    the path.
 2. Privilege escalation: members who can change their role, join any
-   organization, or move rows between tenants (missing `with check`, missing
-   column privileges).
+   organization, or move rows between tenants (a `with check` looser than `using`,
+   missing column privileges).
 3. Breakage: missing grants on projects without default grants, a signup
    trigger that can fail, create flows blocked by `returning`.
 4. Integrity: missing foreign keys, unsafe cascades, cross-tenant references.
