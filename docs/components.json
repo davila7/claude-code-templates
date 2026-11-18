@@ -38569,9 +38569,9 @@
         "issueCount": 0,
         "analysis": "complete",
         "findings": [],
-        "hash": "89155f318cd845f7",
+        "hash": "c47ef55dd27b060a",
         "version": "2.12.0",
-        "scannedAt": "2026-10-26T03:06:46Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -41439,9 +41439,9 @@
             "count": 2
           }
         ],
-        "hash": "b652216e8eb2b51c",
+        "hash": "91097b57b5e890db",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -41765,9 +41765,9 @@
             "count": 1
           }
         ],
-        "hash": "3ab08a120054abca",
+        "hash": "04a4df2a20ec1ad7",
         "version": "2.12.0",
-        "scannedAt": "2026-10-26T03:06:46Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -42299,9 +42299,9 @@
             "count": 1
           }
         ],
-        "hash": "103c38a673feb3a9",
+        "hash": "835b2cf04ce74319",
         "version": "2.12.0",
-        "scannedAt": "2026-10-26T03:06:46Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -42827,9 +42827,9 @@
         "issueCount": 0,
         "analysis": "partial",
         "findings": [],
-        "hash": "83b93737f4c1094b",
+        "hash": "cf14a8f6a22c7b72",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -48958,9 +48958,9 @@
             "count": 1
           }
         ],
-        "hash": "15d234acd2e39cdf",
+        "hash": "ed3888687d192882",
         "version": "2.12.0",
-        "scannedAt": "2026-10-26T03:06:46Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -49753,9 +49753,9 @@
         "issueCount": 0,
         "analysis": "partial",
         "findings": [],
-        "hash": "e64b6efd542f019c",
+        "hash": "782b7baebaf6b14e",
         "version": "2.12.0",
-        "scannedAt": "2026-10-26T03:06:46Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -51170,9 +51170,9 @@
         "issueCount": 0,
         "analysis": "partial",
         "findings": [],
-        "hash": "090620d60f398ab2",
+        "hash": "3d3a4696fcbeb437",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -53053,13 +53053,13 @@
       "skillspector": {
         "score": 0,
         "severity": "LOW",
-        "recommendation": "SAFE",
+        "recommendation": "CAUTION",
         "issueCount": 0,
-        "analysis": "complete",
+        "analysis": "partial",
         "findings": [],
-        "hash": "73ae477a45f6bead",
+        "hash": "fc727f77dfa48f1a",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -53223,9 +53223,9 @@
         "issueCount": 0,
         "analysis": "complete",
         "findings": [],
-        "hash": "32bfa4b6894e235e",
+        "hash": "d93ee9555377941d",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -53306,9 +53306,9 @@
         "issueCount": 0,
         "analysis": "complete",
         "findings": [],
-        "hash": "058643350b901233",
+        "hash": "8f476165fb15a7ad",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -53389,9 +53389,9 @@
         "issueCount": 0,
         "analysis": "complete",
         "findings": [],
-        "hash": "5bda494095156880",
+        "hash": "069d959afea25d75",
         "version": "2.12.0",
-        "scannedAt": "2026-10-24T02:20:12Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -53541,9 +53541,9 @@
         "issueCount": 0,
         "analysis": "complete",
         "findings": [],
-        "hash": "2f40c2e275fcadcf",
+        "hash": "9a33e6cbb0ef4c8a",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -53617,9 +53617,9 @@
         "issueCount": 0,
         "analysis": "complete",
         "findings": [],
-        "hash": "93dbc0fb2863cd87",
+        "hash": "fcc8689cd400ed35",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -53779,9 +53779,9 @@
         "issueCount": 0,
         "analysis": "complete",
         "findings": [],
-        "hash": "80dca0dd255f3fcd",
+        "hash": "163944515f55646a",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -53855,9 +53855,9 @@
         "issueCount": 0,
         "analysis": "complete",
         "findings": [],
-        "hash": "7c8dd3316c66b2db",
+        "hash": "1ccac10378635150",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -54209,9 +54209,9 @@
         "issueCount": 0,
         "analysis": "complete",
         "findings": [],
-        "hash": "b84b38702dcce6ba",
+        "hash": "c16a1736a4e38180",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -54292,9 +54292,9 @@
         "issueCount": 0,
         "analysis": "complete",
         "findings": [],
-        "hash": "24cbd85fc8ecefdd",
+        "hash": "d648b232693fa6a4",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -54853,9 +54853,9 @@
         "issueCount": 0,
         "analysis": "complete",
         "findings": [],
-        "hash": "9c47d824e23d39db",
+        "hash": "0867083c15d736a6",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -55012,9 +55012,9 @@
         "issueCount": 0,
         "analysis": "partial",
         "findings": [],
-        "hash": "8686e34f57b40c2d",
+        "hash": "98590b18a3025eee",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -55088,9 +55088,9 @@
         "issueCount": 0,
         "analysis": "complete",
         "findings": [],
-        "hash": "e0f9e2f5e589a64c",
+        "hash": "5d56b2654398f2b1",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -55782,9 +55782,9 @@
         "issueCount": 0,
         "analysis": "complete",
         "findings": [],
-        "hash": "475f5dd950c5f668",
+        "hash": "108e5734e08d573e",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -55858,9 +55858,9 @@
         "issueCount": 0,
         "analysis": "complete",
         "findings": [],
-        "hash": "b6045a47351a17b8",
+        "hash": "2948943bbd7d7f6f",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -56010,9 +56010,9 @@
         "issueCount": 0,
         "analysis": "partial",
         "findings": [],
-        "hash": "09cd87b97d0ec140",
+        "hash": "d0cc5d896b9d18b6",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -56086,9 +56086,9 @@
         "issueCount": 0,
         "analysis": "complete",
         "findings": [],
-        "hash": "b5289311757663e6",
+        "hash": "91a4bfd0d8ee13ad",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -56238,9 +56238,9 @@
         "issueCount": 0,
         "analysis": "complete",
         "findings": [],
-        "hash": "8ad0f7fb9a117f5d",
+        "hash": "a34983b205ff2ab2",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -56562,9 +56562,9 @@
         "issueCount": 0,
         "analysis": "partial",
         "findings": [],
-        "hash": "28e1160f9d43b570",
+        "hash": "44840f79589cbcdd",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -59383,9 +59383,9 @@
             "count": 2
           }
         ],
-        "hash": "213376ca784ff682",
+        "hash": "f99ff42cd8d4b27b",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -62938,10 +62938,10 @@
       },
       "references": [],
       "skillspector": {
-        "score": 39,
-        "severity": "MEDIUM",
-        "recommendation": "CAUTION",
-        "issueCount": 17,
+        "score": 55,
+        "severity": "HIGH",
+        "recommendation": "DO_NOT_INSTALL",
+        "issueCount": 21,
         "analysis": "partial",
         "findings": [
           {
@@ -62950,26 +62950,26 @@
             "severity": "MEDIUM",
             "title": "Skill Enumeration",
             "file": "SKILL.md",
-            "line": 713,
-            "count": 2
+            "line": 712,
+            "count": 3
+          },
+          {
+            "id": "PE2",
+            "category": "Privilege Escalation",
+            "severity": "MEDIUM",
+            "title": "Sudo/Root Execution",
+            "file": "SKILL.md",
+            "line": 100,
+            "count": 3
           },
           {
             "id": "RP1",
             "category": "MCP Rug Pull",
             "severity": "MEDIUM",
-            "title": "MCP server referenced without pinned version: 'npx actp'.",
+            "title": "npx commands without a version suffix (e.g. @1.0.0) create a rug-pull risk if the upstream server is compromised and publishes a malicious update.",
             "file": "SKILL.md",
             "line": 171,
-            "count": 8
-          },
-          {
-            "id": "RP1",
-            "category": "MCP Rug Pull",
-            "severity": "MEDIUM",
-            "title": "MCP server referenced without pinned version: 'npx ts-node'.",
-            "file": "SKILL.md",
-            "line": 403,
-            "count": 3
+            "count": 11
           },
           {
             "id": "RA2",
@@ -62977,7 +62977,7 @@
             "severity": "MEDIUM",
             "title": "Session Persistence",
             "file": "SKILL.md",
-            "line": 713,
+            "line": 712,
             "count": 1
           },
           {
@@ -62990,9 +62990,9 @@
             "count": 3
           }
         ],
-        "hash": "a2677f3353f4ccb2",
+        "hash": "b48d3ff430a5289f",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -66403,7 +66403,7 @@
         "score": 100,
         "severity": "CRITICAL",
         "recommendation": "DO_NOT_INSTALL",
-        "issueCount": 67,
+        "issueCount": 73,
         "analysis": "partial",
         "findings": [
           {
@@ -66452,9 +66452,9 @@
             "count": 1
           }
         ],
-        "hash": "ce491ffab7a0e415",
+        "hash": "2555c29405869c69",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -67640,9 +67640,9 @@
         "issueCount": 0,
         "analysis": "partial",
         "findings": [],
-        "hash": "4a84c292f424ee5e",
+        "hash": "888ada4aacd70170",
         "version": "2.12.0",
-        "scannedAt": "2026-11-03T01:19:37Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -67712,10 +67712,10 @@
         "README.md"
       ],
       "skillspector": {
-        "score": 90,
+        "score": 98,
         "severity": "CRITICAL",
         "recommendation": "DO_NOT_INSTALL",
-        "issueCount": 6,
+        "issueCount": 7,
         "analysis": "partial",
         "findings": [
           {
@@ -67746,6 +67746,15 @@
             "count": 1
           },
           {
+            "id": "AS3",
+            "category": "Agent Snooping",
+            "severity": "MEDIUM",
+            "title": "Skill Enumeration",
+            "file": "README.md",
+            "line": 22,
+            "count": 1
+          },
+          {
             "id": "RA2",
             "category": "Rogue Agent",
             "severity": "MEDIUM",
@@ -67755,9 +67764,9 @@
             "count": 1
           }
         ],
-        "hash": "49e34551e869a50e",
+        "hash": "175ba133a8e3490e",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -68881,9 +68890,9 @@
         "issueCount": 0,
         "analysis": "complete",
         "findings": [],
-        "hash": "9e354a9c0fc0ea9c",
+        "hash": "3009c75527c3f515",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -72254,9 +72263,9 @@
         "issueCount": 0,
         "analysis": "complete",
         "findings": [],
-        "hash": "2aff1052f8c334df",
+        "hash": "381ed8fa04e51c80",
         "version": "2.12.0",
-        "scannedAt": "2026-10-24T02:20:12Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -79685,9 +79694,9 @@
             "count": 1
           }
         ],
-        "hash": "31cbe86c960da4c7",
+        "hash": "843a1d4033715744",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -87151,9 +87160,9 @@
             "count": 1
           }
         ],
-        "hash": "0489c4a65d2101fd",
+        "hash": "d14213d3c9647c4f",
         "version": "2.12.0",
-        "scannedAt": "2026-10-24T02:20:12Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -87684,9 +87693,9 @@
         "issueCount": 0,
         "analysis": "partial",
         "findings": [],
-        "hash": "27725c1413f24cac",
+        "hash": "21fdcba2933cf71f",
         "version": "2.12.0",
-        "scannedAt": "2026-10-24T03:16:09Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -89803,9 +89812,9 @@
             "count": 1
           }
         ],
-        "hash": "bd57f5d70dd65272",
+        "hash": "cd78fd7b9aad7784",
         "version": "2.12.0",
-        "scannedAt": "2026-10-24T02:20:12Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -91403,9 +91412,9 @@
         "issueCount": 0,
         "analysis": "partial",
         "findings": [],
-        "hash": "f6a0a34fc323de2d",
+        "hash": "6925f13d3fa0c9d6",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -95235,9 +95244,9 @@
         "issueCount": 0,
         "analysis": "partial",
         "findings": [],
-        "hash": "1991d5a98d9f5efc",
+        "hash": "b427a19e86ec9c1d",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -96433,9 +96442,9 @@
         "issueCount": 0,
         "analysis": "complete",
         "findings": [],
-        "hash": "09256d8b2cea26e1",
+        "hash": "879b4a31e83c1e50",
         "version": "2.12.0",
-        "scannedAt": "2026-10-24T02:20:12Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -98837,9 +98846,9 @@
             "count": 1
           }
         ],
-        "hash": "99c2d1de7928be8e",
+        "hash": "f0ed8d0366530c1a",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -107122,10 +107131,10 @@
         "references/web-endpoints.md"
       ],
       "skillspector": {
-        "score": 43,
-        "severity": "MEDIUM",
-        "recommendation": "CAUTION",
-        "issueCount": 4,
+        "score": 53,
+        "severity": "HIGH",
+        "recommendation": "DO_NOT_INSTALL",
+        "issueCount": 5,
         "analysis": "partial",
         "findings": [
           {
@@ -107135,7 +107144,7 @@
             "title": "Tool Parameter Abuse",
             "file": "references/web-endpoints.md",
             "line": 141,
-            "count": 1
+            "count": 2
           },
           {
             "id": "PE3",
@@ -107165,9 +107174,9 @@
             "count": 1
           }
         ],
-        "hash": "aaf6c998247cb65c",
+        "hash": "ba9de2d7e6fbc600",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -108108,9 +108117,9 @@
             "count": 1
           }
         ],
-        "hash": "f5011b56ec0cbc35",
+        "hash": "b0605b6b5e508bf9",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -108589,10 +108598,10 @@
         "scripts/setup_env.py"
       ],
       "skillspector": {
-        "score": 65,
+        "score": 64,
         "severity": "HIGH",
         "recommendation": "DO_NOT_INSTALL",
-        "issueCount": 27,
+        "issueCount": 28,
         "analysis": "complete",
         "findings": [
           {
@@ -108641,9 +108650,9 @@
             "count": 1
           }
         ],
-        "hash": "2df1e59cd7ba3646",
+        "hash": "03d56e0916ced361",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -110992,9 +111001,9 @@
             "count": 1
           }
         ],
-        "hash": "ae751412dcbc811b",
+        "hash": "4633728ee3a4eb40",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -120300,9 +120309,9 @@
         "issueCount": 0,
         "analysis": "complete",
         "findings": [],
-        "hash": "6687e4d7d4e51fae",
+        "hash": "af7fc5a0a5a31333",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -123109,9 +123118,9 @@
         "issueCount": 0,
         "analysis": "partial",
         "findings": [],
-        "hash": "0d6a9ad8f15c82fb",
+        "hash": "e3f2b39ea951575a",
         "version": "2.12.0",
-        "scannedAt": "2026-10-17T20:36:45Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
@@ -123464,9 +123473,9 @@
             "count": 2
           }
         ],
-        "hash": "accbb272319b1f99",
+        "hash": "4379191258ea91e1",
         "version": "2.12.0",
-        "scannedAt": "2026-10-24T02:20:12Z"
+        "scannedAt": "2026-11-18T20:54:24Z"
       },
       "harness": {
         "agents": [
