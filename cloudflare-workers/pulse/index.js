@@ -52,7 +52,7 @@ export default {
         status: 'running',
         worker: 'pulse-weekly-report',
         schedule: 'Sundays 14:00 UTC',
-        sources: ['github', 'downloads', 'returning', 'npm', 'analytics']
+        sources: ['github', 'downloads', 'returning', 'npm', 'analytics', 'sponsors']
       });
     }
 
@@ -78,7 +78,8 @@ async function runReport(env, opts = {}) {
       downloads: collectDownloads,
       returning: collectReturning,
       npm: collectNpm,
-      analytics: collectAnalytics
+      analytics: collectAnalytics,
+      sponsors: collectSponsors
     };
     const collector = collectors[onlySource];
     if (!collector) {
@@ -86,13 +87,14 @@ async function runReport(env, opts = {}) {
     }
     results[onlySource] = await collector(env);
   } else {
-    const [github, downloads, returning, npm] = await Promise.all([
+    const [github, downloads, returning, npm, sponsors] = await Promise.all([
       collectGitHub(env),
       collectDownloads(env),
       collectReturning(env),
-      collectNpm(env)
+      collectNpm(env),
+      collectSponsors(env)
     ]);
-    results = { github, downloads, returning, npm };
+    results = { github, downloads, returning, npm, sponsors };
   }
 
   // Report any failed collectors to Sentry (they still degrade gracefully
@@ -512,6 +514,117 @@ async function collectAnalytics(env) {
   }
 }
 
+// ─── Source: Sponsor kit ─────────────────────────────────────────────────────
+//
+// What a sponsor asks before paying, over the last 30 complete days (UTC):
+// audience from GA4 (users, views, sessions, country split, with US share both
+// of all users and of engaged sessions, since bot-heavy countries such as
+// Singapore have almost no engagement), home page views (where Featured sits),
+// and per-placement impressions, clicks and rates from Supabase
+// placement_report() (database/migrations/006). Each half degrades on its own.
+// On demand: POST /trigger?source=sponsors&send=false
+
+const SPONSOR_DAYS = 30;
+// GA4 has measured every page only since PR #1372 (2026-11-03 18:16 UTC).
+const GA_FULL_SITE_SINCE = '2026-11-04';
+
+async function collectSponsors(env) {
+  const end = new Date();
+  end.setUTCDate(end.getUTCDate() - 1);
+  const start = new Date(end);
+  start.setUTCDate(start.getUTCDate() - (SPONSOR_DAYS - 1));
+  const startDate = start.toISOString().split('T')[0];
+  const endDate = end.toISOString().split('T')[0];
+
+  const [audience, placements] = await Promise.all([
+    collectSponsorAudience(env, startDate, endDate).catch((e) => ({ error: e.message })),
+    collectPlacements(env, startDate, endDate).catch((e) => ({ error: e.message }))
+  ]);
+  if (audience.error && placements.error) {
+    return { error: `GA4: ${audience.error}; placements: ${placements.error}` };
+  }
+  return { startDate, endDate, audience, placements };
+}
+
+async function collectSponsorAudience(env, startDate, endDate) {
+  if (!env.GA_PROPERTY_ID || !env.GA_SERVICE_ACCOUNT_JSON) {
+    return { error: 'GA_PROPERTY_ID or GA_SERVICE_ACCOUNT_JSON not configured' };
+  }
+  const accessToken = await getGAAccessToken(env);
+  const report = (body) =>
+    fetchJSON(`${GA4_API}/properties/${env.GA_PROPERTY_ID}:runReport`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ dateRanges: [{ startDate, endDate }], ...body })
+    });
+
+  const [totalRes, countryRes, homeRes] = await Promise.all([
+    report({
+      metrics: [
+        { name: 'activeUsers' },
+        { name: 'screenPageViews' },
+        { name: 'sessions' },
+        { name: 'engagedSessions' }
+      ]
+    }),
+    report({
+      dimensions: [{ name: 'countryId' }],
+      metrics: [{ name: 'activeUsers' }, { name: 'engagedSessions' }],
+      orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }],
+      limit: 250
+    }),
+    report({
+      dimensions: [{ name: 'pagePath' }],
+      metrics: [{ name: 'screenPageViews' }, { name: 'activeUsers' }],
+      dimensionFilter: { filter: { fieldName: 'pagePath', stringFilter: { matchType: 'EXACT', value: '/' } } }
+    })
+  ]);
+
+  const int = (row, i) => (row ? parseInt(row.metricValues[i].value, 10) || 0 : 0);
+  const total = totalRes.rows?.[0];
+  const countries = (countryRes.rows || []).map((row) => ({
+    country: row.dimensionValues[0].value,
+    users: int(row, 0),
+    engaged: int(row, 1)
+  }));
+  const sumUsers = countries.reduce((a, c) => a + c.users, 0) || 1;
+  const sumEngaged = countries.reduce((a, c) => a + c.engaged, 0) || 1;
+  const us = countries.find((c) => c.country === 'US') || { users: 0, engaged: 0 };
+  const home = homeRes.rows?.[0];
+
+  return {
+    users: int(total, 0),
+    pageviews: int(total, 1),
+    sessions: int(total, 2),
+    engagedSessions: int(total, 3),
+    usUserPct: (100 * us.users) / sumUsers,
+    usEngagedPct: (100 * us.engaged) / sumEngaged,
+    topCountries: countries.slice(0, 5).map((c) => ({
+      ...c,
+      userPct: (100 * c.users) / sumUsers,
+      engagedPct: (100 * c.engaged) / sumEngaged
+    })),
+    homeViews: int(home, 0),
+    homeUsers: int(home, 1)
+  };
+}
+
+async function collectPlacements(env, startDate, endDate) {
+  if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) {
+    return { error: 'SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY not configured' };
+  }
+  const rows = await fetchJSON(`${env.SUPABASE_URL}/rest/v1/rpc/placement_report`, {
+    method: 'POST',
+    headers: {
+      apikey: env.SUPABASE_SERVICE_ROLE_KEY,
+      Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ p_from: startDate, p_to: endDate })
+  });
+  return { rows: Array.isArray(rows) ? rows : [] };
+}
+
 // GA4 JWT auth — build and sign JWT for service account
 async function getGAAccessToken(env) {
   const saJson = atob(env.GA_SERVICE_ACCOUNT_JSON);
@@ -658,6 +771,42 @@ function formatReport(results) {
       `├ Issues: ${fmt(g.openIssues)} open (${fmt(g.issuesOpenedWeek)} new, ${fmt(g.issuesClosedWeek)} closed)`,
       `└ PRs: ${fmt(g.prsOpenedWeek)} opened, ${fmt(g.prsMergedWeek)} merged`
     ].join('\n'));
+  }
+
+  // Sponsor kit (last 30 complete days)
+  if (results.sponsors?.error) {
+    sections.push(`SPONSOR KIT\n└ Unavailable: ${results.sponsors.error}`);
+  } else if (results.sponsors) {
+    const sp = results.sponsors;
+    const lines = [`SPONSOR KIT (${sp.startDate} to ${sp.endDate})`];
+    if (sp.startDate < GA_FULL_SITE_SINCE) {
+      lines.push(`├ ⚠️ GA4 covers every page only since ${GA_FULL_SITE_SINCE}: audience is undercounted`);
+    }
+    const a = sp.audience;
+    if (a?.error) {
+      lines.push(`├ Audience: unavailable (${a.error})`);
+    } else if (a) {
+      lines.push(`├ Users: ${fmt(a.users)} · Views: ${fmt(a.pageviews)} · Engaged sessions: ${fmt(a.engagedSessions)} of ${fmt(a.sessions)}`);
+      lines.push(`├ US: ${fmtPct1(a.usUserPct)} of users, ${fmtPct1(a.usEngagedPct)} of engaged sessions`);
+      lines.push(`├ Top: ${a.topCountries.map((c) => `${c.country} ${fmtPct1(c.userPct)} (${fmtPct1(c.engagedPct)} eng.)`).join(', ')}`);
+      lines.push(`├ Home page: ${fmt(a.homeViews)} views, ${fmt(a.homeUsers)} users`);
+    }
+    const p = sp.placements;
+    if (p?.error) {
+      lines.push(`├ Placements: unavailable (${p.error})`);
+    } else if (p && p.rows.length === 0) {
+      lines.push(`├ Placements: no events (none live, or migration 006 not run)`);
+    } else if (p) {
+      for (const r of p.rows) {
+        const rate = (v) => (v == null ? '—' : `${Number(v).toFixed(2)}%`);
+        lines.push(
+          `├ ${r.placement} @ ${r.surface}: ${fmt(r.impressions)} impr, ${fmt(r.clicks)} clicks (${rate(r.click_rate)}), ` +
+          `${fmt(Number(r.ctas) + Number(r.copies))} to sponsor (${rate(r.cta_rate)}), US ${r.us_share == null ? '—' : `${r.us_share}%`}`
+        );
+      }
+    }
+    lines[lines.length - 1] = lines[lines.length - 1].replace('├', '└');
+    sections.push(lines.join('\n'));
   }
 
   return sections.join('\n\n');

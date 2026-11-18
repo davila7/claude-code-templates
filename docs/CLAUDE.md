@@ -276,7 +276,6 @@ Before committing:
 - Powers trending components
 
 ### Analytics
-- Hotjar for user behavior tracking
 - Counter.dev for page view analytics
 
 ## Deployment Checklist
