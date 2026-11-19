@@ -346,10 +346,10 @@ Two GitHub Actions drive it, both via the batch orchestrator
 **Catalog traffic light (every component type).** `generate_components_json.py`
 also runs SkillSpector on every component through `scripts/skillspector_catalog.py`
 and stores a `skillspector` object (score, severity, recommendation, top 5
-findings, version, file hash) on each entry of `components.json`. The dashboard
+findings, `categories` = every observation per category, version, file hash) on each entry of `components.json`; the per-component content file carries `scanSnippets` (±2 source lines per stored finding, read from disk, no rescan). The dashboard
 shows a neutral "Scanned by NVIDIA SkillSpector" seal on cards and component pages
 (`SkillSpectorBadge.tsx`) and an informative report on the component page
-(`SkillSpectorReport.tsx`, `#security-scan`). Daniel's call (2026-10-21): no
+(`SkillSpectorReport.tsx`, `#security-scan`: a single-accent score ring, a bar of observations per category and each finding as an accordion with its code; Daniel's pick 2026-11-18). Daniel's call (2026-10-21): no
 traffic light, no red, no severity labels or install verdicts. It is
 display-only: never use it for ordering, search or ranking. Results are cached in the previous
 `docs/components.json` by file hash + SkillSpector version, so a run only scans

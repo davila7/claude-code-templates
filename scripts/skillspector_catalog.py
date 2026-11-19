@@ -45,6 +45,12 @@ COMPONENTS_ROOT = Path("cli-tool/components")
 # needs enough for the hover detail.
 MAX_FINDINGS = 5
 
+# Lines of context kept on each side of a finding's line, and the longest
+# line kept (minified files would otherwise bloat the content file).
+SNIPPET_CONTEXT = 2
+SNIPPET_MAX_LINE = 240
+SNIPPET_MAX_BYTES = 2_000_000
+
 # Sibling script extensions that ship with a hook or statusline JSON.
 SCRIPT_EXTS = (".py", ".sh", ".js", ".mjs", ".ts", ".ps1")
 
@@ -198,6 +204,10 @@ def scan(component_type: str, component: dict, root: Path, files: list[Path]) ->
         else:
             f["count"] = 1
             findings[key] = f
+    categories: dict = {}
+    for issue in issues:
+        cat = issue.get("category") or "Other"
+        categories[cat] = categories.get(cat, 0) + 1
     return {
         "score": int(risk.get("score") or 0),
         "severity": (risk.get("severity") or "LOW").upper(),
@@ -207,7 +217,56 @@ def scan(component_type: str, component: dict, root: Path, files: list[Path]) ->
         # is not bundled); SkillSpector then says CAUTION even at score 0.
         "analysis": (data.get("analysis_completeness") or {}).get("status") or "",
         "findings": list(findings.values())[:MAX_FINDINGS],
+        # Every observation per category (the findings above are only the top groups).
+        "categories": dict(sorted(categories.items(), key=lambda kv: (-kv[1], kv[0]))),
     }
+
+
+def finding_snippets(component_type: str, component: dict) -> list[dict | None]:
+    """The source lines around each stored finding, for the component page.
+
+    One entry per finding in component['skillspector']['findings'] (None when
+    the finding has no line or its file is not one of the component's own,
+    e.g. the stub SKILL.md wrapped around a JSON component). Read from the
+    files on disk, so it needs no rescan.
+    """
+    result = component.get("skillspector") or {}
+    findings = result.get("findings") or []
+    if not findings:
+        return []
+    try:
+        root, files = source_files(component_type, component)
+    except (OSError, ValueError, external_skills.ManifestError):
+        return [None] * len(findings)
+    if component_type in ("skills", "mods", "plugins"):
+        by_name = {str(f.relative_to(root)): f for f in files}
+    else:
+        by_name = {f.name: f for f in files}
+    out: list[dict | None] = []
+    cache: dict = {}
+    for f in findings:
+        path = by_name.get(f.get("file") or "")
+        line = f.get("line")
+        if not path or not isinstance(line, int) or line < 1:
+            out.append(None)
+            continue
+        if path not in cache:
+            try:
+                raw = path.read_bytes()[:SNIPPET_MAX_BYTES]
+                cache[path] = raw.decode("utf-8", errors="replace").splitlines()
+            except OSError:
+                cache[path] = None
+        lines = cache[path]
+        if not lines or line > len(lines):
+            out.append(None)
+            continue
+        start = max(1, line - SNIPPET_CONTEXT)
+        end = min(len(lines), line + SNIPPET_CONTEXT)
+        out.append({
+            "start": start,
+            "lines": [ln[:SNIPPET_MAX_LINE] for ln in lines[start - 1:end]],
+        })
+    return out
 
 
 def previous_results(catalog_path: str = "docs/components.json") -> dict:
@@ -256,6 +315,9 @@ def attach_skillspector(components_data: dict, catalog_path: str = "docs/compone
                     c["skillspector"] = prev
                 continue
             fresh = prev and prev.get("hash") == digest and (version is None or prev.get("version") == version)
+            if fresh and version is not None and "categories" not in prev:
+                # Results from before per-category counts: rescan once to add them.
+                fresh = False
             if only is not None:
                 # Trial runs rescan exactly the listed components.
                 fresh = key not in only

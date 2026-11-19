@@ -4,6 +4,8 @@ import { existsSync } from 'node:fs';
 import {
   commitTitle,
   harnessAgentLogo,
+  scanCategories,
+  scanCategoryName,
   harnessAgentName,
   HARNESS_AGENT_LOGOS,
   HARNESS_AGENT_NAMES,
@@ -140,4 +142,18 @@ test('every agent has a logo file, and the NVIDIA mark exists', () => {
   }
   assert.equal(harnessAgentLogo('unknown-agent'), null);
   assert.ok(existsSync(new URL(`../public${NVIDIA_LOGO}`, import.meta.url)));
+});
+
+test('scanCategories uses full counts when present, else the stored findings', () => {
+  const full = scanCategories({ categories: { 'MCP Rug Pull': 35, 'Agent Snooping': 1, Zero: 0 }, findings: [] });
+  assert.deepEqual(full, { entries: [['MCP Rug Pull', 35], ['Agent Snooping', 1]], complete: true });
+  const partial = scanCategories({
+    findings: [
+      { category: 'Excessive Agency', count: 2 },
+      { category: 'Agent Snooping', count: 2 },
+      { category: 'Excessive Agency', count: 1 },
+    ],
+  });
+  assert.deepEqual(partial, { entries: [['Excessive Agency', 3], ['Agent Snooping', 2]], complete: false });
+  assert.equal(scanCategoryName('analysis-evasion'), 'Analysis evasion');
 });
