@@ -1133,9 +1133,21 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
                 # Only the component page shows it; the hash is the generator's cache key.
                 content_payload['harness'] = {k: v for k, v in component['harness'].items() if k != 'hash'}
             snippets = finding_snippets(ctype, component)
-            if any(snippets):
+            scan_hash = (component.get('skillspector') or {}).get('hash')
+            if snippets is None:
+                # Files unreadable or changed since the kept scan: reuse the excerpts saved for
+                # this same scan, if any (same hash = same findings), rather than drop them.
+                try:
+                    with open(content_file_path, 'r', encoding='utf-8') as f:
+                        previous = json.load(f)
+                    if previous.get('scanSnippetsFor') and previous.get('scanSnippetsFor') == scan_hash:
+                        snippets = previous.get('scanSnippets')
+                except (OSError, ValueError):
+                    pass
+            if snippets and any(snippets):
                 # Code around each SkillSpector finding, for the page's accordions (aligned with findings).
                 content_payload['scanSnippets'] = snippets
+                content_payload['scanSnippetsFor'] = scan_hash
             previous_meta = {}
             if f"{ctype}/{component['path']}" in kept_previous:
                 # Upstream unreachable: the file list cannot be rebuilt, so the page keeps the last one.

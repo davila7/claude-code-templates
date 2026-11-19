@@ -26,8 +26,8 @@ function AgentLogo({ id, className }: { id: string; className: string }) {
     <img
       src={logo.src}
       alt=""
-      width={16}
-      height={16}
+      width={28}
+      height={28}
       loading="lazy"
       className={`${className} shrink-0${logo.mono ? ' oss-icon' : ''}`}
     />
@@ -39,13 +39,79 @@ export function NvidiaMark({ className = 'h-3.5 w-3.5' }: { className?: string }
   return <img src={NVIDIA_LOGO} alt="" width={14} height={14} className={`${className} inline-block shrink-0 align-[-2px]`} />;
 }
 
+/** loads as written | loads with changes | not loaded: one color each in the ring, the dots and the notes. */
+function agentTone(a: { status: string; notes: unknown[] }): 'ok' | 'note' | 'off' {
+  if (a.status === 'not_loaded') return 'off';
+  return a.notes.length || a.status !== 'loads' ? 'note' : 'ok';
+}
+
+const TONE_COLOR = {
+  ok: 'var(--color-success)',
+  note: 'var(--color-accent)',
+  off: 'color-mix(in srgb, var(--color-text-tertiary) 35%, transparent)',
+} as const;
+
+/** One segment per agent, in card order. */
+function AgentRing({ agents, loads }: { agents: HarnessResult['agents']; loads: number }) {
+  const r = 52;
+  const c = 2 * Math.PI * r;
+  const n = Math.max(agents.length, 1);
+  const seg = c / n;
+  const gap = agents.length > 1 ? 6 : 0;
+  return (
+    <div
+      className="relative w-[132px] h-[132px] shrink-0"
+      role="img"
+      aria-label={`${loads} of ${agents.length} agents load this skill`}
+    >
+      <svg viewBox="0 0 132 132" className="w-full h-full" aria-hidden="true">
+        {agents.map((a, i) => (
+          <circle
+            key={a.id}
+            cx="66"
+            cy="66"
+            r={r}
+            fill="none"
+            stroke={TONE_COLOR[agentTone(a)]}
+            strokeWidth="12"
+            strokeDasharray={`${seg - gap} ${c - seg + gap}`}
+            strokeDashoffset={-i * seg}
+            transform="rotate(-90 66 66)"
+          />
+        ))}
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+        <span className="font-mono text-[28px] leading-none font-semibold text-[var(--color-text-primary)]">
+          {loads}/{agents.length}
+        </span>
+        <span className="mt-1 font-mono text-[11px] text-[var(--color-text-tertiary)]">load it</span>
+      </div>
+    </div>
+  );
+}
+
+function Chevron() {
+  return (
+    <svg
+      className="w-3.5 h-3.5 shrink-0 text-[var(--color-text-tertiary)] transition-transform group-open:rotate-90"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      aria-hidden="true"
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 6l6 6-6 6" />
+    </svg>
+  );
+}
+
 export default function HarnessReport({ result }: Props) {
   const summary = harnessSummary(result.agents);
-  const withNotes = result.agents.filter((a) => a.notes.length > 0);
+  const notes = result.agents.flatMap((a) => a.notes.map((n) => ({ a, n })));
   return (
     <section
       id="compatibility"
-      className="mb-10 scroll-mt-24 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-1)] p-6"
+      className="@container mb-10 scroll-mt-24 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-1)] p-6"
     >
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex items-start gap-3">
@@ -72,41 +138,67 @@ export default function HarnessReport({ result }: Props) {
         was run. A note means the agent loads the skill but changes part of its text, or drops it.
       </p>
 
-      <ul className="mt-5 grid grid-cols-2 sm:grid-cols-3 gap-2">
-        {result.agents.map((a) => (
-          <li key={a.id} className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-0)] px-3 py-2.5 min-w-0">
-            <div className="flex items-center gap-2 text-[13px] font-semibold text-[var(--color-text-primary)]">
-              <AgentLogo id={a.id} className="h-4 w-4" />
-              <span className="truncate">{harnessAgentName(a.id)}</span>
-            </div>
-            <div className="mt-1 flex items-center gap-1.5 font-mono text-[11px] text-[var(--color-text-tertiary)]">
-              <span
-                className={`w-1.5 h-1.5 rounded-full shrink-0 ${a.notes.length || a.status !== 'loads' ? 'bg-[var(--color-accent)]' : 'bg-[var(--color-success)]'}`}
-                aria-hidden="true"
-              />
-              {harnessStatusText(a.status, a.notes.length)}
-            </div>
-          </li>
-        ))}
-      </ul>
-
-      {withNotes.length > 0 && (
-        <ul className="mt-5 divide-y divide-[var(--color-border)] border-t border-[var(--color-border)]">
-          {withNotes.flatMap((a) =>
-            a.notes.map((n) => (
-              <li key={`${a.id}-${n.id}`} className="py-3 min-w-0">
-                <div className="text-[13px] text-[var(--color-text-primary)]">
-                  <AgentLogo id={a.id} className="inline-block h-3.5 w-3.5 mr-1.5 align-[-2px]" />
-                  <span className="font-semibold">{harnessAgentName(a.id)}:</span> {n.message}
+      <div className="mt-5 flex flex-col @2xl:flex-row @2xl:items-center gap-5 @2xl:gap-6">
+        <div className="self-center">
+          <AgentRing agents={result.agents} loads={summary.loads} />
+        </div>
+        <ul className="grid flex-1 min-w-0 grid-cols-2 @3xl:grid-cols-3 gap-2.5">
+          {result.agents.map((a) => {
+            const tone = agentTone(a);
+            return (
+              <li
+                key={a.id}
+                className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-0)] p-3.5 min-w-0"
+              >
+                <div className="flex items-center gap-2.5 text-[14.5px] font-semibold text-[var(--color-text-primary)]">
+                  <AgentLogo id={a.id} className="h-7 w-7" />
+                  <span className="min-w-0 leading-tight">{harnessAgentName(a.id)}</span>
                 </div>
-                {n.fix && <div className="mt-1 text-[12.5px] text-[var(--color-text-secondary)]">Fix: {n.fix}</div>}
-                <div className="mt-0.5 font-mono text-[11px] text-[var(--color-text-tertiary)] break-all">
-                  {n.id}{a.verified ? ` · verified on ${a.verified}` : ''}
+                <div className="mt-2 flex items-center gap-1.5 font-mono text-[11.5px] text-[var(--color-text-tertiary)]">
+                  <span className="w-2 h-2 rounded-full shrink-0" style={{ background: TONE_COLOR[tone] }} aria-hidden="true" />
+                  {harnessStatusText(a.status, a.notes.length)}
                 </div>
               </li>
-            )),
-          )}
+            );
+          })}
         </ul>
+      </div>
+
+      {notes.length > 0 ? (
+        <div className="mt-5 grid gap-2">
+          {notes.map(({ a, n }, i) => (
+            <details
+              key={`${a.id}-${n.id}-${i}`}
+              open={i === 0}
+              className="group rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-0)] overflow-hidden"
+            >
+              <summary className="flex cursor-pointer list-none items-center gap-3 px-4 py-3 hover:bg-[var(--color-surface-2)] [&::-webkit-details-marker]:hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--color-accent)]">
+                <Chevron />
+                <AgentLogo id={a.id} className="h-6 w-6" />
+                <span className="min-w-0 flex-1 text-[13.5px] text-[var(--color-text-primary)]">
+                  <span className="font-semibold">{harnessAgentName(a.id)}</span>
+                  <span className="text-[12.5px] text-[var(--color-text-tertiary)]">
+                    {' '}· {a.status === 'not_loaded' ? 'not loaded' : 'loads with changes'}
+                  </span>
+                </span>
+              </summary>
+              <div className="border-t border-[var(--color-border)] px-4 py-3 @lg:pl-[68px]">
+                <p className="text-[13.5px] leading-relaxed text-[var(--color-text-primary)]">{n.message}</p>
+                {n.fix && (
+                  <p className="mt-1.5 text-[12.5px] leading-relaxed text-[var(--color-text-secondary)]">
+                    <span className="font-semibold">Fix:</span> {n.fix}
+                  </p>
+                )}
+                <p className="mt-1.5 font-mono text-[11px] text-[var(--color-text-tertiary)] break-all">
+                  {n.id}
+                  {a.verified ? ` · verified on ${a.verified}` : ''}
+                </p>
+              </div>
+            </details>
+          ))}
+        </div>
+      ) : (
+        <p className="mt-5 text-[13px] text-[var(--color-text-secondary)]">Every agent loads this skill as written. No notes.</p>
       )}
 
       <p className="mt-4 text-[11px] text-[var(--color-text-tertiary)]">
