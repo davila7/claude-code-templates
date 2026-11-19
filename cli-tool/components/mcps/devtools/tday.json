@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "tday": {
+      "description": "Official tday.com hosted MCP server (tday.com/api/mcp, streamable HTTP). tday lets your coding agent record narrated demo videos of the app you are building. This hosted server's tools cover tday brands, credits, product screens and launch videos. Requires a tday account (free plan: 5 saved demos) and uses OAuth 2.1 with dynamic client registration: after installing, run /mcp in Claude Code to sign in; nothing to paste. The local demo-recording tools (web apps, Electron apps, terminal tools, iOS Simulator and Android emulator) ship in the npm package @tday-com/mcp. Docs: https://docs.tday.com/coding-agents",
+      "type": "http",
+      "url": "https://tday.com/api/mcp"
+    }
+  }
+}
