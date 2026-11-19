@@ -286,12 +286,12 @@ When a user requests invoice organization:
 # March 2024 Receipts Organized
 
 ## By Category
-- Software & Tools: $847.32 (12 invoices)
-- Office Supplies: $234.18 (8 receipts)
-- Travel & Meals: $1,456.90 (15 receipts)
-- Professional Services: $2,500.00 (3 invoices)
+- Software & Tools: USD 847.32 (12 invoices)
+- Office Supplies: USD 234.18 (8 receipts)
+- Travel & Meals: USD 1,456.90 (15 receipts)
+- Professional Services: USD 2,500.00 (3 invoices)
 
-Total: $5,038.40
+Total: USD 5,038.40
 
 All receipts renamed and filed in:
 `Business-Receipts/2024/03-March/[Category]/`

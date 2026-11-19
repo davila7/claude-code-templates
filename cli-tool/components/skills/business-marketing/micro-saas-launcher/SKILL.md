@@ -142,16 +142,16 @@ Your price = 20-50% of alternative cost
 
 Example:
 - Manual work takes 10 hours/month
-- 10 hours × $50/hour = $500 value
-- Price: $49-99/month
+- 10 hours × USD 50/hour = USD 500 value
+- Price: USD 49-99/month
 ```
 
 ### Common Micro-SaaS Prices
 | Type | Price Range |
 |------|-------------|
-| Simple tool | $9-29/month |
-| Pro tool | $29-99/month |
-| B2B tool | $49-299/month |
+| Simple tool | USD 9-29/month |
+| Pro tool | USD 29-99/month |
+| B2B tool | USD 49-299/month |
 | Lifetime deal | 3-5x monthly |
 
 ### Pricing Mistakes

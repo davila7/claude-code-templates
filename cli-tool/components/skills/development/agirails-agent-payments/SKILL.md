@@ -110,7 +110,7 @@ for questions the user hasn't addressed.
 - Type: number
 - Range: 0.05 – 10,000
 - Default: 1.00
-- Hint: minimum $0.05 (protocol minimum). You can also set per-unit pricing in code.
+- Hint: minimum USD 0.05 (protocol minimum). You can also set per-unit pricing in code.
 
 **Question 7 — Concurrency** *(only if intent = earn or both)*
 > Max concurrent jobs?
@@ -123,7 +123,7 @@ for questions the user hasn't addressed.
 - Type: number
 - Range: 0.05 – 1,000
 - Default: 10
-- Hint: maximum you're willing to pay per request. Mainnet limit: $1,000.
+- Hint: maximum you're willing to pay per request. Mainnet limit: USD 1,000.
 
 **Question 9 — Payment Mode** *(only if intent = pay or both)*
 > Payment mode?
@@ -490,7 +490,7 @@ In mock mode, `request()` auto-releases after dispute window. On testnet/mainnet
 ## Reference: Fee
 
 - **Rate**: 1% of transaction amount
-- **Minimum**: $0.05 per transaction
+- **Minimum**: USD 0.05 per transaction
 - **Formula**: `fee = max(amount * 0.01, 0.05)`
 - ACTP: fee deducted on escrow release (SETTLED state) via ACTPKernel
 - x402: fee deducted atomically via X402Relay contract
@@ -561,11 +561,11 @@ agent.provide({
   name: 'translation',
   pricing: {
     cost: {
-      base: 0.50,                          // $0.50 fixed cost per job
-      perUnit: { unit: 'word', rate: 0.005 } // $0.005 per word
+      base: 0.50,                          // USD 0.50 fixed cost per job
+      perUnit: { unit: 'word', rate: 0.005 } // USD 0.005 per word
     },
     margin: 0.40,  // 40% profit margin
-    minimum: 1.00, // never accept less than $1
+    minimum: 1.00, // never accept less than USD 1
   },
 }, handler);
 ```
@@ -607,7 +607,7 @@ Optional on-chain identity and reputation. Neither `actp init` nor `Agent.start(
 | Delivery proof | Handler result as JSON | ProofGenerator (hash) or DeliveryProofBuilder (EAS + IPFS) | ProofGenerator (hash) or DeliveryProofBuilder (EAS + IPFS) |
 | ServiceDirectory | In-memory, per-process | In-memory, per-process | In-memory, per-process |
 | Gas fees | None (simulated) | Real ETH (or gasless via paymaster) | Real ETH (or gasless via paymaster) |
-| Tx limit | None | None | $1,000 per tx |
+| Tx limit | None | None | USD 1,000 per tx |
 
 ## Reference: Now vs Roadmap
 
@@ -793,7 +793,7 @@ await client.basic.pay({ to: 'https://...' });
 | ServiceDirectory not cross-process | high | Pass provider address explicitly |
 | x402 adapter not registered | high | Call `client.registerAdapter(new X402Adapter(...))` first |
 | Service name mismatch | high | `provide('code-review')` only matches `request('code-review')` — exact string |
-| Mainnet $1,000 limit | medium | Security limit on unaudited contracts |
+| Mainnet USD 1,000 limit | medium | Security limit on unaudited contracts |
 | Base Sepolia RPC rate limits | medium | Set `BASE_SEPOLIA_RPC` to Alchemy or publicnode.com |
 | No global discovery | medium | Requesters must know provider address and exact service name |
 
@@ -840,7 +840,7 @@ All commands support `--json` for machine-readable output and `-q`/`--quiet` for
 | Transaction stuck in INITIATED | No provider running for that service name on this network |
 | "Invalid state transition" | States move forward only — check the state machine table |
 | RPC 503 errors | Set `BASE_SEPOLIA_RPC` to Alchemy or publicnode.com |
-| Mainnet $1,000 limit | Security limit on unaudited contracts |
+| Mainnet USD 1,000 limit | Security limit on unaudited contracts |
 | x402 payment not refundable | By design — x402 is instant/atomic. Use ACTP escrow for dispute protection |
 | "No adapter found" | Register the required adapter (X402Adapter for URLs, ERC-8004 bridge for agent IDs) |
 

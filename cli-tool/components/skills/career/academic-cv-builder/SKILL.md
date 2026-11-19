@@ -193,11 +193,11 @@ GRANTS AND FUNDING
 
 Awarded
 
-NIH R01 (Co-PI), "Project Title," 2023-2028, $2.5M total ($500K to my lab)
+NIH R01 (Co-PI), "Project Title," 2023-2028, USD 2.5M total (USD 500K to my lab)
 
-NSF CAREER Award (PI), "Project Title," 2022-2027, $650,000
+NSF CAREER Award (PI), "Project Title," 2022-2027, USD 650,000
 
-Internal Grant (PI), "Project Title," 2021, $25,000
+Internal Grant (PI), "Project Title," 2021, USD 25,000
 
 Pending
 

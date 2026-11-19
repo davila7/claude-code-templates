@@ -345,16 +345,16 @@ cluster.close()
 ## Cost comparison
 
 **CPU-based curation** (AWS c5.18xlarge × 10):
-- Cost: $3.60/hour × 10 = $36/hour
+- Cost: USD 3.60/hour × 10 = USD 36/hour
 - Time for 8TB: 120 hours
-- **Total**: $4,320
+- **Total**: USD 4,320
 
 **GPU-based curation** (AWS p4d.24xlarge × 2):
-- Cost: $32.77/hour × 2 = $65.54/hour
+- Cost: USD 32.77/hour × 2 = USD 65.54/hour
 - Time for 8TB: 7.5 hours
-- **Total**: $491.55
+- **Total**: USD 491.55
 
-**Savings**: 89% reduction ($3,828 saved)
+**Savings**: 89% reduction (USD 3,828 saved)
 
 ## Supported data formats
 

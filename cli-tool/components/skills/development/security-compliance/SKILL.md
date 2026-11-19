@@ -198,11 +198,11 @@ Prepare for security incidents through planning, testing, and regular tabletop e
    5 = Almost Certain (> 75%)
 
    Impact scale (1-5):
-   1 = Minimal (< $10K loss, no data breach)
-   2 = Minor ($10K-$100K, limited data exposure)
-   3 = Moderate ($100K-$1M, significant data breach)
-   4 = Major ($1M-$10M, extensive data breach, regulatory fines)
-   5 = Catastrophic (> $10M, business-threatening)
+   1 = Minimal (< USD 10K loss, no data breach)
+   2 = Minor (USD 10K-100K, limited data exposure)
+   3 = Moderate (USD 100K-1M, significant data breach)
+   4 = Major (USD 1M-10M, extensive data breach, regulatory fines)
+   5 = Catastrophic (> USD 10M, business-threatening)
 
    Risk Score = Likelihood × Impact (max 25)
 
@@ -505,7 +505,7 @@ Action based on score:
 - **Purpose**: Protect health information (PHI)
 - **Scope**: Healthcare providers, payers, business associates
 - **Requirements**: Administrative, Physical, Technical safeguards
-- **Penalties**: $100-$50,000 per violation, criminal charges possible
+- **Penalties**: USD 100-50,000 per violation, criminal charges possible
 
 ### PCI-DSS (Payment Card Industry Data Security Standard)
 - **Purpose**: Protect cardholder data
