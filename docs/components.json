@@ -28835,6 +28835,84 @@
       }
     },
     {
+      "name": "switch-docs",
+      "path": "devtools/switch-docs.json",
+      "category": "devtools",
+      "type": "mcp",
+      "description": "Official search MCP server of the Switch docs (docs.switchagents.ai, hosted by Mintlify): lets Claude Code search and read how to self-host Switch, a server and desktop console that runs Claude Code, Codex, Cursor and other coding agents as members of Slack, Microsoft Teams, Discord, Telegram and Mattermost channels. Remote, no sign-in required. Every tool is read-only except the feedback tool, which sends a report about a wrong or outdated page to the docs team.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "categories": {},
+        "hash": "b3e29975c4568e92",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-19T18:27:26Z"
+      }
+    },
+    {
+      "name": "tday",
+      "path": "devtools/tday.json",
+      "category": "devtools",
+      "type": "mcp",
+      "description": "Official tday.com hosted MCP server (tday.com/api/mcp, streamable HTTP). tday lets your coding agent record narrated demo videos of the app you are building. This hosted server's tools cover tday brands, credits, product screens and launch videos. Requires a tday account (free plan: 5 saved demos) and uses OAuth 2.1 with dynamic client registration: after installing, run /mcp in Claude Code to sign in; nothing to paste. The local demo-recording tools (web apps, Electron apps, terminal tools, iOS Simulator and Android emulator) ship in the npm package @tday-com/mcp. Docs: https://docs.tday.com/coding-agents",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 7,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 1,
+        "analysis": "complete",
+        "findings": [
+          {
+            "id": "TR2",
+            "category": "Trigger Abuse",
+            "severity": "MEDIUM",
+            "title": "Shadow Command Trigger",
+            "file": "SKILL.md",
+            "line": 1,
+            "count": 1
+          }
+        ],
+        "categories": {
+          "Trigger Abuse": 1
+        },
+        "hash": "59e24bc9b0435861",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-19T18:27:26Z"
+      }
+    },
+    {
       "name": "terraform",
       "path": "devtools/terraform.json",
       "category": "devtools",
@@ -30200,6 +30278,39 @@
         "hash": "6d9b48a18979ceac",
         "version": "2.12.0",
         "scannedAt": "2026-11-19T03:05:32Z"
+      }
+    },
+    {
+      "name": "cheapcarent-mcp",
+      "path": "travel/cheapcarent-mcp.json",
+      "category": "travel",
+      "type": "mcp",
+      "description": "CheapCarRent Search - Official hosted Streamable HTTP MCP server for car rental search at 15,000 pickup points in 46 countries, 19 languages. No account or API key. Read-only tools: list_locations and search_cars.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "categories": {},
+        "hash": "c1ef08ab0054eaac",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-19T18:27:26Z"
       }
     },
     {
@@ -72497,6 +72608,161 @@
         "version": "1.0.1",
         "checkedAt": "2026-11-18T20:31:10Z",
         "hash": "5e48d344c05a41f5"
+      }
+    },
+    {
+      "name": "e2e",
+      "path": "development/e2e",
+      "category": "development",
+      "type": "skill",
+      "description": "Writes, runs, and debugs end-to-end tests for web and mobile apps with e2e, the agentic test runner, which mixes agent.act goals with exact locator assertions on a Playwright browser or an iOS or Android device. Also drives a project's running app live over the e2e MCP server to look at a screen, check a UI change, take a screenshot or record a video, and try a locator; and runs bug bashes, parallel e2e explore runs with each bug proven by a repro test. Use when a project depends on e2e or has an e2e.config.ts, when asked for end-to-end, browser, mobile, or agentic UI tests, to check a change in the running app, to QA or bug bash an app or branch, or when an e2e run fails.",
+      "author": "e2e",
+      "repo": "https://github.com/e2e-inc/e2e",
+      "version": "",
+      "license": "Apache-2.0",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "LICENSE",
+        "NOTICE",
+        "references/agent.md",
+        "references/bug-bash.md",
+        "references/debugging.md",
+        "references/explore.md",
+        "references/mcp.md",
+        "references/running.md",
+        "references/setup.md",
+        "references/writing-tests.md"
+      ],
+      "source": {
+        "repo": "e2e-inc/e2e",
+        "path": "skills/e2e",
+        "commit": "e693cdcf0baee66dead26fa2e51a6693266b4b8f",
+        "license": "Apache-2.0",
+        "url": "https://github.com/e2e-inc/e2e/tree/e693cdcf0baee66dead26fa2e51a6693266b4b8f/skills/e2e",
+        "requires": []
+      },
+      "skillspector": {
+        "score": 94,
+        "severity": "CRITICAL",
+        "recommendation": "DO_NOT_INSTALL",
+        "issueCount": 85,
+        "analysis": "partial",
+        "findings": [
+          {
+            "id": "AE1",
+            "category": "analysis-evasion",
+            "severity": "HIGH",
+            "title": "Incomplete referenced artifact analysis",
+            "file": "SKILL.md",
+            "line": 36,
+            "count": 3
+          },
+          {
+            "id": "PE3",
+            "category": "Privilege Escalation",
+            "severity": "HIGH",
+            "title": "Credential Access",
+            "file": "references/setup.md",
+            "line": 428,
+            "count": 2
+          },
+          {
+            "id": "AS3",
+            "category": "Agent Snooping",
+            "severity": "MEDIUM",
+            "title": "Skill Enumeration",
+            "file": "references/setup.md",
+            "line": 46,
+            "count": 1
+          },
+          {
+            "id": "RP1",
+            "category": "MCP Rug Pull",
+            "severity": "MEDIUM",
+            "title": "npx commands without a version suffix (e.g. @1.0.0) create a rug-pull risk if the upstream server is compromised and publishes a malicious update.",
+            "file": "SKILL.md",
+            "line": 10,
+            "count": 6
+          },
+          {
+            "id": "RP1",
+            "category": "MCP Rug Pull",
+            "severity": "MEDIUM",
+            "title": "npx commands without a version suffix (e.g. @1.0.0) create a rug-pull risk if the upstream server is compromised and publishes a malicious update.",
+            "file": "references/agent.md",
+            "line": 458,
+            "count": 4
+          }
+        ],
+        "categories": {
+          "MCP Rug Pull": 78,
+          "analysis-evasion": 3,
+          "Privilege Escalation": 2,
+          "Agent Snooping": 1,
+          "Rogue Agent": 1
+        },
+        "hash": "23e453e44291368c",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-19T18:27:26Z"
+      },
+      "harness": {
+        "agents": [
+          {
+            "id": "claude-code",
+            "status": "loads",
+            "verified": "2.1.316",
+            "notes": []
+          },
+          {
+            "id": "codex",
+            "status": "loads",
+            "verified": "0.166.0",
+            "notes": []
+          },
+          {
+            "id": "copilot-cli",
+            "status": "loads",
+            "verified": "1.0.105",
+            "notes": []
+          },
+          {
+            "id": "opencode",
+            "status": "loads",
+            "verified": "1.19.5",
+            "notes": []
+          },
+          {
+            "id": "hermes",
+            "status": "loads",
+            "verified": "main",
+            "notes": []
+          },
+          {
+            "id": "openclaw",
+            "status": "degraded",
+            "verified": "2026.10.9",
+            "notes": [
+              {
+                "id": "OW-READ-BUDGET",
+                "effect": "degraded",
+                "message": "SKILL.md reads as 17,858 characters (OpenClaw counts each CJK character as 4 or more), over the read cap for this setup: the read is refused or returns a cut prefix with a truncation notice. The cap depends on the model context (16,000 under 100K tokens, 32,000 under 200K, 64,000 above; custom providers default to 128K). Pass --context-tokens to check your setup.",
+                "fix": "Keep SKILL.md under about 15,000 characters (about 3,700 CJK characters); move detail into references/ files."
+              }
+            ]
+          }
+        ],
+        "version": "1.0.1",
+        "checkedAt": "2026-11-19T18:27:41Z",
+        "hash": "23e453e44291368c"
       }
     },
     {
