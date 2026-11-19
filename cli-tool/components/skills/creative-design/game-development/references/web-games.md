@@ -1,9 +1,3 @@
----
-name: web-games
-description: Web browser game development principles. Framework selection, WebGPU, optimization, PWA.
-allowed-tools: Read, Write, Edit, Glob, Grep
----
-
 # Web Browser Game Development
 
 > Framework selection and browser-specific principles.
@@ -29,34 +23,28 @@ What type of game?
     └── Custom → Raw Canvas/WebGL
 ```
 
-### Comparison (2025)
+### Comparison
 
 | Framework | Type | Best For |
 |-----------|------|----------|
-| **Phaser 4** | 2D | Full game features |
-| **PixiJS 8** | 2D | Rendering, UI |
+| **Phaser** | 2D | Full game features |
+| **PixiJS** | 2D | Rendering, UI |
 | **Three.js** | 3D | Visualizations, lightweight |
-| **Babylon.js 7** | 3D | Full engine, XR |
+| **Babylon.js** | 3D | Full engine, XR |
 
 ---
 
 ## 2. WebGPU Adoption
 
-### Browser Support (2025)
+### Browser Support
 
-| Browser | Support |
-|---------|---------|
-| Chrome | ✅ Since v113 |
-| Edge | ✅ Since v113 |
-| Firefox | ✅ Since v131 |
-| Safari | ✅ Since 18.0 |
-| **Total** | **~73%** global |
+WebGPU shipped in Chrome and Edge 113 (desktop), later on Android, in Firefox 141 (Windows first) and in Safari 26. Coverage still varies by OS and GPU, so check [caniuse.com/webgpu](https://caniuse.com/webgpu) for the target audience and never assume it is present.
 
 ### Decision
 
 - **New projects**: Use WebGPU with WebGL fallback
 - **Legacy support**: Start with WebGL
-- **Feature detection**: Check `navigator.gpu`
+- **Feature detection**: `navigator.gpu` can exist while `requestAdapter()` returns `null`; fall back to WebGL in that case too
 
 ---
 
@@ -67,7 +55,7 @@ What type of game?
 | Constraint | Strategy |
 |------------|----------|
 | No local file access | Asset bundling, CDN |
-| Tab throttling | Pause when hidden |
+| Tab throttling | Pause on `visibilitychange`; `requestAnimationFrame` stops in background tabs, so clamp the frame delta on resume |
 | Mobile data limits | Compress assets |
 | Audio autoplay | Require user interaction |
 

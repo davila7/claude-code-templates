@@ -1,9 +1,3 @@
----
-name: pc-games
-description: PC and console game development principles. Engine selection, platform features, optimization strategies.
-allowed-tools: Read, Write, Edit, Glob, Grep
----
-
 # PC/Console Game Development
 
 > Engine selection and platform-specific principles.
@@ -24,7 +18,7 @@ What are you building?
 ├── 3D Game
 │   ├── AAA visual quality? → Unreal
 │   ├── Cross-platform priority? → Unity
-│   └── Indie/open source? → Godot 4
+│   └── Indie/open source? → Godot
 │
 └── Specific Needs
     ├── DOTS performance? → Unity
@@ -34,13 +28,15 @@ What are you building?
 
 ### Comparison
 
-| Factor | Unity 6 | Godot 4 | Unreal 5 |
+| Factor | Unity | Godot | Unreal |
 |--------|---------|---------|----------|
 | 2D | Good | Excellent | Limited |
 | 3D | Good | Good | Excellent |
 | Learning | Medium | Easy | Hard |
-| Cost | Revenue share | Free | 5% after $1M |
+| Cost | Free Personal tier under a revenue cap, then per-seat plans | Free (MIT) | 5% royalty on gross revenue above USD 1M per product |
 | Team | Any | Solo-Medium | Medium-Large |
+
+Licensing terms change: check the engine's current pricing page before recommending one on cost.
 
 ---
 
@@ -109,19 +105,19 @@ Map ACTIONS, not buttons:
 
 ## 5. Engine-Specific Principles
 
-### Unity 6
+### Unity
 
 - DOTS for performance-critical systems
 - Burst compiler for hot paths
 - Addressables for asset streaming
 
-### Godot 4
+### Godot
 
 - GDScript for rapid iteration
 - C# for complex logic
 - Signals for decoupling
 
-### Unreal 5
+### Unreal
 
 - Blueprint for designers
 - C++ for performance

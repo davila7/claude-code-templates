@@ -1,9 +1,3 @@
----
-name: game-design
-description: Game design principles. GDD structure, balancing, player psychology, progression.
-allowed-tools: Read, Glob, Grep
----
-
 # Game Design Principles
 
 > Design thinking for engaging games.
@@ -72,6 +66,8 @@ Every game needs a fun 30-second loop:
 | **Fixed** | Predictable | Milestone rewards |
 | **Variable** | Addictive | Loot drops |
 | **Ratio** | Effort-based | Grind games |
+
+Variable rewards bought with real money (loot boxes, gacha) are regulated or banned in several countries, and app stores require published drop odds. Prefer variable rewards earned through play.
 
 ---
 

@@ -1,9 +1,3 @@
----
-name: mobile-games
-description: Mobile game development principles. Touch input, battery, performance, app stores.
-allowed-tools: Read, Write, Edit, Glob, Grep
----
-
 # Mobile Game Development
 
 > Platform constraints and optimization principles.
@@ -20,7 +14,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep
 | **Battery** | Limit CPU/GPU usage |
 | **Thermal** | Throttle when hot |
 | **Screen size** | Responsive UI |
-| **Interruptions** | Pause on background |
+| **Interruptions** | Pause and save on background (calls, notifications, app switch) |
 
 ---
 
@@ -37,7 +31,8 @@ allowed-tools: Read, Write, Edit, Glob, Grep
 
 ### Best Practices
 
-- Minimum touch target: 44x44 points
+- Minimum touch target: 44x44 pt (Apple HIG), 48x48 dp (Android Material)
+- Keep controls out of notches and home-indicator areas (safe areas)
 - Visual feedback on touch
 - Avoid precise timing requirements
 - Support both portrait and landscape
@@ -77,7 +72,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep
 
 | Requirement | Note |
 |-------------|------|
-| Target API | Current year's SDK |
+| Target API | Within one year of the latest Android release (see Play's target API policy) |
 | 64-bit | Required |
 | App bundles | Recommended |
 
