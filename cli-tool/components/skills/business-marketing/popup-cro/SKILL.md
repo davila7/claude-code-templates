@@ -121,7 +121,7 @@ Before providing recommendations, understand:
 **Goal**: First purchase or conversion
 
 **Best practices:**
-- Clear discount (10%, $20, free shipping)
+- Clear discount (10%, USD 20, free shipping)
 - Deadline creates urgency
 - Single use per visitor
 - Easy to apply code

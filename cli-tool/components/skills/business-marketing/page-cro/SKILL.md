@@ -244,7 +244,7 @@ Content-to-conversion. Focus on:
 
 **Price Presentation**
 - Highlight annual billing discounts vs. show monthly only vs. show both
-- Test different pricing points ($99 vs. $100 vs. $97)
+- Test different pricing points (USD 99 vs. USD 100 vs. USD 97)
 - Add "Most Popular" or "Recommended" badge to target plan
 - Experiment with number of visible tiers (3 vs. 4 vs. 2)
 - Use price anchoring strategically

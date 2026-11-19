@@ -26,7 +26,7 @@ Use this skill when the user:
 ## Why Quantification Matters
 
 **The Problem:**
-- "Managed projects" vs "Managed 12 projects worth $2M"
+- "Managed projects" vs "Managed 12 projects worth USD 2M"
 - "Improved processes" vs "Reduced cycle time by 40%"
 - "Helped customers" vs "Resolved 50+ tickets daily with 98% satisfaction"
 
@@ -177,7 +177,7 @@ When you don't have exact numbers:
 
 **Examples:**
 - "Managed team of 8-12"
-- "Generated $100K-$150K in revenue"
+- "Generated USD 100K-150K in revenue"
 - "Saved 20-30 hours weekly"
 
 ### Minimum Bound
@@ -187,7 +187,7 @@ When you don't have exact numbers:
 **Examples:**
 - "Served 100+ customers daily"
 - "Managed at least 15 concurrent projects"
-- "Generated $500K+ in annual revenue"
+- "Generated USD 500K+ in annual revenue"
 
 ### Percentage of Activity
 
@@ -220,7 +220,7 @@ Example:
 "[Verb] [number] [things], resulting in [impact]"
 
 Example:
-"Managed 25 concurrent projects worth $3M, delivering 95% on-time with zero budget overruns"
+"Managed 25 concurrent projects worth USD 3M, delivering 95% on-time with zero budget overruns"
 ```
 
 ### Volume + Impact Template
@@ -236,7 +236,7 @@ Example:
 "Ranked #[X] out of [Y] in [metric], [context]"
 
 Example:
-"Ranked #2 out of 45 sales representatives nationally, generating $3.2M in annual revenue"
+"Ranked #2 out of 45 sales representatives nationally, generating USD 3.2M in annual revenue"
 ```
 
 ## Common "I Have No Numbers" Situations
@@ -300,15 +300,15 @@ When quantifying a resume:
 
 ### Questions to Find Metrics:
 - How many accounts? → [User answer: ~40]
-- What was the revenue? → [User answer: ~$2M]
+- What was the revenue? → [User answer: ~USD 2M]
 - What results did you achieve? → [User answer: retained most]
 
 ### Quantified Version:
-"Managed portfolio of 40 enterprise accounts representing $2M ARR, achieving 95% retention rate"
+"Managed portfolio of 40 enterprise accounts representing USD 2M ARR, achieving 95% retention rate"
 
 ### Metrics Added:
 - Account count: 40
-- Revenue: $2M ARR
+- Revenue: USD 2M ARR
 - Retention: 95%
 
 ---

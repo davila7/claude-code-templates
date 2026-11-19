@@ -35,7 +35,7 @@ Use this skill when:
 1. **Get OpenRouter API key**:
    - Visit https://openrouter.ai/keys
    - Create account and generate API key
-   - Add credits to account (minimum $5 recommended)
+   - Add credits to account (minimum USD 5 recommended)
 
 2. **Configure environment**:
    ```bash
@@ -241,10 +241,10 @@ done
 Perplexity models have different pricing tiers:
 
 **Approximate costs per query:**
-- Sonar: $0.001-0.002 (most cost-effective)
-- Sonar Pro: $0.002-0.005 (recommended default)
-- Sonar Reasoning Pro: $0.005-0.010
-- Sonar Pro Search: $0.020-0.050+ (most comprehensive)
+- Sonar: USD 0.001-0.002 (most cost-effective)
+- Sonar Pro: USD 0.002-0.005 (recommended default)
+- Sonar Reasoning Pro: USD 0.005-0.010
+- Sonar Pro Search: USD 0.020-0.050+ (most comprehensive)
 
 **Cost optimization strategies:**
 1. Use `sonar` for simple fact lookups

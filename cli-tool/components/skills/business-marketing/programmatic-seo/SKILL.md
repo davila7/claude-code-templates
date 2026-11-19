@@ -131,7 +131,7 @@ Beyond mixing and matching data point permutations, these are the proven playboo
 
 ### 3. Conversions
 **Pattern**: "[X] to [Y]" or "[amount] [unit] in [unit]"
-**Example searches**: "$10 USD to GBP", "100 kg to lbs", "pdf to word"
+**Example searches**: "10 USD to GBP", "100 kg to lbs", "pdf to word"
 
 **What it is**: Tools or pages that convert between formats, units, or currencies.
 
