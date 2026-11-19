@@ -8,7 +8,7 @@
         "@equalang/mcp@0.2.4"
       ],
       "env": {
-        "EQUALANG_API_KEY": "<YOUR_EQUALANG_API_KEY>"
+        "EQUALANG_API_KEY": "${EQUALANG_API_KEY}"
       }
     }
   }
