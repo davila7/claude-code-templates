@@ -69,11 +69,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "Claude",
-          "work tasks",
-          "core features"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -89,10 +85,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "Claude Code",
-          "development workflow"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -108,11 +101,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "Claude",
-          "platform",
-          "API"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -128,11 +117,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "Claude",
-          "Cowork",
-          "workflows"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -148,10 +133,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "Claude Code",
-          "automation"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -167,11 +149,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "AI",
-          "collaboration",
-          "ethical use"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -187,10 +165,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "Claude API",
-          "Anthropic models"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -206,11 +181,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "Model Context Protocol",
-          "Python",
-          "Claude"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -226,11 +197,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "AI Fluency",
-          "education",
-          "teaching practices"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -246,11 +213,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "AI Fluency",
-          "students",
-          "academic success"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -266,10 +229,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "Model Context Protocol",
-          "advanced topics"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -285,10 +245,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "Claude",
-          "Amazon Bedrock"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -304,11 +261,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "Claude",
-          "Google Cloud",
-          "Anthropic models"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -324,10 +277,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "Teaching",
-          "AI Fluency"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -343,10 +293,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "AI Fluency",
-          "nonprofits"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -362,10 +309,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "Claude Code",
-          "agent skills"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -381,10 +325,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "Claude Code",
-          "subagents"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -400,11 +341,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "AI",
-          "capabilities",
-          "limitations"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -420,10 +357,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "AI Fluency",
-          "small businesses"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -439,10 +373,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "AI Fluency",
-          "builders"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -458,10 +389,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "AI Fluency",
-          "creative work"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -477,10 +405,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "Claude",
-          "enterprise deployment"
-        ],
+        "topics": [],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -499,16 +424,18 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI Models",
-          "Software Development",
-          "AI Tools"
+          "AI models",
+          "software development",
+          "programming with AI",
+          "AI tools",
+          "developer productivity"
         ],
         "source": "cursor-learn",
         "price": null,
         "id": "cursor-ai-foundations",
         "kind": "course",
         "title": "AI Foundations",
-        "description": "This course will teach you about how to use AI to be more effective as a programmer. It focuses on developers writing software using AI models and tools, helping you understand how the models work, their limitations, and practical patterns for building software with AI.",
+        "description": "This course will teach you about how to use AI to be more effective as a programmer. It’s not a course to teach about machine learning or how to train your own models, but instead a course focused on developers writing software using AI models and tools.",
         "url": "https://cursor.com/learn"
       }
     ],
@@ -522,7 +449,6 @@
         "topics": [
           "AI",
           "Foundations",
-          "Large Language Models",
           "ChatGPT"
         ],
         "source": "openai-academy",
@@ -530,7 +456,7 @@
         "id": "openai-ai-foundations-dnq5w",
         "kind": "course",
         "title": "AI Foundations",
-        "description": "Learn the basics of AI, large language models, and ChatGPT. You’ll practice giving clear instructions, adding useful context, reviewing outputs, and using AI responsibly in everyday work.",
+        "description": "Learn the basics of AI, large language models, and ChatGPT with practical exercises.",
         "url": "https://academy.openai.com/public/courses/ai-foundations-dnq5w"
       },
       {
@@ -540,7 +466,6 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI",
           "Applied AI",
           "Workflows",
           "ChatGPT"
@@ -550,7 +475,7 @@
         "id": "openai-applied-ai-foundations-szsmv",
         "kind": "course",
         "title": "Applied AI Foundations",
-        "description": "Turn a recurring task into a repeatable workflow. You’ll break the work into steps, identify where ChatGPT can help, and build review points into the process.",
+        "description": "Turn a recurring task into a repeatable workflow using ChatGPT.",
         "url": "https://academy.openai.com/public/courses/applied-ai-foundations-szsmv"
       },
       {
@@ -560,16 +485,16 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI",
           "Agents",
-          "Workflows"
+          "Workflows",
+          "ChatGPT"
         ],
         "source": "openai-academy",
         "price": null,
         "id": "openai-agents-and-workflows-y0qoc",
         "kind": "course",
         "title": "Agents and Workflows",
-        "description": "Practice directing agents through structured work. You’ll provide context, define outputs, set boundaries, review drafts, improve the workflow, and reuse what works.",
+        "description": "Practice directing agents through structured work with defined outputs.",
         "url": "https://academy.openai.com/public/courses/agents-and-workflows-y0qoc"
       },
       {
@@ -580,14 +505,15 @@
         "eligibility": "public",
         "topics": [
           "AI",
-          "Solutions"
+          "Solution Planning",
+          "OpenAI API"
         ],
         "source": "openai-academy",
         "price": null,
         "id": "openai-scope-ai-solutions-kjplw",
         "kind": "course",
         "title": "Scope AI Solutions",
-        "description": "Identify valuable AI opportunities and turn the strongest into a solution plan.",
+        "description": "Identify valuable AI opportunities and create a solution plan.",
         "url": "https://academy.openai.com/public/courses/scope-ai-solutions-kjplw"
       },
       {
@@ -598,14 +524,15 @@
         "eligibility": "public",
         "topics": [
           "AI",
-          "Evaluation"
+          "Evaluation",
+          "OpenAI API"
         ],
         "source": "openai-academy",
         "price": null,
         "id": "openai-evaluate-ai-applications-pxds7",
         "kind": "course",
         "title": "Evaluate AI Applications",
-        "description": "Build representative evaluations, diagnose failures, and prevent quality regressions.",
+        "description": "Build evaluations and diagnose failures in AI applications.",
         "url": "https://academy.openai.com/public/courses/evaluate-ai-applications-pxds7"
       },
       {
@@ -615,15 +542,16 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI",
-          "Agentic Systems"
+          "Agents",
+          "Design",
+          "OpenAI API"
         ],
         "source": "openai-academy",
         "price": null,
         "id": "openai-design-and-build-agentic-systems-k5uke",
         "kind": "course",
         "title": "Design and Build Agentic Systems",
-        "description": "Design reliable agents with clear roles, controlled tools, and safe handoffs.",
+        "description": "Design reliable agents with clear roles and safe handoffs.",
         "url": "https://academy.openai.com/public/courses/design-and-build-agentic-systems-k5uke"
       },
       {
@@ -633,15 +561,16 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI",
-          "Retrieval-Augmented Generation"
+          "Retrieval-Augmented Generation",
+          "Quality Improvement",
+          "OpenAI API"
         ],
         "source": "openai-academy",
         "price": null,
         "id": "openai-build-with-retrieval-augmented-generation-2v6xg",
         "kind": "course",
         "title": "Build with Retrieval-Augmented Generation",
-        "description": "Build retrieval pipelines and improve answer quality through evaluation.",
+        "description": "Build retrieval pipelines and improve answer quality.",
         "url": "https://academy.openai.com/public/courses/build-with-retrieval-augmented-generation-2v6xg"
       },
       {
@@ -652,14 +581,15 @@
         "eligibility": "public",
         "topics": [
           "AI",
-          "Performance"
+          "Performance",
+          "OpenAI API"
         ],
         "source": "openai-academy",
         "price": null,
         "id": "openai-optimize-ai-application-performance-1k50h",
         "kind": "course",
         "title": "Optimize AI Application Performance",
-        "description": "Balance quality, latency, reliability, throughput, and cost using production evidence.",
+        "description": "Optimize AI application performance through evidence-based decisions.",
         "url": "https://academy.openai.com/public/courses/optimize-ai-application-performance-1k50h"
       },
       {
@@ -669,14 +599,16 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Codex"
+          "Codex",
+          "Development",
+          "Version Control"
         ],
         "source": "openai-academy",
         "price": null,
         "id": "openai-get-started-with-codex-jkhsq",
         "kind": "course",
         "title": "Get Started with Codex",
-        "description": "Scope repository tasks, verify code changes, and provide clear review evidence.",
+        "description": "Scope tasks, verify code changes, and provide clear evidence using Codex.",
         "url": "https://academy.openai.com/public/courses/get-started-with-codex-jkhsq"
       },
       {
@@ -687,14 +619,15 @@
         "eligibility": "public",
         "topics": [
           "Codex",
-          "Workflows"
+          "Workflows",
+          "Best Practices"
         ],
         "source": "openai-academy",
         "price": null,
         "id": "openai-extend-codex-workflows-4e61p",
         "kind": "course",
         "title": "Extend Codex Workflows",
-        "description": "Turn effective Codex habits into reusable, well-governed team workflows.",
+        "description": "Create reusable workflows using effective Codex habits.",
         "url": "https://academy.openai.com/public/courses/extend-codex-workflows-4e61p"
       },
       {
@@ -705,14 +638,15 @@
         "eligibility": "public",
         "topics": [
           "Codex",
-          "Teams"
+          "Team Coordination",
+          "Integration"
         ],
         "source": "openai-academy",
         "price": null,
         "id": "openai-scale-codex-across-teams-and-systems-jr83a",
         "kind": "course",
         "title": "Scale Codex Across Governed Teams and Systems",
-        "description": "Coordinate parallel Codex workstreams and integrate their outputs safely.",
+        "description": "Coordinate Codex workstreams and integrate outputs safely.",
         "url": "https://academy.openai.com/public/courses/scale-codex-across-teams-and-systems-jr83a"
       },
       {
@@ -723,14 +657,15 @@
         "eligibility": "public",
         "topics": [
           "AI",
-          "Leadership"
+          "Leadership",
+          "Strategy"
         ],
         "source": "openai-academy",
         "price": null,
         "id": "openai-ai-leadership-kaf7k",
         "kind": "course",
         "title": "AI Leadership",
-        "description": "Learn how to choose AI opportunities worth backing and guide initiatives from business priority to responsible adoption.",
+        "description": "Learn to guide AI initiatives and connect them to business priorities.",
         "url": "https://academy.openai.com/public/courses/ai-leadership-kaf7k"
       },
       {
@@ -740,16 +675,16 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI",
           "Education",
-          "Teachers"
+          "Teaching",
+          "ChatGPT"
         ],
         "source": "openai-academy",
         "price": null,
         "id": "openai-ai-for-educators-lc8j1",
         "kind": "course",
         "title": "AI for Educators",
-        "description": "Learn how to use ChatGPT to develop teaching materials that align with learning objectives and student needs.",
+        "description": "Use ChatGPT to develop teaching materials that align with learning objectives.",
         "url": "https://academy.openai.com/public/courses/ai-for-educators-lc8j1"
       },
       {
@@ -759,16 +694,16 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI",
           "Education",
-          "Students"
+          "Studying",
+          "ChatGPT"
         ],
         "source": "openai-academy",
         "price": null,
         "id": "openai-ai-for-college-students-gxgmr",
         "kind": "course",
         "title": "AI for College Students",
-        "description": "Learn how to use ChatGPT for practical study and career tasks.",
+        "description": "Leverage ChatGPT for practical study and career tasks.",
         "url": "https://academy.openai.com/public/courses/ai-for-college-students-gxgmr"
       }
     ],
@@ -779,11 +714,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "APIs",
-          "Feedback",
-          "Claude Code"
-        ],
+        "topics": [],
         "source": "vercel-academy",
         "id": "vercel-agent-friendly-apis",
         "kind": "course",
@@ -797,11 +728,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "AI",
-          "Web Development",
-          "Vercel"
-        ],
+        "topics": [],
         "source": "vercel-academy",
         "id": "vercel-build-and-launch-with-ai",
         "kind": "course",
@@ -815,11 +742,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "Workflows",
-          "SDK",
-          "Pizza Order"
-        ],
+        "topics": [],
         "source": "vercel-academy",
         "id": "vercel-workflow-foundations",
         "kind": "course",
@@ -833,11 +756,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "Visual Workflows",
-          "Plugins",
-          "APIs"
-        ],
+        "topics": [],
         "source": "vercel-academy",
         "id": "vercel-visual-workflow-builder-on-vercel",
         "kind": "course",
@@ -851,11 +770,7 @@
           "Frontend"
         ],
         "eligibility": "public",
-        "topics": [
-          "Next.js",
-          "Web Development",
-          "Routing"
-        ],
+        "topics": [],
         "source": "vercel-academy",
         "id": "vercel-nextjs-foundations",
         "kind": "course",
@@ -869,10 +784,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "v0",
-          "Web Development"
-        ],
+        "topics": [],
         "source": "vercel-academy",
         "id": "vercel-v0-foundations",
         "kind": "course",
@@ -886,11 +798,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "AI Agents",
-          "AI SDK",
-          "Vercel Sandbox"
-        ],
+        "topics": [],
         "source": "vercel-academy",
         "id": "vercel-build-ai-agent-harness",
         "kind": "course",
@@ -904,11 +812,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "AI SDK",
-          "Next.js",
-          "Production"
-        ],
+        "topics": [],
         "source": "vercel-academy",
         "id": "vercel-ai-sdk",
         "kind": "course",
@@ -922,11 +826,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "Agents",
-          "eve",
-          "Slack"
-        ],
+        "topics": [],
         "source": "vercel-academy",
         "id": "vercel-building-agents-with-eve",
         "kind": "course",
@@ -940,11 +840,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "Filesystem Agents",
-          "Bash",
-          "Vercel Sandbox"
-        ],
+        "topics": [],
         "source": "vercel-academy",
         "id": "vercel-filesystem-agents",
         "kind": "course",
@@ -958,11 +854,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "Software Factory",
-          "Risk Management",
-          "Human Control"
-        ],
+        "topics": [],
         "source": "vercel-academy",
         "id": "vercel-creating-a-software-factory",
         "kind": "course",
@@ -976,11 +868,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "AI",
-          "Next.js",
-          "Text Summarization"
-        ],
+        "topics": [],
         "source": "vercel-academy",
         "id": "vercel-ai-summary-app-with-nextjs",
         "kind": "course",
@@ -994,11 +882,7 @@
           "Cloud & Infrastructure"
         ],
         "eligibility": "public",
-        "topics": [
-          "Vercel",
-          "Deployment",
-          "Video Series"
-        ],
+        "topics": [],
         "source": "vercel-academy",
         "id": "vercel-foundations",
         "kind": "course",
@@ -1012,11 +896,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "Enterprise Apps",
-          "AI",
-          "Rollout"
-        ],
+        "topics": [],
         "source": "vercel-academy",
         "id": "vercel-enterprise-apps-agents",
         "kind": "course",
@@ -1030,11 +910,7 @@
           "Backend"
         ],
         "eligibility": "public",
-        "topics": [
-          "Subscription Store",
-          "Next.js",
-          "Stripe"
-        ],
+        "topics": [],
         "source": "vercel-academy",
         "id": "vercel-subscription-store",
         "kind": "course",
@@ -1048,10 +924,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "Jev",
-          "Customer Routing"
-        ],
+        "topics": [],
         "source": "vercel-academy",
         "id": "vercel-make-decisions-with-jev",
         "kind": "course",
@@ -1065,10 +938,7 @@
           "Frontend"
         ],
         "eligibility": "public",
-        "topics": [
-          "Microfrontends",
-          "Vercel"
-        ],
+        "topics": [],
         "source": "vercel-academy",
         "id": "vercel-microfrontends-on-vercel",
         "kind": "course",
@@ -1082,11 +952,7 @@
           "Frontend"
         ],
         "eligibility": "public",
-        "topics": [
-          "Nuxt",
-          "Web Development",
-          "Deployment"
-        ],
+        "topics": [],
         "source": "vercel-academy",
         "id": "vercel-nuxt-on-vercel",
         "kind": "course",
@@ -1100,11 +966,7 @@
           "Cloud & Infrastructure"
         ],
         "eligibility": "public",
-        "topics": [
-          "Account Optimization",
-          "Security",
-          "Cost Management"
-        ],
+        "topics": [],
         "source": "vercel-academy",
         "id": "vercel-optimize-your-vercel-account",
         "kind": "course",
@@ -1118,11 +980,7 @@
           "Cloud & Infrastructure"
         ],
         "eligibility": "public",
-        "topics": [
-          "Monorepos",
-          "Turborepo",
-          "Enterprise Development"
-        ],
+        "topics": [],
         "source": "vercel-academy",
         "id": "vercel-production-monorepos",
         "kind": "course",
@@ -1136,11 +994,7 @@
           "Cloud & Infrastructure"
         ],
         "eligibility": "public",
-        "topics": [
-          "Python",
-          "FastAPI",
-          "Vercel"
-        ],
+        "topics": [],
         "source": "vercel-academy",
         "id": "vercel-python-on-vercel",
         "kind": "course",
@@ -1154,11 +1008,7 @@
           "Frontend"
         ],
         "eligibility": "public",
-        "topics": [
-          "UI Development",
-          "React",
-          "Tailwind"
-        ],
+        "topics": [],
         "source": "vercel-academy",
         "id": "vercel-shadcn-ui",
         "kind": "course",
@@ -1172,11 +1022,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "Slack",
-          "AI SDK",
-          "Bot Development"
-        ],
+        "topics": [],
         "source": "vercel-academy",
         "id": "vercel-slack-agents",
         "kind": "course",
@@ -1190,11 +1036,7 @@
           "Frontend"
         ],
         "eligibility": "public",
-        "topics": [
-          "Svelte",
-          "SvelteKit",
-          "Vercel"
-        ],
+        "topics": [],
         "source": "vercel-academy",
         "id": "vercel-svelte-on-vercel",
         "kind": "course",
@@ -1208,11 +1050,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "AI Gateway",
-          "Production",
-          "Model Access"
-        ],
+        "topics": [],
         "source": "vercel-academy",
         "id": "vercel-ai-gateway",
         "kind": "course",
@@ -1226,11 +1064,7 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [
-          "Vercel Sandbox",
-          "Code Review",
-          "Security"
-        ],
+        "topics": [],
         "source": "vercel-academy",
         "id": "vercel-sandbox",
         "kind": "course",
@@ -1333,7 +1167,7 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Data Science"
+          "Accelerated Data Science"
         ],
         "source": "nvidia-certification",
         "role": "Data",
@@ -1351,7 +1185,7 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Data Science"
+          "Accelerated Data Science"
         ],
         "source": "nvidia-certification",
         "role": "Data",
@@ -1386,7 +1220,7 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Generative AI"
+          "Agentic AI"
         ],
         "source": "nvidia-certification",
         "level": "Advanced",
@@ -1437,15 +1271,14 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI Models",
-          "Application Development"
+          "AI Models and Application Development"
         ],
         "source": "nvidia-certification",
         "level": "Entry",
         "id": "nvidia-ai-model-application-development-associate",
         "kind": "certification",
         "title": "NVIDIA-Certified Associate AI Models and Application Development",
-        "description": "Validates foundational skills in building, customizing, deploying, and evaluating AI models and applications on NVIDIA’s platform, including retrieval pipelines, inference optimization, and agentic systems.",
+        "description": "Validates foundational skills in building, customizing, deploying, and evaluating AI models and applications on NVIDIA’s platform.",
         "url": "https://www.nvidia.com/en-us/learn/certification/ai-model-application-development-associate"
       },
       {
@@ -1455,7 +1288,7 @@
         ],
         "eligibility": "public",
         "topics": [
-          "OpenUSD"
+          "OpenUSD Development"
         ],
         "source": "nvidia-certification",
         "level": "Advanced",
