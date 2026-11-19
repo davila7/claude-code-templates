@@ -809,7 +809,7 @@ const componentSchema = component
 
             {component.skillspector && (
               <div data-pane="security" hidden>
-                <SkillSpectorReport result={component.skillspector} snippets={scanSnippets} />
+                <SkillSpectorReport result={component.skillspector} snippets={scanSnippets} componentType={component.type} />
               </div>
             )}
 

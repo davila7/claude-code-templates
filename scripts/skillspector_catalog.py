@@ -222,13 +222,16 @@ def scan(component_type: str, component: dict, root: Path, files: list[Path]) ->
     }
 
 
-def finding_snippets(component_type: str, component: dict) -> list[dict | None]:
+def finding_snippets(component_type: str, component: dict) -> list[dict | None] | None:
     """The source lines around each stored finding, for the component page.
 
     One entry per finding in component['skillspector']['findings'] (None when
     the finding has no line or its file is not one of the component's own,
     e.g. the stub SKILL.md wrapped around a JSON component). Read from the
     files on disk, so it needs no rescan.
+
+    Returns None when the files cannot be read or no longer match the scanned
+    ones (a kept stale result): its line numbers would point at other code.
     """
     result = component.get("skillspector") or {}
     findings = result.get("findings") or []
@@ -236,8 +239,10 @@ def finding_snippets(component_type: str, component: dict) -> list[dict | None]:
         return []
     try:
         root, files = source_files(component_type, component)
+        if result.get("hash") != content_hash(root, files):
+            return None
     except (OSError, ValueError, external_skills.ManifestError):
-        return [None] * len(findings)
+        return None
     if component_type in ("skills", "mods", "plugins"):
         by_name = {str(f.relative_to(root)): f for f in files}
     else:
@@ -252,7 +257,8 @@ def finding_snippets(component_type: str, component: dict) -> list[dict | None]:
             continue
         if path not in cache:
             try:
-                raw = path.read_bytes()[:SNIPPET_MAX_BYTES]
+                with path.open("rb") as fh:
+                    raw = fh.read(SNIPPET_MAX_BYTES)
                 cache[path] = raw.decode("utf-8", errors="replace").splitlines()
             except OSError:
                 cache[path] = None

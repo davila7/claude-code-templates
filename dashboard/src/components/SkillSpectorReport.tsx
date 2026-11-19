@@ -13,6 +13,8 @@ interface Props {
   result: SkillSpectorResult;
   /** Code around each finding, aligned with result.findings (content file `scanSnippets`). */
   snippets?: (ScanSnippet | null)[];
+  /** Component type: every type but skills and plugins is scanned inside a generated SKILL.md. */
+  componentType?: string;
 }
 
 // Categories after the fourth share one "Other" segment so the bar stays readable.
@@ -57,11 +59,23 @@ function ScoreRing({ score }: { score: number }) {
   );
 }
 
-function Snippet({ finding, snippet }: { finding: SkillSpectorFinding; snippet: ScanSnippet | null | undefined }) {
+function Snippet({
+  finding,
+  snippet,
+  wrapped,
+}: {
+  finding: SkillSpectorFinding;
+  snippet: ScanSnippet | null | undefined;
+  wrapped: boolean;
+}) {
   if (!snippet || !snippet.lines.length) {
+    // A wrapped component's SKILL.md is the stub the scanner needs, not a file it ships.
+    const aboutWhole = wrapped && finding.file === 'SKILL.md';
     return (
       <p className="px-4 py-3 text-[12.5px] text-[var(--color-text-tertiary)]">
-        No code excerpt: this observation is about the component as a whole, not one line.
+        {aboutWhole
+          ? 'No code excerpt: this observation is about the component as a whole, not one line.'
+          : 'Code excerpt not available for this observation.'}
       </p>
     );
   }
@@ -91,7 +105,8 @@ function Snippet({ finding, snippet }: { finding: SkillSpectorFinding; snippet: 
   );
 }
 
-export default function SkillSpectorReport({ result, snippets = [] }: Props) {
+export default function SkillSpectorReport({ result, snippets = [], componentType = '' }: Props) {
+  const wrapped = !['skills', 'skill', 'plugins', 'plugin'].includes(componentType);
   // Findings are grouped by (id, title, file); `count` is how many observations each row stands for.
   const shown = result.findings.reduce((total, f) => total + f.count, 0);
   const { entries, complete } = scanCategories(result);
@@ -204,7 +219,7 @@ export default function SkillSpectorReport({ result, snippets = [] }: Props) {
                 </div>
               </summary>
               <div className="border-t border-[var(--color-border)]">
-                <Snippet finding={f} snippet={snippets[i]} />
+                <Snippet finding={f} snippet={snippets[i]} wrapped={wrapped} />
               </div>
             </details>
           ))}
