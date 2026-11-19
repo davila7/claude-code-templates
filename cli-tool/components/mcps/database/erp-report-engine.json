@@ -5,7 +5,7 @@
       "command": "uvx",
       "args": [
         "--from",
-        "erp-report-engine[mcp]",
+        "erp-report-engine[mcp]==0.8.0",
         "erp-report-engine",
         "mcp",
         "-c",
