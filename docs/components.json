@@ -27689,6 +27689,39 @@
       }
     },
     {
+      "name": "guardlink",
+      "path": "devtools/guardlink.json",
+      "category": "devtools",
+      "type": "mcp",
+      "description": "GuardLink threat modeling as code (MIT). Security annotations in source comments, in its own annotation language (GAL), make up the threat model, so it changes with the code. The server runs locally over stdio and gives the agent about 30 guardlink_* tools to parse, validate and diff the model, list declared routes from untrusted input to a sink with no declared control, and export reports or SARIF. Results are deterministic queries over the declared annotations, not proof of real data flow or working mitigations. It reads files under the project root; report, dashboard and SARIF tools write files there. No account or API key; guardlink_threat_report calls an LLM provider only if ANTHROPIC_API_KEY, OPENAI_API_KEY, OPENROUTER_API_KEY or GOOGLE_API_KEY is already set, and otherwise returns a prompt for the calling agent. Needs Node 18+. Docs: https://docs.bugb.io/guardlink/",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "categories": {},
+        "hash": "3419b274d5f09512",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-19T15:08:18Z"
+      }
+    },
+    {
       "name": "huggingface",
       "path": "devtools/huggingface.json",
       "category": "devtools",
@@ -29327,6 +29360,51 @@
         "hash": "f53210dd5d5d6167",
         "version": "2.12.0",
         "scannedAt": "2026-11-19T03:05:32Z"
+      }
+    },
+    {
+      "name": "stalkchain-data",
+      "path": "integration/stalkchain-data.json",
+      "category": "integration",
+      "type": "mcp",
+      "description": "Read-only crypto research with public wallet holdings and PnL, token holders, tracked-trader activity, and Hyperliquid market data. Requires StalkChain OAuth. Metered queries use account credits.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 5,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 1,
+        "analysis": "complete",
+        "findings": [
+          {
+            "id": "E1",
+            "category": "Data Exfiltration",
+            "severity": "MEDIUM",
+            "title": "External Transmission",
+            "file": "stalkchain-data.json",
+            "line": 6,
+            "count": 1
+          }
+        ],
+        "categories": {
+          "Data Exfiltration": 1
+        },
+        "hash": "e214ae7c3f1e367c",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-19T15:08:18Z"
       }
     },
     {
@@ -60324,7 +60402,7 @@
       "path": "creative-design/game-development",
       "category": "creative-design",
       "type": "skill",
-      "description": "Game development orchestrator. Routes to platform-specific skills based on project needs.",
+      "description": "Use when building, fixing or tuning any video game. Invoke it before writing or changing game code (game loop, movement, physics, input, enemies, levels), in any engine (Godot, Unity, Unreal, Phaser, PixiJS, Three.js, Babylon.js, raw Canvas/WebGL) or platform (web, mobile, PC/console, VR/AR). Covers the game loop, fixed timestep, input mapping, frame budgets, AI, collision and game feel, and points to reference guides for 2D, 3D, game design, multiplayer, art and audio.",
       "author": "",
       "repo": "",
       "version": "",
@@ -60340,28 +60418,28 @@
         "lastValidated": null
       },
       "references": [
-        "2d-games/SKILL.md",
-        "3d-games/SKILL.md",
-        "game-art/SKILL.md",
-        "game-audio/SKILL.md",
-        "game-design/SKILL.md",
-        "mobile-games/SKILL.md",
-        "multiplayer/SKILL.md",
-        "pc-games/SKILL.md",
-        "vr-ar/SKILL.md",
-        "web-games/SKILL.md"
+        "references/2d-games.md",
+        "references/3d-games.md",
+        "references/game-art.md",
+        "references/game-audio.md",
+        "references/game-design.md",
+        "references/mobile-games.md",
+        "references/multiplayer.md",
+        "references/pc-games.md",
+        "references/vr-ar.md",
+        "references/web-games.md"
       ],
       "skillspector": {
         "score": 0,
         "severity": "LOW",
-        "recommendation": "SAFE",
+        "recommendation": "CAUTION",
         "issueCount": 0,
-        "analysis": "complete",
+        "analysis": "partial",
         "findings": [],
         "categories": {},
-        "hash": "ae65e16458055c51",
+        "hash": "ff1e6e62802b5a40",
         "version": "2.12.0",
-        "scannedAt": "2026-11-19T03:05:32Z"
+        "scannedAt": "2026-11-19T15:08:18Z"
       },
       "harness": {
         "agents": [
@@ -60373,16 +60451,9 @@
           },
           {
             "id": "codex",
-            "status": "degraded",
+            "status": "loads",
             "verified": "0.166.0",
-            "notes": [
-              {
-                "id": "CX-NESTED",
-                "effect": "degraded",
-                "message": "The nested SKILL.md is loaded as a second, separate skill.",
-                "fix": "Move the nested skill to its own folder under the skills root, or rename its SKILL.md."
-              }
-            ]
+            "notes": []
           },
           {
             "id": "copilot-cli",
@@ -60392,29 +60463,15 @@
           },
           {
             "id": "opencode",
-            "status": "degraded",
+            "status": "loads",
             "verified": "1.19.5",
-            "notes": [
-              {
-                "id": "OC-NESTED",
-                "effect": "degraded",
-                "message": "The nested SKILL.md is loaded as a second, separate skill.",
-                "fix": "Move the nested skill to its own folder under the skills root, or rename its SKILL.md."
-              }
-            ]
+            "notes": []
           },
           {
             "id": "hermes",
-            "status": "degraded",
+            "status": "loads",
             "verified": "main",
-            "notes": [
-              {
-                "id": "HM-NESTED",
-                "effect": "degraded",
-                "message": "The nested SKILL.md is loaded as a second, separate skill (hidden folders are walked too).",
-                "fix": "Move the nested skill to its own folder under the skills root, or rename its SKILL.md."
-              }
-            ]
+            "notes": []
           },
           {
             "id": "openclaw",
@@ -60424,8 +60481,8 @@
           }
         ],
         "version": "1.0.1",
-        "checkedAt": "2026-11-18T20:31:10Z",
-        "hash": "ae65e16458055c51"
+        "checkedAt": "2026-11-19T15:08:27Z",
+        "hash": "ff1e6e62802b5a40"
       }
     },
     {
