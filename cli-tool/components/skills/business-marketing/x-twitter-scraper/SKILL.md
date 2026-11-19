@@ -35,7 +35,7 @@ Gather this context (ask if not provided):
 | **Auth** | `x-api-key` header (key starts with `xq_`, 64 hex chars) |
 | **MCP endpoint** | `https://xquik.com/mcp` (StreamableHTTP, same API key) |
 | **Rate limits** | 10 req/s sustained, 20 burst (API); 60 req/s sustained, 100 burst (general) |
-| **Pricing** | $20/month base (1 monitor included), $5/month per extra monitor |
+| **Pricing** | USD 20/month base (1 monitor included), USD 5/month per extra monitor |
 | **Quota** | Monthly usage cap, hard limit, no overage. `402` when exhausted. |
 | **Docs** | [docs.xquik.com](https://docs.xquik.com) |
 

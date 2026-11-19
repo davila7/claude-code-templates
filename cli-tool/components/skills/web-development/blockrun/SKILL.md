@@ -16,16 +16,16 @@ You have a wallet. When you need a capability you lack, you pay for it autonomou
 
 | You Need | You Call | Pricing |
 |----------|----------|---------|
-| Image generation | DALL-E | $0.04/image |
-| Real-time X data | Grok + Live Search | $0.025/source |
-| Second opinion | GPT-5.2 | $1.75/M input, $14/M output |
-| Cheaper processing | DeepSeek | $0.14/M input, $0.28/M output |
+| Image generation | DALL-E | USD 0.04/image |
+| Real-time X data | Grok + Live Search | USD 0.025/source |
+| Second opinion | GPT-5.2 | USD 1.75/M input, USD 14/M output |
+| Cheaper processing | DeepSeek | USD 0.14/M input, USD 0.28/M output |
 
 **How it works:** BlockRun uses x402 micropayments to route your requests to OpenAI, xAI, Google, and other providers. No API keys needed - your wallet pays per token.
 
 ## Budget Control (Optional)
 
-If the user specifies a budget (e.g., "use at most $1"), track spending and stop when budget is reached:
+If the user specifies a budget (e.g., "use at most USD 1"), track spending and stop when budget is reached:
 
 ```python
 from blockrun_llm import setup_agent_wallet
@@ -166,11 +166,11 @@ print(result.data[0].url)
 
 ## xAI Live Search Reference
 
-Live Search is xAI's real-time data API. Cost: **$0.025 per source** (default 10 sources = ~$0.26).
+Live Search is xAI's real-time data API. Cost: **USD 0.025 per source** (default 10 sources = ~USD 0.26).
 
 To reduce costs, set `max_search_results` to a lower value:
 ```python
-# Only use 5 sources (~$0.13)
+# Only use 5 sources (~USD 0.13)
 response = client.chat("xai/grok-3", "What's trending?",
     search_parameters={"mode": "on", "max_search_results": 5})
 ```
@@ -222,15 +222,15 @@ response = client.chat("xai/grok-3", "What's trending?",
 
 | Model | Best For | Pricing |
 |-------|----------|---------|
-| `openai/gpt-5.2` | Second opinions, code review, general | $1.75/M in, $14/M out |
-| `openai/gpt-5-mini` | Cost-optimized reasoning | $0.30/M in, $1.20/M out |
-| `openai/o4-mini` | Latest efficient reasoning | $1.10/M in, $4.40/M out |
-| `openai/o3` | Advanced reasoning, complex problems | $10/M in, $40/M out |
-| `xai/grok-3` | Real-time X/Twitter data | $3/M + $0.025/source |
-| `deepseek/deepseek-chat` | Simple tasks, bulk processing | $0.14/M in, $0.28/M out |
-| `google/gemini-2.5-flash` | Very long documents, fast | $0.15/M in, $0.60/M out |
-| `openai/dall-e-3` | Photorealistic images | $0.04/image |
-| `google/nano-banana` | Fast, artistic images | $0.01/image |
+| `openai/gpt-5.2` | Second opinions, code review, general | USD 1.75/M in, USD 14/M out |
+| `openai/gpt-5-mini` | Cost-optimized reasoning | USD 0.30/M in, USD 1.20/M out |
+| `openai/o4-mini` | Latest efficient reasoning | USD 1.10/M in, USD 4.40/M out |
+| `openai/o3` | Advanced reasoning, complex problems | USD 10/M in, USD 40/M out |
+| `xai/grok-3` | Real-time X/Twitter data | USD 3/M + USD 0.025/source |
+| `deepseek/deepseek-chat` | Simple tasks, bulk processing | USD 0.14/M in, USD 0.28/M out |
+| `google/gemini-2.5-flash` | Very long documents, fast | USD 0.15/M in, USD 0.60/M out |
+| `openai/dall-e-3` | Photorealistic images | USD 0.04/image |
+| `google/nano-banana` | Fast, artistic images | USD 0.01/image |
 
 *M = million tokens. Actual cost depends on your prompt and response length.*
 
@@ -240,18 +240,18 @@ All LLM costs are per million tokens (M = 1,000,000 tokens).
 
 | Model | Input | Output |
 |-------|-------|--------|
-| GPT-5.2 | $1.75/M | $14.00/M |
-| GPT-5-mini | $0.30/M | $1.20/M |
-| Grok-3 (no search) | $3.00/M | $15.00/M |
-| DeepSeek | $0.14/M | $0.28/M |
+| GPT-5.2 | USD 1.75/M | USD 14.00/M |
+| GPT-5-mini | USD 0.30/M | USD 1.20/M |
+| Grok-3 (no search) | USD 3.00/M | USD 15.00/M |
+| DeepSeek | USD 0.14/M | USD 0.28/M |
 
 | Fixed Cost Actions | |
 |-------|--------|
-| Grok Live Search | $0.025/source (default 10 = $0.25) |
-| DALL-E image | $0.04/image |
-| Nano Banana image | $0.01/image |
+| Grok Live Search | USD 0.025/source (default 10 = USD 0.25) |
+| DALL-E image | USD 0.04/image |
+| Nano Banana image | USD 0.01/image |
 
-**Typical costs:** A 500-word prompt (~750 tokens) to GPT-5.2 costs ~$0.001 input. A 1000-word response (~1500 tokens) costs ~$0.02 output.
+**Typical costs:** A 500-word prompt (~750 tokens) to GPT-5.2 costs ~USD 0.001 input. A 1000-word response (~1500 tokens) costs ~USD 0.02 output.
 
 ## Setup & Funding
 
@@ -266,7 +266,7 @@ client = setup_agent_wallet()
 print(f"Wallet: {client.get_wallet_address()}")
 print(f"Balance: ${client.get_balance():.2f} USDC")
 ```
-3. Fund wallet with $1-5 USDC on Base network
+3. Fund wallet with USD 1-5 USDC on Base network
 
 **Show QR code for funding (ASCII for terminal):**
 ```python

@@ -307,7 +307,7 @@ country_code CHAR(2)
 
 ```sql
 -- ALWAYS use DECIMAL for money
-price DECIMAL(10, 2)  -- $99,999,999.99
+price DECIMAL(10, 2)  -- USD 99,999,999.99
 
 -- NEVER use FLOAT for money
 price FLOAT  -- Rounding errors!

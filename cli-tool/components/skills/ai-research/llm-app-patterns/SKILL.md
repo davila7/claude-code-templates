@@ -94,12 +94,12 @@ VECTOR_DB_OPTIONS = {
 EMBEDDING_MODELS = {
     "openai/text-embedding-3-small": {
         "dimensions": 1536,
-        "cost": "$0.02/1M tokens",
+        "cost": "USD 0.02/1M tokens",
         "quality": "Good for most use cases"
     },
     "openai/text-embedding-3-large": {
         "dimensions": 3072,
-        "cost": "$0.13/1M tokens",
+        "cost": "USD 0.13/1M tokens",
         "quality": "Best for complex queries"
     },
     "local/bge-large": {

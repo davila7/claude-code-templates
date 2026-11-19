@@ -104,7 +104,7 @@ Reviewed: `git diff origin/main...feature/checkout` (6 files, +214 / -37). Skipp
 
 ### High
 2. **Refund total ignores partial refunds** (`src/billing/refund.ts:112`, confirmed by `npm test -- refund`)
-   Each call refunds `charge.amount` instead of the requested amount, so a $10 partial refund on a $100 charge refunds $100.
+   Each call refunds `charge.amount` instead of the requested amount, so a USD 10 partial refund on a USD 100 charge refunds USD 100.
    Fix: refund the requested `amount`, capped at `charge.amount - charge.amount_refunded`.
 
 ### Nits

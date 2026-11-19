@@ -191,7 +191,7 @@ To:
 
 In Experience section, add bullet:
 "Managed stakeholder communication across 3 departments and executive leadership team"
-"Directed budget management for $2.5M project portfolio"
+"Directed budget management for USD 2.5M project portfolio"
 
 **2. Fix Formatting:**
 - Move contact information from header to body of resume

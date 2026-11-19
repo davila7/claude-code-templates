@@ -47,7 +47,7 @@ Before proceeding, the agent should clarify the user's current status:
 ### 1. Sign Up and Activate Free Credit
 
 1.  Go to the [Google Cloud Console](https://console.cloud.google.com/).
-2.  Sign in with your Google Account. This will "Activate" [your $300 free
+2.  Sign in with your Google Account. This will "Activate" [your USD 300 free
     credit](https://docs.cloud.google.com/free/docs/free-cloud-features#free-trial).
 
 ### 2. Create Your First Google Cloud Project

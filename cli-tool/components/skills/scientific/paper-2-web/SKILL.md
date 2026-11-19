@@ -339,10 +339,10 @@ Before finalizing outputs:
 - **Storage**: 1-5GB per paper depending on components and quality settings
 
 ### API Costs (Approximate)
-- **Website**: $0.50-2.00 per paper (GPT-4)
-- **Poster**: $0.30-1.00 per paper (GPT-4)
-- **Video**: $1.00-3.00 per paper (GPT-4)
-- **Complete package**: $2.00-6.00 per paper (GPT-4)
+- **Website**: USD 0.50-2.00 per paper (GPT-4)
+- **Poster**: USD 0.30-1.00 per paper (GPT-4)
+- **Video**: USD 1.00-3.00 per paper (GPT-4)
+- **Complete package**: USD 2.00-6.00 per paper (GPT-4)
 
 ## Troubleshooting
 
