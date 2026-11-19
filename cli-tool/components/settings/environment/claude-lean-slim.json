@@ -1,0 +1,11 @@
+{
+  "description": "Turn off Claude Code features most sessions never use (Artifacts, Workflows, git instructions, background tasks, cron, advisor tool). Their definitions are sent with every request; measured on Claude Code 2.1.239, a clean install's first request drops from 17.2K to 10.5K tokens (-39%), and short tasks cost 32% less with the same pass rate. MCP servers, skills, web tools and subagents stay. From claude-lean (https://github.com/JacobTheJacobs/claude-lean), which also has a long-session guard and an output filter.",
+  "env": {
+    "CLAUDE_CODE_DISABLE_ARTIFACT": "1",
+    "CLAUDE_CODE_DISABLE_WORKFLOWS": "1",
+    "CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS": "1",
+    "CLAUDE_CODE_DISABLE_BACKGROUND_TASKS": "1",
+    "CLAUDE_CODE_DISABLE_CRON": "1",
+    "CLAUDE_CODE_DISABLE_ADVISOR_TOOL": "1"
+  }
+}
