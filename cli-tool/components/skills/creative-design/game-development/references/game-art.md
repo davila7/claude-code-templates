@@ -1,9 +1,3 @@
----
-name: game-art
-description: Game art principles. Visual style selection, asset pipeline, animation workflow.
-allowed-tools: Read, Glob, Grep
----
-
 # Game Art Principles
 
 > Visual design thinking for games - style selection, asset pipelines, and art direction.

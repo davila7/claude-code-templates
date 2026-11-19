@@ -1,9 +1,3 @@
----
-name: vr-ar
-description: VR/AR development principles. Comfort, interaction, performance requirements.
-allowed-tools: Read, Write, Edit, Glob, Grep
----
-
 # VR/AR Development
 
 > Immersive experience principles.
@@ -39,7 +33,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep
 | Cause | Solution |
 |-------|----------|
 | **Locomotion** | Teleport, snap turn |
-| **Low FPS** | Maintain 90 FPS |
+| **Low FPS** | Hold the headset's native refresh rate (72 Hz minimum on Quest 2) |
 | **Camera shake** | Avoid or minimize |
 | **Rapid acceleration** | Gradual movement |
 
@@ -56,7 +50,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep
 
 ### Target Metrics
 
-| Platform | FPS | Resolution |
+| Platform | FPS | Resolution (per eye) |
 |----------|-----|------------|
 | Quest 2 | 72-90 | 1832x1920 |
 | Quest 3 | 90-120 | 2064x2208 |
@@ -114,7 +108,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep
 | ❌ Don't | ✅ Do |
 |----------|-------|
 | Move camera without player | Player controls camera |
-| Drop below 90 FPS | Maintain frame rate |
+| Drop below the headset's refresh rate | Keep frame times consistent; use the platform's reprojection only as a safety net |
 | Use tiny UI text | Large, readable text |
 | Ignore arm length | Scale to player reach |
 
