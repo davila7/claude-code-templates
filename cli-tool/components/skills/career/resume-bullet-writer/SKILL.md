@@ -38,7 +38,7 @@ Most resumes have weak bullets that list job duties instead of achievements:
 These are passive, vague, and don't show impact or results.
 
 ✅ **Strong Bullets (What TO do):**
-- "Led cross-functional team of 12 to deliver $2M product, increasing revenue by 35%"
+- "Led cross-functional team of 12 to deliver USD 2M product, increasing revenue by 35%"
 - "Resolved 50+ customer issues daily, improving satisfaction scores from 3.2 to 4.8/5"
 - "Streamlined approval process, reducing cycle time by 40% (from 10 to 6 days)"
 - "Managed portfolio of 8 concurrent projects with 100% on-time delivery rate"
@@ -88,10 +88,10 @@ Z = Redesigned ticketing system + trained agents
 **Example:**
 
 Full STAR story:
-"Inherited underperforming sales team (S) with 65% quota attainment. Tasked with improving performance within Q1 (T). Implemented new training program and revised commission structure (A). Achieved 92% quota attainment by Q2, generating $1.8M additional revenue (R)."
+"Inherited underperforming sales team (S) with 65% quota attainment. Tasked with improving performance within Q1 (T). Implemented new training program and revised commission structure (A). Achieved 92% quota attainment by Q2, generating USD 1.8M additional revenue (R)."
 
 For resume bullet (condensed STAR):
-"Revitalized underperforming sales team through training program and commission restructure, improving quota attainment from 65% to 92% and generating $1.8M additional revenue"
+"Revitalized underperforming sales team through training program and commission restructure, improving quota attainment from 65% to 92% and generating USD 1.8M additional revenue"
 
 ### 3. CAR Method (Alternative to STAR)
 
@@ -102,7 +102,7 @@ For resume bullet (condensed STAR):
 
 **Example:**
 
-"Reduced customer churn (C) by implementing proactive outreach program (A), retaining 85% of at-risk accounts worth $500K ARR (R)"
+"Reduced customer churn (C) by implementing proactive outreach program (A), retaining 85% of at-risk accounts worth USD 500K ARR (R)"
 
 ## Power Verbs by Category
 
@@ -145,10 +145,10 @@ Every bullet should have at least ONE number. Here's how to find metrics:
 ### Types of Metrics to Include
 
 **1. Money**
-- Revenue generated: "$2M in new revenue"
-- Money saved: "Reduced costs by $50K annually"
-- Budget managed: "Managed $5M project budget"
-- Deal size: "Closed 3 enterprise deals worth $500K"
+- Revenue generated: "USD 2M in new revenue"
+- Money saved: "Reduced costs by USD 50K annually"
+- Budget managed: "Managed USD 5M project budget"
+- Deal size: "Closed 3 enterprise deals worth USD 500K"
 
 **2. Percentages**
 - Growth: "Increased conversion rate by 45%"
@@ -182,7 +182,7 @@ Use estimation strategies:
 
 **Use ranges**
 "Managed team of 8-12 people"
-"Generated $50K-$75K in monthly revenue"
+"Generated USD 50K-75K in monthly revenue"
 
 **Use conservative estimates**
 If you think it was 60%, say 50%
@@ -219,9 +219,9 @@ Can't measure conversion? Measure traffic, engagement, or other funnel metrics
 - Launched new features
 
 ✅ STRONG:
-- Defined and executed product roadmap for $10M ARR product, prioritizing 50+ feature requests from 200+ customers
+- Defined and executed product roadmap for USD 10M ARR product, prioritizing 50+ feature requests from 200+ customers
 - Facilitated weekly stakeholder meetings with engineering, design, and executive teams to align on strategic priorities
-- Launched 8 major features in 12 months, driving 40% increase in customer retention and $2M additional revenue
+- Launched 8 major features in 12 months, driving 40% increase in customer retention and USD 2M additional revenue
 
 ### Sales
 
@@ -231,7 +231,7 @@ Can't measure conversion? Measure traffic, engagement, or other funnel metrics
 - Exceeded quota
 
 ✅ STRONG:
-- Generated $3.2M in new business revenue by closing 15 enterprise deals, achieving 142% of annual quota
+- Generated USD 3.2M in new business revenue by closing 15 enterprise deals, achieving 142% of annual quota
 - Managed sales cycle for 50+ prospects simultaneously, maintaining 35% close rate (company average: 22%)
 - Exceeded quarterly quota 8 consecutive quarters, ranking #2 out of 45 sales reps nationwide
 
@@ -243,7 +243,7 @@ Can't measure conversion? Measure traffic, engagement, or other funnel metrics
 - Analyzed campaign performance
 
 ✅ STRONG:
-- Launched 12 multi-channel campaigns generating $500K in attributed revenue and 2,500+ qualified leads
+- Launched 12 multi-channel campaigns generating USD 500K in attributed revenue and 2,500+ qualified leads
 - Grew LinkedIn audience by 400% (3K to 15K followers) through thought leadership content strategy, resulting in 200+ inbound demo requests
 - Analyzed campaign performance across 8 channels using Google Analytics, identifying 3 top-performing channels responsible for 75% of conversions
 
@@ -255,7 +255,7 @@ Can't measure conversion? Measure traffic, engagement, or other funnel metrics
 - Conducted onboarding sessions
 
 ✅ STRONG:
-- Maintained 95% customer retention rate across portfolio of 50 enterprise accounts representing $4M ARR
+- Maintained 95% customer retention rate across portfolio of 50 enterprise accounts representing USD 4M ARR
 - Resolved 40+ customer issues weekly with average response time of 2 hours, achieving 4.9/5 CSAT score
 - Delivered 25+ onboarding sessions for new customers, achieving 90% product adoption rate within first 30 days
 
@@ -267,9 +267,9 @@ Can't measure conversion? Measure traffic, engagement, or other funnel metrics
 - Made recommendations
 
 ✅ STRONG:
-- Analyzed 500K+ transaction records to identify $2M revenue opportunity, presented findings to C-suite resulting in new product line
+- Analyzed 500K+ transaction records to identify USD 2M revenue opportunity, presented findings to C-suite resulting in new product line
 - Built automated reporting dashboard in Tableau reducing manual reporting time by 15 hours/week for team of 8
-- Developed predictive model with 85% accuracy for customer churn, enabling proactive retention campaigns that saved $500K ARR
+- Developed predictive model with 85% accuracy for customer churn, enabling proactive retention campaigns that saved USD 500K ARR
 
 ### Operations/Project Management
 
@@ -279,7 +279,7 @@ Can't measure conversion? Measure traffic, engagement, or other funnel metrics
 - Tracked progress
 
 ✅ STRONG:
-- Led 8 cross-functional projects simultaneously with 100% on-time delivery rate and zero budget overruns across $5M portfolio
+- Led 8 cross-functional projects simultaneously with 100% on-time delivery rate and zero budget overruns across USD 5M portfolio
 - Coordinated efforts across engineering, design, and marketing teams (30+ people) to launch product ahead of schedule
 - Implemented project tracking system reducing status meeting time by 50% and improving visibility for 15+ stakeholders
 
@@ -317,7 +317,7 @@ Can't measure conversion? Measure traffic, engagement, or other funnel metrics
 ### Mistake 5: Too Long
 ❌ "Was responsible for managing and overseeing all aspects of the customer success function including onboarding, training, support, and retention for a portfolio of enterprise clients..."
 
-✅ "Led customer success for 50 enterprise clients ($3M ARR), achieving 95% retention rate"
+✅ "Led customer success for 50 enterprise clients (USD 3M ARR), achieving 95% retention rate"
 
 **Rule: Keep bullets to 1-2 lines maximum**
 
@@ -378,11 +378,11 @@ When rewriting bullets, provide:
 - No results shown
 
 ### Improved Version:
-"Grew portfolio of 40 enterprise accounts from $2M to $3.5M ARR (75% growth) through quarterly business reviews and proactive upselling strategy"
+"Grew portfolio of 40 enterprise accounts from USD 2M to USD 3.5M ARR (75% growth) through quarterly business reviews and proactive upselling strategy"
 
 ### What Changed:
 - Added scale (40 accounts)
-- Added growth metric (75%, $2M to $3.5M)
+- Added growth metric (75%, USD 2M to USD 3.5M)
 - Specified actions (QBRs, upselling)
 - Shows business impact (revenue growth)
 
@@ -403,7 +403,7 @@ Focus on:
 - Club leadership with metrics
 
 Example:
-"Led university marketing club of 50 members, organizing 8 events attended by 300+ students and securing $10K in corporate sponsorships"
+"Led university marketing club of 50 members, organizing 8 events attended by 300+ students and securing USD 10K in corporate sponsorships"
 
 ### For Career Changers
 Focus on:

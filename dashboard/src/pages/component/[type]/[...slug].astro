@@ -8,10 +8,12 @@ import JsonViewer from '../../../components/JsonViewer.tsx';
 import SkillExplorer from '../../../components/SkillExplorer.tsx';
 import AddToStackButton from '../../../components/AddToStackButton.tsx';
 import SkillSpectorReport from '../../../components/SkillSpectorReport.tsx';
+import HarnessReport from '../../../components/HarnessReport.tsx';
 import { TYPE_CONFIG, ICONS } from '../../../lib/icons';
 import { fetchComponents, fetchComponentContentData, getInstallCommand } from '../../../lib/data';
 import type { ComponentPageMeta } from '../../../lib/data';
-import { PLUGIN_KINDS, commitTitle, displayName, nextStepItems, formatBytes, formatCount, formatDate, initials, languageShares, pluginContentsSummary, topLevelEntries, totals } from '../../../lib/component-page';
+import type { HarnessResult, ScanSnippet } from '../../../lib/types';
+import { PLUGIN_KINDS, commitTitle, displayName, harnessSummary, nextStepItems, formatBytes, formatCount, formatDate, initials, languageShares, pluginContentsSummary, topLevelEntries, totals } from '../../../lib/component-page';
 import type { Component, PluginContents } from '../../../lib/types';
 import { AITMPL_MARKETPLACE } from '../../../lib/constants';
 import { jsonForScript } from '../../../lib/sanitize-html';
@@ -28,6 +30,9 @@ let error: string | null = null;
 let modFiles: Record<string, string> = {};
 // Files, languages and git history for the file list and the About column.
 let pageMeta: ComponentPageMeta | null = null;
+// Skills: agent compatibility (NVIDIA SkillEvaluator Harness Check), from the content file.
+let harness: HarnessResult | null = null;
+let scanSnippets: (ScanSnippet | null)[] = [];
 // Every component of the same type, for the "Next step" block.
 let siblings: Component[] = [];
 // Loops that install this component (content file `usedByLoops`), also for "Next step".
@@ -67,6 +72,8 @@ try {
     component = { ...component, content: contentData.content };
     modFiles = contentData.files ?? {};
     pageMeta = contentData.meta ?? null;
+    harness = contentData.harness?.agents?.length ? contentData.harness : null;
+    scanSnippets = contentData.scanSnippets ?? [];
     const loopPaths = new Set(contentData.usedByLoops ?? []);
     usedByLoops = loopPaths.size
       ? (data.loops ?? []).filter((l) => loopPaths.has(l.path.replace(/\.md$/, '')))
@@ -579,6 +586,19 @@ const componentSchema = component
               </section>
             )}
 
+            {harness && (
+              <section class="rounded-lg border border-[var(--color-border)] px-3.5 py-3 lg:rounded-none lg:border-x-0 lg:border-b-0 lg:px-0 lg:pt-5 lg:pb-0 flex items-start gap-2.5 text-[13px] text-[var(--color-text-secondary)]">
+                <svg class="w-4 h-4 mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2" /><path stroke-linecap="round" stroke-linejoin="round" d="M7 9l3 3-3 3M13 15h4" /></svg>
+                <div>
+                  <p class="font-medium text-[var(--color-text-primary)]">{harnessSummary(harness.agents).label}</p>
+                  <p>
+                    {harnessSummary(harness.agents).notes > 0 ? formatCount(harnessSummary(harness.agents).notes, 'note', 'notes') : 'No notes'}
+                    {' · '}<a href="#compatibility" data-tab-link="compatibility" class="text-[var(--color-accent)] hover:underline underline-offset-4">See each agent</a>
+                  </p>
+                </div>
+              </section>
+            )}
+
             {langShares.length > 0 && (
               <section aria-labelledby="lang-h" class="hidden lg:block border-t border-[var(--color-border)] pt-5">
                 <h2 id="lang-h" class="text-[14px] font-semibold text-[var(--color-text-primary)] mb-2.5">Languages</h2>
@@ -608,6 +628,9 @@ const componentSchema = component
               )}
               {component.skillspector && (
                 <a href="#security-scan" role="tab" data-tab="security" class="tab-link"><span>Security<span class="hidden sm:inline"> scan</span></span> <span class="tab-count">{component.skillspector.issueCount}</span></a>
+              )}
+              {harness && (
+                <a href="#compatibility" role="tab" data-tab="compatibility" class="tab-link">Compatibility <span class="tab-count">{harnessSummary(harness.agents).loads}/{harnessSummary(harness.agents).total}</span></a>
               )}
             </nav>
           </div>
@@ -786,7 +809,13 @@ const componentSchema = component
 
             {component.skillspector && (
               <div data-pane="security" hidden>
-                <SkillSpectorReport result={component.skillspector} />
+                <SkillSpectorReport result={component.skillspector} snippets={scanSnippets} componentType={component.type} />
+              </div>
+            )}
+
+            {harness && (
+              <div data-pane="compatibility" hidden>
+                <HarnessReport result={harness} />
               </div>
             )}
           </div>
@@ -898,9 +927,9 @@ const componentSchema = component
 
 <script is:inline>
   (function () {
-    // Tabs: #files and #security-scan open their pane, anything else shows Overview.
-    var HASH_TO_TAB = { '#files': 'files', '#security-scan': 'security' };
-    var TAB_TO_HASH = { overview: '#overview', files: '#files', security: '#security-scan' };
+    // Tabs: #files, #security-scan and #compatibility open their pane, anything else shows Overview.
+    var HASH_TO_TAB = { '#files': 'files', '#security-scan': 'security', '#compatibility': 'compatibility' };
+    var TAB_TO_HASH = { overview: '#overview', files: '#files', security: '#security-scan', compatibility: '#compatibility' };
 
     function show(tab) {
       var panes = document.querySelectorAll('[data-pane]');

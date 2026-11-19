@@ -494,7 +494,9 @@ export default function SkillExplorer({ skillContent, skillName, skillPath, refe
           {fileTreePanel}
 
           <div className="flex-1 min-w-0 flex gap-4">
-            <div className="flex-1 min-w-0 relative">
+            {/* self-start: a tall TOC or file tree must not stretch this column, or the
+                absolute "Show full document" bar lands far below the 32rem preview. */}
+            <div className="flex-1 min-w-0 relative self-start">
               {loading && (
                 <div className="absolute inset-0 bg-[var(--color-surface-2)]/80 z-10 flex items-center justify-center rounded-r-lg">
                   <div className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
@@ -547,10 +549,13 @@ export default function SkillExplorer({ skillContent, skillName, skillPath, refe
 
           {/* TOC sidebar — identical to MarkdownViewer */}
           {isMarkdown && currentHeadings.length >= 1 && mode === 'preview' && (
-            <nav className="hidden lg:block w-52 shrink-0">
-              <div className="sticky top-24">
+            // The TOC sits in an absolute box so its length never sets the row height:
+            // it scrolls inside the preview's height and stays sticky when expanded.
+            <nav className="hidden lg:block w-52 shrink-0 relative">
+              <div className="absolute inset-0">
+              <div className="sticky top-24 flex flex-col max-h-[min(calc(100vh-8rem),100%)]">
                 <h4 className="text-[10px] font-semibold text-[var(--color-text-tertiary)] uppercase tracking-wider mb-2">On this page</h4>
-                <ul className="space-y-0.5 text-[12px] border-l border-[var(--color-border)] max-h-[calc(100vh-10rem)] overflow-y-auto">
+                <ul className="min-h-0 space-y-0.5 text-[12px] border-l border-[var(--color-border)] overflow-y-auto">
                   {currentHeadings.map((h) => (
                     <li key={h.id}>
                       <button onClick={() => scrollToHeading(h.id)}
@@ -563,6 +568,7 @@ export default function SkillExplorer({ skillContent, skillName, skillPath, refe
                     </li>
                   ))}
                 </ul>
+              </div>
               </div>
             </nav>
           )}

@@ -68,7 +68,7 @@ Premium web design communicates craft through restraint, surprise, and obsessive
 
 ### Typography as Identity
 
-Typography is the #1 differentiator between a $500 website and a $50,000 one.
+Typography is the #1 differentiator between a USD 500 website and a USD 50,000 one.
 
 **Font selection philosophy:**
 - Use distinctive serif or display fonts for headlines — fonts with personality and opinion. Good starting points: *Playfair Display, Cormorant Garamond, DM Serif Display, Fraunces, Instrument Serif* for serifs. For sans-serifs that aren't overused: *Syne, General Sans, Satoshi, Switzer, Cabinet Grotesk, Nacelle, Inter Tight, IBM Plex Sans, Manrope, Archivo, Work Sans, Instrument Sans*.

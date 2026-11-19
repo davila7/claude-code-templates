@@ -51,8 +51,41 @@ export interface SkillSpectorResult {
   issueCount: number;
   analysis?: string;
   findings: SkillSpectorFinding[];
+  /** Every observation per category (findings holds only the top groups). Missing on results scanned before 2026-11-19. */
+  categories?: Record<string, number>;
   version?: string;
   scannedAt?: string;
+}
+
+/** Source lines around one SkillSpector finding (content file `scanSnippets`, aligned with `findings`). */
+export interface ScanSnippet {
+  start: number;
+  lines: string[];
+}
+
+// NVIDIA SkillEvaluator Harness Check per skill, written by scripts/harness_catalog.py.
+// Display-only, like SkillSpector: never used for ordering, search or ranking.
+export interface HarnessNote {
+  id: string;
+  effect: string;
+  message: string;
+  fix: string;
+}
+
+export interface HarnessAgent {
+  /** claude-code | codex | copilot-cli | opencode | hermes | openclaw */
+  id: string;
+  /** loads | degraded | not_loaded */
+  status: string;
+  /** Agent release the loading rules were verified on. */
+  verified: string;
+  notes: HarnessNote[];
+}
+
+export interface HarnessResult {
+  agents: HarnessAgent[];
+  version?: string;
+  checkedAt?: string;
 }
 
 export interface ComponentsData {

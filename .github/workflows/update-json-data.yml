@@ -76,6 +76,10 @@ jobs:
           # components whose files changed, or every component when the
           # SkillSpector version changes, so bump this tag on purpose.
           pip install "git+https://github.com/NVIDIA/skillspector.git@v2.12.0"
+          # NVIDIA SkillEvaluator for the per-skill Harness Check (agent
+          # compatibility), in its own environment so its pins never clash with
+          # SkillSpector's. Same cache rule: a version bump rechecks every skill.
+          pipx install "skillevaluator==1.0.1"
 
       - name: Install Node.js dependencies
         run: |

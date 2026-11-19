@@ -1,0 +1,23 @@
+{
+  "description": "Stops Claude from changing a hosted Supabase project while leaving local work alone. A PreToolUse hook denies supabase CLI commands that write to the linked or remote project however they are launched (npx, bunx, pnpm dlx, sh -c, env prefixes, && chains): db push (unless --local or --dry-run), db reset --linked/--db-url, migration repair, migration up/squash --linked/--db-url, functions deploy/delete, secrets set/unset, config push, projects/orgs create, projects delete, branches create/update/delete, domain, network, SSL, SSO, backup and postgres-config changes, storage rm/mv/cp without --local. It also denies any command that names a hosted Supabase database host (db.<ref>.supabase.co, *.pooler.supabase.com), so psql, pg_dump, prisma or a script with a production connection string cannot reach it. For the Supabase MCP server it is an allowlist: only list_*, get_*, search_docs, generate_typescript_types and execute_sql with one read-only statement (no comments, no write keywords, no side-effect functions such as net.*, cron.*, vault.*) pass; every other tool, including ones added later, is denied. supabase start, db reset, migration new, test db and gen types --local keep working, and the person can still run a blocked command with `! <command>`, which skips hooks. Fails closed on input it cannot read. It reads command text, so it is a guard against mistakes, not a sandbox: a script that connects through DATABASE_URL, a REST call with a secret key, or a deliberately obfuscated command is not caught, nor a select that calls one of the project's own functions that writes, so run the Supabase MCP server with --read-only. Works from a project install or a user install (~/.claude/hooks). Requires python3 (if python3 is missing the hook cannot run and does not block). Tested on Claude Code 2.1.327.",
+  "supportingFiles": [
+    {
+      "source": "supabase-remote-guard.py",
+      "destination": ".claude/hooks/supabase-remote-guard.py",
+      "executable": true
+    }
+  ],
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|mcp__.*[Ss]upabase.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "f=\"$CLAUDE_PROJECT_DIR/.claude/hooks/supabase-remote-guard.py\"; [ -f \"$f\" ] || f=\"$HOME/.claude/hooks/supabase-remote-guard.py\"; python3 \"$f\""
+          }
+        ]
+      }
+    ]
+  }
+}

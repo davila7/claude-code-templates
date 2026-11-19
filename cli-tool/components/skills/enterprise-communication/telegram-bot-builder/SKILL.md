@@ -171,7 +171,7 @@ bot.command('buy', (ctx) => {
     payload: 'premium_monthly',
     provider_token: process.env.PAYMENT_TOKEN,
     currency: 'USD',
-    prices: [{ label: 'Premium', amount: 999 }], // $9.99
+    prices: [{ label: 'Premium', amount: 999 }], // USD 9.99
   });
 });
 
@@ -191,7 +191,7 @@ Free tier:
 - Basic features
 - Ads shown
 
-Premium ($5/month):
+Premium (USD 5/month):
 - Unlimited uses
 - Advanced features
 - No ads

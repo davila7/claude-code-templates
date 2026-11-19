@@ -71,7 +71,7 @@ Use this skill when the user:
 **Timeline:** 6 weeks
 **Team:** 2 designers, 3 engineers, 1 PM
 
-**Summary:** Reduced cart abandonment by 35% through a streamlined 3-step checkout process, generating $2M in recovered revenue.
+**Summary:** Reduced cart abandonment by 35% through a streamlined 3-step checkout process, generating USD 2M in recovered revenue.
 ```
 
 ### 2. Problem Section
@@ -206,10 +206,10 @@ Added security badges, money-back guarantee, and customer service contact throug
 | Cart Abandonment | 68% | 44% | -35% |
 | Checkout Completion | 32% | 56% | +75% |
 | Mobile Conversion | 18% | 41% | +128% |
-| Revenue per Visitor | $2.40 | $3.85 | +60% |
+| Revenue per Visitor | USD 2.40 | USD 3.85 | +60% |
 
 ### Business Impact
-- **$2M additional revenue** in first quarter
+- **USD 2M additional revenue** in first quarter
 - **15% increase in mobile orders**
 - **Customer support tickets about checkout** dropped by 45%
 

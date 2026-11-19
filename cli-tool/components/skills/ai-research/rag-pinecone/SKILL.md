@@ -340,9 +340,9 @@ index.delete(delete_all=True)
 ## Pricing (as of 2025)
 
 **Serverless**:
-- $0.096 per million read units
-- $0.06 per million write units
-- $0.06 per GB storage/month
+- USD 0.096 per million read units
+- USD 0.06 per million write units
+- USD 0.06 per GB storage/month
 
 **Free tier**:
 - 1 serverless index

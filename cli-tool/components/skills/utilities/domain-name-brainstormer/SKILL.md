@@ -85,7 +85,7 @@ Key features: Code sharing, snippets, collaboration
    Why: .app extension, clearly states the action
 
 ## Premium/Taken (.com)
-- codeshare.com (Taken, est. $2,500)
+- codeshare.com (Taken, est. USD 2,500)
 - snippets.com (Taken, premium domain)
 
 ## Recommendations
@@ -197,8 +197,8 @@ management tools, then suggest similar available ones
 ## Pricing Context
 
 When suggesting domains, I'll note:
-- Standard domains: ~$10-15/year
-- Premium TLDs (.io, .ai): ~$30-50/year
+- Standard domains: ~USD 10-15/year
+- Premium TLDs (.io, .ai): ~USD 30-50/year
 - Taken domains: Market price if listed
 - Premium domains: $hundreds to $thousands
 

@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "searchapi": {
+      "description": "SearchApi MCP Server - Real-time search results as structured data from Google (web, Maps, Shopping, Flights, Hotels, News, Scholar, Images, Jobs, Trends), Bing, YouTube, Amazon and 100+ other engines, for Claude Code and other MCP clients. Remote server hosted by searchapi.io. Requires a SearchApi account (free tier available). Uses OAuth authentication; a static MCP token in the X-MCP-Token header is also supported.",
+      "type": "http",
+      "url": "https://www.searchapi.io/mcp"
+    }
+  }
+}
