@@ -28,7 +28,7 @@ Use this skill when the user wants to:
 **Key Principles:**
 1. Negotiation is expected - companies budget for it
 2. 84% of employers expect candidates to negotiate
-3. Not negotiating leaves $500K-$1M on the table over a career
+3. Not negotiating leaves USD 500K-1M on the table over a career
 4. The goal is win-win, not adversarial
 
 **What You're Really Negotiating:**
@@ -85,13 +85,13 @@ Stretch (90th percentile): $XXX,XXX
 
 ```
 EXAMPLE:
-Base Salary: $150,000
-Target Bonus (15%): $22,500
-RSU Grant (4-year): $200,000 ($50,000/year)
-401k Match (4%): $6,000
-Benefits Value: ~$15,000
+Base Salary: USD 150,000
+Target Bonus (15%): USD 22,500
+RSU Grant (4-year): USD 200,000 (USD 50,000/year)
+401k Match (4%): USD 6,000
+Benefits Value: ~USD 15,000
 
-Total Annual Comp: $243,500
+Total Annual Comp: USD 243,500
 ```
 
 **Common Equity Terms:**
@@ -265,18 +265,18 @@ Is there flexibility there?"
 
 | Component | Company A | Company B | Notes |
 |-----------|-----------|-----------|-------|
-| Base Salary | $150,000 | $140,000 | A wins |
-| Target Bonus | 15% ($22,500) | 20% ($28,000) | B wins |
-| Signing Bonus | $20,000 | $10,000 | A wins |
-| Equity (annual) | $50,000 | $75,000 | B wins |
-| 401k Match | 4% ($6,000) | 6% ($8,400) | B wins |
+| Base Salary | USD 150,000 | USD 140,000 | A wins |
+| Target Bonus | 15% (USD 22,500) | 20% (USD 28,000) | B wins |
+| Signing Bonus | USD 20,000 | USD 10,000 | A wins |
+| Equity (annual) | USD 50,000 | USD 75,000 | B wins |
+| 401k Match | 4% (USD 6,000) | 6% (USD 8,400) | B wins |
 | Benefits | Standard | Premium | B wins |
 | WFH | Hybrid (3 days) | Full remote | B wins |
 | Vacation | 3 weeks | Unlimited | Depends |
 
 **Year 1 Total Comp:**
-Company A: $248,500
-Company B: $261,400
+Company A: USD 248,500
+Company B: USD 261,400
 
 **Analysis:** Company B is higher total comp, but Company A has higher base which affects future raises and mortgage qualification.
 ```

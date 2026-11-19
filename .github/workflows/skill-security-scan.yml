@@ -6,6 +6,11 @@ name: Skill Security Scan
 # (risk score > 50) and its score rose compared with the merge base (a new
 # skill counts as 0). Skills that already scored that high on main can be
 # edited without being blocked for old findings.
+#
+# A second job runs NVIDIA SkillEvaluator's Harness Check (Apache-2.0, no API
+# key, no agent run) on the same changed skills and comments which agents
+# (Claude Code, Codex, Copilot CLI, OpenCode, Hermes, OpenClaw) would drop or
+# rewrite part of them. It is informational and never fails the PR.
 
 on:
   pull_request:
@@ -13,6 +18,7 @@ on:
       - 'cli-tool/components/skills/**'
       - 'cli-tool/components/plugins/**'
       - 'scripts/skillspector_scan.py'
+      - 'scripts/harness_catalog.py'
       - 'scripts/external_skills.py'
       - '.github/workflows/skill-security-scan.yml'
 
@@ -155,3 +161,60 @@ jobs:
         run: |
           echo "::error::SkillSpector found HIGH/CRITICAL findings in changed skills (${{ steps.scan.outputs.high_critical_count }})."
           exit 1
+
+  harness-check:
+    name: Harness Check (changed skills)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install SkillEvaluator
+        run: pipx install "skillevaluator==1.0.1"
+
+      - name: Run Harness Check on changed skills
+        continue-on-error: true
+        run: |
+          python scripts/harness_catalog.py \
+            --changed \
+            --base-ref "origin/${{ github.base_ref }}" \
+            --output-md harness-report.md
+
+      - name: Add report to job summary
+        if: always()
+        run: |
+          if [ -f harness-report.md ]; then cat harness-report.md >> "$GITHUB_STEP_SUMMARY"; fi
+
+      - name: Comment PR with results
+        if: always() && github.event.pull_request.head.repo.full_name == github.repository
+        continue-on-error: true
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const fs = require('fs');
+            const reportPath = 'harness-report.md';
+            const marker = '<!-- harness-check-report:v1 -->';
+            if (!fs.existsSync(reportPath)) {
+              console.log('No Harness Check report found.');
+              return;
+            }
+            const body = fs.readFileSync(reportPath, 'utf8');
+            const { owner, repo } = context.repo;
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner, repo, issue_number: context.issue.number, per_page: 100,
+            });
+            const existing = comments.find(comment => comment.body?.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number: context.issue.number, body });
+            }

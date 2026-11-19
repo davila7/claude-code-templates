@@ -85,14 +85,14 @@ This skill serves:
 
 ```
 Campaign Name: [Q2-2025-LinkedIn-ABM-Enterprise]
-Objective: [Generate 50 SQLs from Enterprise accounts ($50k+ ACV)]
-Budget: [$15k/month]
+Objective: [Generate 50 SQLs from Enterprise accounts (USD 50k+ ACV)]
+Budget: [USD 15k/month]
 Duration: [90 days]
 Channels: [LinkedIn Ads, Retargeting, Email]
 Audience: [Director+ at SaaS companies, 500-5000 employees, EU/US]
 Offer: [Gated Industry Benchmark Report]
 Success Metrics:
-  - Primary: 50 SQLs, <$300 CPO
+  - Primary: 50 SQLs, <USD 300 CPO
   - Secondary: 500 MQLs, 10% MQL→SQL rate, 40% email open rate
 HubSpot Setup:
   - Campaign ID: [create in HubSpot]
@@ -161,12 +161,12 @@ Handoff Protocol:
 
 | Channel | Best For | CAC Benchmark | Conversion Rate | Series A Priority |
 |---------|----------|---------------|-----------------|-------------------|
-| **LinkedIn Ads** | B2B, Enterprise, ABM | $150-$400 | 0.5-2% | ⭐⭐⭐⭐⭐ |
-| **Google Search** | High-intent, BOFU | $80-$250 | 2-5% | ⭐⭐⭐⭐⭐ |
-| **Google Display** | Retargeting, awareness | $50-$150 | 0.3-1% | ⭐⭐⭐ |
-| **Meta (FB/IG)** | SMB, consumer-like products | $60-$200 | 1-3% | ⭐⭐⭐ |
-| **YouTube** | Product demos, brand | $100-$300 | 0.5-1.5% | ⭐⭐ |
-| **Reddit/Twitter** | Technical audiences | $40-$180 | 0.5-2% | ⭐⭐ |
+| **LinkedIn Ads** | B2B, Enterprise, ABM | USD 150-400 | 0.5-2% | ⭐⭐⭐⭐⭐ |
+| **Google Search** | High-intent, BOFU | USD 80-250 | 2-5% | ⭐⭐⭐⭐⭐ |
+| **Google Display** | Retargeting, awareness | USD 50-150 | 0.3-1% | ⭐⭐⭐ |
+| **Meta (FB/IG)** | SMB, consumer-like products | USD 60-200 | 1-3% | ⭐⭐⭐ |
+| **YouTube** | Product demos, brand | USD 100-300 | 0.5-1.5% | ⭐⭐ |
+| **Reddit/Twitter** | Technical audiences | USD 40-180 | 0.5-2% | ⭐⭐ |
 
 ### 2.2 LinkedIn Ads Playbook (Primary B2B Channel)
 
@@ -190,7 +190,7 @@ Account
 - **Job Titles**: Director+, VP+, C-level (use LinkedIn's precise targeting)
 - **Industries**: Software, SaaS, Tech Services
 - **Matched Audiences**: Website retargeting (install Insight Tag), uploaded email lists
-- **Budget**: Start $50/day per campaign, scale 20% weekly if CAC < target
+- **Budget**: Start USD 50/day per campaign, scale 20% weekly if CAC < target
 
 **Creative Frameworks**:
 1. **Thought Leadership** - Industry insights, no product pitch
@@ -259,7 +259,7 @@ Descriptions (4 required):
 ### 2.4 Meta Ads Playbook (SMB/Lower ACV)
 
 **When to Use Meta**:
-- ✅ Product ACV <$10k
+- ✅ Product ACV <USD 10k
 - ✅ Visual product (UI, consumer-facing)
 - ✅ SMB/prosumer audience
 - ✅ Broader awareness campaigns
@@ -290,17 +290,17 @@ Campaign Objective: [Conversions]
 
 ### 2.5 Budget Allocation & Scaling
 
-**Initial Budget** (Series A, $30k-50k/month total):
+**Initial Budget** (Series A, USD 30k-50k/month total):
 ```
 Channel            Budget    Expected Results
 ─────────────────────────────────────────────
-LinkedIn Ads       $15k      50 MQLs, 10 SQLs, $1.5k CAC
-Google Search      $12k      80 MQLs, 20 SQLs, $600 CAC
-Google Display     $5k       120 MQLs, 5 SQLs, $1k CAC
-Meta Ads           $5k       100 MQLs, 8 SQLs, $625 CAC
-Partnerships       $3k       20 MQLs, 5 SQLs, $600 CAC
+LinkedIn Ads       USD 15k   50 MQLs, 10 SQLs, USD 1.5k CAC
+Google Search      USD 12k   80 MQLs, 20 SQLs, USD 600 CAC
+Google Display     USD 5k    120 MQLs, 5 SQLs, USD 1k CAC
+Meta Ads           USD 5k    100 MQLs, 8 SQLs, USD 625 CAC
+Partnerships       USD 3k    20 MQLs, 5 SQLs, USD 600 CAC
 ─────────────────────────────────────────────
-TOTAL              $40k      370 MQLs, 48 SQLs, $833 avg CAC
+TOTAL              USD 40k   370 MQLs, 48 SQLs, USD 833 avg CAC
 ```
 
 **Scaling Rules**:
@@ -515,7 +515,7 @@ CTA:
 
 **Tier 3: Referral Partners** (customer-driven)
 - Target: Your existing customers
-- Structure: Referral bonus ($500-$1k per SQL)
+- Structure: Referral bonus (USD 500-1k per SQL)
 - Platform: Built into HubSpot or standalone (Friendbuy)
 - Effort: Low (automate via workflows)
 - ROI: Medium (5-10% of customers refer)
@@ -592,15 +592,15 @@ Best,
 ```
 Tier 1: Influencers/Publishers
 - 30% recurring for 12 months
-- Or: $500 flat per SQL
-- Bonus: $1k for 10+ referrals/quarter
+- Or: USD 500 flat per SQL
+- Bonus: USD 1k for 10+ referrals/quarter
 
 Tier 2: Bloggers/Content Creators
 - 20% recurring for 12 months
-- Or: $300 flat per SQL
+- Or: USD 300 flat per SQL
 
 Tier 3: Customers (Referral Program)
-- $500 per closed deal
+- USD 500 per closed deal
 - Or: 1 month free for both referrer + referee
 ```
 
@@ -629,7 +629,7 @@ Planning (6 weeks out):
 Promotion (4 weeks out):
 - Email: 3 sends (announcement, reminder, last chance)
 - Social: 8-10 posts per partner (LinkedIn, Twitter)
-- Paid: $2k budget for LinkedIn ads → landing page
+- Paid: USD 2k budget for LinkedIn ads → landing page
 - Partners: Cross-promote to each other's audiences
 
 Execution (day of):
@@ -848,7 +848,7 @@ Tools: [HubSpot A/B test, or Google Optimize]
 Required:
 ✅ Job title: Director+ (or Budget Authority confirmed)
 ✅ Company size: 50-5000 employees
-✅ Budget: $10k+ annual (or Qualified Need confirmed)
+✅ Budget: USD 10k+ annual (or Qualified Need confirmed)
 ✅ Timeline: Buying within 90 days
 ✅ Engagement: Demo requested OR High intent action
 
@@ -915,12 +915,12 @@ Optional:
 |--------|----------|---------------|-----|-------|--------------|
 | CTR | 0.4-0.9% | 2-5% | 1-3% | 15-25% | N/A |
 | CVR | 1-3% | 3-7% | 2-5% | 2-5% | 5-10% |
-| CAC | $150-400 | $80-250 | $50-150 | $20-80 | $100-300 |
+| CAC | USD 150-400 | USD 80-250 | USD 50-150 | USD 20-80 | USD 100-300 |
 | MQL→SQL | 10-20% | 15-25% | 12-22% | 8-15% | 20-35% |
 
 ### 8.2 Budget Allocation (Recommended)
 
-**Series A ($40k-60k/month)**:
+**Series A (USD 40k-60k/month)**:
 - 40% Paid Acquisition (LinkedIn + Google)
 - 25% Content/SEO
 - 20% Partnerships

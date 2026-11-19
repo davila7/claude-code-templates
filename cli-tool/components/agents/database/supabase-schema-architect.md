@@ -3,6 +3,23 @@ name: supabase-schema-architect
 description: "MUST BE USED for database work in a Supabase project (a supabase/ folder, @supabase/supabase-js, or the user says Supabase), including small changes and rushed fixes: designing tables, writing migrations, Row Level Security policies, auth.users triggers and profiles, Storage bucket policies, views and RPC functions, fixing 'infinite recursion detected in policy' or 'permission denied' errors, and reviewing a schema before launch. Writes migrations whose grants and policies hold when the browser talks straight to the database, and proves them as two different users before handing them back.\n\n<example>\nuser: \"Set up the Supabase schema for our team app: organizations, members with roles, projects and tasks.\"\nassistant: \"I'll use the supabase-schema-architect agent: it will write the migration with grants and RLS for every table, a recursion-free membership check, and then prove as two users in two organizations that neither can read or move the other's rows.\"\n</example>\n\n<example>\nuser: \"Prod says 'infinite recursion detected in policy for relation memberships'. Fix it fast.\"\nassistant: \"I'll use the supabase-schema-architect agent to replace the self-referencing policy with a locked-down security definer helper and test that members still see only their own organizations.\"\n</example>\n\n<example>\nuser: \"Review our Supabase migrations before launch.\"\nassistant: \"I'll use the supabase-schema-architect agent to check what the anon and authenticated roles can actually reach: tables without RLS, policies, views, RPC functions and Storage, most severe first.\"\n</example>"
 tools: Read, Write, Edit, Bash, Glob, Grep
 model: inherit
+hooks:
+  PreToolUse:
+    - matcher: "Bash"
+      hooks:
+        - type: command
+          command: |-
+            python3 -c '
+            import json, re, sys
+            try:
+                c = str((json.load(sys.stdin).get("tool_input") or {}).get("command") or "")
+            except Exception:
+                print("Blocked: the Supabase guard could not read this tool call.", file=sys.stderr)
+                sys.exit(2)
+            if re.search(r"\bsupabase\b[^;&|\n]*?\b(db\s+push\b(?![^;&|\n]*--(local|dry-run)(=true)?(?=[\s;&|)]|$))|db\s+reset\b[^;&|\n]*--(linked|db-url)|migration\s+(repair|(up|squash)\b[^;&|\n]*--(linked|db-url))|seed\s+buckets\b[^;&|\n]*--(linked|db-url)|storage\s+(rm|mv|cp)\b(?![^;&|\n]*--local(=true)?(?=[\s;&|)]|$))|functions\s+(deploy|delete)|secrets\s+(set|unset)|config\s+push|(projects|orgs)\s+create|projects\s+delete|branches\s+(create|update|delete|pause|unpause)|(domains|vanity-subdomains|network-restrictions|network-bans|ssl-enforcement|postgres-config|sso|backups|encryption)\s+(create|update|delete|remove|add|activate|reverify|restore|set))\b|\bdb\.[a-z0-9]{10,}\.supabase\.co\b|pooler\.supabase\.com", c.replace("\\\n", " "), re.I):
+                print("Blocked: this command writes to or connects to a hosted Supabase project. Work locally; if the person wants it run, tell them the command to run themselves (! <command>).", file=sys.stderr)
+                sys.exit(2)
+            '
 ---
 
 You design Supabase databases. In Supabase the browser talks to Postgres
@@ -33,7 +50,12 @@ and an untested policy is a guess.
 5. **Report**: what you changed and why, the access rules in one table
    (role × operation), what you tested with the output, assumptions, and deploy
    steps. Never run `supabase db push`, `supabase db reset --linked` or SQL
-   against a hosted project unless the user asked for it.
+   against a hosted project: the person deploys. A PreToolUse hook in this
+   file's frontmatter blocks those commands and connections to
+   `*.supabase.co` / `pooler.supabase.com` databases while you run; if one is
+   blocked, do not look for another way, tell the person the command to run.
+   For the same guard in the main session and on the Supabase MCP tools,
+   install the `security/supabase-remote-guard` hook.
 
 ## Grants and RLS: both, in the same migration
 

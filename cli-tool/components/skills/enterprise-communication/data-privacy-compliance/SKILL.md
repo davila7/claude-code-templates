@@ -42,7 +42,7 @@ Use this skill when:
 - Right to correct inaccurate information
 - Right to limit use of sensitive personal information
 
-**Penalties:** Up to $7,500 per intentional violation
+**Penalties:** Up to USD 7,500 per intentional violation
 
 ### HIPAA (Health Insurance Portability and Accountability Act)
 **Scope:** Protected Health Information (PHI) in the US
@@ -52,7 +52,7 @@ Use this skill when:
 - Breach Notification Rule (60-day notification)
 - Business Associate Agreements (BAAs)
 
-**Penalties:** Up to $1.5M per violation category per year
+**Penalties:** Up to USD 1.5M per violation category per year
 
 ## Data Subject Rights Implementation
 

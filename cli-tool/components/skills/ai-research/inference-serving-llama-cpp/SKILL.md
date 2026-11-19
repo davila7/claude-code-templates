@@ -212,19 +212,19 @@ cat prompts.txt | ./llama-cli \
 
 | CPU | Threads | Speed | Cost |
 |-----|---------|-------|------|
-| Apple M3 Max | 16 | 50 tok/s | $0 (local) |
-| AMD Ryzen 9 7950X | 32 | 35 tok/s | $0.50/hour |
-| Intel i9-13900K | 32 | 30 tok/s | $0.40/hour |
-| AWS c7i.16xlarge | 64 | 40 tok/s | $2.88/hour |
+| Apple M3 Max | 16 | 50 tok/s | USD 0 (local) |
+| AMD Ryzen 9 7950X | 32 | 35 tok/s | USD 0.50/hour |
+| Intel i9-13900K | 32 | 30 tok/s | USD 0.40/hour |
+| AWS c7i.16xlarge | 64 | 40 tok/s | USD 2.88/hour |
 
 ### GPU acceleration (Llama 2-7B Q4_K_M)
 
 | GPU | Speed | vs CPU | Cost |
 |-----|-------|--------|------|
-| NVIDIA RTX 4090 | 120 tok/s | 3-4× | $0 (local) |
-| NVIDIA A10 | 80 tok/s | 2-3× | $1.00/hour |
-| AMD MI250 | 70 tok/s | 2× | $2.00/hour |
-| Apple M3 Max (Metal) | 50 tok/s | ~Same | $0 (local) |
+| NVIDIA RTX 4090 | 120 tok/s | 3-4× | USD 0 (local) |
+| NVIDIA A10 | 80 tok/s | 2-3× | USD 1.00/hour |
+| AMD MI250 | 70 tok/s | 2× | USD 2.00/hour |
+| Apple M3 Max (Metal) | 50 tok/s | ~Same | USD 0 (local) |
 
 ## Supported models
 

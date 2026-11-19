@@ -1,7 +1,17 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { existsSync } from 'node:fs';
 import {
   commitTitle,
+  harnessAgentLogo,
+  scanCategories,
+  scanCategoryName,
+  harnessAgentName,
+  HARNESS_AGENT_LOGOS,
+  HARNESS_AGENT_NAMES,
+  NVIDIA_LOGO,
+  harnessStatusText,
+  harnessSummary,
   formatBytes,
   formatDate,
   initials,
@@ -101,4 +111,49 @@ test('nextStepItems: loops first, then the category alphabetically from the curr
   const all = nextStepItems(c('mid'), siblings, [], 6).map((i) => i.component.name);
   assert.deepEqual(all, ['zeta', 'alpha', 'beta', 'gamma']);
   assert.equal(nextStepItems(c('zeta'), siblings, [], 6)[0].component.name, 'alpha');
+});
+
+test('harnessSummary counts agents that load the skill and their notes', () => {
+  const note = { id: 'CC-DOLLAR-N', effect: 'degraded', message: '', fix: '' };
+  const all = [
+    { status: 'loads', notes: [] },
+    { status: 'degraded', notes: [note] },
+    { status: 'loads', notes: [] },
+  ];
+  assert.deepEqual(harnessSummary(all), { label: 'Loads in 3 agents', loads: 3, total: 3, notes: 1 });
+  const dropped = [{ status: 'not_loaded', notes: [note] }, { status: 'loads', notes: [] }];
+  assert.equal(harnessSummary(dropped).label, 'Loads in 1 of 2 agents');
+  assert.equal(harnessSummary(undefined).label, '');
+});
+
+test('harnessStatusText and harnessAgentName', () => {
+  assert.equal(harnessStatusText('loads', 0), 'loads');
+  assert.equal(harnessStatusText('degraded', 2), 'loads · 2 notes');
+  assert.equal(harnessStatusText('not_loaded', 1), 'not loaded');
+  assert.equal(harnessAgentName('copilot-cli'), 'Copilot CLI');
+  assert.equal(harnessAgentName('new-agent'), 'new-agent');
+});
+
+test('every agent has a logo file, and the NVIDIA mark exists', () => {
+  assert.deepEqual(Object.keys(HARNESS_AGENT_LOGOS).sort(), Object.keys(HARNESS_AGENT_NAMES).sort());
+  for (const id of Object.keys(HARNESS_AGENT_NAMES)) {
+    const logo = harnessAgentLogo(id);
+    assert.ok(logo && existsSync(new URL(`../public${logo.src}`, import.meta.url)), `missing logo for ${id}`);
+  }
+  assert.equal(harnessAgentLogo('unknown-agent'), null);
+  assert.ok(existsSync(new URL(`../public${NVIDIA_LOGO}`, import.meta.url)));
+});
+
+test('scanCategories uses full counts when present, else the stored findings', () => {
+  const full = scanCategories({ categories: { 'MCP Rug Pull': 35, 'Agent Snooping': 1, Zero: 0 }, findings: [] });
+  assert.deepEqual(full, { entries: [['MCP Rug Pull', 35], ['Agent Snooping', 1]], complete: true });
+  const partial = scanCategories({
+    findings: [
+      { category: 'Excessive Agency', count: 2 },
+      { category: 'Agent Snooping', count: 2 },
+      { category: 'Excessive Agency', count: 1 },
+    ],
+  });
+  assert.deepEqual(partial, { entries: [['Excessive Agency', 3], ['Agent Snooping', 2]], complete: false });
+  assert.equal(scanCategoryName('analysis-evasion'), 'Analysis evasion');
 });

@@ -146,7 +146,7 @@ People value things more when they've put effort into creating them.
 ### Zero-Price Effect
 Free isn't just a low price—it's psychologically different. "Free" triggers irrational preference.
 
-**Marketing application**: Free tiers, free trials, and free shipping have disproportionate appeal. The jump from $1 to $0 is bigger than $2 to $1.
+**Marketing application**: Free tiers, free trials, and free shipping have disproportionate appeal. The jump from USD 1 to USD 0 is bigger than USD 2 to USD 1.
 
 ### Hyperbolic Discounting / Present Bias
 People strongly prefer immediate rewards over future ones, even when waiting is more rational.
@@ -196,7 +196,7 @@ Once you know something, you can't imagine not knowing it. Experts struggle to e
 ### Mental Accounting
 People treat money differently based on its source or intended use, even though money is fungible.
 
-**Marketing application**: Frame costs in favorable mental accounts. "$3/day" feels different than "$90/month" even though it's the same.
+**Marketing application**: Frame costs in favorable mental accounts. "USD 3/day" feels different than "USD 90/month" even though it's the same.
 
 ### Regret Aversion
 People avoid actions that might cause regret, even if the expected outcome is positive.
@@ -286,19 +286,19 @@ Things seem different depending on what they're compared to.
 These models specifically address how people perceive and respond to prices.
 
 ### Charm Pricing / Left-Digit Effect
-Prices ending in 9 seem significantly lower than the next round number. $99 feels much cheaper than $100.
+Prices ending in 9 seem significantly lower than the next round number. USD 99 feels much cheaper than USD 100.
 
 **Marketing application**: Use .99 or .95 endings for value-focused products. The left digit dominates perception.
 
 ### Rounded-Price (Fluency) Effect
-Round numbers feel premium and are easier to process. $100 signals quality; $99 signals value.
+Round numbers feel premium and are easier to process. USD 100 signals quality; USD 99 signals value.
 
-**Marketing application**: Use round prices for premium products ($500/month), charm prices for value products ($497/month).
+**Marketing application**: Use round prices for premium products (USD 500/month), charm prices for value products (USD 497/month).
 
 ### Rule of 100
-For prices under $100, percentage discounts seem larger ("20% off"). For prices over $100, absolute discounts seem larger ("$50 off").
+For prices under USD 100, percentage discounts seem larger ("20% off"). For prices over USD 100, absolute discounts seem larger ("USD 50 off").
 
-**Marketing application**: $80 product: "20% off" beats "$16 off." $500 product: "$100 off" beats "20% off."
+**Marketing application**: USD 80 product: "20% off" beats "USD 16 off." USD 500 product: "USD 100 off" beats "20% off."
 
 ### Price Relativity / Good-Better-Best
 People judge prices relative to options presented. A middle tier seems reasonable between cheap and expensive.
@@ -308,7 +308,7 @@ People judge prices relative to options presented. A middle tier seems reasonabl
 ### Mental Accounting (Pricing)
 Framing the same price differently changes perception.
 
-**Marketing application**: "$1/day" feels cheaper than "$30/month." "Less than your morning coffee" reframes the expense.
+**Marketing application**: "USD 1/day" feels cheaper than "USD 30/month." "Less than your morning coffee" reframes the expense.
 
 ---
 

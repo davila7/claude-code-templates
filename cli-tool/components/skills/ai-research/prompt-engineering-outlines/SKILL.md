@@ -142,7 +142,7 @@ class Product(BaseModel):
 
 # Generate valid JSON matching schema
 generator = outlines.generate.json(model, Product)
-product = generator("Extract: iPhone 15, $999, available")
+product = generator("Extract: iPhone 15, USD 999, available")
 
 # Guaranteed valid Product instance
 print(type(product))  # <class '__main__.Product'>
@@ -571,12 +571,12 @@ class Task(BaseModel):
 # ✅ Good: Clear context
 prompt = """
 Extract product information from the following text.
-Text: iPhone 15 Pro costs $999 and is currently in stock.
+Text: iPhone 15 Pro costs USD 999 and is currently in stock.
 Product:
 """
 
 # ❌ Bad: Minimal context
-prompt = "iPhone 15 Pro costs $999 and is currently in stock."
+prompt = "iPhone 15 Pro costs USD 999 and is currently in stock."
 ```
 
 ### 5. Handle Optional Fields
