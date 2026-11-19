@@ -101,7 +101,10 @@ def content_hash(root: Path, files: list[Path]) -> str:
     for f in files:
         h.update(str(f.relative_to(root)).encode())
         h.update(b"\0")
-        h.update(f.read_bytes())
+        # Streamed: same digest as hashing read_bytes(), without holding a large file in memory.
+        with f.open("rb") as fh:
+            for chunk in iter(lambda: fh.read(1 << 20), b""):
+                h.update(chunk)
         h.update(b"\0")
     return h.hexdigest()[:16]
 
