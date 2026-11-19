@@ -12,7 +12,7 @@ import HarnessReport from '../../../components/HarnessReport.tsx';
 import { TYPE_CONFIG, ICONS } from '../../../lib/icons';
 import { fetchComponents, fetchComponentContentData, getInstallCommand } from '../../../lib/data';
 import type { ComponentPageMeta } from '../../../lib/data';
-import type { HarnessResult } from '../../../lib/types';
+import type { HarnessResult, ScanSnippet } from '../../../lib/types';
 import { PLUGIN_KINDS, commitTitle, displayName, harnessSummary, nextStepItems, formatBytes, formatCount, formatDate, initials, languageShares, pluginContentsSummary, topLevelEntries, totals } from '../../../lib/component-page';
 import type { Component, PluginContents } from '../../../lib/types';
 import { AITMPL_MARKETPLACE } from '../../../lib/constants';
@@ -32,6 +32,7 @@ let modFiles: Record<string, string> = {};
 let pageMeta: ComponentPageMeta | null = null;
 // Skills: agent compatibility (NVIDIA SkillEvaluator Harness Check), from the content file.
 let harness: HarnessResult | null = null;
+let scanSnippets: (ScanSnippet | null)[] = [];
 // Every component of the same type, for the "Next step" block.
 let siblings: Component[] = [];
 // Loops that install this component (content file `usedByLoops`), also for "Next step".
@@ -72,6 +73,7 @@ try {
     modFiles = contentData.files ?? {};
     pageMeta = contentData.meta ?? null;
     harness = contentData.harness?.agents?.length ? contentData.harness : null;
+    scanSnippets = contentData.scanSnippets ?? [];
     const loopPaths = new Set(contentData.usedByLoops ?? []);
     usedByLoops = loopPaths.size
       ? (data.loops ?? []).filter((l) => loopPaths.has(l.path.replace(/\.md$/, '')))
@@ -807,7 +809,7 @@ const componentSchema = component
 
             {component.skillspector && (
               <div data-pane="security" hidden>
-                <SkillSpectorReport result={component.skillspector} />
+                <SkillSpectorReport result={component.skillspector} snippets={scanSnippets} />
               </div>
             )}
 

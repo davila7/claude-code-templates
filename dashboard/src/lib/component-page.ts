@@ -221,3 +221,33 @@ export function harnessStatusText(status: string, notes: number): string {
   if (notes > 0) return `loads · ${formatCount(notes, 'note', 'notes')}`;
   return 'loads';
 }
+
+/**
+ * Observations per category for the scan report's bar, largest first. Uses the
+ * full per-category counts when the scan has them; older results only carry the
+ * top finding groups, so `complete` is false and the bar says so.
+ */
+export function scanCategories(result: {
+  categories?: Record<string, number>;
+  findings: { category: string; count: number }[];
+}): { entries: [string, number][]; complete: boolean } {
+  let counts: Record<string, number>;
+  let complete = true;
+  if (result.categories && Object.keys(result.categories).length) {
+    counts = result.categories;
+  } else {
+    complete = false;
+    counts = {};
+    for (const f of result.findings) counts[f.category || 'Other'] = (counts[f.category || 'Other'] ?? 0) + f.count;
+  }
+  const entries = Object.entries(counts)
+    .filter(([, n]) => n > 0)
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+  return { entries, complete };
+}
+
+/** SkillSpector's raw category ids, as people read them. */
+export function scanCategoryName(category: string): string {
+  if (category === 'analysis-evasion') return 'Analysis evasion';
+  return category || 'Other';
+}

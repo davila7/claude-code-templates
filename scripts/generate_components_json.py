@@ -9,7 +9,7 @@ from collections import defaultdict
 from dotenv import load_dotenv
 from pathlib import Path
 from generate_trending_data import fetch_with_retry
-from skillspector_catalog import attach_skillspector
+from skillspector_catalog import attach_skillspector, finding_snippets
 from harness_catalog import attach_harness
 import external_skills
 from catalog_api_v1 import write_catalog_api_v1
@@ -1132,6 +1132,10 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
             if component.get('harness'):
                 # Only the component page shows it; the hash is the generator's cache key.
                 content_payload['harness'] = {k: v for k, v in component['harness'].items() if k != 'hash'}
+            snippets = finding_snippets(ctype, component)
+            if any(snippets):
+                # Code around each SkillSpector finding, for the page's accordions (aligned with findings).
+                content_payload['scanSnippets'] = snippets
             previous_meta = {}
             if f"{ctype}/{component['path']}" in kept_previous:
                 # Upstream unreachable: the file list cannot be rebuilt, so the page keeps the last one.

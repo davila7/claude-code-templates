@@ -51,8 +51,16 @@ export interface SkillSpectorResult {
   issueCount: number;
   analysis?: string;
   findings: SkillSpectorFinding[];
+  /** Every observation per category (findings holds only the top groups). Missing on results scanned before 2026-11-19. */
+  categories?: Record<string, number>;
   version?: string;
   scannedAt?: string;
+}
+
+/** Source lines around one SkillSpector finding (content file `scanSnippets`, aligned with `findings`). */
+export interface ScanSnippet {
+  start: number;
+  lines: string[];
 }
 
 // NVIDIA SkillEvaluator Harness Check per skill, written by scripts/harness_catalog.py.
