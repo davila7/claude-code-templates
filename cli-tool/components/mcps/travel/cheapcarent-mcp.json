@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "cheapcarent": {
+      "description": "CheapCarRent Search - Official hosted Streamable HTTP MCP server for car rental search at 15,000 pickup points in 46 countries, 19 languages. No account or API key. Read-only tools: list_locations and search_cars.",
+      "type": "http",
+      "url": "https://cheapcarent.com/mcp"
+    }
+  }
+}

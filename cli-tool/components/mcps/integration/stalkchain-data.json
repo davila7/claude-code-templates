@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "stalkchain-data": {
+      "description": "Read-only crypto research with public wallet holdings and PnL, token holders, tracked-trader activity, and Hyperliquid market data. Requires StalkChain OAuth. Metered queries use account credits.",
+      "type": "http",
+      "url": "https://data.stalkchain.com/mcp/directory"
+    }
+  }
+}

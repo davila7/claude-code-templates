@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "switch-docs": {
+      "description": "Official search MCP server of the Switch docs (docs.switchagents.ai, hosted by Mintlify): lets Claude Code search and read how to self-host Switch, a server and desktop console that runs Claude Code, Codex, Cursor and other coding agents as members of Slack, Microsoft Teams, Discord, Telegram and Mattermost channels. Remote, no sign-in required. Every tool is read-only except the feedback tool, which sends a report about a wrong or outdated page to the docs team.",
+      "type": "http",
+      "url": "https://docs.switchagents.ai/mcp"
+    }
+  }
+}
