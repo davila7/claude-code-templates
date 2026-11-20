@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "skillmem": {
+      "description": "Local long-term memory for Claude Code: records how past tasks were solved and recalls them in new sessions. SQLite + FTS5 with optional local embeddings, no API keys. Agent-written rules stay unapproved until you confirm them. For the automatic recall hooks run `skillmem init --claude-code` after `pip install skillmem`.",
+      "command": "uvx",
+      "args": ["--from", "skillmem", "skillmem-mcp"]
+    }
+  }
+}
