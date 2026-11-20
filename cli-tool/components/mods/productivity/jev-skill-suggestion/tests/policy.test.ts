@@ -42,6 +42,10 @@ import {
   displayIds,
   canonical,
   wideQuestions,
+  MAX_CHOICES,
+  rankingParts,
+  mergeWide,
+  describeFailure,
 } from '../hooks/policy.ts'
 import type { Candidate, PolicyConfig, Skill } from '../hooks/policy.ts'
 
@@ -460,4 +464,68 @@ test('only a file with the backup\'s own shape is treated as a reusable backup',
   expect(validBackup('{"skillOverrides":{}}')).toBe(false)
   expect(validBackup('{nope')).toBe(false)
   expect(validBackup('[]')).toBe(false)
+})
+
+/** A catalog of `count` skills named skill-0, skill-1, … */
+const many = (count: number): Skill[] =>
+  Array.from({ length: count }, (_, i) => ({ name: `skill-${i}`, description: `Skill number ${i}` }))
+
+test('a catalog over 255 skills is ranked in near-equal parts that each fit in one choice', () => {
+  expect(MAX_CHOICES).toBe(255)
+  expect(rankingParts(skills)).toEqual([skills])
+  expect(rankingParts(many(255)).map((part) => part.length)).toEqual([255])
+  expect(rankingParts(many(256)).map((part) => part.length)).toEqual([128, 128])
+  expect(rankingParts(many(311)).map((part) => part.length)).toEqual([156, 155])
+  expect(rankingParts(many(600)).map((part) => part.length)).toEqual([200, 200, 200])
+  const catalog311 = many(311)
+  const parts = rankingParts(catalog311)
+  expect(parts.flat()).toEqual(catalog311)
+  for (const [index, part] of parts.entries()) {
+    const questions = wideQuestions('typesafe', part, index === 0) as Record<
+      string,
+      { criteria?: Record<string, string> }
+    >
+    expect(Object.keys(questions.which?.criteria ?? {}).length <= MAX_CHOICES).toBe(true)
+  }
+})
+
+test('only the first part asks the gate nouls', () => {
+  expect(Object.keys(wideQuestions('typesafe', skills, false))).toEqual(['which'])
+  expect(Object.keys(wideQuestions('gateway', skills, true))).toContain('gate::prose_suffices')
+})
+
+test("the parts' rankings merge place by place, the gate comes from the first part, and its loss is no answer", () => {
+  const first = readWide(wideAnswer('powerpoint', { powerpoint: 0.6, commit: 0.4 }, ACTION))
+  const second = readWide(wideAnswer('pptx-author', { 'pptx-author': 0.9, pdf: 0.1 }))
+  const merged = mergeWide([first, second])
+  // Each part's first before either part's second, the surer one first.
+  expect(merged?.ranked.map((entry) => entry.name)).toEqual(['pptx-author', 'powerpoint', 'commit', 'pdf'])
+  expect(merged?.gate).toBe(first?.gate)
+  expect(merged?.gateValues).toEqual(first?.gateValues)
+  expect(shortlistOf(merged!, skills, 3).map((skill) => skill.name)).toEqual(['pptx-author', 'powerpoint', 'commit'])
+  // A later part that did not answer is left out; the first is required.
+  expect(mergeWide([first, null])?.ranked.map((entry) => entry.name)).toEqual(['powerpoint', 'commit'])
+  expect(mergeWide([null, second])).toBeNull()
+  expect(mergeWide([first])).toBe(first)
+})
+
+test('a merged ranking goes through the rerank like a single one', () => {
+  const merged = mergeWide([
+    readWide(wideAnswer('powerpoint', { powerpoint: 0.6, commit: 0.4 }, ACTION)),
+    readWide(wideAnswer('pptx-author', { 'pptx-author': 0.9, pdf: 0.1 })),
+  ])
+  const rerank = readRerank(rerankAnswer('powerpoint', { 'pptx-author': 0.4, powerpoint: 0.85, commit: 0.05 }))
+  expect(decide(merged, rerank, skills, config, true)).toEqual({ name: 'powerpoint', reason: 'rerank of 3, fits 0.85' })
+})
+
+test("a non-2xx is logged with the backend's reason from the body", () => {
+  expect(
+    describeFailure('typesafe', 400, 'ranking', '{"detail":"Too many choices. Must have at most 255 choices."}'),
+  ).toBe('typesafe responded 400 to the ranking: {"detail":"Too many choices. Must have at most 255 choices."}')
+  expect(describeFailure('gateway', 502, 'rerank', '')).toBe('gateway responded 502 to the rerank')
+  expect(describeFailure('typesafe', 500, 'ranking', 'line one\n  line two')).toBe(
+    'typesafe responded 500 to the ranking: line one line two',
+  )
+  const long = describeFailure('typesafe', 413, 'ranking', 'x'.repeat(500))
+  expect(long.endsWith(`: ${'x'.repeat(200)}…`)).toBe(true)
 })
