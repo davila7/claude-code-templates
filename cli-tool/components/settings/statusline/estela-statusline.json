@@ -1,0 +1,8 @@
+{
+  "description": "Shows the current client and project, measured hours today, and this project's share of your weekly Claude Code usage, plus the official 5-hour and weekly usage percentages Claude Code sends to the status line. Powered by Estela, an open-source CLI that rebuilds hours and AI cost per project from local Claude Code sessions and git. Requires: npm i -g estela && estela setup. Runs locally; nothing leaves your machine.",
+  "statusLine": {
+    "type": "command",
+    "command": "estela statusline",
+    "padding": 0
+  }
+}
