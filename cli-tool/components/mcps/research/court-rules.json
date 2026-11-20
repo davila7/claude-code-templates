@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "court-rules": {
+      "description": "Court Rules - judge-level filing rules, standing orders, local rules and court holidays for U.S. federal and state courts, plus privacy enforcement actions from 21 jurisdictions. Nine read-only tools cover courts, judges, filing rules, court holidays, compliance-check parameters and enforcement actions. Hosted remote server: sign in through your MCP client (OAuth), or send an API key from https://console.courtrules.app as an Authorization Bearer header. https://www.courtrules.app/",
+      "type": "http",
+      "url": "https://mcp.courtrules.app/mcp"
+    }
+  }
+}
