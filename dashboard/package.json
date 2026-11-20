@@ -6,8 +6,9 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "node scripts/generate-og-images.mjs && astro build",
-    "og": "node scripts/generate-og-images.mjs",
+    "build": "node --experimental-strip-types scripts/generate-og-images.mjs && node scripts/generate-badges.mjs && astro build",
+    "og": "node --experimental-strip-types scripts/generate-og-images.mjs",
+    "badges": "node scripts/generate-badges.mjs",
     "preview": "astro preview",
     "astro": "astro",
     "test": "node --experimental-strip-types --test tests/*.test.ts",

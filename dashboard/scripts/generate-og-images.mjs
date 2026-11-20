@@ -1,6 +1,8 @@
 // Generates the social preview images (og:image / twitter:image), 1200x630:
-// one per component page (public/og/{type}/{path}.png) and the site card
-// used by every other page (public/og/site.png).
+// one per component page (public/og/{type}/{path}.png), the site card used by
+// every other page (public/og/site.png), the /trending card
+// (public/og/trending.png) and one per shareable trending entry
+// (public/og/trending/{type}/{path}.png, from public/trending-data.json).
 //
 // Runs before `astro build` (see package.json). The output is a build
 // artifact (gitignored): CI regenerates it on every deploy from the catalog
@@ -16,6 +18,7 @@ import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 import { availableParallelism } from 'node:os';
 import { Worker, isMainThread, workerData } from 'node:worker_threads';
+import { shareEntries, formatName, pctChange } from '../src/lib/trending-share.ts';
 import satori from 'satori';
 import { Resvg } from '@resvg/resvg-js';
 
@@ -26,6 +29,7 @@ const HEIGHT = 630;
 // Bump when the design changes so cached images are re-rendered.
 const DESIGN_VERSION = '2';
 const SITE_DESIGN_VERSION = '1';
+const TRENDING_DESIGN_VERSION = '1';
 
 // Stat label per type: "Subagent" is Claude Code's own name for agents.
 const TYPE_LABEL = {
@@ -88,6 +92,7 @@ const ICON = {
   files: 'M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8l-5-5zm0 0v5h5',
   components: 'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z',
   license: 'M12 3v18M5 7h14M5 7l-2.5 6a3 3 0 005 0L5 7zm14 0l-2.5 6a3 3 0 005 0L19 7zM8 21h8',
+  trend: 'M3 17l6-6 4 4 8-8m0 0h-6m6 0v6',
   version: 'M3.5 12.6V5a1.5 1.5 0 011.5-1.5h7.6l8 8a1.5 1.5 0 010 2.1l-7.6 7.6a1.5 1.5 0 01-2.1 0l-7.4-7.6zM8 8h.01',
 };
 
@@ -201,6 +206,95 @@ function siteEntry() {
   };
 }
 
+// Trending entry card: the component's place this week, for share links.
+function trendingCard(e) {
+  const size = titleSize(`${e.category}/${e.name}`);
+  return h('div', { width: WIDTH, height: HEIGHT, display: 'flex', flexDirection: 'column', backgroundColor: C.bg, fontFamily: 'Geist' }, [
+    h('div', { display: 'flex', flexGrow: 1, padding: '72px 84px 0 84px' }, [
+      h('div', { display: 'flex', flexDirection: 'column', flexGrow: 1, flexShrink: 1, maxWidth: 820 }, [
+        h('div', { display: 'flex', fontFamily: 'Geist Mono', fontSize: 22, color: '#D97757', letterSpacing: 2 }, 'TRENDING ON AITMPL.COM'),
+        h('div', { display: 'flex', fontSize: 64, fontWeight: 700, color: C.ink, letterSpacing: -1.5, marginTop: 22 }, e.headline),
+        h('div', { display: 'block', fontSize: size * 0.7, lineHeight: 1.15, color: C.ink, marginTop: 18, lineClamp: 2 }, [
+          h('span', { fontWeight: 400, color: C.muted }, `${e.category}/`),
+          h('span', { fontWeight: 600 }, e.name),
+        ]),
+      ]),
+      h('div', { display: 'flex', marginLeft: 56, flexShrink: 0 }, [logo(150)]),
+    ]),
+    h('div', { display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', padding: '0 84px 52px 84px' }, [
+      h('div', { display: 'flex' }, e.stats.map(([icon, value, label]) => stat(icon, value, label))),
+      h('div', { display: 'flex', fontSize: 24, fontWeight: 600, color: C.ink, marginBottom: 30 }, 'aitmpl.com'),
+    ]),
+    h('div', { display: 'flex', height: 16, width: WIDTH, backgroundColor: '#D97757' }),
+  ]);
+}
+
+// /trending card: cumulative installers and this week's top risers.
+function trendingSiteCard(t) {
+  return h('div', { width: WIDTH, height: HEIGHT, display: 'flex', flexDirection: 'column', backgroundColor: C.bg, fontFamily: 'Geist' }, [
+    h('div', { display: 'flex', flexGrow: 1, padding: '72px 84px 0 84px' }, [
+      h('div', { display: 'flex', flexDirection: 'column', flexGrow: 1, flexShrink: 1, maxWidth: 820 }, [
+        h('div', { display: 'flex', fontFamily: 'Geist Mono', fontSize: 22, color: '#D97757', letterSpacing: 2 }, 'TRENDING ON CLAUDE CODE TEMPLATES'),
+        h('div', { display: 'flex', fontSize: 96, fontWeight: 700, color: C.ink, letterSpacing: -3, marginTop: 18, lineHeight: 1 }, t.total),
+        h('div', { display: 'flex', fontSize: 28, color: C.muted, marginTop: 12 }, t.totalLabel),
+        h('div', { display: 'flex', flexDirection: 'column', marginTop: 30 }, t.rising.map((r, i) =>
+          h('div', { display: 'flex', fontSize: 24, color: C.ink, marginTop: i ? 8 : 0 }, [
+            h('span', { color: '#D97757', fontWeight: 600, marginRight: 14 }, r.change),
+            h('span', { fontWeight: 600 }, r.name),
+          ]))),
+      ]),
+      h('div', { display: 'flex', marginLeft: 56, flexShrink: 0 }, [logo(150)]),
+    ]),
+    h('div', { display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', padding: '0 84px 52px 84px' }, [
+      h('div', { display: 'flex' }, t.stats.map(([icon, value, label]) => stat(icon, value, label))),
+      h('div', { display: 'flex', fontSize: 24, fontWeight: 600, color: C.ink, marginBottom: 30 }, 'aitmpl.com'),
+    ]),
+    h('div', { display: 'flex', height: 16, width: WIDTH, backgroundColor: '#D97757' }),
+  ]);
+}
+
+function readTrending() {
+  try {
+    return JSON.parse(readFileSync(join(ROOT, 'public', 'trending-data.json'), 'utf8'));
+  } catch {
+    return null;
+  }
+}
+
+function changeLabel(cur, prev) {
+  const pct = pctChange(cur ?? 0, prev ?? 0);
+  return pct === null ? 'New' : `${pct > 0 ? '+' : ''}${pct}%`;
+}
+
+function trendingEntries(data) {
+  if (!data) return [];
+  return shareEntries(data).map((e) => {
+    const stats = [];
+    if (e.installersWeek !== null) {
+      stats.push(['downloads', e.installersWeek.toLocaleString('en-US'), 'Installers, 7 days']);
+      stats.push(['trend', changeLabel(e.installersWeek, e.installersPrevWeek), 'vs previous 7 days']);
+    }
+    stats.push(['components', compact(e.downloadsTotal), 'Installs, all time']);
+    return { type: e.type, path: e.path, category: e.category, name: e.name, headline: e.headline, stats };
+  });
+}
+
+function trendingSiteEntry(data) {
+  const ins = data?.installers;
+  if (!ins) return null;
+  const stats = [
+    ['downloads', ins.activeWeek.toLocaleString('en-US'), 'Installers, 7 days'],
+    ['trend', changeLabel(ins.activeWeek, ins.activePrevWeek), 'vs previous 7 days'],
+  ];
+  if (ins.addedThisMonth !== null && ins.addedThisMonth !== undefined) stats.push(['components', String(ins.addedThisMonth), 'New this month']);
+  return {
+    total: ins.total.toLocaleString('en-US'),
+    totalLabel: 'unique installers so far',
+    rising: (data.rising ?? []).slice(0, 3).map((r) => ({ name: formatName(r.name), change: changeLabel(r.installersWeek, r.installersPrevWeek) })),
+    stats,
+  };
+}
+
 function walk(dir) {
   return readdirSync(dir, { withFileTypes: true })
     .flatMap((d) => (d.isDirectory() ? walk(join(dir, d.name)) : [join(dir, d.name)]));
@@ -253,7 +347,7 @@ function entries() {
 }
 
 async function render(e, file) {
-  const svg = await satori(card(e), { width: WIDTH, height: HEIGHT, fonts });
+  const svg = await satori(e.headline ? trendingCard(e) : card(e), { width: WIDTH, height: HEIGHT, fonts });
   const png = new Resvg(svg, { fitTo: { mode: 'width', value: WIDTH } }).render().asPng();
   mkdirSync(dirname(file), { recursive: true });
   writeFileSync(file, png);
@@ -282,6 +376,30 @@ if (!isMainThread) {
       manifest.site = siteHash;
       siteRendered = 1;
     }
+  }
+  // Trending cards: one for /trending, one per shareable entry. Old entry
+  // images stay on disk (gitignored build output); nothing links to them.
+  const trending = readTrending();
+  if (!only.length || only.includes('trending')) {
+    const t = trendingSiteEntry(trending);
+    const tFile = join(outDir, 'trending.png');
+    const tHash = t && createHash('sha1').update(TRENDING_DESIGN_VERSION + JSON.stringify(t)).digest('hex');
+    if (t && manifest.trending === tHash && existsSync(tFile)) skipped++;
+    else if (t) {
+      const svg = await satori(trendingSiteCard(t), { width: WIDTH, height: HEIGHT, fonts });
+      mkdirSync(outDir, { recursive: true });
+      writeFileSync(tFile, new Resvg(svg, { fitTo: { mode: 'width', value: WIDTH } }).render().asPng());
+      manifest.trending = tHash;
+      siteRendered++;
+    }
+  }
+  for (const e of trendingEntries(trending)) {
+    const key = `trending/${e.type}/${e.path}`;
+    if (only.length && !only.includes(key)) continue;
+    const file = join(outDir, 'trending', e.type, `${e.path}.png`);
+    const hash = createHash('sha1').update(TRENDING_DESIGN_VERSION + JSON.stringify(e)).digest('hex');
+    if (manifest[key] === hash && existsSync(file)) { skipped++; continue; }
+    jobs.push({ e, file, key, hash });
   }
   for (const e of entries()) {
     const key = `${e.typeKey}/${e.path}`;
