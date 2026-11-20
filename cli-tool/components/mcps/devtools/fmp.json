@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "fmp": {
+      "description": "FixMyPrompt saves what your coding agent works out as project memories and fetches them in later sessions, scores and rewrites prompts, and checks CLAUDE.md and AGENTS.md. Sign in with OAuth on first use. Free plan available.",
+      "type": "http",
+      "url": "https://fixmyprompt.net/api/mcp"
+    }
+  }
+}
