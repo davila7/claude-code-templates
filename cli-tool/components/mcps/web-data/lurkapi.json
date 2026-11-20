@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "lurkapi": {
+      "description": "Remote MCP server and API for public social media data: profiles, posts, comments, video transcripts and Meta, Google, TikTok and LinkedIn ad library results from 16 platforms (TikTok, Instagram, YouTube, Reddit, X, LinkedIn and more), one tool per endpoint. Read-only. Sign in with OAuth in the browser or send an x-api-key header; 100 free credits on signup, no card.",
+      "type": "http",
+      "url": "https://api.lurkapi.com/mcp"
+    }
+  }
+}
