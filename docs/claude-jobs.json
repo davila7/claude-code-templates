@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-11-20T03:09:01.596424+00:00",
-  "totalJobs": 974,
+  "lastUpdated": "2026-11-20T21:58:39.934978+00:00",
+  "totalJobs": 1006,
   "sources": [
     "Anthropic",
     "Ashby",
@@ -10,6 +10,1389 @@
     "RemoteOK"
   ],
   "jobs": [
+    {
+      "id": "as-ScribdInc-22c1d410-2522-4e48-8a49-e1623dcae46f",
+      "company": "Scribdinc",
+      "position": "Senior Software Engineer, Core Infrastructure",
+      "location": "San Francisco · Ottawa · Charlotte · Phoenix · Toronto · Los Angeles · Denver · Salt Lake City · Raleigh · Chicago · Hou",
+      "locations": [
+        "San Francisco",
+        "Ottawa",
+        "Charlotte",
+        "Phoenix",
+        "Toronto",
+        "Los Angeles",
+        "Denver",
+        "Salt Lake City",
+        "Raleigh",
+        "Chicago",
+        "Houston",
+        "Portland",
+        "New York City",
+        "Vancouver",
+        "San Diego",
+        "Sacramento",
+        "Jacksonville",
+        "Seattle",
+        "Austin",
+        "Miami",
+        "Boston",
+        "Dallas"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "Scribd, Inc. is on a mission to advance human understanding. Our four products — Scribd®, Slideshare®, Everand™, and Fable — help billions of people across the globe move beyond access and into insight, application, and expertise.\n\n\n\n\nCULTURE AT SCRIBD, INC.\n\nWe support a culture where our...",
+      "applyUrl": "https://jobs.ashbyhq.com/ScribdInc/22c1d410-2522-4e48-8a49-e1623dcae46f",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/ScribdInc/22c1d410-2522-4e48-8a49-e1623dcae46f",
+      "postedAt": "2026-11-20T21:21:16.000+00:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Rust",
+        "PostgreSQL",
+        "AWS",
+        "MySQL"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-kira-dcda6f09-1818-43e2-b2f5-e24d116339a8",
+      "company": "Kira",
+      "position": "Software Engineer (Frontend Focus)",
+      "location": "New York or San Francisco",
+      "locations": [
+        "New York or San Francisco"
+      ],
+      "remote": false,
+      "salary": "$165,000 - $195,000",
+      "description": "We live in a world where technology is rapidly changing the educational experiences of students and teachers everywhere, and we have the opportunity to shape how this change takes place. Kira's mission is to harness transformative AI technologies to make world-class personalized teaching and...",
+      "applyUrl": "https://jobs.ashbyhq.com/kira/dcda6f09-1818-43e2-b2f5-e24d116339a8",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/kira/dcda6f09-1818-43e2-b2f5-e24d116339a8",
+      "postedAt": "2026-11-20T21:07:48.299+00:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "TypeScript",
+        "Python",
+        "AWS",
+        "Cursor",
+        "Kotlin",
+        "Tailwind",
+        "MySQL"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-3y-health-751447ff-3f3a-4af0-83ea-91741adcd950",
+      "company": "3Y Health",
+      "position": "Senior Software Engineer",
+      "location": "Remote - Argentina",
+      "locations": [
+        "Remote - Argentina"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "ABOUT 3Y HEALTH\n\n3Y Health is building the operating system for healthcare practices, an AI-native platform that helps clinicians start, run and grow their practice. We work as a managed services organization (MSO): along with the software, our operations team runs the back office for the clinics...",
+      "applyUrl": "https://jobs.ashbyhq.com/3y-health/751447ff-3f3a-4af0-83ea-91741adcd950",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/3y-health/751447ff-3f3a-4af0-83ea-91741adcd950",
+      "postedAt": "2026-11-20T20:37:30.708+00:00",
+      "tags": [
+        "Claude Code",
+        "React Native",
+        "React",
+        "Next.js",
+        "TypeScript",
+        "Python",
+        "PostgreSQL",
+        "AWS",
+        "Cursor",
+        "Kotlin"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "le-exowatt-c73df83c-943e-4864-a0a9-aac823d9d72b",
+      "company": "Exowatt",
+      "position": "Senior Infrastructure Software Engineer (Austin, TX)",
+      "location": "Austin, TX",
+      "locations": [
+        "Austin, TX"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Exowatt is revolutionizing the energy landscape for the AI era with our groundbreaking P3 system that captures solar energy, stores it as heat, and generates electricity on demand. Founded in 2023 and backed by leading investors including Andreessen Horowitz, Sam Altman, and Felicis, we're...",
+      "applyUrl": "https://jobs.lever.co/exowatt/c73df83c-943e-4864-a0a9-aac823d9d72b",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/exowatt/c73df83c-943e-4864-a0a9-aac823d9d72b",
+      "postedAt": "2026-11-20T20:16:05.132000+00:00",
+      "tags": [
+        "Claude Code",
+        "Cursor",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "le-freedompay-5c8a403f-14be-4fcb-9b7a-12865ddeb440",
+      "company": "Freedompay",
+      "position": "Technical Product Manager, Payments Data Products",
+      "location": "Select USA Remote Locations",
+      "locations": [
+        "Select USA Remote Locations"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "The FreedomPay Commerce Platform is the technology of choice for many of the largest companies across the globe in retail, hospitality, lodging, gaming, sports and entertainment, foodservice, education, healthcare and financial services.  FreedomPay’s technology has been purposely built to deliver...",
+      "applyUrl": "https://jobs.lever.co/freedompay/5c8a403f-14be-4fcb-9b7a-12865ddeb440",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/freedompay/5c8a403f-14be-4fcb-9b7a-12865ddeb440",
+      "postedAt": "2026-11-20T19:55:09.161000+00:00",
+      "tags": [
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-deliveroo-8205846",
+      "company": "Deliveroo ",
+      "position": "Senior Software Engineer, GenAI Platform",
+      "location": "London, United Kingdom - Deliveroo",
+      "locations": [
+        "London, United Kingdom - Deliveroo"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Our Global Structure Deliveroo is now part of DoorDash, bringing together teams with even greater reach, scale, and ambition. Depending on your role, you may collaborate with teammates, systems, and leaders across DoorDash and Wolt. Together, we’re unlocking new possibilities as one global team....",
+      "applyUrl": "https://job-boards.greenhouse.io/deliveroo/jobs/8205846",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/deliveroo/jobs/8205846",
+      "postedAt": "2026-11-20T16:47:13-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "AWS",
+        "GCP",
+        "Kubernetes",
+        "Cursor",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-vercel-6210353004",
+      "company": "Vercel",
+      "position": "Product Manager, Software Factory",
+      "location": "Hybrid - San Francisco",
+      "locations": [
+        "Hybrid - San Francisco"
+      ],
+      "remote": false,
+      "salary": "$208,000 - $312,000",
+      "description": "About Vercel: Vercel is the agentic infrastructure company, freeing people and agents to ship what's next. For more than a decade we've helped builders move from idea to production with speed, security, and exceptional developer experience. Now we're scaling our products for both agents and people...",
+      "applyUrl": "https://job-boards.greenhouse.io/vercel/jobs/6210353004",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/vercel/jobs/6210353004",
+      "postedAt": "2026-11-20T16:27:28-05:00",
+      "tags": [
+        "Claude Code"
+      ],
+      "companyIcon": "https://vercel.com/favicon.ico"
+    },
+    {
+      "id": "as-netboxlabs-79610104-659b-4a7a-bb21-1817d4d34c5d",
+      "company": "Netboxlabs",
+      "position": "Staff Software Engineer, Tech Lead - NetBox Core",
+      "location": "US East Coast Remote",
+      "locations": [
+        "US East Coast Remote"
+      ],
+      "remote": true,
+      "salary": "$110K – $240K • Offers Equity • Offers Bonus • Multiple Ranges",
+      "description": "NetBox Labs is seeking a Staff Software Engineer and Tech Lead for NetBox Core, a team in our Applications group.\n\nNetBox is a product that reaches people in a few ways: our open source community runs NetBox OSS; commercial customers use NetBox Cloud (SaaS) or NetBox Enterprise (self-managed)....",
+      "applyUrl": "https://jobs.ashbyhq.com/netboxlabs/79610104-659b-4a7a-bb21-1817d4d34c5d",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/netboxlabs/79610104-659b-4a7a-bb21-1817d4d34c5d",
+      "postedAt": "2026-11-20T16:26:58.981+00:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "PostgreSQL",
+        "AWS",
+        "Kubernetes",
+        "Django",
+        "GraphQL",
+        "Redis"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-intercom-8172406",
+      "company": "Intercom",
+      "position": "Director of Solutions Marketing",
+      "location": "San Francisco, California",
+      "locations": [
+        "San Francisco, California"
+      ],
+      "remote": false,
+      "salary": "$285,000 - $305,000",
+      "description": "Fin , now part of Salesforce, is on a mission to help businesses provide perfect customer experiences. Our AI Agent Fin is the highest-performing AI Customer Agent on the market today, enabling businesses to deliver impeccable, always-on customer support across the customer journey, from service,...",
+      "applyUrl": "https://job-boards.greenhouse.io/intercom/jobs/8172406",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/intercom/jobs/8172406",
+      "postedAt": "2026-11-20T16:16:39-05:00",
+      "tags": [
+        "Claude Code"
+      ],
+      "companyIcon": "https://intercom.com/favicon.ico"
+    },
+    {
+      "id": "gr-intercom-7372016",
+      "company": "Intercom",
+      "position": "Senior Machine Learning Scientist",
+      "location": "Berlin, Germany",
+      "locations": [
+        "Berlin, Germany"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Fin , now part of Salesforce, is on a mission to help businesses provide perfect customer experiences. Our AI Agent Fin is the highest-performing AI Customer Agent on the market today, enabling businesses to deliver impeccable, always-on customer support across the customer journey, from service,...",
+      "applyUrl": "https://job-boards.greenhouse.io/intercom/jobs/7372016",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/intercom/jobs/7372016",
+      "postedAt": "2026-11-20T16:16:39-05:00",
+      "tags": [
+        "Claude Code"
+      ],
+      "companyIcon": "https://intercom.com/favicon.ico"
+    },
+    {
+      "id": "gr-intercom-8242627",
+      "company": "Intercom",
+      "position": "Senior Web Designer, Growth",
+      "location": "London, England",
+      "locations": [
+        "London, England"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Fin , now part of Salesforce, is on a mission to help businesses provide perfect customer experiences. Our AI Agent Fin is the highest-performing AI Customer Agent on the market today, enabling businesses to deliver impeccable, always-on customer support across the customer journey, from service,...",
+      "applyUrl": "https://job-boards.greenhouse.io/intercom/jobs/8242627",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/intercom/jobs/8242627",
+      "postedAt": "2026-11-20T16:16:39-05:00",
+      "tags": [
+        "Claude Code",
+        "Cursor"
+      ],
+      "companyIcon": "https://intercom.com/favicon.ico"
+    },
+    {
+      "id": "gr-affirm-8039471003",
+      "company": "Affirm",
+      "position": "Analyst, Early Career (Full Stack)",
+      "location": "New York, New York, United States · San Francisco, California, United States",
+      "locations": [
+        "New York, New York, United States",
+        "San Francisco, California, United States"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "At Affirm, we exist for the moments that matter—giving people a clear, predictable way to pay over time, with no hidden fees, no surprises, and no tradeoffs on what matters most. In our hybrid early career program, you’ll be paired with a tenured Affirmer and have an opportunity to collaborate...",
+      "applyUrl": "https://job-boards.greenhouse.io/affirm/jobs/8039471003",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/affirm/jobs/8039471003",
+      "postedAt": "2026-11-20T16:03:42-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Go",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-mongodb-7991447",
+      "company": "MongoDB",
+      "position": "Senior Salesforce Engineer",
+      "location": "Austin · Boston · Charlotte · Dallas · Miami · New York City · San Francisco · Washington DC",
+      "locations": [
+        "Austin",
+        "Boston",
+        "Charlotte",
+        "Dallas",
+        "Miami",
+        "New York City",
+        "San Francisco",
+        "Washington DC"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "The IT SaaS Engineering Team plays a critical role in optimizing MongoDB sales processes, streamlining customer interactions, and maximizing the efficiency of our sales efforts. By leveraging Salesforce, the team ensures that business users have the tools, automation, security, and governance...",
+      "applyUrl": "https://www.mongodb.com/careers/job/?gh_jid=7991447",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.mongodb.com/careers/job/?gh_jid=7991447",
+      "postedAt": "2026-11-20T15:46:30-05:00",
+      "tags": [
+        "Claude Code",
+        "JavaScript",
+        "AWS",
+        "Azure",
+        "Cursor",
+        "Copilot",
+        "MongoDB"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-mongodb-8404811",
+      "company": "MongoDB",
+      "position": "Senior Solutions Architect - Application Modernisation",
+      "location": "Brazil · Mexico · Mexico City",
+      "locations": [
+        "Brazil",
+        "Mexico",
+        "Mexico City"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "AMP Solutions Architect MongoDB’s mission is to empower innovators to create, transform, and disrupt industries by unleashing the power of software and data. We enable organizations of all sizes to easily build, scale, and run modern applications by helping them modernize legacy workloads, embrace...",
+      "applyUrl": "https://www.mongodb.com/careers/job/?gh_jid=8404811",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.mongodb.com/careers/job/?gh_jid=8404811",
+      "postedAt": "2026-11-20T15:30:38-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Node.js",
+        "AWS",
+        "Azure",
+        "Docker",
+        "Cursor",
+        "Copilot",
+        "Java",
+        "MongoDB"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-chainguard-4726048006",
+      "company": "Chainguard",
+      "position": "Senior Growth Operations Manager",
+      "location": "United States - Remote",
+      "locations": [
+        "United States - Remote"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "Chainguard is the trusted source for open source. By delivering hardened, secure, and production-ready builds of all the open source software engineers and AI agents rely on, Chainguard helps organizations build faster, stay compliant, and eliminate risk. Our customers include Fortune 500...",
+      "applyUrl": "https://job-boards.greenhouse.io/chainguard/jobs/4726048006",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/chainguard/jobs/4726048006",
+      "postedAt": "2026-11-20T14:50:55-05:00",
+      "tags": [
+        "Claude Code",
+        "JavaScript",
+        "Python",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-chainguard-4726046006",
+      "company": "Chainguard",
+      "position": "Sr. Growth Marketing Manager, AI Discovery",
+      "location": "United States - Remote",
+      "locations": [
+        "United States - Remote"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "Chainguard is the trusted source for open source. By delivering hardened, secure, and production-ready builds of all the open source software engineers and AI agents rely on, Chainguard helps organizations build faster, stay compliant, and eliminate risk. Our customers include Fortune 500...",
+      "applyUrl": "https://job-boards.greenhouse.io/chainguard/jobs/4726046006",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/chainguard/jobs/4726046006",
+      "postedAt": "2026-11-20T14:50:55-05:00",
+      "tags": [
+        "Claude Code",
+        "Kubernetes",
+        "Cursor",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-axon-8030785003",
+      "company": "Axon",
+      "position": "Sr. Technical Animator, VR",
+      "location": "Seattle, Washington, United States",
+      "locations": [
+        "Seattle, Washington, United States"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Join Axon and be a Force for Good. At Axon, we’re on a mission to Protect Life. We’re explorers, pursuing society’s most critical safety and justice issues with our ecosystem of devices and cloud software. Like our products, we work better together. We connect with candor and care, seeking out...",
+      "applyUrl": "https://job-boards.greenhouse.io/axon/jobs/8030785003",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/axon/jobs/8030785003",
+      "postedAt": "2026-11-20T14:17:50-05:00",
+      "tags": [
+        "Claude Code",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-axon-7748930003",
+      "company": "Axon",
+      "position": "Senior Firmware Engineer I",
+      "location": "Seattle, Washington, United States",
+      "locations": [
+        "Seattle, Washington, United States"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Join Axon and be a Force for Good. At Axon, we’re on a mission to Protect Life. We’re explorers, pursuing society’s most critical safety and justice issues with our ecosystem of devices and cloud software. Like our products, we work better together. We connect with candor and care, seeking out...",
+      "applyUrl": "https://job-boards.greenhouse.io/axon/jobs/7748930003",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/axon/jobs/7748930003",
+      "postedAt": "2026-11-20T14:12:41-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Rust",
+        "Go",
+        "Cursor",
+        "Copilot"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-axon-8183778003",
+      "company": "Axon",
+      "position": "Sr. Technical Character Artist I ",
+      "location": "Seattle, Washington, United States",
+      "locations": [
+        "Seattle, Washington, United States"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Join Axon and be a Force for Good. At Axon, we’re on a mission to Protect Life. We’re explorers, pursuing society’s most critical safety and justice issues with our ecosystem of devices and cloud software. Like our products, we work better together. We connect with candor and care, seeking out...",
+      "applyUrl": "https://job-boards.greenhouse.io/axon/jobs/8183778003",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/axon/jobs/8183778003",
+      "postedAt": "2026-11-20T14:12:41-05:00",
+      "tags": [
+        "Claude Code",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-gitlab-8957066002",
+      "company": "GitLab",
+      "position": "Senior CX Platform Engineer",
+      "location": "Remote, Canada",
+      "locations": [
+        "Remote, Canada"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "GitLab is the intelligent orchestration platform for DevSecOps. GitLab enables organizations to increase developer productivity, improve operational efficiency, reduce security and compliance risk, and accelerate digital transformation. More than 50 million registered users and more than 50% of the...",
+      "applyUrl": "https://job-boards.greenhouse.io/gitlab/jobs/8957066002",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/gitlab/jobs/8957066002",
+      "postedAt": "2026-11-20T13:57:40-05:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "TypeScript",
+        "Python",
+        "AWS",
+        "Docker",
+        "Cursor",
+        "Flask",
+        "Vue.js",
+        "GraphQL"
+      ],
+      "companyIcon": "https://gitlab.com/favicon.ico"
+    },
+    {
+      "id": "gr-orbisoperations-4505540009",
+      "company": "Orbis ",
+      "position": "Full Stack Engineer ",
+      "location": "Remote-US",
+      "locations": [
+        "Remote-US"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "Company Overview Orbis is a technology company that delivers sovereign intelligence and decision capabilities to the United States Government and its allies. We convert complex information and operational systems into decisive outcomes, giving public institutions and critical enterprises the tools...",
+      "applyUrl": "https://job-boards.greenhouse.io/orbisoperations/jobs/4505540009",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/orbisoperations/jobs/4505540009",
+      "postedAt": "2026-11-20T13:25:02-05:00",
+      "tags": [
+        "Claude Code",
+        "React Native",
+        "React",
+        "Next.js",
+        "TypeScript",
+        "AWS"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-gusto-8400148",
+      "company": "Gusto",
+      "position": "Gusto Insights Intern",
+      "location": "San Francisco, CA - Hybrid",
+      "locations": [
+        "San Francisco, CA - Hybrid"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "About Gusto At Gusto, we're on a mission to grow the small business economy. We handle the hard stuff — payroll, health insurance, 401(k)s, and HR — so owners can focus on their craft and their customers. With teams in Denver, San Francisco, and New York, we support more than 500,000 small...",
+      "applyUrl": "https://job-boards.greenhouse.io/gusto/jobs/8400148",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/gusto/jobs/8400148",
+      "postedAt": "2026-11-20T13:23:20-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Cursor"
+      ],
+      "companyIcon": "https://gusto.com/favicon.ico"
+    },
+    {
+      "id": "gr-tribalscale-4731215006",
+      "company": "TribalScale",
+      "position": "AI Engineer - Agent Infrastructure & AI Workflow",
+      "location": "Remote USA",
+      "locations": [
+        "Remote USA"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "Shape the Future with TribalScale TribalScale is a digital innovation firm that helps organizations adapt and thrive in a rapidly changing world. We partner with clients to build transformative digital products, modernize technology platforms, and apply emerging technologies—including artificial...",
+      "applyUrl": "https://job-boards.greenhouse.io/tribalscale/jobs/4731215006",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/tribalscale/jobs/4731215006",
+      "postedAt": "2026-11-20T12:11:27-05:00",
+      "tags": [
+        "Claude Code",
+        "React Native",
+        "React",
+        "Node.js",
+        "AWS",
+        "Kubernetes",
+        "Cursor",
+        "Copilot",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-coast-6267274004",
+      "company": "Coast",
+      "position": "Engineer, Platform",
+      "location": "New York, NY",
+      "locations": [
+        "New York, NY"
+      ],
+      "remote": false,
+      "salary": "$160,000 – $215,000",
+      "description": "What is Coast Coast is re-imagining the trillion-dollar U.S. B2B card payments infrastructure, with a focus on the country’s 500,000 commercial fleets, 40 million commercial vehicles, and many millions of commercial drivers. The incumbent technologies that cater to these customers are decades old,...",
+      "applyUrl": "https://job-boards.greenhouse.io/coast/jobs/6267274004",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/coast/jobs/6267274004",
+      "postedAt": "2026-11-20T11:32:31-05:00",
+      "tags": [
+        "Claude Code",
+        "TypeScript",
+        "Python",
+        "AWS",
+        "Kubernetes",
+        "Cursor",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-fivetran-8017186003",
+      "company": "Fivetran",
+      "position": "Senior Software Engineer, Orchestration",
+      "location": "USA - Austin (dbt)",
+      "locations": [
+        "USA - Austin (dbt)"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "From Fivetran’s founding until now, our mission has remained the same: to make access to data as simple and reliable as electricity. With Fivetran, customer data arrives in their warehouses, canonical and ready to query, with no engineering or maintenance required. We’re proud that more...",
+      "applyUrl": "https://www.fivetran.com/careers/job?gh_jid=8017186003",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.fivetran.com/careers/job?gh_jid=8017186003",
+      "postedAt": "2026-11-20T11:31:54-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Rust",
+        "PostgreSQL",
+        "AWS",
+        "GCP",
+        "Azure",
+        "Docker",
+        "Kubernetes",
+        "Copilot"
+      ],
+      "companyIcon": "https://fivetran.com/favicon.ico"
+    },
+    {
+      "id": "gr-mongodb-8406130",
+      "company": "MongoDB",
+      "position": "Senior Solutions Architect - Application Modernization",
+      "location": "California · Los Angeles · San Diego · San Francisco",
+      "locations": [
+        "California",
+        "Los Angeles",
+        "San Diego",
+        "San Francisco"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "MongoDB's Application Modernization Platform (AMP) team aims to grow the adoption of MongoDB by accelerating the rate at which legacy applications built on RDBMS can be modernized to MongoDB. The AMP team uses modernization methodologies defined as agentic playbooks and skills for AI Coding...",
+      "applyUrl": "https://www.mongodb.com/careers/job/?gh_jid=8406130",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.mongodb.com/careers/job/?gh_jid=8406130",
+      "postedAt": "2026-11-20T11:07:36-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Node.js",
+        "AWS",
+        "Azure",
+        "Docker",
+        "Cursor",
+        "Copilot",
+        "Java",
+        "MongoDB"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-chime-8609159002",
+      "company": "Chime Financial, Inc",
+      "position": "Tech Lead Manager, Cards",
+      "location": "San Francisco, CA, USA",
+      "locations": [
+        "San Francisco, CA, USA"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "About the role Chime is looking for an engineering leader to help manage and guide one of the Cards engineering teams within the Spending, Saving & Investing (SSI) organization. SSI is on a mission to make Chime the top choice for everyday spending by building innovative, reliable, and member-first...",
+      "applyUrl": "https://boards.greenhouse.io/chime/jobs/8609159002?gh_jid=8609159002",
+      "source": "Greenhouse",
+      "sourceUrl": "https://boards.greenhouse.io/chime/jobs/8609159002?gh_jid=8609159002",
+      "postedAt": "2026-11-20T11:00:49-05:00",
+      "tags": [
+        "Claude Code",
+        "React Native",
+        "AWS",
+        "Cursor",
+        "Ruby"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "le-vacancies-64c9b5bf-a98e-4a1b-ac78-d9ce3f017da0",
+      "company": "Vacancies",
+      "position": "Lead Frontend Engineer (Vue.js)",
+      "location": "Kyiv",
+      "locations": [
+        "Kyiv"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": " In this role, you will Lead the front-end team and its technical direction: own front-end architecture decisions, set code review and testing standards, run regular 1:1s and support team growth Develop and maintain high-quality, scalable front-end solutions using Vue 3 and Vite Contribute to...",
+      "applyUrl": "https://jobs.lever.co/vacancies/64c9b5bf-a98e-4a1b-ac78-d9ce3f017da0",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/vacancies/64c9b5bf-a98e-4a1b-ac78-d9ce3f017da0",
+      "postedAt": "2026-11-20T10:33:25.290000+00:00",
+      "tags": [
+        "Claude Code",
+        "TypeScript",
+        "JavaScript",
+        "Node.js",
+        "Docker",
+        "Vue.js"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-cardata-4516748009",
+      "company": "Cardata",
+      "position": "Lead, Quality Assurance",
+      "location": "Canada - Remote",
+      "locations": [
+        "Canada - Remote"
+      ],
+      "remote": true,
+      "salary": "$145,000 – $160,000",
+      "description": "Ready to accelerate your career? Cardata is where driven people make an outsized impact. We’re a small but mighty team transforming how businesses manage vehicle reimbursement — replacing outdated programs with smart, automated solutions. Our vision is bold: to provide the most comprehensive,...",
+      "applyUrl": "https://job-boards.greenhouse.io/cardata/jobs/4516748009",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/cardata/jobs/4516748009",
+      "postedAt": "2026-11-20T10:07:31-05:00",
+      "tags": [
+        "Claude Code",
+        "TypeScript",
+        "JavaScript",
+        "Go",
+        "PostgreSQL",
+        "Cursor",
+        "Copilot"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-stripe-8287910",
+      "company": "Stripe",
+      "position": "AI Transformation Lead, Marketing",
+      "location": "San Francisco, New York, Seattle, Chicago, Atlanta, Remote in the US",
+      "locations": [
+        "San Francisco, New York, Seattle, Chicago, Atlanta, Remote in the US"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "Who we are About Stripe Stripe is a financial infrastructure platform for businesses. Millions of companies — from the world's largest enterprises to the most ambitious startups — use Stripe to accept payments, grow their revenue, and accelerate new business opportunities. Our mission is to...",
+      "applyUrl": "https://stripe.com/jobs/search?gh_jid=8287910",
+      "source": "Greenhouse",
+      "sourceUrl": "https://stripe.com/jobs/search?gh_jid=8287910",
+      "postedAt": "2026-11-20T10:05:26-05:00",
+      "tags": [
+        "Claude Code"
+      ],
+      "companyIcon": "https://stripe.com/favicon.ico"
+    },
+    {
+      "id": "gr-stripe-8406140",
+      "company": "Stripe",
+      "position": "Forward Deployed AI Accelerator, Marketing",
+      "location": "Seattle, San Francisco, New York, Chicago, Atlanta, Remote in the US, Canada",
+      "locations": [
+        "Seattle, San Francisco, New York, Chicago, Atlanta, Remote in the US, Canada"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "Who we are About Stripe Stripe is a financial infrastructure platform for businesses. Millions of companies — from the world's largest enterprises to the most ambitious startups — use Stripe to accept payments, grow their revenue, and accelerate new business opportunities. Our mission is to...",
+      "applyUrl": "https://stripe.com/jobs/search?gh_jid=8406140",
+      "source": "Greenhouse",
+      "sourceUrl": "https://stripe.com/jobs/search?gh_jid=8406140",
+      "postedAt": "2026-11-20T10:05:21-05:00",
+      "tags": [
+        "Claude Code"
+      ],
+      "companyIcon": "https://stripe.com/favicon.ico"
+    },
+    {
+      "id": "gr-gusto-7656216",
+      "company": "Gusto",
+      "position": "Staff Data Scientist, Risk ",
+      "location": "San Francisco, CA - Hybrid",
+      "locations": [
+        "San Francisco, CA - Hybrid"
+      ],
+      "remote": false,
+      "salary": "$186,000/yr",
+      "description": "About Gusto At Gusto, we're on a mission to grow the small business economy. We handle the hard stuff — payroll, health insurance, 401(k)s, and HR — so owners can focus on their craft and their customers. With teams in Denver, San Francisco, and New York, we support more than 500,000 small...",
+      "applyUrl": "https://job-boards.greenhouse.io/gusto/jobs/7656216",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/gusto/jobs/7656216",
+      "postedAt": "2026-11-20T09:27:02-05:00",
+      "tags": [
+        "Claude Code",
+        "Python"
+      ],
+      "companyIcon": "https://gusto.com/favicon.ico"
+    },
+    {
+      "id": "gr-wizinc-4720879006",
+      "company": "Wiz, Inc.",
+      "position": "CTO Data Analyst",
+      "location": "Tel Aviv",
+      "locations": [
+        "Tel Aviv"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Come join the organization that is redefining security for the AI era. As one of the fastest-growing startups ever, we enable teams to secure cloud and AI applications by connecting code, cloud, and runtime into a single shared context. Trusted by security teams all over the world, we have a proven...",
+      "applyUrl": "https://www.wiz.io/careers/job/4720879006/:title?gh_jid=4720879006",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.wiz.io/careers/job/4720879006/:title?gh_jid=4720879006",
+      "postedAt": "2026-11-20T08:45:21-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-wizinc-4650468006",
+      "company": "Wiz, Inc.",
+      "position": "CTO Operations Engineer",
+      "location": "Tel Aviv",
+      "locations": [
+        "Tel Aviv"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Come join the organization that is redefining security for the AI era. As one of the fastest-growing startups ever, we enable teams to secure cloud and AI applications by connecting code, cloud, and runtime into a single shared context. Trusted by security teams all over the world, we have a proven...",
+      "applyUrl": "https://www.wiz.io/careers/job/4650468006/:title?gh_jid=4650468006",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.wiz.io/careers/job/4650468006/:title?gh_jid=4650468006",
+      "postedAt": "2026-11-20T08:45:21-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "AWS",
+        "GCP",
+        "Docker",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-wizinc-4719843006",
+      "company": "Wiz, Inc.",
+      "position": "Manager of Applied AI, Solutions Support Engineering",
+      "location": "Remote - USA",
+      "locations": [
+        "Remote - USA"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "Come join the organization that is redefining security for the AI era. As one of the fastest-growing startups ever, we enable teams to secure cloud and AI applications by connecting code, cloud, and runtime into a single shared context. Trusted by security teams all over the world, we have a proven...",
+      "applyUrl": "https://www.wiz.io/careers/job/4719843006/:title?gh_jid=4719843006",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.wiz.io/careers/job/4719843006/:title?gh_jid=4719843006",
+      "postedAt": "2026-11-20T08:45:21-05:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "TypeScript",
+        "JavaScript",
+        "Python",
+        "Node.js",
+        "PostgreSQL",
+        "AWS",
+        "GCP",
+        "Azure"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-wizinc-4709330006",
+      "company": "Wiz, Inc.",
+      "position": "Manager, Solutions Support Engineering - São Paulo",
+      "location": "Remote - Brazil",
+      "locations": [
+        "Remote - Brazil"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "Come join the organization that is redefining security for the AI era. As one of the fastest-growing startups ever, we enable teams to secure cloud and AI applications by connecting code, cloud, and runtime into a single shared context. Trusted by security teams all over the world, we have a proven...",
+      "applyUrl": "https://www.wiz.io/careers/job/4709330006/:title?gh_jid=4709330006",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.wiz.io/careers/job/4709330006/:title?gh_jid=4709330006",
+      "postedAt": "2026-11-20T08:45:21-05:00",
+      "tags": [
+        "Claude Code",
+        "AWS",
+        "GCP",
+        "Azure",
+        "Kubernetes"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-wizinc-4004237006",
+      "company": "Wiz, Inc.",
+      "position": "Product Manager, AI ",
+      "location": "Tel Aviv",
+      "locations": [
+        "Tel Aviv"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Come join the organization that is redefining security for the AI era. As one of the fastest-growing startups ever, we enable teams to secure cloud and AI applications by connecting code, cloud, and runtime into a single shared context. Trusted by security teams all over the world, we have a proven...",
+      "applyUrl": "https://www.wiz.io/careers/job/4004237006/:title?gh_jid=4004237006",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.wiz.io/careers/job/4004237006/:title?gh_jid=4004237006",
+      "postedAt": "2026-11-20T08:45:21-05:00",
+      "tags": [
+        "Claude Code",
+        "AWS",
+        "GCP",
+        "Azure",
+        "Kubernetes"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-wizinc-4707600006",
+      "company": "Wiz, Inc.",
+      "position": "Threat Researcher",
+      "location": "Tel Aviv",
+      "locations": [
+        "Tel Aviv"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Come join the organization that is redefining security for the AI era. As one of the fastest-growing startups ever, we enable teams to secure cloud and AI applications by connecting code, cloud, and runtime into a single shared context. Trusted by security teams all over the world, we have a proven...",
+      "applyUrl": "https://www.wiz.io/careers/job/4707600006/:title?gh_jid=4707600006",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.wiz.io/careers/job/4707600006/:title?gh_jid=4707600006",
+      "postedAt": "2026-11-20T08:45:21-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "AWS",
+        "GCP",
+        "Azure",
+        "Kubernetes"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-fivetran-8179022003",
+      "company": "Fivetran",
+      "position": "Staff Software Engineer",
+      "location": "Novi Sad, South Bačka, Serbia, EMEA",
+      "locations": [
+        "Novi Sad, South Bačka, Serbia, EMEA"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "From Fivetran’s founding until now, our mission has remained the same: to make access to data as simple and reliable as electricity. With Fivetran, customer data arrives in their warehouses, canonical and ready to query, with no engineering or maintenance required. We’re proud that more...",
+      "applyUrl": "https://www.fivetran.com/careers/job?gh_jid=8179022003",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.fivetran.com/careers/job?gh_jid=8179022003",
+      "postedAt": "2026-11-20T07:22:00-05:00",
+      "tags": [
+        "Claude Code",
+        "TypeScript",
+        "Python",
+        "Rust",
+        "Go",
+        "PostgreSQL",
+        "AWS",
+        "GCP",
+        "Azure",
+        "Docker"
+      ],
+      "companyIcon": "https://fivetran.com/favicon.ico"
+    },
+    {
+      "id": "gr-fivetran-8195548003",
+      "company": "Fivetran",
+      "position": "Lead Full Stack Engineer",
+      "location": "Novi Sad, South Bačka, Serbia, EMEA",
+      "locations": [
+        "Novi Sad, South Bačka, Serbia, EMEA"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "From Fivetran’s founding until now, our mission has remained the same: to make access to data as simple and reliable as electricity. With Fivetran, customer data arrives in their warehouses, canonical and ready to query, with no engineering or maintenance required. We’re proud that more...",
+      "applyUrl": "https://www.fivetran.com/careers/job?gh_jid=8195548003",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.fivetran.com/careers/job?gh_jid=8195548003",
+      "postedAt": "2026-11-20T07:21:38-05:00",
+      "tags": [
+        "Claude Code",
+        "TypeScript",
+        "Python",
+        "Rust",
+        "Go",
+        "PostgreSQL",
+        "AWS",
+        "GCP",
+        "Azure",
+        "Docker"
+      ],
+      "companyIcon": "https://fivetran.com/favicon.ico"
+    },
+    {
+      "id": "gr-fivetran-8196257003",
+      "company": "Fivetran",
+      "position": "Senior Software Engineer",
+      "location": "Novi Sad, South Bačka, Serbia, EMEA",
+      "locations": [
+        "Novi Sad, South Bačka, Serbia, EMEA"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "From Fivetran’s founding until now, our mission has remained the same: to make access to data as simple and reliable as electricity. With Fivetran, customer data arrives in their warehouses, canonical and ready to query, with no engineering or maintenance required. We’re proud that more...",
+      "applyUrl": "https://www.fivetran.com/careers/job?gh_jid=8196257003",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.fivetran.com/careers/job?gh_jid=8196257003",
+      "postedAt": "2026-11-20T07:18:17-05:00",
+      "tags": [
+        "Claude Code",
+        "TypeScript",
+        "Python",
+        "Rust",
+        "Go",
+        "PostgreSQL",
+        "AWS",
+        "GCP",
+        "Azure",
+        "Docker"
+      ],
+      "companyIcon": "https://fivetran.com/favicon.ico"
+    },
+    {
+      "id": "gr-fivetran-8196546003",
+      "company": "Fivetran",
+      "position": "Senior Full Stack Engineer",
+      "location": "Novi Sad, South Bačka, Serbia, EMEA",
+      "locations": [
+        "Novi Sad, South Bačka, Serbia, EMEA"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "From Fivetran’s founding until now, our mission has remained the same: to make access to data as simple and reliable as electricity. With Fivetran, customer data arrives in their warehouses, canonical and ready to query, with no engineering or maintenance required. We’re proud that more...",
+      "applyUrl": "https://www.fivetran.com/careers/job?gh_jid=8196546003",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.fivetran.com/careers/job?gh_jid=8196546003",
+      "postedAt": "2026-11-20T07:18:00-05:00",
+      "tags": [
+        "Claude Code",
+        "TypeScript",
+        "Python",
+        "Rust",
+        "Go",
+        "PostgreSQL",
+        "AWS",
+        "GCP",
+        "Azure",
+        "Docker"
+      ],
+      "companyIcon": "https://fivetran.com/favicon.ico"
+    },
+    {
+      "id": "gr-riskified-8939215002",
+      "company": "Riskified",
+      "position": "Senior Data Platform Engineer (Infra)",
+      "location": "Lisbon",
+      "locations": [
+        "Lisbon"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "About Us Riskified empowers businesses to unleash ecommerce growth by taking risk off the table. Many of the world’s biggest brands and publicly traded companies selling online rely on Riskified for guaranteed protection against chargebacks, to fight fraud and policy abuse at scale, and to improve...",
+      "applyUrl": "https://www.riskified.com/careers/job-description/?gh_jid=8939215002",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.riskified.com/careers/job-description/?gh_jid=8939215002",
+      "postedAt": "2026-11-20T07:08:44-05:00",
+      "tags": [
+        "Claude Code",
+        "TypeScript",
+        "Python",
+        "Go",
+        "Node.js",
+        "PostgreSQL",
+        "AWS",
+        "Kubernetes",
+        "Java",
+        "Redis"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-cognite-4873144101",
+      "company": "Cognite - AI for Industry",
+      "position": "Principal Pre-sales Solutions Consultant (Pharma/Life Science)",
+      "location": "Europe",
+      "locations": [
+        "Europe"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "What Cognite is Relentless to Achieve Cognite operates at the forefront of industrial digitalization, building AI and data solutions that solve the world’s hardest, highest-impact problems. Our Moonshot is bold: unlock $100B in customer value by 2035, and redefine how global industry works. What...",
+      "applyUrl": "https://job-boards.eu.greenhouse.io/cognite/jobs/4873144101",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.eu.greenhouse.io/cognite/jobs/4873144101",
+      "postedAt": "2026-11-20T07:01:10-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "AWS",
+        "GCP",
+        "Azure",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-boosta-5030381101",
+      "company": "Boosta",
+      "position": "Motion Designer",
+      "location": "Remote, Europe · Remote, Ukraine",
+      "locations": [
+        "Remote, Europe",
+        "Remote, Ukraine"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "Hi! We are Boosta, a holding tech company that creates, develops, and invests in digital businesses with global potential. Today, we collaborate with over 800 specialists from different parts of the world, and millions of users use our products and services. We’re currently looking for a Motion...",
+      "applyUrl": "https://job-boards.eu.greenhouse.io/boosta/jobs/5030381101",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.eu.greenhouse.io/boosta/jobs/5030381101",
+      "postedAt": "2026-11-20T06:42:58-05:00",
+      "tags": [
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-eucalyptus-4709044005",
+      "company": "Careers at Eucalyptus",
+      "position": "CRM & Lifecycle Lead, International",
+      "location": "UK - HQ - London",
+      "locations": [
+        "UK - HQ - London"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "We're the world's leading consumer healthcare platform, supporting millions of patients across the US, Australia, the UK, Germany, Japan, Spain and Canada. We're driven by the belief that good health should last a lifetime, and that to get there we need to deliver the personalised, high quality and...",
+      "applyUrl": "https://job-boards.greenhouse.io/eucalyptus/jobs/4709044005",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/eucalyptus/jobs/4709044005",
+      "postedAt": "2026-11-20T05:24:02-05:00",
+      "tags": [
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-artefactjobs-8731956002",
+      "company": "Welcome to the Jungle",
+      "position": "AI & Agentic Engineer, Senior",
+      "location": "Montréal, Quebec, Canada",
+      "locations": [
+        "Montréal, Quebec, Canada"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Artefact is a next-generation data and AI consulting firm dedicated to accelerating the adoption of data and AI to create measurable business impact across the full enterprise value chain. We sit at the intersection of consulting, data science, AI technologies, data engineering, and digital...",
+      "applyUrl": "https://job-boards.greenhouse.io/artefactjobs/jobs/8731956002",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/artefactjobs/jobs/8731956002",
+      "postedAt": "2026-11-20T04:37:29-05:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "TypeScript",
+        "JavaScript",
+        "Python",
+        "AWS",
+        "GCP",
+        "Azure",
+        "Cursor",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-artefactjobs-8726293002",
+      "company": "Welcome to the Jungle",
+      "position": "Director, AI & Data Consulting",
+      "location": "135 W 26th Street, New York, NY 10001",
+      "locations": [
+        "135 W 26th Street, New York, NY 10001"
+      ],
+      "remote": false,
+      "salary": "$200,000 - $230,000",
+      "description": "Artefact is a next-generation data and AI consulting firm dedicated to accelerating the adoption of data and AI to create measurable business impact across the full enterprise value chain. We sit at the intersection of consulting, data science, AI technologies, data engineering, and digital...",
+      "applyUrl": "https://job-boards.greenhouse.io/artefactjobs/jobs/8726293002",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/artefactjobs/jobs/8726293002",
+      "postedAt": "2026-11-20T04:37:29-05:00",
+      "tags": [
+        "Claude Code",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-artefactjobs-8891733002",
+      "company": "Welcome to the Jungle",
+      "position": "Director, Sales Lead — Google (Gemini Enterprise)",
+      "location": "135 W 26th Street, New York, NY 10001",
+      "locations": [
+        "135 W 26th Street, New York, NY 10001"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "About the job Artefact is a next-generation data and AI consulting firm dedicated to accelerating the adoption of data and AI to create measurable business impact across the full enterprise value chain. We sit at the intersection of consulting, data science, AI technologies, data engineering, and...",
+      "applyUrl": "https://job-boards.greenhouse.io/artefactjobs/jobs/8891733002",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/artefactjobs/jobs/8891733002",
+      "postedAt": "2026-11-20T04:37:29-05:00",
+      "tags": [
+        "Claude Code",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-artefactjobs-8726286002",
+      "company": "Welcome to the Jungle",
+      "position": "Manager, AI & Data Consulting",
+      "location": "135 W 26th Street, New York, NY 10001 · Montréal, Quebec, Canada",
+      "locations": [
+        "135 W 26th Street, New York, NY 10001",
+        "Montréal, Quebec, Canada"
+      ],
+      "remote": false,
+      "salary": "$140,000 - $160,000",
+      "description": "Artefact is a next-generation data and AI consulting firm dedicated to accelerating the adoption of data and AI to create measurable business impact across the full enterprise value chain. We sit at the intersection of consulting, data science, AI technologies, data engineering, and digital...",
+      "applyUrl": "https://job-boards.greenhouse.io/artefactjobs/jobs/8726286002",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/artefactjobs/jobs/8726286002",
+      "postedAt": "2026-11-20T04:37:29-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-artefactjobs-8726351002",
+      "company": "Welcome to the Jungle",
+      "position": "Senior, AI & Data Consulting",
+      "location": "135 W 26th Street, New York, NY 10001",
+      "locations": [
+        "135 W 26th Street, New York, NY 10001"
+      ],
+      "remote": false,
+      "salary": "$125,000 - $135,000",
+      "description": "Artefact is a next-generation data and AI consulting firm dedicated to accelerating the adoption of data and AI to create measurable business impact across the full enterprise value chain. We sit at the intersection of consulting, data science, AI technologies, data engineering, and digital...",
+      "applyUrl": "https://job-boards.greenhouse.io/artefactjobs/jobs/8726351002",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/artefactjobs/jobs/8726351002",
+      "postedAt": "2026-11-20T04:37:29-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "AWS",
+        "GCP",
+        "Azure"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-artefactjobs-8733201002",
+      "company": "Welcome to the Jungle",
+      "position": "Senior, AI & Data Science",
+      "location": "Montréal, Quebec, Canada",
+      "locations": [
+        "Montréal, Quebec, Canada"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "About the job Artefact is a next-generation data and AI consulting firm dedicated to accelerating the adoption of data and AI to create measurable business impact across the full enterprise value chain.We sit at the intersection of consulting, data science, AI technologies, data engineering, and...",
+      "applyUrl": "https://job-boards.greenhouse.io/artefactjobs/jobs/8733201002",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/artefactjobs/jobs/8733201002",
+      "postedAt": "2026-11-20T04:37:29-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "AWS",
+        "GCP",
+        "Azure",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-artefactjobs-8931095002",
+      "company": "Welcome to the Jungle",
+      "position": "Senior Forward Deployed Engineer (Gemini Enterprise)",
+      "location": "Montréal, Quebec, Canada",
+      "locations": [
+        "Montréal, Quebec, Canada"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "About Artefact Artefact is a next-generation data and AI consulting firm dedicated to accelerating the adoption of data and AI to create measurable business impact across the full enterprise value chain. We sit at the intersection of consulting, data science, AI technologies, data engineering, and...",
+      "applyUrl": "https://job-boards.greenhouse.io/artefactjobs/jobs/8931095002",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/artefactjobs/jobs/8931095002",
+      "postedAt": "2026-11-20T04:37:29-05:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "TypeScript",
+        "JavaScript",
+        "Python",
+        "AWS",
+        "GCP",
+        "Azure",
+        "Cursor",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-alphasense-8702065002",
+      "company": "AlphaSense",
+      "position": "Staff Technical Program Manager",
+      "location": "Remote - United Kingdom",
+      "locations": [
+        "Remote - United Kingdom"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "About AlphaSense: AlphaSense is the AI platform redefining market intelligence and workflow orchestration, trusted by thousands of leading organizations to drive faster, more confident decisions in business and finance. The platform combines domain-specific AI with a vast content universe of over...",
+      "applyUrl": "https://job-boards.greenhouse.io/alphasense/jobs/8702065002",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/alphasense/jobs/8702065002",
+      "postedAt": "2026-11-20T04:01:10-05:00",
+      "tags": [
+        "Claude Code",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-Superhuman%20Platform%20Inc-08d1b5f5-69e9-443a-a8df-56a9012739fb",
+      "company": "Superhuman Platform Inc",
+      "position": "Data Scientist, Growth",
+      "location": "Hub - San Francisco · Hub - New York · Hub - Seattle",
+      "locations": [
+        "Hub - San Francisco",
+        "Hub - New York",
+        "Hub - Seattle"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Superhuman offers a dynamic hybrid working model for this role. This flexible approach gives team members the best of both worlds: plenty of focus time along with in-person collaboration that helps foster trust, innovation, and a strong team culture.\n\nTeam members for this role must be based In San...",
+      "applyUrl": "https://jobs.ashbyhq.com/Superhuman%20Platform%20Inc/08d1b5f5-69e9-443a-a8df-56a9012739fb",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/Superhuman%20Platform%20Inc/08d1b5f5-69e9-443a-a8df-56a9012739fb",
+      "postedAt": "2026-11-20T03:33:14.373+00:00",
+      "tags": [
+        "Claude Code",
+        "Go"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "as-tolmo-29afe627-c1df-4ade-9abe-3e167f440b25",
       "company": "Tolmo",
@@ -52,6 +1435,29 @@
         "AWS",
         "Kubernetes",
         "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-abridge-c3c523fd-28d4-4e3d-9d02-04eeddb3f4f4",
+      "company": "Abridge",
+      "position": "Business Systems Engineer - Finance",
+      "location": "SF Office",
+      "locations": [
+        "SF Office"
+      ],
+      "remote": false,
+      "salary": "$175K – $200K • Offers Equity",
+      "description": "ABOUT ABRIDGE\n\nFounded in 2018, Abridge is the first AI-native clinician intelligence platform organized around the patient, built for clinicians, and designed to help health systems coordinate the clinical, financial, and evidence-based decisions for every moment of care. Powered by purpose-built...",
+      "applyUrl": "https://jobs.ashbyhq.com/Abridge/c3c523fd-28d4-4e3d-9d02-04eeddb3f4f4",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/Abridge/c3c523fd-28d4-4e3d-9d02-04eeddb3f4f4",
+      "postedAt": "2026-11-19T23:31:53.873+00:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Cursor",
+        "MCP"
       ],
       "companyIcon": ""
     },
@@ -264,32 +1670,6 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-deliveroo-8205846",
-      "company": "Deliveroo ",
-      "position": "Senior Software Engineer, GenAI Platform",
-      "location": "London, United Kingdom - Deliveroo",
-      "locations": [
-        "London, United Kingdom - Deliveroo"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "Our Global Structure Deliveroo is now part of DoorDash, bringing together teams with even greater reach, scale, and ambition. Depending on your role, you may collaborate with teammates, systems, and leaders across DoorDash and Wolt. Together, we’re unlocking new possibilities as one global team....",
-      "applyUrl": "https://job-boards.greenhouse.io/deliveroo/jobs/8205846",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/deliveroo/jobs/8205846",
-      "postedAt": "2026-11-19T22:02:37-05:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "AWS",
-        "GCP",
-        "Kubernetes",
-        "Cursor",
-        "MCP"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "anth-5486780008",
       "company": "Anthropic",
       "position": "Applied AI Architect, Beneficial Deployment",
@@ -380,30 +1760,6 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-elastic-8138062",
-      "company": "Elastic",
-      "position": "Lead Salesforce Full Stack AI Engineer",
-      "location": "Bangalore, India",
-      "locations": [
-        "Bangalore, India"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "Elastic, the Search AI Company, enables everyone to find the answers they need in real time, using all their data, at scale — unleashing the potential of businesses and people. The Elastic Search AI Platform, used by more than 50% of the Fortune 500, brings together the precision of search and the...",
-      "applyUrl": "https://jobs.elastic.co/jobs?gh_jid=8138062&gh_jid=8138062",
-      "source": "Greenhouse",
-      "sourceUrl": "https://jobs.elastic.co/jobs?gh_jid=8138062&gh_jid=8138062",
-      "postedAt": "2026-11-19T18:03:45-05:00",
-      "tags": [
-        "Claude Code",
-        "TypeScript",
-        "JavaScript",
-        "Cursor",
-        "Copilot"
-      ],
-      "companyIcon": "https://elastic.co/favicon.ico"
-    },
-    {
       "id": "gr-assuresoften-4730866006",
       "company": "AssureSoft - Careers",
       "position": "Senior Tech Lead",
@@ -456,6 +1812,26 @@
         "Cursor",
         "GraphQL",
         "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-quo-53c8fc5d-e301-435a-a760-fbe431e17e62",
+      "company": "Quo",
+      "position": "Product Designer, Growth",
+      "location": "Remote - United States & Canada",
+      "locations": [
+        "Remote - United States & Canada"
+      ],
+      "remote": true,
+      "salary": "$150,700 - $177,300",
+      "description": "Small businesses represent 99.9% of all companies, yet they're still forced to choose between clunky, outdated enterprise phone systems or their personal phones. This multi-billion dollar market has been overlooked for decades, left to cobble together solutions that slow them down instead of...",
+      "applyUrl": "https://jobs.ashbyhq.com/quo/53c8fc5d-e301-435a-a760-fbe431e17e62",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/quo/53c8fc5d-e301-435a-a760-fbe431e17e62",
+      "postedAt": "2026-11-19T17:21:41.717+00:00",
+      "tags": [
+        "Claude Code"
       ],
       "companyIcon": ""
     },
@@ -525,6 +1901,30 @@
         "Claude Code",
         "Python",
         "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "rok-remote-front-end-engineer-ux-ui-beyondtrust-1137833",
+      "company": "BeyondTrust",
+      "position": "Front-End Engineer, UX/UI",
+      "location": "Remote (Canada Only)",
+      "locations": [
+        "Canada Only"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "BeyondTrust is a place where you can bring your purpose to life through the work that you do, creating a safer world through our cybersecurity SaaS portfolio. Our culture of flexibility, trust, and continual learning means you will be recognized for your growth, and for the impact you make on our...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-front-end-engineer-ux-ui-beyondtrust-1137833",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-front-end-engineer-ux-ui-beyondtrust-1137833",
+      "postedAt": "2026-11-19T15:30:02+00:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "Next.js",
+        "TypeScript",
+        "GraphQL"
       ],
       "companyIcon": ""
     },
@@ -816,6 +2216,28 @@
       "companyIcon": ""
     },
     {
+      "id": "gr-lightmatter-5473539008",
+      "company": "Lightmatter",
+      "position": "IT and Security Intern – Summer 2027",
+      "location": "Boston, MA",
+      "locations": [
+        "Boston, MA"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Lightmatter is leading the revolution in AI data center infrastructure, enabling the next giant leaps in human progress. The company invented the world’s first 3D-stacked photonics engine, Passage™, capable of connecting thousands to millions of processors at the speed of light in extreme-scale...",
+      "applyUrl": "https://boards.greenhouse.io/lightmatter/jobs/5473539008?gh_jid=5473539008",
+      "source": "Greenhouse",
+      "sourceUrl": "https://boards.greenhouse.io/lightmatter/jobs/5473539008?gh_jid=5473539008",
+      "postedAt": "2026-11-19T12:27:10-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "gr-orenda-8031471003",
       "company": "Orenda",
       "position": "Machine Learning Engineer",
@@ -925,26 +2347,6 @@
       "companyIcon": "https://stripe.com/favicon.ico"
     },
     {
-      "id": "gr-stripe-7747640",
-      "company": "Stripe",
-      "position": "Forward Deployed AI Accelerator, Marketing",
-      "location": "Seattle, San Francisco, New York, Chicago, Atlanta, Remote in the US, Canada",
-      "locations": [
-        "Seattle, San Francisco, New York, Chicago, Atlanta, Remote in the US, Canada"
-      ],
-      "remote": true,
-      "salary": "",
-      "description": "Who we are About Stripe Stripe is a financial infrastructure platform for businesses. Millions of companies — from the world's largest enterprises to the most ambitious startups — use Stripe to accept payments, grow their revenue, and accelerate new business opportunities. Our mission is to...",
-      "applyUrl": "https://stripe.com/jobs/search?gh_jid=7747640",
-      "source": "Greenhouse",
-      "sourceUrl": "https://stripe.com/jobs/search?gh_jid=7747640",
-      "postedAt": "2026-11-19T12:12:20-05:00",
-      "tags": [
-        "Claude Code"
-      ],
-      "companyIcon": "https://stripe.com/favicon.ico"
-    },
-    {
       "id": "gr-stripe-8326579",
       "company": "Stripe",
       "position": "Strategy and Analytics Business Partner",
@@ -1036,93 +2438,6 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-fivetran-8195548003",
-      "company": "Fivetran",
-      "position": "Lead Full Stack Engineer",
-      "location": "Novi Sad, South Bačka, Serbia, EMEA",
-      "locations": [
-        "Novi Sad, South Bačka, Serbia, EMEA"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "From Fivetran’s founding until now, our mission has remained the same: to make access to data as simple and reliable as electricity. With Fivetran, customer data arrives in their warehouses, canonical and ready to query, with no engineering or maintenance required. We’re proud that more...",
-      "applyUrl": "https://www.fivetran.com/careers/job?gh_jid=8195548003",
-      "source": "Greenhouse",
-      "sourceUrl": "https://www.fivetran.com/careers/job?gh_jid=8195548003",
-      "postedAt": "2026-11-19T10:21:31-05:00",
-      "tags": [
-        "Claude Code",
-        "TypeScript",
-        "Python",
-        "Rust",
-        "Go",
-        "PostgreSQL",
-        "AWS",
-        "GCP",
-        "Azure",
-        "Docker"
-      ],
-      "companyIcon": "https://fivetran.com/favicon.ico"
-    },
-    {
-      "id": "gr-fivetran-8196546003",
-      "company": "Fivetran",
-      "position": "Senior Full Stack Engineer",
-      "location": "Novi Sad, South Bačka, Serbia, EMEA",
-      "locations": [
-        "Novi Sad, South Bačka, Serbia, EMEA"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "From Fivetran’s founding until now, our mission has remained the same: to make access to data as simple and reliable as electricity. With Fivetran, customer data arrives in their warehouses, canonical and ready to query, with no engineering or maintenance required. We’re proud that more...",
-      "applyUrl": "https://www.fivetran.com/careers/job?gh_jid=8196546003",
-      "source": "Greenhouse",
-      "sourceUrl": "https://www.fivetran.com/careers/job?gh_jid=8196546003",
-      "postedAt": "2026-11-19T10:21:31-05:00",
-      "tags": [
-        "Claude Code",
-        "TypeScript",
-        "Python",
-        "Rust",
-        "Go",
-        "PostgreSQL",
-        "AWS",
-        "GCP",
-        "Azure",
-        "Docker"
-      ],
-      "companyIcon": "https://fivetran.com/favicon.ico"
-    },
-    {
-      "id": "gr-fivetran-8196257003",
-      "company": "Fivetran",
-      "position": "Senior Software Engineer",
-      "location": "Novi Sad, South Bačka, Serbia, EMEA",
-      "locations": [
-        "Novi Sad, South Bačka, Serbia, EMEA"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "From Fivetran’s founding until now, our mission has remained the same: to make access to data as simple and reliable as electricity. With Fivetran, customer data arrives in their warehouses, canonical and ready to query, with no engineering or maintenance required. We’re proud that more...",
-      "applyUrl": "https://www.fivetran.com/careers/job?gh_jid=8196257003",
-      "source": "Greenhouse",
-      "sourceUrl": "https://www.fivetran.com/careers/job?gh_jid=8196257003",
-      "postedAt": "2026-11-19T10:21:31-05:00",
-      "tags": [
-        "Claude Code",
-        "TypeScript",
-        "Python",
-        "Rust",
-        "Go",
-        "PostgreSQL",
-        "AWS",
-        "GCP",
-        "Azure",
-        "Docker"
-      ],
-      "companyIcon": "https://fivetran.com/favicon.ico"
-    },
-    {
       "id": "gr-fivetran-8041168003",
       "company": "Fivetran",
       "position": "Senior Software Engineer, Developer Experience",
@@ -1152,48 +2467,19 @@
       "companyIcon": "https://fivetran.com/favicon.ico"
     },
     {
-      "id": "gr-fivetran-8179022003",
-      "company": "Fivetran",
-      "position": "Staff Software Engineer",
-      "location": "Novi Sad, South Bačka, Serbia, EMEA",
-      "locations": [
-        "Novi Sad, South Bačka, Serbia, EMEA"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "From Fivetran’s founding until now, our mission has remained the same: to make access to data as simple and reliable as electricity. With Fivetran, customer data arrives in their warehouses, canonical and ready to query, with no engineering or maintenance required. We’re proud that more...",
-      "applyUrl": "https://www.fivetran.com/careers/job?gh_jid=8179022003",
-      "source": "Greenhouse",
-      "sourceUrl": "https://www.fivetran.com/careers/job?gh_jid=8179022003",
-      "postedAt": "2026-11-19T10:21:31-05:00",
-      "tags": [
-        "Claude Code",
-        "TypeScript",
-        "Python",
-        "Rust",
-        "Go",
-        "PostgreSQL",
-        "AWS",
-        "GCP",
-        "Azure",
-        "Docker"
-      ],
-      "companyIcon": "https://fivetran.com/favicon.ico"
-    },
-    {
-      "id": "gr-fivetran-8016899003",
+      "id": "gr-fivetran-7823195003",
       "company": "Fivetran",
       "position": "Engineering Manager, Metadata",
-      "location": "USA - Austin (dbt)",
+      "location": "Denver, Colorado, United States, AMER",
       "locations": [
-        "USA - Austin (dbt)"
+        "Denver, Colorado, United States, AMER"
       ],
       "remote": false,
       "salary": "",
       "description": "From Fivetran’s founding until now, our mission has remained the same: to make access to data as simple and reliable as electricity. With Fivetran, customer data arrives in their warehouses, canonical and ready to query, with no engineering or maintenance required. We’re proud that more...",
-      "applyUrl": "https://www.fivetran.com/careers/job?gh_jid=8016899003",
+      "applyUrl": "https://www.fivetran.com/careers/job?gh_jid=7823195003",
       "source": "Greenhouse",
-      "sourceUrl": "https://www.fivetran.com/careers/job?gh_jid=8016899003",
+      "sourceUrl": "https://www.fivetran.com/careers/job?gh_jid=7823195003",
       "postedAt": "2026-11-19T10:13:32-05:00",
       "tags": [
         "Claude Code",
@@ -1279,35 +2565,6 @@
       "companyIcon": "https://fivetran.com/favicon.ico"
     },
     {
-      "id": "gr-fivetran-7865591003",
-      "company": "Fivetran",
-      "position": "Senior Software Engineer, Metadata",
-      "location": "Oakland, California, United States",
-      "locations": [
-        "Oakland, California, United States"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "From Fivetran’s founding until now, our mission has remained the same: to make access to data as simple and reliable as electricity. With Fivetran, customer data arrives in their warehouses, canonical and ready to query, with no engineering or maintenance required. We’re proud that more...",
-      "applyUrl": "https://www.fivetran.com/careers/job?gh_jid=7865591003",
-      "source": "Greenhouse",
-      "sourceUrl": "https://www.fivetran.com/careers/job?gh_jid=7865591003",
-      "postedAt": "2026-11-19T10:11:36-05:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "Rust",
-        "PostgreSQL",
-        "AWS",
-        "GCP",
-        "Azure",
-        "Docker",
-        "Kubernetes",
-        "Copilot"
-      ],
-      "companyIcon": "https://fivetran.com/favicon.ico"
-    },
-    {
       "id": "gr-robotsandpencils-5486500008",
       "company": "Robots and Pencils",
       "position": "Staff AI Developer - Canada",
@@ -1381,6 +2638,27 @@
       "companyIcon": ""
     },
     {
+      "id": "as-Plaud-345d6771-44d3-4d15-8f98-9fe9c95696ed",
+      "company": "Plaud",
+      "position": "GTM Assistant Manager- Shenzhen/Singapore",
+      "location": "Shenzhen · Singapore",
+      "locations": [
+        "Shenzhen",
+        "Singapore"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "About Plaud Inc.\n\nPlaud is building the real-world AI interface for professionals to amplify intelligence, elevate productivity and performance, loved by over 3,000,000 users worldwide since 2023. With a mission to amplify human intelligence, Plaud captures, structures, and compounds the...",
+      "applyUrl": "https://jobs.ashbyhq.com/Plaud/345d6771-44d3-4d15-8f98-9fe9c95696ed",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/Plaud/345d6771-44d3-4d15-8f98-9fe9c95696ed",
+      "postedAt": "2026-11-19T07:26:42.021+00:00",
+      "tags": [
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "gr-affirm-7806681003",
       "company": "Affirm",
       "position": "Senior Software Engineer, Back-end (Fraud)",
@@ -1403,30 +2681,6 @@
         "Kubernetes",
         "Kotlin",
         "MySQL"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-wizinc-4004237006",
-      "company": "Wiz, Inc.",
-      "position": "Product Manager, AI ",
-      "location": "Tel Aviv",
-      "locations": [
-        "Tel Aviv"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "Come join the organization that is redefining security for the AI era. As one of the fastest-growing startups ever, we enable teams to secure cloud and AI applications by connecting code, cloud, and runtime into a single shared context. Trusted by security teams all over the world, we have a proven...",
-      "applyUrl": "https://www.wiz.io/careers/job/4004237006/:title?gh_jid=4004237006",
-      "source": "Greenhouse",
-      "sourceUrl": "https://www.wiz.io/careers/job/4004237006/:title?gh_jid=4004237006",
-      "postedAt": "2026-11-19T06:51:28-05:00",
-      "tags": [
-        "Claude Code",
-        "AWS",
-        "GCP",
-        "Azure",
-        "Kubernetes"
       ],
       "companyIcon": ""
     },
@@ -1501,39 +2755,6 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-mongodb-7991447",
-      "company": "MongoDB",
-      "position": "Senior Salesforce Engineer",
-      "location": "Austin · Boston · Charlotte · Dallas · Miami · New York City · San Francisco · Washington DC",
-      "locations": [
-        "Austin",
-        "Boston",
-        "Charlotte",
-        "Dallas",
-        "Miami",
-        "New York City",
-        "San Francisco",
-        "Washington DC"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "The IT SaaS Engineering Team plays a critical role in optimizing MongoDB sales processes, streamlining customer interactions, and maximizing the efficiency of our sales efforts. By leveraging Salesforce, the team ensures that business users have the tools, automation, security, and governance...",
-      "applyUrl": "https://www.mongodb.com/careers/job/?gh_jid=7991447",
-      "source": "Greenhouse",
-      "sourceUrl": "https://www.mongodb.com/careers/job/?gh_jid=7991447",
-      "postedAt": "2026-11-19T04:37:38-05:00",
-      "tags": [
-        "Claude Code",
-        "JavaScript",
-        "AWS",
-        "Azure",
-        "Cursor",
-        "Copilot",
-        "MongoDB"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "gr-mongodb-8323296",
       "company": "MongoDB",
       "position": "Engineering Manager, Customer Tools ",
@@ -1588,7 +2809,7 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-opswat-4528456005",
+      "id": "gr-opswat-4724688005",
       "company": "OPSWAT",
       "position": "AI-Native Software Engineer - MD Core",
       "location": "Ho Chi Minh City, Ho Chi Minh City, Vietnam",
@@ -1598,9 +2819,9 @@
       "remote": false,
       "salary": "",
       "description": "OPSWAT , a global leader in IT, OT , and ICS critical infrastructure cybersecurity, delivers an end-to-end platform that gives public and private sector organizations and enterprises the critical advantage needed to protect their complex networks, secure their devices, and ensure compliance. Over...",
-      "applyUrl": "https://www.opswat.com/jobs/4528456005?gh_jid=4528456005",
+      "applyUrl": "https://www.opswat.com/jobs/4724688005?gh_jid=4724688005",
       "source": "Greenhouse",
-      "sourceUrl": "https://www.opswat.com/jobs/4528456005?gh_jid=4528456005",
+      "sourceUrl": "https://www.opswat.com/jobs/4724688005?gh_jid=4724688005",
       "postedAt": "2026-11-19T03:44:52-05:00",
       "tags": [
         "Claude Code",
@@ -1720,19 +2941,19 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-opswat-4731624005",
+      "id": "gr-opswat-4751785005",
       "company": "OPSWAT",
       "position": "Senior AI Engineer, Marketing",
-      "location": "Ho Chi Minh City, Ho Chi Minh City, Vietnam",
+      "location": "Tampa, Florida, United States",
       "locations": [
-        "Ho Chi Minh City, Ho Chi Minh City, Vietnam"
+        "Tampa, Florida, United States"
       ],
       "remote": false,
       "salary": "",
       "description": "OPSWAT , a global leader in IT, OT , and ICS critical infrastructure cybersecurity, delivers an end-to-end platform that gives public and private sector organizations and enterprises the critical advantage needed to protect their complex networks, secure their devices, and ensure compliance. Over...",
-      "applyUrl": "https://www.opswat.com/jobs/4731624005?gh_jid=4731624005",
+      "applyUrl": "https://www.opswat.com/jobs/4751785005?gh_jid=4751785005",
       "source": "Greenhouse",
-      "sourceUrl": "https://www.opswat.com/jobs/4731624005?gh_jid=4731624005",
+      "sourceUrl": "https://www.opswat.com/jobs/4751785005?gh_jid=4751785005",
       "postedAt": "2026-11-19T03:44:52-05:00",
       "tags": [
         "Claude Code",
@@ -1888,95 +3109,6 @@
         "Cursor",
         "Kotlin",
         "MySQL"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-axon-7748930003",
-      "company": "Axon",
-      "position": "Senior Firmware Engineer I",
-      "location": "Seattle, Washington, United States",
-      "locations": [
-        "Seattle, Washington, United States"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "Join Axon and be a Force for Good. At Axon, we’re on a mission to Protect Life. We’re explorers, pursuing society’s most critical safety and justice issues with our ecosystem of devices and cloud software. Like our products, we work better together. We connect with candor and care, seeking out...",
-      "applyUrl": "https://job-boards.greenhouse.io/axon/jobs/7748930003",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/axon/jobs/7748930003",
-      "postedAt": "2026-11-18T17:53:25-05:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "Rust",
-        "Go",
-        "Cursor",
-        "Copilot"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-axon-7902820003",
-      "company": "Axon",
-      "position": "Senior FPGA & Firmware Engineer - SDR",
-      "location": "Boston, Massachusetts, United States",
-      "locations": [
-        "Boston, Massachusetts, United States"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "Join Axon and be a Force for Good. At Axon, we’re on a mission to Protect Life. We’re explorers, pursuing society’s most critical safety and justice issues with our ecosystem of devices and cloud software. Like our products, we work better together. We connect with candor and care, seeking out...",
-      "applyUrl": "https://job-boards.greenhouse.io/axon/jobs/7902820003",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/axon/jobs/7902820003",
-      "postedAt": "2026-11-18T17:53:25-05:00",
-      "tags": [
-        "Claude Code",
-        "Cursor",
-        "Copilot"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-axon-8030785003",
-      "company": "Axon",
-      "position": "Sr. Technical Animator, VR",
-      "location": "Washington, United States",
-      "locations": [
-        "Washington, United States"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "Join Axon and be a Force for Good. At Axon, we’re on a mission to Protect Life. We’re explorers, pursuing society’s most critical safety and justice issues with our ecosystem of devices and cloud software. Like our products, we work better together. We connect with candor and care, seeking out...",
-      "applyUrl": "https://job-boards.greenhouse.io/axon/jobs/8030785003",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/axon/jobs/8030785003",
-      "postedAt": "2026-11-18T17:53:25-05:00",
-      "tags": [
-        "Claude Code",
-        "Cursor"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-axon-8183778003",
-      "company": "Axon",
-      "position": "Sr. Technical Character Artist I ",
-      "location": "Seattle, Washington, United States",
-      "locations": [
-        "Seattle, Washington, United States"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "Join Axon and be a Force for Good. At Axon, we’re on a mission to Protect Life. We’re explorers, pursuing society’s most critical safety and justice issues with our ecosystem of devices and cloud software. Like our products, we work better together. We connect with candor and care, seeking out...",
-      "applyUrl": "https://job-boards.greenhouse.io/axon/jobs/8183778003",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/axon/jobs/8183778003",
-      "postedAt": "2026-11-18T17:53:25-05:00",
-      "tags": [
-        "Claude Code",
-        "Cursor"
       ],
       "companyIcon": ""
     },
@@ -2270,30 +3402,6 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-wizinc-4709330006",
-      "company": "Wiz, Inc.",
-      "position": "Manager, Solutions Support Engineering - São Paulo",
-      "location": "Remote - Brazil",
-      "locations": [
-        "Remote - Brazil"
-      ],
-      "remote": true,
-      "salary": "",
-      "description": "Come join the organization that is redefining security for the AI era. As one of the fastest-growing startups ever, we enable teams to secure cloud and AI applications by connecting code, cloud, and runtime into a single shared context. Trusted by security teams all over the world, we have a proven...",
-      "applyUrl": "https://www.wiz.io/careers/job/4709330006/:title?gh_jid=4709330006",
-      "source": "Greenhouse",
-      "sourceUrl": "https://www.wiz.io/careers/job/4709330006/:title?gh_jid=4709330006",
-      "postedAt": "2026-11-18T16:16:53-05:00",
-      "tags": [
-        "Claude Code",
-        "AWS",
-        "GCP",
-        "Azure",
-        "Kubernetes"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "gr-cognite-5032904101",
       "company": "Cognite - AI for Industry",
       "position": "Data Scientist",
@@ -2334,32 +3442,6 @@
       "postedAt": "2026-11-18T16:03:13-05:00",
       "tags": [
         "Claude Code"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-cardata-4422688009",
-      "company": "Cardata",
-      "position": "QA Lead ",
-      "location": "Canada - Remote",
-      "locations": [
-        "Canada - Remote"
-      ],
-      "remote": true,
-      "salary": "$145,000 – $160,000",
-      "description": "Ready to accelerate your career? Cardata is where driven people make an outsized impact. We’re a small but mighty team transforming how businesses manage vehicle reimbursement — replacing outdated programs with smart, automated solutions. Our vision is bold: to provide the most comprehensive,...",
-      "applyUrl": "https://job-boards.greenhouse.io/cardata/jobs/4422688009",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/cardata/jobs/4422688009",
-      "postedAt": "2026-11-18T15:54:06-05:00",
-      "tags": [
-        "Claude Code",
-        "TypeScript",
-        "JavaScript",
-        "Go",
-        "PostgreSQL",
-        "Cursor",
-        "Copilot"
       ],
       "companyIcon": ""
     },
@@ -2479,27 +3561,6 @@
         "Cursor"
       ],
       "companyIcon": ""
-    },
-    {
-      "id": "gr-gusto-7656216",
-      "company": "Gusto",
-      "position": "Data Scientist, Risk ",
-      "location": "San Francisco, CA - Hybrid",
-      "locations": [
-        "San Francisco, CA - Hybrid"
-      ],
-      "remote": false,
-      "salary": "$186,000/yr",
-      "description": "About Gusto At Gusto, we're on a mission to grow the small business economy. We handle the hard stuff — payroll, health insurance, 401(k)s, and HR — so owners can focus on their craft and their customers. With teams in Denver, San Francisco, and New York, we support more than 500,000 small...",
-      "applyUrl": "https://job-boards.greenhouse.io/gusto/jobs/7656216",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/gusto/jobs/7656216",
-      "postedAt": "2026-11-18T13:37:01-05:00",
-      "tags": [
-        "Claude Code",
-        "Python"
-      ],
-      "companyIcon": "https://gusto.com/favicon.ico"
     },
     {
       "id": "gr-gusto-7905578",
@@ -2647,6 +3708,28 @@
       "companyIcon": "https://gusto.com/favicon.ico"
     },
     {
+      "id": "as-comstruct-90fa2639-8c58-46ff-972c-e5d0cdf2223d",
+      "company": "Comstruct",
+      "position": "Working Student (f/m/d) Civil Engineering / Architecture – AI Building Design",
+      "location": "Munich",
+      "locations": [
+        "Munich"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "As part of our research squad, you bring real construction planning experience to comstruct, the AI agent platform that raised a €12.5M seed round from Google Ventures and 20VC and that nine of Switzerland’s ten largest contractors already run on. The squad works like a startup within the startup...",
+      "applyUrl": "https://jobs.ashbyhq.com/comstruct/90fa2639-8c58-46ff-972c-e5d0cdf2223d",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/comstruct/90fa2639-8c58-46ff-972c-e5d0cdf2223d",
+      "postedAt": "2026-11-18T13:25:16.447+00:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "anth-5471361008",
       "company": "Anthropic",
       "position": "Applied AI Architect, Beneficial Deployments (Global & Public Health)",
@@ -2735,28 +3818,24 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-celonis-8173249003",
+      "id": "gr-celonis-7928952003",
       "company": "Celonis",
       "position": "Lead Deployment Architect - AI",
-      "location": "Redwood City, US, California",
+      "location": "Munich, Germany",
       "locations": [
-        "Redwood City, US, California"
+        "Munich, Germany"
       ],
       "remote": false,
       "salary": "",
       "description": "Celonis is the trusted platform to industrialize Enterprise AI. At our core is the Celonis Context Model — which combines process data, business knowledge, and intelligence into a living digital twin of the enterprise that AI can actually understand, turning AI's operational blind spots into...",
-      "applyUrl": "https://job-boards.greenhouse.io/celonis/jobs/8173249003?gh_jid=8173249003",
+      "applyUrl": "https://job-boards.greenhouse.io/celonis/jobs/7928952003?gh_jid=7928952003",
       "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/celonis/jobs/8173249003?gh_jid=8173249003",
+      "sourceUrl": "https://job-boards.greenhouse.io/celonis/jobs/7928952003?gh_jid=7928952003",
       "postedAt": "2026-11-18T13:05:52-05:00",
       "tags": [
         "Claude Code",
-        "TypeScript",
-        "JavaScript",
         "Python",
-        "Go",
-        "Cursor",
-        "Java"
+        "Cursor"
       ],
       "companyIcon": ""
     },
@@ -3138,33 +4217,6 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-veeamsoftware-5020931101",
-      "company": "Veeam Software",
-      "position": "Staff Security Engineer",
-      "location": "Prague, Czechia",
-      "locations": [
-        "Prague, Czechia"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "Veeam is the Data and AI Trust Company, specializing in helping organizations ensure their data and AI are fully understood, secured, and resilient to enable the acceleration of safe AI at scale. As the market leader in both data resilience and data security posture management, Veeam is built for...",
-      "applyUrl": "https://job-boards.eu.greenhouse.io/veeamsoftware/jobs/5020931101",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.eu.greenhouse.io/veeamsoftware/jobs/5020931101",
-      "postedAt": "2026-11-18T08:06:26-05:00",
-      "tags": [
-        "Claude Code",
-        "TypeScript",
-        "Python",
-        "AWS",
-        "Azure",
-        "Kubernetes",
-        "Cursor",
-        "Copilot"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "gr-bitwarden-7872037003",
       "company": "Bitwarden",
       "position": "Lead Software Engineer (Secrets Manager & AI Identity)",
@@ -3292,28 +4344,6 @@
         "Cursor",
         "Copilot",
         "MongoDB"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-wizinc-4720879006",
-      "company": "Wiz, Inc.",
-      "position": "CTO Data Analyst",
-      "location": "Tel Aviv",
-      "locations": [
-        "Tel Aviv"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "Come join the organization that is redefining security for the AI era. As one of the fastest-growing startups ever, we enable teams to secure cloud and AI applications by connecting code, cloud, and runtime into a single shared context. Trusted by security teams all over the world, we have a proven...",
-      "applyUrl": "https://www.wiz.io/careers/job/4720879006/:title?gh_jid=4720879006",
-      "source": "Greenhouse",
-      "sourceUrl": "https://www.wiz.io/careers/job/4720879006/:title?gh_jid=4720879006",
-      "postedAt": "2026-11-18T06:11:31-05:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "Cursor"
       ],
       "companyIcon": ""
     },
@@ -3555,52 +4585,6 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-chainguard-4726048006",
-      "company": "Chainguard",
-      "position": "Senior Growth Operations Manager",
-      "location": "United States - Remote",
-      "locations": [
-        "United States - Remote"
-      ],
-      "remote": true,
-      "salary": "",
-      "description": "Chainguard is the trusted source for open source. By delivering hardened, secure, and production-ready builds of all the open source software engineers and AI agents rely on, Chainguard helps organizations build faster, stay compliant, and eliminate risk. Our customers include Fortune 500...",
-      "applyUrl": "https://job-boards.greenhouse.io/chainguard/jobs/4726048006",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/chainguard/jobs/4726048006",
-      "postedAt": "2026-11-18T00:00:41-05:00",
-      "tags": [
-        "Claude Code",
-        "JavaScript",
-        "Python",
-        "Cursor"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-chainguard-4726046006",
-      "company": "Chainguard",
-      "position": "Sr. Growth Marketing Manager, AI Discovery",
-      "location": "United States - Remote",
-      "locations": [
-        "United States - Remote"
-      ],
-      "remote": true,
-      "salary": "",
-      "description": "Chainguard is the trusted source for open source. By delivering hardened, secure, and production-ready builds of all the open source software engineers and AI agents rely on, Chainguard helps organizations build faster, stay compliant, and eliminate risk. Our customers include Fortune 500...",
-      "applyUrl": "https://job-boards.greenhouse.io/chainguard/jobs/4726046006",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/chainguard/jobs/4726046006",
-      "postedAt": "2026-11-18T00:00:41-05:00",
-      "tags": [
-        "Claude Code",
-        "Kubernetes",
-        "Cursor",
-        "MCP"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "as-perimetercompute-1193990e-bcf9-49ea-b1b1-6af147cfdcfc",
       "company": "Perimetercompute",
       "position": "Member of Technical Staff, Agent Platform",
@@ -3666,6 +4650,28 @@
       "companyIcon": ""
     },
     {
+      "id": "le-plooto-bfc7562b-fb2b-4be4-92aa-f6d4f21642fd",
+      "company": "Plooto",
+      "position": "Senior Product Designer",
+      "location": "Remote - Canada",
+      "locations": [
+        "Remote - Canada"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "About Plooto\nPlooto is an all-in-one payment automation platform that helps businesses and accounting firms manage payables and receivables. More than 14,000 companies use Plooto to automate financial workflows, move money, and reconcile with their accounting systems.\nWe are building the financial...",
+      "applyUrl": "https://jobs.lever.co/plooto/bfc7562b-fb2b-4be4-92aa-f6d4f21642fd",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/plooto/bfc7562b-fb2b-4be4-92aa-f6d4f21642fd",
+      "postedAt": "2026-11-17T20:01:14.107000+00:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "le-provectus-3f73e36f-2a48-4705-8723-b9dee345282c",
       "company": "Provectus",
       "position": "Senior AI Architect (GenAI, AWS)",
@@ -3695,25 +4701,23 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-affirm-8039471003",
-      "company": "Affirm",
-      "position": "Analyst, Early Career (Full Stack)",
-      "location": "New York, New York, United States · San Francisco, California, United States",
+      "id": "le-exowatt-ec23e694-6716-450d-bfbb-276ca8da3d1c",
+      "company": "Exowatt",
+      "position": "Robotics & Physical AI Spring Intern (Miami)",
+      "location": "Miami, FL",
       "locations": [
-        "New York, New York, United States",
-        "San Francisco, California, United States"
+        "Miami, FL"
       ],
       "remote": false,
       "salary": "",
-      "description": "At Affirm, we exist for the moments that matter—giving people a clear, predictable way to pay over time, with no hidden fees, no surprises, and no tradeoffs on what matters most. In our hybrid early career program, you’ll be paired with a tenured Affirmer and have an opportunity to collaborate...",
-      "applyUrl": "https://job-boards.greenhouse.io/affirm/jobs/8039471003",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/affirm/jobs/8039471003",
-      "postedAt": "2026-11-17T18:04:11-05:00",
+      "description": "Exowatt is revolutionizing the energy landscape for the AI era with our groundbreaking P3 system that captures solar energy, stores it as heat, and generates electricity on demand. Founded in 2023 and backed by leading investors including Andreessen Horowitz, Sam Altman, and Felicis, we're...",
+      "applyUrl": "https://jobs.lever.co/exowatt/ec23e694-6716-450d-bfbb-276ca8da3d1c",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/exowatt/ec23e694-6716-450d-bfbb-276ca8da3d1c",
+      "postedAt": "2026-11-17T18:00:15.322000+00:00",
       "tags": [
         "Claude Code",
         "Python",
-        "Go",
         "Cursor"
       ],
       "companyIcon": ""
@@ -3979,20 +4983,19 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-mongodb-7392902",
+      "id": "gr-mongodb-7590735",
       "company": "MongoDB",
       "position": "Senior Software Engineer, Forward Deployed AI Engineer",
-      "location": "Cork, Ireland · Dublin, Ireland",
+      "location": "Ireland",
       "locations": [
-        "Cork, Ireland",
-        "Dublin, Ireland"
+        "Ireland"
       ],
       "remote": false,
       "salary": "",
       "description": "MongoDB is looking for an outstanding person to join our newly created Forward Deployed Engineering team and take on a key role in our extended R&D organization. Forward Deployed Engineering is linking the work of teams engaged on application modernization roles with our Product and Engineering...",
-      "applyUrl": "https://www.mongodb.com/careers/job/?gh_jid=7392902",
+      "applyUrl": "https://www.mongodb.com/careers/job/?gh_jid=7590735",
       "source": "Greenhouse",
-      "sourceUrl": "https://www.mongodb.com/careers/job/?gh_jid=7392902",
+      "sourceUrl": "https://www.mongodb.com/careers/job/?gh_jid=7590735",
       "postedAt": "2026-11-17T10:58:30-05:00",
       "tags": [
         "Claude Code",
@@ -4190,6 +5193,31 @@
       "companyIcon": ""
     },
     {
+      "id": "le-ciandt-588ba7b4-9d9d-43dc-bfce-dedc24c331ac",
+      "company": "Ciandt",
+      "position": "[Job - 32717] Senior Backend Developer (AI-Driven Development), Brazil",
+      "location": "Brazil",
+      "locations": [
+        "Brazil"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "At CI&T, we help large enterprises transform the potential of AI into real business impact with AI Deployment, AI-native execution, and tech-integrated business solutions.\nWith 30 years of experience in technological transformation, we accelerate innovation with expertise in Agentic SDLC,...",
+      "applyUrl": "https://jobs.lever.co/ciandt/588ba7b4-9d9d-43dc-bfce-dedc24c331ac",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/ciandt/588ba7b4-9d9d-43dc-bfce-dedc24c331ac",
+      "postedAt": "2026-11-16T23:21:30.094000+00:00",
+      "tags": [
+        "Claude Code",
+        "TypeScript",
+        "Python",
+        "Node.js",
+        "AWS",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "gr-andurilindustries-5030386007",
       "company": "Anduril Industries",
       "position": "DevOps Engineer",
@@ -4308,34 +5336,7 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-andurilindustries-5089054007",
-      "company": "Anduril Industries",
-      "position": "Quantum Software Engineer",
-      "location": "Washington, District of Columbia, United States",
-      "locations": [
-        "Washington, District of Columbia, United States"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "Anduril Industries is a defense technology company with a mission to transform U.S. and allied military capabilities with advanced technology. By bringing the expertise, technology, and business model of the 21st century’s most innovative companies to the defense industry, Anduril is changing how...",
-      "applyUrl": "https://boards.greenhouse.io/andurilindustries/jobs/5089054007?gh_jid=5089054007",
-      "source": "Greenhouse",
-      "sourceUrl": "https://boards.greenhouse.io/andurilindustries/jobs/5089054007?gh_jid=5089054007",
-      "postedAt": "2026-11-16T21:23:01-05:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "PostgreSQL",
-        "AWS",
-        "GCP",
-        "Azure",
-        "Copilot",
-        "MySQL"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-andurilindustries-5198870007",
+      "id": "gr-andurilindustries-5251234007",
       "company": "Anduril Industries",
       "position": "Senior Quality Engineer, Analytics",
       "location": "Ashville, Ohio, United States",
@@ -4345,9 +5346,9 @@
       "remote": false,
       "salary": "",
       "description": "Anduril Industries is a defense technology company with a mission to transform U.S. and allied military capabilities with advanced technology. By bringing the expertise, technology, and business model of the 21st century’s most innovative companies to the defense industry, Anduril is changing how...",
-      "applyUrl": "https://boards.greenhouse.io/andurilindustries/jobs/5198870007?gh_jid=5198870007",
+      "applyUrl": "https://boards.greenhouse.io/andurilindustries/jobs/5251234007?gh_jid=5251234007",
       "source": "Greenhouse",
-      "sourceUrl": "https://boards.greenhouse.io/andurilindustries/jobs/5198870007?gh_jid=5198870007",
+      "sourceUrl": "https://boards.greenhouse.io/andurilindustries/jobs/5251234007?gh_jid=5251234007",
       "postedAt": "2026-11-16T21:23:01-05:00",
       "tags": [
         "Claude Code",
@@ -4539,31 +5540,6 @@
         "Claude Code",
         "Cursor",
         "MCP"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-orbisoperations-4505540009",
-      "company": "Orbis ",
-      "position": "Full Stack Engineer ",
-      "location": "Remote-US",
-      "locations": [
-        "Remote-US"
-      ],
-      "remote": true,
-      "salary": "",
-      "description": "Company Overview Orbis is a technology company that delivers sovereign intelligence and decision capabilities to the United States Government and its allies. We convert complex information and operational systems into decisive outcomes, giving public institutions and critical enterprises the tools...",
-      "applyUrl": "https://job-boards.greenhouse.io/orbisoperations/jobs/4505540009",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/orbisoperations/jobs/4505540009",
-      "postedAt": "2026-11-16T18:19:42-05:00",
-      "tags": [
-        "Claude Code",
-        "React Native",
-        "React",
-        "Next.js",
-        "TypeScript",
-        "AWS"
       ],
       "companyIcon": ""
     },
@@ -4925,11 +5901,11 @@
       "id": "as-temporal-4ee99986-77ad-4113-8058-891d5cc7284a",
       "company": "Temporal",
       "position": "Staff Software Engineer, AI Foundations (Agent Optimization) ",
-      "location": "San Francisco, California · United States (Remote) · New York, New York",
+      "location": "United States (Remote) · New York, New York · San Francisco, California",
       "locations": [
-        "San Francisco, California",
         "United States (Remote)",
-        "New York, New York"
+        "New York, New York",
+        "San Francisco, California"
       ],
       "remote": true,
       "salary": "$169,600 – $278,250 • Offers Equity • Multiple Ranges",
@@ -5186,85 +6162,6 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-wizinc-4650468006",
-      "company": "Wiz, Inc.",
-      "position": "CTO Operations Engineer",
-      "location": "Tel Aviv",
-      "locations": [
-        "Tel Aviv"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "Come join the organization that is redefining security for the AI era. As one of the fastest-growing startups ever, we enable teams to secure cloud and AI applications by connecting code, cloud, and runtime into a single shared context. Trusted by security teams all over the world, we have a proven...",
-      "applyUrl": "https://www.wiz.io/careers/job/4650468006/:title?gh_jid=4650468006",
-      "source": "Greenhouse",
-      "sourceUrl": "https://www.wiz.io/careers/job/4650468006/:title?gh_jid=4650468006",
-      "postedAt": "2026-11-16T13:30:24-05:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "AWS",
-        "GCP",
-        "Docker",
-        "Cursor"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-wizinc-4719843006",
-      "company": "Wiz, Inc.",
-      "position": "Manager of Applied AI, Solutions Support Engineering",
-      "location": "Remote - USA",
-      "locations": [
-        "Remote - USA"
-      ],
-      "remote": true,
-      "salary": "",
-      "description": "Come join the organization that is redefining security for the AI era. As one of the fastest-growing startups ever, we enable teams to secure cloud and AI applications by connecting code, cloud, and runtime into a single shared context. Trusted by security teams all over the world, we have a proven...",
-      "applyUrl": "https://www.wiz.io/careers/job/4719843006/:title?gh_jid=4719843006",
-      "source": "Greenhouse",
-      "sourceUrl": "https://www.wiz.io/careers/job/4719843006/:title?gh_jid=4719843006",
-      "postedAt": "2026-11-16T13:30:24-05:00",
-      "tags": [
-        "Claude Code",
-        "React",
-        "TypeScript",
-        "JavaScript",
-        "Python",
-        "Node.js",
-        "PostgreSQL",
-        "AWS",
-        "GCP",
-        "Azure"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-wizinc-4707600006",
-      "company": "Wiz, Inc.",
-      "position": "Threat Researcher",
-      "location": "Tel Aviv",
-      "locations": [
-        "Tel Aviv"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "Come join the organization that is redefining security for the AI era. As one of the fastest-growing startups ever, we enable teams to secure cloud and AI applications by connecting code, cloud, and runtime into a single shared context. Trusted by security teams all over the world, we have a proven...",
-      "applyUrl": "https://www.wiz.io/careers/job/4707600006/:title?gh_jid=4707600006",
-      "source": "Greenhouse",
-      "sourceUrl": "https://www.wiz.io/careers/job/4707600006/:title?gh_jid=4707600006",
-      "postedAt": "2026-11-16T13:30:24-05:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "AWS",
-        "GCP",
-        "Azure",
-        "Kubernetes"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "gr-rubrik-8378306",
       "company": "Rubrik Job Board",
       "position": "Senior Technical Writer I",
@@ -5463,56 +6360,6 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-mongodb-7778975",
-      "company": "MongoDB",
-      "position": "Senior Administrator - Business Systems",
-      "location": "India",
-      "locations": [
-        "India"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "We are looking to speak to candidates who are based in India for our hybrid working model. About MongoDB The database market is massive, and MongoDB is at the head of its disruption. The MongoDB community is transforming industries and empowering developers to build amazing applications that people...",
-      "applyUrl": "https://www.mongodb.com/careers/job/?gh_jid=7778975",
-      "source": "Greenhouse",
-      "sourceUrl": "https://www.mongodb.com/careers/job/?gh_jid=7778975",
-      "postedAt": "2026-11-16T09:27:51-05:00",
-      "tags": [
-        "Claude Code",
-        "AWS",
-        "Azure",
-        "Cursor",
-        "MongoDB"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-mongodb-8094387",
-      "company": "MongoDB",
-      "position": "Senior Engineer - GTM Tech",
-      "location": "Gurugram",
-      "locations": [
-        "Gurugram"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "About Team The IT SaaS Engineering Team is the backbone of MongoDB's go-to-market operations. We build and run the Salesforce platform — with the automation, security, and governance that Sales Operations, Revenue Operations, Security, and Compliance rely on daily to manage customer relationships...",
-      "applyUrl": "https://www.mongodb.com/careers/job/?gh_jid=8094387",
-      "source": "Greenhouse",
-      "sourceUrl": "https://www.mongodb.com/careers/job/?gh_jid=8094387",
-      "postedAt": "2026-11-16T09:27:51-05:00",
-      "tags": [
-        "Claude Code",
-        "JavaScript",
-        "AWS",
-        "Azure",
-        "Cursor",
-        "Copilot",
-        "MongoDB"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "gr-veeamsoftware-5028944101",
       "company": "Veeam Software",
       "position": "Data Analytics Engineer",
@@ -5531,178 +6378,6 @@
         "Claude Code",
         "Python",
         "Azure"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-artefactjobs-8731956002",
-      "company": "Welcome to the Jungle",
-      "position": "AI & Agentic Engineer, Senior",
-      "location": "Montréal, Quebec, Canada",
-      "locations": [
-        "Montréal, Quebec, Canada"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "Artefact is a next-generation data and AI consulting firm dedicated to accelerating the adoption of data and AI to create measurable business impact across the full enterprise value chain. We sit at the intersection of consulting, data science, AI technologies, data engineering, and digital...",
-      "applyUrl": "https://job-boards.greenhouse.io/artefactjobs/jobs/8731956002",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/artefactjobs/jobs/8731956002",
-      "postedAt": "2026-11-16T08:56:04-05:00",
-      "tags": [
-        "Claude Code",
-        "React",
-        "TypeScript",
-        "JavaScript",
-        "Python",
-        "AWS",
-        "GCP",
-        "Azure",
-        "Cursor",
-        "MCP"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-artefactjobs-8726293002",
-      "company": "Welcome to the Jungle",
-      "position": "Director, AI & Data Consulting",
-      "location": "135 W 26th Street, New York, NY 10001",
-      "locations": [
-        "135 W 26th Street, New York, NY 10001"
-      ],
-      "remote": false,
-      "salary": "$200,000 - $230,000",
-      "description": "Artefact is a next-generation data and AI consulting firm dedicated to accelerating the adoption of data and AI to create measurable business impact across the full enterprise value chain. We sit at the intersection of consulting, data science, AI technologies, data engineering, and digital...",
-      "applyUrl": "https://job-boards.greenhouse.io/artefactjobs/jobs/8726293002",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/artefactjobs/jobs/8726293002",
-      "postedAt": "2026-11-16T08:56:04-05:00",
-      "tags": [
-        "Claude Code",
-        "MCP"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-artefactjobs-8891733002",
-      "company": "Welcome to the Jungle",
-      "position": "Director, Sales Lead — Google (Gemini Enterprise)",
-      "location": "135 W 26th Street, New York, NY 10001",
-      "locations": [
-        "135 W 26th Street, New York, NY 10001"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "About the job Artefact is a next-generation data and AI consulting firm dedicated to accelerating the adoption of data and AI to create measurable business impact across the full enterprise value chain. We sit at the intersection of consulting, data science, AI technologies, data engineering, and...",
-      "applyUrl": "https://job-boards.greenhouse.io/artefactjobs/jobs/8891733002",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/artefactjobs/jobs/8891733002",
-      "postedAt": "2026-11-16T08:56:04-05:00",
-      "tags": [
-        "Claude Code",
-        "MCP"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-artefactjobs-8726286002",
-      "company": "Welcome to the Jungle",
-      "position": "Manager, AI & Data Consulting",
-      "location": "135 W 26th Street, New York, NY 10001 · Montréal, Quebec, Canada",
-      "locations": [
-        "135 W 26th Street, New York, NY 10001",
-        "Montréal, Quebec, Canada"
-      ],
-      "remote": false,
-      "salary": "$140,000 - $160,000",
-      "description": "Artefact is a next-generation data and AI consulting firm dedicated to accelerating the adoption of data and AI to create measurable business impact across the full enterprise value chain. We sit at the intersection of consulting, data science, AI technologies, data engineering, and digital...",
-      "applyUrl": "https://job-boards.greenhouse.io/artefactjobs/jobs/8726286002",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/artefactjobs/jobs/8726286002",
-      "postedAt": "2026-11-16T08:56:04-05:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "MCP"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-artefactjobs-8726351002",
-      "company": "Welcome to the Jungle",
-      "position": "Senior, AI & Data Consulting",
-      "location": "135 W 26th Street, New York, NY 10001",
-      "locations": [
-        "135 W 26th Street, New York, NY 10001"
-      ],
-      "remote": false,
-      "salary": "$125,000 - $135,000",
-      "description": "Artefact is a next-generation data and AI consulting firm dedicated to accelerating the adoption of data and AI to create measurable business impact across the full enterprise value chain. We sit at the intersection of consulting, data science, AI technologies, data engineering, and digital...",
-      "applyUrl": "https://job-boards.greenhouse.io/artefactjobs/jobs/8726351002",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/artefactjobs/jobs/8726351002",
-      "postedAt": "2026-11-16T08:56:04-05:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "AWS",
-        "GCP",
-        "Azure"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-artefactjobs-8733201002",
-      "company": "Welcome to the Jungle",
-      "position": "Senior, AI & Data Science",
-      "location": "Montréal, Quebec, Canada",
-      "locations": [
-        "Montréal, Quebec, Canada"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "About the job Artefact is a next-generation data and AI consulting firm dedicated to accelerating the adoption of data and AI to create measurable business impact across the full enterprise value chain.We sit at the intersection of consulting, data science, AI technologies, data engineering, and...",
-      "applyUrl": "https://job-boards.greenhouse.io/artefactjobs/jobs/8733201002",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/artefactjobs/jobs/8733201002",
-      "postedAt": "2026-11-16T08:56:04-05:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "AWS",
-        "GCP",
-        "Azure",
-        "Cursor"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-artefactjobs-8931095002",
-      "company": "Welcome to the Jungle",
-      "position": "Senior Forward Deployed Engineer (Gemini Enterprise)",
-      "location": "Montréal, Quebec, Canada",
-      "locations": [
-        "Montréal, Quebec, Canada"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "About Artefact Artefact is a next-generation data and AI consulting firm dedicated to accelerating the adoption of data and AI to create measurable business impact across the full enterprise value chain. We sit at the intersection of consulting, data science, AI technologies, data engineering, and...",
-      "applyUrl": "https://job-boards.greenhouse.io/artefactjobs/jobs/8931095002",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/artefactjobs/jobs/8931095002",
-      "postedAt": "2026-11-16T08:56:04-05:00",
-      "tags": [
-        "Claude Code",
-        "React",
-        "TypeScript",
-        "JavaScript",
-        "Python",
-        "AWS",
-        "GCP",
-        "Azure",
-        "Cursor",
-        "MCP"
       ],
       "companyIcon": ""
     },
@@ -5869,33 +6544,6 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-veeamsoftware-5020953101",
-      "company": "Veeam Software",
-      "position": "Senior Staff Security Engineer",
-      "location": "Warsaw, Poland",
-      "locations": [
-        "Warsaw, Poland"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "Veeam is the Data and AI Trust Company, specializing in helping organizations ensure their data and AI are fully understood, secured, and resilient to enable the acceleration of safe AI at scale. As the market leader in both data resilience and data security posture management, Veeam is built for...",
-      "applyUrl": "https://job-boards.eu.greenhouse.io/veeamsoftware/jobs/5020953101",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.eu.greenhouse.io/veeamsoftware/jobs/5020953101",
-      "postedAt": "2026-11-16T03:22:25-05:00",
-      "tags": [
-        "Claude Code",
-        "TypeScript",
-        "Python",
-        "AWS",
-        "Azure",
-        "Kubernetes",
-        "Cursor",
-        "Copilot"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "gr-powerdigitalmarketing-5295907007",
       "company": "Power Digital",
       "position": "Data Engineer, Marketing Science",
@@ -5915,6 +6563,26 @@
         "Python",
         "Cursor",
         "Copilot"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-sweetspot-b884afcc-b26d-40fd-b11a-b6651cb3ae8f",
+      "company": "Sweetspot",
+      "position": "Creative Strategist (AI-Native, Direct Response)",
+      "location": "New York City",
+      "locations": [
+        "New York City"
+      ],
+      "remote": true,
+      "salary": "$4K – $8K per month • Offers Bonus",
+      "description": "ABOUT SWEETSPOT HEATING & COOLING\n\nSweetSpot is a growing home-services company in the New York metro, and we are building our creative team from zero. This is the number one creative seat in the company, not a slot in a large agency hierarchy. The strategist hired here owns the function, works...",
+      "applyUrl": "https://jobs.ashbyhq.com/sweetspot/b884afcc-b26d-40fd-b11a-b6651cb3ae8f",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/sweetspot/b884afcc-b26d-40fd-b11a-b6651cb3ae8f",
+      "postedAt": "2026-11-15T00:15:49.039+00:00",
+      "tags": [
+        "Claude Code"
       ],
       "companyIcon": ""
     },
@@ -6431,6 +7099,27 @@
       "companyIcon": ""
     },
     {
+      "id": "le-vacancies-dd394ddd-5dbc-4e8d-af44-65789062e100",
+      "company": "Vacancies",
+      "position": "Manual Web QA Engineer",
+      "location": "Kyiv",
+      "locations": [
+        "Kyiv"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "We are a global IT product company shaping the future of real-time social connection. We have millions of users across North America, Europe, Latin America, and MENA, and we build next-gen mobile and web apps for the live-streaming and social networking niches. The market will exceed $206 billion...",
+      "applyUrl": "https://jobs.lever.co/vacancies/dd394ddd-5dbc-4e8d-af44-65789062e100",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/vacancies/dd394ddd-5dbc-4e8d-af44-65789062e100",
+      "postedAt": "2026-11-13T13:27:38.292000+00:00",
+      "tags": [
+        "Claude Code",
+        "MongoDB"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "gr-datagrail-7980031003",
       "company": "DataGrail",
       "position": "IT & Business Systems Administrator",
@@ -6448,6 +7137,51 @@
       "tags": [
         "Claude Code",
         "Python"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "le-vacancies-0c94ee9a-1d38-4e7e-ae93-62656abac925",
+      "company": "Vacancies",
+      "position": "Manual QA Engineer (WEB)",
+      "location": "Kyiv",
+      "locations": [
+        "Kyiv"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "We are looking for a Manual QA Engineer (WEB). You’ll test features as a QA feature owner, from requirements analysis to release, and work closely with developers and product managers. You’ll have a real influence on development and QA processes, and your ideas will get implemented. The role has a...",
+      "applyUrl": "https://jobs.lever.co/vacancies/0c94ee9a-1d38-4e7e-ae93-62656abac925",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/vacancies/0c94ee9a-1d38-4e7e-ae93-62656abac925",
+      "postedAt": "2026-11-13T13:07:18.822000+00:00",
+      "tags": [
+        "Claude Code",
+        "MongoDB"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-iwoca.co.uk-abcd8f09-934a-4641-a57f-872c363223fd",
+      "company": "Iwoca.Co.Uk",
+      "position": "Senior Platform Engineer - Developer Experience ",
+      "location": "London",
+      "locations": [
+        "London"
+      ],
+      "remote": false,
+      "salary": "£90K – £120K",
+      "description": "SENIOR PLATFORM ENGINEER - DEVELOPER EXPERIENCE\n\nHybrid in London or Remote within the United Kingdom\n\n\n\nWe're looking for a Senior Platform Engineer to join the Platform team.\n\nYou’ll enable everyone at iwoca to build and ship with confidence, from engineers to analysts. You'll make it simpler and...",
+      "applyUrl": "https://jobs.ashbyhq.com/iwoca.co.uk/abcd8f09-934a-4641-a57f-872c363223fd",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/iwoca.co.uk/abcd8f09-934a-4641-a57f-872c363223fd",
+      "postedAt": "2026-11-13T12:52:37.043+00:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Go",
+        "Kubernetes",
+        "MCP"
       ],
       "companyIcon": ""
     },
@@ -6631,31 +7365,6 @@
         "Kubernetes",
         "Angular",
         "MySQL"
-      ],
-      "companyIcon": "https://bitwarden.com/favicon.ico"
-    },
-    {
-      "id": "gr-bitwarden-7886240003",
-      "company": "Bitwarden",
-      "position": "Senior Software Engineer (Autofills Coverage)",
-      "location": "Noida",
-      "locations": [
-        "Noida"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "Bitwarden promotes better internet security and safety with the leading open source password management solution for individuals, teams, and business organizations. Our philosophy on security is that “we are all in this together” – we continue to offer a full-featured free version of Bitwarden so...",
-      "applyUrl": "https://bitwarden.com/careers/7886240003/?gh_jid=7886240003",
-      "source": "Greenhouse",
-      "sourceUrl": "https://bitwarden.com/careers/7886240003/?gh_jid=7886240003",
-      "postedAt": "2026-11-13T07:37:33-05:00",
-      "tags": [
-        "Claude Code",
-        "React",
-        "TypeScript",
-        "JavaScript",
-        "Node.js",
-        "Docker"
       ],
       "companyIcon": "https://bitwarden.com/favicon.ico"
     },
@@ -7380,23 +8089,23 @@
       "companyIcon": ""
     },
     {
-      "id": "as-futuremedia-03527e1d-2895-40fb-8d29-10def3908ce2",
-      "company": "Futuremedia",
-      "position": "QA Engineer (Manual + Automation, AI-Native)",
-      "location": "Global",
+      "id": "as-Plaud-4a2dedb1-7bd6-40c3-854f-2e172bfbffde",
+      "company": "Plaud",
+      "position": "Netsuite-System Expert-Shenzhen",
+      "location": "San Francisco, CA",
       "locations": [
-        "Global"
+        "San Francisco, CA"
       ],
-      "remote": true,
+      "remote": false,
       "salary": "",
-      "description": "ABOUT FUTUREMEDIA\n\nFutureMedia is a global product portfolio company building practical digital products used by millions of people worldwide.\n\nOur products span career, self-discovery, productivity, and digital essentials. We build them by bringing product, engineering, design, data, and growth...",
-      "applyUrl": "https://jobs.ashbyhq.com/futuremedia/03527e1d-2895-40fb-8d29-10def3908ce2",
+      "description": "About Plaud Inc.\n\nPlaud is building the real-world AI interface for professionals to amplify intelligence, elevate productivity and performance, loved by over 3,000,000 users worldwide since 2023. With a mission to amplify human intelligence, Plaud captures, structures, and compounds the...",
+      "applyUrl": "https://jobs.ashbyhq.com/Plaud/4a2dedb1-7bd6-40c3-854f-2e172bfbffde",
       "source": "Ashby",
-      "sourceUrl": "https://jobs.ashbyhq.com/futuremedia/03527e1d-2895-40fb-8d29-10def3908ce2",
-      "postedAt": "2026-11-12T06:09:53.192+00:00",
+      "sourceUrl": "https://jobs.ashbyhq.com/Plaud/4a2dedb1-7bd6-40c3-854f-2e172bfbffde",
+      "postedAt": "2026-11-12T06:56:26.648+00:00",
       "tags": [
         "Claude Code",
-        "TypeScript"
+        "Go"
       ],
       "companyIcon": ""
     },
@@ -7738,6 +8447,26 @@
       "companyIcon": ""
     },
     {
+      "id": "as-Arlo-1d727d9f-0f34-4137-95de-266ad0b3bf8c",
+      "company": "Arlo",
+      "position": "Product Manager, Quoting Platform",
+      "location": "New York City",
+      "locations": [
+        "New York City"
+      ],
+      "remote": false,
+      "salary": "$160,000–$210,000",
+      "description": "Most of what makes American healthcare expensive isn’t medical care. It’s the machinery wrapped around it: middlemen taking a cut, fraud nobody stops, and billing systems designed to fight over payment instead of deliver care. The result is higher premiums, denied claims, surprise bills, and a...",
+      "applyUrl": "https://jobs.ashbyhq.com/Arlo/1d727d9f-0f34-4137-95de-266ad0b3bf8c",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/Arlo/1d727d9f-0f34-4137-95de-266ad0b3bf8c",
+      "postedAt": "2026-11-11T13:56:21.696+00:00",
+      "tags": [
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "gr-riskified-8805509002",
       "company": "Riskified",
       "position": "Security Engineer ",
@@ -7831,23 +8560,43 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-boosta-5030381101",
-      "company": "Boosta",
-      "position": "Motion Designer",
-      "location": "Remote, Europe · Remote, Ukraine",
+      "id": "as-Plaud-87fdda05-dc6a-4d06-8d56-1aebd451cc50",
+      "company": "Plaud",
+      "position": "Marketplace Specialist - 電商平台營運專員",
+      "location": "Taiwan",
       "locations": [
-        "Remote, Europe",
-        "Remote, Ukraine"
+        "Taiwan"
       ],
-      "remote": true,
+      "remote": false,
       "salary": "",
-      "description": "Hi! We are Boosta, a holding tech company that creates, develops, and invests in digital businesses with global potential. Today, we collaborate with over 800 specialists from different parts of the world, and millions of users use our products and services. We’re currently looking for a Motion...",
-      "applyUrl": "https://job-boards.eu.greenhouse.io/boosta/jobs/5030381101",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.eu.greenhouse.io/boosta/jobs/5030381101",
-      "postedAt": "2026-11-11T10:03:34-05:00",
+      "description": "關於 Plaud Inc.\n\nPlaud 致力於打造專為專業人士設計的真實世界 AI 介面，協助放大智慧、提升生產力與工作表現。自 2023 年以來，Plaud 已深受全球 170 多個國家及地區、超過 3,000,000 名用戶的喜愛。我們的使命是放大人類智慧：捕捉、結構化並持續累積對話中產生的智慧，讓人們思考得更好、決策得更快、執行得更清晰。\n\nPlaud Inc. 為一家於美國德拉瓦州註冊、總部位於舊金山的公司。我們已通過 GDPR、SOC 2 Type II、HIPAA 及 EN 18031 等合規認證，致力於以最高標準保障資料安全與隱私。\n\n想進一步了解 Plaud，歡迎造訪...",
+      "applyUrl": "https://jobs.ashbyhq.com/Plaud/87fdda05-dc6a-4d06-8d56-1aebd451cc50",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/Plaud/87fdda05-dc6a-4d06-8d56-1aebd451cc50",
+      "postedAt": "2026-11-11T09:34:10.402+00:00",
       "tags": [
         "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-iwoca.co.uk-6dbba891-4f9a-45de-98b4-c1049cde0fb9",
+      "company": "Iwoca.Co.Uk",
+      "position": "Strategy Analyst - Operations Strategy & CRM",
+      "location": "London",
+      "locations": [
+        "London"
+      ],
+      "remote": false,
+      "salary": "£60K – £70K",
+      "description": "The company\n\nSmall businesses move fast. Opportunities often don’t wait, and cash flow pressures can appear overnight. To keep going, and growing, SMEs need finance that’s as flexible and responsive as they are.\n\nThat's why we built iwoca. Our smart technology, data science and five-star customer...",
+      "applyUrl": "https://jobs.ashbyhq.com/iwoca.co.uk/6dbba891-4f9a-45de-98b4-c1049cde0fb9",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/iwoca.co.uk/6dbba891-4f9a-45de-98b4-c1049cde0fb9",
+      "postedAt": "2026-11-11T09:06:12.516+00:00",
+      "tags": [
+        "Claude Code",
+        "Python"
       ],
       "companyIcon": ""
     },
@@ -7928,6 +8677,32 @@
         "Go",
         "PostgreSQL",
         "AWS",
+        "Docker",
+        "Kubernetes",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-Preference-Model-d9bd60aa-3bb4-4088-8c99-6ce677aac4bf",
+      "company": "Preference Model",
+      "position": "Member of Technical Staff - ML Platform Engineer",
+      "location": "San Francisco",
+      "locations": [
+        "San Francisco"
+      ],
+      "remote": false,
+      "salary": "$180K – $350K • Offers Equity",
+      "description": "ABOUT US\n\nPreference Model is a superintelligence data research company. We build RL environments for training capable, better-aligned superintelligences.\n\nAlmost every aspect of how a model behaves is shaped by the reward signals it's trained on. The biggest problem with AIs today is that they...",
+      "applyUrl": "https://jobs.ashbyhq.com/Preference-Model/d9bd60aa-3bb4-4088-8c99-6ce677aac4bf",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/Preference-Model/d9bd60aa-3bb4-4088-8c99-6ce677aac4bf",
+      "postedAt": "2026-11-10T23:51:21.159+00:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "AWS",
+        "GCP",
         "Docker",
         "Kubernetes",
         "Cursor"
@@ -8517,19 +9292,19 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-samsara-8302004",
+      "id": "gr-samsara-8281490",
       "company": "Samsara",
       "position": "Senior AI Data & Analytics Engineer II",
-      "location": "Remote - Seattle",
+      "location": "Remote - Chicago",
       "locations": [
-        "Remote - Seattle"
+        "Remote - Chicago"
       ],
       "remote": true,
       "salary": "",
       "description": "Who we are Samsara (NYSE: IOT) is the pioneer of the Connected Operations™ Cloud, which is a platform that enables organizations that depend on physical operations to harness Internet of Things (IoT) data to develop actionable insights and improve their operations. At Samsara, we are helping...",
-      "applyUrl": "https://www.samsara.com/company/careers/roles/8302004?gh_jid=8302004",
+      "applyUrl": "https://www.samsara.com/company/careers/roles/8281490?gh_jid=8281490",
       "source": "Greenhouse",
-      "sourceUrl": "https://www.samsara.com/company/careers/roles/8302004?gh_jid=8302004",
+      "sourceUrl": "https://www.samsara.com/company/careers/roles/8281490?gh_jid=8281490",
       "postedAt": "2026-11-10T11:47:15-05:00",
       "tags": [
         "Claude Code",
@@ -8822,6 +9597,106 @@
       "companyIcon": ""
     },
     {
+      "id": "as-Plaud-e5efdb4c-e30b-4e40-9dbc-dbd8629656f2",
+      "company": "Plaud",
+      "position": "Staff Engineer, Engineering-wide",
+      "location": "San Francisco, CA · Palo Alto, CA",
+      "locations": [
+        "San Francisco, CA",
+        "Palo Alto, CA"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "About Plaud Inc.\n\nPlaud is building the real-world AI interface for professionals to amplify intelligence, elevate productivity and performance, loved by over 3,000,000 users worldwide since 2023. With a mission to amplify human intelligence, Plaud captures, structures, and compounds the...",
+      "applyUrl": "https://jobs.ashbyhq.com/Plaud/e5efdb4c-e30b-4e40-9dbc-dbd8629656f2",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/Plaud/e5efdb4c-e30b-4e40-9dbc-dbd8629656f2",
+      "postedAt": "2026-11-09T23:37:45.044+00:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "Python",
+        "Go",
+        "AWS",
+        "GCP",
+        "Kubernetes"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-Plaud-27de31e9-8b79-4e53-b305-f8599069121d",
+      "company": "Plaud",
+      "position": "Head of Growth Engineering",
+      "location": "San Francisco, CA · Palo Alto, CA",
+      "locations": [
+        "San Francisco, CA",
+        "Palo Alto, CA"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "About Plaud Inc.\n\nPlaud is building the real-world AI interface for professionals to amplify intelligence, elevate productivity and performance, loved by over 3,000,000 users worldwide since 2023. With a mission to amplify human intelligence, Plaud captures, structures, and compounds the...",
+      "applyUrl": "https://jobs.ashbyhq.com/Plaud/27de31e9-8b79-4e53-b305-f8599069121d",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/Plaud/27de31e9-8b79-4e53-b305-f8599069121d",
+      "postedAt": "2026-11-09T23:33:08.663+00:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "Python",
+        "Go",
+        "Node.js"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-Plaud-910f8249-4367-413f-b0ee-8aa6999ce8d6",
+      "company": "Plaud",
+      "position": "Head of Product Engineering",
+      "location": "San Francisco, CA · Palo Alto, CA",
+      "locations": [
+        "San Francisco, CA",
+        "Palo Alto, CA"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "About Plaud Inc.\n\nPlaud is building the real-world AI interface for professionals to amplify intelligence, elevate productivity and performance, loved by over 3,000,000 users worldwide since 2023. With a mission to amplify human intelligence, Plaud captures, structures, and compounds the...",
+      "applyUrl": "https://jobs.ashbyhq.com/Plaud/910f8249-4367-413f-b0ee-8aa6999ce8d6",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/Plaud/910f8249-4367-413f-b0ee-8aa6999ce8d6",
+      "postedAt": "2026-11-09T23:29:54.223+00:00",
+      "tags": [
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-Plaud-844a97ac-bdc2-4696-9f17-e76ec9055ace",
+      "company": "Plaud",
+      "position": "Head of Platform Engineering",
+      "location": "Palo Alto, CA · San Francisco, CA",
+      "locations": [
+        "Palo Alto, CA",
+        "San Francisco, CA"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "About Plaud Inc.\n\nPlaud is building the real-world AI interface for professionals to amplify intelligence, elevate productivity and performance, loved by over 3,000,000 users worldwide since 2023. With a mission to amplify human intelligence, Plaud captures, structures, and compounds the...",
+      "applyUrl": "https://jobs.ashbyhq.com/Plaud/844a97ac-bdc2-4696-9f17-e76ec9055ace",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/Plaud/844a97ac-bdc2-4696-9f17-e76ec9055ace",
+      "postedAt": "2026-11-09T23:27:34.265+00:00",
+      "tags": [
+        "Claude Code",
+        "Go",
+        "AWS",
+        "GCP",
+        "Kubernetes",
+        "Java",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "as-GovEagle-15108e53-80a2-4b11-abf7-1ad0812a2027",
       "company": "Goveagle",
       "position": "Software Engineer",
@@ -8948,6 +9823,34 @@
       "companyIcon": ""
     },
     {
+      "id": "as-quo-cfc3ade0-d34d-4d11-953e-637d3b88b6e1",
+      "company": "Quo",
+      "position": "Junior Fullstack Engineer",
+      "location": "Remote - San Francisco · Remote - New York City · Remote - Vancouver · Remote - Toronto",
+      "locations": [
+        "Remote - San Francisco",
+        "Remote - New York City",
+        "Remote - Vancouver",
+        "Remote - Toronto"
+      ],
+      "remote": true,
+      "salary": "$141,000 - $166,000",
+      "description": "Small businesses represent 99.9% of all companies, yet they're still forced to choose between clunky, outdated enterprise phone systems or their personal phones. This multi-billion dollar market has been overlooked for decades, left to cobble together solutions that slow them down instead of...",
+      "applyUrl": "https://jobs.ashbyhq.com/quo/cfc3ade0-d34d-4d11-953e-637d3b88b6e1",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/quo/cfc3ade0-d34d-4d11-953e-637d3b88b6e1",
+      "postedAt": "2026-11-09T18:54:14.665+00:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "TypeScript",
+        "PostgreSQL",
+        "GraphQL",
+        "Redis"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "as-realestatebees-3684f838-8d82-4785-b60d-db11a17714f7",
       "company": "Realestatebees",
       "position": "Backend Engineer (PHP/Laravel)",
@@ -8991,6 +9894,26 @@
         "Claude Code",
         "Python",
         "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-upvest-936058cd-9ffe-4286-9c68-7d024111b2f7",
+      "company": "Upvest",
+      "position": "Growth Strategy Intern (f/m/d)",
+      "location": "Berlin",
+      "locations": [
+        "Berlin"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "At Upvest, we are on a mission to make investing as easy as spending money. Upvest empowers businesses to offer a wide range of investment products and the best experience in the field of capital market investment and retirement planning. Upvest’s Investment API is easy to integrate so that...",
+      "applyUrl": "https://jobs.ashbyhq.com/upvest/936058cd-9ffe-4286-9c68-7d024111b2f7",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/upvest/936058cd-9ffe-4286-9c68-7d024111b2f7",
+      "postedAt": "2026-11-09T17:14:05.350+00:00",
+      "tags": [
+        "Claude Code"
       ],
       "companyIcon": ""
     },
@@ -9165,31 +10088,6 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-cognite-4873144101",
-      "company": "Cognite - AI for Industry",
-      "position": "Principal Pre-sales Solutions Consultant (Pharma/Life Science)",
-      "location": "Europe",
-      "locations": [
-        "Europe"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "What Cognite is Relentless to Achieve Cognite operates at the forefront of industrial digitalization, building AI and data solutions that solve the world’s hardest, highest-impact problems. Our Moonshot is bold: unlock $100B in customer value by 2035, and redefine how global industry works. What...",
-      "applyUrl": "https://job-boards.eu.greenhouse.io/cognite/jobs/4873144101",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.eu.greenhouse.io/cognite/jobs/4873144101",
-      "postedAt": "2026-11-09T14:26:30-05:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "AWS",
-        "GCP",
-        "Azure",
-        "Cursor"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "gr-dashlane-8366806",
       "company": "Dashlane",
       "position": "Senior Software Engineer - Web",
@@ -9349,13 +10247,14 @@
       "id": "le-provectus-92ccf747-e1a2-48b8-b0b5-9f8503480dc5",
       "company": "Provectus",
       "position": "Junior AI/ML Engineer (GenAI, AWS)",
-      "location": "Ukraine · Spain · Serbia · Yerevan · Poland",
+      "location": "Ukraine · Spain · Serbia · Yerevan · Poland · Batumi",
       "locations": [
         "Ukraine",
         "Spain",
         "Serbia",
         "Yerevan",
-        "Poland"
+        "Poland",
+        "Batumi"
       ],
       "remote": true,
       "salary": "",
@@ -9799,36 +10698,6 @@
       "companyIcon": "https://gitlab.com/favicon.ico"
     },
     {
-      "id": "gr-gitlab-8871406002",
-      "company": "GitLab",
-      "position": "Senior CX Platform Engineer",
-      "location": "Remote, Canada · Remote, United States",
-      "locations": [
-        "Remote, Canada",
-        "Remote, United States"
-      ],
-      "remote": true,
-      "salary": "",
-      "description": "GitLab is the intelligent orchestration platform for DevSecOps. GitLab enables organizations to increase developer productivity, improve operational efficiency, reduce security and compliance risk, and accelerate digital transformation. More than 50 million registered users and more than 50% of the...",
-      "applyUrl": "https://job-boards.greenhouse.io/gitlab/jobs/8871406002",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/gitlab/jobs/8871406002",
-      "postedAt": "2026-11-06T15:25:07-05:00",
-      "tags": [
-        "Claude Code",
-        "React",
-        "TypeScript",
-        "Python",
-        "AWS",
-        "Docker",
-        "Cursor",
-        "Flask",
-        "Vue.js",
-        "GraphQL"
-      ],
-      "companyIcon": "https://gitlab.com/favicon.ico"
-    },
-    {
       "id": "gr-archer56-7984475003",
       "company": "Archer",
       "position": "Staff Software Engineer, Android",
@@ -9874,29 +10743,6 @@
         "AWS",
         "GCP",
         "Azure"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "le-iru-76bb7b66-05fb-4fea-ae75-cbf8bfa0c23d",
-      "company": "Iru",
-      "position": "Director, AI-Driven Marketing",
-      "location": "Miami",
-      "locations": [
-        "Miami"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "About Iru\n \nIru is the AI-powered security & IT platform used by the world’s fastest-growing companies to secure their users, apps, and devices. Built for the AI era, Iru unifies identity & access, endpoint security & management, and compliance automation—collapsing the stack and giving IT &...",
-      "applyUrl": "https://jobs.lever.co/iru/76bb7b66-05fb-4fea-ae75-cbf8bfa0c23d",
-      "source": "Lever",
-      "sourceUrl": "https://jobs.lever.co/iru/76bb7b66-05fb-4fea-ae75-cbf8bfa0c23d",
-      "postedAt": "2026-11-06T14:28:43.241000+00:00",
-      "tags": [
-        "Claude Code",
-        "AWS",
-        "Cursor",
-        "MCP"
       ],
       "companyIcon": ""
     },
@@ -10091,6 +10937,34 @@
       "companyIcon": ""
     },
     {
+      "id": "gr-aircallioinc-4401266009",
+      "company": "Aircall.io, Inc.",
+      "position": "Lead Software Engineer, Outbound Capabilities",
+      "location": "Madrid Office",
+      "locations": [
+        "Madrid Office"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Aircall is a unicorn AI-powered communications platform transforming how teams win with customers. For over a decade, we’ve believed voice builds the strongest business relationships. We bring voice, SMS, WhatsApp, and 250+ integrations together on one seamless workspace—so every customer...",
+      "applyUrl": "https://job-boards.greenhouse.io/aircallioinc/jobs/4401266009",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/aircallioinc/jobs/4401266009",
+      "postedAt": "2026-11-06T09:55:23-05:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "TypeScript",
+        "Node.js",
+        "PostgreSQL",
+        "AWS",
+        "Cursor",
+        "Copilot",
+        "GraphQL"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "as-hud-edc49fe4-3ec0-402b-931b-4bf7dae0d00c",
       "company": "Hud",
       "position": "GTM Associate - Singapore",
@@ -10177,26 +11051,6 @@
         "MCP"
       ],
       "companyIcon": ""
-    },
-    {
-      "id": "gr-vercel-6210353004",
-      "company": "Vercel",
-      "position": "Product Manager, Software Factory",
-      "location": "Hybrid - San Francisco",
-      "locations": [
-        "Hybrid - San Francisco"
-      ],
-      "remote": false,
-      "salary": "$208,000 - $312,000",
-      "description": "About Vercel: Vercel is the agentic infrastructure company, freeing people and agents to ship what's next. For more than a decade we've helped builders move from idea to production with speed, security, and exceptional developer experience. Now we're scaling our products for both agents and people...",
-      "applyUrl": "https://job-boards.greenhouse.io/vercel/jobs/6210353004",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/vercel/jobs/6210353004",
-      "postedAt": "2026-11-05T18:21:30-05:00",
-      "tags": [
-        "Claude Code"
-      ],
-      "companyIcon": "https://vercel.com/favicon.ico"
     },
     {
       "id": "gr-mark43-8357123",
@@ -10463,6 +11317,27 @@
       "companyIcon": ""
     },
     {
+      "id": "le-vacancies-97f044a8-7c7e-48f2-ba29-4b4db4cde187",
+      "company": "Vacancies",
+      "position": "Head of AI",
+      "location": "Kyiv",
+      "locations": [
+        "Kyiv"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "United Tech is a global IT product company shaping the future of real-time social connection. With millions of users across North America, Europe, LATAM, and MENA, we build next-gen mobile and web apps for live-streaming and social networking. Our platforms enable connection at scale fast,...",
+      "applyUrl": "https://jobs.lever.co/vacancies/97f044a8-7c7e-48f2-ba29-4b4db4cde187",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/vacancies/97f044a8-7c7e-48f2-ba29-4b4db4cde187",
+      "postedAt": "2026-11-05T15:06:19.521000+00:00",
+      "tags": [
+        "Claude Code",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "gr-crexi-4751623005",
       "company": "Crexi",
       "position": "GTM Automation Engineer",
@@ -10682,37 +11557,9 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-grafanalabs-6092955004",
-      "company": "Grafana Labs",
-      "position": "Staff AI Engineer | USA | Remote",
-      "location": "United States (Remote)",
-      "locations": [
-        "United States (Remote)"
-      ],
-      "remote": true,
-      "salary": "",
-      "description": "Grafana Labs is the company behind Grafana Cloud, the fully managed observability platform trusted by more than 10,000 organizations to ensure reliability, resolve incidents faster, and optimize telemetry at scale. Built on open source and open standards and designed for interoperability across any...",
-      "applyUrl": "https://job-boards.greenhouse.io/grafanalabs/jobs/6092955004",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/grafanalabs/jobs/6092955004",
-      "postedAt": "2026-11-05T08:02:38-05:00",
-      "tags": [
-        "Claude Code",
-        "React",
-        "JavaScript",
-        "Python",
-        "Node.js",
-        "GCP",
-        "Cursor",
-        "Copilot",
-        "MCP"
-      ],
-      "companyIcon": "https://grafana.com/favicon.ico"
-    },
-    {
       "id": "as-trm-labs-d8498fe0-1f86-46e6-805a-626489ddd0cb",
       "company": "Trm Labs",
-      "position": "Senior AI Engineer (AI Automation) ",
+      "position": "Senior Software Engineer, Internal Tools & AI Automation",
       "location": "United States · Toronto, Canada · San Francisco, California · São Paulo, Brazil",
       "locations": [
         "United States",
@@ -11266,6 +12113,27 @@
       "companyIcon": ""
     },
     {
+      "id": "as-Plaud-c4b99f9b-1436-458b-809f-fdfe3fa1bd14",
+      "company": "Plaud",
+      "position": "AI Integration Engineer",
+      "location": "San Francisco, CA",
+      "locations": [
+        "San Francisco, CA"
+      ],
+      "remote": false,
+      "salary": "$140,000 - $276,000",
+      "description": "About Plaud Inc.\n\nPlaud is building the real-world AI interface for professionals to amplify intelligence, elevate productivity and performance, loved by over 3,000,000 users worldwide since 2023. With a mission to amplify human intelligence, Plaud captures, structures, and compounds the...",
+      "applyUrl": "https://jobs.ashbyhq.com/Plaud/c4b99f9b-1436-458b-809f-fdfe3fa1bd14",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/Plaud/c4b99f9b-1436-458b-809f-fdfe3fa1bd14",
+      "postedAt": "2026-11-03T22:18:50.466+00:00",
+      "tags": [
+        "Claude Code",
+        "Python"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "as-render-5e1edcfd-9bc7-4d87-a393-f213e47a9431",
       "company": "Render",
       "position": "Staff DX Engineer",
@@ -11565,19 +12433,19 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-epicgames-6006101004",
+      "id": "gr-epicgames-6206041004",
       "company": "Epic Games",
       "position": "Lead Gameplay Programmer",
-      "location": "Cary,North Carolina,United States",
+      "location": "BLANK,BLANK,Multiple Locations",
       "locations": [
-        "Cary,North Carolina,United States"
+        "BLANK,BLANK,Multiple Locations"
       ],
       "remote": false,
       "salary": "",
       "description": "WHAT MAKES US EPIC? At the core of Epic’s success are talented, passionate people. Epic prides itself on creating a collaborative, welcoming, and creative environment. Whether it’s building award-winning games or crafting engine technology that enables others to make visually stunning interactive...",
-      "applyUrl": "https://epicgames.com/careers/jobs/6006101004?gh_jid=6006101004",
+      "applyUrl": "https://epicgames.com/careers/jobs/6206041004?gh_jid=6206041004",
       "source": "Greenhouse",
-      "sourceUrl": "https://epicgames.com/careers/jobs/6006101004?gh_jid=6006101004",
+      "sourceUrl": "https://epicgames.com/careers/jobs/6206041004?gh_jid=6206041004",
       "postedAt": "2026-11-03T16:19:38-05:00",
       "tags": [
         "Claude Code"
@@ -11862,34 +12730,6 @@
         "Redis"
       ],
       "companyIcon": ""
-    },
-    {
-      "id": "gr-grafanalabs-6092954004",
-      "company": "Grafana Labs",
-      "position": "Staff AI Engineer | Canada | Remote",
-      "location": "Canada (Remote)",
-      "locations": [
-        "Canada (Remote)"
-      ],
-      "remote": true,
-      "salary": "",
-      "description": "Grafana Labs is the company behind Grafana Cloud, the fully managed observability platform trusted by more than 10,000 organizations to ensure reliability, resolve incidents faster, and optimize telemetry at scale. Built on open source and open standards and designed for interoperability across any...",
-      "applyUrl": "https://job-boards.greenhouse.io/grafanalabs/jobs/6092954004",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/grafanalabs/jobs/6092954004",
-      "postedAt": "2026-11-03T12:55:20-05:00",
-      "tags": [
-        "Claude Code",
-        "React",
-        "JavaScript",
-        "Python",
-        "Node.js",
-        "GCP",
-        "Cursor",
-        "Copilot",
-        "MCP"
-      ],
-      "companyIcon": "https://grafana.com/favicon.ico"
     },
     {
       "id": "gr-nortal-5268601007",
@@ -12788,6 +13628,26 @@
       "companyIcon": ""
     },
     {
+      "id": "as-Plaud-40fda566-bd18-48cd-8e13-924bf8baf871",
+      "company": "Plaud",
+      "position": "Customer Support Specialist - Singapore",
+      "location": "Singapore",
+      "locations": [
+        "Singapore"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "About Plaud Inc.\n\nPlaud is building the real-world AI interface for professionals to amplify intelligence, elevate productivity and performance, loved by over 3,000,000 users across 170+ countries and regions since 2023. With a mission to amplify human intelligence, Plaud captures, structures, and...",
+      "applyUrl": "https://jobs.ashbyhq.com/Plaud/40fda566-bd18-48cd-8e13-924bf8baf871",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/Plaud/40fda566-bd18-48cd-8e13-924bf8baf871",
+      "postedAt": "2026-11-02T03:02:02.905+00:00",
+      "tags": [
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "anth-5465639008",
       "company": "Anthropic",
       "position": "AI Outcomes Manager, Strategic Tech (Spanish-speaking)",
@@ -12897,6 +13757,26 @@
         "GCP",
         "Azure",
         "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-quo-e4e88ab4-da1b-4c78-88d4-66f9f69bd44f",
+      "company": "Quo",
+      "position": "Senior Product Designer, Mobile",
+      "location": "Remote - United States & Canada",
+      "locations": [
+        "Remote - United States & Canada"
+      ],
+      "remote": true,
+      "salary": "$166,000 - $195,000",
+      "description": "Small businesses represent 99.9% of all companies, yet they're still forced to choose between clunky, outdated enterprise phone systems or their personal phones. This multi-billion dollar market has been overlooked for decades, left to cobble together solutions that slow them down instead of...",
+      "applyUrl": "https://jobs.ashbyhq.com/quo/e4e88ab4-da1b-4c78-88d4-66f9f69bd44f",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/quo/e4e88ab4-da1b-4c78-88d4-66f9f69bd44f",
+      "postedAt": "2026-10-30T21:50:24.011+00:00",
+      "tags": [
+        "Claude Code"
       ],
       "companyIcon": ""
     },
@@ -13583,19 +14463,19 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-alphasense-8887127002",
+      "id": "gr-alphasense-8860806002",
       "company": "AlphaSense",
       "position": "Product Manager, New Content Initiatives and Analysis",
-      "location": "Remote - United Kingdom",
+      "location": "Remote - United States",
       "locations": [
-        "Remote - United Kingdom"
+        "Remote - United States"
       ],
       "remote": true,
       "salary": "",
       "description": "About AlphaSense: AlphaSense is the AI platform redefining market intelligence and workflow orchestration, trusted by thousands of leading organizations to drive faster, more confident decisions in business and finance. The platform combines domain-specific AI with a vast content universe of over...",
-      "applyUrl": "https://job-boards.greenhouse.io/alphasense/jobs/8887127002",
+      "applyUrl": "https://job-boards.greenhouse.io/alphasense/jobs/8860806002",
       "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/alphasense/jobs/8887127002",
+      "sourceUrl": "https://job-boards.greenhouse.io/alphasense/jobs/8860806002",
       "postedAt": "2026-10-30T09:54:20-04:00",
       "tags": [
         "Claude Code"
@@ -13603,40 +14483,19 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-alphasense-8702065002",
-      "company": "AlphaSense",
-      "position": "Staff Technical Program Manager",
-      "location": "Remote - United Kingdom",
-      "locations": [
-        "Remote - United Kingdom"
-      ],
-      "remote": true,
-      "salary": "",
-      "description": "About AlphaSense: AlphaSense is the AI platform redefining market intelligence and workflow orchestration, trusted by thousands of leading organizations to drive faster, more confident decisions in business and finance. The platform combines domain-specific AI with a vast content universe of over...",
-      "applyUrl": "https://job-boards.greenhouse.io/alphasense/jobs/8702065002",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/alphasense/jobs/8702065002",
-      "postedAt": "2026-10-30T09:51:25-04:00",
-      "tags": [
-        "Claude Code",
-        "MCP"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-epicgames-6122975004",
+      "id": "gr-epicgames-6122977004",
       "company": "Epic Games",
       "position": "Principal Engineer, AI Platform",
-      "location": "Cary,North Carolina,United States",
+      "location": "BLANK,BLANK,Multiple Locations",
       "locations": [
-        "Cary,North Carolina,United States"
+        "BLANK,BLANK,Multiple Locations"
       ],
       "remote": false,
       "salary": "",
       "description": "WHAT MAKES US EPIC? At the core of Epic’s success are talented, passionate people. Epic prides itself on creating a collaborative, welcoming, and creative environment. Whether it’s building award-winning games or crafting engine technology that enables others to make visually stunning interactive...",
-      "applyUrl": "https://epicgames.com/careers/jobs/6122975004?gh_jid=6122975004",
+      "applyUrl": "https://epicgames.com/careers/jobs/6122977004?gh_jid=6122977004",
       "source": "Greenhouse",
-      "sourceUrl": "https://epicgames.com/careers/jobs/6122975004?gh_jid=6122975004",
+      "sourceUrl": "https://epicgames.com/careers/jobs/6122977004?gh_jid=6122977004",
       "postedAt": "2026-10-30T08:51:14-04:00",
       "tags": [
         "Claude Code",
@@ -13990,30 +14849,6 @@
       "companyIcon": ""
     },
     {
-      "id": "rok-remote-cloud-engineer-automation-smile-digital-health-1137600",
-      "company": "Smile Digital Health",
-      "position": "Cloud Engineer Automation",
-      "location": "Remote (Toronto, Ontario)",
-      "locations": [
-        "Toronto, Ontario"
-      ],
-      "remote": true,
-      "salary": "$120,000 - $140,000",
-      "description": "Working for a company like Smile Digital Health means supporting our mandate for #BetterGlobalHealth . We strive towards this goal every day, and the results can be seen in the impact of our innovative health data platform and data management solutions, which are used in over 20 countries. We were...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-cloud-engineer-automation-smile-digital-health-1137600",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-cloud-engineer-automation-smile-digital-health-1137600",
-      "postedAt": "2026-10-29T16:00:03+00:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "PostgreSQL",
-        "Azure",
-        "Kubernetes"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "le-osedea-c2a14eb9-ed2b-491b-8c30-e35ef614ed3d",
       "company": "Osedea",
       "position": "Développeur.euse senior en IA agentique",
@@ -14251,6 +15086,31 @@
         "MCP"
       ],
       "companyIcon": "https://elastic.co/favicon.ico"
+    },
+    {
+      "id": "as-iwoca.co.uk-bd586902-9775-4148-a8a1-1f714964d96c",
+      "company": "Iwoca.Co.Uk",
+      "position": "Senior Full-Stack Engineer - Credit Cards",
+      "location": "London",
+      "locations": [
+        "London"
+      ],
+      "remote": false,
+      "salary": "£80K – £90K",
+      "description": "SENIOR FULL-STACK ENGINEER - CREDIT CARDS\n\nHybrid in London, United Kingdom\n\n\n\nWe’re looking for a Senior Full-Stack Engineer.\n\nYou’ll build features on iwoca’s business credit card and own each one from the first line of code to the moment a customer makes their first spend.\n\n\n\nThe company\n\nSmall...",
+      "applyUrl": "https://jobs.ashbyhq.com/iwoca.co.uk/bd586902-9775-4148-a8a1-1f714964d96c",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/iwoca.co.uk/bd586902-9775-4148-a8a1-1f714964d96c",
+      "postedAt": "2026-10-29T09:22:57.590+00:00",
+      "tags": [
+        "Claude Code",
+        "React Native",
+        "React",
+        "TypeScript",
+        "Python",
+        "PostgreSQL"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "as-Easygenerator-7e605a51-4b83-4b29-9db0-1c6b67625119",
@@ -14664,7 +15524,7 @@
         "Hub - Seattle"
       ],
       "remote": false,
-      "salary": "$180K – $275K • Offers Equity • Multiple Ranges",
+      "salary": "$200K – $275K • Offers Equity • Multiple Ranges",
       "description": "Superhuman offers a dynamic hybrid working model for this role. This flexible approach gives team members the best of both worlds: plenty of focus time along with in-person collaboration that helps foster trust, innovation, and a strong team culture.\n\n\n\n\nABOUT SUPERHUMAN\n\nGrammarly is now part of...",
       "applyUrl": "https://jobs.ashbyhq.com/Superhuman%20Platform%20Inc/fadab17c-adc4-4451-9c44-b5a1db695706",
       "source": "Ashby",
@@ -14815,36 +15675,6 @@
         "Claude Code",
         "Python",
         "Docker"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "as-m-kopa-4f814df8-71c1-4aef-99ca-4ca5e47dd266",
-      "company": "M Kopa",
-      "position": "Senior Backend Engineer - Mobility ",
-      "location": "Nairobi · Cape Town · Lagos · Kampala · Accra · Johannesburg",
-      "locations": [
-        "Nairobi",
-        "Cape Town",
-        "Lagos",
-        "Kampala",
-        "Accra",
-        "Johannesburg"
-      ],
-      "remote": true,
-      "salary": "",
-      "description": "[https://app.ashbyhq.com/api/images/user-content/1d985516-2a99-43c0-b591-957f5adaceb9/5ac97b31-49cd-4012-8bb0-5caf15e33c69/B25.png]\n\n\n\nJoin our expanding Mobility engineering team! We’re actively recruiting a Senior Backend Engineer as M-KOPA Mobility, our fast-growing e-mobility business, which...",
-      "applyUrl": "https://jobs.ashbyhq.com/M-KOPA/4f814df8-71c1-4aef-99ca-4ca5e47dd266",
-      "source": "Ashby",
-      "sourceUrl": "https://jobs.ashbyhq.com/M-KOPA/4f814df8-71c1-4aef-99ca-4ca5e47dd266",
-      "postedAt": "2026-10-27T15:37:28.997+00:00",
-      "tags": [
-        "Claude Code",
-        "AWS",
-        "GCP",
-        "Azure",
-        "Docker",
-        "Kubernetes"
       ],
       "companyIcon": ""
     },
@@ -15133,31 +15963,6 @@
       "companyIcon": ""
     },
     {
-      "id": "le-captivateiq-7eeba044-5350-427e-bfc4-af60d5679645",
-      "company": "Captivateiq",
-      "position": "GTM Engineer",
-      "location": "Remote USA · Poland",
-      "locations": [
-        "Remote USA",
-        "Poland"
-      ],
-      "remote": true,
-      "salary": "",
-      "description": "CaptivateIQ is transforming the way companies plan, manage, and optimize sales performance. We started by revolutionizing incentive compensation management, and now we’re expanding our platform to solve broader sales planning challenges. Recognized by industry analysts like Forrester and G2 and...",
-      "applyUrl": "https://jobs.lever.co/captivateiq/7eeba044-5350-427e-bfc4-af60d5679645",
-      "source": "Lever",
-      "sourceUrl": "https://jobs.lever.co/captivateiq/7eeba044-5350-427e-bfc4-af60d5679645",
-      "postedAt": "2026-10-26T20:44:40.915000+00:00",
-      "tags": [
-        "Claude Code",
-        "JavaScript",
-        "Python",
-        "Cursor",
-        "Copilot"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "as-Crusoe-ef99c43f-8aef-495c-84e7-36663cd73369",
       "company": "Crusoe",
       "position": "Data Scientist, Analytics",
@@ -15323,6 +16128,26 @@
       "companyIcon": ""
     },
     {
+      "id": "as-iwoca.co.uk-d061f5c7-d898-4029-8ab7-d1eb8ec6fade",
+      "company": "Iwoca.Co.Uk",
+      "position": "Data Privacy Analyst - Regulatory Compliance",
+      "location": "London",
+      "locations": [
+        "London"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "The company\n\nSmall businesses move fast. Opportunities often don’t wait, and cash flow pressures can appear overnight. To keep going, and growing, SMEs need finance that’s as flexible and responsive as they are.\n\nThat's why we built iwoca. Our smart technology, data science and five-star customer...",
+      "applyUrl": "https://jobs.ashbyhq.com/iwoca.co.uk/d061f5c7-d898-4029-8ab7-d1eb8ec6fade",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/iwoca.co.uk/d061f5c7-d898-4029-8ab7-d1eb8ec6fade",
+      "postedAt": "2026-10-26T14:52:35.678+00:00",
+      "tags": [
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "as-Coinflow-8d7956ce-8160-45d2-a090-5f5cb337377a",
       "company": "Coinflow",
       "position": "Security Engineer",
@@ -15464,24 +16289,23 @@
       "companyIcon": ""
     },
     {
-      "id": "rok-remote-senior-software-engineer-latam-wagmo-1137572",
-      "company": "Wagmo",
-      "position": "Senior Software Engineer LATAM",
-      "location": "Remote",
-      "locations": [],
-      "remote": true,
-      "salary": "$100k–$140k",
-      "description": "Senior Software Engineer Remote role based in Latin America. Must work at least 6 hours of overlap with US Eastern Time. What We Do Wagmo is a modern pet healthcare company built around how pet parents actually care for their pets. We partner with employers to provide a complete approach to pet and...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-senior-software-engineer-latam-wagmo-1137572",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-senior-software-engineer-latam-wagmo-1137572",
-      "postedAt": "2026-10-26T08:00:06+00:00",
+      "id": "as-weave-os-eaccf911-3d44-49e4-bd84-57310a25358c",
+      "company": "Weave Os",
+      "position": "Technical Customer Success Manager",
+      "location": "Weave HQ",
+      "locations": [
+        "Weave HQ"
+      ],
+      "remote": false,
+      "salary": "$120K – $180K • 0.01% – 0.1%",
+      "description": "Weave (YC W25) is building the definitive platform for understanding and improving how engineering teams work. We believe the way engineering output is measured today is fundamentally broken and that modern AI can give teams a far more accurate and actionable view of productivity, impact and...",
+      "applyUrl": "https://jobs.ashbyhq.com/weave-os/eaccf911-3d44-49e4-bd84-57310a25358c",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/weave-os/eaccf911-3d44-49e4-bd84-57310a25358c",
+      "postedAt": "2026-10-25T21:55:29.146+00:00",
       "tags": [
         "Claude Code",
-        "React",
-        "TypeScript",
-        "Python",
-        "Django"
+        "Cursor"
       ],
       "companyIcon": ""
     },
@@ -15952,6 +16776,27 @@
         "PostgreSQL",
         "AWS",
         "Ruby"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-Plaud-57a36c66-11ae-4e86-9587-987bfaac7fd8",
+      "company": "Plaud",
+      "position": "Machine Learning Engineer (Speech/Audio) - Singapore",
+      "location": "Singapore",
+      "locations": [
+        "Singapore"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "About Plaud Inc.\n\nPlaud is building the real-world AI interface for professionals to amplify intelligence, elevate productivity and performance, loved by over 3,000,000 users worldwide since 2023. With a mission to amplify human intelligence, Plaud captures, structures, and compounds the...",
+      "applyUrl": "https://jobs.ashbyhq.com/Plaud/57a36c66-11ae-4e86-9587-987bfaac7fd8",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/Plaud/57a36c66-11ae-4e86-9587-987bfaac7fd8",
+      "postedAt": "2026-10-23T07:06:27.804+00:00",
+      "tags": [
+        "Claude Code",
+        "Python"
       ],
       "companyIcon": ""
     },
@@ -16549,30 +17394,6 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-talkdesk2-8241903",
-      "company": "Talkdesk",
-      "position": "Software Engineer II - Mobile Developer",
-      "location": "Bengaluru",
-      "locations": [
-        "Bengaluru"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "Responsibilities: Design, develop, and maintain high-quality features on our Android or iOS app, with growing exposure to shared Kotlin Multiplatform code Implement scalable, stable, user-friendly features that hold up under rapid user growth Use AI-assisted development tools to accelerate code...",
-      "applyUrl": "https://job-boards.greenhouse.io/talkdesk2/jobs/8241903",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/talkdesk2/jobs/8241903",
-      "postedAt": "2026-10-21T13:52:12-04:00",
-      "tags": [
-        "Claude Code",
-        "Cursor",
-        "Copilot",
-        "Swift",
-        "Kotlin"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "as-blooming-health-25bdcbd9-3248-4587-9783-cb974ee458b4",
       "company": "Blooming Health",
       "position": "Principal Software Engineer, Platform",
@@ -16976,6 +17797,30 @@
       "companyIcon": ""
     },
     {
+      "id": "as-yoummday-88708db6-ec77-42e1-8d56-eed2fcc17cbe",
+      "company": "Yoummday",
+      "position": "Senior Security Engineer (m/f/d)",
+      "location": "Munich · Berlin",
+      "locations": [
+        "Munich",
+        "Berlin"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "YOUR MISSION\n\nDo you want to do more than just write security concepts - and put your decisions into practice directly? Do you see cloud security not as a compliance checklist, but as the combination of threat modeling, Infrastructure as Code, and genuine hands-on engineering? Then we are looking...",
+      "applyUrl": "https://jobs.ashbyhq.com/yoummday/88708db6-ec77-42e1-8d56-eed2fcc17cbe",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/yoummday/88708db6-ec77-42e1-8d56-eed2fcc17cbe",
+      "postedAt": "2026-10-19T16:33:11.134+00:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Azure",
+        "Django"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "as-abaka.ai-c4786fef-42f1-492c-a8db-8a9bf03e38cf",
       "company": "Abaka.Ai",
       "position": "Data Acquisition",
@@ -17202,30 +18047,6 @@
         "Cursor"
       ],
       "companyIcon": "https://ramp.com/favicon.ico"
-    },
-    {
-      "id": "gr-assemblyai-4744387005",
-      "company": "AssemblyAI",
-      "position": "Software Engineer, Agent Experience",
-      "location": "North America",
-      "locations": [
-        "North America"
-      ],
-      "remote": false,
-      "salary": "$160,000 - $210,000",
-      "description": "Why AssemblyAI AssemblyAI builds the best-in-class Voice AI models powering the next generation of voice applications. We have a lab, and we also power our own models in our own proprietary inference environment. Our models serve 500M+ inference calls monthly, and process nearly 2 million hours of...",
-      "applyUrl": "https://job-boards.greenhouse.io/assemblyai/jobs/4744387005",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/assemblyai/jobs/4744387005",
-      "postedAt": "2026-10-16T15:44:53-04:00",
-      "tags": [
-        "Claude Code",
-        "JavaScript",
-        "Python",
-        "Cursor",
-        "MCP"
-      ],
-      "companyIcon": ""
     },
     {
       "id": "le-keboola-6c6a5804-a5c2-4e35-a237-4d64b6119e02",
@@ -17918,29 +18739,6 @@
       "applyUrl": "https://job-boards.greenhouse.io/backblaze/jobs/5378831008",
       "source": "Greenhouse",
       "sourceUrl": "https://job-boards.greenhouse.io/backblaze/jobs/5378831008",
-      "postedAt": "2026-10-14T12:39:59-04:00",
-      "tags": [
-        "Claude Code",
-        "Rust",
-        "Cursor",
-        "Java"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-backblaze-5378821008",
-      "company": "Backblaze External Website",
-      "position": "Senior Software Engineer",
-      "location": "Remote - US",
-      "locations": [
-        "Remote - US"
-      ],
-      "remote": true,
-      "salary": "",
-      "description": "Company Description: Backblaze is the object storage leader in the open cloud movement, fueling customer success with cloud storage built purposefully to unlock budgets, unburden administrators, and unleash innovators. Together with our partners, we’re helping customers break free from the...",
-      "applyUrl": "https://job-boards.greenhouse.io/backblaze/jobs/5378821008",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/backblaze/jobs/5378821008",
       "postedAt": "2026-10-14T12:39:59-04:00",
       "tags": [
         "Claude Code",
@@ -19667,6 +20465,28 @@
       "companyIcon": "https://snyk.io/favicon.ico"
     },
     {
+      "id": "gr-aircallioinc-4317470009",
+      "company": "Aircall.io, Inc.",
+      "position": "GTM Enablement Intern",
+      "location": "Paris Office",
+      "locations": [
+        "Paris Office"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Aircall is a unicorn AI-powered communications platform transforming how teams win with customers. For over a decade, we’ve believed voice builds the strongest business relationships. We bring voice, SMS, WhatsApp, and 250+ integrations together on one seamless workspace—so every customer...",
+      "applyUrl": "https://job-boards.greenhouse.io/aircallioinc/jobs/4317470009",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/aircallioinc/jobs/4317470009",
+      "postedAt": "2026-10-01T09:21:12-04:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Copilot"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "as-snyk-507a3707-d6bd-48c4-800f-429ecf40769e",
       "company": "Snyk",
       "position": "Senior Product Security Engineer",
@@ -19876,40 +20696,19 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-intercom-8242627",
-      "company": "Intercom",
-      "position": "Senior Web Designer, Growth",
-      "location": "London, England",
-      "locations": [
-        "London, England"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "Fin , now part of Salesforce, is on a mission to help businesses provide perfect customer experiences. Our AI Agent Fin is the highest-performing AI Customer Agent on the market today, enabling businesses to deliver impeccable, always-on customer support across the customer journey, from service,...",
-      "applyUrl": "https://job-boards.greenhouse.io/intercom/jobs/8242627",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/intercom/jobs/8242627",
-      "postedAt": "2026-09-30T08:59:34-04:00",
-      "tags": [
-        "Claude Code",
-        "Cursor"
-      ],
-      "companyIcon": "https://intercom.com/favicon.ico"
-    },
-    {
-      "id": "gr-tailscale-4721714005",
+      "id": "gr-tailscale-4721713005",
       "company": "Tailscale",
       "position": "Software Engineer, Strategic Projects",
-      "location": "Remote (United States)",
+      "location": "Remote (Canada)",
       "locations": [
-        "Remote (United States)"
+        "Remote (Canada)"
       ],
       "remote": true,
       "salary": "",
       "description": "Thank you for considering Tailscale. If this job description resonates with you, please apply. Frequently cited statistics show that people who identify with historically marginalized groups are likely to apply to jobs only if they meet 100% of the qualifications. We encourage you to help us break...",
-      "applyUrl": "https://job-boards.greenhouse.io/tailscale/jobs/4721714005",
+      "applyUrl": "https://job-boards.greenhouse.io/tailscale/jobs/4721713005",
       "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/tailscale/jobs/4721714005",
+      "sourceUrl": "https://job-boards.greenhouse.io/tailscale/jobs/4721713005",
       "postedAt": "2026-09-29T20:38:27-04:00",
       "tags": [
         "Claude Code",
@@ -19949,19 +20748,19 @@
       "companyIcon": "https://decagon.ai/favicon.ico"
     },
     {
-      "id": "gr-powerdigitalmarketing-5216084007",
+      "id": "gr-powerdigitalmarketing-5219547007",
       "company": "Power Digital",
       "position": "Data Engineer, AI & Analytics",
-      "location": "Remote - Colombia",
+      "location": "Remote - Spain",
       "locations": [
-        "Remote - Colombia"
+        "Remote - Spain"
       ],
       "remote": true,
       "salary": "",
       "description": "Who We Are: Power Digital is an AI-Native Growth Firm built at the intersection of world-class talent and proprietary technology. We help leading and emerging brands grow by combining deep vertical expertise, strategic thinking, and enterprise intelligence to drive measurable business outcomes. For...",
-      "applyUrl": "https://job-boards.greenhouse.io/powerdigitalmarketing/jobs/5216084007",
+      "applyUrl": "https://job-boards.greenhouse.io/powerdigitalmarketing/jobs/5219547007",
       "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/powerdigitalmarketing/jobs/5216084007",
+      "sourceUrl": "https://job-boards.greenhouse.io/powerdigitalmarketing/jobs/5219547007",
       "postedAt": "2026-09-29T18:01:10-04:00",
       "tags": [
         "Claude Code",
@@ -20026,28 +20825,6 @@
         "PostgreSQL",
         "Kubernetes",
         "Cursor"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-natera-6205794004",
-      "company": "Natera",
-      "position": "Senior Data Analyst",
-      "location": "San Carlos, CA",
-      "locations": [
-        "San Carlos, CA"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "LOCATION : This will be a hybrid role (1 day a week) working out of our San Carlos, CA location. POSITION SUMMARY: Natera is a global leader in cell-free DNA testing, supporting oncology, women’s health, and organ health. Our goal in R&D operations data science is to support R&D activities at...",
-      "applyUrl": "https://job-boards.greenhouse.io/natera/jobs/6205794004",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/natera/jobs/6205794004",
-      "postedAt": "2026-09-28T12:52:23-04:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "Copilot"
       ],
       "companyIcon": ""
     },
@@ -20417,51 +21194,6 @@
       "companyIcon": "https://decagon.ai/favicon.ico"
     },
     {
-      "id": "as-netboxlabs-f8093bde-80b6-47b7-b01e-eaa2cd42e272",
-      "company": "Netboxlabs",
-      "position": "Staff Software Backend Engineer, Tech Lead - Foundations",
-      "location": "US Remote · UK, Remote",
-      "locations": [
-        "US Remote",
-        "UK, Remote"
-      ],
-      "remote": true,
-      "salary": "$220K – $240K • Offers Equity • Offers Bonus • Multiple Ranges",
-      "description": "ABOUT NETBOX LABS\n\nAt NetBox Labs, our mission is to make it easier to build and manage complex networks and infrastructure. We provide the leading network infrastructure management platform used by enterprises, data centers, and network practitioners worldwide.\n\n\n\n\nWHY THIS ROLE, WHY...",
-      "applyUrl": "https://jobs.ashbyhq.com/netboxlabs/f8093bde-80b6-47b7-b01e-eaa2cd42e272",
-      "source": "Ashby",
-      "sourceUrl": "https://jobs.ashbyhq.com/netboxlabs/f8093bde-80b6-47b7-b01e-eaa2cd42e272",
-      "postedAt": "2026-09-21T18:44:15.437+00:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "PostgreSQL",
-        "Kubernetes",
-        "Redis"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-intercom-8172406",
-      "company": "Intercom",
-      "position": "Director of Solutions Marketing",
-      "location": "San Francisco, California",
-      "locations": [
-        "San Francisco, California"
-      ],
-      "remote": false,
-      "salary": "$285,000 - $305,000",
-      "description": "Fin , now part of Salesforce, is on a mission to help businesses provide perfect customer experiences. Our AI Agent Fin is the highest-performing AI Customer Agent on the market today, enabling businesses to deliver impeccable, always-on customer support across the customer journey, from service,...",
-      "applyUrl": "https://job-boards.greenhouse.io/intercom/jobs/8172406",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/intercom/jobs/8172406",
-      "postedAt": "2026-09-21T12:54:18-04:00",
-      "tags": [
-        "Claude Code"
-      ],
-      "companyIcon": "https://intercom.com/favicon.ico"
-    },
-    {
       "id": "as-ruby-labs-1e548ada-6632-4ef8-ae90-476970b5a4b1",
       "company": "Ruby Labs",
       "position": "Senior Product Designer",
@@ -20777,35 +21509,6 @@
       "companyIcon": ""
     },
     {
-      "id": "le-kpler-0354b55d-7141-4491-98bc-538daeed8593",
-      "company": "Kpler",
-      "position": "Fullstack Engineer",
-      "location": "Athens",
-      "locations": [
-        "Athens"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "At Kpler, we are dedicated to helping our clients navigate complex markets with ease. By simplifying global trade information and providing valuable insights, we empower organisations to make informed decisions in commodities, energy, and maritime sectors. \n \nSince our founding in 2014, we have...",
-      "applyUrl": "https://jobs.lever.co/kpler/0354b55d-7141-4491-98bc-538daeed8593",
-      "source": "Lever",
-      "sourceUrl": "https://jobs.lever.co/kpler/0354b55d-7141-4491-98bc-538daeed8593",
-      "postedAt": "2026-09-17T11:17:34.233000+00:00",
-      "tags": [
-        "Claude Code",
-        "React",
-        "TypeScript",
-        "Python",
-        "Node.js",
-        "PostgreSQL",
-        "Cursor",
-        "Vue.js",
-        "Tailwind",
-        "GraphQL"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "as-sierra-3f6911c0-b49b-4d8e-a434-4064df2cde44",
       "company": "Sierra",
       "position": "Software Engineer, Web Platform",
@@ -20828,26 +21531,6 @@
         "Cursor"
       ],
       "companyIcon": "https://sierra.ai/favicon.ico"
-    },
-    {
-      "id": "gr-intercom-7372016",
-      "company": "Intercom",
-      "position": "Senior Machine Learning Scientist",
-      "location": "Berlin, Germany",
-      "locations": [
-        "Berlin, Germany"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "Fin , now part of Salesforce, is on a mission to help businesses provide perfect customer experiences. Our AI Agent Fin is the highest-performing AI Customer Agent on the market today, enabling businesses to deliver impeccable, always-on customer support across the customer journey, from service,...",
-      "applyUrl": "https://job-boards.greenhouse.io/intercom/jobs/7372016",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/intercom/jobs/7372016",
-      "postedAt": "2026-09-16T13:43:49-04:00",
-      "tags": [
-        "Claude Code"
-      ],
-      "companyIcon": "https://intercom.com/favicon.ico"
     },
     {
       "id": "le-PocketHealth-1c1bcb8b-5ed0-4b55-900a-4564b2453283",
@@ -20895,26 +21578,6 @@
         "Claude Code",
         "React",
         "Tailwind"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "le-masterborn-2-684aad8b-c3bb-48e1-a684-264a83b878ce",
-      "company": "Masterborn 2",
-      "position": "Junior Product Designer",
-      "location": "Wrocław",
-      "locations": [
-        "Wrocław"
-      ],
-      "remote": true,
-      "salary": "",
-      "description": "We’re on the lookout for a Product Designer to join our outstanding Product Design team. Your main focus will be designing useful apps for both web and mobile in Figma.\n\nWe are working with well-established companies and sometimes startups in their early stages (MVPs),  which makes the job full of...",
-      "applyUrl": "https://jobs.lever.co/masterborn-2/684aad8b-c3bb-48e1-a684-264a83b878ce",
-      "source": "Lever",
-      "sourceUrl": "https://jobs.lever.co/masterborn-2/684aad8b-c3bb-48e1-a684-264a83b878ce",
-      "postedAt": "2026-09-14T09:51:59.639000+00:00",
-      "tags": [
-        "Claude Code"
       ],
       "companyIcon": ""
     },
@@ -21152,6 +21815,32 @@
       "companyIcon": ""
     },
     {
+      "id": "as-weave-os-e8e1010b-ff04-4501-90c0-9489a275c44c",
+      "company": "Weave Os",
+      "position": "Founding Developer Relations",
+      "location": "Weave HQ",
+      "locations": [
+        "Weave HQ"
+      ],
+      "remote": false,
+      "salary": "$150K – $225K • 0.01% – 0.2%",
+      "description": "Weave (YC W25) is building the definitive platform for understanding and improving how engineering teams work. We believe the way engineering output is measured today is fundamentally broken and that modern AI can give teams a far more accurate and actionable view of productivity, impact and...",
+      "applyUrl": "https://jobs.ashbyhq.com/weave-os/e8e1010b-ff04-4501-90c0-9489a275c44c",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/weave-os/e8e1010b-ff04-4501-90c0-9489a275c44c",
+      "postedAt": "2026-09-03T16:01:43.874+00:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "TypeScript",
+        "Python",
+        "Go",
+        "Cursor",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "gr-eucalyptus-4725986005",
       "company": "Careers at Eucalyptus",
       "position": "Lead Product Designer, London, UK",
@@ -21303,28 +21992,6 @@
         "Azure"
       ],
       "companyIcon": ""
-    },
-    {
-      "id": "as-miro-ec0a41f9-4ce4-487c-a31d-ef6a6b6536e6",
-      "company": "Miro",
-      "position": "Forward Deployed Consultant, Manufacturing",
-      "location": "Austin",
-      "locations": [
-        "Austin"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "About the Team\n\nThe Professional Services organization at Miro is focused on ensuring our Enterprise customers achieve exceptional outcomes through the Innovation Workspace. Our team of strategic advisors, implementation experts, and forward deployed consultants work side-by-side with customers to...",
-      "applyUrl": "https://jobs.ashbyhq.com/miro/ec0a41f9-4ce4-487c-a31d-ef6a6b6536e6",
-      "source": "Ashby",
-      "sourceUrl": "https://jobs.ashbyhq.com/miro/ec0a41f9-4ce4-487c-a31d-ef6a6b6536e6",
-      "postedAt": "2026-09-01T18:21:00.484+00:00",
-      "tags": [
-        "Claude Code",
-        "Cursor",
-        "MCP"
-      ],
-      "companyIcon": "https://miro.com/favicon.ico"
     },
     {
       "id": "hn-49525270",
@@ -21572,26 +22239,6 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-eucalyptus-4709044005",
-      "company": "Careers at Eucalyptus",
-      "position": "CRM & Lifecycle Lead, International",
-      "location": "UK - HQ - London",
-      "locations": [
-        "UK - HQ - London"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "We're the world's leading consumer healthcare platform, supporting millions of patients across the US, Australia, the UK, Germany, Japan, Spain and Canada. We're driven by the belief that good health should last a lifetime, and that to get there we need to deliver the personalised, high quality and...",
-      "applyUrl": "https://job-boards.greenhouse.io/eucalyptus/jobs/4709044005",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/eucalyptus/jobs/4709044005",
-      "postedAt": "2026-08-28T01:31:45-04:00",
-      "tags": [
-        "Claude Code"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "gr-mattermost-5405811008",
       "company": "Mattermost",
       "position": "Staff Full Stack Engineer",
@@ -21723,6 +22370,32 @@
         "Cursor"
       ],
       "companyIcon": "https://baseten.co/favicon.ico"
+    },
+    {
+      "id": "as-iwoca.co.uk-15fe04de-fe59-4827-975e-719c688082b0",
+      "company": "Iwoca.Co.Uk",
+      "position": "Full-Stack Engineer - Operations Engineering Team",
+      "location": "London",
+      "locations": [
+        "London"
+      ],
+      "remote": false,
+      "salary": "£75K – £90K",
+      "description": "FULL-STACK ENGINEER - OPERATIONS ENGINEERING TEAM\n\nHybrid or Remote working in the UK or Germany.\n\n\n\nWe’re looking for a Full-Stack Engineer to build the systems that power iwoca’s German business.\n\nYou’ll join the Operations Engineering team, a cross-functional group that builds the proprietary...",
+      "applyUrl": "https://jobs.ashbyhq.com/iwoca.co.uk/15fe04de-fe59-4827-975e-719c688082b0",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/iwoca.co.uk/15fe04de-fe59-4827-975e-719c688082b0",
+      "postedAt": "2026-08-22T14:22:11.468+00:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "TypeScript",
+        "Python",
+        "PostgreSQL",
+        "Cursor",
+        "Django"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "anth-5390865008",
@@ -22559,34 +23232,6 @@
       "companyIcon": ""
     },
     {
-      "id": "le-Ionicpartners-b3012e18-7143-49ed-a0df-3a6cbe67498f",
-      "company": "Ionicpartners",
-      "position": "AI-Enabled .NET Chief Architect (OTE $100,000/year USD), @Sparkrock",
-      "location": "Egypt · South Africa · India · Turkey · Philippines · Morocco · Pakistan",
-      "locations": [
-        "Egypt",
-        "South Africa",
-        "India",
-        "Turkey",
-        "Philippines",
-        "Morocco",
-        "Pakistan"
-      ],
-      "remote": true,
-      "salary": "$100,000/year",
-      "description": "Are you a high-performing .NET technical guru with a passion for building best-in-class, industry-focused products, and someone who now builds with AI coding tools as part of how you work? Do you want to work for a best-in-class, 100% remote organization with the brightest talent from around the...",
-      "applyUrl": "https://jobs.lever.co/Ionicpartners/b3012e18-7143-49ed-a0df-3a6cbe67498f",
-      "source": "Lever",
-      "sourceUrl": "https://jobs.lever.co/Ionicpartners/b3012e18-7143-49ed-a0df-3a6cbe67498f",
-      "postedAt": "2026-07-30T08:24:22.630000+00:00",
-      "tags": [
-        "Claude Code",
-        "Cursor",
-        "Copilot"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "gr-mill-4715734005",
       "company": "Mill",
       "position": "Full Stack Tech Lead - Senior",
@@ -22707,6 +23352,50 @@
         "Claude Code",
         "Cursor",
         "Copilot"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "le-exowatt-0cfb9bc6-a953-49e9-b507-535e7de5ff5d",
+      "company": "Exowatt",
+      "position": "Mechanical Engineer - Optical Systems (Miami, FL)",
+      "location": "Miami, FL",
+      "locations": [
+        "Miami, FL"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Exowatt is revolutionizing the energy landscape for the AI era with our groundbreaking P3 system that captures solar energy, stores it as heat, and generates electricity on demand. Founded in 2023 and backed by leading investors including Andreessen Horowitz, Sam Altman, and Felicis, we're...",
+      "applyUrl": "https://jobs.lever.co/exowatt/0cfb9bc6-a953-49e9-b507-535e7de5ff5d",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/exowatt/0cfb9bc6-a953-49e9-b507-535e7de5ff5d",
+      "postedAt": "2026-07-21T21:06:26.312000+00:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "le-exowatt-98ccb27c-cdf4-4ce5-9c2f-baa77c9a7fc0",
+      "company": "Exowatt",
+      "position": "Optomechanical Integration & Test Engineer (Miami, FL)",
+      "location": "Miami, FL",
+      "locations": [
+        "Miami, FL"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Exowatt is revolutionizing the energy landscape for the AI era with our groundbreaking P3 system that captures solar energy, stores it as heat, and generates electricity on demand. Founded in 2023 and backed by leading investors including Andreessen Horowitz, Sam Altman, and Felicis, we're...",
+      "applyUrl": "https://jobs.lever.co/exowatt/98ccb27c-cdf4-4ce5-9c2f-baa77c9a7fc0",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/exowatt/98ccb27c-cdf4-4ce5-9c2f-baa77c9a7fc0",
+      "postedAt": "2026-07-21T20:43:50.166000+00:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "MCP"
       ],
       "companyIcon": ""
     },
@@ -22837,7 +23526,7 @@
         "San Francisco, CA"
       ],
       "remote": false,
-      "salary": "$150,000-$170,00",
+      "salary": "$150K – $170K",
       "description": "ABOUT US\n\nAt LangChain, our mission is to enable every company to own its intelligence. We believe agents will transform how companies operate, and we're building the foundation to make that future possible. Our open-source harnesses and LangSmith platform give developers and enterprises the...",
       "applyUrl": "https://jobs.ashbyhq.com/langchain/6f50988c-8e95-4a68-aeea-a94872651ff7",
       "source": "Ashby",
@@ -23293,6 +23982,33 @@
       "companyIcon": ""
     },
     {
+      "id": "le-altaml-74efba24-9733-4308-903a-9757a80684ba",
+      "company": "Altaml",
+      "position": "Intermediate Software Engineer (Future Opportunities)",
+      "location": "Calgary · Toronto · Edmonton",
+      "locations": [
+        "Calgary",
+        "Toronto",
+        "Edmonton"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Engineering @ AltaML - How We Work:\nWe are an AI-first company. Claude Code and AltaML's shared configuration and skills library are the default way engineers design, build, test, and review software, not an optional accelerant a few people use.\nWe expect dramatically higher productivity from...",
+      "applyUrl": "https://jobs.lever.co/altaml/74efba24-9733-4308-903a-9757a80684ba",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/altaml/74efba24-9733-4308-903a-9757a80684ba",
+      "postedAt": "2026-05-20T22:22:32.788000+00:00",
+      "tags": [
+        "Claude Code",
+        "TypeScript",
+        "Python",
+        "AWS",
+        "GCP",
+        "Azure"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "as-clickup-37c53272-fb9e-4a01-8f1a-8395b922f28c",
       "company": "ClickUp",
       "position": "Senior Product Manager",
@@ -23414,6 +24130,28 @@
         "Cursor"
       ],
       "companyIcon": "https://baseten.co/favicon.ico"
+    },
+    {
+      "id": "le-altaml-3731e215-cbad-4a2d-9bd2-3e60bb19096e",
+      "company": "Altaml",
+      "position": "Senior Software Engineer (Future Opportunities)",
+      "location": "Toronto · Calgary · Edmonton",
+      "locations": [
+        "Toronto",
+        "Calgary",
+        "Edmonton"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Engineering @ AltaML - How We Work:\nWe are an AI-first company. Claude Code and AltaML's shared configuration and skills library are the default way engineers design, build, test, and review software, not an optional accelerant a few people use.\nWe expect dramatically higher productivity from...",
+      "applyUrl": "https://jobs.lever.co/altaml/3731e215-cbad-4a2d-9bd2-3e60bb19096e",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/altaml/3731e215-cbad-4a2d-9bd2-3e60bb19096e",
+      "postedAt": "2026-04-22T21:30:02.672000+00:00",
+      "tags": [
+        "Claude Code"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "as-axle-health-c54930f7-5de6-4358-99a2-727cdbf41e95",

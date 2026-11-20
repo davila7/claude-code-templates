@@ -24,6 +24,13 @@
     },
     {
       "ats": "ashby",
+      "slug": "abridge",
+      "company": "Abridge",
+      "firstSeen": "2026-11-20",
+      "lastHit": "2026-11-20"
+    },
+    {
+      "ats": "ashby",
       "slug": "aleph",
       "company": "Aleph",
       "firstSeen": "2026-11-11",
@@ -48,6 +55,13 @@
       "slug": "answerthis",
       "company": "Answerthis",
       "firstSeen": "2026-11-15",
+      "lastHit": "2026-11-20"
+    },
+    {
+      "ats": "ashby",
+      "slug": "Arlo",
+      "company": "Arlo",
+      "firstSeen": "2026-11-20",
       "lastHit": "2026-11-20"
     },
     {
@@ -118,6 +132,13 @@
       "slug": "Coinflow",
       "company": "Coinflow",
       "firstSeen": "2026-11-01",
+      "lastHit": "2026-11-20"
+    },
+    {
+      "ats": "ashby",
+      "slug": "comstruct",
+      "company": "Comstruct",
+      "firstSeen": "2026-11-20",
       "lastHit": "2026-11-20"
     },
     {
@@ -251,6 +272,13 @@
       "slug": "hyphenate",
       "company": "Hyphenate",
       "firstSeen": "2026-11-01",
+      "lastHit": "2026-11-20"
+    },
+    {
+      "ats": "ashby",
+      "slug": "iwoca.co.uk",
+      "company": "Iwoca.Co.Uk",
+      "firstSeen": "2026-11-20",
       "lastHit": "2026-11-20"
     },
     {
@@ -416,9 +444,23 @@
     },
     {
       "ats": "ashby",
+      "slug": "Plaud",
+      "company": "Plaud",
+      "firstSeen": "2026-11-20",
+      "lastHit": "2026-11-20"
+    },
+    {
+      "ats": "ashby",
       "slug": "polygon-labs",
       "company": "Polygon Labs",
       "firstSeen": "2026-11-13",
+      "lastHit": "2026-11-20"
+    },
+    {
+      "ats": "ashby",
+      "slug": "Preference-Model",
+      "company": "Preference Model",
+      "firstSeen": "2026-11-20",
       "lastHit": "2026-11-20"
     },
     {
@@ -440,6 +482,13 @@
       "slug": "quantumdiamonds",
       "company": "Quantumdiamonds",
       "firstSeen": "2026-11-01",
+      "lastHit": "2026-11-20"
+    },
+    {
+      "ats": "ashby",
+      "slug": "quo",
+      "company": "Quo",
+      "firstSeen": "2026-11-20",
       "lastHit": "2026-11-20"
     },
     {
@@ -521,6 +570,13 @@
     },
     {
       "ats": "ashby",
+      "slug": "sweetspot",
+      "company": "Sweetspot",
+      "firstSeen": "2026-11-20",
+      "lastHit": "2026-11-20"
+    },
+    {
+      "ats": "ashby",
       "slug": "tacto",
       "company": "Tacto",
       "firstSeen": "2026-11-05",
@@ -563,9 +619,30 @@
     },
     {
       "ats": "ashby",
+      "slug": "upvest",
+      "company": "Upvest",
+      "firstSeen": "2026-11-20",
+      "lastHit": "2026-11-20"
+    },
+    {
+      "ats": "ashby",
       "slug": "wealthbox",
       "company": "Wealthbox",
       "firstSeen": "2026-11-09",
+      "lastHit": "2026-11-20"
+    },
+    {
+      "ats": "ashby",
+      "slug": "weave-os",
+      "company": "Weave Os",
+      "firstSeen": "2026-11-20",
+      "lastHit": "2026-11-20"
+    },
+    {
+      "ats": "ashby",
+      "slug": "yoummday",
+      "company": "Yoummday",
+      "firstSeen": "2026-11-20",
       "lastHit": "2026-11-20"
     },
     {
@@ -608,6 +685,13 @@
       "slug": "affirm",
       "company": "Affirm",
       "firstSeen": "2026-11-01",
+      "lastHit": "2026-11-20"
+    },
+    {
+      "ats": "greenhouse",
+      "slug": "aircallioinc",
+      "company": "Aircall.io, Inc.",
+      "firstSeen": "2026-11-20",
       "lastHit": "2026-11-20"
     },
     {
@@ -1172,6 +1256,13 @@
     },
     {
       "ats": "greenhouse",
+      "slug": "lightmatter",
+      "company": "Lightmatter",
+      "firstSeen": "2026-11-20",
+      "lastHit": "2026-11-20"
+    },
+    {
+      "ats": "greenhouse",
       "slug": "machinifyinc",
       "company": "Machinify",
       "firstSeen": "2026-11-06",
@@ -1620,6 +1711,13 @@
     },
     {
       "ats": "lever",
+      "slug": "altaml",
+      "company": "Altaml",
+      "firstSeen": "2026-11-20",
+      "lastHit": "2026-11-20"
+    },
+    {
+      "ats": "lever",
       "slug": "appen-2",
       "company": "Appen 2",
       "firstSeen": "2026-11-18",
@@ -1749,6 +1847,13 @@
       "slug": "ellevationeducation",
       "company": "Ellevationeducation",
       "firstSeen": "2026-11-07",
+      "lastHit": "2026-11-20"
+    },
+    {
+      "ats": "lever",
+      "slug": "exowatt",
+      "company": "Exowatt",
+      "firstSeen": "2026-11-20",
       "lastHit": "2026-11-20"
     },
     {
@@ -2016,6 +2121,13 @@
       "company": "Ubiminds",
       "firstSeen": "2026-11-18",
       "lastHit": "2026-11-18"
+    },
+    {
+      "ats": "lever",
+      "slug": "vacancies",
+      "company": "Vacancies",
+      "firstSeen": "2026-11-20",
+      "lastHit": "2026-11-20"
     },
     {
       "ats": "lever",
