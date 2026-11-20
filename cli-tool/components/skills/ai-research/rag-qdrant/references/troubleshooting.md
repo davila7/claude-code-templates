@@ -216,12 +216,12 @@ print(f"Query dimension: {len(query_vector)}")
 3. **Verify filter conditions**:
 ```python
 # Test without filter first
-results = client.search(
+results = client.query_points(
     collection_name="documents",
-    query_vector=query,
+    query=query,
     limit=10
     # No filter
-)
+).points
 
 # Then add filter incrementally
 ```
@@ -261,12 +261,12 @@ client.update_collection(
 )
 
 # Use ef search parameter
-results = client.search(
+results = client.query_points(
     collection_name="documents",
-    query_vector=query,
+    query=query,
     search_params={"hnsw_ef": 64},  # Lower = faster
     limit=10
-)
+).points
 ```
 
 4. **Use gRPC**:
@@ -297,11 +297,11 @@ client.upsert(
 2. **Check replication consistency**:
 ```python
 # Strong consistency read
-results = client.search(
+results = client.query_points(
     collection_name="documents",
-    query_vector=query,
+    query=query,
     consistency="all"  # Read from all replicas
-)
+).points
 ```
 
 ## Upsert Issues
@@ -505,12 +505,12 @@ def benchmark_search(client, collection, n_queries=100, dimension=384):
 
     # Warmup
     for q in queries[:10]:
-        client.search(collection_name=collection, query_vector=q, limit=10)
+        client.query_points(collection_name=collection, query=q, limit=10)
 
     # Benchmark
     start = time.perf_counter()
     for q in queries:
-        client.search(collection_name=collection, query_vector=q, limit=10)
+        client.query_points(collection_name=collection, query=q, limit=10)
     elapsed = time.perf_counter() - start
 
     print(f"QPS: {n_queries / elapsed:.2f}")
