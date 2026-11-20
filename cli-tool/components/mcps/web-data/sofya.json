@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "sofya": {
+      "description": "Sofya remote MCP server for web access: search the web and get page content with each result, fetch any URL or document (PDF, DOCX and more) as clean markdown, extract structured data from a page, and run multi-query research that returns a cited report. Tools: search, fetch, extract, research, get_balance, buy_credits. Queries and URLs are sent to sofya.co; nothing runs locally. Pay as you go with no subscription, and failed requests are not charged. Get an API key at https://sofya.co/dashboard and set it as the SOFYA_API_KEY environment variable before connecting.",
+      "type": "http",
+      "url": "https://mcp.sofya.co/mcp",
+      "headers": {
+        "Authorization": "Bearer ${SOFYA_API_KEY}"
+      }
+    }
+  }
+}
