@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "aident-loadout": {
+      "description": "Connect Claude Code to 1,000+ apps (Gmail, Slack, GitHub, Linear, Notion, Google Sheets, HubSpot and more) and 400+ expert-built Skills through one remote MCP server. Agents search apps and actions by intent, read the live schema and run the action. OAuth sign-in in the browser on first use; credentials stay in Aident Vault and every action is logged in Audit. Free pay-as-you-go start. Docs: https://docs.aident.ai/loadout/overview",
+      "type": "http",
+      "url": "https://loadout.aident.ai/mcp"
+    }
+  }
+}
