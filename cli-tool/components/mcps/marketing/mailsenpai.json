@@ -1,0 +1,1 @@
+{"mcpServers":{"mailsenpai":{"description":"Official MailSenpai MCP server: manage email marketing lists, subscribers, segments, templates, draft campaigns and stats (EU-hosted, OAuth sign-in, sends and deletions need explicit confirmation). Remote server, no API key: sign in with your MailSenpai account.","type":"http","url":"https://mcp.mailsenpai.com/mcp"}}}
