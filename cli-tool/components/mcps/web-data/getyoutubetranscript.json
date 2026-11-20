@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "getyoutubetranscript": {
+      "description": "Hosted MCP server for YouTube data: video transcripts with timestamps and caption languages, YouTube search, a channel's videos, playlists and posts, and playlist videos. Sign in through the browser with MCP OAuth (a free account includes 100 credits), or send an API key from https://getyoutubetranscript.com as a Bearer header.",
+      "type": "http",
+      "url": "https://getyoutubetranscript.com/api/mcp"
+    }
+  }
+}
