@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "bestprice-shopping": {
+      "description": "Read-only shopping data for Greece from BestPrice.gr: product search, current offers from Greek stores with delivered prices, price history, and a buy-now-or-wait decision for a product. Never buys anything or touches a cart. Public endpoint, no API key required.",
+      "type": "http",
+      "url": "https://mcp.bestprice.gr/mcp"
+    }
+  }
+}
