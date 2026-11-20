@@ -70408,6 +70408,165 @@
       }
     },
     {
+      "name": "code-check",
+      "path": "development/code-check",
+      "category": "development",
+      "type": "skill",
+      "description": "Hold every change to one engineering standard and get a pass or fail with evidence before it merges. SETUP installs quality gates in a repo, PLAN designs a task against the bar (separation of concerns, SOLID, DRY, tests), AUDIT reviews a diff dimension by dimension. Use when you say \"audit this diff\", \"is this ready to merge\", \"/code-check\", \"plan this subsystem\", or \"set up quality gates\". Not for small fixes.",
+      "author": "Off Grid AI",
+      "repo": "https://github.com/off-grid-ai/skills",
+      "version": "",
+      "license": "MIT",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "LEDGER.md",
+        "LICENSE",
+        "README.md",
+        "setup/README.md",
+        "setup/bootstrap.sh",
+        "setup/configs/react-native/.dependency-cruiser.js",
+        "setup/configs/react-native/.eslintrc.json",
+        "setup/configs/react-native/.jscpd.json",
+        "setup/configs/react-native/.prettierrc",
+        "setup/configs/react-native/githooks/pre-push",
+        "setup/configs/react-native/github-workflows-ci.yml",
+        "setup/configs/react-native/knip.json",
+        "setup/configs/react-native/tsconfig.hygiene.json",
+        "setup/configs/web/.c8rc.json",
+        "setup/configs/web/.dependency-cruiser.js",
+        "setup/configs/web/.eslintrc.json",
+        "setup/configs/web/.jscpd.json",
+        "setup/configs/web/.prettierrc",
+        "setup/configs/web/githooks/pre-push",
+        "setup/configs/web/github-workflows-ci.yml",
+        "setup/configs/web/knip.json",
+        "setup/configs/web/tsconfig.hygiene.json"
+      ],
+      "source": {
+        "repo": "off-grid-ai/skills",
+        "path": "review/code-check",
+        "commit": "3be9b17f6a63e341034166ac40049f28e7600a27",
+        "license": "MIT",
+        "url": "https://github.com/off-grid-ai/skills/tree/3be9b17f6a63e341034166ac40049f28e7600a27/review/code-check",
+        "requires": []
+      },
+      "skillspector": {
+        "score": 100,
+        "severity": "CRITICAL",
+        "recommendation": "DO_NOT_INSTALL",
+        "issueCount": 9,
+        "analysis": "partial",
+        "findings": [
+          {
+            "id": "SC9",
+            "category": "Supply Chain",
+            "severity": "HIGH",
+            "title": "Concealed Executable Artifact",
+            "file": "setup/configs/react-native/.dependency-cruiser.js",
+            "line": 1,
+            "count": 1
+          },
+          {
+            "id": "SC9",
+            "category": "Supply Chain",
+            "severity": "HIGH",
+            "title": "Concealed Executable Artifact",
+            "file": "setup/configs/web/.dependency-cruiser.js",
+            "line": 1,
+            "count": 1
+          },
+          {
+            "id": "TM1",
+            "category": "Tool Misuse",
+            "severity": "HIGH",
+            "title": "Tool Parameter Abuse",
+            "file": "setup/configs/react-native/githooks/pre-push",
+            "line": 14,
+            "count": 1
+          },
+          {
+            "id": "TM1",
+            "category": "Tool Misuse",
+            "severity": "HIGH",
+            "title": "Tool Parameter Abuse",
+            "file": "setup/configs/web/githooks/pre-push",
+            "line": 17,
+            "count": 1
+          },
+          {
+            "id": "LP3",
+            "category": "MCP Least Privilege",
+            "severity": "MEDIUM",
+            "title": "Without declared permissions the skill's intent is opaque and cannot be validated.",
+            "file": "SKILL.md",
+            "line": 1,
+            "count": 1
+          }
+        ],
+        "categories": {
+          "MCP Rug Pull": 4,
+          "Supply Chain": 2,
+          "Tool Misuse": 2,
+          "MCP Least Privilege": 1
+        },
+        "hash": "b4a4023576f9f87c",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-20T01:17:14Z"
+      },
+      "harness": {
+        "agents": [
+          {
+            "id": "claude-code",
+            "status": "loads",
+            "verified": "2.1.316",
+            "notes": []
+          },
+          {
+            "id": "codex",
+            "status": "loads",
+            "verified": "0.166.0",
+            "notes": []
+          },
+          {
+            "id": "copilot-cli",
+            "status": "loads",
+            "verified": "1.0.105",
+            "notes": []
+          },
+          {
+            "id": "opencode",
+            "status": "loads",
+            "verified": "1.19.5",
+            "notes": []
+          },
+          {
+            "id": "hermes",
+            "status": "loads",
+            "verified": "main",
+            "notes": []
+          },
+          {
+            "id": "openclaw",
+            "status": "loads",
+            "verified": "2026.10.9",
+            "notes": []
+          }
+        ],
+        "version": "1.0.1",
+        "checkedAt": "2026-11-20T01:17:34Z",
+        "hash": "b4a4023576f9f87c"
+      }
+    },
+    {
       "name": "code-review-checklist",
       "path": "development/code-review-checklist",
       "category": "development",
@@ -75949,6 +76108,217 @@
       }
     },
     {
+      "name": "graph-engineering",
+      "path": "development/graph-engineering",
+      "category": "development",
+      "type": "skill",
+      "description": "Change one thing and get one review page with every place it touches across your apps, every changed screen before and after with notes, and only the calls that need you. Use when you say \"graph engineering\", \"/graph-engineering\", \"change X everywhere\", \"what does changing X touch\", \"ripple of X\", \"change review\", or change a feature that lives in more than one app.",
+      "author": "Off Grid AI",
+      "repo": "https://github.com/off-grid-ai/skills",
+      "version": "",
+      "license": "MIT",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "LICENSE",
+        "README.md",
+        "scripts/change_map.py"
+      ],
+      "source": {
+        "repo": "off-grid-ai/skills",
+        "path": "review/graph-engineering",
+        "commit": "3be9b17f6a63e341034166ac40049f28e7600a27",
+        "license": "MIT",
+        "url": "https://github.com/off-grid-ai/skills/tree/3be9b17f6a63e341034166ac40049f28e7600a27/review/graph-engineering",
+        "requires": []
+      },
+      "skillspector": {
+        "score": 53,
+        "severity": "HIGH",
+        "recommendation": "DO_NOT_INSTALL",
+        "issueCount": 4,
+        "analysis": "partial",
+        "findings": [
+          {
+            "id": "AE1",
+            "category": "analysis-evasion",
+            "severity": "HIGH",
+            "title": "Incomplete referenced artifact analysis",
+            "file": "SKILL.md",
+            "line": 37,
+            "count": 2
+          },
+          {
+            "id": "LP3",
+            "category": "MCP Least Privilege",
+            "severity": "MEDIUM",
+            "title": "Without declared permissions the skill's intent is opaque and cannot be validated.",
+            "file": "SKILL.md",
+            "line": 1,
+            "count": 1
+          },
+          {
+            "id": "AST4",
+            "category": "Dangerous Code Execution",
+            "severity": "MEDIUM",
+            "title": "subprocess module call",
+            "file": "scripts/change_map.py",
+            "line": 59,
+            "count": 1
+          }
+        ],
+        "categories": {
+          "analysis-evasion": 2,
+          "Dangerous Code Execution": 1,
+          "MCP Least Privilege": 1
+        },
+        "hash": "89b681f6a4650e81",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-20T01:17:14Z"
+      },
+      "harness": {
+        "agents": [
+          {
+            "id": "claude-code",
+            "status": "loads",
+            "verified": "2.1.316",
+            "notes": []
+          },
+          {
+            "id": "codex",
+            "status": "loads",
+            "verified": "0.166.0",
+            "notes": []
+          },
+          {
+            "id": "copilot-cli",
+            "status": "loads",
+            "verified": "1.0.105",
+            "notes": []
+          },
+          {
+            "id": "opencode",
+            "status": "loads",
+            "verified": "1.19.5",
+            "notes": []
+          },
+          {
+            "id": "hermes",
+            "status": "loads",
+            "verified": "main",
+            "notes": []
+          },
+          {
+            "id": "openclaw",
+            "status": "loads",
+            "verified": "2026.10.9",
+            "notes": []
+          }
+        ],
+        "version": "1.0.1",
+        "checkedAt": "2026-11-20T01:17:34Z",
+        "hash": "89b681f6a4650e81"
+      }
+    },
+    {
+      "name": "graph-engineering-loop",
+      "path": "development/graph-engineering-loop",
+      "category": "development",
+      "type": "skill",
+      "description": "Make a few calls on a change review and your agent learns the rule behind them, applies it to every place the change touches across your apps, shows the result before and after, and asks you less next time. Use when you say \"I've decided the calls\", \"look at my notes on the change review\", \"graph engineering loop\", \"/graph-engineering-loop\", \"run an iteration on the change\", or \"apply this everywhere\".",
+      "author": "Off Grid AI",
+      "repo": "https://github.com/off-grid-ai/skills",
+      "version": "",
+      "license": "MIT",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "LICENSE",
+        "README.md"
+      ],
+      "source": {
+        "repo": "off-grid-ai/skills",
+        "path": "review/graph-engineering-loop",
+        "commit": "3be9b17f6a63e341034166ac40049f28e7600a27",
+        "license": "MIT",
+        "url": "https://github.com/off-grid-ai/skills/tree/3be9b17f6a63e341034166ac40049f28e7600a27/review/graph-engineering-loop",
+        "requires": [
+          "development/graph-engineering"
+        ]
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "CAUTION",
+        "issueCount": 0,
+        "analysis": "partial",
+        "findings": [],
+        "categories": {},
+        "hash": "b814e548cbf1489a",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-20T01:17:14Z"
+      },
+      "harness": {
+        "agents": [
+          {
+            "id": "claude-code",
+            "status": "loads",
+            "verified": "2.1.316",
+            "notes": []
+          },
+          {
+            "id": "codex",
+            "status": "loads",
+            "verified": "0.166.0",
+            "notes": []
+          },
+          {
+            "id": "copilot-cli",
+            "status": "loads",
+            "verified": "1.0.105",
+            "notes": []
+          },
+          {
+            "id": "opencode",
+            "status": "loads",
+            "verified": "1.19.5",
+            "notes": []
+          },
+          {
+            "id": "hermes",
+            "status": "loads",
+            "verified": "main",
+            "notes": []
+          },
+          {
+            "id": "openclaw",
+            "status": "loads",
+            "verified": "2026.10.9",
+            "notes": []
+          }
+        ],
+        "version": "1.0.1",
+        "checkedAt": "2026-11-20T01:17:34Z",
+        "hash": "b814e548cbf1489a"
+      }
+    },
+    {
       "name": "graphql",
       "path": "development/graphql",
       "category": "development",
@@ -79303,6 +79673,96 @@
         "version": "1.0.1",
         "checkedAt": "2026-11-18T20:31:10Z",
         "hash": "7cd296bd1c567c03"
+      }
+    },
+    {
+      "name": "never-twice",
+      "path": "development/never-twice",
+      "category": "development",
+      "type": "skill",
+      "description": "Turn each pull request review into a sharper engineering standard, so the same mistake doesn't come back. Your agent keeps only the general lessons from a review, writes each into code-check with a signal a grep can catch, and logs its source. Use when you say \"learn from this review\", \"/never-twice\", \"update the standard from these comments\", or at the end of safe-to-merge.",
+      "author": "Off Grid AI",
+      "repo": "https://github.com/off-grid-ai/skills",
+      "version": "",
+      "license": "MIT",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "LICENSE",
+        "README.md"
+      ],
+      "source": {
+        "repo": "off-grid-ai/skills",
+        "path": "review/never-twice",
+        "commit": "3be9b17f6a63e341034166ac40049f28e7600a27",
+        "license": "MIT",
+        "url": "https://github.com/off-grid-ai/skills/tree/3be9b17f6a63e341034166ac40049f28e7600a27/review/never-twice",
+        "requires": [
+          "development/code-check"
+        ]
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "CAUTION",
+        "issueCount": 0,
+        "analysis": "partial",
+        "findings": [],
+        "categories": {},
+        "hash": "f3b2b7bb55470ebb",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-20T01:17:14Z"
+      },
+      "harness": {
+        "agents": [
+          {
+            "id": "claude-code",
+            "status": "loads",
+            "verified": "2.1.316",
+            "notes": []
+          },
+          {
+            "id": "codex",
+            "status": "loads",
+            "verified": "0.166.0",
+            "notes": []
+          },
+          {
+            "id": "copilot-cli",
+            "status": "loads",
+            "verified": "1.0.105",
+            "notes": []
+          },
+          {
+            "id": "opencode",
+            "status": "loads",
+            "verified": "1.19.5",
+            "notes": []
+          },
+          {
+            "id": "hermes",
+            "status": "loads",
+            "verified": "main",
+            "notes": []
+          },
+          {
+            "id": "openclaw",
+            "status": "loads",
+            "verified": "2026.10.9",
+            "notes": []
+          }
+        ],
+        "version": "1.0.1",
+        "checkedAt": "2026-11-20T01:17:34Z",
+        "hash": "f3b2b7bb55470ebb"
       }
     },
     {
@@ -83035,6 +83495,108 @@
       }
     },
     {
+      "name": "safe-to-merge",
+      "path": "development/safe-to-merge",
+      "category": "development",
+      "type": "skill",
+      "description": "Take a pull request from \"the diff exists\" to \"ready to merge\" and keep it there. Your agent audits its diff, gathers every review signal, answers each comment, fixes behind the checks and re-reviews until nothing blocks. Use when you say \"review this PR\", \"get this PR merge-ready\", \"/safe-to-merge\", \"address the review comments\", or after pushing to a PR with open comments.",
+      "author": "Off Grid AI",
+      "repo": "https://github.com/off-grid-ai/skills",
+      "version": "",
+      "license": "MIT",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "LICENSE",
+        "README.md"
+      ],
+      "source": {
+        "repo": "off-grid-ai/skills",
+        "path": "review/safe-to-merge",
+        "commit": "3be9b17f6a63e341034166ac40049f28e7600a27",
+        "license": "MIT",
+        "url": "https://github.com/off-grid-ai/skills/tree/3be9b17f6a63e341034166ac40049f28e7600a27/review/safe-to-merge",
+        "requires": [
+          "development/code-check"
+        ]
+      },
+      "skillspector": {
+        "score": 7,
+        "severity": "LOW",
+        "recommendation": "CAUTION",
+        "issueCount": 1,
+        "analysis": "partial",
+        "findings": [
+          {
+            "id": "TR2",
+            "category": "Trigger Abuse",
+            "severity": "MEDIUM",
+            "title": "Shadow Command Trigger",
+            "file": "SKILL.md",
+            "line": 1,
+            "count": 1
+          }
+        ],
+        "categories": {
+          "Trigger Abuse": 1
+        },
+        "hash": "c0fab2bfcfe16d0d",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-20T01:17:14Z"
+      },
+      "harness": {
+        "agents": [
+          {
+            "id": "claude-code",
+            "status": "loads",
+            "verified": "2.1.316",
+            "notes": []
+          },
+          {
+            "id": "codex",
+            "status": "loads",
+            "verified": "0.166.0",
+            "notes": []
+          },
+          {
+            "id": "copilot-cli",
+            "status": "loads",
+            "verified": "1.0.105",
+            "notes": []
+          },
+          {
+            "id": "opencode",
+            "status": "loads",
+            "verified": "1.19.5",
+            "notes": []
+          },
+          {
+            "id": "hermes",
+            "status": "loads",
+            "verified": "main",
+            "notes": []
+          },
+          {
+            "id": "openclaw",
+            "status": "loads",
+            "verified": "2026.10.9",
+            "notes": []
+          }
+        ],
+        "version": "1.0.1",
+        "checkedAt": "2026-11-20T01:17:34Z",
+        "hash": "c0fab2bfcfe16d0d"
+      }
+    },
+    {
       "name": "salesforce-development",
       "path": "development/salesforce-development",
       "category": "development",
@@ -84839,6 +85401,117 @@
         "version": "1.0.1",
         "checkedAt": "2026-11-18T20:31:10Z",
         "hash": "2460accc32383931"
+      }
+    },
+    {
+      "name": "show-me",
+      "path": "development/show-me",
+      "category": "development",
+      "type": "skill",
+      "description": "Get every screen of your app on one page and pin notes on the exact spot, like Figma comments; your agent reads them, makes the changes and shows each screen before and after with its replies. Works for web, mobile, desktop and games. Use when you say \"screen review\", \"/show-me\", \"screenshot all the screens\", \"let me give feedback on every screen\", \"read my screen comments\", or \"show me before and after\".",
+      "author": "Off Grid AI",
+      "repo": "https://github.com/off-grid-ai/skills",
+      "version": "",
+      "license": "MIT",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "LICENSE",
+        "README.md",
+        "template/index.html"
+      ],
+      "source": {
+        "repo": "off-grid-ai/skills",
+        "path": "review/show-me",
+        "commit": "3be9b17f6a63e341034166ac40049f28e7600a27",
+        "license": "MIT",
+        "url": "https://github.com/off-grid-ai/skills/tree/3be9b17f6a63e341034166ac40049f28e7600a27/review/show-me",
+        "requires": []
+      },
+      "skillspector": {
+        "score": 45,
+        "severity": "MEDIUM",
+        "recommendation": "CAUTION",
+        "issueCount": 3,
+        "analysis": "partial",
+        "findings": [
+          {
+            "id": "AE1",
+            "category": "analysis-evasion",
+            "severity": "HIGH",
+            "title": "Incomplete referenced artifact analysis",
+            "file": "SKILL.md",
+            "line": 8,
+            "count": 2
+          },
+          {
+            "id": "EA2",
+            "category": "Excessive Agency",
+            "severity": "MEDIUM",
+            "title": "Autonomous Decision Making",
+            "file": "SKILL.md",
+            "line": 16,
+            "count": 1
+          }
+        ],
+        "categories": {
+          "analysis-evasion": 2,
+          "Excessive Agency": 1
+        },
+        "hash": "2bb48b94a24bd66d",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-20T01:17:14Z"
+      },
+      "harness": {
+        "agents": [
+          {
+            "id": "claude-code",
+            "status": "loads",
+            "verified": "2.1.316",
+            "notes": []
+          },
+          {
+            "id": "codex",
+            "status": "loads",
+            "verified": "0.166.0",
+            "notes": []
+          },
+          {
+            "id": "copilot-cli",
+            "status": "loads",
+            "verified": "1.0.105",
+            "notes": []
+          },
+          {
+            "id": "opencode",
+            "status": "loads",
+            "verified": "1.19.5",
+            "notes": []
+          },
+          {
+            "id": "hermes",
+            "status": "loads",
+            "verified": "main",
+            "notes": []
+          },
+          {
+            "id": "openclaw",
+            "status": "loads",
+            "verified": "2026.10.9",
+            "notes": []
+          }
+        ],
+        "version": "1.0.1",
+        "checkedAt": "2026-11-20T01:17:34Z",
+        "hash": "2bb48b94a24bd66d"
       }
     },
     {
