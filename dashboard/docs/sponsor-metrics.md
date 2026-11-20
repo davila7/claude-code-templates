@@ -52,7 +52,7 @@ the endpoint to `/api/ads/...` would silently lose part of a developer audience.
   delivery reporting.
 - GA4 covers every page only since 2026-11-03, so no full month exists before
   2026-12-03. Until then a monthly figure is a projection.
-- The README sponsor (Swiftproxy) is on GitHub: we cannot count its impressions,
+- The README sponsor (Proxy-Seller) is on GitHub: we cannot count its impressions,
   and its clicks are measured by the sponsor's own link.
 
 ## Adding a placement
