@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "dank-meme-sounds": {
+      "description": "Meme soundboard for Claude Code: find a reaction sound for a moment, search 38,000+ meme sound effects by name, mood or use case, and see what is trending live on dankmachine.com. Read-only, Streamable HTTP, no sign-in or API key. Search queries go to dankmachine.com.",
+      "type": "http",
+      "url": "https://dankmachine.com/mcp"
+    }
+  }
+}
