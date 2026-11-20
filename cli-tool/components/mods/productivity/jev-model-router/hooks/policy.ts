@@ -292,6 +292,70 @@ export interface PolicyConfig {
    * by too small a model or too little thought, so the bar is high.
    */
   minDowngradeConfidence: number
+  /**
+   * True when changing the effort alone would drop the prompt cache (see
+   * `effortKeepsCache`): the effort then moves only when risk forces it up or
+   * the model changes too, which drops the cache anyway. Absent means free.
+   */
+  effortChangeDropsCache?: boolean
+  /**
+   * False when the caller will not apply a model change (the main loop with
+   * model routing off). The routing still names the model it wanted, but that
+   * model must not license an effort change the cache guard would stop.
+   */
+  routeModel?: boolean
+  /**
+   * False when the session's context is too large to move to another model
+   * (see `contextAllowsModelChange`): the model is held, up or down, and a
+   * forced turn still gets its effort. Absent means it may move.
+   */
+  contextAllowsModelChange?: boolean
+}
+
+/**
+ * Whether the main loop's context is small enough to move to another model.
+ *
+ * Measured on Claude Code 2.1.280: a turn.step rewrite of a 283k-token Opus
+ * 5.5 [1m] session to Haiku 4.5 got "prompt is too long: 216737 tokens >
+ * 200000 maximum", and Claude Code answered with a reactive compaction that
+ * kept 2 trailing messages: the rest of the session was summarised away, and
+ * the next Opus turn re-read 7k tokens, not 283k. The default cap sits under
+ * the smallest window a tier can land on (200k, Haiku 4.5, or `opus` without
+ * [1m]) with room for another tokenizer: the same text counted 283k on Opus
+ * 5.5 and 217k on Haiku, about 1.3×.
+ *
+ * `tokens` is what the last response was answered over, so it leaves out the
+ * prompt being sent now: a large paste, or any prompt on a session's first
+ * turn (no reading yet), would pass unseen. The prompt is added at one token
+ * a character, the most text weighs (CJK; English runs about 4 characters a
+ * token): a large paste holds the model rather than guess. Only 0 lifts the
+ * cap; a negative one holds the model.
+ */
+export function contextAllowsModelChange(
+  tokens: number | undefined,
+  promptChars: number,
+  maxTokens: number,
+): boolean {
+  return maxTokens === 0 || (tokens ?? 0) + promptChars <= maxTokens
+}
+
+/** Model ids whose effort Claude Code can change without dropping the prompt cache. */
+export const EFFORT_CACHE_SAFE_MODELS = ['claude-opus-5-5', 'claude-fable-5-1']
+
+/**
+ * Whether changing the effort of `model` keeps the prompt cache.
+ *
+ * Claude Code's prompt-caching page (2.1.280): "On most models, each effort
+ * level has its own cache, so changing effort mid-session recomputes the
+ * entire request. On Opus 5.5 and Fable 5.1 with an API key or a Claude
+ * subscription, the cache stays intact by default." Measured with a turn.step
+ * rewrite like this mod's: on Sonnet 5 and Opus 5 a switch to a level not used
+ * yet read only the system prompt from cache and wrote the conversation again
+ * (~17k of ~27k); on Opus 5.5 every switch read the whole conversation.
+ * Matched by prefix, so `claude-opus-5-5[1m]` and dated ids count.
+ */
+export function effortKeepsCache(model: string, prefixes: readonly string[]): boolean {
+  return prefixes.some((prefix) => prefix !== '' && model.startsWith(prefix))
 }
 
 export interface Routing {
@@ -358,6 +422,7 @@ export function route(
   const model =
     wantedModel &&
     wantedModel !== current.model &&
+    config.contextAllowsModelChange !== false &&
     (forced || allowed(wantedTier, currentTier, decision.confidence, config))
       ? wantedModel
       : null
@@ -385,7 +450,17 @@ export function route(
     }
   }
 
+  // Where an effort change re-sends the whole conversation uncached, a lighter
+  // turn costs more than it saves; only risk, or a model change that drops the
+  // cache regardless, may still move it.
+  const modelApplied = model !== null && config.routeModel !== false
+  const heldForCache = effort !== null && !modelApplied && !forced && config.effortChangeDropsCache === true
+  if (heldForCache) effort = null
+  const cached = heldForCache ? ', effort held: changing it on this model drops the prompt cache' : ''
+
   const said = decision.confidence === null ? 'confidence n/d' : `confidence ${decision.confidence.toFixed(2)}`
+  const moveWanted = Boolean(wantedModel) && wantedModel !== current.model && currentTier !== wantedTier
+  const sized = moveWanted && config.contextAllowsModelChange === false ? ', model held: the context is too large to move' : ''
 
   if (!model && !effort) {
     // Naming what it wanted and what it kept is the whole point of this line.
@@ -394,10 +469,11 @@ export function route(
     const wantedEffort = effortScore === null ? null : effortLevel(effortScore)
     const kept = `${current.model}${current.effort === undefined ? '' : `/${current.effort}`}`
     const wanted = `${wantedModel}${wantedEffort ? `/${wantedEffort}` : ''}`
-    return { model: null, effort: null, reason: `kept ${kept}, wanted ${wanted} (${said})` }
+    return { model: null, effort: null, reason: `kept ${kept}, wanted ${wanted} (${said}${sized}${cached})` }
   }
 
-  return { model, effort, reason: forced ? `${tier}, forced by risk` : `${tier} (${said})` }
+  const held = model ? '' : sized
+  return { model, effort, reason: forced ? `${tier}, forced by risk${held}` : `${tier} (${said}${held}${cached})` }
 }
 
 /**
