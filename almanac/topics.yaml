@@ -1,0 +1,86 @@
+topics:
+- slug: concepts
+  title: Concepts
+  description: Core vocabulary and mental models for this codebase
+  parents: []
+- slug: architecture
+  title: Architecture
+  parents: []
+  description: System boundaries, runtime flows, and subsystem relationships
+- slug: guides
+  title: Guides
+  parents: []
+  description: Task-oriented contributor workflows and operational procedures
+- slug: decisions
+  title: Decisions
+  parents: []
+  description: Durable choices, tradeoffs, and known areas of design drift
+- slug: reference
+  title: Reference
+  parents: []
+  description: Lookup material, inventories, contracts, and environment details
+- slug: build
+  title: Build
+  parents: []
+  description: How this repository and its generated artifacts are assembled
+- slug: wiki
+  title: Wiki
+  parents: []
+  description: CodeAlmanac coverage, navigation, and wiki-maintenance context
+- slug: analytics
+  title: Analytics
+  parents: []
+  description: Conversation analytics, state detection, caches, and updates
+- slug: api
+  title: API
+  parents: []
+  description: Production and dashboard API endpoints and their contracts
+- slug: catalog
+  title: Catalog
+  parents: []
+  description: Component catalog schemas, generation, and generated artifacts
+- slug: cli
+  title: CLI
+  parents: []
+  description: Node and Rust command-line interfaces and installation flows
+- slug: components
+  title: Components
+  parents: []
+  description: Claude Code component formats, installs, and contribution rules
+- slug: dashboard
+  title: Dashboard
+  parents: []
+  description: Astro dashboard runtime, data loading, and user-facing systems
+- slug: deployment
+  title: Deployment
+  parents: []
+  description: Cloudflare, Vercel drift, releases, and deployment guidance
+- slug: monitoring
+  title: Monitoring
+  parents: []
+  description: Scheduled checks, reporting, health, and operational telemetry
+- slug: persistence
+  title: Persistence
+  parents: []
+  description: Supabase and Neon storage boundaries, tables, and migrations
+- slug: rust
+  title: Rust
+  parents: []
+  description: Rust CLI implementation and delegation boundaries
+- slug: security
+  title: Security
+  parents: []
+  description: Security constraints, audits, secrets, and privacy contracts
+- slug: testing
+  title: Testing
+  parents: []
+  description: Automated test suites, validation gates, and release checks
+- slug: validation
+  title: Validation
+  parents: []
+  description: Component validation architecture, errors, scoring, and extension
+    points
+- slug: workers
+  title: Workers
+  parents: []
+  description: Cloudflare Worker schedules, monitors, and reporting jobs
