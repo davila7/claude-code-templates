@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "ashare": {
+      "description": "ashare.net hosts the HTML and Markdown your agent writes. Publish a document, share the link by email, collect readers' comments on the text, fix the document and resolve the threads. Sign in with OAuth in the browser via /mcp.",
+      "type": "http",
+      "url": "https://ashare.net/mcp"
+    }
+  }
+}
