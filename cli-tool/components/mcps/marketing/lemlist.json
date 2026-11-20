@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "lemlist": {
+      "description": "lemlist's official hosted MCP server for sales outreach: list campaigns and their stats, create campaigns with email and LinkedIn sequences, add and search leads, search the lemlist B2B people database, and check the deliverability of sending domains, through your own lemlist account. Sign in to lemlist in the browser on first use (OAuth), there is no key to paste. Launching a campaign sends real messages and asks for confirmation first.",
+      "type": "http",
+      "url": "https://app.lemlist.com/mcp"
+    }
+  }
+}

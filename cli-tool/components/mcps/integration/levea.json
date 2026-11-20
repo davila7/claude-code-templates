@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "levea": {
+      "description": "Levea remote MCP server (Streamable HTTP, OAuth 2.1 sign-in or Bearer API key at livecore.ai; free tier and paid plans). Autonomous AI video editor that turns natural-language prompts or long recordings into finished videos: viral clips, 280+ animated caption templates, 9:16 speaker reframing, silence cleanup, B-roll, motion graphics, voiceover, brand kits, and cloud MP4 exports. Guide: https://github.com/brajendrak00068/agentic-ai-video-production/blob/main/mcp-server/README.md",
+      "type": "http",
+      "url": "https://api.livecore.ai/api/v1/misc/mcp"
+    }
+  }
+}

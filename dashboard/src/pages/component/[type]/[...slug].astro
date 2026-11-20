@@ -13,7 +13,7 @@ import { TYPE_CONFIG, ICONS } from '../../../lib/icons';
 import { fetchComponents, fetchComponentContentData, getInstallCommand } from '../../../lib/data';
 import type { ComponentPageMeta } from '../../../lib/data';
 import type { HarnessResult, ScanSnippet } from '../../../lib/types';
-import { PLUGIN_KINDS, commitTitle, displayName, harnessSummary, nextStepItems, formatBytes, formatCount, formatDate, initials, languageShares, pluginContentsSummary, topLevelEntries, totals } from '../../../lib/component-page';
+import { NVIDIA_LOGO, PLUGIN_KINDS, commitTitle, displayName, harnessSummary, nextStepItems, formatBytes, formatCount, formatDate, initials, languageShares, pluginContentsSummary, topLevelEntries, totals } from '../../../lib/component-page';
 import type { Component, PluginContents } from '../../../lib/types';
 import { AITMPL_MARKETPLACE } from '../../../lib/constants';
 import { jsonForScript } from '../../../lib/sanitize-html';
@@ -574,7 +574,7 @@ const componentSchema = component
 
             {component.skillspector && (
               <section class="rounded-lg border border-[var(--color-border)] px-3.5 py-3 lg:rounded-none lg:border-x-0 lg:border-b-0 lg:px-0 lg:pt-5 lg:pb-0 flex items-start gap-2.5 text-[13px] text-[var(--color-text-secondary)]">
-                <svg class="w-4 h-4 mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6l7-3z" /><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4" /></svg>
+                <img src={NVIDIA_LOGO} alt="" width="16" height="16" class="w-4 h-4 mt-0.5 shrink-0" />
                 <div>
                   <p class="font-medium text-[var(--color-text-primary)]">Scanned by NVIDIA SkillSpector</p>
                   <p>

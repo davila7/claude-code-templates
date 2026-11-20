@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "gitranks": {
+      "description": "Find open-source GitHub issues to contribute to, matched to your skills and checked ready for a pull request. Your agent fixes one; you approve the PR on gitranks.com. Sign in with your GitHub account: after installing, run /mcp in Claude Code. Docs: https://gitranks.com/contribute/mcp",
+      "type": "http",
+      "url": "https://mcp.gitranks.com/mcp"
+    }
+  }
+}
