@@ -67832,6 +67832,94 @@
       }
     },
     {
+      "name": "bug-trap",
+      "path": "development/bug-trap",
+      "category": "development",
+      "type": "skill",
+      "description": "Write and fix tests that catch real bugs, by testing behaviour, faking only the device boundary and seeding data the way the product writes it. Use when a bug needs a test that fails first, or a unit test is failing or flaky, or when the user says \"add a test for this bug\", \"fix this failing test\" or \"why is this test flaky\". For the bar every test is held to, use test-like-a-user.",
+      "author": "Off Grid AI",
+      "repo": "https://github.com/off-grid-ai/skills",
+      "version": "",
+      "license": "MIT",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "LICENSE",
+        "README.md"
+      ],
+      "source": {
+        "repo": "off-grid-ai/skills",
+        "path": "testing/bug-trap",
+        "commit": "3be9b17f6a63e341034166ac40049f28e7600a27",
+        "license": "MIT",
+        "url": "https://github.com/off-grid-ai/skills/tree/3be9b17f6a63e341034166ac40049f28e7600a27/testing/bug-trap",
+        "requires": []
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "CAUTION",
+        "issueCount": 0,
+        "analysis": "partial",
+        "findings": [],
+        "categories": {},
+        "hash": "85f3754a71d31886",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-20T01:11:02Z"
+      },
+      "harness": {
+        "agents": [
+          {
+            "id": "claude-code",
+            "status": "loads",
+            "verified": "2.1.316",
+            "notes": []
+          },
+          {
+            "id": "codex",
+            "status": "loads",
+            "verified": "0.166.0",
+            "notes": []
+          },
+          {
+            "id": "copilot-cli",
+            "status": "loads",
+            "verified": "1.0.105",
+            "notes": []
+          },
+          {
+            "id": "opencode",
+            "status": "loads",
+            "verified": "1.19.5",
+            "notes": []
+          },
+          {
+            "id": "hermes",
+            "status": "loads",
+            "verified": "main",
+            "notes": []
+          },
+          {
+            "id": "openclaw",
+            "status": "loads",
+            "verified": "2026.10.9",
+            "notes": []
+          }
+        ],
+        "version": "1.0.1",
+        "checkedAt": "2026-11-20T01:11:13Z",
+        "hash": "85f3754a71d31886"
+      }
+    },
+    {
       "name": "bullmq-specialist",
       "path": "development/bullmq-specialist",
       "category": "development",
@@ -69322,6 +69410,106 @@
         "version": "1.0.1",
         "checkedAt": "2026-11-18T20:31:10Z",
         "hash": "07aa053c3808d64d"
+      }
+    },
+    {
+      "name": "click-everything",
+      "path": "development/click-everything",
+      "category": "development",
+      "type": "skill",
+      "description": "Test your app one module at a time by looking at it like a user does. Your agent lists every route from the router, screenshots every route and state, clicks the buttons, makes the app produce real output and reads it, fixes what doesn't make sense, adds replayable end-to-end tests, and reports. Use when you say \"test every page\", \"/click-everything\", \"sweep the app\", \"visually test this module\", or when there is no other work queued.",
+      "author": "Off Grid AI",
+      "repo": "https://github.com/off-grid-ai/skills",
+      "version": "",
+      "license": "MIT",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "LICENSE",
+        "README.md"
+      ],
+      "source": {
+        "repo": "off-grid-ai/skills",
+        "path": "testing/click-everything",
+        "commit": "3be9b17f6a63e341034166ac40049f28e7600a27",
+        "license": "MIT",
+        "url": "https://github.com/off-grid-ai/skills/tree/3be9b17f6a63e341034166ac40049f28e7600a27/testing/click-everything",
+        "requires": []
+      },
+      "skillspector": {
+        "score": 7,
+        "severity": "LOW",
+        "recommendation": "CAUTION",
+        "issueCount": 1,
+        "analysis": "partial",
+        "findings": [
+          {
+            "id": "TR2",
+            "category": "Trigger Abuse",
+            "severity": "MEDIUM",
+            "title": "Shadow Command Trigger",
+            "file": "SKILL.md",
+            "line": 1,
+            "count": 1
+          }
+        ],
+        "categories": {
+          "Trigger Abuse": 1
+        },
+        "hash": "45fd79d5c9027f47",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-20T01:11:02Z"
+      },
+      "harness": {
+        "agents": [
+          {
+            "id": "claude-code",
+            "status": "loads",
+            "verified": "2.1.316",
+            "notes": []
+          },
+          {
+            "id": "codex",
+            "status": "loads",
+            "verified": "0.166.0",
+            "notes": []
+          },
+          {
+            "id": "copilot-cli",
+            "status": "loads",
+            "verified": "1.0.105",
+            "notes": []
+          },
+          {
+            "id": "opencode",
+            "status": "loads",
+            "verified": "1.19.5",
+            "notes": []
+          },
+          {
+            "id": "hermes",
+            "status": "loads",
+            "verified": "main",
+            "notes": []
+          },
+          {
+            "id": "openclaw",
+            "status": "loads",
+            "verified": "2026.10.9",
+            "notes": []
+          }
+        ],
+        "version": "1.0.1",
+        "checkedAt": "2026-11-20T01:11:13Z",
+        "hash": "45fd79d5c9027f47"
       }
     },
     {
@@ -72534,6 +72722,94 @@
       }
     },
     {
+      "name": "dont-break-it",
+      "path": "development/dont-break-it",
+      "category": "development",
+      "type": "skill",
+      "description": "Your agent changes code in small, additive, checked commits that never skip hooks and never block on long jobs. Use before editing code, running checks, committing or pushing in any repo, or when you say \"change code safely\", \"commit this properly\", \"small commits\" or \"follow the engineering rules\".",
+      "author": "Off Grid AI",
+      "repo": "https://github.com/off-grid-ai/skills",
+      "version": "",
+      "license": "MIT",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "LICENSE",
+        "README.md"
+      ],
+      "source": {
+        "repo": "off-grid-ai/skills",
+        "path": "testing/dont-break-it",
+        "commit": "3be9b17f6a63e341034166ac40049f28e7600a27",
+        "license": "MIT",
+        "url": "https://github.com/off-grid-ai/skills/tree/3be9b17f6a63e341034166ac40049f28e7600a27/testing/dont-break-it",
+        "requires": []
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "CAUTION",
+        "issueCount": 0,
+        "analysis": "partial",
+        "findings": [],
+        "categories": {},
+        "hash": "17d230b8d3708c84",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-20T01:11:02Z"
+      },
+      "harness": {
+        "agents": [
+          {
+            "id": "claude-code",
+            "status": "loads",
+            "verified": "2.1.316",
+            "notes": []
+          },
+          {
+            "id": "codex",
+            "status": "loads",
+            "verified": "0.166.0",
+            "notes": []
+          },
+          {
+            "id": "copilot-cli",
+            "status": "loads",
+            "verified": "1.0.105",
+            "notes": []
+          },
+          {
+            "id": "opencode",
+            "status": "loads",
+            "verified": "1.19.5",
+            "notes": []
+          },
+          {
+            "id": "hermes",
+            "status": "loads",
+            "verified": "main",
+            "notes": []
+          },
+          {
+            "id": "openclaw",
+            "status": "loads",
+            "verified": "2026.10.9",
+            "notes": []
+          }
+        ],
+        "version": "1.0.1",
+        "checkedAt": "2026-11-20T01:11:13Z",
+        "hash": "17d230b8d3708c84"
+      }
+    },
+    {
       "name": "dotnet-backend",
       "path": "development/dotnet-backend",
       "category": "development",
@@ -74083,6 +74359,94 @@
         "version": "1.0.1",
         "checkedAt": "2026-11-18T20:31:10Z",
         "hash": "6442fce1f873f358"
+      }
+    },
+    {
+      "name": "fix-it-for-real",
+      "path": "development/fix-it-for-real",
+      "category": "development",
+      "type": "skill",
+      "description": "Fix bugs at the system level instead of patching symptoms, by reproducing each bug with a failing probe, finding who already solved the general problem, and committing small checked changes safely even when several agents share one checkout. Use when fixing a bug, especially one that came back, or when the user says \"no hack fixes\", \"fix it properly\", \"this keeps breaking\", \"fix the root cause\" or \"fix-it-for-real\".",
+      "author": "Off Grid AI",
+      "repo": "https://github.com/off-grid-ai/skills",
+      "version": "",
+      "license": "MIT",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "LICENSE",
+        "README.md"
+      ],
+      "source": {
+        "repo": "off-grid-ai/skills",
+        "path": "testing/fix-it-for-real",
+        "commit": "3be9b17f6a63e341034166ac40049f28e7600a27",
+        "license": "MIT",
+        "url": "https://github.com/off-grid-ai/skills/tree/3be9b17f6a63e341034166ac40049f28e7600a27/testing/fix-it-for-real",
+        "requires": []
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "CAUTION",
+        "issueCount": 0,
+        "analysis": "partial",
+        "findings": [],
+        "categories": {},
+        "hash": "15893d4d7367d963",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-20T01:11:02Z"
+      },
+      "harness": {
+        "agents": [
+          {
+            "id": "claude-code",
+            "status": "loads",
+            "verified": "2.1.316",
+            "notes": []
+          },
+          {
+            "id": "codex",
+            "status": "loads",
+            "verified": "0.166.0",
+            "notes": []
+          },
+          {
+            "id": "copilot-cli",
+            "status": "loads",
+            "verified": "1.0.105",
+            "notes": []
+          },
+          {
+            "id": "opencode",
+            "status": "loads",
+            "verified": "1.19.5",
+            "notes": []
+          },
+          {
+            "id": "hermes",
+            "status": "loads",
+            "verified": "main",
+            "notes": []
+          },
+          {
+            "id": "openclaw",
+            "status": "loads",
+            "verified": "2026.10.9",
+            "notes": []
+          }
+        ],
+        "version": "1.0.1",
+        "checkedAt": "2026-11-20T01:11:13Z",
+        "hash": "15893d4d7367d963"
       }
     },
     {
@@ -86275,6 +86639,117 @@
       }
     },
     {
+      "name": "test-like-a-user",
+      "path": "development/test-like-a-user",
+      "category": "development",
+      "type": "skill",
+      "description": "Hold every test to one bar, real integration tests that walk the whole user journey and prove the intended end state, with fakes only at boundaries you can't control. Use when writing, fixing, reviewing or auditing tests, or when the user says \"write a test\", \"add tests for this\", \"are these tests any good\", \"test this properly\", \"audit the tests\" or \"review this test\".",
+      "author": "Off Grid AI",
+      "repo": "https://github.com/off-grid-ai/skills",
+      "version": "",
+      "license": "MIT",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "LICENSE",
+        "README.md",
+        "reference/test-doctrine.md"
+      ],
+      "source": {
+        "repo": "off-grid-ai/skills",
+        "path": "testing/test-like-a-user",
+        "commit": "3be9b17f6a63e341034166ac40049f28e7600a27",
+        "license": "MIT",
+        "url": "https://github.com/off-grid-ai/skills/tree/3be9b17f6a63e341034166ac40049f28e7600a27/testing/test-like-a-user",
+        "requires": []
+      },
+      "skillspector": {
+        "score": 29,
+        "severity": "MEDIUM",
+        "recommendation": "CAUTION",
+        "issueCount": 2,
+        "analysis": "complete",
+        "findings": [
+          {
+            "id": "P3",
+            "category": "Prompt Injection",
+            "severity": "HIGH",
+            "title": "Exfiltration Commands",
+            "file": "reference/test-doctrine.md",
+            "line": 162,
+            "count": 1
+          },
+          {
+            "id": "RP1",
+            "category": "MCP Rug Pull",
+            "severity": "MEDIUM",
+            "title": "npx commands without a version suffix (e.g. @1.0.0) create a rug-pull risk if the upstream server is compromised and publishes a malicious update.",
+            "file": "reference/test-doctrine.md",
+            "line": 248,
+            "count": 1
+          }
+        ],
+        "categories": {
+          "MCP Rug Pull": 1,
+          "Prompt Injection": 1
+        },
+        "hash": "9d38d26980b6cfb4",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-20T01:11:02Z"
+      },
+      "harness": {
+        "agents": [
+          {
+            "id": "claude-code",
+            "status": "loads",
+            "verified": "2.1.316",
+            "notes": []
+          },
+          {
+            "id": "codex",
+            "status": "loads",
+            "verified": "0.166.0",
+            "notes": []
+          },
+          {
+            "id": "copilot-cli",
+            "status": "loads",
+            "verified": "1.0.105",
+            "notes": []
+          },
+          {
+            "id": "opencode",
+            "status": "loads",
+            "verified": "1.19.5",
+            "notes": []
+          },
+          {
+            "id": "hermes",
+            "status": "loads",
+            "verified": "main",
+            "notes": []
+          },
+          {
+            "id": "openclaw",
+            "status": "loads",
+            "verified": "2026.10.9",
+            "notes": []
+          }
+        ],
+        "version": "1.0.1",
+        "checkedAt": "2026-11-20T01:11:13Z",
+        "hash": "9d38d26980b6cfb4"
+      }
+    },
+    {
       "name": "testing-patterns",
       "path": "development/testing-patterns",
       "category": "development",
@@ -87373,6 +87848,83 @@
         "version": "1.0.1",
         "checkedAt": "2026-11-18T20:31:10Z",
         "hash": "abfaf4cc6cf57234"
+      }
+    },
+    {
+      "name": "witness",
+      "path": "development/witness",
+      "category": "development",
+      "type": "skill",
+      "description": "Proves that a coding task is actually complete instead of only claimed. Use at the start of a coding task to fix acceptance criteria with a human and capture a baseline, and before claiming the task is done to run deterministic checks. Also use when the user asks to verify an agent's work.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [],
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "CAUTION",
+        "issueCount": 0,
+        "analysis": "partial",
+        "findings": [],
+        "categories": {},
+        "hash": "eac8e7fac8a5fb3c",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-20T01:11:02Z"
+      },
+      "harness": {
+        "agents": [
+          {
+            "id": "claude-code",
+            "status": "loads",
+            "verified": "2.1.316",
+            "notes": []
+          },
+          {
+            "id": "codex",
+            "status": "loads",
+            "verified": "0.166.0",
+            "notes": []
+          },
+          {
+            "id": "copilot-cli",
+            "status": "loads",
+            "verified": "1.0.105",
+            "notes": []
+          },
+          {
+            "id": "opencode",
+            "status": "loads",
+            "verified": "1.19.5",
+            "notes": []
+          },
+          {
+            "id": "hermes",
+            "status": "loads",
+            "verified": "main",
+            "notes": []
+          },
+          {
+            "id": "openclaw",
+            "status": "loads",
+            "verified": "2026.10.9",
+            "notes": []
+          }
+        ],
+        "version": "1.0.1",
+        "checkedAt": "2026-11-20T01:11:13Z",
+        "hash": "eac8e7fac8a5fb3c"
       }
     },
     {
