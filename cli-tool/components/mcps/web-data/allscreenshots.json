@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "allscreenshots": {
+      "description": "Allscreenshots hosted MCP server for capturing website screenshots over Streamable HTTP, including full-page capture, viewport sizing, dark mode, and ad or cookie banner blocking. Connect to https://mcp.allscreenshots.com/mcp/v1 with OAuth, or set ALLSCREENSHOTS_API_KEY from https://allscreenshots.com/dashboard and send it as the X-API-Key header. Official plugin and local stdio server: https://github.com/allscreenshots/allscreenshots-plugin",
+      "type": "http",
+      "url": "https://mcp.allscreenshots.com/mcp/v1",
+      "headers": {
+        "X-API-Key": "${ALLSCREENSHOTS_API_KEY}"
+      }
+    }
+  }
+}
