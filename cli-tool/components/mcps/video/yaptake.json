@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "yaptake": {
+      "description": "Yaptake is a native Mac video editor with a transcript, captions and timeline. This local stdio server lets an agent edit the project open in the app: inspect it, view its editable transcript text, search what was said, dry-run and apply edits (each one undo step) and preview the result. Requires the separately installed Yaptake app on Apple silicon with macOS 26.0 or later; in the app choose Help > Use with Coding Agents > Command line to install the yaptake command. Projects stay on your Mac; the app's export allowance applies. The Yaptake application is proprietary; see https://yaptake.com/docs/agents.",
+      "command": "yaptake",
+      "args": ["mcp"]
+    }
+  }
+}
