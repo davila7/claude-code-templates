@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "sightradar": {
+      "description": "Official SightRadar Face Recognition API MCP: index photos into collections, find every photo of a person from one selfie, compare and detect faces, run batches of photo URLs, and check credits and usage. Streamable HTTP, OAuth sign-in with a SightRadar account in the browser (or an API key as a Bearer token); each connection gets its own revocable key and chosen permission groups. Billable tools state their price in credits; deletes are soft by default with a 7-day restore window, while immediate and compliance deletes are permanent.",
+      "type": "http",
+      "url": "https://mcp.sightradar.com/mcp"
+    }
+  }
+}
