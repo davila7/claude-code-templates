@@ -247,14 +247,14 @@ export default function PluginsGrid({ plugins }: { plugins: Plugin[] }) {
 
               {/* Description */}
               <p
-                className="relative z-10 text-[13px] line-clamp-2 leading-[1.6] mb-4 flex-1"
+                className="relative z-10 text-[13px] line-clamp-2 leading-[1.6] mb-4"
                 style={{ color: 'var(--color-text-secondary)' }}
               >
                 {plugin.description}
               </p>
 
               {/* Tags */}
-              <div className="relative z-10 flex items-center gap-1.5 flex-wrap">
+              <div className="relative z-10 flex items-center gap-1.5 flex-wrap mt-auto">
                 {plugin.tags.slice(0, 5).map((tag) => (
                   <span
                     key={tag}
