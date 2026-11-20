@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "chord": {
+      "description": "Hosted no-key MCP: DEX swap quotes and unsigned txs on 7 EVM chains (Base, Monad, BNB Chain, Avalanche, Arbitrum, Robinhood Chain, Arc), token boards, candles, wallet PnL, smart money, holders and LP pools. About 60 requests a minute without a key; only chord_ask needs a Chord API key. Non-custodial.",
+      "type": "http",
+      "url": "https://api.getchord.xyz/v1/mcp"
+    }
+  }
+}
