@@ -29276,6 +29276,51 @@
       }
     },
     {
+      "name": "levea",
+      "path": "integration/levea.json",
+      "category": "integration",
+      "type": "mcp",
+      "description": "Levea remote MCP server (Streamable HTTP, OAuth 2.1 sign-in or Bearer API key at livecore.ai; free tier and paid plans). Autonomous AI video editor that turns natural-language prompts or long recordings into finished videos: viral clips, 280+ animated caption templates, 9:16 speaker reframing, silence cleanup, B-roll, motion graphics, voiceover, brand kits, and cloud MP4 exports. Guide: https://github.com/brajendrak00068/agentic-ai-video-production/blob/main/mcp-server/README.md",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 5,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 1,
+        "analysis": "complete",
+        "findings": [
+          {
+            "id": "E1",
+            "category": "Data Exfiltration",
+            "severity": "MEDIUM",
+            "title": "External Transmission",
+            "file": "levea.json",
+            "line": 6,
+            "count": 1
+          }
+        ],
+        "categories": {
+          "Data Exfiltration": 1
+        },
+        "hash": "f4915438d7e2b614",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-20T01:14:24Z"
+      }
+    },
+    {
       "name": "livetennisapi",
       "path": "integration/livetennisapi.json",
       "category": "integration",
@@ -29771,6 +29816,39 @@
         "hash": "f04924cdacfefbc4",
         "version": "2.12.0",
         "scannedAt": "2026-11-19T03:05:32Z"
+      }
+    },
+    {
+      "name": "lemlist",
+      "path": "marketing/lemlist.json",
+      "category": "marketing",
+      "type": "mcp",
+      "description": "lemlist's official hosted MCP server for sales outreach: list campaigns and their stats, create campaigns with email and LinkedIn sequences, add and search leads, search the lemlist B2B people database, and check the deliverability of sending domains, through your own lemlist account. Sign in to lemlist in the browser on first use (OAuth), there is no key to paste. Launching a campaign sends real messages and asks for confirmation first.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "categories": {},
+        "hash": "3cba1b9547d678de",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-20T01:14:24Z"
       }
     },
     {
