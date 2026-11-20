@@ -1,7 +1,7 @@
 {
   "name": "jev-model-router",
-  "version": "0.4.2",
-  "description": "Picks the model and the reasoning effort for each task with TypeSafe's Jev, a System One decision model reached either through TypeSafe's own API or the Vercel AI Gateway. Routes subagent models at agent.spawn and the main loop's effort and model at turn.step, in both directions, falling back to the engine's built-in classifier when no key is set.",
+  "version": "0.5.0",
+  "description": "Picks the model and the reasoning effort for each task with a decision model: TypeSafe's Jev, reached through TypeSafe's own API or the Vercel AI Gateway, or Google's Gemini Decision. Routes subagent models at agent.spawn and the main loop's effort and model at turn.step, in both directions, falling back to the engine's built-in classifier when no key is set.",
   "author": {
     "name": "claude-code-templates",
     "url": "https://www.aitmpl.com"
@@ -18,7 +18,14 @@
     "typesafeApiKey": {
       "type": "string",
       "title": "TypeSafe API key",
-      "description": "Key for TypeSafe's own API; preferred over the Gateway, since only it reports a calibrated confidence",
+      "description": "Key for TypeSafe's own API; preferred when several keys are set, since the questions were tuned against Jev",
+      "default": "",
+      "sensitive": true
+    },
+    "geminiApiKey": {
+      "type": "string",
+      "title": "Gemini API key",
+      "description": "Gemini Developer API key, used for Google's Gemini Decision model; reports a confidence per answer like TypeSafe",
       "default": "",
       "sensitive": true
     },
@@ -32,11 +39,12 @@
     "provider": {
       "type": "string",
       "title": "Backend",
-      "description": "Which backend to use; \"auto\" picks TypeSafe when its key is set, then the Gateway, then the built-in classifier",
+      "description": "Which backend to use; \"auto\" picks TypeSafe when its key is set, then Gemini, then the Gateway, then the built-in classifier",
       "default": "auto",
       "options": [
         "auto",
         "typesafe",
+        "gemini",
         "gateway",
         "builtin"
       ]
@@ -51,6 +59,18 @@
       "type": "string",
       "title": "TypeSafe model",
       "description": "Decision model on TypeSafe's own API; empty uses jev-latest",
+      "default": ""
+    },
+    "geminiBaseUrl": {
+      "type": "string",
+      "title": "Gemini base URL",
+      "description": "Base URL of the Gemini Developer API; empty uses https://generativelanguage.googleapis.com",
+      "default": ""
+    },
+    "geminiModel": {
+      "type": "string",
+      "title": "Gemini model",
+      "description": "Decision model on the Gemini Developer API; empty uses gemini-decision-1",
       "default": ""
     },
     "gatewayBaseUrl": {
