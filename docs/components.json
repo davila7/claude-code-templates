@@ -141035,6 +141035,91 @@
         "version": "2.12.0",
         "scannedAt": "2026-11-19T03:05:32Z"
       }
+    },
+    {
+      "name": "subagents-pane",
+      "path": "productivity/subagents-pane",
+      "category": "productivity",
+      "type": "plugin",
+      "description": "See what your agents, skills and plans are doing: a live pane with a list and a graph across all Claude Code sessions",
+      "author": "qaokss",
+      "repo": "https://github.com/qaokss/claude-agents-view",
+      "version": "0.4.1",
+      "license": "MIT",
+      "keywords": [],
+      "installCommand": "npx claude-code-templates@latest --plugin productivity/subagents-pane",
+      "downloads": 0,
+      "references": [
+        ".claude-plugin/icon.png",
+        ".claude-plugin/marketplace.json",
+        ".claude-plugin/plugin.json",
+        ".gitignore",
+        "LICENSE",
+        "docs/graph-demo.gif",
+        "docs/graph.png",
+        "docs/stats.png",
+        "docs/timeline.png",
+        "docs/working-states.gif",
+        "hooks/external.ts",
+        "hooks/graph.ts",
+        "hooks/hooks.json",
+        "hooks/i18n.ts",
+        "hooks/register.tsx",
+        "tests/pane.test.tsx",
+        "tsconfig.json",
+        "types/index.d.ts"
+      ],
+      "contains": {},
+      "source": {
+        "repo": "qaokss/claude-agents-view",
+        "path": "",
+        "commit": "2093e5af5918762d5a655130c6a1e04a2e018c2d",
+        "license": "MIT",
+        "url": "https://github.com/qaokss/claude-agents-view/tree/2093e5af5918762d5a655130c6a1e04a2e018c2d"
+      },
+      "skillspector": {
+        "score": 19,
+        "severity": "LOW",
+        "recommendation": "CAUTION",
+        "issueCount": 6,
+        "analysis": "partial",
+        "findings": [
+          {
+            "id": "RP1",
+            "category": "MCP Rug Pull",
+            "severity": "MEDIUM",
+            "title": "npx commands without a version suffix (e.g. @1.0.0) create a rug-pull risk if the upstream server is compromised and publishes a malicious update.",
+            "file": "README.md",
+            "line": 92,
+            "count": 2
+          },
+          {
+            "id": "RP1",
+            "category": "MCP Rug Pull",
+            "severity": "MEDIUM",
+            "title": "npx commands without a version suffix (e.g. @1.0.0) create a rug-pull risk if the upstream server is compromised and publishes a malicious update.",
+            "file": "tests/pane.test.tsx",
+            "line": 617,
+            "count": 3
+          },
+          {
+            "id": "LP3",
+            "category": "MCP Least Privilege",
+            "severity": "MEDIUM",
+            "title": "Without declared permissions the skill's intent is opaque and cannot be validated.",
+            "file": "SKILL.md",
+            "line": 1,
+            "count": 1
+          }
+        ],
+        "categories": {
+          "MCP Rug Pull": 5,
+          "MCP Least Privilege": 1
+        },
+        "hash": "8eb2d3a676af311b",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-20T01:19:30Z"
+      }
     }
   ],
   "componentsMarketplace": {
