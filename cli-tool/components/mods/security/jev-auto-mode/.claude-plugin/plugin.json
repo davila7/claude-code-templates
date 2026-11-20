@@ -41,6 +41,12 @@
       "title": "Log level",
       "description": "blocked (asks and denies, the default), all (every decision) or off",
       "default": "blocked"
+    },
+    "dialogMaxChars": {
+      "type": "number",
+      "title": "Dialog action length",
+      "description": "How many characters of the action the Allow / Deny dialog shows; 0 (the default) shows all of it. Log lines keep 80.",
+      "default": 0
     }
   }
 }
