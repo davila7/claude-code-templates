@@ -243,9 +243,11 @@ export const register: Register = (on, options) => {
     }
     const els = $.ui.resolve(e)
     const { Box, Text, Button } = els
-    // mobile draws no field and no link: there the timeline is read-only
-    const Input = 'Input' in els ? els.Input : undefined
-    const Link = 'Link' in els ? els.Link : undefined
+    // mobile draws no field and no link: there the timeline is read-only.
+    // Ask the surface, not the table: since Claude Code 2.1.318 every surface's table has Input and Link.
+    const readOnly = e.surface === 'mobile'
+    const Input = !readOnly && 'Input' in els ? els.Input : undefined
+    const Link = !readOnly && 'Link' in els ? els.Link : undefined
     const W = Math.max(30, e.props.bodyColumns - 1)
     const now = Date.now()
     const noop = () => {}
