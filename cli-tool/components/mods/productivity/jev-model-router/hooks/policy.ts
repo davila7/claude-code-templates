@@ -253,6 +253,10 @@ export function rankOf(model: string, tiers: Tiers): number | null {
   if (lowered.includes('haiku')) return 0
   if (lowered.includes('sonnet')) return 1
   if (lowered.includes('opus')) return 2
+  // Fable sits above Opus, so on this ladder it is the deep tier. Unranked, a
+  // Fable session's move to Haiku read as an upgrade and cleared the gentle
+  // `minUpgradeConfidence` bar instead of the strict one.
+  if (lowered.includes('fable')) return 2
   return null
 }
 
@@ -264,11 +268,15 @@ export function rankOf(model: string, tiers: Tiers): number | null {
  * and goes to the API as written: an alias there is refused ("There's an
  * issue with the selected model (haiku)"). So the tiers stay aliases in the
  * options, and only a main-loop rewrite resolves them, here.
+ *
+ * The ids are what `--model <alias>` resolves to in Claude Code 2.1.280.
+ * `opus` was `claude-opus-5` here, which, with main-loop model routing on,
+ * moved a turn routed to the deep tier onto the older model.
  */
 const ALIAS_IDS: Record<string, string> = {
   haiku: 'claude-haiku-4-5-20251001',
   sonnet: 'claude-sonnet-5',
-  opus: 'claude-opus-5',
+  opus: 'claude-opus-5-5',
 }
 
 /**
@@ -355,15 +363,25 @@ export function route(
   const currentTier = rankOf(current.model, config.tiers)
   const wantedModel = config.tiers[tier]
 
+  // A session already in the wanted tier keeps its exact id, forced or not: a
+  // risky turn on `claude-opus-5-5[1m]` must not be rewritten to the `opus`
+  // alias, which drops the 1M context.
+  const sameTier = currentTier !== null && currentTier === wantedTier
   const model =
     wantedModel &&
     wantedModel !== current.model &&
+    !sameTier &&
     (forced || allowed(wantedTier, currentTier, decision.confidence, config))
       ? wantedModel
       : null
 
   let effort: Effort | null = null
-  if (effortScore !== null) {
+  // No current effort means none to set: a subagent (the Agent tool takes no
+  // effort) or a model without one (Haiku). Routing one anyway made the
+  // subagent line read "general-purpose: deep (confidence 0.95)" for a spawn
+  // that was left exactly as it was. A model change still takes one: a Haiku
+  // turn lifted to Opus by risk must not run at Opus's default effort.
+  if (effortScore !== null && (current.effort !== undefined || model !== null)) {
     const currentRank = effortRank(current.effort)
     let wantedRank = EFFORT_ORDER.indexOf(effortLevel(effortScore))
 
@@ -394,6 +412,8 @@ export function route(
     const wantedEffort = effortScore === null ? null : effortLevel(effortScore)
     const kept = `${current.model}${current.effort === undefined ? '' : `/${current.effort}`}`
     const wanted = `${wantedModel}${wantedEffort ? `/${wantedEffort}` : ''}`
+    // Risk that finds the session already deep enough is not a hunch declined.
+    if (forced) return { model: null, effort: null, reason: `${tier}, forced by risk; already on ${kept}` }
     return { model: null, effort: null, reason: `kept ${kept}, wanted ${wanted} (${said})` }
   }
 

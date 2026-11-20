@@ -224,7 +224,9 @@ export const register: Register = (on, options) => {
     // The main loop's `model` is sent to the API as written, so an alias
     // becomes its id here; a subagent's (agent.spawn) may stay an alias.
     if (routeMainModel && routing.model) change.model = requestModelId(routing.model)
-    if (routeMainEffort && routing.effort) change.effort = routing.effort
+    // A model with no effort (Haiku) gets none, unless it is being moved: with
+    // model routing off, the routing may name a model this turn will not run on.
+    if (routeMainEffort && routing.effort && (e.effort !== undefined || change.model)) change.effort = routing.effort
 
     appliedTurnId = e.turnId
     applied = Object.keys(change).length > 0 ? change : null
