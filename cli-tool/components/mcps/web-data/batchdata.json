@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "batchdata": {
+      "description": "BatchData hosted MCP server for U.S. property data covering 169 million+ parcels: property lookup and search, comparables, owner skip tracing, DNC and TCPA phone checks, and address verification and geocoding. Remote Streamable HTTP server; nothing runs locally. Requires a BatchData account. Sign in with OAuth on first use, or send a BatchData API token as an Authorization: Bearer header.",
+      "type": "http",
+      "url": "https://mcp.batchdata.com"
+    }
+  }
+}
