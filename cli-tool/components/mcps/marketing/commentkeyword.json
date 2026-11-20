@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "commentkeyword": {
+      "description": "Official MCP server for CommentKeyword: create and manage Instagram comment-to-DM keyword automations (\"comment GUIDE and I'll DM you the link\") through Instagram's official API. Dependency-free Node stdio server, pinned to release v0.2.0. Tools: create_keyword, update_keyword, list_keywords, get_keyword, delete_keyword, list_agents. Create a token at https://commentkeyword.com/settings?tab=api (API access is included on the Free plan). Docs: https://commentkeyword.com/instagram-mcp-server",
+      "command": "npx",
+      "args": ["-y", "github:commentkeyword/agent-toolkit#v0.2.0"],
+      "env": {
+        "COMMENTKEYWORD_API_TOKEN": "<YOUR_TOKEN>"
+      }
+    }
+  }
+}
