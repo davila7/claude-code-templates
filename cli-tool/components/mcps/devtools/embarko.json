@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "embarko": {
+      "description": "Official Embarko MCP server (mcp.embarko.ai): deploy and host AI-built apps and websites and get a live URL without any DevOps setup. Tools: deploy_app (deploy or update an app from its files), read_app (status, logs, deployments, env vars, domains, analytics), update_app (set env vars, add and verify a custom domain, roll back) and app_danger_zone (delete an env var or domain, rename or delete an app). Requires an Embarko account and uses OAuth: after installing, run /mcp in Claude Code to sign in. It has write access: it can deploy, change and delete apps, env vars and domains in your Embarko account.",
+      "type": "http",
+      "url": "https://mcp.embarko.ai/mcp"
+    }
+  }
+}
