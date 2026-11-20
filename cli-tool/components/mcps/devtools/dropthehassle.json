@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "dropthehassle": {
+      "description": "Your AI puts the site it built live on a real link with HTTPS, not localhost: a free link with no account or token for the first publish. Want your own .com? It hands you a €19/$19 payment link; after you pay, the site goes live on it with no DNS. You can also ask it for visitors, leads or site status. No tool spends money.",
+      "type": "http",
+      "url": "https://dropthehassle.com/mcp"
+    }
+  }
+}
