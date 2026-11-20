@@ -9,4 +9,6 @@ node_modules
 
 # Generated social preview images (scripts/generate-og-images.mjs)
 public/og/
+# Generated README badges (scripts/generate-badges.mjs)
+public/badge/
 .wrangler/
