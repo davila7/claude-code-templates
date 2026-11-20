@@ -1,0 +1,4 @@
+{
+  "description": "second-opinion: a bar above the prompt picks OpenAI, Gemini or xAI reviewers and effort; /second-opinion sends the session to them, /reviewer lists models, and Claude can call the ask_model tool",
+  "modules": ["./register.tsx"]
+}
