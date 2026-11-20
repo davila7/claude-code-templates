@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "oh-my-android": {
+      "description": "Native macOS control panel for the Android Emulator with a built-in MCP server (18 tools). Lets Claude Code screenshot the emulator in dp, read the UI tree, tap, type, and switch dark mode, font scale or RTL. Requires macOS 26+, Apple silicon and the Android SDK. Install with: brew install --cask ateymoori/tap/oh-my-android",
+      "command": "ohmyandroid-mcp",
+      "args": []
+    }
+  }
+}
