@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "creatorscompanion": {
+      "description": "Hosted MCP server for content creators: find posts going viral in your niche, pull transcripts, and write Reels and TikTok scripts, LinkedIn posts, X threads, newsletters, YouTube scripts and carousels in your own voice. Sign in with your CreatorsCompanion account through the MCP client's OAuth flow. Free tier: 2,500 credits on signup; paid plans add more. Docs: https://www.creatorscompanion.app/connect",
+      "type": "http",
+      "url": "https://www.creatorscompanion.app/mcp"
+    }
+  }
+}
