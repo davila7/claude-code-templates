@@ -132,6 +132,23 @@
       ],
       "license": "Apache-2.0",
       "category": "design"
+    },
+    {
+      "name": "subagents-pane",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/qaokss/claude-agents-view.git",
+        "sha": "2093e5af5918762d5a655130c6a1e04a2e018c2d"
+      },
+      "description": "See what your agents, skills and plans are doing: a live pane with a list and a graph across all Claude Code sessions",
+      "author": {
+        "name": "qaokss",
+        "url": "https://github.com/qaokss"
+      },
+      "homepage": "https://www.aitmpl.com/component/plugins/productivity/subagents-pane",
+      "repository": "https://github.com/qaokss/claude-agents-view",
+      "license": "MIT",
+      "category": "productivity"
     }
   ]
 }
