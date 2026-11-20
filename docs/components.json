@@ -27656,6 +27656,51 @@
       }
     },
     {
+      "name": "gitranks-contribute",
+      "path": "devtools/gitranks-contribute.json",
+      "category": "devtools",
+      "type": "mcp",
+      "description": "Find open-source GitHub issues to contribute to, matched to your skills and checked ready for a pull request. Your agent fixes one; you approve the PR on gitranks.com. Sign in with your GitHub account: after installing, run /mcp in Claude Code. Docs: https://gitranks.com/contribute/mcp",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 7,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 1,
+        "analysis": "complete",
+        "findings": [
+          {
+            "id": "TR2",
+            "category": "Trigger Abuse",
+            "severity": "MEDIUM",
+            "title": "Shadow Command Trigger",
+            "file": "SKILL.md",
+            "line": 1,
+            "count": 1
+          }
+        ],
+        "categories": {
+          "Trigger Abuse": 1
+        },
+        "hash": "8f2d80c1bc0e7aa8",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-20T01:26:01Z"
+      }
+    },
+    {
       "name": "grafana",
       "path": "devtools/grafana.json",
       "category": "devtools",
@@ -30872,6 +30917,39 @@
         "hash": "78aeabd8536c9314",
         "version": "2.12.0",
         "scannedAt": "2026-11-19T03:05:32Z"
+      }
+    },
+    {
+      "name": "sofya",
+      "path": "web-data/sofya.json",
+      "category": "web-data",
+      "type": "mcp",
+      "description": "Sofya remote MCP server for web access: search the web and get page content with each result, fetch any URL or document (PDF, DOCX and more) as clean markdown, extract structured data from a page, and run multi-query research that returns a cited report. Tools: search, fetch, extract, research, get_balance, buy_credits. Queries and URLs are sent to sofya.co; nothing runs locally. Pay as you go with no subscription, and failed requests are not charged. Get an API key at https://sofya.co/dashboard and set it as the SOFYA_API_KEY environment variable before connecting.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "categories": {},
+        "hash": "a30a5a49880d9f8b",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-20T01:26:01Z"
       }
     },
     {
