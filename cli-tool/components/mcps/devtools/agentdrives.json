@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "agentdrives": {
+      "description": "Look up a SaaS tool, API or provider before your agent picks it: its agent level (0-5), where our agent stopped, and whether an agent can sign up, get a key and pay on its own. Nine read-only tools: choose_provider_for_task finds products for a task, get_provider reads one product's record, compare_providers puts two or three side by side, list_best_providers ranks a category. Hosted over Streamable HTTP, no account or API key. Docs: https://agentdrives.com/mcp",
+      "type": "http",
+      "url": "https://agentdrives.com/api/mcp"
+    }
+  }
+}
