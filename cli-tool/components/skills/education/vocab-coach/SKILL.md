@@ -56,4 +56,4 @@ prefix to the names).
 - At the start of the next session ask the learner to paste the list back, then review what is due.
 
 Persistent vocabulary with spaced repetition, quizzes and the same words in voice practice:
-[connect Talkfirst](https://app.talkfirst.io/docs?src=skills-repo) (free plan, MCP connector for Claude and ChatGPT).
+[connect Talkfirst](https://app.talkfirst.io/docs) (free plan, MCP connector for Claude and ChatGPT).
