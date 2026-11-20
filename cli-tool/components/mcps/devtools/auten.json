@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "auten": {
+      "description": "Computer-use MCP server: gives Claude Code hands on a real screen, your computer (Mac/Windows/Linux) and your Android phone over USB (beta). It clicks, types and reads the screen, even in apps with no API. A task done once can be saved as a skill and replayed without a model call, and saved passwords are typed locally, never sent to the model. The first run asks you to connect a free key (30 minutes a month, no card).",
+      "command": "npx",
+      "args": ["-y", "@autenai/mcp"]
+    }
+  }
+}
