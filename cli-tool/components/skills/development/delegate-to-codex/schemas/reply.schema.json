@@ -1,0 +1,37 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "status": {"type": "string", "enum": ["complete", "partial", "blocked", "extension_requested"]},
+    "summary": {"type": "string"},
+    "findings": {"type": "array", "items": {"type": "string"}},
+    "files_read": {"type": "array", "items": {"type": "string"}},
+    "files_changed": {"type": "array", "items": {"type": "string"}},
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "description": {"type": "string"},
+          "reported_outcome": {"type": "string", "enum": ["passed", "failed", "not_run"]},
+          "evidence": {"type": "string"}
+        },
+        "required": ["description", "reported_outcome", "evidence"]
+      }
+    },
+    "blockers": {"type": "array", "items": {"type": "string"}},
+    "extension_request": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "completed_work": {"type": "array", "items": {"type": "string"}},
+        "remaining_work": {"type": "array", "items": {"type": "string"}},
+        "reason": {"type": "string"},
+        "requested_turns": {"type": "integer", "minimum": 0, "maximum": 24}
+      },
+      "required": ["completed_work", "remaining_work", "reason", "requested_turns"]
+    }
+  },
+  "required": ["status", "summary", "findings", "files_read", "files_changed", "checks", "blockers", "extension_request"]
+}
