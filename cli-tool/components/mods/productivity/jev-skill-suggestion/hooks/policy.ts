@@ -273,6 +273,7 @@ export function installPathsOf(installedJson: string, plugin: string): string[] 
   } catch {
     return []
   }
+  if (!parsed || typeof parsed !== 'object') return []
   const plugins = (parsed as { plugins?: Record<string, { installPath?: string }[]> }).plugins
   if (!plugins) return []
   const paths: string[] = []
