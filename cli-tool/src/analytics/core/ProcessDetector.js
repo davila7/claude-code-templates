@@ -1,6 +1,6 @@
 const { exec } = require('child_process');
 const fs = require('fs-extra');
-const path = require('path');
+const ConversationAnalyzer = require('./ConversationAnalyzer');
 
 /**
  * ProcessDetector - Handles Claude CLI process detection and conversation matching
@@ -143,12 +143,10 @@ class ProcessDetector {
           }
           
           // Recalculate conversation state with process information
-          const conversationFile = path.join(claudeDir, conversation.fileName);
+          const conversationFile = conversation.filePath;
           try {
-            const content = await fs.readFile(conversationFile, 'utf8');
-            const parsedMessages = content.split('\n')
-              .filter(line => line.trim())
-              .map(line => JSON.parse(line));
+            // Parse it like the initial load does: the state calculator reads each message's role
+            const parsedMessages = await new ConversationAnalyzer(claudeDir).getParsedConversation(conversationFile);
             
             const stats = await fs.stat(conversationFile);
             conversation.conversationState = stateCalculator.determineConversationState(
