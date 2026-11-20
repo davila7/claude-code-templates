@@ -1,7 +1,7 @@
 {
   "name": "subagent-tuner",
-  "version": "0.1.4",
-  "description": "Picks the model and reasoning effort of every subagent: a recommendation by task kind, a band above the prompt, and a saved default that wins.",
+  "version": "0.1.7",
+  "description": "Picks the model and reasoning effort of every subagent: a recommendation by task kind, a band above the prompt, and a saved default that wins. Needs Claude Code 2.1.295 or later.",
   "author": {
     "name": "Aleh Kruhlikau",
     "url": "https://github.com/Kruhlikau"

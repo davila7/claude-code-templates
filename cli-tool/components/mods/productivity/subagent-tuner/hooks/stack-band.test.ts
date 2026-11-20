@@ -25,11 +25,14 @@ const kids = (node: Node) => (typeof node === 'string' ? [] : (node.children ?? 
 const strings = (node: Node): string[] =>
   typeof node === 'string' ? [node] : kids(node).flatMap(strings)
 
-// Each draw hands its Buttons new press handles; the shape is what two draws are compared by.
+// Each draw hands its Buttons new press handles, and Claude Code 2.1.300 and later mark a tree with the
+// plugin that owns it (`part`); the shape is what two draws are compared by, without either.
 const shape = (node: Node): Node =>
   typeof node === 'string'
     ? node
-    : (JSON.parse(JSON.stringify(node, (key, value: unknown) => (key === 'press' ? undefined : value))) as Node)
+    : (JSON.parse(
+        JSON.stringify(node, (key, value: unknown) => (key === 'press' || key === 'part' ? undefined : value)),
+      ) as Node)
 
 // The band as drawn alone: the reference for "identical to today".
 async function alone($: Engine, columns = 100, surface: 'terminal' | 'desktop' = 'terminal') {

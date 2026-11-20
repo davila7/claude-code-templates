@@ -3,7 +3,7 @@ import { expect, test } from 'claude-code/testing'
 
 import { EFFORT_OPTIONS, INHERITED_TEXT, MODEL_OPTIONS, MORE_EFFORT_OPTIONS, MORE_MODEL_OPTIONS, fieldQuestion, mainDialog, parseChoiceText, readField, readMain } from './dialog'
 import { headerLine } from './pane-view'
-import { LONG_PROMPT_CHARS, bumpEffort, hasOpenField, patchFor, recommend, resolveDefault } from './recommend'
+import { LONG_PROMPT_CHARS, bumpEffort, hasOpenField, hasOwnDefinition, patchFor, recommend, resolveDefault } from './recommend'
 
 const TABLE = [
   { subagent_type: 'Explore', description: 'Find the config loader', model: 'haiku', effort: 'low' },
@@ -158,4 +158,31 @@ test('the pane header is clipped to the room', () => {
   for (let columns = 5; columns <= 80; columns += 1) {
     expect(headerLine({ ...entry, description: 'd'.repeat(300) }, columns).length).toBeLessThanOrEqual(columns)
   }
+})
+
+// A type the engine offered as a built-in has no definition of its own; any other has one that may
+// pin a model and an effort the tuner cannot see.
+test('own definition: the offer cache says built-in, or says not', () => {
+  const offers = new Map([['Plan', true], ['acme-reviewer', false], ['general-purpose', false]])
+
+  expect(hasOwnDefinition('Plan', offers)).toBe(false)
+  expect(hasOwnDefinition('acme-reviewer', offers)).toBe(true)
+  // The cache outranks the known names: a user's agent may take a built-in's name.
+  expect(hasOwnDefinition('general-purpose', offers)).toBe(true)
+})
+
+test('own definition: a type no offer was seen for is judged by its name', () => {
+  const offers = new Map<string, boolean>()
+
+  for (const name of ['general-purpose', 'Explore', 'Plan', 'claude', 'statusline-setup', 'claude-code-guide']) {
+    expect(hasOwnDefinition(name, offers)).toBe(false)
+  }
+
+  expect(hasOwnDefinition('code-reviewer', offers)).toBe(true)
+  expect(hasOwnDefinition('explore', offers)).toBe(true)
+})
+
+test('own definition: no subagent_type means general-purpose', () => {
+  expect(hasOwnDefinition(undefined, new Map())).toBe(false)
+  expect(hasOwnDefinition(undefined, new Map([['general-purpose', true]]))).toBe(false)
 })
