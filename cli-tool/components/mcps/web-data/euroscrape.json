@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "euroscrape": {
+      "description": "European data for agents: Google Flights, Google Hotels and Ryanair fares, EU electricity prices, EU public tenders (TED, BOAMP), EU VAT validation (VIES), French and UK company registers, French open data and second-hand marketplaces. Runs EuroScrape Actors on your own Apify account with a spending cap on every call.",
+      "command": "npx",
+      "args": ["-y", "github:EuroScrape-eu/euroscrape-mcp#v0.1.2"],
+      "env": {
+        "APIFY_TOKEN": "<your-apify-token>",
+        "EUROSCRAPE_MAX_USD_PER_CALL": "0.5"
+      }
+    }
+  }
+}
