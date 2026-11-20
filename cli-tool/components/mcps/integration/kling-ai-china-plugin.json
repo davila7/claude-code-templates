@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "kling-ai-china-plugin": {
+      "description": "Official Kling AI China Plugin remote MCP for image/video generation and task tracking. Uses OAuth and the connected China Kling account's credits. This configuration points to the hosted service; this repository does not contain its server implementation. China and Global accounts, credits and tasks are separate. Guide: https://klingai.com/app/mcp/guide",
+      "type": "http",
+      "url": "https://klingai.com/mcp/plugin"
+    }
+  }
+}
