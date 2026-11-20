@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "videodb": {
+      "description": "VideoDB lets an AI agent watch, search and clip video. Works in Claude, ChatGPT, Claude Code, Cursor and any MCP client. Uses OAuth 2.1 browser sign-in, so no API key is needed. Steps for every client: https://docs.videodb.io/pages/mcp/connect?utm_source=github.com/davila7/claude-code-templates&utm_medium=directory",
+      "type": "http",
+      "url": "https://mcp.videodb.io/mcp"
+    }
+  }
+}
