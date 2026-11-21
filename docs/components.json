@@ -69443,9 +69443,9 @@
         "categories": {
           "Excessive Agency": 1
         },
-        "hash": "295bdffe89bf1f22",
+        "hash": "dc1d9c8d29352d2d",
         "version": "2.12.0",
-        "scannedAt": "2026-11-19T03:05:32Z"
+        "scannedAt": "2026-11-21T05:26:19Z"
       },
       "harness": {
         "agents": [
@@ -69487,8 +69487,8 @@
           }
         ],
         "version": "1.0.1",
-        "checkedAt": "2026-11-18T20:31:10Z",
-        "hash": "295bdffe89bf1f22"
+        "checkedAt": "2026-11-21T05:26:26Z",
+        "hash": "dc1d9c8d29352d2d"
       }
     },
     {
@@ -101996,9 +101996,9 @@
         "categories": {
           "MCP Rug Pull": 1
         },
-        "hash": "e93bb211be8cc383",
+        "hash": "334bb502c8b140df",
         "version": "2.12.0",
-        "scannedAt": "2026-11-19T03:05:32Z"
+        "scannedAt": "2026-11-21T05:26:19Z"
       },
       "harness": {
         "agents": [
@@ -102040,8 +102040,8 @@
           }
         ],
         "version": "1.0.1",
-        "checkedAt": "2026-11-18T20:31:10Z",
-        "hash": "e93bb211be8cc383"
+        "checkedAt": "2026-11-21T05:26:26Z",
+        "hash": "334bb502c8b140df"
       }
     },
     {
@@ -124633,7 +124633,7 @@
       "path": "security/vulnerability-scanner",
       "category": "security",
       "type": "skill",
-      "description": "Advanced vulnerability analysis principles. OWASP 2025, Supply Chain Security, attack surface mapping, risk prioritization.",
+      "description": "Find exploitable security vulnerabilities in a codebase, including apps built on LLMs, agents, RAG, MCP servers and agent skills, and report each with its attack, impact and fix. Use when the user asks to scan, audit or security-review a project, find vulnerabilities, or check code before shipping. Invoke it before reading any code for a security check.",
       "author": "",
       "repo": "",
       "version": "",
@@ -124649,72 +124649,20 @@
         "lastValidated": null
       },
       "references": [
-        "checklists.md",
-        "scripts/security_scan.py"
+        "references/ai-and-agents.md",
+        "references/web-and-supply-chain.md"
       ],
       "skillspector": {
-        "score": 99,
-        "severity": "CRITICAL",
-        "recommendation": "DO_NOT_INSTALL",
-        "issueCount": 9,
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "CAUTION",
+        "issueCount": 0,
         "analysis": "partial",
-        "findings": [
-          {
-            "id": "AR3",
-            "category": "Anti-Refusal",
-            "severity": "HIGH",
-            "title": "Anti-Refusal Statement",
-            "file": "scripts/security_scan.py",
-            "line": 310,
-            "count": 2
-          },
-          {
-            "id": "PE3",
-            "category": "Privilege Escalation",
-            "severity": "HIGH",
-            "title": "Credential Access",
-            "file": "scripts/security_scan.py",
-            "line": 90,
-            "count": 3
-          },
-          {
-            "id": "EA4",
-            "category": "Excessive Agency",
-            "severity": "MEDIUM",
-            "title": "Unbounded Resource Access",
-            "file": "SKILL.md",
-            "line": 155,
-            "count": 1
-          },
-          {
-            "id": "TM3",
-            "category": "Tool Misuse",
-            "severity": "MEDIUM",
-            "title": "Unsafe Defaults",
-            "file": "SKILL.md",
-            "line": 208,
-            "count": 1
-          },
-          {
-            "id": "AST4",
-            "category": "Dangerous Code Execution",
-            "severity": "MEDIUM",
-            "title": "subprocess module call",
-            "file": "scripts/security_scan.py",
-            "line": 134,
-            "count": 1
-          }
-        ],
-        "categories": {
-          "Privilege Escalation": 3,
-          "Anti-Refusal": 2,
-          "Tool Misuse": 2,
-          "Dangerous Code Execution": 1,
-          "Excessive Agency": 1
-        },
-        "hash": "f428bf645bc3e63c",
+        "findings": [],
+        "categories": {},
+        "hash": "236dee5cf3e54631",
         "version": "2.12.0",
-        "scannedAt": "2026-11-19T03:05:32Z"
+        "scannedAt": "2026-11-21T05:26:19Z"
       },
       "harness": {
         "agents": [
@@ -124756,8 +124704,8 @@
           }
         ],
         "version": "1.0.1",
-        "checkedAt": "2026-11-18T20:31:10Z",
-        "hash": "f428bf645bc3e63c"
+        "checkedAt": "2026-11-21T05:26:26Z",
+        "hash": "236dee5cf3e54631"
       }
     },
     {
