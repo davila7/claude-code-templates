@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef, useMemo, useCallback } from 'react';
 import { marked } from 'marked';
 import { sanitizeHtml, codeLang, demoteH1 } from '../lib/sanitize-html';
+import { extractHeadings, forEachMarkdownLine, parseHeadingLine, stripFrontmatter } from '../lib/markdown-headings';
 import SkillSlideView from './SkillSlideView';
 
 interface Heading {
@@ -46,9 +47,16 @@ const EXT_COLORS: Record<string, string> = {
   sh: '#86efac', yml: '#f472b6', yaml: '#f472b6', css: '#c084fc', toml: '#f472b6',
 };
 
+/** Height of the collapsed viewer; "Show full" appears only when the file is taller. */
+const COLLAPSED_MAX = 'max-h-[34rem]';
+/** Above this many files the tree gets a filter box; below it the box is noise. */
+const FILTER_MIN_FILES = 8;
+/** Lines rendered in the collapsed Code view (the rest renders on "Show full source"). */
+const COLLAPSED_LINES = 120;
+const DESKTOP_QUERY = '(min-width: 1024px)';
+
 // ─── Markdown rendering ────────────────────────────────────────────
 function renderMarkdown(content: string): string {
-  const stripped = content.replace(/^---\s*\n[\s\S]*?\n---\s*\n?/, '');
   marked.setOptions({ gfm: true, breaks: false });
   const renderer = new marked.Renderer();
   renderer.heading = ({ text, depth }: { text: string; depth: number }) => {
@@ -61,48 +69,26 @@ function renderMarkdown(content: string): string {
   renderer.code = ({ text, lang }: { text: string; lang?: string }) => {
     return `<div class="md-code-block"><div class="md-code-lang">${codeLang(lang)}</div><pre><code class="language-${codeLang(lang)}">${text.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre></div>`;
   };
-  return demoteH1(sanitizeHtml(marked.parse(stripped, { renderer }) as string));
-}
-
-function extractHeadings(content: string): Heading[] {
-  const stripped = content.replace(/^---\s*\n[\s\S]*?\n---\s*\n?/, '');
-  const headings: Heading[] = [];
-  const regex = /^(#{1,4})\s+(.+)$/gm;
-  let m;
-  while ((m = regex.exec(stripped)) !== null) {
-    const text = m[2].replace(/[*_`\[\]]/g, '').trim();
-    const id = text.toLowerCase().replace(/[^\w]+/g, '-').replace(/^-|-$/g, '');
-    headings.push({ level: m[1].length, text, id });
-  }
-  return headings;
+  return demoteH1(sanitizeHtml(marked.parse(stripFrontmatter(content), { renderer }) as string));
 }
 
 function buildSearchIndex(content: string, headings: Heading[]): { text: string; headingId: string }[] {
-  const stripped = content.replace(/^---\s*\n[\s\S]*?\n---\s*\n?/, '');
-  const lines = stripped.split('\n');
   const entries: { text: string; headingId: string }[] = [];
   let currentHeadingId = headings[0]?.id ?? '';
   let paragraph = '';
-  for (const line of lines) {
-    const headingMatch = line.match(/^(#{1,4})\s+(.+)$/);
-    if (headingMatch) {
-      if (paragraph.trim()) { entries.push({ text: paragraph.trim(), headingId: currentHeadingId }); paragraph = ''; }
-      const text = headingMatch[2].replace(/[*_`\[\]]/g, '').trim();
-      currentHeadingId = text.toLowerCase().replace(/[^\w]+/g, '-').replace(/^-|-$/g, '');
-      continue;
-    }
-    if (line.trim() === '') {
-      if (paragraph.trim()) { entries.push({ text: paragraph.trim(), headingId: currentHeadingId }); paragraph = ''; }
-    } else {
-      paragraph += (paragraph ? ' ' : '') + line.trim();
-    }
-  }
-  if (paragraph.trim()) entries.push({ text: paragraph.trim(), headingId: currentHeadingId });
+  const flush = () => { if (paragraph.trim()) entries.push({ text: paragraph.trim(), headingId: currentHeadingId }); paragraph = ''; };
+  forEachMarkdownLine(content, (line, inFence) => {
+    const heading = inFence ? null : parseHeadingLine(line);
+    if (heading) { flush(); currentHeadingId = heading.id; return; }
+    if (line.trim() === '') flush();
+    else paragraph += (paragraph ? ' ' : '') + line.trim();
+  });
+  flush();
   return entries;
 }
 
 // ─── Tree building ─────────────────────────────────────────────────
-function buildTree(paths: string[], skillName: string, mainFile = 'SKILL.md'): TreeNode[] {
+function buildTree(paths: string[], mainFile = 'SKILL.md'): TreeNode[] {
   const root: TreeNode[] = [];
   root.push({ name: mainFile, path: mainFile, isFile: true, children: [], ext: 'md' });
   for (const p of paths) {
@@ -140,6 +126,32 @@ function countFiles(nodes: TreeNode[]): number {
   return c;
 }
 
+function isDesktop(): boolean {
+  return typeof window !== 'undefined' && !!window.matchMedia?.(DESKTOP_QUERY).matches;
+}
+
+// ─── Icons ─────────────────────────────────────────────────────────
+const Icon = ({ d, className = 'w-4 h-4', strokeWidth = 1.75 }: { d: string; className?: string; strokeWidth?: number }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={strokeWidth} aria-hidden="true">
+    <path strokeLinecap="round" strokeLinejoin="round" d={d} />
+  </svg>
+);
+const ICON = {
+  sidebar: 'M3.75 5.25h16.5v13.5H3.75zM9 5.25v13.5',
+  code: 'M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5',
+  eye: 'M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178zM15 12a3 3 0 11-6 0 3 3 0 016 0z',
+  slides: 'M3.75 3v11.25A2.25 2.25 0 006 16.5h12a2.25 2.25 0 002.25-2.25V3M2.25 3h19.5M9 20.25l3-3.75 3 3.75',
+  search: 'M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z',
+  outline: 'M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm0 5.25h.007v.008H3.75V12zm0 5.25h.007v.008H3.75v-.008z',
+  copy: 'M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75',
+  check: 'M4.5 12.75l6 6 9-13.5',
+  close: 'M6 18L18 6M6 6l12 12',
+  chevron: 'M19 9l-7 7-7-7',
+};
+
+const iconButton = 'inline-flex items-center justify-center gap-1.5 h-8 rounded-md text-[13px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400/40';
+const quietButton = `${iconButton} text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-3)]`;
+
 // ─── Main Component ────────────────────────────────────────────────
 export default function SkillExplorer({ skillContent, skillName, skillPath, references, headings: initialHeadings, componentType = 'skills', mainFile = 'SKILL.md', files }: SkillExplorerProps) {
   const [selectedFile, setSelectedFile] = useState(mainFile);
@@ -148,6 +160,7 @@ export default function SkillExplorer({ skillContent, skillName, skillPath, refe
   const [error, setError] = useState('');
   const [mode, setMode] = useState<'code' | 'preview' | 'slides'>('preview');
   const [expanded, setExpanded] = useState(false);
+  const [overflowing, setOverflowing] = useState(false);
   const [activeHeading, setActiveHeading] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [searchOpen, setSearchOpen] = useState(false);
@@ -155,31 +168,39 @@ export default function SkillExplorer({ skillContent, skillName, skillPath, refe
   const [highlightCount, setHighlightCount] = useState(0);
   const [treeOpen, setTreeOpen] = useState(false);
   const [treeFilter, setTreeFilter] = useState('');
+  const [outlineOpen, setOutlineOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
   const codeRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const outlineRef = useRef<HTMLDivElement>(null);
 
+  const totalFiles = references.length + 1;
   const isMarkdown = selectedFile.endsWith('.md');
   const html = useMemo(() => isMarkdown ? renderMarkdown(fileContent) : '', [fileContent, isMarkdown]);
   const currentHeadings = useMemo(() => {
     if (selectedFile === mainFile) return initialHeadings;
     if (isMarkdown) return extractHeadings(fileContent);
     return [];
-  }, [selectedFile, fileContent, isMarkdown, initialHeadings]);
+  }, [selectedFile, fileContent, isMarkdown, initialHeadings, mainFile]);
   const searchIndex = useMemo(() => buildSearchIndex(fileContent, currentHeadings), [fileContent, currentHeadings]);
+  const lines = useMemo(() => (fileContent || '').replace(/\n$/, '').split('\n'), [fileContent]);
+  const showOutline = isMarkdown && mode === 'preview' && currentHeadings.length > 1;
 
-  const tree = useMemo(() => buildTree(references, skillName, mainFile), [references, skillName, mainFile]);
+  const tree = useMemo(() => buildTree(references, mainFile), [references, mainFile]);
   const filteredTree = useMemo(() => {
     if (!treeFilter.trim()) return tree;
     const q = treeFilter.toLowerCase();
-    const filtered = references.filter((r) => r.toLowerCase().includes(q));
-    const t = buildTree(filtered, skillName, mainFile);
+    const t = buildTree(references.filter((r) => r.toLowerCase().includes(q)), mainFile);
     if (!mainFile.toLowerCase().includes(q)) {
       const idx = t.findIndex((n) => n.name === mainFile);
       if (idx >= 0) t.splice(idx, 1);
     }
     return t;
-  }, [treeFilter, references, tree, skillName]);
+  }, [treeFilter, references, tree, mainFile]);
+
+  // The tree starts open on desktop, where there is room beside the document.
+  useEffect(() => { if (isDesktop()) setTreeOpen(true); }, []);
 
   // Fetch file content
   useEffect(() => {
@@ -202,6 +223,29 @@ export default function SkillExplorer({ skillContent, skillName, skillPath, refe
     window.addEventListener('component-file:open', open);
     return () => window.removeEventListener('component-file:open', open);
   }, [mainFile, references]);
+
+  // "Show full" only when the file is taller than the collapsed viewer.
+  useLayoutEffect(() => {
+    if (expanded) return;
+    const el = previewRef.current || codeRef.current;
+    if (!el) { setOverflowing(false); return; }
+    const measure = () => setOverflowing(el.scrollHeight > el.clientHeight + 4);
+    measure();
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(measure) : null;
+    ro?.observe(el);
+    return () => ro?.disconnect();
+  }, [html, fileContent, mode, expanded, treeOpen, error, loading]);
+
+  // Close the outline on an outside click or Escape.
+  useEffect(() => {
+    if (!outlineOpen) return;
+    const onDown = (e: MouseEvent) => { if (!outlineRef.current?.contains(e.target as Node)) setOutlineOpen(false); };
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOutlineOpen(false); };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey);
+    return () => { document.removeEventListener('mousedown', onDown); document.removeEventListener('keydown', onKey); };
+  }, [outlineOpen]);
+  useEffect(() => { if (!showOutline) setOutlineOpen(false); }, [showOutline]);
 
   // Search results
   const searchResults = useMemo((): SearchMatch[] => {
@@ -287,7 +331,12 @@ export default function SkillExplorer({ skillContent, skillName, skillPath, refe
 
   useEffect(() => { setSelectedIdx(0); }, [searchResults]);
 
-  const handleCopy = () => navigator.clipboard.writeText(fileContent);
+  const handleCopy = () => {
+    navigator.clipboard?.writeText(fileContent).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    }).catch(() => {});
+  };
 
   const scrollToHeading = useCallback((id: string) => {
     if (!expanded) setExpanded(true);
@@ -316,267 +365,252 @@ export default function SkillExplorer({ skillContent, skillName, skillPath, refe
     setSearchOpen(false);
     setSearchQuery('');
     setExpanded(false);
+    // On a phone the tree sits above the document: get it out of the way once a file is picked.
+    if (!isDesktop()) setTreeOpen(false);
   };
 
-  const fileTreePanel = treeOpen ? (
-    <div className="w-56 shrink-0 bg-[var(--color-surface-2)] border border-r-0 border-[var(--color-border)] rounded-l-lg overflow-hidden flex flex-col animate-slide-in-left">
-      <div className="px-3 py-2.5 border-b border-[var(--color-border)] flex items-center gap-2">
-        <button 
-          onClick={() => setTreeOpen(false)} 
-          className="text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-3)] p-1 rounded-md shrink-0 transition-all duration-150 active:scale-95" 
-          title="Close file tree"
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-          </svg>
-        </button>
-        <span className="text-[11px] font-bold text-[var(--color-text-primary)] truncate flex-1">{skillName}</span>
-        <span className="text-[10px] font-semibold text-[var(--color-text-tertiary)] bg-[var(--color-surface-3)] px-1.5 py-0.5 rounded-md shrink-0">{references.length + 1}</span>
-      </div>
-      <div className="px-2.5 py-2 border-b border-[var(--color-border)]">
-        <div className="relative">
-          <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--color-text-tertiary)] pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-          </svg>
-          <input type="text" value={treeFilter} onChange={(e) => setTreeFilter(e.target.value)}
-            placeholder="Filter files..." className="w-full bg-[var(--color-surface-3)] border border-[var(--color-border)] rounded-lg pl-8 pr-2.5 py-1.5 text-[11px] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] focus:outline-none focus:border-[var(--color-primary-500)]/40 focus:ring-1 focus:ring-[var(--color-primary-500)]/20 transition-all" />
-        </div>
-      </div>
-      <div className="flex-1 overflow-y-auto py-1" style={{ scrollbarWidth: 'thin' }}>
-        <TreeNodes nodes={filteredTree} depth={0} forceOpen={!!treeFilter} selectedFile={selectedFile} onSelect={handleFileClick} />
-      </div>
-    </div>
-  ) : (
-    <button
-      onClick={() => setTreeOpen(true)}
-      className="shrink-0 w-10 bg-[var(--color-surface-2)] border border-r-0 border-[var(--color-border)] rounded-l-lg flex flex-col items-center justify-start pt-4 gap-2.5 hover:bg-[var(--color-surface-3)] hover:w-11 hover:shadow-sm transition-all duration-200 group active:scale-95"
-      title={`Browse files (${references.length + 1})`}
-    >
-      <svg className="w-5 h-5 text-[var(--color-text-tertiary)] group-hover:text-[var(--color-text-secondary)] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
-      </svg>
-      <span className="text-[10px] font-semibold text-[var(--color-text-tertiary)] group-hover:text-[var(--color-text-secondary)] transition-colors" style={{ writingMode: 'vertical-lr' }}>Files</span>
+  const toggleSearch = () => {
+    setSearchOpen(!searchOpen);
+    if (!searchOpen) setTimeout(() => searchInputRef.current?.focus(), 50);
+    else setSearchQuery('');
+  };
+
+  // Breadcrumb: component / folder / file. The root goes back to the main file.
+  const crumbs = selectedFile.split('/');
+
+  const modeButton = (value: 'code' | 'preview' | 'slides', label: string, icon: string) => (
+    <button type="button" onClick={() => setMode(value)} aria-pressed={mode === value}
+      className={`flex items-center gap-1.5 px-2.5 h-7 rounded-[5px] text-[12.5px] font-medium transition-colors ${mode === value
+        ? 'bg-[var(--color-surface-0)] text-[var(--color-text-primary)] shadow-sm ring-1 ring-[var(--color-border)]'
+        : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'}`}>
+      <Icon d={icon} className="w-3.5 h-3.5" strokeWidth={2} />
+      {label}
     </button>
   );
 
   return (
-    <div className="flex-1 min-w-0">
-        {/* File indicator when viewing non-SKILL file */}
-        {selectedFile !== mainFile && (
-          <div className="flex items-center gap-2 mb-2 text-[12px] text-[var(--color-text-secondary)]">
-            <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke={EXT_COLORS[selectedFile.split('.').pop() || ''] || 'var(--color-text-tertiary)'} strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-            </svg>
-            <span className="font-mono">{selectedFile}</span>
-            <button onClick={() => handleFileClick(mainFile)} className="text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)] ml-1">
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-        )}
+    <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-0)]">
+      {/* Header: tree toggle, path, view switch and actions in one bar, like a repository file view. */}
+      <div className="relative flex flex-wrap items-center gap-x-1.5 gap-y-2 px-2 py-1.5 bg-[var(--color-surface-1)] border-b border-[var(--color-border)] rounded-t-lg">
+        <button type="button" data-explorer-tree-toggle onClick={() => setTreeOpen(!treeOpen)}
+          aria-expanded={treeOpen} aria-label={treeOpen ? 'Hide file tree' : `Show file tree (${totalFiles} files)`}
+          className={`${quietButton} w-8 shrink-0 ${treeOpen ? 'text-[var(--color-text-primary)] bg-[var(--color-surface-3)]' : ''}`}>
+          <Icon d={ICON.sidebar} />
+        </button>
 
-        {/* Toolbar — identical to MarkdownViewer */}
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            {isMarkdown && (
-              <div className="flex items-center gap-1 bg-[var(--color-surface-3)] rounded-lg p-0.5">
-                <button onClick={() => setMode('code')}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${mode === 'code' ? 'bg-[var(--color-surface-2)] text-[var(--color-text-primary)] shadow-sm' : 'text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)]'}`}>
-                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
-                  </svg>
-                  Code
-                </button>
-                <button onClick={() => setMode('preview')}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${mode === 'preview' ? 'bg-[var(--color-surface-2)] text-[var(--color-text-primary)] shadow-sm' : 'text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)]'}`}>
-                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                  Preview
-                </button>
-                {selectedFile === mainFile && (
-                  <button onClick={() => setMode('slides')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${mode === 'slides' ? 'bg-surface-2 text-text-primary shadow-sm' : 'text-text-tertiary hover:text-text-secondary'}`}>
-                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5" />
-                    </svg>
-                    Slides
-                  </button>
-                )}
-              </div>
-            )}
-            {isMarkdown && (
-              <button onClick={() => { setSearchOpen(!searchOpen); if (!searchOpen) setTimeout(() => searchInputRef.current?.focus(), 50); }}
-                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs transition-colors ${searchOpen ? 'bg-accent-500/15 text-accent-400' : 'text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)] hover:bg-white/[0.04]'}`}
-                title="Search in document (Cmd+F)">
-                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                </svg>
-                <span className="hidden sm:inline">Search</span>
-                <kbd className="hidden sm:inline text-[9px] px-1 py-0.5 rounded bg-white/[0.06] text-[var(--color-text-tertiary)] font-mono ml-1">
-                  {typeof navigator !== 'undefined' && navigator.platform?.includes('Mac') ? '\u2318' : 'Ctrl'}F
-                </kbd>
-              </button>
-            )}
-          </div>
-          <button onClick={handleCopy}
-            className="text-[11px] px-2.5 py-1 rounded-md bg-white/[0.06] hover:bg-white/[0.12] text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] transition-colors">
-            Copy
+        <nav aria-label="File path" className="flex-1 min-w-0 flex items-center gap-1 font-mono text-[13px] overflow-hidden">
+          <button type="button" onClick={() => handleFileClick(mainFile)}
+            className="min-w-[1.5rem] shrink truncate text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] hover:underline underline-offset-4">
+            {skillName}
           </button>
+          {crumbs.map((part, i) => (
+            <span key={i} className={`flex items-center gap-1 min-w-0 ${i === crumbs.length - 1 ? '' : 'shrink-[2]'}`}>
+              <span className="text-[var(--color-text-tertiary)]">/</span>
+              <span className={`truncate ${i === crumbs.length - 1 ? 'font-semibold text-[var(--color-text-primary)]' : 'text-[var(--color-text-secondary)]'}`}>{part}</span>
+            </span>
+          ))}
+        </nav>
+
+        {/* View controls: their own full-width row on a phone, inline from sm up. */}
+        <div className="order-last sm:order-none w-full sm:w-auto flex items-center gap-1">
+          {isMarkdown && (
+            <div role="group" aria-label="View" className="flex items-center gap-0.5 p-0.5 rounded-md bg-[var(--color-surface-3)]">
+              {modeButton('code', 'Code', ICON.code)}
+              {modeButton('preview', 'Preview', ICON.eye)}
+              {selectedFile === mainFile && modeButton('slides', 'Slides', ICON.slides)}
+            </div>
+          )}
+          <span className="flex-1 sm:hidden" />
+          {isMarkdown && mode !== 'slides' && (
+            <button type="button" onClick={toggleSearch} aria-pressed={searchOpen} aria-label="Search in document" title="Search in document"
+              className={`${quietButton} px-2 ${searchOpen ? 'text-[var(--color-accent)] bg-[var(--color-surface-3)]' : ''}`}>
+              <Icon d={ICON.search} />
+              <kbd className="hidden 2xl:inline text-[10px] px-1 py-px rounded bg-[var(--color-surface-3)] text-[var(--color-text-tertiary)] font-mono">
+                {typeof navigator !== 'undefined' && navigator.platform?.includes('Mac') ? '⌘' : 'Ctrl'}F
+              </kbd>
+            </button>
+          )}
+          {showOutline && (
+            <div ref={outlineRef} className="relative">
+              <button type="button" onClick={() => setOutlineOpen(!outlineOpen)} aria-expanded={outlineOpen} aria-haspopup="true" aria-label="Outline" title="Outline"
+                className={`${quietButton} px-2 ${outlineOpen ? 'text-[var(--color-text-primary)] bg-[var(--color-surface-3)]' : ''}`}>
+                <Icon d={ICON.outline} />
+                <span className="hidden 2xl:inline">Outline</span>
+              </button>
+              {outlineOpen && (
+                <div className="absolute right-0 top-full mt-1.5 z-30 w-[min(20rem,calc(100vw-2rem))] max-h-[min(60vh,28rem)] overflow-y-auto rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-1)] shadow-xl py-1.5"
+                  style={{ scrollbarWidth: 'thin' }}>
+                  <p className="px-3 pt-1 pb-2 text-[11px] font-semibold uppercase tracking-wider text-[var(--color-text-tertiary)]">On this page</p>
+                  <ul>
+                    {currentHeadings.map((h) => (
+                      <li key={h.id}>
+                        <button type="button" onClick={() => { setOutlineOpen(false); scrollToHeading(h.id); }}
+                          className={`block w-full text-left pr-3 py-1.5 text-[13px] leading-snug transition-colors ${
+                            h.level <= 1 ? 'pl-3' : h.level === 2 ? 'pl-5' : h.level === 3 ? 'pl-8' : 'pl-11'
+                          } ${activeHeading === h.id
+                            ? 'text-[var(--color-accent)] bg-[var(--color-surface-3)]'
+                            : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-3)]'}`}>
+                          <span className="line-clamp-2">{h.text}</span>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
-        {/* Search bar */}
-        {searchOpen && isMarkdown && mode !== 'slides' && (
-          <div className="mb-3 relative">
-            <div className="relative">
-              <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--color-text-tertiary)] pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-              </svg>
-              <input ref={searchInputRef} type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={handleSearchKeyDown}
-                placeholder="Search sections and content..."
-                className="w-full bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg pl-9 pr-20 py-2 text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] focus:outline-none focus:border-accent-400/50 focus:ring-1 focus:ring-accent-400/20 font-sans" autoFocus />
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                {searchQuery.length >= 2 && (
-                  <span className="text-[10px] text-[var(--color-text-tertiary)]">
-                    {highlightCount > 0 ? `${highlightCount} match${highlightCount !== 1 ? 'es' : ''}` : 'No matches'}
-                  </span>
-                )}
-                <button onClick={() => { setSearchOpen(false); setSearchQuery(''); }} className="text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)]">
-                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
+        <button type="button" onClick={handleCopy} aria-label={copied ? 'Copied' : `Copy ${crumbs[crumbs.length - 1]}`} title={`Copy ${crumbs[crumbs.length - 1]}`}
+          className={`${quietButton} px-2 shrink-0 ${copied ? 'text-[var(--color-accent)]' : ''}`}>
+          <Icon d={copied ? ICON.check : ICON.copy} />
+          <span className="hidden 2xl:inline">{copied ? 'Copied' : 'Copy'}</span>
+        </button>
+      </div>
+
+      {/* Search bar */}
+      {searchOpen && isMarkdown && mode !== 'slides' && (
+        <div className="relative px-2 py-2 border-b border-[var(--color-border)] bg-[var(--color-surface-1)]">
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-tertiary)] pointer-events-none"><Icon d={ICON.search} className="w-3.5 h-3.5" strokeWidth={2} /></span>
+            <input ref={searchInputRef} type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={handleSearchKeyDown}
+              placeholder="Search sections and content..."
+              className="w-full bg-[var(--color-surface-0)] border border-[var(--color-border)] rounded-md pl-9 pr-24 py-1.5 text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] focus:outline-none focus:border-accent-400/50 focus:ring-1 focus:ring-accent-400/20 font-sans" autoFocus />
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
+              {searchQuery.length >= 2 && (
+                <span className="text-[11px] text-[var(--color-text-tertiary)]">
+                  {highlightCount > 0 ? `${highlightCount} match${highlightCount !== 1 ? 'es' : ''}` : 'No matches'}
+                </span>
+              )}
+              <button type="button" onClick={() => { setSearchOpen(false); setSearchQuery(''); }} aria-label="Close search" className="text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)]">
+                <Icon d={ICON.close} className="w-3.5 h-3.5" strokeWidth={2} />
+              </button>
             </div>
-            {searchResults.length > 0 && (
-              <div className="absolute z-20 top-full left-0 right-0 mt-1 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg shadow-xl overflow-hidden max-h-72 overflow-y-auto">
-                {searchResults.map((result, i) => (
-                  <button key={`${result.id}-${i}`} onClick={() => navigateToResult(result)} onMouseEnter={() => setSelectedIdx(i)}
-                    className={`w-full text-left px-3 py-2.5 flex items-start gap-2.5 transition-colors ${i === selectedIdx ? 'bg-white/[0.06]' : 'hover:bg-white/[0.03]'}`}>
+          </div>
+          {searchResults.length > 0 && (
+            <div className="absolute z-30 top-full left-2 right-2 mt-1 bg-[var(--color-surface-1)] border border-[var(--color-border)] rounded-lg shadow-xl overflow-hidden max-h-72 overflow-y-auto">
+              {searchResults.map((result, i) => (
+                <button key={`${result.id}-${i}`} onClick={() => navigateToResult(result)} onMouseEnter={() => setSelectedIdx(i)}
+                  className={`w-full text-left px-3 py-2.5 flex items-start gap-2.5 transition-colors ${i === selectedIdx ? 'bg-[var(--color-surface-3)]' : 'hover:bg-[var(--color-surface-2)]'}`}>
+                  <span className={`mt-0.5 shrink-0 ${result.type === 'heading' ? 'text-accent-400' : 'text-[var(--color-text-tertiary)]'}`}>
+                    <Icon d={result.type === 'heading' ? ICON.outline : ICON.search} className="w-3.5 h-3.5" strokeWidth={2} />
+                  </span>
+                  <div className="flex-1 min-w-0">
                     {result.type === 'heading' ? (
-                      <svg className="w-3.5 h-3.5 mt-0.5 shrink-0 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 7.5h13.5m-13.5 4.5h7.5m-7.5 4.5h13.5" />
-                      </svg>
+                      <HighlightText text={result.text} query={searchQuery} className="text-sm text-[var(--color-text-primary)] font-medium" />
                     ) : (
-                      <svg className="w-3.5 h-3.5 mt-0.5 shrink-0 text-[var(--color-text-tertiary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-                      </svg>
+                      <>
+                        <div className="text-[11px] text-[var(--color-text-tertiary)] mb-0.5">{currentHeadings.find((h) => h.id === result.id)?.text ?? ''}</div>
+                        <HighlightText text={result.context || ''} query={searchQuery} className="text-xs text-[var(--color-text-secondary)] leading-relaxed" />
+                      </>
                     )}
-                    <div className="flex-1 min-w-0">
-                      {result.type === 'heading' ? (
-                        <HighlightText text={result.text} query={searchQuery} className="text-sm text-[var(--color-text-primary)] font-medium" />
-                      ) : (
-                        <>
-                          <div className="text-[11px] text-[var(--color-text-tertiary)] mb-0.5">{currentHeadings.find((h) => h.id === result.id)?.text ?? ''}</div>
-                          <HighlightText text={result.context || ''} query={searchQuery} className="text-xs text-[var(--color-text-secondary)] leading-relaxed" />
-                        </>
-                      )}
+                  </div>
+                  {i === selectedIdx && <kbd className="text-[9px] px-1 py-0.5 rounded bg-[var(--color-surface-3)] text-[var(--color-text-tertiary)] font-mono self-center shrink-0">Enter</kbd>}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {mode === 'slides' && selectedFile === mainFile ? (
+        <div className="p-3 sm:p-4">
+          <SkillSlideView content={skillContent} skillName={skillName} />
+        </div>
+      ) : (
+        <div className="flex flex-col lg:flex-row">
+          {/* File tree. On desktop it sits in an absolute box so its length never sets the
+              row height (the document does); it scrolls inside it and stays sticky when the
+              document is expanded. On a phone it stacks above the document. */}
+          {treeOpen && (
+            <aside aria-label="Files" className="relative shrink-0 lg:w-60 border-b lg:border-b-0 lg:border-r border-[var(--color-border)] animate-slide-in-left">
+              <div className="lg:absolute lg:inset-0">
+                <div className="lg:sticky lg:top-20 flex flex-col max-h-64 lg:max-h-[min(calc(100vh-6rem),100%)]">
+                  {totalFiles >= FILTER_MIN_FILES && (
+                    <div className="p-2 border-b border-[var(--color-border)]">
+                      <div className="relative">
+                        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--color-text-tertiary)] pointer-events-none"><Icon d={ICON.search} className="w-3.5 h-3.5" strokeWidth={2} /></span>
+                        <input type="text" value={treeFilter} onChange={(e) => setTreeFilter(e.target.value)} aria-label="Filter files"
+                          placeholder={`Filter ${totalFiles} files`}
+                          className="w-full bg-[var(--color-surface-1)] border border-[var(--color-border)] rounded-md pl-8 pr-2.5 py-1.5 text-[12.5px] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] focus:outline-none focus:border-accent-400/40 focus:ring-1 focus:ring-accent-400/20" />
+                      </div>
                     </div>
-                    {i === selectedIdx && <kbd className="text-[9px] px-1 py-0.5 rounded bg-white/[0.06] text-[var(--color-text-tertiary)] font-mono self-center shrink-0">Enter</kbd>}
+                  )}
+                  <div className="min-h-0 flex-1 overflow-y-auto py-1.5" style={{ scrollbarWidth: 'thin' }}>
+                    {filteredTree.length === 0 ? (
+                      <p className="px-3 py-4 text-center text-[12px] text-[var(--color-text-tertiary)]">No matching files</p>
+                    ) : (
+                      <TreeNodes nodes={filteredTree} depth={0} forceOpen={!!treeFilter} selectedFile={selectedFile} onSelect={handleFileClick} />
+                    )}
+                  </div>
+                </div>
+              </div>
+            </aside>
+          )}
+
+          {/* self-start: the column is exactly the viewer's height, so the "Show full" bar
+              sits at the bottom of the document, never far below it (#1621). */}
+          <div className={`relative flex-1 min-w-0 self-start w-full ${treeOpen ? 'lg:min-h-[16rem]' : ''}`}>
+            {loading && (
+              <div className="absolute inset-0 bg-[var(--color-surface-0)]/80 z-10 flex items-center justify-center">
+                <div className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
+                  <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
+                  Loading...
+                </div>
+              </div>
+            )}
+            {error ? (
+              <div className="p-6 text-sm text-red-400">{error}</div>
+            ) : isMarkdown && mode === 'preview' ? (
+              <div ref={previewRef}
+                className={`md-preview px-5 py-5 sm:px-8 sm:py-6 overflow-hidden ${expanded ? '' : COLLAPSED_MAX}`}
+                dangerouslySetInnerHTML={{ __html: html }} />
+            ) : (
+              <div ref={codeRef} className={`overflow-hidden ${expanded ? '' : COLLAPSED_MAX}`}>
+                {fileContent ? (
+                  <table className="w-full border-collapse font-mono text-[12.5px] leading-[1.65] my-3">
+                    <tbody>
+                      {(expanded ? lines : lines.slice(0, COLLAPSED_LINES)).map((line, i) => (
+                        <tr key={i}>
+                          <td className="w-px whitespace-nowrap select-none text-right align-top pl-4 pr-4 text-[var(--color-text-tertiary)] tabular-nums" aria-hidden="true">{i + 1}</td>
+                          <td className="pr-4 align-top whitespace-pre-wrap break-words [overflow-wrap:anywhere] text-[var(--color-text-primary)]">{line || ' '}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <p className="p-6 text-sm text-[var(--color-text-tertiary)]">No content available</p>
+                )}
+              </div>
+            )}
+
+            {!expanded && overflowing && !error && (
+              <div className="absolute bottom-0 inset-x-0">
+                <div className="h-24 bg-gradient-to-t from-[var(--color-surface-0)] to-transparent pointer-events-none" />
+                <div className="flex justify-center pb-3 bg-[var(--color-surface-0)] rounded-br-lg">
+                  <button type="button" onClick={() => setExpanded(true)}
+                    className="flex items-center gap-1.5 px-3.5 h-8 rounded-full border border-[var(--color-border)] bg-[var(--color-surface-1)] text-[13px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-3)] transition-colors">
+                    <Icon d={ICON.chevron} className="w-3.5 h-3.5" strokeWidth={2} />
+                    Show full {mode === 'preview' ? 'document' : `source · ${lines.length} lines`}
                   </button>
-                ))}
+                </div>
+              </div>
+            )}
+
+            {expanded && (
+              <div className="flex justify-center py-2.5 border-t border-[var(--color-border)]">
+                <button type="button" onClick={() => setExpanded(false)}
+                  className="flex items-center gap-1.5 px-3.5 h-8 rounded-full text-[13px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-3)] transition-colors">
+                  <Icon d={ICON.chevron} className="w-3.5 h-3.5 rotate-180" strokeWidth={2} />
+                  Collapse
+                </button>
               </div>
             )}
           </div>
-        )}
-
-        {/* Slides mode */}
-        {mode === 'slides' && selectedFile === mainFile ? (
-          <SkillSlideView content={skillContent} skillName={skillName} />
-        ) : (
-        <>
-        {/* Content + TOC — identical layout to MarkdownViewer */}
-        <div className="flex gap-0 items-stretch">
-          {/* File tree panel */}
-          {fileTreePanel}
-
-          <div className="flex-1 min-w-0 flex gap-4">
-            {/* self-start: a tall TOC or file tree must not stretch this column, or the
-                absolute "Show full document" bar lands far below the 32rem preview. */}
-            <div className="flex-1 min-w-0 relative self-start">
-              {loading && (
-                <div className="absolute inset-0 bg-[var(--color-surface-2)]/80 z-10 flex items-center justify-center rounded-r-lg">
-                  <div className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
-                    <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
-                    Loading...
-                  </div>
-                </div>
-              )}
-              {error ? (
-                <div className="bg-[var(--color-surface-2)] border border-l-0 border-[var(--color-border)] rounded-lg rounded-l-none p-6 text-sm text-red-400">{error}</div>
-              ) : isMarkdown && mode === 'preview' ? (
-                <div ref={previewRef}
-                  className={`md-preview bg-[var(--color-surface-2)] border border-l-0 border-[var(--color-border)] rounded-lg rounded-l-none p-6 overflow-hidden transition-[max-height] duration-300 ${expanded ? '' : 'max-h-[32rem]'}`}
-                  dangerouslySetInnerHTML={{ __html: html }} />
-              ) : (
-                <div ref={codeRef}
-                  className={`bg-[var(--color-surface-2)] border border-l-0 border-[var(--color-border)] rounded-lg rounded-l-none p-6 text-sm text-[var(--color-text-primary)] leading-relaxed whitespace-pre-wrap font-mono overflow-hidden transition-[max-height] duration-300 ${expanded ? '' : 'max-h-[32rem]'}`}>
-                  {fileContent || 'No content available'}
-                </div>
-              )}
-
-              {/* Gradient fade + expand */}
-              {!expanded && (
-                <div className="absolute bottom-0 left-0 right-0 rounded-br-lg overflow-hidden">
-                  <div className="h-24 bg-gradient-to-t from-[var(--color-surface-2)] to-transparent pointer-events-none" />
-                  <div className="bg-[var(--color-surface-2)] px-4 pb-3 flex justify-center border-r border-b border-[var(--color-border)] rounded-br-lg -mt-px">
-                    <button onClick={() => setExpanded(true)}
-                      className="text-[13px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] flex items-center gap-1.5 px-3 py-1.5 rounded-md hover:bg-[var(--color-surface-3)] transition-colors">
-                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                      </svg>
-                      Show full {mode === 'preview' ? 'document' : 'source'}
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {expanded && (
-                <div className="flex justify-center py-2 bg-[var(--color-surface-2)] border border-l-0 border-t-0 border-[var(--color-border)] rounded-br-lg">
-                  <button onClick={() => setExpanded(false)}
-                    className="text-[13px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] flex items-center gap-1.5 px-3 py-1.5 rounded-md hover:bg-[var(--color-surface-3)] transition-colors">
-                    <svg className="w-3.5 h-3.5 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                    </svg>
-                    Collapse
-                  </button>
-                </div>
-              )}
-            </div>
-
-          {/* TOC sidebar — identical to MarkdownViewer */}
-          {isMarkdown && currentHeadings.length >= 1 && mode === 'preview' && (
-            // The TOC sits in an absolute box so its length never sets the row height:
-            // it scrolls inside the preview's height and stays sticky when expanded.
-            <nav className="hidden lg:block w-52 shrink-0 relative">
-              <div className="absolute inset-0">
-              <div className="sticky top-24 flex flex-col max-h-[min(calc(100vh-8rem),100%)]">
-                <h4 className="text-[10px] font-semibold text-[var(--color-text-tertiary)] uppercase tracking-wider mb-2">On this page</h4>
-                <ul className="min-h-0 space-y-0.5 text-[12px] border-l border-[var(--color-border)] overflow-y-auto">
-                  {currentHeadings.map((h) => (
-                    <li key={h.id}>
-                      <button onClick={() => scrollToHeading(h.id)}
-                        className={`block w-full text-left py-1 transition-colors border-l-2 -ml-px ${
-                          h.level === 1 ? 'pl-3' : h.level === 2 ? 'pl-5' : 'pl-7'
-                        } ${activeHeading === h.id ? 'border-accent-400 text-accent-400' : 'border-transparent text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)] hover:border-[var(--color-border)]'}`}
-                        title={h.text}>
-                        <span className="line-clamp-1">{h.text}</span>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              </div>
-            </nav>
-          )}
-          </div>
         </div>
-        </>
-        )}
-      </div>
+      )}
+    </div>
   );
 }
 
@@ -586,9 +620,9 @@ function TreeNodes({ nodes, depth, forceOpen, selectedFile, onSelect }: { nodes:
     <>
       {nodes.map((node) =>
         node.isFile ? (
-          <FileNode key={node.path} node={node} depth={depth} selected={selectedFile === node.path} onSelect={onSelect} />
+          <FileNode key={`f:${node.path}`} node={node} depth={depth} selected={selectedFile === node.path} onSelect={onSelect} />
         ) : (
-          <FolderNode key={node.path} node={node} depth={depth} forceOpen={forceOpen} selectedFile={selectedFile} onSelect={onSelect} />
+          <FolderNode key={`d:${node.path}`} node={node} depth={depth} forceOpen={forceOpen} selectedFile={selectedFile} onSelect={onSelect} />
         )
       )}
     </>
@@ -602,9 +636,9 @@ function FolderNode({ node, depth, forceOpen, selectedFile, onSelect }: { node: 
   return (
     <div>
       <button onClick={() => setOpen(!open)}
-        className="w-full flex items-center gap-1 py-[3px] pr-2 hover:bg-white/[0.04] transition-colors group/f"
-        style={{ paddingLeft: `${depth * 10 + 6}px` }}>
-        <svg className={`w-2.5 h-2.5 text-[var(--color-text-tertiary)] shrink-0 transition-transform duration-100 ${isOpen ? 'rotate-90' : ''}`}
+        className="w-[calc(100%-0.75rem)] mx-1.5 flex items-center gap-1.5 py-1 pr-2 rounded-md hover:bg-[var(--color-surface-2)] transition-colors group/f"
+        style={{ paddingLeft: `${depth * 14 + 6}px` }} aria-expanded={isOpen}>
+        <svg className={`w-3 h-3 text-[var(--color-text-tertiary)] shrink-0 transition-transform duration-100 ${isOpen ? 'rotate-90' : ''}`}
           fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
         </svg>
@@ -613,8 +647,8 @@ function FolderNode({ node, depth, forceOpen, selectedFile, onSelect }: { node: 
             ? <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 9.776c.112-.017.227-.026.344-.026h15.812c.117 0 .232.009.344.026m-16.5 0a2.25 2.25 0 00-1.883 2.542l.857 6a2.25 2.25 0 002.227 1.932H19.05a2.25 2.25 0 002.227-1.932l.857-6a2.25 2.25 0 00-1.883-2.542m-16.5 0V6A2.25 2.25 0 016 3.75h3.879a1.5 1.5 0 011.06.44l2.122 2.12a1.5 1.5 0 001.06.44H18A2.25 2.25 0 0120.25 9v.776" />
             : <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />}
         </svg>
-        <span className="text-[11px] text-[var(--color-text-secondary)] truncate">{node.name}</span>
-        <span className="text-[8px] text-[var(--color-text-tertiary)] ml-auto opacity-0 group-hover/f:opacity-100">{fc}</span>
+        <span className="text-[13px] text-[var(--color-text-secondary)] truncate">{node.name}</span>
+        <span className="text-[11px] text-[var(--color-text-tertiary)] ml-auto tabular-nums">{fc}</span>
       </button>
       {isOpen && <TreeNodes nodes={node.children} depth={depth + 1} forceOpen={forceOpen} selectedFile={selectedFile} onSelect={onSelect} />}
     </div>
@@ -625,12 +659,12 @@ function FileNode({ node, depth, selected, onSelect }: { node: TreeNode; depth: 
   const color = EXT_COLORS[node.ext ?? ''] ?? 'var(--color-text-tertiary)';
   return (
     <button onClick={() => onSelect(node.path)}
-      className={`w-full flex items-center gap-1.5 py-[3px] pr-2 transition-colors ${selected ? 'bg-accent-400/10 text-accent-300' : 'hover:bg-white/[0.04] text-[var(--color-text-primary)]'}`}
-      style={{ paddingLeft: `${depth * 10 + 16}px` }} title={node.path}>
-      <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke={selected ? 'currentColor' : color} strokeWidth={1.5}>
+      className={`w-[calc(100%-0.75rem)] mx-1.5 flex items-center gap-1.5 py-1 pr-2 rounded-md transition-colors ${selected ? 'bg-[var(--color-surface-3)] text-[var(--color-text-primary)] font-medium' : 'hover:bg-[var(--color-surface-2)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'}`}
+      style={{ paddingLeft: `${depth * 14 + 24}px` }} aria-current={selected ? 'true' : undefined}>
+      <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke={color} strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
       </svg>
-      <span className="text-[11px] truncate font-mono">{node.name}</span>
+      <span className="text-[13px] truncate">{node.name}</span>
     </button>
   );
 }

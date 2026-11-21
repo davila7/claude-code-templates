@@ -6,6 +6,7 @@ import SaveToCollectionButton from '../../../components/SaveToCollectionButton.t
 import MarkdownViewer from '../../../components/MarkdownViewer.tsx';
 import JsonViewer from '../../../components/JsonViewer.tsx';
 import SkillExplorer from '../../../components/SkillExplorer.tsx';
+import { extractHeadings } from '../../../lib/markdown-headings';
 import AddToStackButton from '../../../components/AddToStackButton.tsx';
 import SkillSpectorReport from '../../../components/SkillSpectorReport.tsx';
 import HarnessReport from '../../../components/HarnessReport.tsx';
@@ -280,18 +281,9 @@ const pluginId = isPlugin ? `${slugNameFor(component)}@${AITMPL_MARKETPLACE.name
 const modModules: string[] = typePlural === 'mods' ? ((component as any)?.modules ?? []) : [];
 const modOptions: string[] = typePlural === 'mods' ? Object.keys((component as any)?.userConfig ?? {}) : [];
 
-// Extract headings from markdown content for TOC
-const contentHeadings: { level: number; text: string; id: string }[] = [];
-if (component?.content && !isJsonType) {
-  const stripped = component.content.replace(/^---\s*\n[\s\S]*?\n---\s*\n?/, '');
-  const headingRegex = /^(#{1,4})\s+(.+)$/gm;
-  let m;
-  while ((m = headingRegex.exec(stripped)) !== null) {
-    const text = m[2].replace(/[*_`\[\]]/g, '').trim();
-    const id = text.toLowerCase().replace(/[^\w]+/g, '-').replace(/^-|-$/g, '');
-    contentHeadings.push({ level: m[1].length, text, id });
-  }
-}
+// Headings for the TOC (fenced code is skipped, so template lines are never entries)
+const contentHeadings: { level: number; text: string; id: string }[] =
+  component?.content && !isJsonType ? extractHeadings(component.content) : [];
 
 // Reference files for skills (used for layout decisions)
 // Cast to any to access references which may not be in the TS type yet
