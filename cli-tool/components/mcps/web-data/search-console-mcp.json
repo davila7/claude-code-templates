@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "search-console-mcp": {
+      "description": "Google Search Console for any MCP client - 30-second login, no Google Cloud project. Source: https://github.com/sudomichael/search-console-mcp",
+      "command": "npx",
+      "args": [
+        "-y",
+        "search-console-mcp-server@0.2.3"
+      ]
+    }
+  }
+}
