@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "questionpunk": {
+      "description": "Connect Claude Code to your QuestionPunk account through OAuth to create surveys, publish them and read responses and cross-tabs. Publishing opens a study to participants.",
+      "type": "http",
+      "url": "https://app.questionpunk.com/api/v1"
+    }
+  }
+}
