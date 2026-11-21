@@ -2,6 +2,9 @@
 """Generate speech audio with the OpenAI Audio API (TTS).
 
 Defaults to gpt-4o-mini-tts-2025-12-15 and a built-in voice (cedar).
+OPENAI_TTS_MODEL and OPENAI_TTS_VOICE change those defaults. When
+OPENAI_BASE_URL points at another OpenAI-compatible speech server, that
+server's own voice ids are accepted.
 """
 
 from __future__ import annotations
@@ -14,6 +17,7 @@ import re
 import sys
 import time
 from typing import Any, Dict, List, Optional
+from urllib.parse import urlparse
 
 DEFAULT_MODEL = "gpt-4o-mini-tts-2025-12-15"
 DEFAULT_VOICE = "cedar"
@@ -85,15 +89,38 @@ def _validate_input(text: str) -> None:
         )
 
 
+def _default_model() -> str:
+    return os.getenv("OPENAI_TTS_MODEL", "").strip() or DEFAULT_MODEL
+
+
+def _default_voice() -> str:
+    return os.getenv("OPENAI_TTS_VOICE", "").strip() or DEFAULT_VOICE
+
+
+def _uses_openai_api() -> bool:
+    """True unless OPENAI_BASE_URL points at a server other than OpenAI's."""
+    base_url = os.getenv("OPENAI_BASE_URL", "").strip()
+    if not base_url:
+        return True
+    try:
+        host = urlparse(base_url).hostname or ""
+    except ValueError:
+        return False
+    return host == "openai.com" or host.endswith(".openai.com")
+
+
 def _normalize_voice(voice: Optional[str]) -> str:
-    if not voice:
-        return DEFAULT_VOICE
-    value = str(voice).strip().lower()
-    if value not in ALLOWED_VOICES:
+    value = ("" if voice is None else str(voice)).strip() or _default_voice()
+    if value.lower() not in ALLOWED_VOICES:
+        if not _uses_openai_api():
+            # Other servers name their own voices, so the id is sent as given.
+            return value
+        source = " (from OPENAI_TTS_VOICE)" if value == _default_voice() else ""
         _die(
-            "voice must be one of: " + ", ".join(sorted(ALLOWED_VOICES))
+            f"voice {value!r}{source} must be one of: "
+            + ", ".join(sorted(ALLOWED_VOICES))
         )
-    return value
+    return value.lower()
 
 
 def _normalize_format(fmt: Optional[str]) -> str:
@@ -297,6 +324,10 @@ def _sleep_for_rate_limit(last_ts: Optional[float], rpm: int) -> float:
 
 
 def _list_voices() -> None:
+    if not _uses_openai_api():
+        _warn(
+            "these are OpenAI's built-in voices; OPENAI_BASE_URL points at another server, so use its voice ids."
+        )
     for name in sorted(ALLOWED_VOICES):
         print(name)
 
@@ -361,7 +392,7 @@ def _run_speak_batch(args: argparse.Namespace) -> int:
 
     base_payload = {
         "model": str(args.model).strip(),
-        "voice": _normalize_voice(args.voice),
+        "voice": args.voice,
         "response_format": _normalize_format(args.response_format),
         "speed": _normalize_speed(args.speed),
         "instructions": base_instructions,
@@ -385,8 +416,8 @@ def _run_speak_batch(args: argparse.Namespace) -> int:
         overrides: Dict[str, Any] = {}
         if "model" in job:
             overrides["model"] = str(job["model"]).strip()
-        if "voice" in job:
-            overrides["voice"] = _normalize_voice(job["voice"])
+        if job.get("voice") is not None and str(job["voice"]).strip():
+            overrides["voice"] = job["voice"]
         if "response_format" in job or "format" in job:
             overrides["response_format"] = _normalize_format(job.get("response_format") or job.get("format"))
         if "speed" in job and job["speed"] is not None:
@@ -395,6 +426,8 @@ def _run_speak_batch(args: argparse.Namespace) -> int:
             overrides["instructions"] = str(job["instructions"]).strip()
 
         job_payload = _merge_non_null(job_payload, overrides)
+        # Checked after the job's override, so an unused batch voice can't fail the run.
+        job_payload["voice"] = _normalize_voice(job_payload["voice"])
         job_payload["instructions"] = _maybe_drop_instructions(
             job_payload["model"], job_payload.get("instructions")
         )
@@ -438,13 +471,13 @@ def _run_speak_batch(args: argparse.Namespace) -> int:
 def _add_common_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--model",
-        default=DEFAULT_MODEL,
-        help=f"Model to use (default: {DEFAULT_MODEL})",
+        default=_default_model(),
+        help=f"Model to use (default: $OPENAI_TTS_MODEL, else {DEFAULT_MODEL})",
     )
     parser.add_argument(
         "--voice",
-        default=DEFAULT_VOICE,
-        help=f"Voice to use (default: {DEFAULT_VOICE})",
+        default=_default_voice(),
+        help=f"Voice to use (default: $OPENAI_TTS_VOICE, else {DEFAULT_VOICE})",
     )
     parser.add_argument(
         "--response-format",
@@ -483,7 +516,7 @@ def _add_common_args(parser: argparse.ArgumentParser) -> None:
     )
 
 
-def main() -> int:
+def main(argv: Optional[List[str]] = None) -> int:
     parser = argparse.ArgumentParser(
         description="Generate speech audio using the OpenAI Audio API."
     )
@@ -520,7 +553,7 @@ def main() -> int:
     _add_common_args(batch)
     batch.set_defaults(func=_run_speak_batch)
 
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
     return int(args.func(args))
 
 
