@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "datawebot": {
+      "description": "Product search and seller prices across online shops worldwide, plus extraction jobs for search results, catalogue and product pages on Amazon (10 countries) and 1,100+ Shopify stores. Hosted remote server; sign in with OAuth in the browser (email approval, no password) or send an Authorization: Bearer API key. Free daily search allowance plus 200 free trial credits.",
+      "type": "http",
+      "url": "https://mcp.datawebot.com/mcp"
+    }
+  }
+}
