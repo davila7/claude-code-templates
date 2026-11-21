@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-11-20T21:58:39.934978+00:00",
-  "totalJobs": 1006,
+  "lastUpdated": "2026-11-21T03:08:25.152350+00:00",
+  "totalJobs": 1021,
   "sources": [
     "Anthropic",
     "Ashby",
@@ -10,6 +10,79 @@
     "RemoteOK"
   ],
   "jobs": [
+    {
+      "id": "as-meridianlink-5ace10c9-f8aa-4b70-ba13-32d7807e3481",
+      "company": "Meridianlink",
+      "position": "Product Manager",
+      "location": "US Remote",
+      "locations": [
+        "US Remote"
+      ],
+      "remote": true,
+      "salary": "$94,667 – $148,000",
+      "description": "Product Manager, Data, APIs & Integrations\n\nPosition Summary:\n\nThe Product Manager will direct execution of the product-level strategy and drive cross-functional alignment and priorities for all integration surfaces and ATS/HRIS integrations. The role will own the roadmap for the respective...",
+      "applyUrl": "https://jobs.ashbyhq.com/meridianlink/5ace10c9-f8aa-4b70-ba13-32d7807e3481",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/meridianlink/5ace10c9-f8aa-4b70-ba13-32d7807e3481",
+      "postedAt": "2026-11-20T23:43:08.340+00:00",
+      "tags": [
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-temporal-4ee99986-77ad-4113-8058-891d5cc7284a",
+      "company": "Temporal",
+      "position": "Staff Software Engineer, AI Foundations (Agent Optimization) ",
+      "location": "United States (Remote) · New York, New York · San Francisco, California",
+      "locations": [
+        "United States (Remote)",
+        "New York, New York",
+        "San Francisco, California"
+      ],
+      "remote": true,
+      "salary": "$169,600 – $278,250 • Offers Equity • Multiple Ranges",
+      "description": "ROLE SUMMARY\n\nWe have an opening to hire a Staff Software Engineer - Agent Optimization\n\nTemporal provides a reliable foundation powering AI leaders such as OpenAI, NVIDIA, Cursor, Lovable, and others. Its adoption is expanding to users spanning a broad range of AI applications ranging from agents...",
+      "applyUrl": "https://jobs.ashbyhq.com/temporal/4ee99986-77ad-4113-8058-891d5cc7284a",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/temporal/4ee99986-77ad-4113-8058-891d5cc7284a",
+      "postedAt": "2026-11-20T23:05:12.301+00:00",
+      "tags": [
+        "Claude Code",
+        "TypeScript",
+        "Python",
+        "Go",
+        "Cursor",
+        "Java"
+      ],
+      "companyIcon": "https://temporal.io/favicon.ico"
+    },
+    {
+      "id": "gr-deliveroo-8205846",
+      "company": "Deliveroo ",
+      "position": "Senior Software Engineer, GenAI Platform",
+      "location": "London, United Kingdom - Deliveroo",
+      "locations": [
+        "London, United Kingdom - Deliveroo"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Our Global Structure Deliveroo is now part of DoorDash, bringing together teams with even greater reach, scale, and ambition. Depending on your role, you may collaborate with teammates, systems, and leaders across DoorDash and Wolt. Together, we’re unlocking new possibilities as one global team....",
+      "applyUrl": "https://job-boards.greenhouse.io/deliveroo/jobs/8205846",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/deliveroo/jobs/8205846",
+      "postedAt": "2026-11-20T21:34:38-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "AWS",
+        "GCP",
+        "Kubernetes",
+        "Cursor",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "as-ScribdInc-22c1d410-2522-4e48-8a49-e1623dcae46f",
       "company": "Scribdinc",
@@ -136,6 +209,108 @@
       "companyIcon": ""
     },
     {
+      "id": "gr-sonyinteractiveentertainmentglobal-6222405004",
+      "company": "PlayStation Global",
+      "position": "Lead Data Engineer",
+      "location": "United Kingdom, London",
+      "locations": [
+        "United Kingdom, London"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Why Sony Interactive Entertainment? Sony Interactive Entertainment isn’t just the Best Place to Play — it’s also the Best Place to Work. Sony Interactive Entertainment (SIE) is the company behind the PlayStation brand. As a subsidiary of Sony Group Corporation, we’re part of a proud legacy of...",
+      "applyUrl": "https://job-boards.greenhouse.io/sonyinteractiveentertainmentglobal/jobs/6222405004",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/sonyinteractiveentertainmentglobal/jobs/6222405004",
+      "postedAt": "2026-11-20T20:11:05-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Go",
+        "AWS"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-sonyinteractiveentertainmentglobal-6251398004",
+      "company": "PlayStation Global",
+      "position": "Lead Software Engineer - Data",
+      "location": "United Kingdom, London",
+      "locations": [
+        "United Kingdom, London"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Why Sony Interactive Entertainment? Sony Interactive Entertainment isn’t just the Best Place to Play — it’s also the Best Place to Work. Sony Interactive Entertainment (SIE) is the company behind the PlayStation brand. As a subsidiary of Sony Group Corporation, we’re part of a proud legacy of...",
+      "applyUrl": "https://job-boards.greenhouse.io/sonyinteractiveentertainmentglobal/jobs/6251398004",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/sonyinteractiveentertainmentglobal/jobs/6251398004",
+      "postedAt": "2026-11-20T20:11:05-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Go",
+        "AWS"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-sonyinteractiveentertainmentglobal-6208604004",
+      "company": "PlayStation Global",
+      "position": "Senior Software Engineer - AI & Agentic Architecture",
+      "location": "United States, Aliso Viejo, CA",
+      "locations": [
+        "United States, Aliso Viejo, CA"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Why Sony Interactive Entertainment? Sony Interactive Entertainment isn’t just the Best Place to Play — it’s also the Best Place to Work. Sony Interactive Entertainment (SIE) is the company behind the PlayStation brand. As a subsidiary of Sony Group Corporation, we’re part of a proud legacy of...",
+      "applyUrl": "https://job-boards.greenhouse.io/sonyinteractiveentertainmentglobal/jobs/6208604004",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/sonyinteractiveentertainmentglobal/jobs/6208604004",
+      "postedAt": "2026-11-20T20:11:05-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Rust",
+        "Go",
+        "AWS",
+        "Docker",
+        "Kubernetes",
+        "Java",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-sonyinteractiveentertainmentglobal-6232155004",
+      "company": "PlayStation Global",
+      "position": "Senior Software Engineer AI (Contractor)",
+      "location": "United States, Aliso Viejo, CA",
+      "locations": [
+        "United States, Aliso Viejo, CA"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Why Sony Interactive Entertainment? Sony Interactive Entertainment isn’t just the Best Place to Play — it’s also the Best Place to Work. Sony Interactive Entertainment (SIE) is the company behind the PlayStation brand. As a subsidiary of Sony Group Corporation, we’re part of a proud legacy of...",
+      "applyUrl": "https://job-boards.greenhouse.io/sonyinteractiveentertainmentglobal/jobs/6232155004",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/sonyinteractiveentertainmentglobal/jobs/6232155004",
+      "postedAt": "2026-11-20T20:11:05-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Rust",
+        "Go",
+        "AWS",
+        "Docker",
+        "Kubernetes",
+        "Java",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "le-freedompay-5c8a403f-14be-4fcb-9b7a-12865ddeb440",
       "company": "Freedompay",
       "position": "Technical Product Manager, Payments Data Products",
@@ -156,27 +331,76 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-deliveroo-8205846",
-      "company": "Deliveroo ",
-      "position": "Senior Software Engineer, GenAI Platform",
-      "location": "London, United Kingdom - Deliveroo",
+      "id": "as-multiplyai-5b30aa69-b2a6-480b-b5b9-3ad5d67f1a55",
+      "company": "Multiplyai",
+      "position": "Early Software Engineer (AI-Native)",
+      "location": "San Francisco",
       "locations": [
-        "London, United Kingdom - Deliveroo"
+        "San Francisco"
       ],
       "remote": false,
       "salary": "",
-      "description": "Our Global Structure Deliveroo is now part of DoorDash, bringing together teams with even greater reach, scale, and ambition. Depending on your role, you may collaborate with teammates, systems, and leaders across DoorDash and Wolt. Together, we’re unlocking new possibilities as one global team....",
-      "applyUrl": "https://job-boards.greenhouse.io/deliveroo/jobs/8205846",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/deliveroo/jobs/8205846",
-      "postedAt": "2026-11-20T16:47:13-05:00",
+      "description": "About Multiply\n\nMultiply is building the AI-native media agency for B2B companies, combining AI agents with expert strategists to transform how businesses run and optimize paid advertising.\n\nOur platform connects to advertising channels, CRMs, and customer data to continuously create, manage, and...",
+      "applyUrl": "https://jobs.ashbyhq.com/multiplyai/5b30aa69-b2a6-480b-b5b9-3ad5d67f1a55",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/multiplyai/5b30aa69-b2a6-480b-b5b9-3ad5d67f1a55",
+      "postedAt": "2026-11-20T19:44:18.850+00:00",
       "tags": [
         "Claude Code",
-        "Python",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-meridianlink-b81d3423-bb51-4e88-99ec-18fab781c8c1",
+      "company": "Meridianlink",
+      "position": "Director, Software Engineering - Consumer Portal ",
+      "location": "US Remote",
+      "locations": [
+        "US Remote"
+      ],
+      "remote": true,
+      "salary": "$167,778 – $262,200 • Offers Bonus",
+      "description": "We are seeking a Director of Software Engineering to lead the Consumer Portal portfolio. This leader brings strong technical depth and architectural judgment, combined with solid managerial skill and a steady focus on customer outcomes. You will go deep on technology and architecture, lead and grow...",
+      "applyUrl": "https://jobs.ashbyhq.com/meridianlink/b81d3423-bb51-4e88-99ec-18fab781c8c1",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/meridianlink/b81d3423-bb51-4e88-99ec-18fab781c8c1",
+      "postedAt": "2026-11-20T17:57:44.165+00:00",
+      "tags": [
+        "Claude Code",
+        "Azure",
+        "Docker",
+        "Kubernetes",
+        "Copilot",
+        "Java",
+        "Angular",
+        "Redis"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-life360-8952155002",
+      "company": "Life360",
+      "position": "Senior Software Engineer II, Lifecycle",
+      "location": "Remote, USA · Remote, Canada",
+      "locations": [
+        "Remote, USA",
+        "Remote, Canada"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "About Life360 Life360’s mission is to keep people close to the ones they love. Our category-leading mobile app, Tile tracking devices, and Pet GPS tracker empower members to protect the people, pets, and things they care about most with a range of services, including location sharing, safe driver...",
+      "applyUrl": "https://job-boards.greenhouse.io/life360/jobs/8952155002",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/life360/jobs/8952155002",
+      "postedAt": "2026-11-20T17:55:01-05:00",
+      "tags": [
+        "Claude Code",
         "AWS",
-        "GCP",
         "Kubernetes",
         "Cursor",
+        "Copilot",
+        "Java",
         "MCP"
       ],
       "companyIcon": ""
@@ -590,6 +814,32 @@
         "Kubernetes",
         "Cursor",
         "Copilot",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-tenstorrent-5301371007",
+      "company": "Tenstorrent",
+      "position": "Senior Application Security Engineer",
+      "location": "Santa Clara, California, United States · Toronto, Ontario, Canada",
+      "locations": [
+        "Santa Clara, California, United States",
+        "Toronto, Ontario, Canada"
+      ],
+      "remote": false,
+      "salary": "$100k - $500k",
+      "description": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and...",
+      "applyUrl": "https://job-boards.greenhouse.io/tenstorrent/jobs/5301371007",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/tenstorrent/jobs/5301371007",
+      "postedAt": "2026-11-20T11:59:37-05:00",
+      "tags": [
+        "Claude Code",
+        "TypeScript",
+        "Python",
+        "Go",
+        "Cursor",
         "MCP"
       ],
       "companyIcon": ""
@@ -2189,33 +2439,6 @@
       "companyIcon": "https://www.anthropic.com/favicon.ico"
     },
     {
-      "id": "gr-life360-8952155002",
-      "company": "Life360",
-      "position": "Senior Software Engineer, Lifecycle",
-      "location": "Remote, USA · Remote, Canada",
-      "locations": [
-        "Remote, USA",
-        "Remote, Canada"
-      ],
-      "remote": true,
-      "salary": "",
-      "description": "About Life360 Life360’s mission is to keep people close to the ones they love. Our category-leading mobile app, Tile tracking devices, and Pet GPS tracker empower members to protect the people, pets, and things they care about most with a range of services, including location sharing, safe driver...",
-      "applyUrl": "https://job-boards.greenhouse.io/life360/jobs/8952155002",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/life360/jobs/8952155002",
-      "postedAt": "2026-11-19T12:35:43-05:00",
-      "tags": [
-        "Claude Code",
-        "AWS",
-        "Kubernetes",
-        "Cursor",
-        "Copilot",
-        "Java",
-        "MCP"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "gr-lightmatter-5473539008",
       "company": "Lightmatter",
       "position": "IT and Security Intern – Summer 2027",
@@ -2367,6 +2590,34 @@
       "companyIcon": "https://stripe.com/favicon.ico"
     },
     {
+      "id": "as-vega-14564ad4-f4ce-4918-b400-d1426d446860",
+      "company": "Vega",
+      "position": "Product Engineer ",
+      "location": "London",
+      "locations": [
+        "London"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "London, 4x days per week in-office  \n\n\nVega is looking for an engineer to build features end to end across our platform from Java/Spring Boot services and APIs to React and TypeScript interfaces – using AI tools as a core part of how they work and helping bring AI-powered capabilities into the...",
+      "applyUrl": "https://jobs.ashbyhq.com/vega/14564ad4-f4ce-4918-b400-d1426d446860",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/vega/14564ad4-f4ce-4918-b400-d1426d446860",
+      "postedAt": "2026-11-19T12:00:04.649+00:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "TypeScript",
+        "AWS",
+        "Kubernetes",
+        "Cursor",
+        "Java",
+        "Tailwind",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "gr-riskified-8885153002",
       "company": "Riskified",
       "position": "Software Engineering Manager ",
@@ -2467,19 +2718,19 @@
       "companyIcon": "https://fivetran.com/favicon.ico"
     },
     {
-      "id": "gr-fivetran-7823195003",
+      "id": "gr-fivetran-8016899003",
       "company": "Fivetran",
       "position": "Engineering Manager, Metadata",
-      "location": "Denver, Colorado, United States, AMER",
+      "location": "USA - Austin (dbt)",
       "locations": [
-        "Denver, Colorado, United States, AMER"
+        "USA - Austin (dbt)"
       ],
       "remote": false,
       "salary": "",
       "description": "From Fivetran’s founding until now, our mission has remained the same: to make access to data as simple and reliable as electricity. With Fivetran, customer data arrives in their warehouses, canonical and ready to query, with no engineering or maintenance required. We’re proud that more...",
-      "applyUrl": "https://www.fivetran.com/careers/job?gh_jid=7823195003",
+      "applyUrl": "https://www.fivetran.com/careers/job?gh_jid=8016899003",
       "source": "Greenhouse",
-      "sourceUrl": "https://www.fivetran.com/careers/job?gh_jid=7823195003",
+      "sourceUrl": "https://www.fivetran.com/careers/job?gh_jid=8016899003",
       "postedAt": "2026-11-19T10:13:32-05:00",
       "tags": [
         "Claude Code",
@@ -2563,6 +2814,26 @@
         "Java"
       ],
       "companyIcon": "https://fivetran.com/favicon.ico"
+    },
+    {
+      "id": "gr-hspg-5012893101",
+      "company": "Sevet",
+      "position": "AI Analyst",
+      "location": "London or Manchester",
+      "locations": [
+        "London or Manchester"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Sevet's mission is to put a roof over the heads of the people who need it most. Having somewhere to call home is one of our most important basic human needs. The housing shortage presents one of the biggest social crises in the UK. We’re here to create thousands of homes to alleviate that. Sevet is...",
+      "applyUrl": "https://job-boards.eu.greenhouse.io/hspg/jobs/5012893101",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.eu.greenhouse.io/hspg/jobs/5012893101",
+      "postedAt": "2026-11-19T09:51:54-05:00",
+      "tags": [
+        "Claude Code"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "gr-robotsandpencils-5486500008",
@@ -2809,7 +3080,7 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-opswat-4724688005",
+      "id": "gr-opswat-4528456005",
       "company": "OPSWAT",
       "position": "AI-Native Software Engineer - MD Core",
       "location": "Ho Chi Minh City, Ho Chi Minh City, Vietnam",
@@ -2819,9 +3090,9 @@
       "remote": false,
       "salary": "",
       "description": "OPSWAT , a global leader in IT, OT , and ICS critical infrastructure cybersecurity, delivers an end-to-end platform that gives public and private sector organizations and enterprises the critical advantage needed to protect their complex networks, secure their devices, and ensure compliance. Over...",
-      "applyUrl": "https://www.opswat.com/jobs/4724688005?gh_jid=4724688005",
+      "applyUrl": "https://www.opswat.com/jobs/4528456005?gh_jid=4528456005",
       "source": "Greenhouse",
-      "sourceUrl": "https://www.opswat.com/jobs/4724688005?gh_jid=4724688005",
+      "sourceUrl": "https://www.opswat.com/jobs/4528456005?gh_jid=4528456005",
       "postedAt": "2026-11-19T03:44:52-05:00",
       "tags": [
         "Claude Code",
@@ -3080,6 +3351,32 @@
       "postedAt": "2026-11-19T00:15:46.501+00:00",
       "tags": [
         "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-nubank-be62f215-903b-4769-882e-a920eb4bca77",
+      "company": "Nubank",
+      "position": "Senior IT Engineer - People & Culture",
+      "location": "São Paulo",
+      "locations": [
+        "São Paulo"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "ABOUT NU\n\nNu serves more than 143 million customers, guided by a mission to fight complexity and empower people. The company has been leading an industry transformation through innovative products and human-centered services.\n\n \n\nProprietary technology and data at scale power Nu’s digital platform,...",
+      "applyUrl": "https://jobs.ashbyhq.com/nubank/be62f215-903b-4769-882e-a920eb4bca77",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/nubank/be62f215-903b-4769-882e-a920eb4bca77",
+      "postedAt": "2026-11-18T23:24:19.510+00:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Go",
+        "AWS",
+        "Cursor",
+        "Kotlin",
+        "Java"
       ],
       "companyIcon": ""
     },
@@ -3369,34 +3666,6 @@
         "Azure",
         "GraphQL",
         "Redis",
-        "MCP"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-sonyinteractiveentertainmentglobal-6232155004",
-      "company": "PlayStation Global",
-      "position": "Senior Software Engineer AI (Contractor)",
-      "location": "United States, Aliso Viejo, CA",
-      "locations": [
-        "United States, Aliso Viejo, CA"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "Why Sony Interactive Entertainment? Sony Interactive Entertainment isn’t just the Best Place to Play — it’s also the Best Place to Work. Sony Interactive Entertainment (SIE) is the company behind the PlayStation brand. As a subsidiary of Sony Group Corporation, we’re part of a proud legacy of...",
-      "applyUrl": "https://job-boards.greenhouse.io/sonyinteractiveentertainmentglobal/jobs/6232155004",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/sonyinteractiveentertainmentglobal/jobs/6232155004",
-      "postedAt": "2026-11-18T16:31:52-05:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "Rust",
-        "Go",
-        "AWS",
-        "Docker",
-        "Kubernetes",
-        "Java",
         "MCP"
       ],
       "companyIcon": ""
@@ -3968,6 +4237,34 @@
         "TypeScript",
         "Python",
         "AWS",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "le-smart-working-solutions-b54f0d60-9226-4292-b0a3-9caec516a2fd",
+      "company": "Smart Working Solutions",
+      "position": "AI Trainer - Software Engineering (Remote, Full-Time) [MV001]",
+      "location": "India · Bangalore · Delhi · Mumbai · Gurgaon · Pune · Hyderabad",
+      "locations": [
+        "India",
+        "Bangalore",
+        "Delhi",
+        "Mumbai",
+        "Gurgaon",
+        "Pune",
+        "Hyderabad"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "About Smart Working\n \nAt Smart Working, we believe your job should not only look right on paper but also feel right every day. This isn’t just another remote opportunity - it’s about finding where you truly belong, no matter where you are. From day one, you’re welcomed into a genuine community that...",
+      "applyUrl": "https://jobs.lever.co/smart-working-solutions/b54f0d60-9226-4292-b0a3-9caec516a2fd",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/smart-working-solutions/b54f0d60-9226-4292-b0a3-9caec516a2fd",
+      "postedAt": "2026-11-18T12:23:43.857000+00:00",
+      "tags": [
+        "Claude Code",
+        "Copilot",
         "MCP"
       ],
       "companyIcon": ""
@@ -4835,37 +5132,6 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
-    },
-    {
-      "id": "gr-turing-6255566004",
-      "company": "Turing",
-      "position": "Research Engineering Manager, STEM",
-      "location": "Brazil · Colombia, Huila, Colombia · Global - Remote",
-      "locations": [
-        "Brazil",
-        "Colombia, Huila, Colombia",
-        "Global - Remote"
-      ],
-      "remote": true,
-      "salary": "",
-      "description": "About Turing Turing’s mission is to accelerate superintelligence to drive real economic progress. Headquartered in San Francisco, Turing works with frontier AI labs to generate high-quality datasets, reinforcement learning environments, and frontier research benchmarks that improve model...",
-      "applyUrl": "https://job-boards.greenhouse.io/turing/jobs/6255566004",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/turing/jobs/6255566004",
-      "postedAt": "2026-11-17T15:24:36-05:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "PostgreSQL",
-        "AWS",
-        "GCP",
-        "Docker",
-        "Kubernetes",
-        "Cursor",
-        "Copilot",
-        "Django"
-      ],
-      "companyIcon": ""
     },
     {
       "id": "as-partsbase-1629660d-b818-4526-8a3c-3aa56dc6d773",
@@ -5898,33 +6164,6 @@
       "companyIcon": ""
     },
     {
-      "id": "as-temporal-4ee99986-77ad-4113-8058-891d5cc7284a",
-      "company": "Temporal",
-      "position": "Staff Software Engineer, AI Foundations (Agent Optimization) ",
-      "location": "United States (Remote) · New York, New York · San Francisco, California",
-      "locations": [
-        "United States (Remote)",
-        "New York, New York",
-        "San Francisco, California"
-      ],
-      "remote": true,
-      "salary": "$169,600 – $278,250 • Offers Equity • Multiple Ranges",
-      "description": "ROLE SUMMARY\n\nWe have an opening to hire a Staff Software Engineer - Agent Optimization\n\nTemporal provides a reliable foundation powering AI leaders such as OpenAI, NVIDIA, Cursor, Lovable, and others. Its adoption is expanding to users spanning a broad range of AI applications ranging from agents...",
-      "applyUrl": "https://jobs.ashbyhq.com/temporal/4ee99986-77ad-4113-8058-891d5cc7284a",
-      "source": "Ashby",
-      "sourceUrl": "https://jobs.ashbyhq.com/temporal/4ee99986-77ad-4113-8058-891d5cc7284a",
-      "postedAt": "2026-11-16T15:12:09.886+00:00",
-      "tags": [
-        "Claude Code",
-        "TypeScript",
-        "Python",
-        "Go",
-        "Cursor",
-        "Java"
-      ],
-      "companyIcon": "https://temporal.io/favicon.ico"
-    },
-    {
       "id": "le-smiledigitalhealth-2b30e6de-1e1d-43fa-bfb0-544b203a2dce",
       "company": "Smiledigitalhealth",
       "position": "Senior Automation Tester  - Remote Canada",
@@ -6020,19 +6259,19 @@
       "companyIcon": "https://mixpanel.com/favicon.ico"
     },
     {
-      "id": "gr-mixpanel-8237751",
+      "id": "gr-mixpanel-8248501",
       "company": "Mixpanel",
       "position": "Senior Customer Engineer - LATAM (Spanish Speaking)",
-      "location": "Florida, US (Remote)",
+      "location": "Remote, US (Remote)",
       "locations": [
-        "Florida, US (Remote)"
+        "Remote, US (Remote)"
       ],
       "remote": true,
       "salary": "",
       "description": "About Mixpanel Mixpanel is the leading product intelligence and analytics platform, trusted by more than 29,000 companies to help understand how people use the products they build. By combining powerful analytics with AI that knows your business, Mixpanel helps teams see what’s working, diagnose...",
-      "applyUrl": "https://job-boards.greenhouse.io/mixpanel/jobs/8237751",
+      "applyUrl": "https://job-boards.greenhouse.io/mixpanel/jobs/8248501",
       "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/mixpanel/jobs/8237751",
+      "sourceUrl": "https://job-boards.greenhouse.io/mixpanel/jobs/8248501",
       "postedAt": "2026-11-16T14:21:48-05:00",
       "tags": [
         "Claude Code",
@@ -6544,6 +6783,35 @@
       "companyIcon": ""
     },
     {
+      "id": "as-chamelio-33a00ca8-5cff-4c29-b675-d9b725244ed2",
+      "company": "Chamelio",
+      "position": "Senior DevSecOps Engineer",
+      "location": "Tel Aviv",
+      "locations": [
+        "Tel Aviv"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "About Chamelio:\n\nChamelio is revolutionizing legal tech with an AI-powered Legal Intelligence Platform trusted by some of the world's fastest-growing companies including Wiz, Socure, and Monday. We integrate seamlessly with Salesforce and other systems to help in-house legal teams accelerate...",
+      "applyUrl": "https://jobs.ashbyhq.com/chamelio/33a00ca8-5cff-4c29-b675-d9b725244ed2",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/chamelio/33a00ca8-5cff-4c29-b675-d9b725244ed2",
+      "postedAt": "2026-11-15T19:19:42.733+00:00",
+      "tags": [
+        "Claude Code",
+        "TypeScript",
+        "Python",
+        "Go",
+        "Node.js",
+        "AWS",
+        "GCP",
+        "Docker",
+        "Kubernetes",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "gr-powerdigitalmarketing-5295907007",
       "company": "Power Digital",
       "position": "Data Engineer, Marketing Science",
@@ -6733,6 +7001,27 @@
         "Cursor",
         "Kotlin",
         "Java"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-nubank-985ee82a-c092-42e5-b17d-89fb5a7f5946",
+      "company": "Nubank",
+      "position": "Tech Lead - Global Offices Network",
+      "location": "São Paulo",
+      "locations": [
+        "São Paulo"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "ABOUT NU\n\nNu serves more than 143 million customers, guided by a mission to fight complexity and empower people. The company has been leading an industry transformation through innovative products and human-centered services.\n\n \n\nProprietary technology and data at scale power Nu’s digital platform,...",
+      "applyUrl": "https://jobs.ashbyhq.com/nubank/985ee82a-c092-42e5-b17d-89fb5a7f5946",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/nubank/985ee82a-c092-42e5-b17d-89fb5a7f5946",
+      "postedAt": "2026-11-13T20:55:36.388+00:00",
+      "tags": [
+        "Claude Code",
+        "Cursor"
       ],
       "companyIcon": ""
     },
@@ -8230,6 +8519,34 @@
       "companyIcon": ""
     },
     {
+      "id": "as-chamelio-20792f61-d947-4535-acb2-2f55814ce733",
+      "company": "Chamelio",
+      "position": "Fullstack Engineer",
+      "location": "Tel Aviv",
+      "locations": [
+        "Tel Aviv"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "About us\n\nChamelio is revolutionizing legal tech with an AI-powered Legal Intelligence Platform trusted by some of the world's fastest-growing companies, including Wiz, Socure, Appsflyer and Monday. We help in-house legal teams accelerate negotiations, reduce risk, and unlock institutional...",
+      "applyUrl": "https://jobs.ashbyhq.com/chamelio/20792f61-d947-4535-acb2-2f55814ce733",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/chamelio/20792f61-d947-4535-acb2-2f55814ce733",
+      "postedAt": "2026-11-11T19:08:28.304+00:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "TypeScript",
+        "Python",
+        "PostgreSQL",
+        "AWS",
+        "Cursor",
+        "Redis",
+        "MongoDB"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "as-headway-61d675b9-b127-4aae-a615-1dea90bc9a40",
       "company": "Headway",
       "position": "Senior Applied AI Engineer, AI Platform ",
@@ -8779,32 +9096,6 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-life360-8801341002",
-      "company": "Life360",
-      "position": "Senior Backend Engineer II, AI Native, Vertical Experiences",
-      "location": "Remote, USA",
-      "locations": [
-        "Remote, USA"
-      ],
-      "remote": true,
-      "salary": "",
-      "description": "About Life360 Life360’s mission is to keep people close to the ones they love. Our category-leading mobile app, Tile tracking devices, and Pet GPS tracker empower members to protect the people, pets, and things they care about most with a range of services, including location sharing, safe driver...",
-      "applyUrl": "https://job-boards.greenhouse.io/life360/jobs/8801341002",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/life360/jobs/8801341002",
-      "postedAt": "2026-11-10T20:39:58-05:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "Go",
-        "AWS",
-        "Cursor",
-        "Copilot",
-        "Java"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "gr-life360-8875585002",
       "company": "Life360",
       "position": "Lead Data Scientist",
@@ -8946,6 +9237,32 @@
         "AWS",
         "Java",
         "MySQL"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-life360-8929126002",
+      "company": "Life360",
+      "position": "Senior Software Engineer II, Mobile - On App Ads (AI Native)",
+      "location": "Remote, USA · Remote, Canada",
+      "locations": [
+        "Remote, USA",
+        "Remote, Canada"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "About Life360 Life360’s mission is to keep people close to the ones they love. Our category-leading mobile app, Tile tracking devices, and Pet GPS tracker empower members to protect the people, pets, and things they care about most with a range of services, including location sharing, safe driver...",
+      "applyUrl": "https://job-boards.greenhouse.io/life360/jobs/8929126002",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/life360/jobs/8929126002",
+      "postedAt": "2026-11-10T17:38:14-05:00",
+      "tags": [
+        "Claude Code",
+        "Cursor",
+        "Copilot",
+        "Swift",
+        "Kotlin",
+        "MCP"
       ],
       "companyIcon": ""
     },
@@ -9288,28 +9605,6 @@
         "AWS",
         "Azure",
         "Kubernetes"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-samsara-8281490",
-      "company": "Samsara",
-      "position": "Senior AI Data & Analytics Engineer II",
-      "location": "Remote - Chicago",
-      "locations": [
-        "Remote - Chicago"
-      ],
-      "remote": true,
-      "salary": "",
-      "description": "Who we are Samsara (NYSE: IOT) is the pioneer of the Connected Operations™ Cloud, which is a platform that enables organizations that depend on physical operations to harness Internet of Things (IoT) data to develop actionable insights and improve their operations. At Samsara, we are helping...",
-      "applyUrl": "https://www.samsara.com/company/careers/roles/8281490?gh_jid=8281490",
-      "source": "Greenhouse",
-      "sourceUrl": "https://www.samsara.com/company/careers/roles/8281490?gh_jid=8281490",
-      "postedAt": "2026-11-10T11:47:15-05:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "Cursor"
       ],
       "companyIcon": ""
     },
@@ -10914,29 +11209,6 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-sonyinteractiveentertainmentglobal-6251398004",
-      "company": "PlayStation Global",
-      "position": "Lead Software Engineer - Data",
-      "location": "United Kingdom, London",
-      "locations": [
-        "United Kingdom, London"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "Why Sony Interactive Entertainment? Sony Interactive Entertainment isn’t just the Best Place to Play — it’s also the Best Place to Work. Sony Interactive Entertainment (SIE) is the company behind the PlayStation brand. As a subsidiary of Sony Group Corporation, we’re part of a proud legacy of...",
-      "applyUrl": "https://job-boards.greenhouse.io/sonyinteractiveentertainmentglobal/jobs/6251398004",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/sonyinteractiveentertainmentglobal/jobs/6251398004",
-      "postedAt": "2026-11-06T09:56:55-05:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "Go",
-        "AWS"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "gr-aircallioinc-4401266009",
       "company": "Aircall.io, Inc.",
       "position": "Lead Software Engineer, Outbound Capabilities",
@@ -11338,6 +11610,33 @@
       "companyIcon": ""
     },
     {
+      "id": "as-sophos-46929d7f-2677-4837-a033-134d9fde79fe",
+      "company": "Sophos",
+      "position": "Site Reliability Engineer /Cloud",
+      "location": "India",
+      "locations": [
+        "India"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "ROLE SUMMARY\n\nCentral Operations is responsible for delivering the infrastructure to provide customer facing systems and cloud services to Sophos customers. The job role requires skill with Linux, cloud computing, automation, CI/CD pipelines, containerized environments and incident management...",
+      "applyUrl": "https://jobs.ashbyhq.com/sophos/46929d7f-2677-4837-a033-134d9fde79fe",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/sophos/46929d7f-2677-4837-a033-134d9fde79fe",
+      "postedAt": "2026-11-05T14:16:09.370+00:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "PostgreSQL",
+        "AWS",
+        "Cursor",
+        "Copilot",
+        "MongoDB",
+        "MySQL"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "gr-crexi-4751623005",
       "company": "Crexi",
       "position": "GTM Automation Engineer",
@@ -11650,6 +11949,48 @@
         "Kubernetes",
         "Cursor",
         "Copilot"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-dashly-0fa643b4-5656-4622-a5b4-a81c69b318fc",
+      "company": "Dashly",
+      "position": "Senior Technical OSINT Investigator",
+      "location": "New York City",
+      "locations": [
+        "New York City"
+      ],
+      "remote": false,
+      "salary": "$140K – $180K • Offers Equity",
+      "description": "Target Start: January 2027\n\n\nABOUT US\n\nDashly is a fraud intelligence startup that uses data across employers, insurers, contractors, and open source intelligence to fight fraud in injury claims. We expose fraud networks that cost Americans billions of dollars annually, slow commercial development,...",
+      "applyUrl": "https://jobs.ashbyhq.com/dashly/0fa643b4-5656-4622-a5b4-a81c69b318fc",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/dashly/0fa643b4-5656-4622-a5b4-a81c69b318fc",
+      "postedAt": "2026-11-04T19:28:39.441+00:00",
+      "tags": [
+        "Claude Code",
+        "Python"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-dashly-038332a8-9e65-4fe5-9e60-88e6c05ee6e9",
+      "company": "Dashly",
+      "position": "Fraud Intelligence Analyst (New Graduate)",
+      "location": "New York City",
+      "locations": [
+        "New York City"
+      ],
+      "remote": false,
+      "salary": "$70K – $100K • Offers Equity",
+      "description": "ABOUT US\n\nDashly is a fraud intelligence startup that uses data across employers, insurers, and contractors to fight fraud in injury claims. We expose fraud networks that cost Americans billions of dollars annually, slow commercial development, and erode trust in blue-collar industries.\n\nBacked by...",
+      "applyUrl": "https://jobs.ashbyhq.com/dashly/038332a8-9e65-4fe5-9e60-88e6c05ee6e9",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/dashly/038332a8-9e65-4fe5-9e60-88e6c05ee6e9",
+      "postedAt": "2026-11-04T19:27:50.045+00:00",
+      "tags": [
+        "Claude Code",
+        "Python"
       ],
       "companyIcon": ""
     },
@@ -12807,6 +13148,35 @@
       "companyIcon": ""
     },
     {
+      "id": "as-chamelio-b71809e1-4d9e-462e-b432-5d9c59adc8e8",
+      "company": "Chamelio",
+      "position": "Senior Backend Engineer",
+      "location": "Tel Aviv",
+      "locations": [
+        "Tel Aviv"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "ABOUT CHAMELIO-\n\nChamelio is revolutionizing legal tech with an AI-powered Legal Intelligence Platform trusted by hyper-growth tech leaders including Wiz, Socure, and Wix. We integrate deeply with enterprise ecosystems (Salesforce and beyond) to help in-house legal teams automate complex workflows,...",
+      "applyUrl": "https://jobs.ashbyhq.com/chamelio/b71809e1-4d9e-462e-b432-5d9c59adc8e8",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/chamelio/b71809e1-4d9e-462e-b432-5d9c59adc8e8",
+      "postedAt": "2026-11-03T11:16:19.051+00:00",
+      "tags": [
+        "Claude Code",
+        "TypeScript",
+        "Python",
+        "PostgreSQL",
+        "AWS",
+        "Docker",
+        "Cursor",
+        "Copilot",
+        "Redis",
+        "MongoDB"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "gr-accenturefederalservices-4714126006",
       "company": "Accenture Federal Services",
       "position": ".NET and Power Platform App Developer ",
@@ -13413,57 +13783,6 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-sonyinteractiveentertainmentglobal-6222405004",
-      "company": "PlayStation Global",
-      "position": "Lead Data Engineer",
-      "location": "United Kingdom, London",
-      "locations": [
-        "United Kingdom, London"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "Why Sony Interactive Entertainment? Sony Interactive Entertainment isn’t just the Best Place to Play — it’s also the Best Place to Work. Sony Interactive Entertainment (SIE) is the company behind the PlayStation brand. As a subsidiary of Sony Group Corporation, we’re part of a proud legacy of...",
-      "applyUrl": "https://job-boards.greenhouse.io/sonyinteractiveentertainmentglobal/jobs/6222405004",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/sonyinteractiveentertainmentglobal/jobs/6222405004",
-      "postedAt": "2026-11-02T13:23:59-05:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "Go",
-        "AWS"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-sonyinteractiveentertainmentglobal-6208604004",
-      "company": "PlayStation Global",
-      "position": "Senior Software Engineer - AI & Agentic Architecture",
-      "location": "United States, Aliso Viejo, CA",
-      "locations": [
-        "United States, Aliso Viejo, CA"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "Why Sony Interactive Entertainment? Sony Interactive Entertainment isn’t just the Best Place to Play — it’s also the Best Place to Work. Sony Interactive Entertainment (SIE) is the company behind the PlayStation brand. As a subsidiary of Sony Group Corporation, we’re part of a proud legacy of...",
-      "applyUrl": "https://job-boards.greenhouse.io/sonyinteractiveentertainmentglobal/jobs/6208604004",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/sonyinteractiveentertainmentglobal/jobs/6208604004",
-      "postedAt": "2026-11-02T13:23:59-05:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "Rust",
-        "Go",
-        "AWS",
-        "Docker",
-        "Kubernetes",
-        "Java",
-        "MCP"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "gr-robotsandpencils-5469814008",
       "company": "Robots and Pencils",
       "position": "Staff Engineer / AI Builder - Mountain View",
@@ -13670,6 +13989,34 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "as-chamelio-b77f93a2-6df4-426f-b35d-f26b2398c17d",
+      "company": "Chamelio",
+      "position": "Senior Security Engineer",
+      "location": "Tel Aviv",
+      "locations": [
+        "Tel Aviv"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "About Chamelio\n\nChamelio is revolutionizing legal tech with an AI-powered Legal Intelligence Platform trusted by some of the world's fastest-growing companies including Wiz, Socure, and Monday\n\nWe integrate seamlessly with Salesforce and other systems to help in-house legal teams accelerate...",
+      "applyUrl": "https://jobs.ashbyhq.com/chamelio/b77f93a2-6df4-426f-b35d-f26b2398c17d",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/chamelio/b77f93a2-6df4-426f-b35d-f26b2398c17d",
+      "postedAt": "2026-11-01T15:21:17.616+00:00",
+      "tags": [
+        "Claude Code",
+        "TypeScript",
+        "Python",
+        "Node.js",
+        "AWS",
+        "GCP",
+        "Azure",
+        "Kubernetes",
+        "Cursor"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "gr-forter-8909336002",
@@ -14354,19 +14701,19 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-samsara-8109358",
+      "id": "gr-samsara-7752678",
       "company": "Samsara",
       "position": "Staff Software Engineer, DevEx",
-      "location": "Remote - Canada",
+      "location": "Remote - US",
       "locations": [
-        "Remote - Canada"
+        "Remote - US"
       ],
       "remote": true,
       "salary": "",
       "description": "Who we are Samsara (NYSE: IOT) is the pioneer of the Connected Operations™ Cloud, which is a platform that enables organizations that depend on physical operations to harness Internet of Things (IoT) data to develop actionable insights and improve their operations. At Samsara, we are helping...",
-      "applyUrl": "https://www.samsara.com/company/careers/roles/8109358?gh_jid=8109358",
+      "applyUrl": "https://www.samsara.com/company/careers/roles/7752678?gh_jid=7752678",
       "source": "Greenhouse",
-      "sourceUrl": "https://www.samsara.com/company/careers/roles/8109358?gh_jid=8109358",
+      "sourceUrl": "https://www.samsara.com/company/careers/roles/7752678?gh_jid=7752678",
       "postedAt": "2026-10-30T11:15:54-04:00",
       "tags": [
         "Claude Code",
@@ -18854,6 +19201,35 @@
       "companyIcon": ""
     },
     {
+      "id": "as-vega-368add16-b0e5-4381-817e-e8e7b095afc2",
+      "company": "Vega",
+      "position": "AI Engineer",
+      "location": "London",
+      "locations": [
+        "London"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "AI Engineer\n\nLondon, 4x days per week in-office\n\n\n\nVega is looking for AI-native builders to create the new way that work gets done in private markets.\n\n\n\nAbout Vega\n\nVega is transforming the way private markets operate. Alternative asset management is one of the most influential forces in the...",
+      "applyUrl": "https://jobs.ashbyhq.com/vega/368add16-b0e5-4381-817e-e8e7b095afc2",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/vega/368add16-b0e5-4381-817e-e8e7b095afc2",
+      "postedAt": "2026-10-13T17:53:12.769+00:00",
+      "tags": [
+        "React",
+        "TypeScript",
+        "Node.js",
+        "PostgreSQL",
+        "AWS",
+        "Docker",
+        "Kubernetes",
+        "Java",
+        "Tailwind",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "le-smiledigitalhealth-b85b79cd-0b53-4563-aae6-9816ed2ce6df",
       "company": "Smiledigitalhealth",
       "position": "Senior Cloud Engineer, Automation (Remote Ontario)",
@@ -20003,7 +20379,7 @@
         "San Francisco, CA"
       ],
       "remote": false,
-      "salary": "$120,000-$160,00",
+      "salary": "$120K – $160K • Offers Equity",
       "description": "ABOUT US\n\nAt LangChain, our mission is to enable every company to own its intelligence. We believe agents will transform how companies operate, and we're building the foundation to make that future possible. Our open-source harnesses and LangSmith platform give developers and enterprises the...",
       "applyUrl": "https://jobs.ashbyhq.com/langchain/e39f60c8-6bfb-4ca4-b1b0-dd3d44d128bc",
       "source": "Ashby",
@@ -20748,19 +21124,19 @@
       "companyIcon": "https://decagon.ai/favicon.ico"
     },
     {
-      "id": "gr-powerdigitalmarketing-5219547007",
+      "id": "gr-powerdigitalmarketing-5219545007",
       "company": "Power Digital",
       "position": "Data Engineer, AI & Analytics",
-      "location": "Remote - Spain",
+      "location": "Remote - Brazil",
       "locations": [
-        "Remote - Spain"
+        "Remote - Brazil"
       ],
       "remote": true,
       "salary": "",
       "description": "Who We Are: Power Digital is an AI-Native Growth Firm built at the intersection of world-class talent and proprietary technology. We help leading and emerging brands grow by combining deep vertical expertise, strategic thinking, and enterprise intelligence to drive measurable business outcomes. For...",
-      "applyUrl": "https://job-boards.greenhouse.io/powerdigitalmarketing/jobs/5219547007",
+      "applyUrl": "https://job-boards.greenhouse.io/powerdigitalmarketing/jobs/5219545007",
       "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/powerdigitalmarketing/jobs/5219547007",
+      "sourceUrl": "https://job-boards.greenhouse.io/powerdigitalmarketing/jobs/5219545007",
       "postedAt": "2026-09-29T18:01:10-04:00",
       "tags": [
         "Claude Code",
