@@ -120,6 +120,7 @@ ${typeLines}
 
 - [Plugins and marketplaces](${SITE}/plugins): third-party Claude Code plugin marketplaces indexed by the site.
 - [Trending components](${SITE}/trending)
+- [Leaderboard](${SITE}/leaderboard): components ranked by all-time CLI installs, by type and category.
 `;
 }
 
