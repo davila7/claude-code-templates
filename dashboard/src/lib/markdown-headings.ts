@@ -29,7 +29,14 @@ export function forEachMarkdownLine(content: string, visit: (line: string, inFen
     const m = line.match(FENCE);
     if (m) {
       const marker = m[1];
-      if (fence === null) { fence = marker; visit(line, true); continue; }
+      // CommonMark: a backtick fence's info string has no backticks, so a line like
+      // ```inline``` is an inline code span, not the start of a block.
+      const info = line.slice(line.indexOf(marker) + marker.length);
+      const opens = marker[0] === '~' || !info.includes('`');
+      if (fence === null) {
+        if (opens) { fence = marker; visit(line, true); continue; }
+        visit(line, false); continue;
+      }
       if (marker[0] === fence[0] && marker.length >= fence.length && line.trim() === marker) {
         fence = null; visit(line, true); continue;
       }
