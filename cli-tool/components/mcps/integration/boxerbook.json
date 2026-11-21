@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "boxerbook": {
+      "description": "Professional boxing data from Boxerbook, the open world boxing database: boxer records, upcoming cards with start times and broadcasters, results with sources, world titles and publisher rankings (WBC, WBA, IBF, WBO, The Ring, TBRB). Public endpoint, no API key required. Data ODbL.",
+      "type": "http",
+      "url": "https://mcp.boxerbook.com/mcp"
+    }
+  }
+}
