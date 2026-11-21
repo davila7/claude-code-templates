@@ -140,10 +140,10 @@ export default function LeaderboardView({ lists, rising, harness, lastUpdated }:
     <div className="pb-10">
       {/* Header */}
       <header className="px-4 sm:px-6 pt-6 pb-5">
-        <h1 className="text-[22px] font-semibold text-[var(--color-text-primary)]">Leaderboard</h1>
+        <h1 className="text-[22px] font-semibold text-[var(--color-text-primary)]">Harness Components Leaderboard</h1>
         <p className="mt-1.5 max-w-2xl text-[14px] leading-relaxed text-[var(--color-text-secondary)] antialiased">
-          {totalComponents.toLocaleString('en-US')} Claude Code components ranked by how many times developers installed them
-          with the CLI. The order comes only from install counts: sponsored placements never change it.
+          {totalComponents.toLocaleString('en-US')} components for Claude Code and other agent harnesses (Codex, OpenCode, Cursor…),
+          ranked by how many times developers installed them with the CLI. The order comes only from install counts: sponsored placements never change it.
         </p>
         <dl className="mt-4 flex flex-wrap gap-x-8 gap-y-2">
           <div>
