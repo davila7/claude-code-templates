@@ -1,0 +1,22 @@
+{
+  "description": "Gate \"I'm done\" on ground truth instead of the agent's word. On Stop, audits the latest commit's subject against its actual diff using the DOS kernel (`dos commit-audit`) — a commit message is forgeable, but the files it touched are not. Catches a `fix:` that only touched a README, or a \"tests pass\" that deleted the assertions, before the agent declares the work complete. Advisory by default (exit 0 with a warning); set DOS_VERIFY_GATE_BLOCK=1 to refuse the stop on an unwitnessed claim (exit 2). Requires the DOS CLI (`pip install dos-kernel`); deterministic, no API key, no LLM, no network. Stays out of the way when DOS is not installed or the repo has no commits.",
+  "supportingFiles": [
+    {
+      "source": "dos-verify-gate.sh",
+      "destination": ".claude/hooks/dos-verify-gate.sh",
+      "executable": true
+    }
+  ],
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/dos-verify-gate.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
