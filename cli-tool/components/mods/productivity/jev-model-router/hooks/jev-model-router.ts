@@ -249,6 +249,11 @@ export const register: Register = (on, options) => {
     return yield* next({ ...e, ...change })
   })
 
+  // Hooked only when it routes: while any mod hooks agent.spawn, Claude Code
+  // turns its experimental Code Mode off (#1579), so a user who only routes
+  // the main loop keeps Code Mode by setting routeSubagentModel to false.
+  if (!routeSubagentModel) return
+
   on('agent.spawn', async ($, e, next) => {
     // Before the routing guards: a module whose switches are all off has still
     // loaded, and that is exactly when its silence is most misleading.
@@ -275,7 +280,7 @@ export const register: Register = (on, options) => {
     // resume), and its `prompt` is the resuming message, not the task. A
     // workflow agent is routed like any other: its `model` rewrite applies
     // since 2.1.300.
-    if (!routeSubagentModel || e.fork || e.resume) return next(e)
+    if (e.fork || e.resume) return next(e)
 
     if (!unusableReported) {
       unusableReported = true
