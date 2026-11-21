@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "meigen": {
+      "description": "Find inspiration, generate images and videos, and use your MeiGen favorites, boards and history. Connect through remote HTTP and browser OAuth. Generation uses purchased credits; private-library access requires its OAuth permissions.",
+      "type": "http",
+      "url": "https://www.meigen.ai/api/mcp"
+    }
+  }
+}
