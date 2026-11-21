@@ -831,10 +831,18 @@ async function installIndividualSetting(settingName, targetDir, options) {
       }
       
       if (existingConfig.hooks && settingConfig.hooks) {
-        mergedConfig.hooks = {
-          ...existingConfig.hooks,
-          ...settingConfig.hooks
-        };
+        mergedConfig.hooks = { ...existingConfig.hooks };
+        // Append to the events already configured (as --hook does) instead of
+        // replacing their arrays; skip entries that are already there.
+        Object.entries(settingConfig.hooks).forEach(([event, entries]) => {
+          const current = existingConfig.hooks[event];
+          if (!Array.isArray(current) || !Array.isArray(entries)) {
+            mergedConfig.hooks[event] = entries;
+            return;
+          }
+          const added = entries.filter(entry => !current.some(e => require('util').isDeepStrictEqual(e, entry)));
+          mergedConfig.hooks[event] = [...current, ...added];
+        });
       }
       
       // Write the merged configuration
