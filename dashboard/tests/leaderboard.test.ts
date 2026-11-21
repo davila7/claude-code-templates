@@ -38,6 +38,7 @@ test('topByCategory orders categories by total installs and skips zero-install e
 
 test('typeStats computes total, median and the top 10% share', () => {
   assert.deepEqual(typeStats([['a', 90], ['b', 5], ['c', 3], ['d', 2]]), { components: 4, installs: 100, median: 4, top10Share: 0.9 });
+  assert.equal(typeStats([['a', 5], ['b', 4]]).median, 4.5);
   assert.deepEqual(typeStats([]), { components: 0, installs: 0, median: 0, top10Share: 0 });
 });
 

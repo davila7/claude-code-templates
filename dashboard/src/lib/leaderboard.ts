@@ -100,7 +100,7 @@ export function typeStats(list: CompactEntry[]): TypeStats {
   const counts = list.map((e) => e[1]).sort((a, b) => b - a);
   const installs = counts.reduce((s, n) => s + n, 0);
   const n = counts.length;
-  const median = n === 0 ? 0 : n % 2 ? counts[(n - 1) / 2] : Math.round((counts[n / 2 - 1] + counts[n / 2]) / 2);
+  const median = n === 0 ? 0 : n % 2 ? counts[(n - 1) / 2] : (counts[n / 2 - 1] + counts[n / 2]) / 2;
   const topN = Math.max(1, Math.ceil(n * 0.1));
   const topInstalls = counts.slice(0, topN).reduce((s, v) => s + v, 0);
   return { components: n, installs, median, top10Share: installs ? topInstalls / installs : 0 };

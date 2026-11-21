@@ -97,9 +97,19 @@ export default function LeaderboardView({ lists, rising, harness, lastUpdated }:
   const [shown, setShown] = useState(PAGE);
   const [allCategories, setAllCategories] = useState(false);
 
+  // Follow the URL fragment on load and on back/forward or an in-page #type link.
   useEffect(() => {
-    const h = window.location.hash.slice(1);
-    if (isLeaderboardType(h)) setTab(h);
+    const sync = () => {
+      const h = window.location.hash.slice(1);
+      setTab(isLeaderboardType(h) ? h : 'overview');
+      setQuery('');
+      setCategory('');
+      setShown(PAGE);
+      setAllCategories(false);
+    };
+    sync();
+    window.addEventListener('hashchange', sync);
+    return () => window.removeEventListener('hashchange', sync);
   }, []);
 
   const select = (next: Tab) => {
