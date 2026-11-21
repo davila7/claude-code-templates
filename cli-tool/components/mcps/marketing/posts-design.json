@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "posts-design": {
+      "description": "posts.design - design references for social posts, X headers and OG images, from the brands and studios that made them. Search the library, open a reference with its media and attribution, read breakdowns of video posts (hook, timed beats, type, end card), and pull from your own saves. Hosted remote server; sign in with a free posts.design account (100 credits a month), no key to paste.",
+      "type": "http",
+      "url": "https://posts.design/mcp"
+    }
+  }
+}
