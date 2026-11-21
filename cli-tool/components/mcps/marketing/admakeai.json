@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "admakeai": {
+      "description": "Official hosted MCP server for AdMakeAI, an AI ad creative tool for Meta and TikTok advertisers. Generate ad images in Meta placement ratios and UGC-style video ads, pull an advertiser's live ads from the Meta Ad Library, read Meta campaign results and draft Meta campaigns, which arrive paused. Sign in with your AdMakeAI account through the MCP client's OAuth flow. Free signup with 30 credits and no card; paid plans from $39/month. Docs: https://admakeai.com/agents",
+      "type": "http",
+      "url": "https://admakeai.com/api/mcp"
+    }
+  }
+}
