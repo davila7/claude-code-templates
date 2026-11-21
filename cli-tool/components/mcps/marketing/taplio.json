@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "taplio": {
+      "description": "Taplio's hosted MCP server for your own LinkedIn: write, schedule and analyze posts, find inspiration from top creators, draft and schedule comments and replies, like posts and send connection requests, through your Taplio account. Sign in to Taplio in the browser on first use (OAuth), there is no key to paste. Requires a Taplio account with LinkedIn connected.",
+      "type": "http",
+      "url": "https://mcp.taplio.com/"
+    }
+  }
+}
