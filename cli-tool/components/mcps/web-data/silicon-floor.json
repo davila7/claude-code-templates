@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "silicon-floor": {
+      "description": "Follow the AI stock market from Claude Code: AI and semiconductor stocks, their news, the sector's market cap, dividends, who owns each company, what insiders and hedge funds bought and sold each quarter, and short interest with the short float, every SEC figure dated and linked to its filing. Read-only; public endpoint, no API key required.",
+      "type": "http",
+      "url": "https://siliconfloor.com/mcp"
+    }
+  }
+}
