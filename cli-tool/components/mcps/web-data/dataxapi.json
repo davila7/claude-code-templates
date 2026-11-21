@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "dataxapi": {
+      "description": "DataXAPI remote MCP server for public social and market data: posts, comments, creators, ads, products and search trends from Douyin, Xiaohongshu (RedNote), WeChat Official Accounts and Channels, Weibo, Bilibili, Zhihu, Kuaishou, TikTok, X, YouTube, Instagram, Reddit and more. Tools: find, describe, call, read_more, account. Requests go to api.dataxapi.com; nothing runs locally. find and describe work without a key. Pay per call from a prepaid balance, no subscription; failed calls are not charged. Get an API key at https://dataxapi.com/console/keys/?ref=claude-code-templates (free trial of up to 333 calls, no card) and set it as the DATAXAPI_API_KEY environment variable before connecting.",
+      "type": "http",
+      "url": "https://api.dataxapi.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ${DATAXAPI_API_KEY}"
+      }
+    }
+  }
+}
