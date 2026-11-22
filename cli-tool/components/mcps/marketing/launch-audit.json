@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "launch-audit": {
+      "description": "Official OmniForge Launch Audit hosted MCP server (brand-checker.appwrite.network/mcp, Streamable HTTP, free, no API key or sign-in required). Exposes 4 read-only pre-launch audit tools: check_brand_availability (live RDAP across .com/.io/.ai/.dev, developer handles and USPTO trademarks), audit_email_deliverability (MX, recursive SPF 10-lookup check, DKIM, DMARC, MTA-STS, BIMI and DNSBL), audit_ai_search_visibility (robots.txt AI crawler rules, /llms.txt and Schema.org JSON-LD), and full_launch_readiness_audit. Listed in the Official MCP Registry as io.github.zColdWater/mcp-launch-audit. Open-source MIT stdio package also available at https://github.com/zColdWater/mcp-launch-audit",
+      "type": "http",
+      "url": "https://brand-checker.appwrite.network/mcp"
+    }
+  }
+}
