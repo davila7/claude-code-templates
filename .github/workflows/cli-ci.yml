@@ -46,6 +46,9 @@ jobs:
       - name: Install-path tests
         run: npm run test:install-paths
 
+      - name: --dry-run writes nothing
+        run: npm run test:dry-run
+
       - name: Lint for undefined identifiers
         # analytics-web/ is browser code served by the analytics server, not run by Node.
         run: >

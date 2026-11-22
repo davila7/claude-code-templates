@@ -63,6 +63,39 @@ async function runCatalogBrowser(options, targetDir) {
 
 const INSTALL_FLAGS = ['agent', 'command', 'mcp', 'setting', 'hook', 'skill', 'loop', 'mod', 'plugin'];
 
+/**
+ * Where each component of a `--dry-run` would be written, one line per item.
+ * Mirrors the destination every installer in this file writes to; a plugin is
+ * installed by Claude Code into its plugin cache, so it only has a scope.
+ */
+function dryRunDestinations(items) {
+  const baseName = name => (String(name).includes('/') ? String(name).split('/').pop() : String(name));
+  return items.map(item => {
+    switch (item.type) {
+      case 'agent':
+        return `agents/${item.name}.md → .claude/agents/${baseName(item.name)}.md`;
+      case 'command':
+        return `commands/${item.name}.md → .claude/commands/${baseName(item.name)}.md`;
+      case 'mcp':
+        return `mcps/${item.name}.json → .mcp.json`;
+      case 'setting':
+        return `settings/${item.name}.json → the settings file you choose (local by default)`;
+      case 'hook':
+        return `hooks/${item.name}.json → the settings file you choose (local by default)`;
+      case 'skill':
+        return `skills/${item.name}/ → .claude/skills/${baseName(item.name)}/`;
+      case 'loop':
+        return `loops/${item.name}.md → .claude/loops/${baseName(item.name)}.md (+ referenced components)`;
+      case 'mod':
+        return `mods/${item.name}/ → .claude/skills/${baseName(item.name)}/`;
+      case 'plugin':
+        return `${item.name} → installed by Claude Code into ~/.claude/plugins/cache/aitmpl/`;
+      default:
+        return `${item.type}: ${item.name}`;
+    }
+  });
+}
+
 /** Every component named on the command line, as [{ type, name }] in flag order. */
 function requestedItems(options) {
   const items = [];
@@ -240,18 +273,26 @@ async function createClaudeConfig(options = {}) {
     templateConfig.language = config.language; // Ensure language is available for MCP filtering
   }
   
-  // Install selected agents
-  if (config.agents && config.agents.length > 0) {
-    console.log(chalk.blue('🤖 Installing Claude Code agents...'));
-    await installAgents(config.agents, targetDir);
-  }
-  
+  // --dry-run reports the plan and stops before anything is written, so it runs
+  // ahead of the agent install below (which writes .claude/agents/*.md).
   if (options.dryRun) {
     console.log(chalk.yellow('🔍 Dry run - showing what would be copied:'));
     templateConfig.files.forEach(file => {
       console.log(chalk.gray(`  - ${file.source} → ${file.destination}`));
     });
+    if (config.agents && config.agents.length > 0) {
+      config.agents.forEach(agent => {
+        console.log(chalk.gray(`  - agents/${agent}.md → .claude/agents/${String(agent).split('/').pop()}.md`));
+      });
+    }
+    console.log(chalk.gray('Nothing was written.'));
     return;
+  }
+
+  // Install selected agents
+  if (config.agents && config.agents.length > 0) {
+    console.log(chalk.blue('🤖 Installing Claude Code agents...'));
+    await installAgents(config.agents, targetDir);
   }
   
   // Copy template files
@@ -2068,6 +2109,14 @@ async function installMultipleComponents(options, targetDir) {
     if (!options.skipHeader) ui.header();
     ui.plan(items);
 
+    // --dry-run: report where each component would land and write nothing.
+    // Same promise as cli-rust's print_dry_run() and docs-site/installation.mdx.
+    if (options.dryRun) {
+      for (const line of dryRunDestinations(items)) ui.note(line);
+      ui.note('Nothing was written.');
+      return;
+    }
+
     // Ask for installation locations once for configuration components.
     // Loops can pull in settings/hooks via their referenced components, so ask when loops are present too.
     let sharedInstallLocations = ['local'];
@@ -2221,7 +2270,17 @@ async function installWorkflow(workflowHash, targetDir, options) {
     console.log(chalk.cyan(`📝 Description: ${workflowData.description}`));
     console.log(chalk.cyan(`🏷️  Tags: ${workflowData.tags.join(', ')}`));
     console.log(chalk.cyan(`📊 Steps: ${workflowData.steps.length}`));
-    
+
+    // --dry-run reports the workflow and stops before any component is installed
+    // or the YAML is written.
+    if (options.dryRun) {
+      const planned = workflowData.steps.map(step => `  ${String(step.type).padEnd(8)} ${step.path || step.name}`);
+      for (const line of planned) console.log(chalk.gray(line));
+      console.log(chalk.gray('  workflow → .claude/workflows/<name>.yaml'));
+      console.log(chalk.gray('Nothing was written.'));
+      return;
+    }
+
     // Install all required components
     const installPromises = [];
     
@@ -2786,4 +2845,4 @@ async function handlePromptExecution(prompt, targetDir) {
 }
 
 // installIndividualSkill is exported for tests (cli-tool/tests/unit/skill-install.node-test.js).
-module.exports = { createClaudeConfig, installIndividualSkill };
+module.exports = { createClaudeConfig, installIndividualSkill, dryRunDestinations };
