@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "makeaivideo": {
+      "description": "MakeAIVideo - create short-form AI videos (script, AI voiceover, AI or stock scenes, captions, music) from a prompt or script, return the MP4, and post or schedule it to TikTok, Instagram or YouTube. Hosted remote server; sign in with MakeAIVideo OAuth. Videos use account credits.",
+      "type": "http",
+      "url": "https://mcp.makeaivideo.ai"
+    }
+  }
+}
