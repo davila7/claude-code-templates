@@ -42,12 +42,12 @@
 
 **What to Check:**
 - Existing paid products in niche (courses, ebooks, coaching)
-- Price points people are paying (300K-3M range?)
+- Price points people are paying ($12–$120 range?)
 - Payment evidence (reviews, testimonials, sales posts)
 - Problem severity (painful vs nice-to-have)
 
 **Scoring Guide:**
-- **10 points:** Multiple paid products 500K+, visible buyer testimonials, urgent problem
+- **10 points:** Multiple paid products $20+, visible buyer testimonials, urgent problem
 - **5 points:** Few paid products, mostly free content, moderate problem
 - **0 points:** No paid products, only free content, low-priority problem
 
@@ -207,7 +207,7 @@
 **Quick Tests:**
 ```
 ✓ Facebook Ads Manager: Create audience → Check size (100K+ ideal)
-✓ Check estimated daily results for 50K budget
+✓ Check estimated daily results for a $50/day budget
 ✓ TikTok: Search hashtags → How many videos posted daily?
 ✓ YouTube: Related channels → What's their view count?
 ```
@@ -312,7 +312,7 @@ LOW URGENCY (Score 0-3):
 **Action Plan:**
 1. Proceed but validate MVP first (minimum viable product)
 2. Start with free content/organic growth
-3. Test small paid product (297-497K) before flagship
+3. Test small paid product ($12–$20) before flagship
 4. Budget $50–$100 for initial testing
 
 **Expected Timeline:** 90-120 days to consistent income
@@ -364,7 +364,7 @@ Pursuing a low-scoring niche = wasted months + money with minimal results. Bette
 - ⚠️ Dominated by 1-2 major players with large followings (hard to compete)
 - ⚠️ Trending topic with no proven monetization (hype vs sustainable)
 - ⚠️ International trend not adapted to the US context (cultural mismatch)
-- ⚠️ Audience willing to pay but only <100K (low margins)
+- ⚠️ Audience willing to pay but only under $5 (low margins)
 
 ---
 
@@ -372,7 +372,7 @@ Pursuing a low-scoring niche = wasted months + money with minimal results. Bette
 
 ### Example 1: "Facebook Ads for Small Business" (Score: 85/100)
 - Market Demand: 9/10 (high search volume)
-- Willingness to Pay: 9/10 (businesses paying 2-5M for courses)
+- Willingness to Pay: 9/10 (businesses paying $80–$200 for courses)
 - Competition: 7/10 (10-15 active creators, room for specialization)
 - US Specificity: 10/10 (local businesses need US strategies)
 - Amazon Activity: 5/10 (limited digital products but high physical book sales)
