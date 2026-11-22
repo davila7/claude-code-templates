@@ -141037,6 +141037,106 @@
       }
     },
     {
+      "name": "pdftomarkdown",
+      "path": "documentation/pdftomarkdown",
+      "category": "documentation",
+      "type": "plugin",
+      "description": "Lets Claude read any PDF — scanned documents, tables, multi-column layouts, CJK — by converting it to markdown with npx pdftomarkdown.",
+      "author": "pdftomarkdown.dev",
+      "repo": "https://github.com/ThiloReintjes/pdftomarkdown-skill",
+      "version": "0.1.0",
+      "license": "MIT",
+      "keywords": [
+        "pdf",
+        "markdown",
+        "ocr",
+        "extraction",
+        "documents"
+      ],
+      "installCommand": "npx claude-code-templates@latest --plugin documentation/pdftomarkdown",
+      "downloads": 0,
+      "references": [
+        ".claude-plugin/marketplace.json",
+        ".claude-plugin/plugin.json",
+        "LICENSE",
+        "skills/pdf-to-markdown/SKILL.md"
+      ],
+      "contains": {
+        "skills": [
+          "pdf-to-markdown"
+        ]
+      },
+      "source": {
+        "repo": "ThiloReintjes/pdftomarkdown-skill",
+        "path": "",
+        "commit": "58b66263d6b744dc5b9a391e8fdfd02a95bb4979",
+        "license": "MIT",
+        "url": "https://github.com/ThiloReintjes/pdftomarkdown-skill/tree/58b66263d6b744dc5b9a391e8fdfd02a95bb4979"
+      },
+      "skillspector": {
+        "score": 26,
+        "severity": "MEDIUM",
+        "recommendation": "CAUTION",
+        "issueCount": 14,
+        "analysis": "complete",
+        "findings": [
+          {
+            "id": "AS3",
+            "category": "Agent Snooping",
+            "severity": "MEDIUM",
+            "title": "Skill Enumeration",
+            "file": "README.md",
+            "line": 27,
+            "count": 1
+          },
+          {
+            "id": "RP1",
+            "category": "MCP Rug Pull",
+            "severity": "MEDIUM",
+            "title": "npx commands without a version suffix (e.g. @1.0.0) create a rug-pull risk if the upstream server is compromised and publishes a malicious update.",
+            "file": ".claude-plugin/marketplace.json",
+            "line": 11,
+            "count": 1
+          },
+          {
+            "id": "RP1",
+            "category": "MCP Rug Pull",
+            "severity": "MEDIUM",
+            "title": "npx commands without a version suffix (e.g. @1.0.0) create a rug-pull risk if the upstream server is compromised and publishes a malicious update.",
+            "file": ".claude-plugin/plugin.json",
+            "line": 3,
+            "count": 1
+          },
+          {
+            "id": "RP1",
+            "category": "MCP Rug Pull",
+            "severity": "MEDIUM",
+            "title": "npx commands without a version suffix (e.g. @1.0.0) create a rug-pull risk if the upstream server is compromised and publishes a malicious update.",
+            "file": "SKILL.md",
+            "line": 3,
+            "count": 1
+          },
+          {
+            "id": "RP1",
+            "category": "MCP Rug Pull",
+            "severity": "MEDIUM",
+            "title": "npx commands without a version suffix (e.g. @1.0.0) create a rug-pull risk if the upstream server is compromised and publishes a malicious update.",
+            "file": "README.md",
+            "line": 3,
+            "count": 2
+          }
+        ],
+        "categories": {
+          "MCP Rug Pull": 12,
+          "Agent Snooping": 1,
+          "Rogue Agent": 1
+        },
+        "hash": "7796618f7d96c9e2",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-22T18:11:23Z"
+      }
+    },
+    {
       "name": "champion-kit",
       "path": "productivity/champion-kit",
       "category": "productivity",

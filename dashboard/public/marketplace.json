@@ -55,6 +55,29 @@
       "category": "documentation"
     },
     {
+      "name": "pdftomarkdown",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/ThiloReintjes/pdftomarkdown-skill.git",
+        "sha": "58b66263d6b744dc5b9a391e8fdfd02a95bb4979"
+      },
+      "description": "Lets Claude read any PDF — scanned documents, tables, multi-column layouts, CJK — by converting it to markdown with npx pdftomarkdown.",
+      "author": {
+        "name": "pdftomarkdown.dev"
+      },
+      "homepage": "https://pdftomarkdown.dev",
+      "keywords": [
+        "pdf",
+        "markdown",
+        "ocr",
+        "extraction",
+        "documents"
+      ],
+      "repository": "https://github.com/ThiloReintjes/pdftomarkdown-skill",
+      "license": "MIT",
+      "category": "documentation"
+    },
+    {
       "name": "stitch-build",
       "source": {
         "source": "git-subdir",
