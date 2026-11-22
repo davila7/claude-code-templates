@@ -227,7 +227,7 @@ export default function SendToRepoModal({ items, collectionName, onClose }: Prop
       onClick={handleBackdropClick}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
     >
-      <div className="w-full max-w-lg mx-4 bg-[var(--color-surface-1)] border border-[var(--color-border)] rounded-xl shadow-2xl overflow-hidden">
+      <div data-private className="w-full max-w-lg mx-4 bg-[var(--color-surface-1)] border border-[var(--color-border)] rounded-xl shadow-2xl overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--color-border)]">
           <div className="flex items-center gap-2.5">

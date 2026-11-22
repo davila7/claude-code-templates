@@ -13,6 +13,8 @@
  * - Google Analytics (gtag; with Google signals it also sends to www.google.com)
  * - jsDelivr: mermaid in some blog articles
  * - Google Fonts
+ * - PostHog (session replay, only when PUBLIC_POSTHOG_KEY is set; the SDK is
+ *   bundled, so it needs connect-src only: events and its remote config JSON)
  * Images may come from any https host: component markdown embeds them.
  *
  * script-src keeps 'unsafe-inline' because Astro islands, gtag and the blog
@@ -44,6 +46,8 @@ const DIRECTIVES: Record<string, string[]> = {
     'https://*.analytics.google.com',
     'https://www.google.com',
     'https://cdn.jsdelivr.net',
+    'https://us.i.posthog.com',
+    'https://us-assets.i.posthog.com',
   ],
   'frame-src': ['https://challenges.cloudflare.com'],
   'worker-src': ["'self'", 'blob:'],
