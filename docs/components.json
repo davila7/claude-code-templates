@@ -31744,6 +31744,58 @@
         "errorCount": 0,
         "warningCount": 0,
         "lastValidated": null
+      },
+      "skillspector": {
+        "score": 36,
+        "severity": "MEDIUM",
+        "recommendation": "CAUTION",
+        "issueCount": 4,
+        "analysis": "complete",
+        "findings": [
+          {
+            "id": "PE3",
+            "category": "Privilege Escalation",
+            "severity": "HIGH",
+            "title": "Credential Access",
+            "file": "SKILL.md",
+            "line": 3,
+            "count": 1
+          },
+          {
+            "id": "PE3",
+            "category": "Privilege Escalation",
+            "severity": "HIGH",
+            "title": "Credential Access",
+            "file": "dependency-cooldown.json",
+            "line": 2,
+            "count": 1
+          },
+          {
+            "id": "RP1",
+            "category": "MCP Rug Pull",
+            "severity": "MEDIUM",
+            "title": "uvx/uv tool run commands without ==version create a rug-pull risk.",
+            "file": "SKILL.md",
+            "line": 3,
+            "count": 1
+          },
+          {
+            "id": "RP1",
+            "category": "MCP Rug Pull",
+            "severity": "MEDIUM",
+            "title": "uvx/uv tool run commands without ==version create a rug-pull risk.",
+            "file": "dependency-cooldown.json",
+            "line": 2,
+            "count": 1
+          }
+        ],
+        "categories": {
+          "MCP Rug Pull": 2,
+          "Privilege Escalation": 2
+        },
+        "hash": "379090f66c6f0b0f",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-22T01:41:02Z"
       }
     },
     {
