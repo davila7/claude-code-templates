@@ -10,16 +10,28 @@ Design and package a compelling offer.
 
 <args>$ARGUMENTS</args>
 
+## Prerequisites
+
+This command works together with two companion components. Install them first if they are not already installed:
+
+```bash
+npx claude-code-templates@latest --agent business-marketing/offer-agent
+npx claude-code-templates@latest --skill business-marketing/offer-packaging
+```
+
+If either component is missing, the command cannot activate the Offer Agent or apply the Offer Packaging skill — install both with the commands above, then run `/offer` again.
+
 ## Actions
 - `[product]` - Full offer packaging
 - `stack [product]` - Build offer stack (core + bonuses)
 - `price [product]` - Pricing strategy recommendation
 
 ## Process
-1. Activate Offer Agent
-2. Use Offer Packaging skill
-3. Apply value ladder + offer stack + pricing psychology
-4. Output: Complete offer document with pricing
+1. Check that `offer-agent` and the `offer-packaging` skill are installed (see Prerequisites above). If either is missing, tell the user the install commands and stop.
+2. Activate Offer Agent
+3. Use Offer Packaging skill
+4. Apply value ladder + offer stack + pricing psychology
+5. Output: Complete offer document with pricing
 
 ## Examples
 - `/offer full digital marketing course` — Package a complete course offer with bonuses and guarantee
