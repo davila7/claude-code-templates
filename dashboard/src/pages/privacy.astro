@@ -5,6 +5,9 @@ import ProsePage from '../components/ProsePage.astro';
 import SearchModal from '../components/SearchModal.tsx';
 
 export const prerender = true;
+
+// Session replay (lib/session-replay.ts) is described only when it is on.
+const replayOn = Boolean(import.meta.env.PUBLIC_POSTHOG_KEY);
 ---
 
 <DashboardLayout
@@ -132,6 +135,22 @@ export const prerender = true;
       Sponsors receive only the totals.
     </p>
 
+    {replayOn && (
+      <>
+        <h2>Session recordings</h2>
+        <p>
+          To see where the site is hard to use, about one in twenty browser tabs (chosen at random) records how pages
+          respond to you: mouse movement, clicks, scrolling and the page as it looked, sent to PostHog. The other tabs load
+          nothing. Everything you type is masked, so recordings never contain search terms or form contents. Your account
+          menu, the sign-in and profile windows and the Send to repo window are left out, and pages with account data
+          (My components, Certifications, shared collections) are never recorded. Recordings set no cookie, keep no account
+          or name, drop the query part of each address, and are not linked to your Google Analytics data. Whether a tab
+          was chosen is kept in its session storage and removed when the tab closes. Recordings are deleted after PostHog's
+          retention period.
+        </p>
+      </>
+    )}
+
     <h2>Error monitoring</h2>
     <p>
       Server errors on the website are reported to Sentry so we can fix them. Reports contain the error and the API route where it happened,
@@ -147,6 +166,7 @@ export const prerender = true;
       <li>Resend: email delivery (paused since September 2026).</li>
       <li>Stripe: payments for sponsored placements.</li>
       <li>Sentry: error monitoring.</li>
+      {replayOn && <li>PostHog: session recordings on a sample of visits.</li>}
       <li>Google: Google Fonts on every page, Google Analytics on every page.</li>
     </ul>
 

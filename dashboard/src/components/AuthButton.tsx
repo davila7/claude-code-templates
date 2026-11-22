@@ -104,7 +104,7 @@ function UserMenu({ user }: { user: ClerkUser }) {
   const displayName = user.fullName || user.firstName || 'User';
 
   return (
-    <div ref={ref} className="relative">
+    <div ref={ref} className="relative" data-private>
       <button
         onClick={() => setOpen(!open)}
         className="flex items-center gap-2.5 px-2.5 py-[6px] rounded-md text-[13px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-2)] transition-colors w-full"

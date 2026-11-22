@@ -190,6 +190,19 @@ const schemaData = JSON.stringify({
     </script>
 
     <script>
+      // Sampled session replay (PostHog). No-op unless PUBLIC_POSTHOG_KEY is set
+      // at build time; see lib/session-replay.ts and /privacy.
+      import { initSessionReplay } from '../lib/session-replay';
+      const start = () => initSessionReplay({
+        key: import.meta.env.PUBLIC_POSTHOG_KEY,
+        host: import.meta.env.PUBLIC_POSTHOG_HOST,
+        sampleRate: import.meta.env.PUBLIC_POSTHOG_SAMPLE_RATE,
+      }).catch(() => { /* replay is best-effort */ });
+      if ('requestIdleCallback' in window) requestIdleCallback(start, { timeout: 4000 });
+      else setTimeout(start, 2000);
+    </script>
+
+    <script>
       // Impressions and clicks of [data-spot] placements, for sponsor reports.
       import { initPlacementTracking } from '../lib/placement-tracking';
       initPlacementTracking();
