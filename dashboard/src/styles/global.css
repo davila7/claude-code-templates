@@ -1055,3 +1055,86 @@ html.light .stat-today-active {
 html:not(.light) .logo-invert-dark {
   filter: invert(1);
 }
+
+/* ─── Syntax highlighting: Files tab Code view (SkillExplorer + lib/code-highlight.ts) ───
+   highlight.js scope classes, colored from tokens so both themes stay AA
+   (dark on #0b0b0a: 7.2–10.9:1; light on #fff: 5.2–7.8:1). Orange stays the keyword
+   color, as the site's single accent. */
+:root,
+html.dark {
+  --syn-keyword: #e8906f;
+  --syn-string: #a9c98f;
+  --syn-number: #dcb46f;
+  --syn-title: #8fb8e6;
+  --syn-attr: #c8a6e8;
+  --syn-comment: #9f9d93;
+  --syn-punct: #c3c1b7;
+  --syn-deletion: #f08a80;
+  --syn-deletion-bg: rgba(240, 138, 128, 0.1);
+  --syn-addition: #7fcf8a;
+  --syn-addition-bg: rgba(127, 207, 138, 0.1);
+}
+html.light {
+  --syn-keyword: #b0462a;
+  --syn-string: #3d7a24;
+  --syn-number: #946000;
+  --syn-title: #2659a3;
+  --syn-attr: #7a3fb8;
+  --syn-comment: #6b6b6b;
+  --syn-punct: #525252;
+  --syn-deletion: #b42318;
+  --syn-deletion-bg: rgba(180, 35, 24, 0.07);
+  --syn-addition: #1f7a33;
+  --syn-addition-bg: rgba(31, 122, 51, 0.08);
+}
+
+.code-view .hljs-keyword,
+.code-view .hljs-name,
+.code-view .hljs-selector-tag,
+.code-view .hljs-built_in.hljs-keyword,
+.code-view .hljs-bullet,
+.code-view .hljs-operator,
+.code-view .hljs-template-tag { color: var(--syn-keyword); }
+
+.code-view .hljs-string,
+.code-view .hljs-regexp,
+.code-view .hljs-code,
+.code-view .hljs-template-variable,
+.code-view .hljs-symbol,
+.code-view .hljs-link { color: var(--syn-string); }
+
+.code-view .hljs-number,
+.code-view .hljs-literal,
+.code-view .hljs-built_in,
+.code-view .hljs-type,
+.code-view .hljs-variable.language_,
+.code-view .hljs-selector-pseudo { color: var(--syn-number); }
+
+.code-view .hljs-title,
+.code-view .hljs-section,
+.code-view .hljs-selector-id,
+.code-view .hljs-selector-class { color: var(--syn-title); }
+
+.code-view .hljs-section { font-weight: 600; }
+
+.code-view .hljs-attr,
+.code-view .hljs-attribute,
+.code-view .hljs-property,
+.code-view .hljs-params .hljs-variable,
+.code-view .hljs-variable,
+.code-view .hljs-selector-attr { color: var(--syn-attr); }
+
+.code-view .hljs-comment,
+.code-view .hljs-quote,
+.code-view .hljs-doctag { color: var(--syn-comment); font-style: italic; }
+
+.code-view .hljs-meta,
+.code-view .hljs-tag,
+.code-view .hljs-punctuation,
+.code-view .hljs-subst { color: var(--syn-punct); }
+
+.code-view .hljs-emphasis { font-style: italic; }
+.code-view .hljs-strong { font-weight: 600; }
+
+.code-view .hljs-deletion { color: var(--syn-deletion); background: var(--syn-deletion-bg); }
+.code-view .hljs-addition { color: var(--syn-addition); background: var(--syn-addition-bg); }
