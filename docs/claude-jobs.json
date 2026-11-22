@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-11-21T03:08:25.152350+00:00",
-  "totalJobs": 1021,
+  "lastUpdated": "2026-11-22T03:08:50.666441+00:00",
+  "totalJobs": 1040,
   "sources": [
     "Anthropic",
     "Ashby",
@@ -10,6 +10,84 @@
     "RemoteOK"
   ],
   "jobs": [
+    {
+      "id": "gr-deliveroo-8205846",
+      "company": "Deliveroo ",
+      "position": "Senior Software Engineer, GenAI Platform",
+      "location": "London, United Kingdom - Deliveroo",
+      "locations": [
+        "London, United Kingdom - Deliveroo"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Our Global Structure Deliveroo is now part of DoorDash, bringing together teams with even greater reach, scale, and ambition. Depending on your role, you may collaborate with teammates, systems, and leaders across DoorDash and Wolt. Together, we’re unlocking new possibilities as one global team....",
+      "applyUrl": "https://job-boards.greenhouse.io/deliveroo/jobs/8205846",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/deliveroo/jobs/8205846",
+      "postedAt": "2026-11-21T21:59:53-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "AWS",
+        "GCP",
+        "Kubernetes",
+        "Cursor",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-consumeredge-6252515004",
+      "company": "Consumer Edge",
+      "position": "Staff Data Engineer",
+      "location": "United States",
+      "locations": [
+        "United States"
+      ],
+      "remote": false,
+      "salary": "$175,000 - $210,000,",
+      "description": "Location: Remote (United States) ; requires ability to work east coast hours About Consumer Edge Join a dynamic team that's redefining consumer data analytics. Consumer Edge (“CE”) is a leading data and insights-as-a-service (IaaS) company specializing in the global consumer, B2B, and healthcare...",
+      "applyUrl": "https://job-boards.greenhouse.io/consumeredge/jobs/6252515004",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/consumeredge/jobs/6252515004",
+      "postedAt": "2026-11-21T14:32:40-05:00",
+      "tags": [
+        "Claude Code",
+        "Python",
+        "Cursor",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-rubrik-8318044",
+      "company": "Rubrik Job Board",
+      "position": "Senior AI Engineer - Enterprise Agentic Systems",
+      "location": "Bengaluru, India",
+      "locations": [
+        "Bengaluru, India"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "About the role We are looking for a Senior AI Engineer to join Rubrik's Applied AI Apps org, building production-grade, full-stack applications and APIs for our internal Business teams while embedding AI-agentified capabilities into these internal platforms. This is a hands-on build role: you will...",
+      "applyUrl": "https://www.rubrik.com/company/careers/departments/job.8318044?gh_jid=8318044",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.rubrik.com/company/careers/departments/job.8318044?gh_jid=8318044",
+      "postedAt": "2026-11-21T03:52:23-05:00",
+      "tags": [
+        "React",
+        "Next.js",
+        "JavaScript",
+        "Python",
+        "PostgreSQL",
+        "AWS",
+        "GCP",
+        "Azure",
+        "Docker",
+        "Flask"
+      ],
+      "companyIcon": ""
+    },
     {
       "id": "as-meridianlink-5ace10c9-f8aa-4b70-ba13-32d7807e3481",
       "company": "Meridianlink",
@@ -56,32 +134,6 @@
         "Java"
       ],
       "companyIcon": "https://temporal.io/favicon.ico"
-    },
-    {
-      "id": "gr-deliveroo-8205846",
-      "company": "Deliveroo ",
-      "position": "Senior Software Engineer, GenAI Platform",
-      "location": "London, United Kingdom - Deliveroo",
-      "locations": [
-        "London, United Kingdom - Deliveroo"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "Our Global Structure Deliveroo is now part of DoorDash, bringing together teams with even greater reach, scale, and ambition. Depending on your role, you may collaborate with teammates, systems, and leaders across DoorDash and Wolt. Together, we’re unlocking new possibilities as one global team....",
-      "applyUrl": "https://job-boards.greenhouse.io/deliveroo/jobs/8205846",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/deliveroo/jobs/8205846",
-      "postedAt": "2026-11-20T21:34:38-05:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "AWS",
-        "GCP",
-        "Kubernetes",
-        "Cursor",
-        "MCP"
-      ],
-      "companyIcon": ""
     },
     {
       "id": "as-ScribdInc-22c1d410-2522-4e48-8a49-e1623dcae46f",
@@ -1275,6 +1327,29 @@
       "companyIcon": "https://fivetran.com/favicon.ico"
     },
     {
+      "id": "rok-remote-advisory-solutions-architect-msp-new-product-intro-rubrik-job-board-1137896",
+      "company": "Rubrik Job Board",
+      "position": "Advisory Solutions Architect, MSP (New Product Intro)",
+      "location": "Remote (US Only)",
+      "locations": [
+        "US Only"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "Help shape how Rubrik partners with leading service providers to deliver cyber resilience at scale. The New Product Introduction (NPI) & Service Creation Solution Architect is a new function in the MSP Solution Architecture Team. You will design, package and enable new managed service offerings...",
+      "applyUrl": "https://remoteOK.com/remote-jobs/remote-advisory-solutions-architect-msp-new-product-intro-rubrik-job-board-1137896",
+      "source": "RemoteOK",
+      "sourceUrl": "https://remoteok.com/remote-jobs/remote-advisory-solutions-architect-msp-new-product-intro-rubrik-job-board-1137896",
+      "postedAt": "2026-11-20T07:20:36+00:00",
+      "tags": [
+        "Claude Code",
+        "AWS",
+        "GCP",
+        "Azure"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "gr-fivetran-8196257003",
       "company": "Fivetran",
       "position": "Senior Software Engineer",
@@ -2155,30 +2230,6 @@
       "companyIcon": ""
     },
     {
-      "id": "rok-remote-front-end-engineer-ux-ui-beyondtrust-1137833",
-      "company": "BeyondTrust",
-      "position": "Front-End Engineer, UX/UI",
-      "location": "Remote (Canada Only)",
-      "locations": [
-        "Canada Only"
-      ],
-      "remote": true,
-      "salary": "",
-      "description": "BeyondTrust is a place where you can bring your purpose to life through the work that you do, creating a safer world through our cybersecurity SaaS portfolio. Our culture of flexibility, trust, and continual learning means you will be recognized for your growth, and for the impact you make on our...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-front-end-engineer-ux-ui-beyondtrust-1137833",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-front-end-engineer-ux-ui-beyondtrust-1137833",
-      "postedAt": "2026-11-19T15:30:02+00:00",
-      "tags": [
-        "Claude Code",
-        "React",
-        "Next.js",
-        "TypeScript",
-        "GraphQL"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "gr-twilio-8385593",
       "company": "Twilio",
       "position": "Software Engineer - Platform Engineering",
@@ -2203,6 +2254,30 @@
       "companyIcon": "https://twilio.com/favicon.ico"
     },
     {
+      "id": "gr-cloudflare-8392916",
+      "company": "Cloudflare",
+      "position": "Named Account Executive, Digital Natives",
+      "location": "Hybrid",
+      "locations": [
+        "Hybrid"
+      ],
+      "remote": false,
+      "salary": "€169,000 - €232,000",
+      "description": "About Us At Cloudflare, we are on a mission to help build a better Internet. Today the company runs one of the world’s largest networks that powers millions of websites and other Internet properties for customers ranging from individual bloggers to SMBs to Fortune 500 companies. Cloudflare protects...",
+      "applyUrl": "https://boards.greenhouse.io/cloudflare/jobs/8392916?gh_jid=8392916",
+      "source": "Greenhouse",
+      "sourceUrl": "https://boards.greenhouse.io/cloudflare/jobs/8392916?gh_jid=8392916",
+      "postedAt": "2026-11-19T15:08:50-05:00",
+      "tags": [
+        "Claude Code",
+        "AWS",
+        "GCP",
+        "Azure",
+        "Kubernetes"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "le-pigment-43f51046-ae33-4a82-a363-f34917c89228",
       "company": "Pigment",
       "position": "Senior GTM Analyst",
@@ -2219,30 +2294,6 @@
       "postedAt": "2026-11-19T15:05:19.942000+00:00",
       "tags": [
         "Claude Code",
-        "Python",
-        "MCP"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-bloomerang-4749457005",
-      "company": " Bloomerang",
-      "position": "Software Engineer (PDLC Tooling + Automation)",
-      "location": "Remote, US",
-      "locations": [
-        "Remote, US"
-      ],
-      "remote": true,
-      "salary": "$100,700 - $167,800",
-      "description": "At Bloomerang, we believe change happens on purpose. We champion the power and potential of nonprofits, igniting next-level impact with the team and technology built for purpose. Our powerful giving platform and stellar support enable tens of thousands of nonprofits to raise more, recruit more, and...",
-      "applyUrl": "https://job-boards.greenhouse.io/bloomerang/jobs/4749457005",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/bloomerang/jobs/4749457005",
-      "postedAt": "2026-11-19T14:54:54-05:00",
-      "tags": [
-        "Claude Code",
-        "TypeScript",
-        "JavaScript",
         "Python",
         "MCP"
       ],
@@ -2640,6 +2691,30 @@
         "AWS",
         "Kubernetes",
         "Redis"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-cloudflare-8392878",
+      "company": "Cloudflare",
+      "position": "Account Executive, Start Ups",
+      "location": "Hybrid",
+      "locations": [
+        "Hybrid"
+      ],
+      "remote": false,
+      "salary": "€152,000 - €209,000",
+      "description": "About Us At Cloudflare, we are on a mission to help build a better Internet. Today the company runs one of the world’s largest networks that powers millions of websites and other Internet properties for customers ranging from individual bloggers to SMBs to Fortune 500 companies. Cloudflare protects...",
+      "applyUrl": "https://boards.greenhouse.io/cloudflare/jobs/8392878?gh_jid=8392878",
+      "source": "Greenhouse",
+      "sourceUrl": "https://boards.greenhouse.io/cloudflare/jobs/8392878?gh_jid=8392878",
+      "postedAt": "2026-11-19T11:10:40-05:00",
+      "tags": [
+        "Claude Code",
+        "AWS",
+        "GCP",
+        "Azure",
+        "Kubernetes"
       ],
       "companyIcon": ""
     },
@@ -3054,6 +3129,29 @@
       "companyIcon": ""
     },
     {
+      "id": "as-orderful-cdf74e0a-15c6-46ae-ad0d-4a78d3cb2565",
+      "company": "Orderful",
+      "position": "Senior Software Engineer",
+      "location": "Canada",
+      "locations": [
+        "Canada"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "ABOUT ORDERFUL\n\n\nORDERFUL IS REINVENTING HOW BUSINESSES CONNECT AND TRADE. WE MODERNIZE EDI - THE BACKBONE OF $5T+ IN GLOBAL COMMERCE - SO COMPANIES CAN CLICK-TO-TRADE WITH ANY PARTNER FAST. WE’RE SERIES C AND AMONG THE FASTEST-GROWING IN SUPPLY-CHAIN TECH. OUR CULTURE IS HIGH-OWNERSHIP,...",
+      "applyUrl": "https://jobs.ashbyhq.com/orderful/cdf74e0a-15c6-46ae-ad0d-4a78d3cb2565",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/orderful/cdf74e0a-15c6-46ae-ad0d-4a78d3cb2565",
+      "postedAt": "2026-11-19T03:58:37.947+00:00",
+      "tags": [
+        "Claude Code",
+        "TypeScript",
+        "Node.js",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "gr-opswat-4478668005",
       "company": "OPSWAT",
       "position": "AI Engineer - Quality Engineering",
@@ -3426,6 +3524,30 @@
       "postedAt": "2026-11-18T17:42:16-05:00",
       "tags": [
         "Claude Code",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "le-compassx-f5d86967-d921-4e38-b62e-d9e0685e4ee6",
+      "company": "Compassx",
+      "position": "Forward Deployed Engineer (AI Solution Owner)",
+      "location": "Irvine, CA · Los Angeles, CA",
+      "locations": [
+        "Irvine, CA",
+        "Los Angeles, CA"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "CompassX is a boutique business and technology consulting firm. We help Fortune 500 and high-growth clients deliver their most strategic initiatives, from enterprise transformations to digital and data-driven projects. With over 15 years of proven results, we’ve expanded across industries including...",
+      "applyUrl": "https://jobs.lever.co/compassx/f5d86967-d921-4e38-b62e-d9e0685e4ee6",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/compassx/f5d86967-d921-4e38-b62e-d9e0685e4ee6",
+      "postedAt": "2026-11-18T17:34:14.251000+00:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "Python",
         "Cursor"
       ],
       "companyIcon": ""
@@ -5602,7 +5724,7 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-andurilindustries-5251234007",
+      "id": "gr-andurilindustries-5198870007",
       "company": "Anduril Industries",
       "position": "Senior Quality Engineer, Analytics",
       "location": "Ashville, Ohio, United States",
@@ -5612,9 +5734,9 @@
       "remote": false,
       "salary": "",
       "description": "Anduril Industries is a defense technology company with a mission to transform U.S. and allied military capabilities with advanced technology. By bringing the expertise, technology, and business model of the 21st century’s most innovative companies to the defense industry, Anduril is changing how...",
-      "applyUrl": "https://boards.greenhouse.io/andurilindustries/jobs/5251234007?gh_jid=5251234007",
+      "applyUrl": "https://boards.greenhouse.io/andurilindustries/jobs/5198870007?gh_jid=5198870007",
       "source": "Greenhouse",
-      "sourceUrl": "https://boards.greenhouse.io/andurilindustries/jobs/5251234007?gh_jid=5251234007",
+      "sourceUrl": "https://boards.greenhouse.io/andurilindustries/jobs/5198870007?gh_jid=5198870007",
       "postedAt": "2026-11-16T21:23:01-05:00",
       "tags": [
         "Claude Code",
@@ -5742,6 +5864,27 @@
       "postedAt": "2026-11-16T20:30:19-05:00",
       "tags": [
         "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-kin-c890833a-b6b2-40d2-a028-177efbb46efa",
+      "company": "Kin",
+      "position": "Senior Analyst, Attribute Analytics (Imagery & Property Data)",
+      "location": "Remote (United States)",
+      "locations": [
+        "Remote (United States)"
+      ],
+      "remote": true,
+      "salary": "$119,774 – $131,955 • Offers Equity",
+      "description": "Quick Summary\nTurn listing photos and aerial imagery into property data Kin can trust. Build the models, prove they pay off, and use AI daily. 5+ years analytics required.\n\nWho we are\n\nKin makes life simpler, more affordable, and better for homeowners — especially in the places where climate risks,...",
+      "applyUrl": "https://jobs.ashbyhq.com/kin/c890833a-b6b2-40d2-a028-177efbb46efa",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/kin/c890833a-b6b2-40d2-a028-177efbb46efa",
+      "postedAt": "2026-11-16T19:17:16.178+00:00",
+      "tags": [
+        "Claude Code",
+        "Python"
       ],
       "companyIcon": ""
     },
@@ -6621,91 +6764,6 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-rubrik-8273717",
-      "company": "Rubrik Job Board",
-      "position": "Senior Applied AI Engineer",
-      "location": "Bangalore",
-      "locations": [
-        "Bangalore"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "About the Role We are looking for a Senior Applied AI Engineer to join Rubrik's Applied AI team, building production-grade, full-stack applications and APIs for our internal Business teams while embedding AI-agentified capabilities into these internal platforms. This is a hands-on build role: you...",
-      "applyUrl": "https://www.rubrik.com/company/careers/departments/job.8273717?gh_jid=8273717",
-      "source": "Greenhouse",
-      "sourceUrl": "https://www.rubrik.com/company/careers/departments/job.8273717?gh_jid=8273717",
-      "postedAt": "2026-11-16T03:45:35-05:00",
-      "tags": [
-        "Claude Code",
-        "React",
-        "Next.js",
-        "JavaScript",
-        "Python",
-        "PostgreSQL",
-        "AWS",
-        "GCP",
-        "Azure",
-        "Docker"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-rubrik-8273834",
-      "company": "Rubrik Job Board",
-      "position": "Senior AI Evals Engineer",
-      "location": "Bangalore",
-      "locations": [
-        "Bangalore"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "About the Role The Senior AI Evals Test Engineer is a hands-on technical role responsible for defining, developing, and executing robust evaluation frameworks and test strategies for AI agents built using the Google Agent Development Kit (ADK) or similar sort of agentic frameworks . This role...",
-      "applyUrl": "https://www.rubrik.com/company/careers/departments/job.8273834?gh_jid=8273834",
-      "source": "Greenhouse",
-      "sourceUrl": "https://www.rubrik.com/company/careers/departments/job.8273834?gh_jid=8273834",
-      "postedAt": "2026-11-16T03:45:18-05:00",
-      "tags": [
-        "React",
-        "TypeScript",
-        "Python",
-        "AWS",
-        "GCP",
-        "Azure",
-        "Kubernetes",
-        "Java"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-rubrik-8273808",
-      "company": "Rubrik Job Board",
-      "position": "Senior AI API Platform Engineer",
-      "location": "Bangalore, India",
-      "locations": [
-        "Bangalore, India"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "About the Role The AI API Platform Engineer is a hands-on technical lead who designs and builds the APIs and platform capabilities powering Rubrik's AI-driven products and automation, owning the full API lifecycle across any stack, cloud, or iPaaS. This role delivers secure, scalable,...",
-      "applyUrl": "https://www.rubrik.com/company/careers/departments/job.8273808?gh_jid=8273808",
-      "source": "Greenhouse",
-      "sourceUrl": "https://www.rubrik.com/company/careers/departments/job.8273808?gh_jid=8273808",
-      "postedAt": "2026-11-16T03:45:04-05:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "Go",
-        "Node.js",
-        "AWS",
-        "GCP",
-        "Azure",
-        "Kubernetes",
-        "Cursor",
-        "Copilot"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "gr-veeamsoftware-5005567101",
       "company": "Veeam Software",
       "position": "Senior Director, Software Development Engineer in Test",
@@ -7517,6 +7575,117 @@
       "companyIcon": ""
     },
     {
+      "id": "as-lorikeet-c4d5d6da-87f0-44c1-89cf-76958d7905b0",
+      "company": "Lorikeet",
+      "position": "Demand Generation ",
+      "location": "US - Remote",
+      "locations": [
+        "US - Remote"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "ABOUT US\n\n\nLorikeet is redefining what customer support looks like — and we're just getting started.\n\n\nWe build AI that handles complex, high-volume support for fintechs, healthtechs, marketplaces, and delivery services. Not chatbot-tier AI. The kind that actually resolves tickets, gives support...",
+      "applyUrl": "https://jobs.ashbyhq.com/Lorikeet/c4d5d6da-87f0-44c1-89cf-76958d7905b0",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/Lorikeet/c4d5d6da-87f0-44c1-89cf-76958d7905b0",
+      "postedAt": "2026-11-13T10:55:25.005+00:00",
+      "tags": [
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-lorikeet-3c3b3839-4a1b-46fe-bc04-ae750332687c",
+      "company": "Lorikeet",
+      "position": "Senior Software Engineer",
+      "location": "Sydney, Australia HQ",
+      "locations": [
+        "Sydney, Australia HQ"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "ABOUT US\n\n\nLorikeet is redefining what customer support looks like — and we're just getting started.\n\n\nWe build AI that handles complex, high-volume support for fintechs, healthtechs, marketplaces, and delivery services. Not chatbot-tier AI. The kind that actually resolves tickets, gives support...",
+      "applyUrl": "https://jobs.ashbyhq.com/Lorikeet/3c3b3839-4a1b-46fe-bc04-ae750332687c",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/Lorikeet/3c3b3839-4a1b-46fe-bc04-ae750332687c",
+      "postedAt": "2026-11-13T10:54:41.826+00:00",
+      "tags": [
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-lorikeet-4c8048f2-49a7-43b9-b950-2f70c6d3e371",
+      "company": "Lorikeet",
+      "position": "Software Engineer",
+      "location": "Sydney, Australia HQ",
+      "locations": [
+        "Sydney, Australia HQ"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "ABOUT US\n\n\nLorikeet is redefining what customer support looks like — and we're just getting started.\n\n\nWe build AI that handles complex, high-volume support for fintechs, healthtechs, marketplaces, and delivery services. Not chatbot-tier AI. The kind that actually resolves tickets, gives support...",
+      "applyUrl": "https://jobs.ashbyhq.com/Lorikeet/4c8048f2-49a7-43b9-b950-2f70c6d3e371",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/Lorikeet/4c8048f2-49a7-43b9-b950-2f70c6d3e371",
+      "postedAt": "2026-11-13T10:54:16.652+00:00",
+      "tags": [
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-lorikeet-4ae5de01-a973-4720-baca-d63581572860",
+      "company": "Lorikeet",
+      "position": "Staff Software Engineer",
+      "location": "New York City (US-Onsite)",
+      "locations": [
+        "New York City (US-Onsite)"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "ABOUT US\n\n\nLorikeet is redefining what customer support looks like — and we're just getting started.\n\n\nWe build AI that handles complex, high-volume support for fintechs, healthtechs, marketplaces, and delivery services. Not chatbot-tier AI. The kind that actually resolves tickets, gives support...",
+      "applyUrl": "https://jobs.ashbyhq.com/Lorikeet/4ae5de01-a973-4720-baca-d63581572860",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/Lorikeet/4ae5de01-a973-4720-baca-d63581572860",
+      "postedAt": "2026-11-13T10:53:28.789+00:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "TypeScript",
+        "Python"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-neko-health-82de1716-d978-4b28-aa50-d33c48fe1d0b",
+      "company": "Neko Health",
+      "position": "Lead Product Engineer, Growth",
+      "location": "London · Stockholm",
+      "locations": [
+        "London",
+        "Stockholm"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "MISSION\n\nNeko Health is a health technology company that opened its first clinic in Stockholm in 2018, founded by Daniel Ek and Hjalmar Nilsonne.\n\nIn one hour, our scan combines radiation-free imaging, heart and circulation measurements, and same-visit blood results with time to talk it through...",
+      "applyUrl": "https://jobs.ashbyhq.com/neko-health/82de1716-d978-4b28-aa50-d33c48fe1d0b",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/neko-health/82de1716-d978-4b28-aa50-d33c48fe1d0b",
+      "postedAt": "2026-11-13T10:23:04.429+00:00",
+      "tags": [
+        "Claude Code",
+        "React Native",
+        "React",
+        "Next.js",
+        "TypeScript",
+        "Azure",
+        "Swift",
+        "Kotlin"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "gr-humaninterest-8319689",
       "company": "Human Interest",
       "position": "Senior Software Engineer - Mobile",
@@ -7878,6 +8047,34 @@
       "companyIcon": ""
     },
     {
+      "id": "le-compassx-316e957f-b828-454d-b385-ae5e22c29208",
+      "company": "Compassx",
+      "position": "Senior Product Engineer (React, TypeScript, AWS) – Client-Facing Contract",
+      "location": "Irvine, CA · Los Angeles, CA · San Diego, CA",
+      "locations": [
+        "Irvine, CA",
+        "Los Angeles, CA",
+        "San Diego, CA"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "CompassX is a boutique business and technology consulting firm. We help Fortune 500 and high-growth clients deliver their most strategic initiatives, from enterprise transformations to digital and data-driven projects. With over 15 years of proven results, we’ve expanded across industries including...",
+      "applyUrl": "https://jobs.lever.co/compassx/316e957f-b828-454d-b385-ae5e22c29208",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/compassx/316e957f-b828-454d-b385-ae5e22c29208",
+      "postedAt": "2026-11-12T17:14:00.146000+00:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "TypeScript",
+        "Node.js",
+        "AWS",
+        "Copilot",
+        "GraphQL"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "as-latamcent-648e1e69-7717-4e7f-8dd2-f4f78b4aa09a",
       "company": "Latamcent",
       "position": "AI Implementation Specialist",
@@ -8039,29 +8236,6 @@
       "postedAt": "2026-11-12T16:02:35.400+00:00",
       "tags": [
         "Claude Code"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-rubrik-8352451",
-      "company": "Rubrik Job Board",
-      "position": "Advisory Solutions Architect, MSP (New Product Intro)",
-      "location": "Remote - United States",
-      "locations": [
-        "Remote - United States"
-      ],
-      "remote": true,
-      "salary": "",
-      "description": "Help shape how Rubrik partners with leading service providers to deliver cyber resilience at scale. The New Product Introduction (NPI) & Service Creation Solution Architect is a new function in the MSP Solution Architecture Team. You will design, package and enable new managed service offerings...",
-      "applyUrl": "https://www.rubrik.com/company/careers/departments/job.8352451?gh_jid=8352451",
-      "source": "Greenhouse",
-      "sourceUrl": "https://www.rubrik.com/company/careers/departments/job.8352451?gh_jid=8352451",
-      "postedAt": "2026-11-12T15:58:21-05:00",
-      "tags": [
-        "Claude Code",
-        "AWS",
-        "GCP",
-        "Azure"
       ],
       "companyIcon": ""
     },
@@ -9191,6 +9365,26 @@
       "companyIcon": "https://notion.so/favicon.ico"
     },
     {
+      "id": "as-lorikeet-197c897d-396a-46e3-b430-80ea482def71",
+      "company": "Lorikeet",
+      "position": "Partnerships Lead",
+      "location": "US - Remote",
+      "locations": [
+        "US - Remote"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "ABOUT US\n\n\nLorikeet is redefining what customer support looks like — and we're just getting started.\n\n\nWe build AI that handles complex, high-volume support for fintechs, healthtechs, marketplaces, and delivery services. Not chatbot-tier AI. The kind that actually resolves tickets, gives support...",
+      "applyUrl": "https://jobs.ashbyhq.com/Lorikeet/197c897d-396a-46e3-b430-80ea482def71",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/Lorikeet/197c897d-396a-46e3-b430-80ea482def71",
+      "postedAt": "2026-11-10T18:57:13.377+00:00",
+      "tags": [
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "as-docker-7c5981e1-9dcf-41f1-a6bb-58e3cf4394af",
       "company": "Docker",
       "position": "Staff Software Engineer, Sandbox Secrets (West Coast)",
@@ -10309,32 +10503,6 @@
       "companyIcon": ""
     },
     {
-      "id": "rok-remote-senior-agentic-ai-engineer-nda-gt-1137710",
-      "company": "GT",
-      "position": "Senior Agentic AI Engineer NDA",
-      "location": "Remote (Warsaw)",
-      "locations": [
-        "Warsaw"
-      ],
-      "remote": true,
-      "salary": "",
-      "description": "GT was founded in 2019 by a former Apple, Nest, and Google executive. GT’s mission is to connect the world’s best talent with product careers offered by high-growth companies in the UK, USA, Canada, Germany, and the Netherlands. On behalf of the client, GT is looking for a Senior Agentic AI...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-senior-agentic-ai-engineer-nda-gt-1137710",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-senior-agentic-ai-engineer-nda-gt-1137710",
-      "postedAt": "2026-11-09T16:00:13+00:00",
-      "tags": [
-        "Claude Code",
-        "React",
-        "Python",
-        "Azure",
-        "Docker",
-        "Cursor",
-        "MCP"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "as-latamcent-d902fcc5-3058-4224-91f7-467137b02ecf",
       "company": "Latamcent",
       "position": "Senior Full-Stack Engineer (AI-Focused)",
@@ -10379,6 +10547,33 @@
         "Python",
         "Docker",
         "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-the-exploration-company-bdb17a37-2330-4893-87ba-9ca342bb0748",
+      "company": "The Exploration Company",
+      "position": "Software Intern- Mission Control Center",
+      "location": "Bordeaux, France",
+      "locations": [
+        "Bordeaux, France"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Here at The Exploration Company, we are building spacecraft for humanity.\n\nWe want you as a talented Software Intern, Mission Control Center to help us in our mission by building and setting up the systems that power our mission operations. You will support the setup of our Mission Control Center...",
+      "applyUrl": "https://jobs.ashbyhq.com/the-exploration-company/bdb17a37-2330-4893-87ba-9ca342bb0748",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/the-exploration-company/bdb17a37-2330-4893-87ba-9ca342bb0748",
+      "postedAt": "2026-11-09T14:33:54.088+00:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "TypeScript",
+        "JavaScript",
+        "Python",
+        "Docker",
+        "Cursor",
+        "Vue.js"
       ],
       "companyIcon": ""
     },
@@ -11541,31 +11736,6 @@
         "MCP"
       ],
       "companyIcon": "https://render.com/favicon.ico"
-    },
-    {
-      "id": "rok-remote-feltsense-ai-engineer-silver-dev-1137691",
-      "company": "Silver.dev",
-      "position": "Feltsense AI Engineer",
-      "location": "Remote",
-      "locations": [],
-      "remote": true,
-      "salary": "$60k–$110k",
-      "description": "About the company We raised $5.1M to build agents that operate as fully autonomous founders. Our backers include Matt Schlicht (founder of Moltbook), the founders of Crunchbase and Republic, and VCs including Draper, Precursor, and Liquid2. We're working at the frontier of autonomous systems,...",
-      "applyUrl": "https://remoteOK.com/remote-jobs/remote-feltsense-ai-engineer-silver-dev-1137691",
-      "source": "RemoteOK",
-      "sourceUrl": "https://remoteok.com/remote-jobs/remote-feltsense-ai-engineer-silver-dev-1137691",
-      "postedAt": "2026-11-05T16:00:07+00:00",
-      "tags": [
-        "Claude Code",
-        "TypeScript",
-        "JavaScript",
-        "Node.js",
-        "PostgreSQL",
-        "Supabase",
-        "GCP",
-        "Cursor"
-      ],
-      "companyIcon": ""
     },
     {
       "id": "le-RyzLabs-4a9dffab-061b-4ae6-891b-8a12f4cb5842",
@@ -15116,6 +15286,26 @@
       "companyIcon": ""
     },
     {
+      "id": "as-lorikeet-b4129964-6d87-416f-82ce-dddd00d4a1b6",
+      "company": "Lorikeet",
+      "position": "Business Development Representative ",
+      "location": "US - Remote",
+      "locations": [
+        "US - Remote"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "ABOUT US\n\n\nLorikeet is redefining what customer support looks like — and we're just getting started.\n\n\nWe build AI that handles complex, high-volume support for fintechs, healthtechs, marketplaces, and delivery services. Not chatbot-tier AI. The kind that actually resolves tickets, gives support...",
+      "applyUrl": "https://jobs.ashbyhq.com/Lorikeet/b4129964-6d87-416f-82ce-dddd00d4a1b6",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/Lorikeet/b4129964-6d87-416f-82ce-dddd00d4a1b6",
+      "postedAt": "2026-10-29T18:03:31.531+00:00",
+      "tags": [
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "le-cscgeneration-2-5a3fb9cb-6135-417c-93db-afd91b1bd7d5",
       "company": "Cscgeneration 2",
       "position": "Senior Automation QA",
@@ -15562,6 +15752,29 @@
         "Python",
         "Cursor",
         "Copilot"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-neko-health-3350cd79-2308-44ff-977a-33fdf9f4029d",
+      "company": "Neko Health",
+      "position": "Director of Engineering - Platform",
+      "location": "London · Stockholm",
+      "locations": [
+        "London",
+        "Stockholm"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "MISSION\n\nNeko Health is a health technology company that opened its first clinic in Stockholm in 2018, founded by Daniel Ek and Hjalmar Nilsonne.\n\nIn one hour, our scan combines radiation-free imaging, heart and circulation measurements, and same-visit blood results with time to talk it through...",
+      "applyUrl": "https://jobs.ashbyhq.com/neko-health/3350cd79-2308-44ff-977a-33fdf9f4029d",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/neko-health/3350cd79-2308-44ff-977a-33fdf9f4029d",
+      "postedAt": "2026-10-28T17:04:48.031+00:00",
+      "tags": [
+        "Claude Code",
+        "Azure",
+        "Docker"
       ],
       "companyIcon": ""
     },
@@ -16636,6 +16849,26 @@
       "companyIcon": ""
     },
     {
+      "id": "as-lorikeet-d61db179-9d0e-417b-b0c9-f739814a86e1",
+      "company": "Lorikeet",
+      "position": "Mid-Market Account Executive ",
+      "location": "US - Remote",
+      "locations": [
+        "US - Remote"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "ABOUT US\n\n\nLorikeet is redefining what customer support looks like — and we're just getting started.\n\n\nWe build AI that handles complex, high-volume support for fintechs, healthtechs, marketplaces, and delivery services. Not chatbot-tier AI. The kind that actually resolves tickets, gives support...",
+      "applyUrl": "https://jobs.ashbyhq.com/Lorikeet/d61db179-9d0e-417b-b0c9-f739814a86e1",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/Lorikeet/d61db179-9d0e-417b-b0c9-f739814a86e1",
+      "postedAt": "2026-10-25T22:31:10.826+00:00",
+      "tags": [
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "as-weave-os-eaccf911-3d44-49e4-bd84-57310a25358c",
       "company": "Weave Os",
       "position": "Technical Customer Success Manager",
@@ -16653,6 +16886,46 @@
       "tags": [
         "Claude Code",
         "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-lorikeet-078c3133-7512-4f62-9b34-fda0434a09e1",
+      "company": "Lorikeet",
+      "position": "Forward Deployed Product Manager",
+      "location": "US - Remote",
+      "locations": [
+        "US - Remote"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "ABOUT US\n\n\nLorikeet is redefining what customer support looks like — and we're just getting started.\n\n\nWe build AI that handles complex, high-volume support for fintechs, healthtechs, marketplaces, and delivery services. Not chatbot-tier AI. The kind that actually resolves tickets, gives support...",
+      "applyUrl": "https://jobs.ashbyhq.com/Lorikeet/078c3133-7512-4f62-9b34-fda0434a09e1",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/Lorikeet/078c3133-7512-4f62-9b34-fda0434a09e1",
+      "postedAt": "2026-10-25T20:06:35.140+00:00",
+      "tags": [
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-lorikeet-fdd30368-c3a4-4431-91a8-5ebe30f1ec99",
+      "company": "Lorikeet",
+      "position": "Senior Forward Deployed Product Manager ",
+      "location": "US - Remote",
+      "locations": [
+        "US - Remote"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "ABOUT US\n\n\nLorikeet is redefining what customer support looks like — and we're just getting started.\n\n\nWe build AI that handles complex, high-volume support for fintechs, healthtechs, marketplaces, and delivery services. Not chatbot-tier AI. The kind that actually resolves tickets, gives support...",
+      "applyUrl": "https://jobs.ashbyhq.com/Lorikeet/fdd30368-c3a4-4431-91a8-5ebe30f1ec99",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/Lorikeet/fdd30368-c3a4-4431-91a8-5ebe30f1ec99",
+      "postedAt": "2026-10-25T19:56:08.209+00:00",
+      "tags": [
+        "Claude Code"
       ],
       "companyIcon": ""
     },
@@ -20583,6 +20856,62 @@
       "companyIcon": ""
     },
     {
+      "id": "as-neko-health-77816c3d-5bde-4289-bf6a-e647d32b0e76",
+      "company": "Neko Health",
+      "position": "Lead Product Engineer, Engagement",
+      "location": "Stockholm · London",
+      "locations": [
+        "Stockholm",
+        "London"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "MISSION\n\nNeko Health is a health technology company that opened its first clinic in Stockholm in 2018, founded by Daniel Ek and Hjalmar Nilsonne.\n\nIn one hour, our scan combines radiation-free imaging, heart and circulation measurements, and same-visit blood results with time to talk it through...",
+      "applyUrl": "https://jobs.ashbyhq.com/neko-health/77816c3d-5bde-4289-bf6a-e647d32b0e76",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/neko-health/77816c3d-5bde-4289-bf6a-e647d32b0e76",
+      "postedAt": "2026-10-02T09:26:56.578+00:00",
+      "tags": [
+        "Claude Code",
+        "React Native",
+        "React",
+        "Next.js",
+        "TypeScript",
+        "Azure",
+        "Swift",
+        "Kotlin"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-neko-health-bc21b16d-34d1-4b25-9ab3-7d4317d2d9db",
+      "company": "Neko Health",
+      "position": "Design Engineer, Member Experience",
+      "location": "Stockholm · London",
+      "locations": [
+        "Stockholm",
+        "London"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "MISSION\n\nNeko Health is a health technology company that opened its first clinic in Stockholm in 2018, founded by Daniel Ek and Hjalmar Nilsonne.\n\nIn one hour, our scan combines radiation-free imaging, heart and circulation measurements, and same-visit blood results with time to talk it through...",
+      "applyUrl": "https://jobs.ashbyhq.com/neko-health/bc21b16d-34d1-4b25-9ab3-7d4317d2d9db",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/neko-health/bc21b16d-34d1-4b25-9ab3-7d4317d2d9db",
+      "postedAt": "2026-10-02T09:26:05.705+00:00",
+      "tags": [
+        "Claude Code",
+        "React Native",
+        "React",
+        "Next.js",
+        "TypeScript",
+        "Azure",
+        "Swift",
+        "Kotlin"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "le-masterborn-2-9ec6c217-02ff-4d62-b470-c245b73a97d5",
       "company": "Masterborn 2",
       "position": "Junior QA Specialist",
@@ -21785,6 +22114,26 @@
         "Anthropic"
       ],
       "companyIcon": "https://www.anthropic.com/favicon.ico"
+    },
+    {
+      "id": "as-lorikeet-c7ba6b9e-7b65-4d7b-9f62-0c2f5ec344e3",
+      "company": "Lorikeet",
+      "position": "Account Executive ",
+      "location": "US - Remote",
+      "locations": [
+        "US - Remote"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "ABOUT US\n\n\nLorikeet is redefining what customer support looks like — and we're just getting started.\n\n\nWe build AI that handles complex, high-volume support for fintechs, healthtechs, marketplaces, and delivery services. Not chatbot-tier AI. The kind that actually resolves tickets, gives support...",
+      "applyUrl": "https://jobs.ashbyhq.com/Lorikeet/c7ba6b9e-7b65-4d7b-9f62-0c2f5ec344e3",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/Lorikeet/c7ba6b9e-7b65-4d7b-9f62-0c2f5ec344e3",
+      "postedAt": "2026-09-17T23:39:05.197+00:00",
+      "tags": [
+        "Claude Code"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "as-render-68a1d88b-6cc4-4303-b2c6-5405a22bb48b",
@@ -23325,6 +23674,30 @@
       "companyIcon": ""
     },
     {
+      "id": "as-incident-b4edacb2-1008-476f-9b96-d5c9f39b81a9",
+      "company": "Incident",
+      "position": "Product Engineer",
+      "location": "London",
+      "locations": [
+        "London"
+      ],
+      "remote": false,
+      "salary": "£110K – £200K • Offers Equity",
+      "description": "A LITTLE ABOUT US\n\nincident.io http://incident.io is the AI software reliability platform trusted by engineering teams at Notion, Linear, Ramp and 2,000+ companies who can't afford downtime.\n\nThe stakes are real, the talent is insane, and somehow it's a genuinely lovely place to work. We all pull...",
+      "applyUrl": "https://jobs.ashbyhq.com/incident/b4edacb2-1008-476f-9b96-d5c9f39b81a9",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/incident/b4edacb2-1008-476f-9b96-d5c9f39b81a9",
+      "postedAt": "2026-08-14T20:04:53.156+00:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "TypeScript",
+        "Go",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "as-notion-e32799d2-8ef8-4803-8189-c72514afa816",
       "company": "Notion",
       "position": "Software Engineer, New Grad (Dec 2026)",
@@ -24118,6 +24491,28 @@
       "companyIcon": "https://ramp.com/favicon.ico"
     },
     {
+      "id": "as-incident-26af5e13-edee-41c3-9019-f886f404cd59",
+      "company": "Incident",
+      "position": "Platform Engineer",
+      "location": "London",
+      "locations": [
+        "London"
+      ],
+      "remote": false,
+      "salary": "£110K – £200K • Offers Equity",
+      "description": "A LITTLE ABOUT US\n\nincident.io http://incident.io is the AI software reliability platform trusted by engineering teams at Notion, Linear, Ramp and 2,000+ companies who can't afford downtime.\n\nThe stakes are real, the talent is insane, and somehow it's a genuinely lovely place to work. We all pull...",
+      "applyUrl": "https://jobs.ashbyhq.com/incident/26af5e13-edee-41c3-9019-f886f404cd59",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/incident/26af5e13-edee-41c3-9019-f886f404cd59",
+      "postedAt": "2026-06-15T19:39:32.937+00:00",
+      "tags": [
+        "Claude Code",
+        "Go",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "le-distru-9c3ca4f6-fd74-4d70-b7e3-682c914c1a22",
       "company": "Distru",
       "position": "Senior AI Product Manager | REMOTE",
@@ -24478,6 +24873,28 @@
         "MCP"
       ],
       "companyIcon": "https://clickup.com/favicon.ico"
+    },
+    {
+      "id": "as-neko-health-d862f29a-3eee-4217-abc4-ad082310d3cd",
+      "company": "Neko Health",
+      "position": "Director, Software Engineering  (Platform)",
+      "location": "New York",
+      "locations": [
+        "New York"
+      ],
+      "remote": false,
+      "salary": "$405K – $480K • Offers Equity",
+      "description": "MISSION\n\nNeko Health is a health technology company that opened its first clinic in Stockholm in 2018, founded by Daniel Ek and Hjalmar Nilsonne.\n\nIn one hour, our scan combines radiation-free imaging, heart and circulation measurements, and same-visit blood results with time to talk it through...",
+      "applyUrl": "https://jobs.ashbyhq.com/neko-health/d862f29a-3eee-4217-abc4-ad082310d3cd",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/neko-health/d862f29a-3eee-4217-abc4-ad082310d3cd",
+      "postedAt": "2026-04-28T13:46:01.270+00:00",
+      "tags": [
+        "Claude Code",
+        "Azure",
+        "Docker"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "as-baseten-6e396eb7-acb3-436a-89ec-05e755c477f2",
