@@ -261,7 +261,7 @@ Complete Library: $60 (10 products)
 
 ### Cultural Pricing Notes
 - US buyers value "discount" heavily
-- Show original price even if inflated
+- Show an original price only when it is a genuine prior selling price; label any justified value estimate clearly instead of presenting it as an original price
 - Charm numbers: 9, 7, 5
 - Round prices feel premium, not like deals
 - Group buying mentality (offer referral discounts)
