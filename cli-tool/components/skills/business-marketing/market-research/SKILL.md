@@ -132,7 +132,7 @@ Detailed methodologies and templates:
    - Entry decision matrix
 
 3. **[Niche Validation Checklist](./references/niche-validation-checklist.md)**
-   - 20-item validation criteria
+   - 10-criterion validation scorecard (100 points total)
    - Scoring methodology
    - Quick validation protocol (2-hour sprint)
    - Pass/fail thresholds
@@ -190,7 +190,7 @@ Research quality indicators:
 - 3+ validated demand sources per niche
 - Clear differentiation from competitors
 - Quantified market size with assumptions documented
-- Validation score 15+ on checklist
+- Validation score 60+ on the checklist (Cautious Go or better; 80+ is a Strong Go)
 - Confident go/no-go decision within 2 weeks
 
 ## Common Pitfalls to Avoid
