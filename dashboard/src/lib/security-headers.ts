@@ -38,6 +38,8 @@ const DIRECTIVES: Record<string, string[]> = {
   'connect-src': [
     "'self'",
     'https://api.github.com',
+    // Component explorer: catalog files on main, and external skills/plugins at their pinned commit.
+    'https://raw.githubusercontent.com',
     'https://clerk.aitmpl.com',
     'https://www.googletagmanager.com',
     'https://*.google-analytics.com',

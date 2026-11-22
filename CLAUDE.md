@@ -267,7 +267,13 @@ into its own folders (decided 2026-11-07, PR #1429).
   in google-labs-code/stitch-skills: Claude Code ignores that file and loads the
   default folders, so the catalog reads it only for `name` and display fields);
   its `name` must equal the folder name and be unique across `plugins/`; symlinks and submodules are
-  refused. Add one with `python scripts/external_skills.py add OWNER/REPO PATH
+  refused. Cursor's `.cursor-plugin/plugin.json` (github.com/cursor/plugins) is read the same
+  display-only way: Claude Code loads `skills/` and `agents/` and ignores Cursor's `rules/`, its
+  hooks (`stop`, `afterFileEdit`… are "unknown hook event") and `model: fast` agents (API 404), so
+  take only Cursor plugins that work without them. A plugin may be up to 1,000 files / 10 MB (Claude
+  Code installs it from git; skills stay at 200 / 5 MB); its content file embeds at most 1.5 MB of
+  text, Markdown first, and the site's file explorer reads the rest from the upstream repo at the
+  pinned commit. Add one with `python scripts/external_skills.py add OWNER/REPO PATH
   CATEGORY --plugin`. Upstream changes reach users only through a PR that bumps
   `commit` (`external-skills-outdated.yml` lists plugins too).
 - `generate_components_json.py` writes `dashboard/public/marketplace.json`

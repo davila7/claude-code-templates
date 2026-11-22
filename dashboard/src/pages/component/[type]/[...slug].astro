@@ -795,6 +795,7 @@ const componentSchema = component
                   componentType={typePlural === 'mods' || isPlugin ? typePlural : 'skills'}
                   mainFile={mainFileName}
                   files={typePlural === 'mods' || externalSource ? modFiles : undefined}
+                  rawBase={externalSource ? `https://raw.githubusercontent.com/${externalSource.repo}/${externalSource.commit}${externalSource.path ? `/${externalSource.path}` : ''}` : undefined}
                 />
               </section>
             )}

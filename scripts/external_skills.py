@@ -25,8 +25,8 @@ instead, which fetches the commit with git into .cache/external-skills/ and
 returns the skill's folder there. The code is never committed to this repo.
 
 Plugins: cli-tool/components/plugins/{category}/{name}/source.json pins a whole
-Claude Code plugin (a folder with .claude-plugin/plugin.json, or a plugin.json at
-its root: see ROOT_MANIFEST) with the same
+Claude Code plugin (a folder with .claude-plugin/plugin.json, a plugin.json at
+its root, or Cursor's .cursor-plugin/plugin.json: see PLUGIN_MANIFESTS) with the same
 manifest, minus `include` and `requires`: Claude Code installs the whole folder,
 and a plugin declares its own dependencies. The folder name must equal the
 plugin's `name` and be unique across plugins/. Nothing copies plugin files into a
@@ -73,6 +73,12 @@ ALLOWED_LICENSES = {
 }
 MAX_FILES = 200
 MAX_TOTAL_BYTES = 5 * 1024 * 1024
+# A plugin is never downloaded by our CLI: Claude Code installs the whole folder
+# from git. Its limit only bounds what the catalog fetches, scans and caches
+# (cursor/plugins' pstack: ~540 files, 5.7 MB with its guide images). The site's
+# content file embeds less: see PLUGIN_EMBED_* in generate_components_json.py.
+PLUGIN_MAX_FILES = 1000
+PLUGIN_MAX_TOTAL_BYTES = 10 * 1024 * 1024
 PLUGIN_MANIFEST = ".claude-plugin/plugin.json"
 # A plugin.json at the plugin root, the layout of the Agent Skills `plugins` CLI
 # (google-labs-code/stitch-skills). Claude Code does not read it: with no
@@ -81,6 +87,13 @@ PLUGIN_MANIFEST = ".claude-plugin/plugin.json"
 # 2.1.325. The catalog reads it only for the name check and the display fields,
 # never for component paths.
 ROOT_MANIFEST = "plugin.json"
+# Cursor's plugin manifest (github.com/cursor/plugins). Claude Code does not read
+# it either: a folder with skills/ (and agents/) and no .claude-plugin/plugin.json
+# loads its default folders under the marketplace entry's name (checked with
+# `claude plugin validate` and a load on 2.1.330). Read for the name and display
+# fields only, like ROOT_MANIFEST; its `rules`, `hooks` and paths are Cursor's.
+CURSOR_MANIFEST = ".cursor-plugin/plugin.json"
+PLUGIN_MANIFESTS = (PLUGIN_MANIFEST, ROOT_MANIFEST, CURSOR_MANIFEST)
 # A skill `name` Claude Code can show after the plugin prefix. Anything else
 # (google-labs-code/stitch-skills uses "stitch::code-to-design") is listed under
 # the skill's folder name, which is also what Claude Code lists.
@@ -241,12 +254,13 @@ def local_dir(skill_dir: Path) -> Path:
         if not _safe_rel(rel):
             raise ManifestError(f"unsafe path in {repo}: {full}")
         entries.append((rel, sha, mode, int(size)))
-    wanted = (PLUGIN_MANIFEST, ROOT_MANIFEST) if plugin else ("SKILL.md",)
+    wanted = PLUGIN_MANIFESTS if plugin else ("SKILL.md",)
     if not any(rel in wanted for rel, *_ in entries):
         raise ManifestError(f"no {' or '.join(wanted)} in {repo}/{path} at {commit[:7]}")
     entries += _legal_files(git_dir, commit, path, listing, entries)
-    if len(entries) > MAX_FILES or sum(e[3] for e in entries) > MAX_TOTAL_BYTES:
-        raise ManifestError(f"{repo}/{path} is over the size limit ({MAX_FILES} files / {MAX_TOTAL_BYTES} bytes)")
+    max_files, max_bytes = (PLUGIN_MAX_FILES, PLUGIN_MAX_TOTAL_BYTES) if plugin else (MAX_FILES, MAX_TOTAL_BYTES)
+    if len(entries) > max_files or sum(e[3] for e in entries) > max_bytes:
+        raise ManifestError(f"{repo}/{path} is over the size limit ({max_files} files / {max_bytes} bytes)")
     shutil.rmtree(dest, ignore_errors=True)
     for rel, sha, mode, _ in entries:
         out = dest / rel
@@ -299,7 +313,7 @@ def _legal_files(git_dir: Path, commit: str, path: str, listing: str, entries: l
 
 def manifest_file(local: Path) -> str | None:
     """The plugin.json a materialized plugin folder has: Claude Code's own one first."""
-    for rel in (PLUGIN_MANIFEST, ROOT_MANIFEST):
+    for rel in PLUGIN_MANIFESTS:
         if (local / rel).is_file():
             return rel
     return None
@@ -406,7 +420,7 @@ def plugin_inventory(local: Path) -> dict:
     Display only: Claude Code itself decides what loads."""
     meta = plugin_manifest(local)
     if manifest_file(local) != PLUGIN_MANIFEST:
-        # Claude Code ignores a root plugin.json: only the default folders load.
+        # Claude Code ignores a root or Cursor plugin.json: only the default folders load.
         meta = {"name": meta.get("name")}
     skills = set()
     roots = ["skills"] + _component_paths(meta.get("skills"))
@@ -583,7 +597,7 @@ def check(dirs: list[Path]) -> list[str]:
             local = local_dir(d)
             if kind_of(d) == "plugin":
                 if not is_plugin(local):
-                    raise ManifestError(f"a plugin needs {PLUGIN_MANIFEST} (or {ROOT_MANIFEST} at its root)")
+                    raise ManifestError(f"a plugin needs {PLUGIN_MANIFEST} (or {ROOT_MANIFEST} at its root, or {CURSOR_MANIFEST})")
                 pname = plugin_manifest(local).get("name")
                 if pname != d.name:
                     raise ManifestError(f'plugin name {pname!r} must equal the folder name {d.name!r}')

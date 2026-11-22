@@ -163,6 +163,25 @@ class ValidateManifestTest(unittest.TestCase):
             (plug / ".claude-plugin/plugin.json").write_text('{"name": "kit", "description": "own"}')
             self.assertEqual(ext.plugin_manifest(plug)["description"], "own")
 
+    def test_cursor_plugin_json(self):
+        # github.com/cursor/plugins: .cursor-plugin/plugin.json only. Claude Code loads
+        # the default folders; the manifest's `rules`/`skills` keys are Cursor's.
+        with tempfile.TemporaryDirectory() as tmp:
+            plug = Path(tmp) / "thermos"
+            (plug / "skills/review").mkdir(parents=True)
+            (plug / "skills/review/SKILL.md").write_text("---\nname: review\n---\n")
+            (plug / "agents").mkdir()
+            (plug / "agents/auditor.md").write_text("---\nname: auditor\n---\n")
+            (plug / "rules").mkdir()
+            (plug / "rules/style.mdc").write_text("")
+            self.assertFalse(ext.is_plugin(plug))
+            (plug / ".cursor-plugin").mkdir()
+            (plug / ".cursor-plugin/plugin.json").write_text(json.dumps(
+                {"name": "thermos", "description": "Deep review", "skills": "./other/", "rules": "./rules/"}))
+            self.assertEqual(ext.manifest_file(plug), ".cursor-plugin/plugin.json")
+            self.assertEqual(ext.plugin_manifest(plug)["description"], "Deep review")
+            self.assertEqual(ext.plugin_inventory(plug), {"skills": ["review"], "agents": ["auditor"]})
+
     def test_the_site_lists_every_kind_the_inventory_writes(self):
         # dashboard/src/lib/component-page.ts PLUGIN_KINDS renders `contains`; a kind
         # missing there would vanish from the plugin page and its summary.

@@ -32,6 +32,33 @@
       "category": "productivity"
     },
     {
+      "name": "cursor-team-kit",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/cursor/plugins.git",
+        "path": "cursor-team-kit",
+        "sha": "7a583913eb1b8d1a0ee76753d1a2cf072e7b54f9"
+      },
+      "displayName": "Cursor Team Kit",
+      "description": "Internal engineering team workflows for CI, code review, shipping, control-cli, control-ui, verify-this, test reliability, code cleanup, and work summaries. Designed to work without requiring third-party service integrations.",
+      "author": {
+        "name": "Eric Zakariasson"
+      },
+      "homepage": "https://github.com/cursor/plugins",
+      "repository": "https://github.com/cursor/plugins",
+      "keywords": [
+        "cursor-team-kit",
+        "ci",
+        "code-review",
+        "shipping",
+        "testing",
+        "verification",
+        "local-automation"
+      ],
+      "license": "MIT",
+      "category": "development"
+    },
+    {
       "name": "egm",
       "source": {
         "source": "git-subdir",
@@ -53,6 +80,32 @@
       ],
       "license": "Apache-2.0",
       "category": "documentation"
+    },
+    {
+      "name": "pstack",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/cursor/plugins.git",
+        "path": "harness/pstack/claude-code",
+        "sha": "7a583913eb1b8d1a0ee76753d1a2cf072e7b54f9"
+      },
+      "description": "if you want to go fast, go deep first. pstack helps you write less, but higher quality code. rigorous agent workflows you can parallelize with confidence.",
+      "author": {
+        "name": "Lauren Tan"
+      },
+      "homepage": "https://github.com/cursor/plugins/tree/main/pstack",
+      "repository": "https://github.com/cursor/plugins",
+      "keywords": [
+        "pstack",
+        "poteto-mode",
+        "workflow",
+        "principles",
+        "agent-style",
+        "subagents",
+        "unslop"
+      ],
+      "license": "MIT",
+      "category": "development"
     },
     {
       "name": "stitch-build",
@@ -149,6 +202,34 @@
       "repository": "https://github.com/qaokss/claude-agents-view",
       "license": "MIT",
       "category": "productivity"
+    },
+    {
+      "name": "thermos",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/cursor/plugins.git",
+        "path": "thermos",
+        "sha": "7a583913eb1b8d1a0ee76753d1a2cf072e7b54f9"
+      },
+      "displayName": "Thermos",
+      "description": "Thermo-nuclear branch review: deep correctness and security audits plus harsh code-quality rubrics, parallel subagents, thermos orchestration, and optional take-the-wheel and FSD merge-ready flows.",
+      "author": {
+        "name": "Cursor",
+        "email": "plugins@cursor.com"
+      },
+      "homepage": "https://github.com/cursor/plugins",
+      "repository": "https://github.com/cursor/plugins",
+      "keywords": [
+        "thermos",
+        "thermo-nuclear",
+        "code-review",
+        "deep-review",
+        "code-quality",
+        "security-review",
+        "subagents"
+      ],
+      "license": "MIT",
+      "category": "development"
     }
   ]
 }
