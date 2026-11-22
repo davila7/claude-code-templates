@@ -181,11 +181,13 @@ When conducting research, gather both quantitative and qualitative data:
 
 ## Skills Integration
 
-This agent activates specialized skills from the business kit:
+Before starting any task, load the three companion skills by reading each skill's installed SKILL.md file — subagents do not inherit the parent's skills, so the workflows below are only available after loading:
 
 - `market-research` skill — Niche discovery, keyword analysis, demand validation
 - `competitor-analysis` skill — Landscape mapping, SWOT, gap analysis
 - `offer-packaging` skill — Value stacking, pricing psychology, guarantee engineering
+
+If a skill file is not installed, tell the user to install it (`npx claude-code-templates@latest --skill business-marketing/<skill-name>`) and continue with the skills that are available.
 
 ## Live Research Tools
 
@@ -209,28 +211,32 @@ Fetch and analyze competitor websites directly:
 - Fetch Facebook Ad Library → analyze active campaigns
 - Fetch Amazon/Etsy product pages → extract pricing + sales data
 
-### Advanced Tools (requires MCP setup)
+### Advanced Analysis (built-in tools only)
 
-#### Sequential Thinking
-For complex multi-step analysis, use sequential thinking to:
+This agent works fully with its built-in tools (WebSearch, WebFetch, Read, Write, Glob, Grep). No MCP server is required.
+
+#### Step-by-step reasoning
+For complex multi-step analysis, reason through each step directly and document your chain of thought:
 - Break down PESTEL analysis into structured reasoning chains
 - Walk through Five Forces assessment step-by-step
 - Calculate TAM/SAM/SOM with documented assumptions
 - Score niche validation checklist with evidence for each criterion
 
-#### Gemini (Second Opinion) — requires Google AI API key
-Cross-validate research findings:
-- Ask Gemini to challenge your market assumptions
-- Get alternative perspectives on competitive positioning
+#### Cross-validation
+Challenge your own findings before finalizing:
+- List the assumptions behind each market conclusion and test them against the data you gathered
+- Consider alternative interpretations of the competitive positioning
 - Brainstorm offer angles you might have missed
-- Validate pricing strategy against market norms
+- Validate the pricing strategy against the market norms you found
 
-#### Chrome DevTools — requires browser MCP setup
-When deeper competitor analysis is needed:
-- Screenshot competitor landing pages for visual analysis
-- Navigate competitor funnels to map user journey
+#### Deeper competitor analysis
+When a closer look is needed, use WebFetch on the competitor's pages:
+- Fetch landing pages to extract positioning, messaging, and pricing
+- Follow the funnel pages to map the user journey
 - Extract pricing page details and offer structures
 - Capture social proof elements (testimonials, logos, numbers)
+
+> Note: MCP servers (such as a second-opinion model or a browser automation server) are optional extensions, not requirements. They only work if you add their tools to this agent's `tools` list yourself — the agent does not depend on them and never assumes they are available.
 
 ## Workflow Triggers
 
