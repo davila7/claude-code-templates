@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "dchub": {
+      "description": "DC Hub remote MCP server (Streamable HTTP): the orchestration layer for data center and energy intelligence. Call execute_plan first with the question as asked; it chains the right tools for power, grid, interconnection-queue, fiber, site and market questions and returns one dated, cited answer. Includes the Data Center Power Index (DCPI). Works without a key; DCHUB_API_KEY is optional (sent as the X-API-Key header). Docs: https://dchub.cloud/connect",
+      "type": "http",
+      "url": "https://dchub.cloud/mcp"
+    }
+  }
+}
