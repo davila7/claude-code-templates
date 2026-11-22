@@ -3,6 +3,8 @@ import { marked } from 'marked';
 import { sanitizeHtml, codeLang, demoteH1 } from '../lib/sanitize-html';
 import { extractHeadings, forEachMarkdownLine, parseHeadingLine, stripFrontmatter } from '../lib/markdown-headings';
 import SkillSlideView from './SkillSlideView';
+import { languageForFile } from '../lib/code-language';
+import type { CodeToken } from '../lib/code-highlight';
 
 interface Heading {
   level: number;
@@ -186,6 +188,26 @@ export default function SkillExplorer({ skillContent, skillName, skillPath, refe
   const searchIndex = useMemo(() => buildSearchIndex(fileContent, currentHeadings), [fileContent, currentHeadings]);
   const lines = useMemo(() => (fileContent || '').replace(/\n$/, '').split('\n'), [fileContent]);
   const showOutline = isMarkdown && mode === 'preview' && currentHeadings.length > 1;
+
+  // Syntax highlighting for the Code view. The highlighter loads on demand in the browser
+  // (never during SSR, never in the page bundle); until it answers, lines render plain.
+  const codeLanguage = useMemo(() => languageForFile(selectedFile), [selectedFile]);
+  const showingCode = !isMarkdown || mode === 'code';
+  const source = useMemo(() => lines.join('\n'), [lines]);
+  const [highlighted, setHighlighted] = useState<{ source: string; language: string; lines: CodeToken[][] } | null>(null);
+  const lineTokens = highlighted && highlighted.source === source && highlighted.language === codeLanguage ? highlighted.lines : null;
+  useEffect(() => {
+    if (!showingCode || !codeLanguage || !source || lineTokens) return;
+    let cancelled = false;
+    import('../lib/code-highlight')
+      .then(({ highlightLines }) => {
+        if (cancelled) return;
+        const tokens = highlightLines(source, codeLanguage);
+        if (tokens && tokens.length === lines.length) setHighlighted({ source, language: codeLanguage, lines: tokens });
+      })
+      .catch(() => { /* stays plain text */ });
+    return () => { cancelled = true; };
+  }, [showingCode, codeLanguage, source, lines, lineTokens]);
 
   const tree = useMemo(() => buildTree(references, mainFile), [references, mainFile]);
   const filteredTree = useMemo(() => {
@@ -569,12 +591,14 @@ export default function SkillExplorer({ skillContent, skillName, skillPath, refe
             ) : (
               <div ref={codeRef} className={`overflow-hidden ${expanded ? '' : COLLAPSED_MAX}`}>
                 {fileContent ? (
-                  <table className="w-full border-collapse font-mono text-[12.5px] leading-[1.65] my-3">
+                  <table className="code-view w-full border-collapse font-mono text-[12.5px] leading-[1.65] my-3" data-language={lineTokens ? codeLanguage ?? undefined : undefined}>
                     <tbody>
                       {(expanded ? lines : lines.slice(0, COLLAPSED_LINES)).map((line, i) => (
                         <tr key={i}>
                           <td className="w-px whitespace-nowrap select-none text-right align-top pl-4 pr-4 text-[var(--color-text-tertiary)] tabular-nums" aria-hidden="true">{i + 1}</td>
-                          <td className="pr-4 align-top whitespace-pre-wrap break-words [overflow-wrap:anywhere] text-[var(--color-text-primary)]">{line || ' '}</td>
+                          <td className="pr-4 align-top whitespace-pre-wrap break-words [overflow-wrap:anywhere] text-[var(--color-text-primary)]">{lineTokens?.[i]?.length
+                            ? lineTokens[i].map((t, j) => t.cls ? <span key={j} className={t.cls}>{t.text}</span> : t.text)
+                            : (line || ' ')}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -592,7 +616,7 @@ export default function SkillExplorer({ skillContent, skillName, skillPath, refe
                   <button type="button" onClick={() => setExpanded(true)}
                     className="flex items-center gap-1.5 px-3.5 h-8 rounded-full border border-[var(--color-border)] bg-[var(--color-surface-1)] text-[13px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-3)] transition-colors">
                     <Icon d={ICON.chevron} className="w-3.5 h-3.5" strokeWidth={2} />
-                    Show full {mode === 'preview' ? 'document' : `source · ${lines.length} lines`}
+                    Show full {isMarkdown && mode === 'preview' ? 'document' : `source · ${lines.length} lines`}
                   </button>
                 </div>
               </div>
