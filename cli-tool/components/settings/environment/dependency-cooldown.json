@@ -1,0 +1,20 @@
+{
+  "description": "Install in User settings to cover every project. Dependency cooldown: npm, pnpm and uv skip any version published less than 7 days ago in everything Claude Code starts (Bash commands, npx/uvx MCP servers, hooks), so a hijacked release or a freshly registered name an AI made up (slopsquatting) fails to resolve instead of installing. A command that mentions the cooldown settings, for example to skip them with --min-release-age=0, asks you first (denied in claude -p). Your .npmrc is untouched. Needs npm 11.10+ (older npm ignores it silently), pnpm 11+ or a recent uv (tested on 0.11); pip, yarn and bun are not covered. Units: npm days, pnpm minutes, uv a duration. Docs: https://docs.npmjs.com/cli/v11/using-npm/config#min-release-age",
+  "env": {
+    "npm_config_min_release_age": "7",
+    "pnpm_config_minimum_release_age": "10080",
+    "UV_EXCLUDE_NEWER": "7 days"
+  },
+  "permissions": {
+    "ask": [
+      "Bash(*min-release-age*)",
+      "Bash(*minimum-release-age*)",
+      "Bash(*min_release_age*)",
+      "Bash(*minimum_release_age*)",
+      "Bash(*MIN_RELEASE_AGE*)",
+      "Bash(*ReleaseAge*)",
+      "Bash(*exclude-newer*)",
+      "Bash(*EXCLUDE_NEWER*)"
+    ]
+  }
+}
