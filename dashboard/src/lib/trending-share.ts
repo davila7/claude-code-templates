@@ -175,13 +175,3 @@ export function linkedInShareUrl(url: string): string {
 export function badgeMarkdown(origin: string, type: string, path: string): string {
   return `[![aitmpl](${origin}${badgePath(type, path)})](${origin}/component/${type}/${path})`;
 }
-
-/** Monthly cumulative series as SVG polyline points inside width x height. */
-export function cumulativePoints(monthly: { cumulative: number }[], width: number, height: number, pad = 4): string {
-  if (!monthly.length) return '';
-  const max = Math.max(...monthly.map((m) => m.cumulative)) || 1;
-  const step = monthly.length > 1 ? (width - pad * 2) / (monthly.length - 1) : 0;
-  return monthly
-    .map((m, i) => `${(pad + i * step).toFixed(1)},${(height - pad - (m.cumulative / max) * (height - pad * 2)).toFixed(1)}`)
-    .join(' ');
-}

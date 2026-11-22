@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  badgeMarkdown, cumulativePoints, findShareEntry, isRising, pctChange, safePath, shareEntries, shareText, xShareUrl,
+  badgeMarkdown, findShareEntry, isRising, pctChange, safePath, shareEntries, shareText, xShareUrl,
 } from '../src/lib/trending-share.ts';
 import { badgeSvg, compact } from '../scripts/generate-badges.mjs';
 
@@ -70,10 +70,4 @@ test('badge markdown links the badge to the component page', () => {
   assert.equal(compact(12900), '12.9k');
   assert.equal(compact(999), '999');
   assert.match(badgeSvg('12.9k'), /aria-label="aitmpl installs: 12\.9k"/);
-});
-
-test('cumulativePoints spans the box and ends at the top', () => {
-  const pts = cumulativePoints([{ cumulative: 0 }, { cumulative: 50 }, { cumulative: 100 }], 100, 50, 0).split(' ');
-  assert.deepEqual(pts, ['0.0,50.0', '50.0,25.0', '100.0,0.0']);
-  assert.equal(cumulativePoints([], 100, 50), '');
 });
