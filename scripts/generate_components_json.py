@@ -426,6 +426,11 @@ def fetch_download_stats():
     print(f"✅ Fetched and aggregated {len(component_totals)} component download stats")
     return dict(component_totals)
 
+# Text a catalog plugin's content file embeds (see the plugins branch of the scan).
+PLUGIN_EMBED_MAX_FILE_BYTES = 200 * 1024
+PLUGIN_EMBED_MAX_TOTAL_BYTES = 1536 * 1024
+
+
 def scan_directory_recursively(directory_path, relative_to_path=None):
     """
     Recursively scan a directory and return all files with their relative paths.
@@ -761,11 +766,21 @@ def generate_components_json(skip_downloads=False, skip_skillspector=False, skil
                     keywords = [str(k) for k in meta.get('keywords') or [] if isinstance(k, (str, int, float))]
                     references = sorted(r for r in scan_directory_recursively(str(root), str(root)) if r != 'README.md')
                     files = {'README.md': content}
-                    for rel in references:
+                    # A big plugin (cursor/plugins' pstack: ~3 MB of text, mostly test
+                    # fixtures) would make a multi-MB content file. Markdown goes first;
+                    # past the budget a file is only listed, and the site's explorer
+                    # reads it from the upstream repo at the pinned commit.
+                    embedded, texts = 0, {}
+                    for rel in sorted(references, key=lambda r: (not r.endswith('.md'), r)):
                         try:
-                            files[rel] = (root / rel).read_text(encoding='utf-8')
+                            size = (root / rel).stat().st_size
+                            if size > PLUGIN_EMBED_MAX_FILE_BYTES or embedded + size > PLUGIN_EMBED_MAX_TOTAL_BYTES:
+                                continue
+                            texts[rel] = (root / rel).read_text(encoding='utf-8')
+                            embedded += size
                         except (UnicodeDecodeError, OSError):
                             pass
+                    files.update((rel, texts[rel]) for rel in references if rel in texts)
                     components_data['plugins'].append({
                         'name': name,
                         'path': f"{category}/{name}",

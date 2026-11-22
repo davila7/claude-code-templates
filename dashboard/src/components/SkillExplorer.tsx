@@ -37,6 +37,9 @@ interface SkillExplorerProps {
   mainFile?: string;
   /** Files already fetched with the component (mods): read from here instead of GitHub. */
   files?: Record<string, string>;
+  /** External components (source.json): raw URL of the upstream folder at the pinned
+   *  commit, for files the content file lists but does not embed (big plugins). */
+  rawBase?: string;
 }
 
 const GITHUB_RAW_ROOT = 'https://raw.githubusercontent.com/davila7/claude-code-templates/main/cli-tool/components';
@@ -153,7 +156,7 @@ const iconButton = 'inline-flex items-center justify-center gap-1.5 h-8 rounded-
 const quietButton = `${iconButton} text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-3)]`;
 
 // ─── Main Component ────────────────────────────────────────────────
-export default function SkillExplorer({ skillContent, skillName, skillPath, references, headings: initialHeadings, componentType = 'skills', mainFile = 'SKILL.md', files }: SkillExplorerProps) {
+export default function SkillExplorer({ skillContent, skillName, skillPath, references, headings: initialHeadings, componentType = 'skills', mainFile = 'SKILL.md', files, rawBase }: SkillExplorerProps) {
   const [selectedFile, setSelectedFile] = useState(mainFile);
   const [fileContent, setFileContent] = useState(skillContent);
   const [loading, setLoading] = useState(false);
@@ -207,12 +210,12 @@ export default function SkillExplorer({ skillContent, skillName, skillPath, refe
     if (selectedFile === mainFile) { setFileContent(skillContent); setError(''); return; }
     if (files && selectedFile in files) { setFileContent(files[selectedFile] ?? ''); setError(''); return; }
     setLoading(true); setError('');
-    fetch(`${GITHUB_RAW_ROOT}/${componentType}/${skillPath}/${selectedFile}`)
+    fetch(rawBase ? `${rawBase}/${selectedFile}` : `${GITHUB_RAW_ROOT}/${componentType}/${skillPath}/${selectedFile}`)
       .then((res) => { if (!res.ok) throw new Error(`HTTP ${res.status}`); return res.text(); })
       .then((text) => setFileContent(text))
       .catch((e) => { setError(`Failed to load file: ${e.message}`); setFileContent(''); })
       .finally(() => setLoading(false));
-  }, [selectedFile, skillPath, skillContent, componentType, mainFile, files]);
+  }, [selectedFile, skillPath, skillContent, componentType, mainFile, files, rawBase]);
 
   // The component page's file list opens a file here ('component-file:open', detail = path).
   useEffect(() => {
