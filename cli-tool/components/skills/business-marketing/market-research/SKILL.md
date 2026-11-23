@@ -205,6 +205,3 @@ Research quality indicators:
 ---
 
 **Next Steps**: Review reference files for detailed workflows, then apply framework to your specific opportunity.
-
----
-> Part of the free FullStack AI Starter — Offer Agent + market-research, competitor-analysis and offer-packaging skills + /offer command. Full system (6 agents, 39 commands, 47 skills, CMO Engine): https://hoangbio.gumroad.com/l/fullstack-ai-business-system — Guide: https://aifullstack.site/en/
