@@ -238,14 +238,29 @@ body {
   padding-right: 0.5rem !important;
 }
 
-#sidebar[data-collapsed="true"] .sidebar-nav-link,
-#sidebar[data-collapsed="true"] nav > a {
+/* Every rail item (Browse, Resources, and the My Components island, which
+   sits inside an astro-island and is not `nav > a`) gets the same box, so
+   all icons share one column and one vertical rhythm. */
+#sidebar[data-collapsed="true"] nav a,
+#sidebar[data-collapsed="true"] nav button {
   justify-content: center !important;
+  height: 2.5rem !important;
   padding-left: 0.75rem !important;
   padding-right: 0.75rem !important;
   gap: 0 !important;
   margin-left: 0 !important;
   margin-right: 0 !important;
+}
+
+/* Hidden labels, "New" badges, external-link arrows and counts keep their
+   `ml-auto`, padding and min-width at width 0. An auto margin beats
+   `justify-content: center` and pushed the icon left by up to 12px. */
+#sidebar[data-collapsed="true"] nav .sidebar-text,
+#sidebar[data-collapsed="true"] nav .sidebar-nav-count {
+  margin: 0 !important;
+  padding: 0 !important;
+  min-width: 0 !important;
+  border-width: 0 !important;
 }
 
 #sidebar[data-collapsed="true"] .sidebar-nav-icon {
