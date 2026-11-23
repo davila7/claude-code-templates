@@ -3,16 +3,13 @@ import { TYPE_CONFIG } from '../lib/icons';
 import TypeIcon from './TypeIcon';
 import CountryFlag from './CountryFlag';
 import AgentSplitView, { type ClientSplit } from './AgentSplitView';
-
-interface TrendingItem {
-  id: string;
-  name: string;
-  category: string;
-  downloadsToday: number;
-  downloadsWeek: number;
-  downloadsMonth: number;
-  downloadsTotal: number;
-}
+import TrendingShareMenu from './TrendingShareMenu';
+import GrowthHero from './TrendingGrowthHero';
+import RisingList from './TrendingRisingList';
+import {
+  type TrendingItem, type RisingItem, type InstallersBlock,
+  formatName, formatNumber, pctChange, isRising, safePath, sharePath, shareText, findShareEntry,
+} from '../lib/trending-share';
 
 interface GlobalStats {
   totalComponents: number;
@@ -37,17 +34,11 @@ interface TrendingData {
   topCountries: TopCountry[];
   trending: Record<string, TrendingItem[]>;
   clientSplit?: ClientSplit;
+  rising?: RisingItem[];
+  installers?: InstallersBlock | null;
 }
 
-function formatName(name: string): string {
-  return name.replace(/[-_]/g, ' ').split(' ').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-}
-
-function formatNumber(n: number): string {
-  if (n >= 1000000) return (n / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
-  if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
-  return String(n);
-}
+type Period = 'week' | 'downloadsMonth' | 'downloadsTotal';
 
 const TRENDING_TYPES = ['all', 'skills', 'agents', 'commands', 'settings', 'hooks', 'mcps', 'mods'] as const;
 
@@ -55,7 +46,7 @@ export default function TrendingView() {
   const [data, setData] = useState<TrendingData | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeType, setActiveType] = useState<string>('all');
-  const [period, setPeriod] = useState<'downloadsWeek' | 'downloadsMonth' | 'downloadsTotal'>('downloadsWeek');
+  const [period, setPeriod] = useState<Period>('week');
   const [view, setView] = useState<'components' | 'agents'>('components');
 
   useEffect(() => {
@@ -77,8 +68,19 @@ export default function TrendingView() {
   const items = useMemo(() => {
     if (!data) return [];
     const list = data.trending[activeType] ?? [];
-    return [...list].sort((a, b) => (b[period] ?? 0) - (a[period] ?? 0));
+    // "This week" ranks by unique installers when the data has them (raw
+    // downloads include CI and scripts), then by downloads.
+    const value = (i: TrendingItem): [number, number] =>
+      period === 'week' ? [i.installersWeek ?? 0, i.downloadsWeek] : [i[period] ?? 0, 0];
+    return [...list].sort((a, b) => {
+      const [a1, a2] = value(a);
+      const [b1, b2] = value(b);
+      return b1 - a1 || b2 - a2;
+    });
   }, [data, activeType, period]);
+
+  const origin = typeof window === 'undefined' ? 'https://www.aitmpl.com' : window.location.origin;
+  const hasInstallers = Boolean(data?.installers);
 
   // Only show a type filter once the data actually carries that bucket, so a
   // type the generator hasn't published yet never renders as an empty tab.
@@ -120,11 +122,18 @@ export default function TrendingView() {
             </div>
             <div>
               <h1 className="text-[20px] font-semibold text-[var(--color-text-primary)]">Trending Components</h1>
-              <p className="text-[12px] text-[var(--color-text-tertiary)] mt-0.5">Most popular downloads this week</p>
+              <p className="text-[12px] text-[var(--color-text-tertiary)] mt-0.5">{data.installers ? 'What developers install with Claude Code, and what is growing' : 'Most popular downloads this week'}</p>
             </div>
           </div>
 
-          {/* Stats cards with enhanced design */}
+          {data.installers ? (
+            <GrowthHero
+              installers={data.installers}
+              weeklyDownloads={stats.weeklyDownloads}
+              totalCountries={stats.totalCountries}
+              shareUrl={`${origin}/trending`}
+            />
+          ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
             {[
               { 
@@ -202,6 +211,7 @@ export default function TrendingView() {
               </div>
             ))}
           </div>
+          )}
         </div>
       </div>
 
@@ -230,6 +240,10 @@ export default function TrendingView() {
         <AgentSplitView split={data.clientSplit} />
       ) : (
       <>
+      {data.rising && data.rising.length > 0 && (
+        <RisingList items={data.rising} origin={origin} />
+      )}
+
       {/* Top countries with icons */}
       <div className="px-6 pb-6">
         <div className="bg-[var(--color-surface-1)] border border-[var(--color-border)] rounded-xl p-4">
@@ -303,7 +317,7 @@ export default function TrendingView() {
               onChange={(e) => setPeriod(e.target.value as any)}
               className="bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg text-[12px] text-[var(--color-text-primary)] font-medium px-3 py-1.5 outline-none cursor-pointer hover:border-[var(--color-accent)]/30 transition-colors"
             >
-              <option value="downloadsWeek">This Week</option>
+              <option value="week">This Week</option>
               <option value="downloadsMonth">This Month</option>
               <option value="downloadsTotal">All Time</option>
             </select>
@@ -325,38 +339,16 @@ export default function TrendingView() {
       <div className="px-6 pb-8">
         <div className="bg-[var(--color-surface-1)] border border-[var(--color-border)] rounded-xl overflow-hidden shadow-sm">
           {/* Table header */}
-          <div className="hidden md:grid grid-cols-[50px_1fr_110px_110px_110px_110px] gap-3 px-5 py-3 bg-[var(--color-surface-2)] border-b border-[var(--color-border)]">
-            <div className="flex items-center gap-1.5 text-[11px] text-[var(--color-text-tertiary)] font-semibold uppercase tracking-wider">
-              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
-              </svg>
-              Rank
-            </div>
-            <span className="text-[11px] text-[var(--color-text-tertiary)] font-semibold uppercase tracking-wider">Component</span>
-            <div className="flex items-center justify-end gap-1.5 text-[11px] text-[var(--color-text-tertiary)] font-semibold uppercase tracking-wider">
-              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              Today
-            </div>
-            <div className="flex items-center justify-end gap-1.5 text-[11px] text-[var(--color-text-tertiary)] font-semibold uppercase tracking-wider">
-              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              Week
-            </div>
-            <div className="flex items-center justify-end gap-1.5 text-[11px] text-[var(--color-text-tertiary)] font-semibold uppercase tracking-wider">
-              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              Month
-            </div>
-            <div className="flex items-center justify-end gap-1.5 text-[11px] text-[var(--color-text-tertiary)] font-semibold uppercase tracking-wider">
-              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
-              Total
-            </div>
+          <div className="hidden md:grid grid-cols-[50px_1fr_120px_110px_100px_100px_44px] gap-3 px-5 py-3 bg-[var(--color-surface-2)] border-b border-[var(--color-border)] text-[11px] text-[var(--color-text-tertiary)] font-semibold uppercase tracking-wider">
+            <span>Rank</span>
+            <span>Component</span>
+            <span className="text-right" title={hasInstallers ? 'Unique installers (IPv4 or IPv6 /64) in the last 7 days' : undefined}>
+              {hasInstallers ? 'Installers 7d' : 'Week'}
+            </span>
+            <span className="text-right">{hasInstallers ? 'vs prev 7d' : 'Today'}</span>
+            <span className="text-right">Month</span>
+            <span className="text-right">Total</span>
+            <span className="sr-only">Share</span>
           </div>
 
           {/* Table rows */}
@@ -366,6 +358,17 @@ export default function TrendingView() {
               const typeKey = item.id.split('-')[0];
               const typePlural = typeKey === 'mcp' ? 'mcps' : typeKey + 's';
               const config = TYPE_CONFIG[typePlural];
+              const path = safePath(item.path);
+              const share = path && data ? findShareEntry(data, typePlural, path) : null;
+              const change = hasInstallers ? pctChange(item.installersWeek ?? 0, item.installersPrevWeek ?? 0) : null;
+              const rising = hasInstallers && isRising(item);
+              const weekValue = hasInstallers ? item.installersWeek ?? 0 : item.downloadsWeek;
+              const secondValue = hasInstallers
+                ? (change === null ? ((item.installersWeek ?? 0) > 0 ? 'new' : '—') : `${change > 0 ? '+' : ''}${change}%`)
+                : (item.downloadsToday > 0 ? `+${item.downloadsToday}` : '—');
+              const secondClass = hasInstallers
+                ? (change !== null && change > 0 ? 'stat-today-active' : 'text-[var(--color-text-tertiary)]')
+                : (item.downloadsToday > 0 ? 'stat-today-active' : 'text-[var(--color-text-tertiary)]');
 
               // Medal colors for top 3
               const getMedalClass = (rank: number) => {
@@ -378,7 +381,7 @@ export default function TrendingView() {
               return (
                 <div
                   key={item.id}
-                  className="grid md:grid-cols-[50px_1fr_110px_110px_110px_110px] gap-3 px-5 py-3.5 hover:bg-[var(--color-surface-2)] transition-all duration-150 group"
+                  className="grid grid-cols-[auto_1fr_auto] md:grid-cols-[50px_1fr_120px_110px_100px_100px_44px] gap-3 px-5 py-3.5 hover:bg-[var(--color-surface-2)] transition-all duration-150 group"
                 >
                   {/* Rank with medal for top 3 */}
                   <div className="flex items-center">
@@ -390,25 +393,29 @@ export default function TrendingView() {
                   {/* Component info */}
                   <div className="flex items-center gap-3 min-w-0">
                     <div
-                      className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 shadow-sm group-hover:scale-110 transition-transform duration-200"
-                      style={{ 
-                        backgroundColor: config?.color ? `${config.color}15` : 'rgba(115, 115, 115, 0.15)', 
-                        color: config?.color ?? 'var(--color-text-tertiary)' 
+                      className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 shadow-sm"
+                      style={{
+                        backgroundColor: config?.color ? `${config.color}15` : 'rgba(115, 115, 115, 0.15)',
+                        color: config?.color ?? 'var(--color-text-tertiary)'
                       }}
                     >
                       <TypeIcon type={typePlural} size={16} />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-[13px] text-[var(--color-text-primary)] font-medium truncate block group-hover:text-[var(--color-accent)] transition-colors">
-                          {formatName(item.name)}
-                        </span>
-                        {item.downloadsToday > 0 && (
-                          <span className="hot-badge">
-                            <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <div className="flex items-center gap-2 min-w-0">
+                        {path ? (
+                          <a href={`/component/${typePlural}/${path}`} className="text-[13px] text-[var(--color-text-primary)] font-medium truncate hover:text-[var(--color-accent)] transition-colors">
+                            {formatName(item.name)}
+                          </a>
+                        ) : (
+                          <span className="text-[13px] text-[var(--color-text-primary)] font-medium truncate">{formatName(item.name)}</span>
+                        )}
+                        {rising && (
+                          <span className="hot-badge shrink-0">
+                            <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 10l7-7m0 0l7 7m-7-7v18" />
                             </svg>
-                            Hot
+                            Rising
                           </span>
                         )}
                       </div>
@@ -418,53 +425,49 @@ export default function TrendingView() {
                     </div>
                   </div>
 
+                  {/* Share - mobile */}
+                  <div className="md:hidden flex items-center">
+                    {share && (
+                      <TrendingShareMenu compact source="trending" url={`${origin}${sharePath(share.type, share.path)}`} text={shareText(share)} component={{ type: share.type, path: share.path }} />
+                    )}
+                  </div>
+
                   {/* Stats - Desktop */}
                   <div className="hidden md:flex items-center justify-end">
-                    <span className={`text-[13px] font-semibold tabular-nums ${item.downloadsToday > 0 ? 'stat-today-active' : 'text-[var(--color-text-tertiary)]'}`}>
-                      {item.downloadsToday > 0 ? `+${item.downloadsToday}` : '—'}
-                    </span>
+                    <span className="text-[13px] font-semibold tabular-nums text-[var(--color-text-primary)]">{formatNumber(weekValue)}</span>
                   </div>
                   <div className="hidden md:flex items-center justify-end">
-                    <span className="text-[13px] font-medium tabular-nums text-[var(--color-text-secondary)]">
-                      {formatNumber(item.downloadsWeek)}
-                    </span>
+                    <span className={`text-[13px] font-semibold tabular-nums ${secondClass}`}>{secondValue}</span>
                   </div>
                   <div className="hidden md:flex items-center justify-end">
-                    <span className="text-[13px] font-medium tabular-nums text-[var(--color-text-secondary)]">
-                      {formatNumber(item.downloadsMonth)}
-                    </span>
+                    <span className="text-[13px] font-medium tabular-nums text-[var(--color-text-secondary)]">{formatNumber(item.downloadsMonth)}</span>
                   </div>
                   <div className="hidden md:flex items-center justify-end">
-                    <span className="text-[13px] font-bold tabular-nums text-[var(--color-text-primary)]">
-                      {formatNumber(item.downloadsTotal)}
-                    </span>
+                    <span className="text-[13px] font-medium tabular-nums text-[var(--color-text-secondary)]">{formatNumber(item.downloadsTotal)}</span>
+                  </div>
+                  <div className="hidden md:flex items-center justify-end">
+                    {share && (
+                      <TrendingShareMenu compact source="trending" url={`${origin}${sharePath(share.type, share.path)}`} text={shareText(share)} component={{ type: share.type, path: share.path }} />
+                    )}
                   </div>
 
                   {/* Stats - Mobile */}
                   <div className="md:hidden col-span-full grid grid-cols-4 gap-2 mt-2 pt-2 border-t border-[var(--color-border)]">
                     <div className="text-center">
-                      <div className="text-[10px] text-[var(--color-text-tertiary)] mb-0.5">Today</div>
-                      <div className={`text-[12px] font-semibold tabular-nums ${item.downloadsToday > 0 ? 'stat-today-active' : 'text-[var(--color-text-tertiary)]'}`}>
-                        {item.downloadsToday > 0 ? `+${item.downloadsToday}` : '—'}
-                      </div>
+                      <div className="text-[10px] text-[var(--color-text-tertiary)] mb-0.5">{hasInstallers ? 'Installers 7d' : 'Week'}</div>
+                      <div className="text-[12px] font-semibold tabular-nums text-[var(--color-text-primary)]">{formatNumber(weekValue)}</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-[10px] text-[var(--color-text-tertiary)] mb-0.5">Week</div>
-                      <div className="text-[12px] font-medium tabular-nums text-[var(--color-text-secondary)]">
-                        {formatNumber(item.downloadsWeek)}
-                      </div>
+                      <div className="text-[10px] text-[var(--color-text-tertiary)] mb-0.5">{hasInstallers ? 'vs prev' : 'Today'}</div>
+                      <div className={`text-[12px] font-semibold tabular-nums ${secondClass}`}>{secondValue}</div>
                     </div>
                     <div className="text-center">
                       <div className="text-[10px] text-[var(--color-text-tertiary)] mb-0.5">Month</div>
-                      <div className="text-[12px] font-medium tabular-nums text-[var(--color-text-secondary)]">
-                        {formatNumber(item.downloadsMonth)}
-                      </div>
+                      <div className="text-[12px] font-medium tabular-nums text-[var(--color-text-secondary)]">{formatNumber(item.downloadsMonth)}</div>
                     </div>
                     <div className="text-center">
                       <div className="text-[10px] text-[var(--color-text-tertiary)] mb-0.5">Total</div>
-                      <div className="text-[12px] font-bold tabular-nums text-[var(--color-text-primary)]">
-                        {formatNumber(item.downloadsTotal)}
-                      </div>
+                      <div className="text-[12px] font-medium tabular-nums text-[var(--color-text-secondary)]">{formatNumber(item.downloadsTotal)}</div>
                     </div>
                   </div>
                 </div>
@@ -472,6 +475,11 @@ export default function TrendingView() {
             })}
           </div>
         </div>
+        {hasInstallers && (
+          <p className="mt-3 text-[11px] text-[var(--color-text-tertiary)]">
+            Installers are unique IPv4 addresses or IPv6 /64 networks, after dropping addresses with more than 50 installs in a day. Month and Total count every install. Sponsored placements never change this ranking.
+          </p>
+        )}
       </div>
 
       </>

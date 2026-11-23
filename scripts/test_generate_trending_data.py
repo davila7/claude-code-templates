@@ -170,5 +170,78 @@ class ClientSplitTest(unittest.TestCase):
         self.assertEqual(split["since"], expected)
 
 
+SUMMARY = {
+    "asOf": "2026-11-20",
+    "computedAt": "2026-11-20T02:30:00+00:00",
+    "totalInstallers": 1000,
+    "monthly": [{"month": "2026-10", "new": 600, "cumulative": 600},
+                {"month": "2026-11", "new": 400, "cumulative": 1000}],
+    "window": {"current": 300, "previous": 250, "returning": 40},
+    "components": [
+        {"type": "agent", "name": "database/database-architect", "current": 120, "previous": 20},
+        {"type": "agent", "name": "development/steady", "current": 200, "previous": 190},
+        {"type": "skill", "name": "x/not-in-catalog", "current": 90, "previous": 1},
+        {"type": "function-hook", "name": "security/secret-redactor", "current": 30, "previous": 2},
+    ],
+}
+
+CATALOG = {
+    ("agent", "database-architect"): [{"path": "database/database-architect", "category": "database"}],
+    ("agent", "steady"): [{"path": "development/steady", "category": "development"}],
+    ("mod", "secret-redactor"): [{"path": "security/secret-redactor", "category": "security"}],
+}
+
+
+class InstallerSummaryTest(unittest.TestCase):
+    def rows(self):
+        return ([download("agent", "database/database-architect")] * 3
+                + [download("agent", "development/steady")] * 9
+                + [download("skill", "x/not-in-catalog")] * 5
+                + [download("function-hook", "security/secret-redactor")])
+
+    def test_lists_rank_by_installers_when_the_summary_exists(self):
+        data = generator.process_downloads_data(self.rows(), installer_summary=SUMMARY, catalog=CATALOG)
+        agents = data["trending"]["agents"]
+        self.assertEqual([a["name"] for a in agents], ["steady", "database-architect"])
+        self.assertEqual(agents[1]["installersWeek"], 120)
+        self.assertEqual(agents[1]["path"], "database/database-architect")
+
+    def test_rising_keeps_catalog_components_with_a_real_gain(self):
+        data = generator.process_downloads_data(self.rows(), installer_summary=SUMMARY, catalog=CATALOG)
+        names = [r["name"] for r in data["rising"]]
+        # not-in-catalog has no path; steady gained only 5%; the mod's legacy
+        # type folds into mods.
+        self.assertEqual(names, ["database-architect", "secret-redactor"])
+        self.assertEqual(data["rising"][1]["type"], "mods")
+
+    def test_installers_block(self):
+        data = generator.process_downloads_data(self.rows(), installer_summary=SUMMARY, catalog=CATALOG,
+                                                added_this_month=7)
+        block = data["installers"]
+        self.assertEqual(block["total"], 1000)
+        self.assertEqual(block["activeWeek"], 300)
+        self.assertEqual(block["returningWeek"], 40)
+        self.assertEqual(block["addedThisMonth"], 7)
+        self.assertEqual(block["monthly"][-1]["cumulative"], 1000)
+
+    def test_without_summary_lists_rank_by_downloads_and_nothing_is_added(self):
+        data = generator.process_downloads_data(self.rows(), catalog=CATALOG)
+        self.assertIsNone(data["installers"])
+        self.assertEqual(data["rising"], [])
+        self.assertNotIn("installersWeek", data["trending"]["agents"][0])
+        self.assertEqual(data["trending"]["agents"][0]["name"], "steady")
+
+    def test_rising_needs_the_minimum(self):
+        small = dict(SUMMARY, components=[{"type": "agent", "name": "database/database-architect",
+                                            "current": 24, "previous": 0}])
+        data = generator.process_downloads_data(self.rows(), installer_summary=small, catalog=CATALOG)
+        self.assertEqual(data["rising"], [])
+
+    def test_catalog_match_prefers_the_category(self):
+        catalog = {("agent", "dup"): [{"path": "a/dup", "category": "a"}, {"path": "b/dup", "category": "b"}]}
+        self.assertEqual(generator.catalog_match(catalog, "agent", "dup", "b")["path"], "b/dup")
+        self.assertIsNone(generator.catalog_match(catalog, "agent", "dup", "c"))
+
+
 if __name__ == "__main__":
     unittest.main()
