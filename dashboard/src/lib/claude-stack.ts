@@ -1,0 +1,134 @@
+// "Build my stack with Claude" (/stack/armar): the browser reads a few files
+// from the user's repo and sends them to the private claude-gateway Worker
+// (claude.aitmpl.com), which runs Claude billed to the user's own Claude
+// Platform organization (Claude Platform OAuth, linked billing).
+//
+// The repo is read here, in the browser, with the GitHub token the user
+// already granted for "Send to repo" (or anonymously for a public repo).
+// The gateway never sees a GitHub token.
+
+import { normalizeItems, isStackType, type StackItem } from './stack-link.ts';
+
+// import.meta.env is undefined under node --test, hence the optional chaining.
+const env = (import.meta as { env?: Record<string, string | undefined> }).env;
+export const CLAUDE_LINK_ENABLED = env?.PUBLIC_CLAUDE_LINK_ENABLED === 'true';
+export const GATEWAY_URL = env?.PUBLIC_CLAUDE_GATEWAY_URL || 'https://claude.aitmpl.com';
+
+export const MAX_FILE_CHARS = 20_000;
+export const MAX_TREE_PATHS = 1_500;
+const MAX_WORKFLOWS = 5;
+
+// Files that say the most about a project's stack, by exact path (root) or basename.
+const ROOT_FILES = [
+  'package.json', 'pyproject.toml', 'requirements.txt', 'Pipfile', 'go.mod', 'Cargo.toml', 'Gemfile',
+  'composer.json', 'pom.xml', 'build.gradle', 'build.gradle.kts', 'mix.exs', 'pubspec.yaml', 'deno.json',
+  'README.md', 'CLAUDE.md', 'AGENTS.md', 'Dockerfile', 'docker-compose.yml', 'compose.yaml',
+  'wrangler.toml', 'vercel.json', 'netlify.toml', 'fly.toml', 'tsconfig.json', '.mcp.json',
+  '.claude/settings.json', 'turbo.json', 'pnpm-workspace.yaml',
+];
+const CONFIG_RE = /^(next|astro|vite|nuxt|svelte|remix|tailwind|vitest|jest|playwright)\.config\.(js|mjs|cjs|ts)$/;
+
+export function parseRepoName(input: string): string | null {
+  const s = input.trim().replace(/^https?:\/\/github\.com\//i, '').replace(/\/+$/, '').replace(/\.git$/, '');
+  return /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(s) ? s : null;
+}
+
+/** Which tree paths to read, in priority order. */
+export function pickFiles(paths: string[]): string[] {
+  const set = new Set(paths);
+  const picked = ROOT_FILES.filter((p) => set.has(p));
+  for (const p of paths) if (!p.includes('/') && CONFIG_RE.test(p)) picked.push(p);
+  picked.push(...paths.filter((p) => /^\.github\/workflows\/[^/]+\.ya?ml$/.test(p)).slice(0, MAX_WORKFLOWS));
+  return [...new Set(picked)];
+}
+
+/** A compact tree listing: skips vendored and build folders. */
+export function treeListing(paths: string[]): string {
+  const skip = /(^|\/)(node_modules|dist|build|\.next|vendor|\.venv|target|coverage|\.git)\//;
+  const kept = paths.filter((p) => !skip.test(p));
+  const shown = kept.slice(0, MAX_TREE_PATHS);
+  const more = kept.length - shown.length;
+  return shown.join('\n') + (more > 0 ? `\n… and ${more} more paths` : '');
+}
+
+type Fetcher = (url: string, init?: RequestInit) => Promise<Response>;
+
+async function gh<T>(path: string, token: string | null, fetcher: Fetcher, raw = false): Promise<T> {
+  const res = await fetcher(`https://api.github.com${path}`, {
+    headers: {
+      Accept: raw ? 'application/vnd.github.raw+json' : 'application/vnd.github+json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+  if (!res.ok) throw new Error(res.status === 404 ? 'Repository not found (private repos need GitHub connected)' : `GitHub API error ${res.status}`);
+  return (raw ? res.text() : res.json()) as Promise<T>;
+}
+
+export interface RepoSnapshot { name: string; files: Array<{ path: string; content: string }> }
+
+/** Reads the repo's tree plus its manifest and docs files. */
+export async function readRepo(name: string, token: string | null, fetcher: Fetcher = fetch): Promise<RepoSnapshot> {
+  const meta = await gh<{ default_branch: string }>(`/repos/${name}`, token, fetcher);
+  const tree = await gh<{ tree: Array<{ path: string; type: string }> }>(
+    `/repos/${name}/git/trees/${encodeURIComponent(meta.default_branch)}?recursive=1`, token, fetcher);
+  const paths = tree.tree.filter((t) => t.type === 'blob').map((t) => t.path);
+  const files = await Promise.all(pickFiles(paths).map(async (path) => {
+    try {
+      const content = await gh<string>(`/repos/${name}/contents/${path.split('/').map(encodeURIComponent).join('/')}?ref=${encodeURIComponent(meta.default_branch)}`, token, fetcher, true);
+      return { path, content: content.slice(0, MAX_FILE_CHARS) };
+    } catch {
+      return null;
+    }
+  }));
+  return { name, files: [{ path: '(file tree)', content: treeListing(paths) }, ...files.filter((f): f is { path: string; content: string } => f !== null)] };
+}
+
+// ---------- gateway ----------
+
+export interface StackPick { id: string; reason: string }
+export interface Recommendation {
+  summary: string;
+  components: StackPick[];
+  usage: { model: string; inputTokens: number; outputTokens: number };
+}
+
+export class GatewayError extends Error {
+  readonly code: string;
+  readonly status: number;
+  constructor(message: string, code: string, status: number) {
+    super(message);
+    this.code = code;
+    this.status = status;
+  }
+}
+
+async function call<T>(path: string, token: string, init: RequestInit = {}, fetcher: Fetcher = fetch): Promise<T> {
+  const res = await fetcher(`${GATEWAY_URL}${path}`, {
+    ...init,
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', ...(init.headers || {}) },
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new GatewayError(data.message || `Request failed (${res.status})`, data.error || 'error', res.status);
+  return data as T;
+}
+
+export const linkStatus = (token: string) => call<{ linked: boolean; linkedAt: string | null }>('/link/status', token);
+export const startLink = (token: string) => call<{ authorizeUrl: string }>('/link/start', token, { method: 'POST', body: '{}' });
+export const forgetLink = (token: string) => call<{ linked: false }>('/link/forget', token, { method: 'POST', body: '{}' });
+export const recommend = (token: string, repo: RepoSnapshot, model?: string) =>
+  call<Recommendation>('/stack/recommend', token, { method: 'POST', body: JSON.stringify({ repo, ...(model ? { model } : {}) }) });
+
+// ---------- picks -> install ----------
+
+/** Splits picks into stack-link items (the 8 CLI types) and plugins (own command). */
+export function splitPicks(picks: StackPick[]): { items: StackItem[]; plugins: string[] } {
+  const raw: Array<{ type: string; path: string }> = [];
+  const plugins: string[] = [];
+  for (const p of picks) {
+    const [type, ...rest] = p.id.split('/');
+    const path = rest.join('/');
+    if (type === 'plugins') plugins.push(path);
+    else if (isStackType(type)) raw.push({ type, path });
+  }
+  return { items: normalizeItems(raw), plugins };
+}
