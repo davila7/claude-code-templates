@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "flowfeed": {
+      "description": "FlowFeed MCP - Real-time macro, forex and crypto news for AI assistants: Bloomberg, the FT, 8 central banks (Fed, ECB, BoE, BoJ, BoC, SNB, RBA, RBNZ), US statistics agencies, 20+ newsrooms and market Telegram channels, plus the economic calendar and official central bank releases. Remote server hosted by flowfeed.cc (paid, $9/month). Uses OAuth (Sign in with your FlowFeed key); a Bearer key on https://mcp.flowfeed.cc is also supported. Read-only tools.",
+      "type": "http",
+      "url": "https://mcp.flowfeed.cc/mcp"
+    }
+  }
+}
