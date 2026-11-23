@@ -55,7 +55,7 @@ Skip test directories, fixtures, and generated code, but note them separately ra
 Match the two lists case-sensitively (most runtimes treat them that way) and sort findings into:
 
 1. **Used but never declared** — the dangerous one. The code reads it, nothing defines it, and the failure mode depends on the framework: a crash at boot, an empty default that corrupts data, or a silent fallback to the wrong environment.
-2. **Declared but never used** — dead config. Usually leftovers from a removed feature. Flag for deletion, not for wiring up.
+2. **Declared but never used** — dead config. Usually leftovers from a removed feature. Flag for deletion, not for wiring up. Read where the declaration is consumed before calling it dead: a variable interpolated inside `docker-compose.yml` itself (`ports: ["${HOST_PORT}:80"]`) is used by compose, so it is neither dead nor missing, and it gets its own line in the report rather than either of the two buckets above.
 3. **Name mismatches** — `DATABASE_URL` in compose but `DB_URL` in code, or `API_KEY` vs `APIKEY`. Check for prefix conventions too: frontend builds gate on prefixes like `VITE_`, `NEXT_PUBLIC_`, `REACT_APP_`, and a variable without its prefix never reaches the client bundle.
 4. **Defaults that disagree** — the same variable with one default in docker-compose and another in code. Report both values and both file locations.
 5. **Secret-looking values in committed files** — `.env` files checked into git, or real values in `.env.example` instead of placeholders. Report location only; never echo the value.
@@ -71,7 +71,7 @@ Suggested fixes are edits to the config files, not to the code, unless the code 
 - Compose interpolation like `${DB_HOST:-localhost}` is both a declaration and a default; treat it as such.
 - Some projects build variable names dynamically (`env["SETTING_" + key]`). Flag that line instead of guessing the names.
 - Monorepos: run per service, since each service has its own deployment surface and merging the lists produces false matches.
-- Framework shorthands (`DATABASE_URL` for ORMs, `PORT`, `NODE_ENV`, `RAILS_MASTER_KEY`, `AWS_*` for SDKs) have implicit provider defaults. Mark them "provider default exists" rather than "never declared" so the report stays honest.
+- Framework shorthands that a provider fills in on its own (`PORT` under Platform.sh/Heroku-style platforms, `NODE_ENV`, `RAILS_MASTER_KEY`, `AWS_REGION` and the `AWS_*` credentials the SDKs read themselves) have real provider defaults. Mark those "provider default exists" rather than "never declared" so the report stays honest. The list stays short on purpose: a familiar name is not a default. `DATABASE_URL` is the clearest trap — the ORM recognizes the name, but neither the ORM nor the name brings a database with it, so a missing `DATABASE_URL` is reported as used but never declared, not as covered.
 
 ## Report Format
 
