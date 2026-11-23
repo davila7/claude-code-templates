@@ -183,9 +183,5 @@ The companion skills below live in the full FullStack AI Business System — not
 - **Marketing Strategist** (full kit): Integrate into funnel design and campaign planning
 - **Product Manager** (full kit): Structure product tiers and feature bundling
 
-Full system — 6 agents, 39 commands, 47 skills, CMO Engine: https://hoangbio.gumroad.com/l/fullstack-ai-business-system
 
 Use this skill to create offers so compelling that prospects feel they'd be foolish to pass them up.
-
----
-> Part of the free FullStack AI Starter — Offer Agent + market-research, competitor-analysis and offer-packaging skills + /offer command. Full system (6 agents, 39 commands, 47 skills, CMO Engine): https://hoangbio.gumroad.com/l/fullstack-ai-business-system — Guide: https://aifullstack.site/en/
