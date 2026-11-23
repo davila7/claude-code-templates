@@ -24,7 +24,7 @@ const KINDS: { key: Kind; label: string; hint: string; color: string }[] = [
   { key: 'nonInteractive', label: 'Scripts', hint: 'No terminal and no agent: CI-like scripts, pipes', color: 'var(--color-text-tertiary)' },
 ];
 
-const AGENT_NAMES: Record<string, string> = {
+export const AGENT_NAMES: Record<string, string> = {
   claude: 'Claude Code',
   cowork: 'Claude Cowork',
   cursor: 'Cursor',

@@ -1,0 +1,78 @@
+---
+// Share page for one component's place on /trending: what a "Post on X" or
+// "Copy link" from the trending page points to. Its og:image is rendered at
+// build time from the same trending-data.json (scripts/generate-og-images.mjs).
+// A component that has left the lists since the link was shared redirects to
+// its component page, so old links never 404.
+import DashboardLayout from '../../../layouts/DashboardLayout.astro';
+import TopBar from '../../../components/TopBar.astro';
+import SearchModal from '../../../components/SearchModal.tsx';
+import TrendingShareMenu from '../../../components/TrendingShareMenu.tsx';
+import { fetchTrendingData } from '../../../lib/data';
+import { componentPath } from '../../../lib/component-url';
+import {
+  type TrendingShareData, findShareEntry, formatName, formatNumber, pctChange, safePath,
+  shareImagePath, shareText, sharePath,
+} from '../../../lib/trending-share';
+
+export const prerender = false;
+
+const { type = '', slug = '' } = Astro.params;
+const path = safePath(slug);
+if (!/^[a-z]+$/.test(type) || !path) return Astro.rewrite('/404');
+
+const data = await fetchTrendingData<TrendingShareData & { installers?: { asOf?: string } }>();
+const entry = data ? findShareEntry(data, type, path) : null;
+if (!entry) return Astro.redirect(componentPath(type, path), 302);
+
+const name = formatName(entry.name);
+const url = new URL(sharePath(entry.type, entry.path), Astro.site).href;
+const change = entry.installersWeek !== null && entry.installersPrevWeek !== null
+  ? pctChange(entry.installersWeek, entry.installersPrevWeek)
+  : null;
+const stats: [string, string][] = [];
+if (entry.installersWeek !== null) stats.push([entry.installersWeek.toLocaleString('en-US'), 'unique installers, last 7 days']);
+if (change !== null) stats.push([`${change > 0 ? '+' : ''}${change}%`, 'vs the previous 7 days']);
+else if (entry.installersWeek) stats.push(['New', 'no installs the previous 7 days']);
+stats.push([formatNumber(entry.downloadsTotal), 'installs, all time']);
+const asOf = data?.installers?.asOf;
+---
+
+<DashboardLayout
+  title={`${name} is ${entry.headline} | Claude Code Templates`}
+  description={shareText(entry)}
+  ogImage={shareImagePath(entry.type, entry.path)}
+  ogImageAlt={`${name}: ${entry.headline} on Claude Code Templates`}
+  noindex
+>
+  <TopBar />
+  <main class="px-6 py-10 max-w-3xl">
+    <p class="text-[11px] font-semibold uppercase tracking-wider text-[var(--color-accent)]">Trending on aitmpl.com{asOf ? ` · week ending ${asOf}` : ''}</p>
+    <h1 class="mt-2 text-[28px] leading-tight font-bold text-[var(--color-text-primary)]" style="text-wrap: balance">
+      {name} is {entry.headline}
+    </h1>
+    <p class="mt-1 text-[13px] text-[var(--color-text-tertiary)]">{entry.category} · {entry.type}</p>
+
+    <dl class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
+      {stats.map(([value, label]) => (
+        <div class="bg-[var(--color-surface-1)] border border-[var(--color-border)] rounded-xl px-4 py-3.5">
+          <dt class="sr-only">{label}</dt>
+          <dd class="text-[22px] font-bold tabular-nums text-[var(--color-text-primary)] leading-none">{value}</dd>
+          <div aria-hidden="true" class="mt-1.5 text-[11px] text-[var(--color-text-tertiary)]">{label}</div>
+        </div>
+      ))}
+    </dl>
+
+    <div class="mt-6 flex flex-wrap items-center gap-2">
+      <a href={componentPath(entry.type, entry.path)} class="inline-flex items-center rounded-lg bg-[var(--color-accent)] px-4 py-2 text-[13px] font-medium text-white">View and install</a>
+      <a href="/trending" class="inline-flex items-center rounded-lg border border-[var(--color-border)] px-4 py-2 text-[13px] font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]">See everything trending</a>
+      <TrendingShareMenu client:idle source="share_page" url={url} text={shareText(entry)} component={{ type: entry.type, path: entry.path }} />
+    </div>
+
+    <p class="mt-8 text-[11px] text-[var(--color-text-tertiary)] max-w-prose">
+      Installers are unique IPv4 addresses or IPv6 /64 networks, after dropping addresses with more than 50 installs in a day.
+      Rankings come from installs only; sponsored placements never change them.
+    </p>
+  </main>
+  <SearchModal client:idle />
+</DashboardLayout>
