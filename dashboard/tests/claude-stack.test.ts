@@ -1,6 +1,6 @@
 import { describe, it, mock } from 'node:test';
 import assert from 'node:assert/strict';
-import { parseRepoName, pickFiles, readRepo, splitPicks, treeListing } from '../src/lib/claude-stack.ts';
+import { parseRepoName, pickFiles, readRepo, redactSecrets, splitPicks, treeListing } from '../src/lib/claude-stack.ts';
 
 describe('parseRepoName', () => {
   it('accepts owner/name and github URLs', () => {
@@ -21,11 +21,43 @@ describe('pickFiles', () => {
     assert.ok(!picked.includes('apps/web/package.json'));
     assert.equal(picked.filter((p) => p.startsWith('.github/')).length, 5);
   });
+  it('never reads files that usually hold credentials', () => {
+    const picked = pickFiles(['.env', '.env.local', '.mcp.json', '.claude/settings.json', '.claude/settings.local.json',
+      'docker-compose.yml', 'compose.yaml', '.npmrc', 'package.json']);
+    assert.deepEqual(picked, ['package.json']);
+  });
+});
+
+describe('redactSecrets', () => {
+  it('redacts tokens, keys and credential assignments', () => {
+    const fake = {
+      ant: 'sk-ant-' + 'a'.repeat(30), gh: 'ghp_' + 'b'.repeat(36), aws: 'AKIA' + 'C'.repeat(16),
+      jwt: 'eyJ' + 'h'.repeat(20) + '.' + 'p'.repeat(20) + '.' + 's'.repeat(20),
+    };
+    const text = [
+      `ANTHROPIC_API_KEY=${fake.ant}`, `token: ${fake.gh}`, `aws ${fake.aws}`, `auth ${fake.jwt}`,
+      'DATABASE_URL=postgres://user:hunter2pass@db.example.com/app', 'password = "correcthorsebattery"',
+      '-----BEGIN PRIVATE KEY-----\nMIIabc\n-----END PRIVATE KEY-----',
+    ].join('\n');
+    const out = redactSecrets(text);
+    for (const v of [...Object.values(fake), 'hunter2pass', 'correcthorsebattery', 'MIIabc']) assert.ok(!out.includes(v), v);
+  });
+  it('keeps references to env vars and ordinary text', () => {
+    const text = 'apiKey: process.env.API_KEY\ntoken: ${{ secrets.NPM_TOKEN }}\n"dependencies": { "react": "^19.0.0" }';
+    assert.equal(redactSecrets(text), text);
+  });
 });
 
 describe('treeListing', () => {
   it('skips vendored folders', () => {
     assert.equal(treeListing(['node_modules/a/b.js', 'src/a.ts']), 'src/a.ts');
+  });
+});
+
+describe('splitPicks plugin names', () => {
+  it('drops plugin ids that are not plain names', () => {
+    const { plugins } = splitPicks([{ id: 'plugins/ok/name', reason: '' }, { id: 'plugins/x;rm -rf ~', reason: '' }, { id: 'plugins/../x', reason: '' }]);
+    assert.deepEqual(plugins, ['ok/name']);
   });
 });
 

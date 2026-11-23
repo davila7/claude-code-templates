@@ -18,14 +18,37 @@ export const MAX_FILE_CHARS = 20_000;
 export const MAX_TREE_PATHS = 1_500;
 const MAX_WORKFLOWS = 5;
 
-// Files that say the most about a project's stack, by exact path (root) or basename.
+// Files that say the most about a project's stack, by exact root path. Files that
+// commonly carry credentials (.env*, .mcp.json, .claude/settings*.json, compose
+// files with environment blocks, .npmrc) are deliberately not read.
 const ROOT_FILES = [
   'package.json', 'pyproject.toml', 'requirements.txt', 'Pipfile', 'go.mod', 'Cargo.toml', 'Gemfile',
   'composer.json', 'pom.xml', 'build.gradle', 'build.gradle.kts', 'mix.exs', 'pubspec.yaml', 'deno.json',
-  'README.md', 'CLAUDE.md', 'AGENTS.md', 'Dockerfile', 'docker-compose.yml', 'compose.yaml',
-  'wrangler.toml', 'vercel.json', 'netlify.toml', 'fly.toml', 'tsconfig.json', '.mcp.json',
-  '.claude/settings.json', 'turbo.json', 'pnpm-workspace.yaml',
+  'README.md', 'CLAUDE.md', 'AGENTS.md', 'Dockerfile',
+  'wrangler.toml', 'vercel.json', 'netlify.toml', 'fly.toml', 'tsconfig.json',
+  'turbo.json', 'pnpm-workspace.yaml',
 ];
+
+// Second line of defense for what is read: anything that looks like a credential
+// is replaced before it leaves the browser.
+const SECRET_PATTERNS: RegExp[] = [
+  /-----BEGIN [A-Z ]*PRIVATE KEY-----[\s\S]*?-----END [A-Z ]*PRIVATE KEY-----/g,
+  /\b(sk-ant-[A-Za-z0-9_-]{10,}|sk-[A-Za-z0-9_-]{20,}|sk_(live|test)_[A-Za-z0-9]{10,}|rk_(live|test)_[A-Za-z0-9]{10,}|whsec_[A-Za-z0-9]{10,})\b/g,
+  /\b(gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|glpat-[A-Za-z0-9_-]{20,}|xox[abprs]-[A-Za-z0-9-]{10,}|npm_[A-Za-z0-9]{30,})\b/g,
+  /\b(AKIA|ASIA)[A-Z0-9]{16}\b/g,
+  /\bAIza[A-Za-z0-9_-]{35}\b/g,
+  /\beyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\b/g,
+  /\b[a-z][a-z0-9+.-]*:\/\/[^\s:@\/]+:[^\s@\/]+@/gi,
+];
+const SECRET_ASSIGN = /((?:api[_-]?key|secret|token|passw(?:or)?d|private[_-]?key|access[_-]?key|client[_-]?secret|auth)[A-Za-z0-9_-]*["']?\s*[:=]\s*["']?)([^\s"',;}{]{8,})/gi;
+
+/** Replaces credential-looking values with [redacted]. */
+export function redactSecrets(text: string): string {
+  let out = text;
+  for (const re of SECRET_PATTERNS) out = out.replace(re, '[redacted]');
+  return out.replace(SECRET_ASSIGN, (_, key: string, value: string) =>
+    /^(\$\{|\$\(|process\.env|os\.environ|env\(|<|\[redacted\]|true$|false$|null$|undefined$)/i.test(value) ? key + value : key + '[redacted]');
+}
 const CONFIG_RE = /^(next|astro|vite|nuxt|svelte|remix|tailwind|vitest|jest|playwright)\.config\.(js|mjs|cjs|ts)$/;
 
 export function parseRepoName(input: string): string | null {
@@ -75,7 +98,7 @@ export async function readRepo(name: string, token: string | null, fetcher: Fetc
   const files = await Promise.all(pickFiles(paths).map(async (path) => {
     try {
       const content = await gh<string>(`/repos/${name}/contents/${path.split('/').map(encodeURIComponent).join('/')}?ref=${encodeURIComponent(meta.default_branch)}`, token, fetcher, true);
-      return { path, content: content.slice(0, MAX_FILE_CHARS) };
+      return { path, content: redactSecrets(content.slice(0, MAX_FILE_CHARS)) };
     } catch {
       return null;
     }
@@ -104,6 +127,8 @@ export class GatewayError extends Error {
 
 async function call<T>(path: string, token: string, init: RequestInit = {}, fetcher: Fetcher = fetch): Promise<T> {
   const res = await fetcher(`${GATEWAY_URL}${path}`, {
+    // /link/start sets the HttpOnly cookie that binds the OAuth callback to this browser.
+    credentials: 'include',
     ...init,
     headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', ...(init.headers || {}) },
   });
@@ -127,7 +152,7 @@ export function splitPicks(picks: StackPick[]): { items: StackItem[]; plugins: s
   for (const p of picks) {
     const [type, ...rest] = p.id.split('/');
     const path = rest.join('/');
-    if (type === 'plugins') plugins.push(path);
+    if (type === 'plugins') { if (/^[a-z0-9][a-z0-9._-]*(\/[a-z0-9][a-z0-9._-]*)?$/i.test(path)) plugins.push(path); }
     else if (isStackType(type)) raw.push({ type, path });
   }
   return { items: normalizeItems(raw), plugins };
