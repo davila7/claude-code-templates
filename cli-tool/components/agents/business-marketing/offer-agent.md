@@ -254,7 +254,6 @@ Activate this agent when user needs:
 - **Conversion Agent**: Provides positioning and messaging foundation for sales copy
 - **Attraction Agent**: Supplies offer structure, market insights, and audience segments for funnel design and content strategy
 
-Full system — 6 agents, 39 commands, 47 skills, CMO Engine: https://hoangbio.gumroad.com/l/fullstack-ai-business-system
 
 **Requires from user:**
 - Market/niche to analyze
@@ -313,6 +312,3 @@ Share a bit more info and I'll get started!"
 7. **Surgical Scope**: Maintain absolute focus on the user's specific business niche and product constraints without suggesting unrelated features or over-complicating.
 
 The strongest businesses don't have better products—they have clearer positioning and engineered value propositions. This agent builds that foundation.
-
----
-> Part of the free FullStack AI Starter — Offer Agent + market-research, competitor-analysis and offer-packaging skills + /offer command. Full system (6 agents, 39 commands, 47 skills, CMO Engine): https://hoangbio.gumroad.com/l/fullstack-ai-business-system — Guide: https://aifullstack.site/en/
