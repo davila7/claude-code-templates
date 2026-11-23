@@ -114,7 +114,6 @@ Develop differentiation strategy:
 - **offer-packaging** - Use competitive gaps to strengthen offer positioning
 - **sales-page-blueprint** (full kit) - Leverage competitor weaknesses in sales page messaging
 
-`content-creation` and `sales-page-blueprint` live in the full FullStack AI Business System, not in this free Starter: https://hoangbio.gumroad.com/l/fullstack-ai-business-system
 
 ## Live Research Protocol
 
@@ -255,6 +254,3 @@ When live tools don't cover it, guide user to check manually:
 - Use insights to inform, not dictate, strategy
 - Share findings to build organizational awareness
 - Update positioning as market evolves
-
----
-> Part of the free FullStack AI Starter — Offer Agent + market-research, competitor-analysis and offer-packaging skills + /offer command. Full system (6 agents, 39 commands, 47 skills, CMO Engine): https://hoangbio.gumroad.com/l/fullstack-ai-business-system — Guide: https://aifullstack.site/en/
