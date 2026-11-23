@@ -5,7 +5,7 @@ license: Apache-2.0
 source: https://github.com/pixeltable/pixeltable-skill
 metadata:
   author: Pixeltable
-  version: 2.14.1
+  version: 2.14.2
   promptSignals:
     phrases: ["pixeltable", "multimodal rag", "pdf rag", "video search", "image similarity", "image semantic search", "audio transcription search", "agent memory", "vector database", "embeddings with your data", "incremental pipeline", "dataset versioning", "computed column", "embedding index", "add_embedding_index", "TableModel", "create_view", "document_splitter", "invoke_tools", "pxt schema", "pxt service", "pxt shell", "pxt errors", "pxt dashboard"]
     minScore: 6
@@ -79,7 +79,7 @@ EOF
 ```
 
 With `DO_NOT_TRACK` set to `1`, `true`, or `yes` (trimmed, case-insensitive), `--send` exits 3 and sends nothing; any other value, including empty, still sends.
-`--json` is also on `pxt usage` and `pxt feedback`.
+`--json` is also on `pxt usage`, `pxt feedback`, and `pxt functions`.
 Use placeholder data, never customer names, hosts, paths, or secrets.
 
 Provider keys on Cloud: `pxt secret set pxt://org OPENAI_API_KEY=...`, never in `pixeltable.toml`.
@@ -158,19 +158,20 @@ RAG, views, and search: [workflows.md](references/workflows.md). Do not add Hugg
 | Serving, FastAPIRouter, routes | [workflows.md](references/workflows.md) |
 | Wrong stack | [anti-patterns.md](references/anti-patterns.md) |
 
-Add video, audio, agents, or a UI by editing `app.py`. A view is either a filter (`base=Docs.where(...)`) or an iterator (`frame_iterator`, `audio_splitter`, `document_splitter`, `video_splitter`, `string_splitter`, `list_iterator`, `tile_iterator`). Check `pixeltable.functions` before writing a UDF. Start from `pxt service example` or `pxt schema example`. Do not invent a second `pxt schema update` path.
+Add video, audio, agents, or a UI by editing `app.py`. A view is either a filter (`base=Docs.where(...)`) or an iterator (`frame_iterator`, `audio_splitter`, `document_splitter`, `video_splitter`, `string_splitter`, `list_iterator`, `tile_iterator`). Check `pixeltable.functions` before writing a UDF (`pxt.list_functions()` or `pxt functions`). Start from `pxt service example` or `pxt schema example`. Do not invent a second `pxt schema update` path.
 
 ## API traps
 
 | Wrong | Correct |
 |-------|---------|
 | `openai.vision(...)` | Deprecated (the only deprecated function in `pixeltable.functions`). Use `chat_completions` with `image_url`, or `responses` |
-| `from pixeltable.iterators import ...` | The whole `pixeltable.iterators` package is a deprecated shim (`FrameIterator`, `VideoSplitter`, `DocumentSplitter`, `StringSplitter`, `AudioSplitter`, `TileIterator`). Import the function from `pixeltable.functions.*` -- e.g. `from pixeltable.functions.video import frame_iterator` |
+| `from pixeltable.iterators import ...` | Removed in 0.7.25 (the import fails). Import the function from `pixeltable.functions.*` -- e.g. `from pixeltable.functions.video import frame_iterator` |
 | `similarity(query)` | `similarity(string=query)`. Also `image=` / `audio=` / `video=` / `document=` / `vector=`; `idx=` picks among several indexes on one column |
-| Re-run with `if_exists='ignore'` to fix logic | App: edit the expression, `pxt schema update`, then `pxt recompute my_app/docs summary -f`: the update keeps the old values. Notebook: `t.alter_computed_column(summary=...)`, which recomputes it and its dependents |
+| Re-run with `if_exists='ignore'` to fix logic | That skip is for `create_*` / `add_*`, not `insert`. App: edit the expression, `pxt schema update`, then `pxt recompute my_app/docs summary -f`: the update keeps the old values. Notebook: `t.alter_computed_column(summary=...)`, which recomputes it and its dependents |
 | Change a column's type in place (`T` to `T \| None`, stored to computed, `stored=`) | `UNSUPPORTED`: the whole update applies nothing, and `--allow-destructive` does not help. A computed column: rename it (one `--allow-destructive -f` pass). A stored column: renaming drops its data, so declare `T \| None` up front |
 | `t.summary_errortype` | `t.summary.errortype` / `t.summary.errormsg`, on stored computed or media columns. `t.<col>.fileurl` / `.localpath` for media |
-| `pxt.Required[pxt.String]` | Non-nullable by default. Optional: `T \| None` |
+| `pxt.Required[pxt.String]` | Removed in 0.7.25. Non-nullable by default. Optional: `T \| None` |
+| `f'{t.title}'` / `'{}'.format(t.title)` | Raises on a Pixeltable expression. Concatenate with `+`, or `pxtf.string.format('Hello {0}', t.title)` |
 | `@pxt.udf def f(x: str)` fed a nullable column | A non-nullable parameter that receives `None` **skips the call**: the cell is `None` and `errormsg` is empty. Annotate `x: str \| None` and handle `None` in the body |
 | `whisper.load_model(...)` inside a UDF body | Weights reload on every row. Use the shipped wrapper (`pxtf.whisper.transcribe`, `clip.using(...)`), or a module-scope cached loader |
 | `recompute_columns(columns=['summary'])` | `t.recompute_columns('summary', errors_only=True)` |
@@ -207,7 +208,7 @@ t = pxt.create_table('my_project.documents', {
 }, if_exists='ignore')
 ```
 
-Types are non-nullable by default. Optional is `T | None`. Do not use `pxt.Required`.
+Types are non-nullable by default. Optional is `T | None`. `pxt.Required` was removed in 0.7.25.
 
 ```python
 from pixeltable.functions.uuid import uuid7
@@ -218,7 +219,7 @@ t = pxt.create_table('my_project.items', {
 }, primary_key=['uuid'], if_exists='ignore')
 ```
 
-Insert: `t.insert([{...}])`. Computed column:
+Insert: `t.insert([{...}])`. On a table with a primary key, `insert(..., if_exists='ignore')` skips rows whose key is already present. Computed column:
 
 ```python
 from pixeltable.functions.openai import chat_completions
