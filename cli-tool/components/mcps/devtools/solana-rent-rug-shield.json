@@ -1,7 +1,7 @@
 {
   "mcpServers": {
     "solana-rent-rug-shield": {
-      "description": "Solana security MCP server providing sub-120ms 12-layer token rug audits, Layer 9 Inner CPI drainer simulation, and read-only empty ATA SOL rent discovery.",
+      "description": "Non-custodial Solana security MCP server for 12-layer token rug audits, inner-CPI drainer simulation, and read-only SPL empty ATA rent discovery.",
       "type": "http",
       "url": "https://diary-gravity-opens-volunteer.trycloudflare.com/mcp"
     }
