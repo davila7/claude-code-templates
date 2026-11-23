@@ -60,7 +60,7 @@
 <p align="center"><sub>SPONSORED BY</sub></p>
 
 <p align="center">
-  <a href="https://proxy-seller.com/?utm_source=github&utm_medium=readme&utm_campaign=claude-code-templates">
+  <a href="https://proxy-seller.com/?partner=DKN86HR5VI69P">
     <img src="docs/sponsors/proxyseller.png" alt="Proxy-Seller" width="280" />
   </a>
 </p>
@@ -69,7 +69,7 @@
   <b>Proxy-Seller proudly supports this project.</b><br />
   Reliable proxy infrastructure for any workflow: private residential, mobile (4G/5G/LTE), ISP, and datacenter IPv4/IPv6 proxies, all with HTTP(S) and SOCKS5 support.<br />
   Residential IPs across 220+ locations, targeting by country, city, or ISP, and 24/7 support.<br /><br />
-  <a href="https://proxy-seller.com/?utm_source=github&utm_medium=readme&utm_campaign=claude-code-templates"><img src="https://img.shields.io/badge/Get%2015%25%20off-code%20CCT15-22c55e?style=for-the-badge" alt="Get 15% off with code CCT15" /></a>
+  <a href="https://proxy-seller.com/?partner=DKN86HR5VI69P"><img src="https://img.shields.io/badge/Get%2015%25%20off-code%20CCT15-22c55e?style=for-the-badge" alt="Get 15% off with code CCT15" /></a>
 </p>
 
 <picture>

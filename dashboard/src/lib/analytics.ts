@@ -33,6 +33,8 @@ export interface EventParams {
   stack_link_create: { item_count: number; source: 'stack' };
   // "Send to your computer" on a phone: the system share sheet, or copying the link where there is none.
   share_component: { kind: 'stack'; method: 'share' | 'copy'; item_count: number; source: 'stack' | 'stack_page' };
+  // Share menu on /trending and on a /trending/{type}/{path} page. component_* are empty for the page itself.
+  share_trending: { target: 'component' | 'page'; method: 'x' | 'linkedin' | 'copy_link' | 'copy_badge'; component_type?: string; component_path?: string; source: 'trending' | 'share_page' };
   // "Add to my stack" on a /s/ page, which loads its components into the cart.
   stack_open_in_builder: { item_count: number };
   save_click: ComponentRef & { signed_in: boolean };
