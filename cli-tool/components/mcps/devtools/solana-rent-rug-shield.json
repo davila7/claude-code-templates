@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "solana-rent-rug-shield": {
+      "description": "Solana security MCP server providing sub-120ms 12-layer token rug audits, Layer 9 Inner CPI drainer simulation, and read-only empty ATA SOL rent discovery.",
+      "command": "npx",
+      "args": ["-y", "@rentandrugshield/mcp-server"]
+    }
+  }
+}
