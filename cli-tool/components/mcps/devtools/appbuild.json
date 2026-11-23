@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "appbuild": {
+      "description": "AppBuild is a no-code builder of native iOS, Android and web apps for local businesses. Its hosted MCP server lets an AI assistant start wrapping an app, fetch integration prompts, send test push notifications and check build status. Connect with an account key from your AppBuild dashboard after signing in at https://appbuild.diy/auth.",
+      "type": "http",
+      "url": "https://wywxzbpuciavotvckkno.supabase.co/functions/v1/mcp-server",
+      "headers": {
+        "Authorization": "Bearer <YOUR_API_KEY>"
+      }
+    }
+  }
+}
