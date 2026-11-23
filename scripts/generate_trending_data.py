@@ -77,6 +77,159 @@ def plural_type(component_type):
         return TYPE_PLURALS[canonical]
     return canonical if canonical.endswith('s') else canonical + 's'
 
+# Unique installers come from a daily summary row that pg_cron writes in
+# Supabase (database/migrations/007_supabase_trending_installer_summary.sql):
+# the anon key cannot read ip_address, and the all-time count is too slow for
+# an anon request. Without the row (migration not applied, cron failed) the
+# page falls back to raw downloads.
+SUMMARY_MAX_AGE = timedelta(days=7)
+# "Rising this week" needs this many installers in the last 7 days, so 3 -> 9
+# does not beat 300 -> 400.
+RISING_MIN_INSTALLERS = 25
+RISING_LIMIT = 8
+
+
+def fetch_installer_summary(supabase_url, headers):
+    """Return the summary's `data` dict, or None when it is missing or stale."""
+    url = (f"{supabase_url}/rest/v1/trending_installer_summary"
+           f"?select=computed_at,data&id=eq.1")
+    try:
+        response = requests.get(url, headers=headers, timeout=30)
+    except requests.RequestException as e:
+        print(f"::warning::Installer summary unavailable ({e}); /trending shows downloads only")
+        return None
+    if response.status_code != 200:
+        print(f"::warning::Installer summary unavailable (HTTP {response.status_code}); "
+              "apply migration 007 to show unique installers")
+        return None
+    rows = response.json()
+    if not rows:
+        print("::warning::Installer summary is empty; /trending shows downloads only")
+        return None
+    computed_at = datetime.fromisoformat(rows[0]['computed_at'].replace('Z', '+00:00'))
+    if datetime.now(timezone.utc) - computed_at > SUMMARY_MAX_AGE:
+        print(f"::warning::Installer summary is stale (computed {computed_at.isoformat()}); not used")
+        return None
+    data = rows[0]['data']
+    data['computedAt'] = computed_at.isoformat()
+    return data
+
+
+def strip_ext(value):
+    for ext in ('.md', '.json'):
+        if value.endswith(ext):
+            return value[:-len(ext)]
+    return value
+
+
+def load_catalog(path='docs/components.json'):
+    """(singular type, name) -> [{'path', 'category'}] for every catalog component.
+
+    Download rows carry whatever the CLI sent, so names are only linked,
+    shared or listed as rising when they match a real catalog entry.
+    """
+    try:
+        with open(path, encoding='utf-8') as f:
+            catalog = json.load(f)
+    except (OSError, ValueError) as e:
+        print(f"::warning::Catalog not readable ({e}); trending entries get no links")
+        return {}
+    index = defaultdict(list)
+    for plural, items in catalog.items():
+        if not isinstance(items, list):
+            continue
+        singular = canonical_type(plural)
+        for c in items:
+            if not isinstance(c, dict) or not c.get('name') or not c.get('path'):
+                continue
+            index[(singular, strip_ext(c['name']))].append({
+                'path': strip_ext(c['path']).strip('/'),
+                'category': c.get('category') or '',
+            })
+    return index
+
+
+def catalog_match(catalog, component_type, name, category):
+    matches = catalog.get((component_type, name)) or []
+    for m in matches:
+        if m['category'] == category:
+            return m
+    return matches[0] if len(matches) == 1 else None
+
+
+def count_added_this_month(content_dir='dashboard/public/component-content', now=None):
+    """Components whose first commit (meta.addedAt) is in the current UTC month."""
+    now = now or datetime.now(timezone.utc)
+    month = now.strftime('%Y-%m')
+    if not os.path.isdir(content_dir):
+        return None
+    count = 0
+    for root, _, files in os.walk(content_dir):
+        if os.path.relpath(root, content_dir).split(os.sep)[0] == 'templates':
+            continue
+        for file in files:
+            if not file.endswith('.json'):
+                continue
+            try:
+                with open(os.path.join(root, file), encoding='utf-8') as f:
+                    added = (json.load(f).get('meta') or {}).get('addedAt')
+            except (OSError, ValueError):
+                continue
+            if not added:
+                continue
+            try:
+                added_utc = datetime.fromisoformat(added).astimezone(timezone.utc)
+            except ValueError:
+                continue
+            if added_utc.strftime('%Y-%m') == month:
+                count += 1
+    return count
+
+
+def row_key(component_type, component_name):
+    """Aggregation key and display name of a raw download/summary row."""
+    canonical = canonical_type(component_type)
+    actual_name = component_name.split('/')[-1]
+    category = component_name.split('/')[0] if '/' in component_name else None
+    return f"{canonical}-{actual_name}", canonical, actual_name, category
+
+
+def installer_index(summary):
+    """component key -> (installers last 7 days, installers the 7 days before)."""
+    index = {}
+    for row in (summary or {}).get('components') or []:
+        try:
+            key = row_key(row["type"], row["name"])[0]
+            cur, prev = int(row['current']), int(row['previous'])
+        except (KeyError, TypeError, ValueError):
+            continue
+        # One component can arrive under two raw names; distinct installers
+        # cannot be added up, so keep the larger window.
+        old = index.get(key, (0, 0))
+        index[key] = (max(old[0], cur), max(old[1], prev))
+    return index
+
+
+def build_installers_block(summary, added_this_month):
+    if not summary:
+        return None
+    window = summary.get('window') or {}
+    monthly = [
+        {'month': m['month'], 'new': int(m['new']), 'cumulative': int(m['cumulative'])}
+        for m in summary.get('monthly') or []
+    ]
+    return {
+        'asOf': summary.get('asOf'),
+        'computedAt': summary.get('computedAt'),
+        'total': int(summary.get('totalInstallers') or 0),
+        'monthly': monthly,
+        'activeWeek': int(window.get('current') or 0),
+        'activePrevWeek': int(window.get('previous') or 0),
+        'returningWeek': int(window.get('returning') or 0),
+        'addedThisMonth': added_this_month,
+    }
+
+
 def fetch_with_retry(url, headers, max_retries=5, timeout=60):
     """
     Fetch data from API with retry logic and exponential backoff.
@@ -235,7 +388,13 @@ def main():
 
         print(f"\n✅ Successfully fetched {len(all_downloads):,} total records from Supabase")
         print(f"📊 Processing download data to generate trending statistics...")
-        trending_data = process_downloads_data(all_downloads)
+        installer_summary = fetch_installer_summary(supabase_url, headers)
+        trending_data = process_downloads_data(
+            all_downloads,
+            installer_summary=installer_summary,
+            catalog=load_catalog(),
+            added_this_month=count_added_this_month(),
+        )
         
         # Write to JSON file
         output_file = "docs/trending-data.json"
@@ -309,8 +468,15 @@ def build_client_split(rows, chart_dates):
     }
 
 
-def process_downloads_data(downloads):
-    """Process raw download data and generate trending structure"""
+def process_downloads_data(downloads, installer_summary=None, catalog=None, added_this_month=None):
+    """Process raw download data and generate trending structure.
+
+    With an installer summary every list is ranked by unique installers in the
+    last 7 days (raw downloads break ties), and `installers` + `rising` are
+    added. Without it the lists stay ranked by weekly downloads.
+    """
+    catalog = catalog or {}
+    installers = installer_index(installer_summary)
 
     # Components to exclude from trending (test/internal components)
     EXCLUDED_COMPONENTS = {
@@ -462,17 +628,20 @@ def process_downloads_data(downloads):
             'downloadsMonth': stats['month'],
             'downloadsTotal': stats['total']
         }
+        match = catalog_match(catalog, component_type, stats['name'], stats['category'])
+        if match:
+            trending_item['path'] = match['path']
+        if installer_summary:
+            cur, prev = installers.get(component_key, (0, 0))
+            trending_item['installersWeek'] = cur
+            trending_item['installersPrevWeek'] = prev
         
         trending_by_type[component_type].append(trending_item)
     
     # Sort each type by weekly downloads (most trending)
     for component_type in trending_by_type:
-        trending_by_type[component_type].sort(
-            key=lambda x: x['downloadsWeek'], 
-            reverse=True
-        )
-        # Keep top 10 for each type
-        trending_by_type[component_type] = trending_by_type[component_type][:10]
+        trending_by_type[component_type].sort(key=rank_key, reverse=True)
+        # The per-type top 10 is cut when the buckets are merged below.
     
     # Process chart data for cumulative growth
     chart_dates = []
@@ -597,7 +766,8 @@ def process_downloads_data(downloads):
             "dates": chart_dates,
             "series": chart_series
         },
-        "clientSplit": build_client_split(client_rows, chart_dates)
+        "clientSplit": build_client_split(client_rows, chart_dates),
+        "installers": build_installers_block(installer_summary, added_this_month),
     }
     
     # Debug: Print what component types we found
@@ -611,7 +781,7 @@ def process_downloads_data(downloads):
         merged[plural_type(db_type)].extend(items)
 
     for json_type, items in merged.items():
-        items.sort(key=lambda x: x['downloadsWeek'], reverse=True)
+        items.sort(key=rank_key, reverse=True)
         trending_data['trending'][json_type] = items[:10]
         print(f"✅ Using real data for {json_type}: {len(items[:10])} items")
 
@@ -627,10 +797,43 @@ def process_downloads_data(downloads):
         all_items.extend(items)
     
     # Sort all items by weekly downloads and take top 10
-    all_items.sort(key=lambda x: x['downloadsWeek'], reverse=True)
+    all_items.sort(key=rank_key, reverse=True)
     trending_data['trending']['all'] = all_items[:10]
-    
+
+    trending_data['rising'] = build_rising(trending_by_type)
+
     return trending_data
+
+
+def rank_key(item):
+    """Unique installers this week when known, then raw weekly downloads."""
+    return (item.get('installersWeek', 0), item['downloadsWeek'])
+
+
+def build_rising(trending_by_type):
+    """Catalog components with the largest gain in weekly installers."""
+    rising = []
+    for component_type, items in trending_by_type.items():
+        for item in items:
+            cur = item.get('installersWeek')
+            prev = item.get('installersPrevWeek', 0)
+            if cur is None or 'path' not in item:
+                continue
+            # Same rule as isRising() in dashboard/src/lib/trending-share.ts.
+            if cur < RISING_MIN_INSTALLERS or (prev and cur < prev * 1.25):
+                continue
+            rising.append({
+                'type': plural_type(component_type),
+                'name': item['name'],
+                'category': item['category'],
+                'path': item['path'],
+                'installersWeek': cur,
+                'installersPrevWeek': prev,
+                'downloadsTotal': item['downloadsTotal'],
+            })
+    rising.sort(key=lambda r: (r['installersWeek'] - r['installersPrevWeek'], r['installersWeek']), reverse=True)
+    return rising[:RISING_LIMIT]
+
 
 def create_fallback_data(component_type):
     """Create fallback data for component types with no real data"""

@@ -320,3 +320,29 @@ export function getInstallCommand(component: Component): string {
   const cleanPath = component.path?.replace(/\.(md|json)$/, '') ?? component.name;
   return `npx claude-code-templates@latest ${flag} ${cleanPath}`;
 }
+
+// /trending-data.json for SSR pages (the /trending/{type}/{path} share page).
+// Same pattern as fetchComponents: local file in dev, same-site fetch in prod.
+let trendingCache: { data: unknown; ts: number } | null = null;
+
+export async function fetchTrendingData<T = unknown>(): Promise<T | null> {
+  const now = Date.now();
+  if (trendingCache && now - trendingCache.ts < CACHE_TTL) return trendingCache.data as T;
+  try {
+    let data: unknown;
+    if (typeof window === 'undefined' && import.meta.env.DEV) {
+      const fs = await import('node:fs');
+      const path = await import('node:path');
+      data = JSON.parse(fs.readFileSync(path.resolve('public/trending-data.json'), 'utf-8'));
+    } else {
+      const base = import.meta.env.SITE || 'https://www.aitmpl.com';
+      const res = await fetch(`${base}/trending-data.json`, { signal: AbortSignal.timeout(10000) });
+      if (!res.ok) return null;
+      data = await res.json();
+    }
+    trendingCache = { data, ts: now };
+    return data as T;
+  } catch {
+    return null;
+  }
+}

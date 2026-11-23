@@ -1,0 +1,49 @@
+---
+import { readFileSync, existsSync } from 'node:fs';
+import DashboardLayout from '../layouts/DashboardLayout.astro';
+import TopBar from '../components/TopBar.astro';
+import LeaderboardView, { type HarnessSplit } from '../components/LeaderboardView.tsx';
+import SearchModal from '../components/SearchModal.tsx';
+import CartSidebar from '../components/CartSidebar.tsx';
+import { LEADERBOARD_TYPES, compactList, type LeaderboardLists } from '../lib/leaderboard';
+
+// Built from the catalog files at build time: the catalog and trending
+// workflows dispatch a deploy after every regeneration, so the page follows them.
+export const prerender = true;
+
+function readJson<T>(file: string): T | null {
+  if (!existsSync(file)) return null;
+  try {
+    return JSON.parse(readFileSync(file, 'utf-8')) as T;
+  } catch {
+    return null;
+  }
+}
+
+const lists = {} as LeaderboardLists;
+for (const type of LEADERBOARD_TYPES) {
+  lists[type] = compactList(readJson<{ path?: string; downloads?: number }[]>(`public/components/${type}.json`) ?? []);
+}
+
+interface TrendingFile {
+  lastUpdated?: string;
+  rising?: { type: string; path?: string }[];
+  clientSplit?: { since: string | null; agents: { name: string; downloads: number }[] };
+}
+const trending = readJson<TrendingFile>('public/trending-data.json');
+const rising = (trending?.rising ?? []).filter((r) => r.path).map((r) => `${r.type}/${r.path}`);
+const harness: HarnessSplit | null = trending?.clientSplit
+  ? { since: trending.clientSplit.since, agents: trending.clientSplit.agents ?? [] }
+  : null;
+const lastUpdated = trending?.lastUpdated ?? null;
+---
+
+<DashboardLayout
+  title="Claude Code Components Leaderboard: Top Skills, Agents and MCPs | Claude Code Templates"
+  description="The most installed Claude Code skills, agents, commands, MCP servers, settings, hooks and mods, ranked by CLI installs and grouped by category. Sponsored placements never change the order."
+>
+  <TopBar />
+  <LeaderboardView client:load lists={lists} rising={rising} harness={harness} lastUpdated={lastUpdated} />
+  <SearchModal client:idle />
+  <CartSidebar client:idle />
+</DashboardLayout>
