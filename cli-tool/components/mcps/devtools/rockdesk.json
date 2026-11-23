@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "rockdesk": {
+      "description": "Operate another computer by its 9-digit RockDesk ID: run shell commands with real exit codes, start background jobs, copy files, take screenshots, click and type, read and set the clipboard, forward ports. Connects peer-to-peer and falls back to an end-to-end encrypted relay; no public IP, open port or SSH server needed. Install the RockDesk app on both computers first: https://rockdesk.io/#download",
+      "command": "npx",
+      "args": ["-y", "rockdesk-mcp"]
+    }
+  }
+}
