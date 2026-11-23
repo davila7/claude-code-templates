@@ -42,6 +42,3 @@ If either component is missing, the command cannot activate the Offer Agent or a
 - Use the Value Equation: Dream Outcome x Perceived Likelihood / Time Delay x Effort
 - Start with a strong core offer, then layer bonuses to increase perceived value
 - Price in USD charm pricing ($X.99) — e.g., $19.99 feels significantly less than $20
-
----
-> Part of the free FullStack AI Starter — Offer Agent + market-research, competitor-analysis and offer-packaging skills + /offer command. Full system (6 agents, 39 commands, 47 skills, CMO Engine): https://hoangbio.gumroad.com/l/fullstack-ai-business-system — Guide: https://aifullstack.site/en/
