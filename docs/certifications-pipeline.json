@@ -69,7 +69,11 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Claude",
+          "Work Tasks",
+          "Core Features"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -85,7 +89,10 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Claude Code",
+          "Development Workflow"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -101,7 +108,11 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Claude Platform",
+          "APIs",
+          "Development"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -117,14 +128,19 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Claude",
+          "Cowork",
+          "Hands-on",
+          "Workflows"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
         "id": "anthropic-introduction-to-claude-cowork",
         "kind": "course",
         "title": "Introduction to Claude Cowork",
-        "description": "Learn to work alongside Claude on your real files and projects. This hands-on course covers the Cowork task loop, plugins and skills, file and research workflows, and how to steer multi-step work responsibly.",
+        "description": "Learn to work alongside Claude on your real files and projects. This hands-on course covers the Cowork task loop, plugins and skills, file and research workflows, and how to steer multi-step work responsibly — so you're productive in your first week.",
         "url": "https://anthropic.skilljar.com/introduction-to-claude-cowork"
       },
       {
@@ -133,7 +149,10 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Claude Code",
+          "Automation"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -149,7 +168,11 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "AI Fluency",
+          "Collaboration",
+          "Ethics"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -165,7 +188,10 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Claude API",
+          "Anthropic Models"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -181,7 +207,12 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Model Context Protocol",
+          "Python",
+          "Servers",
+          "Clients"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -197,7 +228,11 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "AI Fluency",
+          "Education",
+          "Institutional Strategy"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -213,7 +248,12 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "AI Fluency",
+          "Students",
+          "Learning",
+          "Career Planning"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -229,7 +269,10 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Model Context Protocol",
+          "Advanced Topics"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -245,7 +288,11 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Claude",
+          "Amazon Bedrock",
+          "Training"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -261,7 +308,11 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Claude",
+          "Google Cloud",
+          "Anthropic Models"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -277,7 +328,11 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "AI Fluency",
+          "Teaching",
+          "Assessment"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -293,7 +348,11 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "AI Fluency",
+          "Nonprofits",
+          "Organizational Impact"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -309,7 +368,12 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Agent Skills",
+          "Claude Code",
+          "Configuration",
+          "Collaboration"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -325,7 +389,11 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Subagents",
+          "Claude Code",
+          "Workflow Management"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -341,7 +409,10 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "AI",
+          "Introduction"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -357,7 +428,11 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "AI Fluency",
+          "Small Businesses",
+          "Organizational Impact"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -373,7 +448,11 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "AI Fluency",
+          "Builders",
+          "Problem Solving"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -389,7 +468,11 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "AI Fluency",
+          "Creative Work",
+          "Decision Making"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -405,7 +488,11 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Claude Enterprise",
+          "Deployment",
+          "Governance"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -423,7 +510,13 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "AI tools",
+          "Software development",
+          "Programming productivity",
+          "AI models",
+          "Developer tools"
+        ],
         "source": "cursor-learn",
         "price": null,
         "id": "cursor-ai-foundations",
@@ -442,8 +535,7 @@
         "eligibility": "public",
         "topics": [
           "AI",
-          "Basics",
-          "Large Language Models",
+          "Foundations",
           "ChatGPT"
         ],
         "source": "openai-academy",
@@ -462,8 +554,8 @@
         "eligibility": "public",
         "topics": [
           "AI",
-          "Workflows",
-          "ChatGPT"
+          "Applied",
+          "Workflows"
         ],
         "source": "openai-academy",
         "price": null,
@@ -500,8 +592,7 @@
         "eligibility": "public",
         "topics": [
           "AI",
-          "Solutions",
-          "Opportunity Identification"
+          "Solutions"
         ],
         "source": "openai-academy",
         "price": null,
@@ -519,8 +610,8 @@
         "eligibility": "public",
         "topics": [
           "AI",
-          "Evaluation",
-          "Quality Assurance"
+          "Applications",
+          "Evaluation"
         ],
         "source": "openai-academy",
         "price": null,
@@ -539,7 +630,7 @@
         "topics": [
           "AI",
           "Design",
-          "Agent Systems"
+          "Agentic Systems"
         ],
         "source": "openai-academy",
         "price": null,
@@ -557,8 +648,7 @@
         "eligibility": "public",
         "topics": [
           "AI",
-          "Retrieval-Augmented Generation",
-          "Pipelines"
+          "Retrieval-Augmented Generation"
         ],
         "source": "openai-academy",
         "price": null,
@@ -595,8 +685,7 @@
         "eligibility": "public",
         "topics": [
           "Codex",
-          "Task Management",
-          "Review Process"
+          "Programming"
         ],
         "source": "openai-academy",
         "price": null,
@@ -614,8 +703,7 @@
         "eligibility": "public",
         "topics": [
           "Codex",
-          "Workflows",
-          "Governance"
+          "Workflows"
         ],
         "source": "openai-academy",
         "price": null,
@@ -633,8 +721,7 @@
         "eligibility": "public",
         "topics": [
           "Codex",
-          "Scale",
-          "Team Coordination"
+          "Teams"
         ],
         "source": "openai-academy",
         "price": null,
@@ -652,8 +739,7 @@
         "eligibility": "public",
         "topics": [
           "AI",
-          "Leadership",
-          "Business Strategy"
+          "Leadership"
         ],
         "source": "openai-academy",
         "price": null,
@@ -672,7 +758,7 @@
         "topics": [
           "AI",
           "Education",
-          "Teaching Materials"
+          "Teaching"
         ],
         "source": "openai-academy",
         "price": null,
@@ -691,14 +777,14 @@
         "topics": [
           "AI",
           "Education",
-          "Career Development"
+          "College"
         ],
         "source": "openai-academy",
         "price": null,
         "id": "openai-ai-for-college-students-gxgmr",
         "kind": "course",
         "title": "AI for College Students",
-        "description": "Learn how to use ChatGPT for practical study and career tasks.",
+        "description": "Learn how to use ChatGPT for practical study and career tasks. You’ll practice planning study and group work, reviewing responses critically, and preparing for applications and interviews.",
         "url": "https://academy.openai.com/public/courses/ai-for-college-students-gxgmr"
       }
     ],
@@ -714,7 +800,7 @@
         "id": "vercel-agent-friendly-apis",
         "kind": "course",
         "title": "Agent-Friendly APIs",
-        "description": "Build a feedback API, then build a Claude Code skill that generates the documentation agents need to use it.",
+        "description": "Agent-Friendly APIs",
         "url": "https://vercel.com/academy/agent-friendly-apis"
       },
       {
@@ -728,7 +814,7 @@
         "id": "vercel-build-and-launch-with-ai",
         "kind": "course",
         "title": "Build and Launch with AI",
-        "description": "Build and launch a website for Small Hours Studio with AI. Start in v0, add workshop pages and an email inquiry form, and learn to publish your own updates with fx, GitHub, and Vercel. No coding experience required.",
+        "description": "Build and Launch with AI",
         "url": "https://vercel.com/academy/build-and-launch-with-ai"
       },
       {
@@ -742,7 +828,7 @@
         "id": "vercel-workflow-foundations",
         "kind": "course",
         "title": "Build Durable Workflows",
-        "description": "Learn the foundations of the Workflow SDK by building a pizza order tracker. Durable, resumable code with two directives and no state machines.",
+        "description": "Build Durable Workflows",
         "url": "https://vercel.com/academy/workflow-foundations"
       },
       {
@@ -756,7 +842,7 @@
         "id": "vercel-visual-workflow-builder-on-vercel",
         "kind": "course",
         "title": "Build Visual Workflow Plugins on Vercel",
-        "description": "Deploy a visual workflow builder on Vercel and extend it with plugins for the APIs you actually use. Learn Vercel Workflow fundamentals along the way.",
+        "description": "Build Visual Workflow Plugins on Vercel",
         "url": "https://vercel.com/academy/visual-workflow-builder-on-vercel"
       },
       {
@@ -770,7 +856,7 @@
         "id": "vercel-nextjs-foundations",
         "kind": "course",
         "title": "Build with Next.js",
-        "description": "Learn Next.js by building real apps. Work through routing, data fetching, caching, forms, and error handling, then deploy everything to Vercel.",
+        "description": "Build with Next.js",
         "url": "https://vercel.com/academy/nextjs-foundations"
       },
       {
@@ -784,7 +870,7 @@
         "id": "vercel-v0-foundations",
         "kind": "course",
         "title": "Build with v0",
-        "description": "Build, customize, and ship a real website with v0. No code required.",
+        "description": "Build with v0",
         "url": "https://vercel.com/academy/v0-foundations"
       },
       {
@@ -798,7 +884,7 @@
         "id": "vercel-build-ai-agent-harness",
         "kind": "course",
         "title": "Build Your Own AI Coding Agent Harness",
-        "description": "Build an AI coding agent harness from scratch using AI SDK, Vercel Sandbox, and just-bash. Covers the tool loop, tool design, system prompts, sandbox abstraction, context pruning, subagent delegation, lifecycle management, and extensibility.",
+        "description": "Build Your Own AI Coding Agent Harness",
         "url": "https://vercel.com/academy/build-ai-agent-harness"
       },
       {
@@ -812,7 +898,7 @@
         "id": "vercel-ai-sdk",
         "kind": "course",
         "title": "Builders Guide to the AI SDK",
-        "description": "Build production-ready AI features with the AI SDK & Next.js. Learn LLMs, prompting, extraction, streaming, & more.",
+        "description": "Builders Guide to the AI SDK",
         "url": "https://vercel.com/academy/ai-sdk"
       },
       {
@@ -826,7 +912,7 @@
         "id": "vercel-building-agents-with-eve",
         "kind": "course",
         "title": "Building Agents with eve",
-        "description": "Build a production bike shop dispatcher agent with eve, from its first typed tool to a deployed app behind Slack, a web dashboard, real auth, and human approval.",
+        "description": "Building Agents with eve",
         "url": "https://vercel.com/academy/building-agents-with-eve"
       },
       {
@@ -840,7 +926,7 @@
         "id": "vercel-filesystem-agents",
         "kind": "course",
         "title": "Building Filesystem Agents",
-        "description": "Build a filesystem agent that uses bash tools and Vercel Sandbox to explore call transcripts and answer questions.",
+        "description": "Building Filesystem Agents",
         "url": "https://vercel.com/academy/filesystem-agents"
       },
       {
@@ -854,7 +940,7 @@
         "id": "vercel-creating-a-software-factory",
         "kind": "course",
         "title": "Creating a Software Factory",
-        "description": "Build a risk-routed software factory that requires evidence before code changes and preserves human control over consequential decisions.",
+        "description": "Creating a Software Factory",
         "url": "https://vercel.com/academy/creating-a-software-factory"
       },
       {
@@ -868,7 +954,7 @@
         "id": "vercel-ai-summary-app-with-nextjs",
         "kind": "course",
         "title": "Creating an AI Summary App with Next.js",
-        "description": "Build an AI-powered summary application using Next.js App Router and the Vercel AI SDK. You'll implement text summarization, structured output, caching, and production-ready patterns.",
+        "description": "Creating an AI Summary App with Next.js",
         "url": "https://vercel.com/academy/ai-summary-app-with-nextjs"
       },
       {
@@ -882,7 +968,7 @@
         "id": "vercel-foundations",
         "kind": "course",
         "title": "Deploy on Vercel",
-        "description": "A 1-hour video series covering the most important Vercel concepts. Nine short sessions to get you productive on the platform.",
+        "description": "Deploy on Vercel",
         "url": "https://vercel.com/academy/vercel-foundations"
       },
       {
@@ -896,7 +982,7 @@
         "id": "vercel-enterprise-apps-agents",
         "kind": "course",
         "title": "Enterprise Apps and Agents",
-        "description": "Take an internal AI prototype from demo to rollout: assign owners, restrict access, test model behavior, and add human approval.",
+        "description": "Enterprise Apps and Agents",
         "url": "https://vercel.com/academy/enterprise-apps-agents"
       },
       {
@@ -910,7 +996,7 @@
         "id": "vercel-subscription-store",
         "kind": "course",
         "title": "Launch a Subscription Store with Vercel and Stripe",
-        "description": "Build a production-ready subscription storefront with Next.js 16, React 19, Supabase Auth, and Stripe. Learn authentication, payments, and access control.",
+        "description": "Launch a Subscription Store with Vercel and Stripe",
         "url": "https://vercel.com/academy/subscription-store"
       },
       {
@@ -924,7 +1010,7 @@
         "id": "vercel-make-decisions-with-jev",
         "kind": "course",
         "title": "Make Decisions with Jev",
-        "description": "Use Jev to route customer messages to the right team. Start with a working contact form, teach it who handles cancellations, and test your rules with different requests.",
+        "description": "Make Decisions with Jev",
         "url": "https://vercel.com/academy/make-decisions-with-jev"
       },
       {
@@ -938,7 +1024,7 @@
         "id": "vercel-microfrontends-on-vercel",
         "kind": "course",
         "title": "Microfrontends on Vercel",
-        "description": "Build scalable, independent frontend applications with Vercel's microfrontends platform.",
+        "description": "Microfrontends on Vercel",
         "url": "https://vercel.com/academy/microfrontends-on-vercel"
       },
       {
@@ -952,7 +1038,7 @@
         "id": "vercel-nuxt-on-vercel",
         "kind": "course",
         "title": "Nuxt on Vercel",
-        "description": "Translate your React and Next.js skills to Nuxt. Build a hot springs finder app using idiomatic Nuxt patterns, from reactivity to auth to deployment.",
+        "description": "Nuxt on Vercel",
         "url": "https://vercel.com/academy/nuxt-on-vercel"
       },
       {
@@ -966,7 +1052,7 @@
         "id": "vercel-optimize-your-vercel-account",
         "kind": "course",
         "title": "Optimize Your Vercel Account",
-        "description": "Audit and tune your Vercel account for security, cost, and operations.",
+        "description": "Optimize Your Vercel Account",
         "url": "https://vercel.com/academy/optimize-your-vercel-account"
       },
       {
@@ -980,7 +1066,7 @@
         "id": "vercel-production-monorepos",
         "kind": "course",
         "title": "Production Monorepos with Turborepo",
-        "description": "Build a production monorepo from idea to enterprise scale with Turborepo and Next.js.",
+        "description": "Production Monorepos with Turborepo",
         "url": "https://vercel.com/academy/production-monorepos"
       },
       {
@@ -994,7 +1080,7 @@
         "id": "vercel-firewall",
         "kind": "course",
         "title": "Protect Your App on Vercel",
-        "description": "Deploy a lobster roll truck's website, attack it with a bundled scalper script, and protect it with Vercel Firewall.",
+        "description": "Protect Your App on Vercel",
         "url": "https://vercel.com/academy/vercel-firewall"
       },
       {
@@ -1008,7 +1094,7 @@
         "id": "vercel-python-on-vercel",
         "kind": "course",
         "title": "Python on Vercel",
-        "description": "Keep your Python stack and ship it with your frontend. Build a FastAPI + Next.js furniture app deployed as one Vercel project.",
+        "description": "Python on Vercel",
         "url": "https://vercel.com/academy/python-on-vercel"
       },
       {
@@ -1022,7 +1108,7 @@
         "id": "vercel-shadcn-ui",
         "kind": "course",
         "title": "React UI with shadcn/ui + Radix + Tailwind",
-        "description": "Learn the fundamentals of modern UI development with shadcn/ui. Master component libraries, Radix primitives, and build production-ready interfaces.",
+        "description": "React UI with shadcn/ui + Radix + Tailwind",
         "url": "https://vercel.com/academy/shadcn-ui"
       },
       {
@@ -1036,7 +1122,7 @@
         "id": "vercel-slack-agents",
         "kind": "course",
         "title": "Slack Agents on Vercel with the AI SDK",
-        "description": "Step-by-step course to build, deploy, and run a real Slack bot on Vercel using the AI SDK, with logging, safeguards, and an ops runbook for your team’s workspace.",
+        "description": "Slack Agents on Vercel with the AI SDK",
         "url": "https://vercel.com/academy/slack-agents"
       },
       {
@@ -1050,7 +1136,7 @@
         "id": "vercel-svelte-on-vercel",
         "kind": "course",
         "title": "Svelte on Vercel",
-        "description": "Build production-ready SvelteKit applications on Vercel. Learn deployment, AI integration, workflows, and performance optimization.",
+        "description": "Svelte on Vercel",
         "url": "https://vercel.com/academy/svelte-on-vercel"
       },
       {
@@ -1064,7 +1150,7 @@
         "id": "vercel-ai-gateway",
         "kind": "course",
         "title": "Using AI Gateway in Production",
-        "description": "Learn how AI Gateway handles model access, routing, spend, privacy, developer tools, and production authentication.",
+        "description": "Using AI Gateway in Production",
         "url": "https://vercel.com/academy/ai-gateway"
       },
       {
@@ -1078,7 +1164,7 @@
         "id": "vercel-sandbox",
         "kind": "course",
         "title": "Vercel Sandbox",
-        "description": "Learn how to safely execute untrusted code using Vercel Sandbox. Build a CLI code review agent that clones repositories, runs tests, and uses AI to analyze code for security and quality issues, all in an isolated environment.",
+        "description": "Vercel Sandbox",
         "url": "https://vercel.com/academy/vercel-sandbox"
       }
     ],
@@ -1089,7 +1175,10 @@
           "Cloud & Infrastructure"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Professional",
+          "AI Infrastructure"
+        ],
         "source": "nvidia-certification",
         "level": "Advanced",
         "id": "nvidia-ai-infrastructure-professional",
@@ -1104,7 +1193,10 @@
           "Cloud & Infrastructure"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Professional",
+          "AI Operations"
+        ],
         "source": "nvidia-certification",
         "level": "Advanced",
         "id": "nvidia-ai-operations-professional",
@@ -1119,7 +1211,10 @@
           "Cloud & Infrastructure"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Professional",
+          "AI Networking"
+        ],
         "source": "nvidia-certification",
         "level": "Advanced",
         "id": "nvidia-ai-networking-professional",
@@ -1134,7 +1229,10 @@
           "Cloud & Infrastructure"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Professional",
+          "AI Rack and Interconnect"
+        ],
         "source": "nvidia-certification",
         "level": "Advanced",
         "id": "nvidia-ai-rack-and-interconnect-professional",
@@ -1149,13 +1247,17 @@
           "Cloud & Infrastructure"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Associate",
+          "AI Infrastructure",
+          "AI Operations"
+        ],
         "source": "nvidia-certification",
         "level": "Entry",
         "id": "nvidia-ai-infrastructure-operations-associate",
         "kind": "certification",
         "title": "NVIDIA-Certified Associate AI Infrastructure and Operations",
-        "description": "Validate a candidate’s knowledge of foundational concepts of AI computing related to infrastructure and operations.",
+        "description": "Validate a candidate's knowledge of foundational concepts of AI computing related to infrastructure and operations.",
         "url": "https://www.nvidia.com/en-us/learn/certification/ai-infrastructure-operations-associate"
       },
       {
@@ -1164,7 +1266,11 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Associate",
+          "Power",
+          "Cooling"
+        ],
         "source": "nvidia-certification",
         "level": "Entry",
         "id": "nvidia-ai-power-and-cooling-associate",
@@ -1179,7 +1285,10 @@
           "Data & Analytics"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Professional",
+          "Accelerated Data Science"
+        ],
         "source": "nvidia-certification",
         "role": "Data",
         "level": "Advanced",
@@ -1195,7 +1304,10 @@
           "Data & Analytics"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Associate",
+          "Accelerated Data Science"
+        ],
         "source": "nvidia-certification",
         "role": "Data",
         "level": "Entry",
@@ -1211,13 +1323,17 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Professional",
+          "Generative AI",
+          "LLMs"
+        ],
         "source": "nvidia-certification",
         "level": "Advanced",
         "id": "nvidia-generative-ai-llm-professional",
         "kind": "certification",
         "title": "NVIDIA-Certified Professional Generative AI LLMs",
-        "description": "Certify the ability to design, train, and optimize LLMs using advanced distributed training and fine-tuning strategies.",
+        "description": "Certify the ability to design, train, and optimize LLMs, leveraging advanced distributed training and fine-tuning strategies to deliver high-performance AI solutions.",
         "url": "https://www.nvidia.com/en-us/learn/certification/generative-ai-llm-professional"
       },
       {
@@ -1226,7 +1342,10 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Professional",
+          "Agentic AI"
+        ],
         "source": "nvidia-certification",
         "level": "Advanced",
         "id": "nvidia-agentic-ai-professional",
@@ -1241,7 +1360,11 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Associate",
+          "Generative AI",
+          "LLMs"
+        ],
         "source": "nvidia-certification",
         "level": "Entry",
         "id": "nvidia-generative-ai-llm-associate",
@@ -1256,7 +1379,11 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Associate",
+          "Generative AI",
+          "Multimodal"
+        ],
         "source": "nvidia-certification",
         "level": "Entry",
         "id": "nvidia-generative-ai-multimodal-associate",
@@ -1271,7 +1398,11 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Associate",
+          "AI Model",
+          "Application Development"
+        ],
         "source": "nvidia-certification",
         "level": "Entry",
         "id": "nvidia-ai-model-application-development-associate",
@@ -1286,7 +1417,10 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Professional",
+          "OpenUSD"
+        ],
         "source": "nvidia-certification",
         "level": "Advanced",
         "id": "nvidia-openusd-development-professional",
@@ -1301,7 +1435,10 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Associate",
+          "OpenUSD"
+        ],
         "source": "nvidia-certification",
         "level": "Entry",
         "id": "nvidia-openusd-foundations-workflows-associate",

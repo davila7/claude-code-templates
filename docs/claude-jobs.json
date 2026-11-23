@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-11-22T03:08:50.666441+00:00",
-  "totalJobs": 1040,
+  "lastUpdated": "2026-11-23T03:09:10.680479+00:00",
+  "totalJobs": 1049,
   "sources": [
     "Anthropic",
     "Ashby",
@@ -24,7 +24,7 @@
       "applyUrl": "https://job-boards.greenhouse.io/deliveroo/jobs/8205846",
       "source": "Greenhouse",
       "sourceUrl": "https://job-boards.greenhouse.io/deliveroo/jobs/8205846",
-      "postedAt": "2026-11-21T21:59:53-05:00",
+      "postedAt": "2026-11-22T22:00:42-05:00",
       "tags": [
         "Claude Code",
         "Python",
@@ -33,6 +33,99 @@
         "Kubernetes",
         "Cursor",
         "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-binance-5028202101",
+      "company": "Binance",
+      "position": "Fullstack Engineer - Square (APAC Remote)",
+      "location": "Hong Kong · Singapore · Taiwan",
+      "locations": [
+        "Hong Kong",
+        "Singapore",
+        "Taiwan"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Binance is a leading global blockchain ecosystem behind the world’s largest cryptocurrency exchange by trading volume and registered users. We are trusted by 300+ million people in 100+ countries for our industry-leading security, user fund transparency, trading engine speed, deep liquidity, and an...",
+      "applyUrl": "https://job-boards.eu.greenhouse.io/binance/jobs/5028202101",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.eu.greenhouse.io/binance/jobs/5028202101",
+      "postedAt": "2026-11-22T20:54:26-05:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "Go",
+        "Cursor",
+        "Copilot",
+        "Java",
+        "Vue.js",
+        "Redis",
+        "MySQL"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-ResolveAI-e2205cf3-4d92-40fa-a9df-a2ccd0a2e2ae",
+      "company": "Resolveai",
+      "position": "Solutions Engineering Manager",
+      "location": "San Francisco",
+      "locations": [
+        "San Francisco"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "ABOUT RESOLVE AI\n\n - Software maintenance and production troubleshooting have become a massive tax of engineering velocity. Resolve AI is solving this by building a transformative, truly autonomous AI Production Engineer that investigates and fixes complex system issues end-to-end.\n\n - Our founders...",
+      "applyUrl": "https://jobs.ashbyhq.com/ResolveAI/e2205cf3-4d92-40fa-a9df-a2ccd0a2e2ae",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/ResolveAI/e2205cf3-4d92-40fa-a9df-a2ccd0a2e2ae",
+      "postedAt": "2026-11-22T15:47:56.011+00:00",
+      "tags": [
+        "Claude Code",
+        "AWS",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-artefactjobs-8726286002",
+      "company": "Welcome to the Jungle",
+      "position": "AI Strategist Manager",
+      "location": "135 W 26th Street, New York, NY 10001 · Montréal, Quebec, Canada",
+      "locations": [
+        "135 W 26th Street, New York, NY 10001",
+        "Montréal, Quebec, Canada"
+      ],
+      "remote": false,
+      "salary": "$140,000 - $160,000",
+      "description": "Lead the missions where large groups place their AI bets, and turn them into measurable results. Mission AI, and agentic AI in particular, is among the priorities of executive committees. At Artefact, we are makers. “We Make AI Work”: our job is not to talk about AI, it is to make it work, at...",
+      "applyUrl": "https://job-boards.greenhouse.io/artefactjobs/jobs/8726286002",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/artefactjobs/jobs/8726286002",
+      "postedAt": "2026-11-22T14:45:08-05:00",
+      "tags": [
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-whiskeylibrary-531608f3-2814-4ce4-98c8-8a1b4635e1f1",
+      "company": "Whiskeylibrary",
+      "position": "Creative Strategist, Direct Response Ads",
+      "location": "United States",
+      "locations": [
+        "United States"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "Type: Full-time, 40 hours a week, contract, month to month\n\nLocation: Remote, any country. You must work US Eastern hours.\n\nPay: $5,000 to $10,000 a month (USD), based on experience, plus 3% of spend on your winning ads\n\n \n\n\nWRITE THE ADS THAT FIND THE NEXT 10,000 BOURBON DRINKERS\n\n \n\nMost people...",
+      "applyUrl": "https://jobs.ashbyhq.com/whiskeylibrary/531608f3-2814-4ce4-98c8-8a1b4635e1f1",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/whiskeylibrary/531608f3-2814-4ce4-98c8-8a1b4635e1f1",
+      "postedAt": "2026-11-22T05:57:20.291+00:00",
+      "tags": [
+        "Claude Code"
       ],
       "companyIcon": ""
     },
@@ -843,6 +936,29 @@
       "companyIcon": "https://gusto.com/favicon.ico"
     },
     {
+      "id": "gr-databento-8406501",
+      "company": "Databento",
+      "position": "Senior Design Engineer",
+      "location": "Remote / Boston / Salt Lake City / San Francisco / New York",
+      "locations": [
+        "Remote / Boston / Salt Lake City / San Francisco / New York"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "The financial industry is growing at a record pace, but our data providers are still stuck in the past. They have cumbersome onboarding processes, complicated APIs, slow infrastructure, and expensive licensing costs. Databento is the next generation market data provider, with the radical idea that...",
+      "applyUrl": "https://job-boards.greenhouse.io/databento/jobs/8406501",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/databento/jobs/8406501",
+      "postedAt": "2026-11-20T12:30:35-05:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "TypeScript",
+        "JavaScript"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "gr-tribalscale-4731215006",
       "company": "TribalScale",
       "position": "AI Engineer - Agent Infrastructure & AI Workflow",
@@ -1503,35 +1619,6 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-artefactjobs-8731956002",
-      "company": "Welcome to the Jungle",
-      "position": "AI & Agentic Engineer, Senior",
-      "location": "Montréal, Quebec, Canada",
-      "locations": [
-        "Montréal, Quebec, Canada"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "Artefact is a next-generation data and AI consulting firm dedicated to accelerating the adoption of data and AI to create measurable business impact across the full enterprise value chain. We sit at the intersection of consulting, data science, AI technologies, data engineering, and digital...",
-      "applyUrl": "https://job-boards.greenhouse.io/artefactjobs/jobs/8731956002",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/artefactjobs/jobs/8731956002",
-      "postedAt": "2026-11-20T04:37:29-05:00",
-      "tags": [
-        "Claude Code",
-        "React",
-        "TypeScript",
-        "JavaScript",
-        "Python",
-        "AWS",
-        "GCP",
-        "Azure",
-        "Cursor",
-        "MCP"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "gr-artefactjobs-8726293002",
       "company": "Welcome to the Jungle",
       "position": "Director, AI & Data Consulting",
@@ -1570,78 +1657,6 @@
       "tags": [
         "Claude Code",
         "MCP"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-artefactjobs-8726286002",
-      "company": "Welcome to the Jungle",
-      "position": "Manager, AI & Data Consulting",
-      "location": "135 W 26th Street, New York, NY 10001 · Montréal, Quebec, Canada",
-      "locations": [
-        "135 W 26th Street, New York, NY 10001",
-        "Montréal, Quebec, Canada"
-      ],
-      "remote": false,
-      "salary": "$140,000 - $160,000",
-      "description": "Artefact is a next-generation data and AI consulting firm dedicated to accelerating the adoption of data and AI to create measurable business impact across the full enterprise value chain. We sit at the intersection of consulting, data science, AI technologies, data engineering, and digital...",
-      "applyUrl": "https://job-boards.greenhouse.io/artefactjobs/jobs/8726286002",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/artefactjobs/jobs/8726286002",
-      "postedAt": "2026-11-20T04:37:29-05:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "MCP"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-artefactjobs-8726351002",
-      "company": "Welcome to the Jungle",
-      "position": "Senior, AI & Data Consulting",
-      "location": "135 W 26th Street, New York, NY 10001",
-      "locations": [
-        "135 W 26th Street, New York, NY 10001"
-      ],
-      "remote": false,
-      "salary": "$125,000 - $135,000",
-      "description": "Artefact is a next-generation data and AI consulting firm dedicated to accelerating the adoption of data and AI to create measurable business impact across the full enterprise value chain. We sit at the intersection of consulting, data science, AI technologies, data engineering, and digital...",
-      "applyUrl": "https://job-boards.greenhouse.io/artefactjobs/jobs/8726351002",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/artefactjobs/jobs/8726351002",
-      "postedAt": "2026-11-20T04:37:29-05:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "AWS",
-        "GCP",
-        "Azure"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-artefactjobs-8733201002",
-      "company": "Welcome to the Jungle",
-      "position": "Senior, AI & Data Science",
-      "location": "Montréal, Quebec, Canada",
-      "locations": [
-        "Montréal, Quebec, Canada"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "About the job Artefact is a next-generation data and AI consulting firm dedicated to accelerating the adoption of data and AI to create measurable business impact across the full enterprise value chain.We sit at the intersection of consulting, data science, AI technologies, data engineering, and...",
-      "applyUrl": "https://job-boards.greenhouse.io/artefactjobs/jobs/8733201002",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.greenhouse.io/artefactjobs/jobs/8733201002",
-      "postedAt": "2026-11-20T04:37:29-05:00",
-      "tags": [
-        "Claude Code",
-        "Python",
-        "AWS",
-        "GCP",
-        "Azure",
-        "Cursor"
       ],
       "companyIcon": ""
     },
@@ -1787,28 +1802,6 @@
       "companyIcon": ""
     },
     {
-      "id": "as-ResolveAI-8e83e58e-3b72-4d54-96ab-09f1de5b970f",
-      "company": "Resolveai",
-      "position": "Solutions Engineering Manager",
-      "location": "New York",
-      "locations": [
-        "New York"
-      ],
-      "remote": true,
-      "salary": "",
-      "description": "ABOUT RESOLVE AI\n\n - Software maintenance and production troubleshooting have become a massive tax of engineering velocity. Resolve AI is solving this by building a transformative, truly autonomous AI Production Engineer that investigates and fixes complex system issues end-to-end.\n\n - Our founders...",
-      "applyUrl": "https://jobs.ashbyhq.com/ResolveAI/8e83e58e-3b72-4d54-96ab-09f1de5b970f",
-      "source": "Ashby",
-      "sourceUrl": "https://jobs.ashbyhq.com/ResolveAI/8e83e58e-3b72-4d54-96ab-09f1de5b970f",
-      "postedAt": "2026-11-19T23:29:57.804+00:00",
-      "tags": [
-        "Claude Code",
-        "AWS",
-        "Cursor"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "gr-binance-5025783101",
       "company": "Binance",
       "position": "Full Stack Engineer - Recommendation Engine (APAC Remote)",
@@ -1833,36 +1826,6 @@
         "Cursor",
         "Copilot",
         "Java"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "gr-binance-5028202101",
-      "company": "Binance",
-      "position": "Fullstack Engineer - Square (APAC Remote)",
-      "location": "Hong Kong · Singapore · Taiwan",
-      "locations": [
-        "Hong Kong",
-        "Singapore",
-        "Taiwan"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "Binance is a leading global blockchain ecosystem behind the world’s largest cryptocurrency exchange by trading volume and registered users. We are trusted by 300+ million people in 100+ countries for our industry-leading security, user fund transparency, trading engine speed, deep liquidity, and an...",
-      "applyUrl": "https://job-boards.eu.greenhouse.io/binance/jobs/5028202101",
-      "source": "Greenhouse",
-      "sourceUrl": "https://job-boards.eu.greenhouse.io/binance/jobs/5028202101",
-      "postedAt": "2026-11-19T22:04:06-05:00",
-      "tags": [
-        "Claude Code",
-        "React",
-        "Go",
-        "Cursor",
-        "Copilot",
-        "Java",
-        "Vue.js",
-        "Redis",
-        "MySQL"
       ],
       "companyIcon": ""
     },
@@ -5142,6 +5105,27 @@
       "companyIcon": ""
     },
     {
+      "id": "as-jasper%20ai-06305db2-fd8d-488e-8a19-d5faa847b731",
+      "company": "Jasper Ai",
+      "position": "Senior Product Designer ",
+      "location": "United States",
+      "locations": [
+        "United States"
+      ],
+      "remote": true,
+      "salary": "$157,000-$195,000",
+      "description": "Jasper is the marketing agents platform, built to help enterprises orchestrate AI agents that execute marketing work at scale. Purpose-built for marketing teams, Jasper enables faster, more consistent execution across campaigns, personalization, localization, and compliance—while maintaining...",
+      "applyUrl": "https://jobs.ashbyhq.com/Jasper%20AI/06305db2-fd8d-488e-8a19-d5faa847b731",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/Jasper%20AI/06305db2-fd8d-488e-8a19-d5faa847b731",
+      "postedAt": "2026-11-17T17:58:02.611+00:00",
+      "tags": [
+        "Claude Code",
+        "Cursor"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "as-kaluza-4c6171bd-f1a5-413d-a184-54483502346e",
       "company": "Kaluza",
       "position": "Product Manager - Customer Account Lifecycle (CAL) + Market Interactions, Paris (Français & Anglais) ",
@@ -5276,6 +5260,31 @@
         "JavaScript",
         "Cursor",
         "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-salesjack-703ef2d5-8594-447d-877b-eb8bd8c9447f",
+      "company": "Salesjack",
+      "position": "Software Engineer",
+      "location": "Toronto",
+      "locations": [
+        "Toronto"
+      ],
+      "remote": false,
+      "salary": "CA$130K – CA$150K • Offers Equity",
+      "description": "Location: Hybrid in Toronto, ON\n\nAbout SalesJack\n\nSalesJack is a fast-growing sales software platform (CRM, Prospecting Service) purpose-built for independent businesses in the construction supply industry. Our team and customers are spread across the US and Canada. Our mission: build tools that...",
+      "applyUrl": "https://jobs.ashbyhq.com/salesjack/703ef2d5-8594-447d-877b-eb8bd8c9447f",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/salesjack/703ef2d5-8594-447d-877b-eb8bd8c9447f",
+      "postedAt": "2026-11-17T14:50:12.324+00:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "Next.js",
+        "Node.js",
+        "PostgreSQL",
+        "Cursor"
       ],
       "companyIcon": ""
     },
@@ -10288,6 +10297,32 @@
       "companyIcon": ""
     },
     {
+      "id": "as-salesjack-7ba3df69-8edf-4496-9e12-95fe561dd99b",
+      "company": "Salesjack",
+      "position": "Senior Software Engineer",
+      "location": "Toronto",
+      "locations": [
+        "Toronto"
+      ],
+      "remote": false,
+      "salary": "CA$160K – CA$200K • Offers Equity",
+      "description": "SENIOR FULL STACK SOFTWARE ENGINEER\n\nLocation: Onsite in Toronto, ON\n\n \n\nAbout SalesJack\n\nSalesJack is a fast-growing, profitable sales software platform (CRM, Prospecting Service) purpose-built for independent businesses in the construction supply industry. Our team and customers are spread across...",
+      "applyUrl": "https://jobs.ashbyhq.com/salesjack/7ba3df69-8edf-4496-9e12-95fe561dd99b",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/salesjack/7ba3df69-8edf-4496-9e12-95fe561dd99b",
+      "postedAt": "2026-11-09T20:23:13.887+00:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "Next.js",
+        "Node.js",
+        "PostgreSQL",
+        "Cursor",
+        "MCP"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "le-cscgeneration-2-61ba3ce6-b92b-45b4-932d-0c66e5e19185",
       "company": "Cscgeneration 2",
       "position": "Junior Software Engineer",
@@ -12796,6 +12831,67 @@
         "MCP"
       ],
       "companyIcon": "https://figma.com/favicon.ico"
+    },
+    {
+      "id": "as-Resonance-8388409b-d510-4823-923d-78495e587dfc",
+      "company": "Resonance",
+      "position": "Senior AI Transformation Lead",
+      "location": "Berlin",
+      "locations": [
+        "Berlin"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "TLDR: We’re looking for top 1%, high agency, AI-forward transformation leads to be part of our early team at Resonance in Berlin. We have recently raised one of the largest ever European seed rounds, with investment from Anthropic and Hg Capital, to deploy AI into the economy and rebuild businesses...",
+      "applyUrl": "https://jobs.ashbyhq.com/Resonance/8388409b-d510-4823-923d-78495e587dfc",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/Resonance/8388409b-d510-4823-923d-78495e587dfc",
+      "postedAt": "2026-11-03T18:29:20.280+00:00",
+      "tags": [
+        "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-Resonance-684fcdd8-ec22-4d86-87cd-086bc0239703",
+      "company": "Resonance",
+      "position": "Graduate AI Transformation Lead",
+      "location": "Berlin",
+      "locations": [
+        "Berlin"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "TLDR: We’re looking for top 1%, high agency, AI-forward graduates to join the first graduate cohort at Resonance in Berlin as AI Transformation Leads. We have recently raised one of the largest ever European seed rounds, with investment from Anthropic and Hg Capital, to deploy AI into the economy...",
+      "applyUrl": "https://jobs.ashbyhq.com/Resonance/684fcdd8-ec22-4d86-87cd-086bc0239703",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/Resonance/684fcdd8-ec22-4d86-87cd-086bc0239703",
+      "postedAt": "2026-11-03T18:28:45.838+00:00",
+      "tags": [
+        "Claude Code",
+        "Go"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "as-Resonance-ac92a3c7-f09d-45eb-9b1f-c35ad2610cd1",
+      "company": "Resonance",
+      "position": "AI Transformation Lead",
+      "location": "Berlin",
+      "locations": [
+        "Berlin"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "TLDR: We’re looking for top 1%, high agency, AI-forward transformation leads to be part of our early team at Resonance in Berlin. We have recently raised one of the largest ever European seed rounds, with investment from Anthropic and Hg Capital, to deploy AI into the economy and rebuild businesses...",
+      "applyUrl": "https://jobs.ashbyhq.com/Resonance/ac92a3c7-f09d-45eb-9b1f-c35ad2610cd1",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/Resonance/ac92a3c7-f09d-45eb-9b1f-c35ad2610cd1",
+      "postedAt": "2026-11-03T18:28:09.562+00:00",
+      "tags": [
+        "Claude Code"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "as-tacto-f1956058-c042-4686-8320-897da2b22556",
@@ -15462,32 +15558,6 @@
       "companyIcon": ""
     },
     {
-      "id": "gr-toast-8191597",
-      "company": "Toast",
-      "position": "Senior Software Engineer, Release Engineering",
-      "location": "Remote, US",
-      "locations": [
-        "Remote, US"
-      ],
-      "remote": true,
-      "salary": "",
-      "description": "Toast creates technology to help restaurants and local businesses succeed in a digital world, helping business owners operate, increase sales, engage customers, and keep employees happy. The mission of the Release Engineering team is “to empower Toasters to build and deploy software with speed,...",
-      "applyUrl": "https://careers.toasttab.com/jobs?gh_jid=8191597",
-      "source": "Greenhouse",
-      "sourceUrl": "https://careers.toasttab.com/jobs?gh_jid=8191597",
-      "postedAt": "2026-10-29T15:06:21-04:00",
-      "tags": [
-        "Claude Code",
-        "TypeScript",
-        "Go",
-        "PostgreSQL",
-        "AWS",
-        "Kotlin",
-        "Java"
-      ],
-      "companyIcon": ""
-    },
-    {
       "id": "gr-nscaleoperationsukltd-5021031101",
       "company": "Nscale",
       "position": "Senior Manager, Developer Platforms",
@@ -15686,6 +15756,32 @@
       "postedAt": "2026-10-29T08:51:42.479+00:00",
       "tags": [
         "Claude Code"
+      ],
+      "companyIcon": ""
+    },
+    {
+      "id": "gr-toast-8333523",
+      "company": "Toast",
+      "position": "Senior Software Engineer, IQ Grow",
+      "location": "Dublin, Ireland",
+      "locations": [
+        "Dublin, Ireland"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Toast creates technology to help restaurants and local businesses succeed in a digital world, helping business owners operate, increase sales, engage customers, and keep employees happy. At Toast, the IQ Grow team is on a mission to scale new, high-impact go-to-market initiatives. By combining the...",
+      "applyUrl": "https://careers.toasttab.com/jobs?gh_jid=8333523",
+      "source": "Greenhouse",
+      "sourceUrl": "https://careers.toasttab.com/jobs?gh_jid=8333523",
+      "postedAt": "2026-10-29T06:41:35-04:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "PostgreSQL",
+        "Kotlin",
+        "Java",
+        "Tailwind",
+        "GraphQL"
       ],
       "companyIcon": ""
     },
@@ -16704,30 +16800,6 @@
       "postedAt": "2026-10-26T14:52:35.678+00:00",
       "tags": [
         "Claude Code"
-      ],
-      "companyIcon": ""
-    },
-    {
-      "id": "as-Coinflow-8d7956ce-8160-45d2-a090-5f5cb337377a",
-      "company": "Coinflow",
-      "position": "Security Engineer",
-      "location": "Europe / Israel",
-      "locations": [
-        "Europe / Israel"
-      ],
-      "remote": false,
-      "salary": "",
-      "description": "About Coinflow\n\n\n\nCoinflow is the next-generation payment service provider revolutionizing global financial infrastructure with stablecoins, AI-driven fraud prevention, and instant settlement. Coinflow enables businesses to grow faster with instant settlement, fraud & chargeback indemnity, global...",
-      "applyUrl": "https://jobs.ashbyhq.com/Coinflow/8d7956ce-8160-45d2-a090-5f5cb337377a",
-      "source": "Ashby",
-      "sourceUrl": "https://jobs.ashbyhq.com/Coinflow/8d7956ce-8160-45d2-a090-5f5cb337377a",
-      "postedAt": "2026-10-26T12:49:30.582+00:00",
-      "tags": [
-        "Claude Code",
-        "TypeScript",
-        "Python",
-        "Rust",
-        "Go"
       ],
       "companyIcon": ""
     },
@@ -19474,6 +19546,27 @@
       "companyIcon": ""
     },
     {
+      "id": "le-zoox-ad992e12-39da-4046-b766-45f928924575",
+      "company": "Zoox",
+      "position": "Contract Student Worker - Freeways Data Evaluation (20 hrs/wk)",
+      "location": "Foster City, CA",
+      "locations": [
+        "Foster City, CA"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": " Role Overview  Supporting freeways initiative, particularly in exploring ways to use data external to Zoox to help drive progress. This will include developing software to interface between Zoox's simulation system and external data sources as well as learning about and developing potential use...",
+      "applyUrl": "https://jobs.lever.co/zoox/ad992e12-39da-4046-b766-45f928924575",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/zoox/ad992e12-39da-4046-b766-45f928924575",
+      "postedAt": "2026-10-13T18:40:30.073000+00:00",
+      "tags": [
+        "Claude Code",
+        "Python"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "as-vega-368add16-b0e5-4381-817e-e8e7b095afc2",
       "company": "Vega",
       "position": "AI Engineer",
@@ -20311,6 +20404,27 @@
         "Cursor"
       ],
       "companyIcon": "https://notion.so/favicon.ico"
+    },
+    {
+      "id": "as-2501-23c27e3c-945a-4111-8a6b-f2609f0cb705",
+      "company": "2501",
+      "position": "Solution Architect",
+      "location": "France remote",
+      "locations": [
+        "France remote"
+      ],
+      "remote": true,
+      "salary": "",
+      "description": "ABOUT 2501\n\n2501 builds autonomous AI agents that operate directly in the shell to complete real production tasks - not just synthetic evals. We treat LLMs as pluggable brains, mixing open‑source and flagship models to get the best result. By fusing their output with observability data we surface...",
+      "applyUrl": "https://jobs.ashbyhq.com/2501/23c27e3c-945a-4111-8a6b-f2609f0cb705",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/2501/23c27e3c-945a-4111-8a6b-f2609f0cb705",
+      "postedAt": "2026-10-09T14:02:55.848+00:00",
+      "tags": [
+        "Claude Code",
+        "Cursor"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "as-harvey-bc479bb5-445f-4e9f-a0bc-d2e1bab03947",
@@ -21897,6 +22011,29 @@
         "Cursor"
       ],
       "companyIcon": "https://decagon.ai/favicon.ico"
+    },
+    {
+      "id": "le-zoox-48a6b2ac-0dcb-4481-ab26-386ce62decab",
+      "company": "Zoox",
+      "position": "Lead AI Engineer – Enterprise, Data & AI",
+      "location": "Foster City, CA",
+      "locations": [
+        "Foster City, CA"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "Zoox is seeking a highly motivated, hands-on Lead AI Engineer to spearhead the end-to-end development and deployment of our Enterprise Gen AI and LLM initiatives, building agentic workflows, integrating enterprise data sources, and enforcing identity-aware security, that transform operations across...",
+      "applyUrl": "https://jobs.lever.co/zoox/48a6b2ac-0dcb-4481-ab26-386ce62decab",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/zoox/48a6b2ac-0dcb-4481-ab26-386ce62decab",
+      "postedAt": "2026-09-21T18:25:12.723000+00:00",
+      "tags": [
+        "Python",
+        "AWS",
+        "MongoDB",
+        "MCP"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "as-ruby-labs-1e548ada-6632-4ef8-ae90-476970b5a4b1",
@@ -24780,6 +24917,30 @@
       "companyIcon": ""
     },
     {
+      "id": "as-Coinflow-5ef1599d-a828-4733-8983-58a9488aedfb",
+      "company": "Coinflow",
+      "position": "Security Engineer",
+      "location": "Chicago",
+      "locations": [
+        "Chicago"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "About Coinflow\n\n\n\nCoinflow is the next-generation payment service provider revolutionizing global financial infrastructure with stablecoins, AI-driven fraud prevention, and instant settlement. Coinflow enables businesses to grow faster with instant settlement, fraud & chargeback indemnity, global...",
+      "applyUrl": "https://jobs.ashbyhq.com/Coinflow/5ef1599d-a828-4733-8983-58a9488aedfb",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/Coinflow/5ef1599d-a828-4733-8983-58a9488aedfb",
+      "postedAt": "2026-05-14T16:29:24.483+00:00",
+      "tags": [
+        "Claude Code",
+        "TypeScript",
+        "Python",
+        "Rust",
+        "Go"
+      ],
+      "companyIcon": ""
+    },
+    {
       "id": "as-clickup-37c53272-fb9e-4a01-8f1a-8395b922f28c",
       "company": "ClickUp",
       "position": "Senior Product Manager",
@@ -25198,6 +25359,30 @@
         "Cursor"
       ],
       "companyIcon": "https://ramp.com/favicon.ico"
+    },
+    {
+      "id": "le-zoox-7bf2a9b3-8aa5-4950-b8b8-14306ef1069f",
+      "company": "Zoox",
+      "position": "Program Tooling & Analytics Developer",
+      "location": "Foster City, CA",
+      "locations": [
+        "Foster City, CA"
+      ],
+      "remote": false,
+      "salary": "",
+      "description": "The Program Management Office (PMO) at Zoox is responsible for driving cross-functional program planning and execution at the highest level. We partner with leaders across vehicle development, software engineering, manufacturing, fleet operations, and business functions to deliver the major...",
+      "applyUrl": "https://jobs.lever.co/zoox/7bf2a9b3-8aa5-4950-b8b8-14306ef1069f",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/zoox/7bf2a9b3-8aa5-4950-b8b8-14306ef1069f",
+      "postedAt": "2026-01-22T02:09:56.726000+00:00",
+      "tags": [
+        "Claude Code",
+        "React",
+        "TypeScript",
+        "Python",
+        "Flask"
+      ],
+      "companyIcon": ""
     },
     {
       "id": "as-cloudzero-9a295df8-1e90-43df-b903-b01eabc3e240",
