@@ -1,0 +1,21 @@
+{
+  "mcpServers": {
+    "aitmpl-skills": {
+      "description": "Example of Skills over MCP (needs Claude Code 2.1.331 or later): a remote MCP server that serves skills instead of tools. Claude Code lists them as aitmpl-skills:component-review (review a Claude Code component before sharing it) and aitmpl-skills:skill-over-mcp (build your own MCP server that serves skills). Read-only, no sign-in.",
+      "type": "http",
+      "url": "https://skills-example.aitmpl.com/mcp"
+    }
+  },
+  "mcpSkills": {
+    "aitmpl-skills": [
+      {
+        "name": "component-review",
+        "description": "Review a Claude Code component (agent, command, skill, hook, MCP server config or setting) before sharing it or sending it to aitmpl.com."
+      },
+      {
+        "name": "skill-over-mcp",
+        "description": "Build an MCP server that serves skills (Skills over MCP, extension io.modelcontextprotocol/skills) with the official TypeScript SDK."
+      }
+    ]
+  }
+}

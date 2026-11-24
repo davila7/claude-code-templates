@@ -217,6 +217,10 @@ locally with `python3 scripts/validate_components.py [--changed FILE] [--strict]
 
 An MCP component's server starts its package with `npx`/`pnpx`, `uvx` or `pipx run` on every Claude Code start, so the package is pinned to an exact version (`pkg@1.2.3`, `uvx pkg@1.2.3`, `pipx run pkg==1.2.3`; never `@latest` or bare). `component-validate.yml` fails a PR that adds an unpinned one (`python3 scripts/mcp_versions.py check [FILE ...]`; `pin [FILE ...]` writes the registry's latest version). The weekly `mcp-versions-outdated.yml` keeps one issue listing pins behind the registry; bump them in a PR after reading the changelog. Docker images and local binaries are out of scope.
 
+#### Skills over MCP (MCP components that serve skills)
+
+Claude Code 2.1.331+ (public beta) loads skills that an MCP server serves through the MCP Skills extension (`io.modelcontextprotocol/skills`, protocol revision 2026-07-28); they appear as `<server>:<skill>` in `/skills`. The skills live on the server, so a component cannot attach a skill to someone else's server: only servers that implement the extension get it (Daniel, 2026-11-24: no gateway). An MCP component declares what its server serves under a top-level `mcpSkills` key, keyed by server name (`{"mcpSkills": {"docs": [{"name": "pdf", "description": "..."}]}}`). The CLI strips that key before writing `.mcp.json`, and the component page draws the discovery flow and the skill list from it (`dashboard/src/lib/mcp-skills.ts`, `McpSkillsFlow.astro`). The list is declared, not probed: keep it in sync with the server. Example: `mcps/devtools/aitmpl-skills-example` (worker `cloudflare-workers/mcp-skills-example/`, `skills-example.aitmpl.com`). MCP skills do not load in `claude -p`, the Agent SDK, cloud sessions, or a `claude` started from a shell that inherited Claude Desktop's `CLAUDE_CODE_ENTRYPOINT`: test in a normal interactive terminal.
+
 #### External skills (code in another repo)
 
 A skill can live in its author's GitHub repo instead of being copied here. Its
@@ -481,6 +485,10 @@ npx wrangler deploy  # Deploy
 ### mcp (aitmpl MCP server, mcp.aitmpl.com)
 
 Remote MCP server for the catalog (`cloudflare-workers/mcp/`, worker `aitmpl-mcp`, added 2026-11-16): `https://mcp.aitmpl.com/mcp`, Streamable HTTP, no auth, four read-only tools (`search_components`, `get_component`, `get_install_command`, `list_categories`). Built on Cloudflare's stateless `createMcpHandler` (`agents/mcp/server`) + MCP SDK v2 (`@modelcontextprotocol/server`, the exact version `agents` peers on). It reads only `/api/v1/` + `components/plugins.json` + `component-content/` from www.aitmpl.com, so a change to those shapes must keep it working (`cloudflare-workers/mcp/test/smoke.mjs`). It installs nothing: it returns the CLI command (`--yes`) and the client runs it. Search uses the CLI `--search` scoring (keep `scoreComponent` in sync with `cli-tool/src/catalog-lookup.js`); never let downloads, scans or ads change the order. Every tool needs `title`, `readOnlyHint`/`destructiveHint`, `outputSchema` + `structuredContent` (Anthropic directory requirements). Deploy by hand: `cd cloudflare-workers/mcp && npx wrangler deploy && node test/smoke.mjs https://mcp.aitmpl.com/mcp`. Docs: `docs-site/developers/mcp-server.mdx`; privacy: `/privacy#mcp-server`; catalog entry `mcps/devtools/aitmpl`.
+
+### mcp-skills-example (Skills over MCP example, skills-example.aitmpl.com)
+
+Example MCP server that serves two skills and no tools (`cloudflare-workers/mcp-skills-example/`, worker `aitmpl-mcp-skills-example`): the skills are the Markdown files in its `skills/` folder, served with `SkillsExtension` from `@modelcontextprotocol/server/ext/skills`. Deploy by hand: `cd cloudflare-workers/mcp-skills-example && npx wrangler deploy && node test/smoke.mjs https://skills-example.aitmpl.com/mcp`. Catalog entry `mcps/devtools/aitmpl-skills-example`.
 
 ### docs-monitor (DECOMMISSIONED 2026-07)
 

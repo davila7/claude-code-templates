@@ -10,6 +10,8 @@ import { extractHeadings } from '../../../lib/markdown-headings';
 import AddToStackButton from '../../../components/AddToStackButton.tsx';
 import SkillSpectorReport from '../../../components/SkillSpectorReport.tsx';
 import HarnessReport from '../../../components/HarnessReport.tsx';
+import McpSkillsFlow from '../../../components/McpSkillsFlow.astro';
+import { parseMcpSkills } from '../../../lib/mcp-skills';
 import { TYPE_CONFIG, ICONS } from '../../../lib/icons';
 import { fetchComponents, fetchComponentContentData, getInstallCommand } from '../../../lib/data';
 import type { ComponentPageMeta } from '../../../lib/data';
@@ -178,6 +180,8 @@ const ogImage = component && config
   ? encodeURI(`/og/${typePlural}/${component.path?.replace(/\.(md|json)$/, '') ?? component.name}.png`)
   : undefined;
 const frontmatter = component ? parseFrontmatter(component.content, typePlural ?? '') : {};
+// Skills over MCP: the skills an MCP component declares its server serves (first server only).
+const mcpSkills = component && typePlural === 'mcps' ? parseMcpSkills(component.content)[0] ?? null : null;
 // Agent Skills keep author/version/tags/license under `metadata:`, which the
 // line parser above does not read; fall back to what the catalog generator parsed.
 if (component) {
@@ -741,6 +745,8 @@ const componentSchema = component
                   {' '}Run <code>claude plugin validate</code> on the installed folder to see every event it hooks and every <code>$</code> call it makes.
                 </div>
               )}
+
+              {mcpSkills && <McpSkillsFlow data={mcpSkills} />}
 
               {referencedComponents.length > 0 && (
                 <div class="rounded-lg border border-[var(--color-border)] overflow-hidden">
