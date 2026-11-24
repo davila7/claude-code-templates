@@ -4992,6 +4992,61 @@
       }
     },
     {
+      "name": "release-manager",
+      "path": "development-team/release-manager.md",
+      "category": "development-team",
+      "type": "agent",
+      "description": "Use this agent when you need to plan and coordinate a software release: cut a release branch, audit what is shipping, write release notes, version and tag the build, and prepare a rollback plan. Invoke when you need release-candidate triage, changelog assembly from merged pull requests, semver decisions, release-runbook drafting, or post-release verification steps. Specifically:\\n\\n<example>\\nContext: A team is cutting a minor release every two weeks and the process lives in one person's head.\\nuser: \"We're shipping v2.14.0 on Friday. Can you put the release together?\"\\nassistant: \"I'll audit everything merged since v2.13.0, group it into features, fixes and breaking changes, flag the two pull requests still missing review, draft the release notes from the merged history, and write the runbook: build, tag, deploy order, smoke tests, and the rollback conditions that stop the release.\"\\n<commentary>\\nInvoke release-manager when a release needs to be assembled from repository history into a coordinated plan. The agent prepares and coordinates; it does not approve the release or run the deployment itself.\\n</commentary>\\n</example>\\n\\n<example>\\nContext: A hotfix has to go out while a feature branch is already frozen for the release.\\nuser: \"Production is down because of the change in PR #482. We're mid-freeze for v2.14.0. What do we do?\"\\nassistant: \"I'll lay out both paths: cherry-pick the revert onto the release branch as v2.13.1 and ship it now, and how the freeze for v2.14.0 absorbs the same revert. I'll draft the hotfix release notes and the post-release check that confirms the regression is gone before the freeze resumes.\"\\n<commentary>\\nUse release-manager for mid-freeze decisions and hotfix logistics, where the release state of every branch has to be tracked alongside the incident.\\n</commentary>\\n</example>\\n\\n<example>\\nContext: Maintainers disagree on whether the next release is minor or major.\\nuser: \"We changed the response shape of three endpoints but kept the old fields. Is this 3.0 or 2.20?\"\\nassistant: \"I'll read the three endpoint changes against your documented API stability policy, check whether any consumer in the repo depends on the removed behavior, and lay out the semver argument both ways with the risk that matters: whether an unnoticed consumer breaks. If the policy doesn't cover it, I'll draft the policy addition so the next such decision is mechanical.\"\\n<commentary>\\nInvoke release-manager for version-numbering disputes that need evidence from the codebase and the project's stated compatibility promises.\\n</commentary>\\n</example>",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 16,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 2,
+        "analysis": "complete",
+        "findings": [
+          {
+            "id": "EA5",
+            "category": "Excessive Agency",
+            "severity": "MEDIUM",
+            "title": "External Model or Provider Selection",
+            "file": "release-manager.md",
+            "line": 4,
+            "count": 1
+          },
+          {
+            "id": "TR2",
+            "category": "Trigger Abuse",
+            "severity": "MEDIUM",
+            "title": "Shadow Command Trigger",
+            "file": "release-manager.md",
+            "line": 1,
+            "count": 1
+          }
+        ],
+        "categories": {
+          "Excessive Agency": 1,
+          "Trigger Abuse": 1
+        },
+        "hash": "7507448082481719",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-24T00:35:23Z"
+      }
+    },
+    {
       "name": "sdd-spec-writer",
       "path": "development-team/sdd-spec-writer.md",
       "category": "development-team",

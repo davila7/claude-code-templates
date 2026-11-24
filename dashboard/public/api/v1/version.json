@@ -1,10 +1,10 @@
 {
   "schemaVersion": "1.1.0",
-  "generatedAt": "2026-11-23T03:10:35Z",
-  "sha256": "e1b52d92b98979725d48bb6f9b8135c8d0ad7472fb8f091275a748339be1feae",
-  "count": 2019,
+  "generatedAt": "2026-11-24T00:35:30Z",
+  "sha256": "3d35573bfb519c30abe21f975b9227b4f51f236d3806d8e190151fffec8337dd",
+  "count": 2020,
   "counts": {
-    "agents": 423,
+    "agents": 424,
     "commands": 288,
     "mcps": 143,
     "settings": 87,
