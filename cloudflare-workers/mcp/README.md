@@ -28,6 +28,24 @@ without a shell). The CLI then tracks the install like any other, with the agent
 (`cli-tool/src/catalog-lookup.js`). Downloads and sponsored placements never change the order, and the
 server does not read any ads data.
 
+## Narrowing a search (form elicitation)
+
+`search_components` can ask the user for a type and/or category before answering (`src/narrow.ts`). It asks
+only when all of these hold: the request is on protocol revision 2026-07-28 and its client capabilities
+declare form elicitation (`elicitation.form`, or a bare `elicitation: {}`); `type` or `category` was left out;
+the search matches more components than `limit`; and the matches span more than one value of a missing
+field. The form lists those values with their match counts (at most 15 categories, most matches first).
+
+The worker is stateless, so it uses the 2026-07-28 multi-round-trip flow: the tool returns
+`inputRequired({ inputRequests: { narrow_search: inputRequired.elicit(...) } })`, the client shows the form
+and retries the same `tools/call` with `inputResponses`. A retry carries the `narrow_search` key, so the
+server never asks twice. The answer only adds filters; the order stays text match, then id. Decline, cancel,
+an empty or invalid answer all search as asked. The push-style `elicitInput` is not used: on 2026-07-28 it
+throws, and `createMcpHandler`'s legacy lane refuses server-to-client requests. Clients on 2025-11-25 and
+older, or without form elicitation, get the results directly, exactly as before. The smoke test covers
+each case. Note the SDK answers `-32021` if a handler returns an input request the client did not declare,
+which is why `canElicitForm` checks first.
+
 ## Skills (Skills over MCP)
 
 Clients on protocol revision 2026-07-28 also get two skills through the MCP Skills extension

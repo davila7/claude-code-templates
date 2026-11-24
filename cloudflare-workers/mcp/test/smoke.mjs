@@ -96,7 +96,63 @@ for (const skill of skillList.skills) {
 let unknownSkill = false;
 try { await modern.readResource({ uri: 'skill://nope/SKILL.md' }); } catch { unknownSkill = true; }
 check(unknownSkill, 'unknown skill URI is an error');
+check(!(await modern.callTool({ name: 'search_components', arguments: { query: 'code review', limit: 3 } })).isError,
+  'no elicitation capability: search answers directly on 2026-07-28');
 await modern.close();
+
+// Form elicitation (2026-07-28 multi-round-trip): a broad search with no type asks the user to narrow it.
+const elicitClient = async (caps, answer) => {
+  const asked = [];
+  const c = new Client({ name: 'aitmpl-smoke-elicit', version: '1.0.0' },
+    { capabilities: caps, versionNegotiation: { mode: { pin: '2026-07-28' } } });
+  c.setRequestHandler('elicitation/create', async (req) => { asked.push(req.params); return answer(req.params); });
+  await c.connect(new StreamableHTTPClientTransport(url));
+  return { c, asked };
+};
+
+{
+  const { c, asked } = await elicitClient({ elicitation: { form: {}, url: {} } }, () => ({ action: 'accept', content: { type: 'agents' } }));
+  const r = await c.callTool({ name: 'search_components', arguments: { query: 'review', limit: 5 } });
+  const props = asked[0]?.requestedSchema?.properties || {};
+  check(asked.length === 1 && Boolean(props.type) && Boolean(props.category), 'broad search asks for type + category (form)',
+    asked[0]?.message);
+  check(!r.isError && r.structuredContent.results.length > 0 && r.structuredContent.results.every((x) => x.type === 'agents')
+    && /Narrowed by the user to type "agents"/.test(r.content[0].text), 'accepted answer filters the results');
+  const plain = await c.callTool({ name: 'search_components', arguments: { query: 'review', type: 'agents', limit: 5 } });
+  check(JSON.stringify(plain.structuredContent.results.map((x) => x.id)) === JSON.stringify(r.structuredContent.results.map((x) => x.id)),
+    'filtered order equals the plain type filter (text match only)');
+  const before = asked.length; // the plain call above asked for a category (answered without one)
+  const narrow = await c.callTool({ name: 'search_components', arguments: { query: 'zzzqqqxxx' } });
+  check(asked.length === before && narrow.structuredContent?.total === 0, 'no form when the search is not broad');
+  await c.close();
+}
+{
+  const { c, asked } = await elicitClient({ elicitation: {} }, () => ({ action: 'decline' }));
+  const r = await c.callTool({ name: 'search_components', arguments: { query: 'review', limit: 5 } });
+  check(asked.length === 1 && !r.isError && r.structuredContent.results.length === 5
+    && new Set(r.structuredContent.results.map((x) => x.type)).size >= 1, 'bare elicitation: {} gets the form; decline searches unfiltered');
+  const typed = await c.callTool({ name: 'search_components', arguments: { query: 'review', type: 'agents', limit: 5 } });
+  check(asked.length === 2 && Boolean(asked[1]?.requestedSchema?.properties?.category) && !asked[1]?.requestedSchema?.properties?.type
+    && !typed.isError, 'with a type given it asks only for the category');
+  await c.close();
+}
+{
+  // Earlier revisions: the stateless legacy lane has no server-to-client requests, so never a form.
+  const asked = [];
+  const c = new Client({ name: 'aitmpl-smoke-legacy-elicit', version: '1.0.0' }, { capabilities: { elicitation: {} } });
+  c.setRequestHandler('elicitation/create', async (req) => { asked.push(req.params); return { action: 'decline' }; });
+  await c.connect(new StreamableHTTPClientTransport(url));
+  const r = await c.callTool({ name: 'search_components', arguments: { query: 'review', limit: 5 } });
+  check(c.getNegotiatedProtocolVersion?.() !== '2026-07-28' && asked.length === 0 && !r.isError && r.structuredContent.results.length === 5,
+    `legacy revision (${c.getNegotiatedProtocolVersion?.()}) with elicitation: no form, search answers`);
+  await c.close();
+}
+{
+  const { c, asked } = await elicitClient({ elicitation: { url: {} } }, () => ({ action: 'accept', content: {} }));
+  const r = await c.callTool({ name: 'search_components', arguments: { query: 'review', limit: 5 } });
+  check(asked.length === 0 && !r.isError, 'URL-only elicitation capability: no form, search answers');
+  await c.close();
+}
 
 console.log(failures ? `\n${failures} check(s) failed` : '\nall checks passed');
 process.exit(failures ? 1 : 0);
