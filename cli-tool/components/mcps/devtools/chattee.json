@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "chattee": {
+      "description": "Lets AI assistants create, change, deploy and publish full web apps on Chattee. Streamable HTTP with OAuth sign-in in the browser. A Chattee account is needed; builds spend its credits. What you put into a call is sent to chattee.ai.",
+      "type": "http",
+      "url": "https://chattee.ai/mcp/connect"
+    }
+  }
+}
