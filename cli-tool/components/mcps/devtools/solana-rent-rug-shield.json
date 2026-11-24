@@ -1,9 +1,9 @@
 {
   "mcpServers": {
     "solana-rent-rug-shield": {
-      "description": "Non-custodial Solana security MCP server for 12-layer token rug audits, inner-CPI drainer simulation, and read-only SPL empty ATA rent discovery.",
+      "description": "Non-custodial Solana security MCP server for 12-layer token rug audits, inner-CPI drainer simulation, and read-only SPL empty ATA rent discovery. Free tier included (read-only token safety audits and empty ATA discovery with no API key required); optional paid Solana x402 micropayments ($0.02 per scan or $1.99 Pro Pass) for high-volume agent automation.",
       "type": "http",
-      "url": "https://diary-gravity-opens-volunteer.trycloudflare.com/mcp"
+      "url": "https://appointed-intimate-database-instance.trycloudflare.com/mcp"
     }
   }
 }
