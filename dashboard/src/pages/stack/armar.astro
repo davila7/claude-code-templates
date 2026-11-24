@@ -1,0 +1,17 @@
+---
+// "Build my stack with Claude" (Claude Platform OAuth, linked billing).
+// Off unless PUBLIC_CLAUDE_LINK_ENABLED=true; noindex either way (src/lib/robots.ts).
+import DashboardLayout from '../../layouts/DashboardLayout.astro';
+import StackBuilderView from '../../components/StackBuilderView.tsx';
+import { CLAUDE_LINK_ENABLED } from '../../lib/claude-stack';
+
+export const prerender = false;
+
+if (!CLAUDE_LINK_ENABLED) {
+  return new Response(null, { status: 404 });
+}
+---
+
+<DashboardLayout title="Build my stack with Claude - Claude Code Templates">
+  <StackBuilderView client:load />
+</DashboardLayout>
