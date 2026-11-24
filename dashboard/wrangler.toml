@@ -11,6 +11,8 @@ PUBLIC_COMPONENTS_JSON_URL = "/components.json"
 PUBLIC_GITHUB_CLIENT_ID = "Ov23li3KjfA4cuLi5c0k"
 # Sponsored placements (CCT Ads) are inert until this is set to "true":
 # PUBLIC_ADS_ENABLED = "true"
+# "Build my stack with Claude" (/stack/armar, claude-gateway Worker) is off until this is "true":
+# PUBLIC_CLAUDE_LINK_ENABLED = "true"
 # WebMCP catalog tools (src/lib/webmcp.ts); set to "false" to disable:
 PUBLIC_WEBMCP_ENABLED = "true"
 # Google Analytics 4 on every page (DashboardLayout.astro); leave unset to load no analytics:

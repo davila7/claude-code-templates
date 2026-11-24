@@ -106,6 +106,22 @@ export const prerender = true;
       browser's session storage, used only to create the commit or pull request you asked for, and is not stored on our servers.
     </p>
 
+    <h2 id="claude">Building a stack with Claude</h2>
+    <p>
+      "Build my stack with Claude" runs Claude on your own Claude Platform organization through Anthropic's linked billing
+      (Claude Platform OAuth). When you link it, Anthropic creates a user profile for you in our organization and asks you to
+      approve the link and a monthly spend limit; we keep that profile id, the connection id and the refresh token Anthropic
+      returns, the token encrypted, tied to your account. We never see your Anthropic credentials or billing details.
+    </p>
+    <p>
+      For each recommendation you ask for, your browser reads a few files from the repository you name (manifests, README,
+      CLAUDE.md, workflow files and the file tree) with your GitHub token, and sends only those files to our gateway, which passes
+      them to Claude with catalog search tools. We do not store the files or Claude's answer; we keep a record of each run (time,
+      model, token counts, success or error) to enforce one run at a time and to answer billing questions. Anthropic processes the
+      request under its own terms; your organization's zero data retention or BAA arrangements do not apply to these requests.
+      You can forget the link here and revoke it in Claude Console under Linked platforms.
+    </p>
+
     <h2>Email</h2>
     <p>
       From July to September 2026 we sent emails about new and trending components to people with an aitmpl.com
@@ -143,6 +159,7 @@ export const prerender = true;
       <li>Cloudflare: hosting, content delivery and the MCP server.</li>
       <li>Supabase and Neon: databases for usage statistics, collections, email records and placements.</li>
       <li>Clerk: sign-in.</li>
+      <li>Anthropic: Claude, for "Build my stack with Claude", billed to your linked organization.</li>
       <li>GitHub: OAuth for "Send to repo", the public source repository, and the files the CLI downloads.</li>
       <li>Resend: email delivery (paused since September 2026).</li>
       <li>Stripe: payments for sponsored placements.</li>

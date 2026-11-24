@@ -13,7 +13,7 @@
  */
 export const NOINDEX_HEADER = 'noindex, nofollow';
 
-const NOINDEX_BASES = ['/api', '/my-components', '/github-callback'];
+const NOINDEX_BASES = ['/api', '/my-components', '/github-callback', '/stack'];
 
 export function isNoindexPath(pathname: string): boolean {
   return NOINDEX_BASES.some((base) => pathname === base || pathname.startsWith(`${base}/`));
