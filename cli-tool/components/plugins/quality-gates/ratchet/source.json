@@ -1,7 +1,7 @@
 {
   "repo": "krishansubudhi/ratchet",
-  "path": "",
-  "commit": "9631918e9875b94acd6c4caa835d813db72a57f5",
+  "path": "plugin",
+  "commit": "2d7dd0cca363731135982b933414ceaef7015fa3",
   "license": "Apache-2.0",
   "author": "Krishan Subudhi"
 }
