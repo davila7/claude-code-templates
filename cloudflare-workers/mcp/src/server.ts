@@ -1,4 +1,5 @@
 import { McpServer } from '@modelcontextprotocol/server';
+import type { SkillsExtension } from '@modelcontextprotocol/server/ext/skills';
 import { z } from 'zod';
 import {
   CatalogUnavailable, FLAG, SITE, TYPES, WRITES, findComponent, installCommand, loadCatalog, oneLine, search,
@@ -87,8 +88,8 @@ function resultText(results: ReturnType<typeof summary>[], total: number, query:
   return `${total} component(s) match "${query}", best text match first:\n\n${lines.join('\n\n')}`;
 }
 
-/** Builds a fresh server per request (createMcpHandler is stateless). */
-export function createServer(fetcher: Fetcher) {
+/** Builds a fresh server per request (createMcpHandler is stateless). `skills` adds the Skills over MCP extension. */
+export function createServer(fetcher: Fetcher, skills?: SkillsExtension) {
   const server = new McpServer(
     {
       name: 'aitmpl',
@@ -103,7 +104,8 @@ export function createServer(fetcher: Fetcher) {
         + 'search_components finds components by text, get_component returns one component with its full content and security scan, '
         + 'get_install_command returns the claude-code-templates CLI command that installs one or more components. '
         + 'This server installs nothing itself: the command runs in a terminal on the machine where the components should go. '
-        + 'Results are ordered by text match only; downloads and sponsorship never change the order.',
+        + 'Results are ordered by text match only; downloads and sponsorship never change the order. '
+        + 'Clients that support Skills over MCP also get two skills: component-review and skill-over-mcp.',
     },
   );
 
@@ -311,5 +313,6 @@ export function createServer(fetcher: Fetcher) {
     }),
   );
 
+  skills?.attach(server);
   return server;
 }

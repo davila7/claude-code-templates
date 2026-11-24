@@ -53,6 +53,10 @@ The aitmpl MCP server gives Claude read-only access to the aitmpl.com catalog: a
 
 Ids have the form `{type}/{category}/{name}`, for example `agents/development-team/frontend-developer` or `plugins/productivity/champion-kit`.
 
+## Skills
+
+The server also serves two skills through Skills over MCP (Claude Code 2.1.331 or later, public beta). They appear in `/skills` as `aitmpl:component-review`, which reviews a Claude Code component before you share it, and `aitmpl:skill-over-mcp`, which shows how to build an MCP server that serves skills. Run one by asking Claude or by typing `/aitmpl:component-review`. Clients without Skills over MCP see only the tools. MCP skills do not load in `claude -p`, the Agent SDK or cloud sessions.
+
 ## How installing works
 
 The server installs nothing. It runs on Cloudflare and cannot write to your machine, so it hands back the command and the command does the install:

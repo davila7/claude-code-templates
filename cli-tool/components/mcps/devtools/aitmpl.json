@@ -1,9 +1,21 @@
 {
   "mcpServers": {
     "aitmpl": {
-      "description": "Official MCP server of the aitmpl.com catalog: lets Claude search Claude Code components (agents, commands, skills, hooks, MCP servers, settings, loops, mods and plugins), read one with its full content and SkillSpector scan, and get the claude-code-templates command that installs it. Remote, read-only, no sign-in; it installs nothing itself, Claude runs the returned command.",
+      "description": "Official MCP server of the aitmpl.com catalog: lets Claude search Claude Code components (agents, commands, skills, hooks, MCP servers, settings, loops, mods and plugins), read one with its full content and SkillSpector scan, and get the claude-code-templates command that installs it. It also serves two skills over MCP (Claude Code 2.1.331 or later): component-review and skill-over-mcp. Remote, read-only, no sign-in; it installs nothing itself, Claude runs the returned command.",
       "type": "http",
       "url": "https://mcp.aitmpl.com/mcp"
     }
+  },
+  "mcpSkills": {
+    "aitmpl": [
+      {
+        "name": "component-review",
+        "description": "Review a Claude Code component (agent, command, skill, hook, MCP server config or setting) before sharing it or sending it to aitmpl.com."
+      },
+      {
+        "name": "skill-over-mcp",
+        "description": "Build an MCP server that serves skills (Skills over MCP, extension io.modelcontextprotocol/skills) with the official TypeScript SDK."
+      }
+    ]
   }
 }
