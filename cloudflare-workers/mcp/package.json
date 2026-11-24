@@ -21,7 +21,7 @@
     "@modelcontextprotocol/client": "2.4.0",
     "@modelcontextprotocol/core": "2.4.0",
     "typescript": "5.9.3",
-    "vitest": "3.2.7",
+    "vitest": "4.1.11",
     "wrangler": "4.163.0"
   }
 }
