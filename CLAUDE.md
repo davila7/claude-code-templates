@@ -237,7 +237,7 @@ Claude Code 2.1.331+ (public beta) loads skills that an MCP server serves throug
      }
    }
    ```
-4. **Validate and review** as usual: `python3 scripts/validate_components.py --changed FILE --strict` (`claude plugin validate` accepts the extra key), `python3 scripts/mcp_versions.py check FILE` for package servers, then the component-reviewer. The page parses `mcpSkills` with `parseMcpSkills()` (`dashboard/src/lib/mcp-skills.ts`): it drops servers missing from `mcpServers`, invalid names and duplicates, and draws only the first server, so check the page after the catalog regenerates.
+4. **Validate and review** as usual: `echo cli-tool/components/mcps/{category}/{name}.json > /tmp/changed.txt && python3 scripts/validate_components.py --changed /tmp/changed.txt --strict` (`--changed` takes a file that lists paths, not the component itself: passing the component validates 0 components; `claude plugin validate` accepts the extra key), `python3 scripts/mcp_versions.py check FILE` for package servers, then the component-reviewer. The page parses `mcpSkills` with `parseMcpSkills()` (`dashboard/src/lib/mcp-skills.ts`): it drops servers missing from `mcpServers`, invalid names and duplicates, and draws only the first server, so check the page after the catalog regenerates.
 5. **Keep it in sync.** The list is declared, not probed: when the server adds, renames or removes a skill, the component changes in the same PR (or the next one, for a third-party server). Users see the skills from the server itself, so a stale list only misleads the page.
 
 #### External skills (code in another repo)
