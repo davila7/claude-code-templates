@@ -27117,44 +27117,11 @@
       }
     },
     {
-      "name": "aitmpl-skills-example",
-      "path": "devtools/aitmpl-skills-example.json",
-      "category": "devtools",
-      "type": "mcp",
-      "description": "Example of Skills over MCP (needs Claude Code 2.1.331 or later): a remote MCP server that serves skills instead of tools. Claude Code lists them as aitmpl-skills:component-review (review a Claude Code component before sharing it) and aitmpl-skills:skill-over-mcp (build your own MCP server that serves skills). Read-only, no sign-in.",
-      "author": "",
-      "repo": "",
-      "version": "",
-      "license": "",
-      "keywords": [],
-      "downloads": 0,
-      "security": {
-        "validated": false,
-        "valid": null,
-        "score": null,
-        "errorCount": 0,
-        "warningCount": 0,
-        "lastValidated": null
-      },
-      "skillspector": {
-        "score": 0,
-        "severity": "LOW",
-        "recommendation": "SAFE",
-        "issueCount": 0,
-        "analysis": "complete",
-        "findings": [],
-        "categories": {},
-        "hash": "8595a1197e882906",
-        "version": "2.12.0",
-        "scannedAt": "2026-11-24T21:18:46Z"
-      }
-    },
-    {
       "name": "aitmpl",
       "path": "devtools/aitmpl.json",
       "category": "devtools",
       "type": "mcp",
-      "description": "Official MCP server of the aitmpl.com catalog: lets Claude search Claude Code components (agents, commands, skills, hooks, MCP servers, settings, loops, mods and plugins), read one with its full content and SkillSpector scan, and get the claude-code-templates command that installs it. Remote, read-only, no sign-in; it installs nothing itself, Claude runs the returned command.",
+      "description": "Official MCP server of the aitmpl.com catalog: lets Claude search Claude Code components (agents, commands, skills, hooks, MCP servers, settings, loops, mods and plugins), read one with its full content and SkillSpector scan, and get the claude-code-templates command that installs it. It also serves two skills over MCP (Claude Code 2.1.331 or later): component-review and skill-over-mcp. Remote, read-only, no sign-in; it installs nothing itself, Claude runs the returned command.",
       "author": "",
       "repo": "",
       "version": "",
@@ -27177,9 +27144,9 @@
         "analysis": "complete",
         "findings": [],
         "categories": {},
-        "hash": "ebb3d02a230b1ebc",
+        "hash": "9bc00428efc6d4db",
         "version": "2.12.0",
-        "scannedAt": "2026-11-19T03:05:32Z"
+        "scannedAt": "2026-11-24T21:39:35Z"
       }
     },
     {
