@@ -29046,6 +29046,39 @@
       }
     },
     {
+      "name": "testingbot",
+      "path": "devtools/testingbot.json",
+      "category": "devtools",
+      "type": "mcp",
+      "description": "Official TestingBot MCP server: drive real browsers and iOS/Android devices, run Selenium, Playwright, Appium and Maestro tests, take cross-browser screenshots, test localhost through a tunnel, and explain failed tests. Sign in with the tb_login tool (no key to paste) or set TESTINGBOT_KEY and TESTINGBOT_SECRET.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "categories": {},
+        "hash": "75d546bc2330ac05",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-24T16:08:46Z"
+      }
+    },
+    {
       "name": "testsprite",
       "path": "devtools/testsprite.json",
       "category": "devtools",
@@ -29628,6 +29661,39 @@
         "hash": "e214ae7c3f1e367c",
         "version": "2.12.0",
         "scannedAt": "2026-11-19T15:08:18Z"
+      }
+    },
+    {
+      "name": "worktable-mcp",
+      "path": "integration/worktable-mcp.json",
+      "category": "integration",
+      "type": "mcp",
+      "description": "Create and revise shared docs, interactive HTML Docs, drawings, structured records, comments, and threads. Connect to Worktable Cloud and sign in with OAuth. Free Solo plan; paid Team and Business plans. Docs: https://docs.worktable.dev/start/connect-your-agent",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "categories": {},
+        "hash": "fd69970e09fbb78d",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-24T16:08:46Z"
       }
     },
     {
@@ -30360,6 +30426,39 @@
       }
     },
     {
+      "name": "pathista",
+      "path": "productivity/pathista.json",
+      "category": "productivity",
+      "type": "mcp",
+      "description": "Run your own multi-step workflows in Claude Code one step at a time: the agent gets only the current step and the possible next steps, while the position, notes and todos stay in your Pathista account, so a run continues in a later session. Loops and branches included. Remote server, nothing to install. Needs a Pathista account. Free plan available; Premium is paid (10 USD/month). Claude Code asks you to sign in (OAuth) on first use.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "categories": {},
+        "hash": "785f01e5d99ac923",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-24T16:08:46Z"
+      }
+    },
+    {
       "name": "reasonbook",
       "path": "productivity/reasonbook.json",
       "category": "productivity",
@@ -30423,6 +30522,39 @@
         "hash": "426469820c9ce3b5",
         "version": "2.12.0",
         "scannedAt": "2026-11-19T03:05:32Z"
+      }
+    },
+    {
+      "name": "zambo",
+      "path": "productivity/zambo.json",
+      "category": "productivity",
+      "type": "mcp",
+      "description": "Zambo is the verifiable work layer for AI: 153 tools behind one remote MCP endpoint, memory and handover that carry work across AIs, and a verifiable AER-1 receipt for every job. No account or API key needed. Free tier: 20 calls and 1 wrap-up free every day, and picking up in another AI is always free. Day Pass $0.99 for unlimited use for 24 hours.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "categories": {},
+        "hash": "6c50f44e3f1355ac",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-24T16:08:46Z"
       }
     },
     {
@@ -30828,6 +30960,51 @@
         "hash": "57b923345e139016",
         "version": "2.12.0",
         "scannedAt": "2026-11-19T03:05:32Z"
+      }
+    },
+    {
+      "name": "lurkapi",
+      "path": "web-data/lurkapi.json",
+      "category": "web-data",
+      "type": "mcp",
+      "description": "Remote MCP server and API for public social media data: profiles, posts, comments, video transcripts and Meta, Google, TikTok and LinkedIn ad library results from 16 platforms (TikTok, Instagram, YouTube, Reddit, X, LinkedIn and more), one tool per endpoint. Read-only. Sign in with OAuth in the browser or send an x-api-key header; 100 free credits on signup, no card.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 5,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 1,
+        "analysis": "complete",
+        "findings": [
+          {
+            "id": "E1",
+            "category": "Data Exfiltration",
+            "severity": "MEDIUM",
+            "title": "External Transmission",
+            "file": "lurkapi.json",
+            "line": 6,
+            "count": 1
+          }
+        ],
+        "categories": {
+          "Data Exfiltration": 1
+        },
+        "hash": "3bf056d39742a266",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-24T16:08:46Z"
       }
     },
     {
@@ -52044,6 +52221,83 @@
         "version": "1.0.1",
         "checkedAt": "2026-11-18T20:31:10Z",
         "hash": "463863dff702a422"
+      }
+    },
+    {
+      "name": "rag-milvus",
+      "path": "ai-research/rag-milvus",
+      "category": "ai-research",
+      "type": "skill",
+      "description": "Builds and evaluates persistent document retrieval with Milvus and Milvus Lite. Use when implementing semantic search, metadata-filtered RAG, repeatable ingestion, or moving a local retrieval experiment to a server.",
+      "author": "Cheney Zhang",
+      "repo": "",
+      "version": "1.0.0",
+      "license": "MIT",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [],
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "CAUTION",
+        "issueCount": 0,
+        "analysis": "partial",
+        "findings": [],
+        "categories": {},
+        "hash": "09f865eab151d581",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-24T16:08:46Z"
+      },
+      "harness": {
+        "agents": [
+          {
+            "id": "claude-code",
+            "status": "loads",
+            "verified": "2.1.316",
+            "notes": []
+          },
+          {
+            "id": "codex",
+            "status": "loads",
+            "verified": "0.166.0",
+            "notes": []
+          },
+          {
+            "id": "copilot-cli",
+            "status": "loads",
+            "verified": "1.0.105",
+            "notes": []
+          },
+          {
+            "id": "opencode",
+            "status": "loads",
+            "verified": "1.19.5",
+            "notes": []
+          },
+          {
+            "id": "hermes",
+            "status": "loads",
+            "verified": "main",
+            "notes": []
+          },
+          {
+            "id": "openclaw",
+            "status": "loads",
+            "verified": "2026.10.9",
+            "notes": []
+          }
+        ],
+        "version": "1.0.1",
+        "checkedAt": "2026-11-24T16:18:10Z",
+        "hash": "09f865eab151d581"
       }
     },
     {
@@ -129245,6 +129499,300 @@
         "version": "1.0.1",
         "checkedAt": "2026-11-18T20:31:10Z",
         "hash": "64fc90157497237d"
+      }
+    },
+    {
+      "name": "socialcrawl",
+      "path": "web-data/socialcrawl",
+      "category": "web-data",
+      "type": "skill",
+      "description": "Fetch social media, commerce, and research data through the SocialCrawl API: profiles, followers, posts, comments, reviews, search results, transcripts, ads, product catalogs, app-store listings, places, jobs, finance, news, trends, prediction markets (Polymarket), plus cross-platform Prism composites, scheduled Monitors, and audience Cohorts. Covers TikTok, Instagram, YouTube, Twitter/X, Facebook, LinkedIn, Reddit, Threads, Amazon, Walmart, Google, Trustpilot, Yelp, GitHub, Naver and many more behind one API key. Use when the user mentions SocialCrawl, or wants to collect social media data, creators or influencers, brand mentions, comments, reviews, or competitor data; scrape or crawl a web page via SocialCrawl; generate code that calls the API; check endpoints, pricing, or their credit balance; or run one search across many platforms.",
+      "author": "SocialCrawl",
+      "repo": "https://github.com/socialcrawl/skills",
+      "version": "",
+      "license": "MIT",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "LICENSE",
+        "assets/endpoints.json",
+        "assets/socialcrawl-types.ts",
+        "assets/socialcrawl_types.py",
+        "manifest.json",
+        "references/airbnb.md",
+        "references/aliexpress.md",
+        "references/amazon.md",
+        "references/apartments.md",
+        "references/api-overview.md",
+        "references/app_store.md",
+        "references/apple_maps.md",
+        "references/apple_music.md",
+        "references/baidu.md",
+        "references/bestbuy.md",
+        "references/bing.md",
+        "references/bluesky.md",
+        "references/booking.md",
+        "references/codegen.md",
+        "references/cohorts.md",
+        "references/content_analysis.md",
+        "references/cost-gate.md",
+        "references/douyin.md",
+        "references/duckduckgo.md",
+        "references/ebay.md",
+        "references/economy.md",
+        "references/errors.md",
+        "references/etsy.md",
+        "references/facebook.md",
+        "references/finance.md",
+        "references/g2.md",
+        "references/gab.md",
+        "references/github.md",
+        "references/goodreads.md",
+        "references/google.md",
+        "references/google_news.md",
+        "references/google_play.md",
+        "references/google_shopping.md",
+        "references/google_trends.md",
+        "references/gumtree.md",
+        "references/hackernews.md",
+        "references/hm.md",
+        "references/home_depot.md",
+        "references/homes.md",
+        "references/idealo.md",
+        "references/ikea.md",
+        "references/index.md",
+        "references/instagram.md",
+        "references/jobs.md",
+        "references/kick.md",
+        "references/klarna.md",
+        "references/kohls.md",
+        "references/komi.md",
+        "references/kroger.md",
+        "references/kwai.md",
+        "references/linkbio.md",
+        "references/linkedin.md",
+        "references/linkme.md",
+        "references/linktree.md",
+        "references/listening.md",
+        "references/monitors.md",
+        "references/naver.md",
+        "references/npm.md",
+        "references/on_page.md",
+        "references/perplexity.md",
+        "references/pillar.md",
+        "references/pinterest.md",
+        "references/polymarket.md",
+        "references/pricing.md",
+        "references/prism.md",
+        "references/producthunt.md",
+        "references/pypi.md",
+        "references/quora.md",
+        "references/realtor.md",
+        "references/recipes.md",
+        "references/reddit.md",
+        "references/redfin.md",
+        "references/rumble.md",
+        "references/schemas/Analytics.md",
+        "references/schemas/App.md",
+        "references/schemas/AppList.md",
+        "references/schemas/Author.md",
+        "references/schemas/AuthorList.md",
+        "references/schemas/BarList.md",
+        "references/schemas/Comment.md",
+        "references/schemas/CommentList.md",
+        "references/schemas/FinancialStatementList.md",
+        "references/schemas/Job.md",
+        "references/schemas/JobList.md",
+        "references/schemas/NewsArticleList.md",
+        "references/schemas/OptionContractList.md",
+        "references/schemas/Place.md",
+        "references/schemas/PlaceList.md",
+        "references/schemas/Post.md",
+        "references/schemas/PostList.md",
+        "references/schemas/Product.md",
+        "references/schemas/ProductList.md",
+        "references/schemas/Quote.md",
+        "references/schemas/QuoteList.md",
+        "references/schemas/ReviewList.md",
+        "references/schemas/Seller.md",
+        "references/schemas/SellerList.md",
+        "references/schemas/WebPage.md",
+        "references/schemas/WebPageList.md",
+        "references/search.md",
+        "references/sephora.md",
+        "references/snapchat.md",
+        "references/soundcloud.md",
+        "references/spotify.md",
+        "references/sprouts.md",
+        "references/stackoverflow.md",
+        "references/steam.md",
+        "references/target.md",
+        "references/tavily.md",
+        "references/telegram.md",
+        "references/threads.md",
+        "references/tiktok.md",
+        "references/tiktokshop.md",
+        "references/tripadvisor.md",
+        "references/trustpilot.md",
+        "references/truthsocial.md",
+        "references/twitch.md",
+        "references/twitter.md",
+        "references/us_congress_trades.md",
+        "references/utility.md",
+        "references/walmart.md",
+        "references/wayfair.md",
+        "references/web.md",
+        "references/weibo.md",
+        "references/wikipedia.md",
+        "references/xiaohongshu.md",
+        "references/yahoo.md",
+        "references/yandex.md",
+        "references/yelp.md",
+        "references/youtube.md",
+        "references/zillow.md",
+        "scripts/batch.py",
+        "scripts/estimate.py",
+        "scripts/paginate.py",
+        "scripts/sc.py",
+        "scripts/sclib.py",
+        "scripts/to_csv.py"
+      ],
+      "source": {
+        "repo": "socialcrawl/skills",
+        "path": "socialcrawl",
+        "commit": "ba259b9b8e08f3ab42e19be2b967a84f3b6785e6",
+        "license": "MIT",
+        "url": "https://github.com/socialcrawl/skills/tree/ba259b9b8e08f3ab42e19be2b967a84f3b6785e6/socialcrawl",
+        "requires": []
+      },
+      "skillspector": {
+        "score": 100,
+        "severity": "CRITICAL",
+        "recommendation": "DO_NOT_INSTALL",
+        "issueCount": 511,
+        "analysis": "partial",
+        "findings": [
+          {
+            "id": "AE1",
+            "category": "analysis-evasion",
+            "severity": "HIGH",
+            "title": "Incomplete referenced artifact analysis",
+            "file": "SKILL.md",
+            "line": 71,
+            "count": 32
+          },
+          {
+            "id": "SC2",
+            "category": "Supply Chain",
+            "severity": "HIGH",
+            "title": "External Script Fetching",
+            "file": "references/web.md",
+            "line": 567,
+            "count": 1
+          },
+          {
+            "id": "SC2",
+            "category": "Supply Chain",
+            "severity": "HIGH",
+            "title": "External Script Fetching",
+            "file": "references/youtube.md",
+            "line": 735,
+            "count": 1
+          },
+          {
+            "id": "AR2",
+            "category": "Anti-Refusal",
+            "severity": "HIGH",
+            "title": "Anti-Refusal Statement",
+            "file": "references/api-overview.md",
+            "line": 260,
+            "count": 1
+          },
+          {
+            "id": "TM1",
+            "category": "Tool Misuse",
+            "severity": "HIGH",
+            "title": "Tool Parameter Abuse",
+            "file": "references/api-overview.md",
+            "line": 699,
+            "count": 4
+          }
+        ],
+        "categories": {
+          "Prompt Injection": 371,
+          "Rogue Agent": 37,
+          "analysis-evasion": 32,
+          "Data Exfiltration": 26,
+          "Tool Misuse": 26,
+          "Excessive Agency": 7,
+          "Anti-Refusal": 5,
+          "Privilege Escalation": 2,
+          "Supply Chain": 2,
+          "Dangerous Code Execution": 1,
+          "MCP Least Privilege": 1,
+          "MCP Rug Pull": 1
+        },
+        "hash": "064df536297bfd03",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-24T16:08:46Z"
+      },
+      "harness": {
+        "agents": [
+          {
+            "id": "claude-code",
+            "status": "loads",
+            "verified": "2.1.316",
+            "notes": []
+          },
+          {
+            "id": "codex",
+            "status": "loads",
+            "verified": "0.166.0",
+            "notes": []
+          },
+          {
+            "id": "copilot-cli",
+            "status": "loads",
+            "verified": "1.0.105",
+            "notes": []
+          },
+          {
+            "id": "opencode",
+            "status": "loads",
+            "verified": "1.19.5",
+            "notes": []
+          },
+          {
+            "id": "hermes",
+            "status": "loads",
+            "verified": "main",
+            "notes": []
+          },
+          {
+            "id": "openclaw",
+            "status": "degraded",
+            "verified": "2026.10.9",
+            "notes": [
+              {
+                "id": "OW-READ-BUDGET",
+                "effect": "degraded",
+                "message": "SKILL.md reads as 31,467 characters (OpenClaw counts each CJK character as 4 or more), over the read cap for this setup: the read is refused or returns a cut prefix with a truncation notice. The cap depends on the model context (16,000 under 100K tokens, 32,000 under 200K, 64,000 above; custom providers default to 128K). Pass --context-tokens to check your setup.",
+                "fix": "Keep SKILL.md under about 15,000 characters (about 3,700 CJK characters); move detail into references/ files."
+              }
+            ]
+          }
+        ],
+        "version": "1.0.1",
+        "checkedAt": "2026-11-24T16:18:10Z",
+        "hash": "064df536297bfd03"
       }
     },
     {
