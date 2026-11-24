@@ -1,13 +1,14 @@
 {
   "repo": "ultrafastmov/ultrafast",
   "path": "skills/ultrafast",
-  "commit": "95b38327b4191bb70a189c07aa9d99a5c8c3f872",
+  "commit": "a2bf8fd19bc3d6c42b2a96d314904b084e2fb33f",
   "license": "MIT",
   "author": "ultrafast",
   "include": [
     "SKILL.md",
     "references/document.md",
     "references/recipes.md",
+    "references/setup.md",
     "examples"
   ]
 }
