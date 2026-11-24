@@ -15,3 +15,9 @@ enabled = true
 # Public hostnames the MCP endpoint answers on (Host/Origin checks against DNS rebinding).
 [vars]
 ALLOWED_HOSTNAMES = "mcp.aitmpl.com"
+
+# Skills over MCP: the Markdown files under skills/ are bundled as text and served with SkillsExtension.
+[[rules]]
+type = "Text"
+globs = ["**/*.md"]
+fallthrough = true

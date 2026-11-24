@@ -41,13 +41,13 @@ test('skillCommandPrefix keeps letters, digits and dashes', () => {
   assert.equal(skillCommandPrefix('my docs.v2'), 'my_docs_v2');
 });
 
-test('the example component declares the skills its server serves', () => {
+test('the aitmpl component declares the skills its server serves', () => {
   const root = new URL('../../', import.meta.url);
-  const component = readFileSync(new URL('cli-tool/components/mcps/devtools/aitmpl-skills-example.json', root), 'utf8');
+  const component = readFileSync(new URL('cli-tool/components/mcps/devtools/aitmpl.json', root), 'utf8');
   const [declared] = parseMcpSkills(component);
-  assert.equal(declared.server, 'aitmpl-skills');
+  assert.equal(declared.server, 'aitmpl');
   for (const s of declared.skills) {
-    const skill = readFileSync(new URL(`cloudflare-workers/mcp-skills-example/skills/${s.name}/SKILL.md`, root), 'utf8');
+    const skill = readFileSync(new URL(`cloudflare-workers/mcp/skills/${s.name}/SKILL.md`, root), 'utf8');
     const description = skill.match(/^description: (.+)$/m)?.[1] ?? '';
     assert.ok(description.startsWith(s.description.replace(/\.$/, '')), `${s.name}: catalog description matches SKILL.md`);
   }

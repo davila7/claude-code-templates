@@ -1,6 +1,8 @@
 // End-to-end check of a running aitmpl MCP server with the official MCP client.
 //   node test/smoke.mjs [url]   (default http://localhost:8787/mcp)
 import { Client, StreamableHTTPClientTransport } from '@modelcontextprotocol/client';
+import { GetSkillResultSchema, ListSkillsResultSchema } from '@modelcontextprotocol/core/ext/skills';
+import { createHash } from 'node:crypto';
 
 const url = new URL(process.argv[2] || 'http://localhost:8787/mcp');
 const client = new Client({ name: 'aitmpl-smoke', version: '1.0.0' });
@@ -70,5 +72,31 @@ check(!cats.isError && cats.structuredContent.categories.length > 5, 'list_categ
   `${cats.structuredContent?.categories.length} categories`);
 
 await client.close();
+
+// Skills over MCP: only offered on protocol revision 2026-07-28, so this client pins it.
+const modern = new Client({ name: 'aitmpl-smoke-skills', version: '1.0.0' }, { versionNegotiation: { mode: { pin: '2026-07-28' } } });
+await modern.connect(new StreamableHTTPClientTransport(url));
+check(modern.getNegotiatedProtocolVersion?.() === '2026-07-28', 'negotiates 2026-07-28', modern.getNegotiatedProtocolVersion?.());
+const caps = modern.getServerCapabilities();
+check(Boolean(caps?.resources) && caps?.extensions?.['io.modelcontextprotocol/skills'] !== undefined, 'declares resources + skills extension');
+check((await modern.listTools()).tools.length === 4, 'tools still listed on 2026-07-28');
+const skillList = await modern.request({ method: 'skills/list', params: {} }, ListSkillsResultSchema);
+const skillNames = skillList.skills.map((x) => x.frontmatter.name).sort();
+check(skillNames.join(',') === 'component-review,skill-over-mcp', 'skills/list', skillNames.join(', '));
+for (const skill of skillList.skills) {
+  for (const file of skill.resources) {
+    const r = await modern.readResource({ uri: file.uri });
+    const text = r.contents[0]?.text ?? '';
+    const digest = `sha256:${createHash('sha256').update(text, 'utf8').digest('hex')}`;
+    check(digest === file.digest && Buffer.byteLength(text) === file.size, `resources/read ${file.uri} matches its digest`);
+  }
+  const got = await modern.request({ method: 'skills/get', params: { uri: skill.uri } }, GetSkillResultSchema);
+  check(got.skill.uri === skill.uri, `skills/get ${skill.uri}`);
+}
+let unknownSkill = false;
+try { await modern.readResource({ uri: 'skill://nope/SKILL.md' }); } catch { unknownSkill = true; }
+check(unknownSkill, 'unknown skill URI is an error');
+await modern.close();
+
 console.log(failures ? `\n${failures} check(s) failed` : '\nall checks passed');
 process.exit(failures ? 1 : 0);
