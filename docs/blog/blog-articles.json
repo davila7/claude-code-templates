@@ -1,6 +1,26 @@
 {
   "articles": [
     {
+      "id": "automated-testing-workflow",
+      "title": "Automated Testing Workflow for Claude Code: Agent, Command and Hook",
+      "description": "Combine the Test Engineer agent, the Generate Tests command and the Run Tests After Changes hook into one Claude Code workflow that plans tests, writes them and reruns them after every edit.",
+      "url": "automated-testing-workflow/",
+      "image": "assets/automated-testing-workflow-cover.png",
+      "category": "Workflows",
+      "publishDate": "2026-11-24",
+      "readTime": "6 min read",
+      "tags": [
+        "Claude Code",
+        "Agents",
+        "Commands",
+        "Hooks",
+        "Testing"
+      ],
+      "difficulty": "intermediate",
+      "featured": true,
+      "order": 30
+    },
+    {
       "id": "brightdata-search-skill",
       "title": "Bright Data Search Skill for Claude Code: Google Results as Structured JSON",
       "description": "Install the Bright Data Search skill for Claude Code to run Google searches from your terminal session and get clean JSON results (title, link, description) through the Bright Data SERP API.",
@@ -589,11 +609,11 @@
     }
   ],
   "metadata": {
-    "lastUpdated": "2026-11-17",
-    "totalArticles": 31,
+    "lastUpdated": "2026-11-24",
+    "totalArticles": 32,
     "difficultyLevels": {
       "basic": 15,
-      "intermediate": 11,
+      "intermediate": 12,
       "advanced": 5
     }
   }
