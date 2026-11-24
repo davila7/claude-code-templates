@@ -80893,6 +80893,131 @@
       }
     },
     {
+      "name": "platform-oauth-linked-billing",
+      "path": "development/platform-oauth-linked-billing",
+      "category": "development",
+      "type": "skill",
+      "description": "Use when adding Claude Platform OAuth (linked billing) to an app, so that customers link their own Claude Console organization and the Claude calls they start are billed to them. Invoke it before writing any code for \"connect your Claude org\", \"bill Claude usage to the customer\", user profiles, auth.claude.com, PAR/PKCE with Anthropic, workload identity federation or billing_policy.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "references/backend.md",
+        "references/console-setup.md",
+        "references/troubleshooting.md",
+        "scripts/genkey.mjs",
+        "scripts/verify.mjs"
+      ],
+      "skillspector": {
+        "score": 29,
+        "severity": "MEDIUM",
+        "recommendation": "CAUTION",
+        "issueCount": 6,
+        "analysis": "partial",
+        "findings": [
+          {
+            "id": "EA2",
+            "category": "Excessive Agency",
+            "severity": "MEDIUM",
+            "title": "Autonomous Decision Making",
+            "file": "references/troubleshooting.md",
+            "line": 13,
+            "count": 1
+          },
+          {
+            "id": "LP3",
+            "category": "MCP Least Privilege",
+            "severity": "MEDIUM",
+            "title": "Without declared permissions the skill's intent is opaque and cannot be validated.",
+            "file": "SKILL.md",
+            "line": 1,
+            "count": 1
+          },
+          {
+            "id": "RA2",
+            "category": "Rogue Agent",
+            "severity": "MEDIUM",
+            "title": "Session Persistence",
+            "file": "SKILL.md",
+            "line": 92,
+            "count": 1
+          },
+          {
+            "id": "E1",
+            "category": "Data Exfiltration",
+            "severity": "MEDIUM",
+            "title": "External Transmission",
+            "file": "references/backend.md",
+            "line": 39,
+            "count": 3
+          }
+        ],
+        "categories": {
+          "Data Exfiltration": 3,
+          "Excessive Agency": 1,
+          "MCP Least Privilege": 1,
+          "Rogue Agent": 1
+        },
+        "hash": "1bbd9b8c5f30ab68",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-24T01:35:30Z"
+      },
+      "harness": {
+        "agents": [
+          {
+            "id": "claude-code",
+            "status": "loads",
+            "verified": "2.1.316",
+            "notes": []
+          },
+          {
+            "id": "codex",
+            "status": "loads",
+            "verified": "0.166.0",
+            "notes": []
+          },
+          {
+            "id": "copilot-cli",
+            "status": "loads",
+            "verified": "1.0.105",
+            "notes": []
+          },
+          {
+            "id": "opencode",
+            "status": "loads",
+            "verified": "1.19.5",
+            "notes": []
+          },
+          {
+            "id": "hermes",
+            "status": "loads",
+            "verified": "main",
+            "notes": []
+          },
+          {
+            "id": "openclaw",
+            "status": "loads",
+            "verified": "2026.10.9",
+            "notes": []
+          }
+        ],
+        "version": "1.0.1",
+        "checkedAt": "2026-11-24T01:35:40Z",
+        "hash": "1bbd9b8c5f30ab68"
+      }
+    },
+    {
       "name": "playwright",
       "path": "development/playwright",
       "category": "development",
