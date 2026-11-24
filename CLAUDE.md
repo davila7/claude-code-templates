@@ -221,6 +221,25 @@ An MCP component's server starts its package with `npx`/`pnpx`, `uvx` or `pipx r
 
 Claude Code 2.1.331+ (public beta) loads skills that an MCP server serves through the MCP Skills extension (`io.modelcontextprotocol/skills`, protocol revision 2026-07-28); they appear as `<server>:<skill>` in `/skills`. The skills live on the server, so a component cannot attach a skill to someone else's server: only servers that implement the extension get it (Daniel, 2026-11-24: no gateway). An MCP component declares what its server serves under a top-level `mcpSkills` key, keyed by server name (`{"mcpSkills": {"docs": [{"name": "pdf", "description": "..."}]}}`). The CLI strips that key before writing `.mcp.json`, and the component page draws the discovery flow and the skill list from it (`dashboard/src/lib/mcp-skills.ts`, `McpSkillsFlow.astro`). The list is declared, not probed: keep it in sync with the server. Example: `mcps/devtools/aitmpl` (mcp.aitmpl.com serves two skills next to its tools; Daniel, 2026-11-24: use the existing server, no separate example worker). MCP skills do not load in `claude -p`, the Agent SDK, cloud sessions, or a `claude` started from a shell that inherited Claude Desktop's `CLAUDE_CODE_ENTRYPOINT`: test in a normal interactive terminal.
 
+**Adding an MCP component that serves skills** (maintainers and contributors alike; a contributor PR holds only the component file):
+
+1. **The server must already serve them.** Skills over MCP is the server's job: it declares the extension in its capabilities and answers `skills/list`, `skills/get` and `resources/read` on protocol revision 2026-07-28. With the TypeScript SDK that is `SkillsExtension.load(...)` + `attach(server)` from `@modelcontextprotocol/server/ext/skills` (2.4.0+): see `cloudflare-workers/mcp/src/skills.ts`, or install `mcps/devtools/aitmpl` and run its `aitmpl:skill-over-mcp` skill, which walks through stdio and Streamable HTTP servers. A server that does not implement it gets no skills from a component: never add an `mcpSkills` list for a server that does not serve it.
+2. **Check what it serves** with the official client pinned to 2026-07-28 (an unpinned client negotiates an older revision and sees no skills): `new Client(info, { versionNegotiation: { mode: { pin: '2026-07-28' } } })`, then `client.request({ method: 'skills/list', params: {} }, ListSkillsResultSchema)` (schema from `@modelcontextprotocol/core/ext/skills`). `cloudflare-workers/mcp/test/smoke.mjs` has the full check (digests, `skills/get`). Then in an interactive `claude` 2.1.331+ from a normal terminal: `/mcp` shows `Protocol: 2026-07-28` and `N skills`, `/skills` lists `<server>:<skill>`.
+3. **Write the component** like any MCP (`cli-tool/components/mcps/{category}/{name}.json`, remote `type: "http"` + `url`, or a pinned `npx`/`uvx` package), plus a top-level `mcpSkills` keyed by the same server name as in `mcpServers`. One entry per skill the server lists: `name` = the skill's frontmatter `name` (lowercase, digits, `-`, at most 64 chars), `description` = the first sentence of its description. At most 100 per server (Claude Code's limit). Say in the server's `description` that it serves skills and needs Claude Code 2.1.331+.
+
+   ```json
+   {
+     "mcpServers": {
+       "docs": { "description": "... Also serves skills over MCP (Claude Code 2.1.331 or later).", "type": "http", "url": "https://example.com/mcp" }
+     },
+     "mcpSkills": {
+       "docs": [{ "name": "pdf", "description": "Fill and extract PDF forms." }]
+     }
+   }
+   ```
+4. **Validate and review** as usual: `python3 scripts/validate_components.py --changed FILE --strict` (`claude plugin validate` accepts the extra key), `python3 scripts/mcp_versions.py check FILE` for package servers, then the component-reviewer. The page parses `mcpSkills` with `parseMcpSkills()` (`dashboard/src/lib/mcp-skills.ts`): it drops servers missing from `mcpServers`, invalid names and duplicates, and draws only the first server, so check the page after the catalog regenerates.
+5. **Keep it in sync.** The list is declared, not probed: when the server adds, renames or removes a skill, the component changes in the same PR (or the next one, for a third-party server). Users see the skills from the server itself, so a stale list only misleads the page.
+
 #### External skills (code in another repo)
 
 A skill can live in its author's GitHub repo instead of being copied here. Its
