@@ -10,11 +10,18 @@ TARGET_DIR="${1:-garmin-coach-bot}"
 echo "=== Garmin Coach Bot Setup ==="
 echo
 
-# Clone
+# Clone or verify existing directory
 if [ -d "$TARGET_DIR" ]; then
-    echo "Directory '$TARGET_DIR' already exists. Using it."
+    if [ ! -f "$TARGET_DIR/bot.py" ] || [ ! -f "$TARGET_DIR/requirements.txt" ]; then
+        echo "ERROR: Directory '$TARGET_DIR' exists but does not contain the Garmin Coach Bot."
+        echo "Remove it or choose a different name: $0 <directory>"
+        exit 1
+    fi
+    echo "Directory '$TARGET_DIR' already exists. Updating..."
     cd "$TARGET_DIR"
-    git pull --ff-only 2>/dev/null || true
+    if ! git pull --ff-only; then
+        echo "WARNING: Could not update repository. Continuing with existing files."
+    fi
 else
     echo "Cloning repository..."
     git clone "$REPO_URL" "$TARGET_DIR"
@@ -55,9 +62,10 @@ echo "Installing dependencies..."
 # Generate encryption key
 ENCRYPTION_KEY=$(.venv/bin/python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())")
 
-# Create .env if not exists
+# Create .env if not exists (owner-only permissions for secrets)
 if [ ! -f ".env" ]; then
     echo "Creating .env file..."
+    umask 077
     cat > .env << EOF
 TELEGRAM_BOT_TOKEN=
 GEMINI_API_KEY=
@@ -66,7 +74,7 @@ CALENDAR_BASE_URL=
 USER_TIMEZONE=America/Bogota
 EOF
     echo
-    echo "Generated .env with a fresh ENCRYPTION_KEY."
+    echo "Generated .env with a fresh ENCRYPTION_KEY (permissions: owner-only)."
     echo
     echo "NEXT STEPS:"
     echo "  1. Create a Telegram bot via @BotFather and paste the token"

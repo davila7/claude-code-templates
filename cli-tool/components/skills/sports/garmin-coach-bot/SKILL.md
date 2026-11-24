@@ -122,6 +122,11 @@ python -m pytest tests/ -v
 
 Railway detecta el `Dockerfile` automaticamente y hace deploy.
 
+5. **Agregar volumen persistente** (importante: sin esto los datos de usuarios se pierden en cada redeploy):
+   - Settings > Volumes > Add Volume
+   - Mount path: `/app/data`
+   - Esto preserva credenciales cifradas, configuraciones y datos sincronizados entre deploys
+
 ### Opcion B: Con Railway CLI
 
 ```bash
@@ -136,6 +141,9 @@ railway init
 railway variables set TELEGRAM_BOT_TOKEN=...
 railway variables set GEMINI_API_KEY=...
 railway variables set ENCRYPTION_KEY=...
+
+# Agregar volumen persistente para datos de usuarios
+railway volume add --mount /app/data
 
 # Deploy
 railway up --detach
