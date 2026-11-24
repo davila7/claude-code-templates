@@ -5,8 +5,9 @@ import {
   CatalogUnavailable, FLAG, SITE, TYPES, WRITES, findComponent, installCommand, loadCatalog, oneLine, search,
   type Catalog, type Component, type ComponentType,
 } from './catalog';
+import { narrowSearch, type NarrowContext } from './narrow';
 
-export const SERVER_VERSION = '1.0.0';
+export const SERVER_VERSION = '1.1.0';
 
 const READ_ONLY = { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false } as const;
 const MAX_CONTENT_CHARS = 12_000;
@@ -132,12 +133,15 @@ export function createServer(fetcher: Fetcher, skills?: SkillsExtension) {
       }),
       annotations: { title: 'Search aitmpl components', ...READ_ONLY },
     },
-    async ({ query, type, category, limit }) => withCatalog(fetcher, (catalog) => {
-      const { total, match, results } = search(catalog, { query, type: type as ComponentType | undefined, category, limit });
+    async ({ query, type, category, limit }, ctx) => withCatalog(fetcher, (catalog) => {
+      // May ask the user for a type or category first (form elicitation, 2026-07-28 clients only); the answer only filters.
+      const narrowed = narrowSearch(catalog, { query, type: type as ComponentType | undefined, category, limit }, ctx as unknown as NarrowContext);
+      if (narrowed.kind === 'ask') return narrowed.result;
+      const { total, match, results } = search(catalog, narrowed.args);
       const rows = results.map(summary);
       const text = resultText(rows, total, query);
-      return ok({ query, total, match, results: rows },
-        match === 'partial' ? `No component matches every word of "${query}"; these match some of them.\n${text}` : text);
+      const body = match === 'partial' ? `No component matches every word of "${query}"; these match some of them.\n${text}` : text;
+      return ok({ query, total, match, results: rows }, narrowed.note ? `${narrowed.note}\n${body}` : body);
     }),
   );
 
