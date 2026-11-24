@@ -1,5 +1,5 @@
 ---
-name: Network 101
+name: network-101
 description: This skill should be used when the user asks to "set up a web server", "configure HTTP or HTTPS", "perform SNMP enumeration", "configure SMB shares", "test network services", or needs guidance on configuring and testing network services for penetration testing labs.
 metadata:
   author: zebbern
