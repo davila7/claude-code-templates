@@ -39,6 +39,7 @@ const DIRECTIVES: Record<string, string[]> = {
     "'self'",
     'https://api.github.com',
     'https://clerk.aitmpl.com',
+    'https://claude.aitmpl.com',
     'https://www.googletagmanager.com',
     'https://*.google-analytics.com',
     'https://*.analytics.google.com',

@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automated Testing Workflow for Claude Code: Agent, Command and Hook</title>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YWW6FV2SGN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-YWW6FV2SGN');
+    </script>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../../static/favicon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="../../static/favicon/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../../static/favicon/favicon-32x32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../../static/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="../../static/favicon/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="../../static/favicon/android-chrome-512x512.png">
+
+    <meta name="description" content="Combine the Test Engineer agent, the Generate Tests command and the Run Tests After Changes hook into one Claude Code workflow that plans tests, writes them and reruns them after every edit.">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://www.aitmpl.com/blog/automated-testing-workflow/">
+    <meta property="og:title" content="Automated Testing Workflow for Claude Code: Agent + Command + Hook">
+    <meta property="og:description" content="Combine the Test Engineer agent, the Generate Tests command and the Run Tests After Changes hook into one Claude Code workflow that plans tests, writes them and reruns them after every edit.">
+    <meta property="og:image" content="https://www.aitmpl.com/blog/assets/automated-testing-workflow-cover.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="article:author" content="Claude Code Templates">
+    <meta property="article:section" content="Workflows">
+    <meta property="article:tag" content="Claude Code">
+    <meta property="article:tag" content="Agents">
+    <meta property="article:tag" content="Commands">
+    <meta property="article:tag" content="Hooks">
+    <meta property="article:tag" content="Testing">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://www.aitmpl.com/blog/automated-testing-workflow/">
+    <meta name="twitter:title" content="Automated Testing Workflow for Claude Code: Agent + Command + Hook">
+    <meta name="twitter:description" content="Combine the Test Engineer agent, the Generate Tests command and the Run Tests After Changes hook into one Claude Code workflow that plans tests, writes them and reruns them after every edit.">
+    <meta name="twitter:image" content="https://www.aitmpl.com/blog/assets/automated-testing-workflow-cover.png">
+
+    <!-- Additional SEO -->
+    <meta name="keywords" content="Claude Code workflow, Claude Code testing, Test Engineer agent, generate tests command, PostToolUse hook, Claude Code hooks, Claude Code subagents, automated testing, test automation">
+    <meta name="author" content="Claude Code Templates">
+    <link rel="canonical" href="https://www.aitmpl.com/blog/automated-testing-workflow/">
+
+    <link rel="stylesheet" href="../../css/styles.css">
+    <link rel="stylesheet" href="../../css/blog.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Automated Testing Workflow for Claude Code: Agent, Command and Hook",
+        "description": "Combine the Test Engineer agent, the Generate Tests command and the Run Tests After Changes hook into one Claude Code workflow that plans tests, writes them and reruns them after every edit.",
+        "image": "https://www.aitmpl.com/blog/assets/automated-testing-workflow-cover.png",
+        "author": {
+            "@type": "Organization",
+            "name": "Claude Code Templates"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Claude Code Templates",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://www.aitmpl.com/static/img/logo.svg"
+            }
+        },
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https://www.aitmpl.com/blog/automated-testing-workflow/"
+        },
+        "keywords": "Claude Code workflow, Claude Code testing, Test Engineer agent, generate tests command, PostToolUse hook, automated testing",
+        "wordCount": "1000",
+        "articleSection": "Claude Code Workflows",
+        "about": [
+            {
+                "@type": "Thing",
+                "name": "Claude Code"
+            },
+            {
+                "@type": "Thing",
+                "name": "Subagents"
+            },
+            {
+                "@type": "Thing",
+                "name": "Hooks"
+            },
+            {
+                "@type": "Thing",
+                "name": "Automated Testing"
+            },
+            {
+                "@type": "SoftwareApplication",
+                "name": "Claude Code",
+                "applicationCategory": "DeveloperApplication"
+            }
+        ]
+    }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="terminal-header">
+                    <div class="ascii-title">
+                        <pre class="ascii-art">
+██████╗ ██╗      ██████╗  ██████╗
+██╔══██╗██║     ██╔═══██╗██╔════╝
+██████╔╝██║     ██║   ██║██║  ███╗
+██╔══██╗██║     ██║   ██║██║   ██║
+██████╔╝███████╗╚██████╔╝╚██████╔╝
+╚═════╝ ╚══════╝ ╚═════╝  ╚═════╝</pre>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <a href="../../index.html" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z"/>
+                        </svg>
+                        Home
+                    </a>
+                    <a href="../index.html" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                        </svg>
+                        Blog
+                    </a>
+                    <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="header-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.30 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="terminal">
+        <header class="article-header">
+            <div class="container">
+                <!-- Copy Markdown Button -->
+                <button id="copy-markdown-btn" class="copy-markdown-button" title="Copy post as Markdown">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                    </svg>
+                    Copy as Markdown
+                </button>
+
+                <h1 class="article-title">Automated Testing Workflow for Claude Code: Agent, Command and Hook</h1>
+                <p class="article-subtitle">Learn how to install three Claude Code components together and use them as one loop: the agent plans the tests, the command writes them, and the hook reruns them after each edit.</p>
+                <div class="article-meta-full">
+                    <span class="read-time">6 min read</span>
+                    <div class="article-tags">
+                        <span class="tag">Claude Code</span>
+                        <span class="tag">Agent</span>
+                        <span class="tag">Command</span>
+                        <span class="tag">Hook</span>
+                        <span class="tag">Testing</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <article class="article-body">
+            <img src="../assets/automated-testing-workflow-cover.png" alt="Automated Testing Workflow for Claude Code: Agent, Command and Hook" class="article-cover" loading="lazy">
+
+            <div class="article-content-full">
+                <h2>What is the Automated Testing Workflow?</h2>
+
+                <p>This Claude Code workflow combines three components from the library so that tests get planned, written and re-run without you asking each time: the <strong>Test Engineer agent</strong> decides what is worth testing, the <strong>Generate Tests command</strong> writes the test file for a given source file, and the <strong>Run Tests After Changes hook</strong> runs your quick test script after every edit.</p>
+
+                <!-- Mermaid Diagram -->
+                <div class="mermaid-diagram" style="background: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 2rem; margin: 2rem 0; text-align: center;">
+                    <pre class="mermaid">
+graph LR
+    A[🤖 Test Engineer agent] --> B[⚙️ Generate Tests command]
+    B --> C[📝 Edits to your code]
+    C --> D[🪝 Run Tests hook]
+    D --> E[✅ Test status]
+
+    style B fill:#F97316,stroke:#fff,color:#000
+                    </pre>
+                </div>
+
+                <h2>The Three Components</h2>
+                <ul>
+                    <li><strong>Test Engineer</strong> (agent, <code>development-tools/test-engineer</code>): a subagent for test strategy, automation and coverage analysis. It works with the Read, Write, Edit and Bash tools and follows a test pyramid of roughly 70% unit, 20% integration and 10% end-to-end tests.</li>
+                    <li><strong>Generate Tests</strong> (command, <code>testing/generate-tests</code>): the <code>/generate-tests</code> slash command. It detects your test framework, looks at the tests you already have, and writes a test file for the file or component you name.</li>
+                    <li><strong>Run Tests After Changes</strong> (hook, <code>post-tool/run-tests-after-changes</code>): a <code>PostToolUse</code> hook that runs <code>npm run test:quick</code> after each Edit and prints whether it passed.</li>
+                </ul>
+
+                <h2>Installation</h2>
+
+                <p>Install all three with one command from your project root:</p>
+
+                <pre><code class="language-bash">npx claude-code-templates@latest --agent development-tools/test-engineer --command testing/generate-tests --hook post-tool/run-tests-after-changes</code></pre>
+
+                <p>The CLI asks where to write the hook. Choose project settings to share it with your team, or local settings to keep it to yourself.</p>
+
+                <p><strong>Where are the components installed?</strong></p>
+
+                <pre><code class="language-bash">your-project/
+├── .claude/
+│   ├── agents/
+│   │   └── test-engineer.md      # ← Agent
+│   ├── commands/
+│   │   └── generate-tests.md     # ← Slash command
+│   └── settings.json             # ← Hook (or settings.local.json)
+├── src/
+└── package.json</code></pre>
+
+                <h2>How They Connect</h2>
+
+                <p><strong>The agent plans.</strong> A subagent runs in its own context window and returns a summary, so a long read through your codebase does not fill the main conversation. Claude can delegate to it on its own when a task matches the agent's description, or you can ask for it by name.</p>
+
+                <p><strong>The command writes.</strong> Before Claude sees the prompt, <code>/generate-tests</code> runs a few shell lines that collect your framework (Jest, Vitest, Mocha or Jasmine), a sample of existing test files and your coverage script. The path you type after the command arrives as <code>$ARGUMENTS</code>. Claude then works through six steps: analyze the exports, choose unit or integration scope, design mocks, write unit tests, write integration tests, and check naming and coverage.</p>
+
+                <p><strong>The hook checks.</strong> After each Edit tool call, Claude Code runs the hook's shell command. Project hooks also fire for edits made by a subagent, so the Test Engineer's own changes are checked too.</p>
+
+                <h2>Step-by-Step Workflow</h2>
+
+                <h3>Step 1: Add a <code>test:quick</code> script</h3>
+                <p>The hook calls <code>npm run test:quick</code>, so that script has to exist. Keep it fast, since it runs after every edit. Two common options:</p>
+
+                <pre><code class="language-json">{
+  "scripts": {
+    "test": "vitest run",
+    "test:quick": "vitest run --changed"
+  }
+}</code></pre>
+
+                <pre><code class="language-json">{
+  "scripts": {
+    "test": "jest",
+    "test:quick": "jest --onlyChanged"
+  }
+}</code></pre>
+
+                <p>Without this script the hook prints "Tests may need attention" after every edit, because the <code>npm run</code> call fails.</p>
+
+                <h3>Step 2: Ask the agent for a test plan</h3>
+                <pre><code class="language-bash">claude
+
+&gt; Use the test-engineer subagent to review src/cart/ and list the functions that have no tests, ordered by risk</code></pre>
+
+                <p>You get back a short list of gaps instead of the whole exploration.</p>
+
+                <h3>Step 3: Generate the tests</h3>
+                <p>Take the first file from the plan and pass it to the command:</p>
+
+                <pre><code class="language-bash">&gt; /generate-tests src/cart/totals.ts</code></pre>
+
+                <p>Claude writes a test file that follows the patterns of your existing tests: Arrange, Act, Assert, with mocks for external I/O and cases for the happy path, edge cases and errors.</p>
+
+                <h3>Step 4: Keep working while the hook watches</h3>
+                <p>From here on, each time Claude edits a file the hook runs the quick tests and prints one of two lines:</p>
+
+                <pre><code class="language-bash">✅ Tests passed
+⚠️ Tests may need attention</code></pre>
+
+                <p>The message is for you. A <code>PostToolUse</code> hook that exits with code 0 does not pass its output to Claude, so Claude does not react to the warning on its own. When you see it, ask Claude to run the tests and fix what broke.</p>
+
+                <h3>Step 5: Let Claude see the failures (optional)</h3>
+                <p>If you want Claude to act on a failure without being asked, replace the installed hook entry with a version that exits with code 2 and writes to stderr. Claude Code shows that stderr text to Claude:</p>
+
+                <pre><code class="language-json">{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -f package.json ]; then npm run test:quick --silent &gt;/dev/null 2&gt;&amp;1 || { echo 'test:quick failed after this edit. Run it and fix the failures.' &gt;&amp;2; exit 2; }; fi"
+          }
+        ]
+      }
+    ]
+  }
+}</code></pre>
+
+                <p>The <code>Edit|Write</code> matcher also covers new files, which the original <code>Edit</code> matcher does not. Keep only one of the two entries, otherwise the tests run twice per edit.</p>
+
+                <h2>A Practical Use Case</h2>
+
+                <p>You inherit a checkout module with no tests and need to change how discounts are calculated.</p>
+
+                <ol>
+                    <li>Ask the Test Engineer agent which functions in <code>src/checkout/</code> are untested and which ones the discount change touches.</li>
+                    <li>Run <code>/generate-tests src/checkout/discounts.ts</code> to pin down the current behavior before changing anything.</li>
+                    <li>Ask Claude to make the discount change. After each edit the hook reruns the quick tests, so you see right away if the new logic breaks a case the old code handled.</li>
+                    <li>When the change is done, run the full suite once with <code>npm test</code>.</li>
+                </ol>
+
+                <h2>Tips</h2>
+                <ul>
+                    <li>The hook only does something in projects with a <code>package.json</code>. For Python or Ruby projects, look at the <code>testing/test-runner</code> hook, which picks <code>pytest</code> or <code>rspec</code> by file extension.</li>
+                    <li>The quick script runs on every edit. If it takes more than a few seconds, narrow it to changed files or to unit tests only.</li>
+                    <li>Read generated tests before you commit them. A test that asserts the current output of buggy code will keep the bug in place.</li>
+                </ul>
+
+                <h2>Official Documentation</h2>
+                <p>For more information, see the official Claude Code documentation for <a href="https://code.claude.com/docs/en/sub-agents?utm_source=aitmpl&utm_medium=referral&utm_campaign=blog" target="_blank">subagents</a>, <a href="https://code.claude.com/docs/en/slash-commands?utm_source=aitmpl&utm_medium=referral&utm_campaign=blog" target="_blank">slash commands</a> and <a href="https://code.claude.com/docs/en/hooks?utm_source=aitmpl&utm_medium=referral&utm_campaign=blog" target="_blank">hooks</a>.</p>
+
+                <p><strong>Created by <a href="https://x.com/dani_avila7" target="_blank" rel="noopener">Daniel Ávila</a></strong></p>
+
+                <!-- Explore Components Banner -->
+                <div class="explore-components-banner">
+                    <h3>Explore 800+ Claude Code Components</h3>
+                    <p>Discover agents, commands, MCPs, settings, hooks, skills and templates to supercharge your Claude Code workflow</p>
+                    <a href="../../index.html">Browse All Components</a>
+                </div>
+
+            </div>
+
+            <div class="article-nav">
+                <a href="../index.html" class="back-to-blog">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z"/>
+                    </svg>
+                    Back to Blog
+                </a>
+            </div>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <div class="footer-ascii">
+                        <pre class="footer-ascii-art"> █████╗ ██╗████████╗███╗   ███╗██████╗ ██╗
+██╔══██╗██║╚══██╔══╝████╗ ████║██╔══██╗██║
+███████║██║   ██║   ██╔████╔██║██████╔╝██║
+██╔══██║██║   ██║   ██║╚██╔╝██║██╔═══╝ ██║
+██║  ██║██║   ██║   ██║ ╚═╝ ██║██║     ███████╗
+╚═╝  ╚═╝╚═╝   ╚═╝   ╚═╝     ╚═╝╚═╝     ╚══════╝</pre>
+                        <p class="footer-tagline">Supercharge Anthropic's Claude Code</p>
+                    </div>
+                </div>
+
+                <div class="footer-right">
+                    <p class="footer-copyright">&copy; 2026 Claude Code Templates. Open source project.</p>
+                    <div class="footer-links">
+                        <a href="../../trending.html" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M16,6L18.29,8.29L13.41,13.17L9.41,9.17L2,16.59L3.41,18L9.41,12L13.41,16L19.71,9.71L22,12V6H16Z"/>
+                            </svg>
+                            Trending
+                        </a>
+                        <a href="https://docs.aitmpl.com/" target="_blank" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                            </svg>
+                            Documentation
+                        </a>
+                        <a href="https://github.com/davila7/claude-code-templates" target="_blank" class="footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.30 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                            GitHub
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Code Copy Functionality -->
+    <script>
+        // Code Copy Functionality for Blog Articles
+class CodeCopy {
+    constructor() {
+        this.initCodeBlocks();
+        this.setupCopyFunctionality();
+    }
+
+    initCodeBlocks() {
+        // Convert existing pre elements to new code-block structure
+        const preElements = document.querySelectorAll('.article-content-full pre:not(.converted)');
+
+        preElements.forEach(pre => {
+            const code = pre.querySelector('code');
+            if (!code) return;
+
+            // Detect language from class or content
+            const language = this.detectLanguage(code);
+            const isTerminal = language === 'bash' || language === 'terminal';
+
+            // Create new code block structure
+            const codeBlock = document.createElement('div');
+            codeBlock.className = isTerminal ? 'code-block terminal-block' : 'code-block';
+
+            // Create header
+            const header = document.createElement('div');
+            header.className = 'code-header';
+
+            const languageSpan = document.createElement('span');
+            languageSpan.className = 'code-language';
+            languageSpan.textContent = language;
+
+            const copyButton = document.createElement('button');
+            copyButton.className = 'copy-button';
+            copyButton.innerHTML = `
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                </svg>
+                Copy
+            `;
+
+            header.appendChild(languageSpan);
+            header.appendChild(copyButton);
+
+            // Clone and prepare the pre element
+            const newPre = pre.cloneNode(true);
+            newPre.classList.add('converted');
+
+            // Assemble new structure
+            codeBlock.appendChild(header);
+            codeBlock.appendChild(newPre);
+
+            // Replace original pre
+            pre.parentNode.replaceChild(codeBlock, pre);
+        });
+    }
+
+    detectLanguage(codeElement) {
+        // Check for class-based language detection
+        const className = codeElement.className;
+        if (className.includes('language-')) {
+            return className.match(/language-(\w+)/)[1];
+        }
+
+        // Check content patterns
+        const content = codeElement.textContent;
+
+        if (content.includes('npm ') || content.includes('$ ') || content.includes('claude-code ')) {
+            return 'bash';
+        }
+        if (content.includes('import ') && content.includes('from ')) {
+            return 'javascript';
+        }
+        if (content.includes('CREATE TABLE') || content.includes('SELECT ')) {
+            return 'sql';
+        }
+        if (content.includes('{') && content.includes('"')) {
+            return 'json';
+        }
+        if (content.includes('def ') || content.includes('import ')) {
+            return 'python';
+        }
+
+        return 'text';
+    }
+
+    setupCopyFunctionality() {
+        document.addEventListener('click', async (e) => {
+            if (!e.target.closest('.copy-button')) return;
+
+            const button = e.target.closest('.copy-button');
+            const codeBlock = button.closest('.code-block');
+            const pre = codeBlock.querySelector('pre');
+            const code = pre.querySelector('code');
+
+            if (!code) return;
+
+            try {
+                // Get clean text content
+                let textToCopy = code.textContent;
+
+                // Clean up terminal prompts if it's a terminal block
+                if (codeBlock.classList.contains('terminal-block')) {
+                    textToCopy = this.cleanTerminalOutput(textToCopy);
+                }
+
+                await navigator.clipboard.writeText(textToCopy);
+
+                // Update button state
+                const originalContent = button.innerHTML;
+                button.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                    Copied!
+                `;
+                button.classList.add('copied');
+
+                // Reset after 2 seconds
+                setTimeout(() => {
+                    button.innerHTML = originalContent;
+                    button.classList.remove('copied');
+                }, 2000);
+
+            } catch (err) {
+                console.error('Failed to copy code:', err);
+
+                // Fallback: select text
+                const selection = window.getSelection();
+                const range = document.createRange();
+                range.selectNodeContents(code);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+        });
+    }
+
+    cleanTerminalOutput(text) {
+        // Remove common terminal prompts and clean output
+        return text
+            .split('\n')
+            .map(line => {
+                // Remove prompts like "$ ", "❯ ", "claude-code> "
+                line = line.replace(/^[\$❯]\s*/, '').replace(/^claude-code>\s*/, '');
+
+                // Remove output/result comments (lines starting with # ✓)
+                if (line.trim().startsWith('# ✓') ||
+                    line.trim().startsWith('# Start using') ||
+                    line.trim().startsWith('# Your .claude') ||
+                    line.trim().startsWith('# This will') ||
+                    line.includes('Components will be installed') ||
+                    line.includes('directory now contains')) {
+                    return '';
+                }
+
+                return line;
+            })
+            .filter(line => line.trim() !== '') // Remove empty lines
+            .join('\n')
+            .trim();
+    }
+}
+
+// Initialize when DOM is loaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => new CodeCopy());
+} else {
+    new CodeCopy();
+}
+
+// Explore components banner hover effect
+document.addEventListener('DOMContentLoaded', () => {
+    const banner = document.querySelector('.explore-components-banner a');
+    if (banner) {
+        banner.addEventListener('mouseenter', () => {
+            banner.style.background = '#00cc33';
+            banner.style.transform = 'translateY(-2px)';
+        });
+        banner.addEventListener('mouseleave', () => {
+            banner.style.background = '#00ff41';
+            banner.style.transform = 'translateY(0)';
+        });
+    }
+});
+
+// Copy Markdown functionality
+class MarkdownCopier {
+    constructor() {
+        this.setupButton();
+    }
+
+    setupButton() {
+        const button = document.getElementById('copy-markdown-btn');
+        if (!button) return;
+
+        button.addEventListener('click', async () => {
+            const markdown = this.extractMarkdown();
+
+            try {
+                await navigator.clipboard.writeText(markdown);
+
+                // Update button state
+                const originalContent = button.innerHTML;
+                button.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                    ✓
+                `;
+                button.classList.add('copied');
+
+                // Reset after 2 seconds
+                setTimeout(() => {
+                    button.innerHTML = originalContent;
+                    button.classList.remove('copied');
+                }, 2000);
+
+            } catch (err) {
+                console.error('Failed to copy markdown:', err);
+            }
+        });
+    }
+
+    extractMarkdown() {
+        const title = document.querySelector('.article-title')?.textContent || '';
+        const subtitle = document.querySelector('.article-subtitle')?.textContent || '';
+        const date = document.querySelector('time')?.textContent || '';
+        const content = document.querySelector('.article-content-full');
+
+        let markdown = `# ${title}\n\n`;
+
+        if (subtitle) {
+            markdown += `${subtitle}\n\n`;
+        }
+
+        if (date) {
+            markdown += `*${date}*\n\n`;
+        }
+
+        if (!content) return markdown;
+
+        // Process content elements
+        const elements = content.children;
+
+        for (const element of elements) {
+            markdown += this.processElement(element) + '\n\n';
+        }
+
+        return markdown.trim();
+    }
+
+    processElement(element) {
+        const tagName = element.tagName.toLowerCase();
+
+        switch (tagName) {
+            case 'h2':
+                return `## ${element.textContent}`;
+            case 'h3':
+                return `### ${element.textContent}`;
+            case 'h4':
+                return `#### ${element.textContent}`;
+            case 'p':
+                return element.textContent;
+            case 'ul':
+                return this.processList(element, '-');
+            case 'ol':
+                return this.processList(element, '1.');
+            case 'table':
+                return this.processTable(element);
+            case 'pre':
+                return this.processCodeBlock(element);
+            case 'div':
+                if (element.classList.contains('code-block')) {
+                    return this.processCodeBlock(element.querySelector('pre'));
+                }
+                // Skip newsletter CTAs and other divs
+                if (element.classList.contains('newsletter-cta')) {
+                    return '';
+                }
+                return element.textContent || '';
+            case 'img':
+                const alt = element.getAttribute('alt') || '';
+                const src = element.getAttribute('src') || '';
+                return `![${alt}](${src})`;
+            default:
+                return element.textContent || '';
+        }
+    }
+
+    processList(listElement, marker) {
+        const items = listElement.querySelectorAll('li');
+        return Array.from(items)
+            .map(item => `${marker} ${item.textContent}`)
+            .join('\n');
+    }
+
+    processTable(table) {
+        const rows = table.querySelectorAll('tr');
+        if (rows.length === 0) return '';
+
+        let markdown = '';
+
+        // Process header
+        const headerRow = rows[0];
+        const headers = headerRow.querySelectorAll('th, td');
+        const headerText = Array.from(headers).map(h => h.textContent.trim()).join(' | ');
+        markdown += `| ${headerText} |\n`;
+
+        // Add separator
+        const separator = Array.from(headers).map(() => '---').join(' | ');
+        markdown += `| ${separator} |\n`;
+
+        // Process body rows
+        for (let i = 1; i < rows.length; i++) {
+            const row = rows[i];
+            const cells = row.querySelectorAll('td, th');
+            const cellText = Array.from(cells).map(c => c.textContent.trim()).join(' | ');
+            markdown += `| ${cellText} |\n`;
+        }
+
+        return markdown;
+    }
+
+    processCodeBlock(preElement) {
+        if (!preElement) return '';
+
+        const code = preElement.querySelector('code');
+        const codeText = code ? code.textContent : preElement.textContent;
+
+        // Detect language from parent code-block or code element classes
+        const codeBlock = preElement.closest('.code-block');
+        let language = '';
+
+        if (codeBlock) {
+            const languageSpan = codeBlock.querySelector('.code-language');
+            if (languageSpan) {
+                language = languageSpan.textContent.toLowerCase();
+            }
+        } else if (code && code.className.includes('language-')) {
+            language = code.className.match(/language-(\w+)/)?.[1] || '';
+        }
+
+        return `\`\`\`${language}\n${codeText}\n\`\`\``;
+    }
+}
+
+// Initialize markdown copier
+document.addEventListener('DOMContentLoaded', () => {
+    new MarkdownCopier();
+});
+    </script>
+
+    <!-- Mermaid Diagram Support -->
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: 'dark',
+        themeVariables: {
+          primaryColor: '#F97316',
+          primaryTextColor: '#fff',
+          primaryBorderColor: '#F97316',
+          lineColor: '#00ff41',
+          secondaryColor: '#1a1a1a',
+          tertiaryColor: '#2d2d2d'
+        }
+      });
+    </script>
+</body>
+</html>
