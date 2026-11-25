@@ -71,6 +71,7 @@ REPOS = [
     ("lliu56/minicut-skills", "https://www.minicut.ai/?utm_source=claude-code-templates&utm_medium=integration"),
     ("fainir/frugal", None),
     ("OAI-Labs/vibe-flow", "https://oai-labs.github.io/vibe-flow/"),
+    ("edsml-jz2321/QuoteMem", None),
 ]
 
 DESCRIPTION_OVERRIDES = {
