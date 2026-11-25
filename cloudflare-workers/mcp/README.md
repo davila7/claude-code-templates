@@ -28,6 +28,44 @@ without a shell). The CLI then tracks the install like any other, with the agent
 (`cli-tool/src/catalog-lookup.js`). Downloads and sponsored placements never change the order, and the
 server does not read any ads data.
 
+## Narrowing a search (form elicitation)
+
+`search_components` can ask the user for a type and/or category before answering (`src/narrow.ts`). It asks
+only when all of these hold: the request is on protocol revision 2026-07-28 and its client capabilities
+declare form elicitation (`elicitation.form`, or a bare `elicitation: {}`); `type` or `category` was left out;
+the search matches more components than `limit`; and the matches span more than one value of a missing
+field. The form lists those values with their match counts (at most 15 categories, most matches first).
+
+The worker is stateless, so it uses the 2026-07-28 multi-round-trip flow: the tool returns
+`inputRequired({ inputRequests: { narrow_search: inputRequired.elicit(...) } })`, the client shows the form
+and retries the same `tools/call` with `inputResponses`. A retry carries the `narrow_search` key, so the
+server never asks twice. The answer only adds filters; the order stays text match, then id. Decline, cancel,
+an empty or invalid answer all search as asked. The push-style `elicitInput` is not used: on 2026-07-28 it
+throws, and `createMcpHandler`'s legacy lane refuses server-to-client requests. Clients on 2025-11-25 and
+older, or without form elicitation, get the results directly, exactly as before. The smoke test covers
+each case. Note the SDK answers `-32021` if a handler returns an input request the client did not declare,
+which is why `canElicitForm` checks first.
+
+## Skills (Skills over MCP)
+
+Clients on protocol revision 2026-07-28 also get two skills through the MCP Skills extension
+(`io.modelcontextprotocol/skills`). In Claude Code 2.1.331 or later (interactive terminal, VS Code,
+Desktop local sessions) `/mcp` shows `2 skills` and `/skills` lists:
+
+| Skill | What it does |
+| --- | --- |
+| `aitmpl:component-review` | Reviews a Claude Code component before sharing it (supporting file: `references/checklist.md`) |
+| `aitmpl:skill-over-mcp` | Shows how to build an MCP server that serves skills (supporting file: `references/server.md`) |
+
+The skills are the Markdown files in `skills/`, bundled as text by wrangler (`[[rules]] type = "Text"`)
+and loaded once in `src/skills.ts` with `SkillsExtension.load(memorySkillFiles(...), { strict: true })`
+(`@modelcontextprotocol/server/ext/skills`), which computes each file's sha256 digest and checks every
+`SKILL.md`. `createServer` calls `attach(server)`. Older clients connect as before and see only the tools.
+The catalog entry's `mcpSkills` key (`cli-tool/components/mcps/devtools/aitmpl.json`) lists them for the
+component page's diagram: keep it in sync with `skills/`. MCP skills do not load in `claude -p`, the
+Agent SDK or cloud sessions, nor in a `claude` started from a shell with Claude Desktop's
+`CLAUDE_CODE_ENTRYPOINT`.
+
 ## Data
 
 Only what www.aitmpl.com already publishes: `/api/v1/version.json` and `/api/v1/catalog.json`
@@ -42,7 +80,7 @@ Retired templates are not in v1, so they never appear.
 npm ci
 npm test                 # unit tests (vitest)
 npm run type-check
-npx wrangler dev --var ALLOWED_HOSTNAMES:   # http://localhost:8787/mcp (empty allowlist = localhost)
+npx wrangler dev         # http://localhost:8787/mcp
 npm run smoke            # end-to-end with the official MCP client against localhost
 node test/smoke.mjs https://mcp.aitmpl.com/mcp   # same checks against production
 npx @modelcontextprotocol/inspector             # manual testing

@@ -1,6 +1,8 @@
 // End-to-end check of a running aitmpl MCP server with the official MCP client.
 //   node test/smoke.mjs [url]   (default http://localhost:8787/mcp)
 import { Client, StreamableHTTPClientTransport } from '@modelcontextprotocol/client';
+import { GetSkillResultSchema, ListSkillsResultSchema } from '@modelcontextprotocol/core/ext/skills';
+import { createHash } from 'node:crypto';
 
 const url = new URL(process.argv[2] || 'http://localhost:8787/mcp');
 const client = new Client({ name: 'aitmpl-smoke', version: '1.0.0' });
@@ -70,5 +72,87 @@ check(!cats.isError && cats.structuredContent.categories.length > 5, 'list_categ
   `${cats.structuredContent?.categories.length} categories`);
 
 await client.close();
+
+// Skills over MCP: only offered on protocol revision 2026-07-28, so this client pins it.
+const modern = new Client({ name: 'aitmpl-smoke-skills', version: '1.0.0' }, { versionNegotiation: { mode: { pin: '2026-07-28' } } });
+await modern.connect(new StreamableHTTPClientTransport(url));
+check(modern.getNegotiatedProtocolVersion?.() === '2026-07-28', 'negotiates 2026-07-28', modern.getNegotiatedProtocolVersion?.());
+const caps = modern.getServerCapabilities();
+check(Boolean(caps?.resources) && caps?.extensions?.['io.modelcontextprotocol/skills'] !== undefined, 'declares resources + skills extension');
+check((await modern.listTools()).tools.length === 4, 'tools still listed on 2026-07-28');
+const skillList = await modern.request({ method: 'skills/list', params: {} }, ListSkillsResultSchema);
+const skillNames = skillList.skills.map((x) => x.frontmatter.name).sort();
+check(skillNames.join(',') === 'component-review,skill-over-mcp', 'skills/list', skillNames.join(', '));
+for (const skill of skillList.skills) {
+  for (const file of skill.resources) {
+    const r = await modern.readResource({ uri: file.uri });
+    const text = r.contents[0]?.text ?? '';
+    const digest = `sha256:${createHash('sha256').update(text, 'utf8').digest('hex')}`;
+    check(digest === file.digest && Buffer.byteLength(text) === file.size, `resources/read ${file.uri} matches its digest`);
+  }
+  const got = await modern.request({ method: 'skills/get', params: { uri: skill.uri } }, GetSkillResultSchema);
+  check(got.skill.uri === skill.uri, `skills/get ${skill.uri}`);
+}
+let unknownSkill = false;
+try { await modern.readResource({ uri: 'skill://nope/SKILL.md' }); } catch { unknownSkill = true; }
+check(unknownSkill, 'unknown skill URI is an error');
+check(!(await modern.callTool({ name: 'search_components', arguments: { query: 'code review', limit: 3 } })).isError,
+  'no elicitation capability: search answers directly on 2026-07-28');
+await modern.close();
+
+// Form elicitation (2026-07-28 multi-round-trip): a broad search with no type asks the user to narrow it.
+const elicitClient = async (caps, answer) => {
+  const asked = [];
+  const c = new Client({ name: 'aitmpl-smoke-elicit', version: '1.0.0' },
+    { capabilities: caps, versionNegotiation: { mode: { pin: '2026-07-28' } } });
+  c.setRequestHandler('elicitation/create', async (req) => { asked.push(req.params); return answer(req.params); });
+  await c.connect(new StreamableHTTPClientTransport(url));
+  return { c, asked };
+};
+
+{
+  const { c, asked } = await elicitClient({ elicitation: { form: {}, url: {} } }, () => ({ action: 'accept', content: { type: 'agents' } }));
+  const r = await c.callTool({ name: 'search_components', arguments: { query: 'review', limit: 5 } });
+  const props = asked[0]?.requestedSchema?.properties || {};
+  check(asked.length === 1 && Boolean(props.type) && Boolean(props.category), 'broad search asks for type + category (form)',
+    asked[0]?.message);
+  check(!r.isError && r.structuredContent.results.length > 0 && r.structuredContent.results.every((x) => x.type === 'agents')
+    && /Narrowed by the user to type "agents"/.test(r.content[0].text), 'accepted answer filters the results');
+  const plain = await c.callTool({ name: 'search_components', arguments: { query: 'review', type: 'agents', limit: 5 } });
+  check(JSON.stringify(plain.structuredContent.results.map((x) => x.id)) === JSON.stringify(r.structuredContent.results.map((x) => x.id)),
+    'filtered order equals the plain type filter (text match only)');
+  const before = asked.length; // the plain call above asked for a category (answered without one)
+  const narrow = await c.callTool({ name: 'search_components', arguments: { query: 'zzzqqqxxx' } });
+  check(asked.length === before && narrow.structuredContent?.total === 0, 'no form when the search is not broad');
+  await c.close();
+}
+{
+  const { c, asked } = await elicitClient({ elicitation: {} }, () => ({ action: 'decline' }));
+  const r = await c.callTool({ name: 'search_components', arguments: { query: 'review', limit: 5 } });
+  check(asked.length === 1 && !r.isError && r.structuredContent.results.length === 5
+    && new Set(r.structuredContent.results.map((x) => x.type)).size >= 1, 'bare elicitation: {} gets the form; decline searches unfiltered');
+  const typed = await c.callTool({ name: 'search_components', arguments: { query: 'review', type: 'agents', limit: 5 } });
+  check(asked.length === 2 && Boolean(asked[1]?.requestedSchema?.properties?.category) && !asked[1]?.requestedSchema?.properties?.type
+    && !typed.isError, 'with a type given it asks only for the category');
+  await c.close();
+}
+{
+  // Earlier revisions: the stateless legacy lane has no server-to-client requests, so never a form.
+  const asked = [];
+  const c = new Client({ name: 'aitmpl-smoke-legacy-elicit', version: '1.0.0' }, { capabilities: { elicitation: {} } });
+  c.setRequestHandler('elicitation/create', async (req) => { asked.push(req.params); return { action: 'decline' }; });
+  await c.connect(new StreamableHTTPClientTransport(url));
+  const r = await c.callTool({ name: 'search_components', arguments: { query: 'review', limit: 5 } });
+  check(c.getNegotiatedProtocolVersion?.() !== '2026-07-28' && asked.length === 0 && !r.isError && r.structuredContent.results.length === 5,
+    `legacy revision (${c.getNegotiatedProtocolVersion?.()}) with elicitation: no form, search answers`);
+  await c.close();
+}
+{
+  const { c, asked } = await elicitClient({ elicitation: { url: {} } }, () => ({ action: 'accept', content: {} }));
+  const r = await c.callTool({ name: 'search_components', arguments: { query: 'review', limit: 5 } });
+  check(asked.length === 0 && !r.isError, 'URL-only elicitation capability: no form, search answers');
+  await c.close();
+}
+
 console.log(failures ? `\n${failures} check(s) failed` : '\nall checks passed');
 process.exit(failures ? 1 : 0);
