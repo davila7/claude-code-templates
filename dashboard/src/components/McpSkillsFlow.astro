@@ -1,0 +1,277 @@
+---
+// Skills over MCP on an MCP component page: an animated flow of how Claude Code
+// discovers and loads the skills this server serves (connect, skills/list, you
+// call a skill, resources/read, SKILL.md loads), then the list of skills with
+// the command that runs each one. Shown only when the component declares
+// `mcpSkills` (see lib/mcp-skills.ts). Same look and controls as the /s/ flow
+// (StackHarness.astro): neutral grays, the accent for Claude Code and the packet,
+// Play/Pause/Replay, autoplay once in view, never with reduced motion.
+import type { McpServerSkills } from '../lib/mcp-skills';
+import { jsonForScript } from '../lib/sanitize-html';
+
+interface Props { data: McpServerSkills }
+const { data } = Astro.props;
+const { server, skills } = data;
+
+const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
+const cut = (s: string, n: number) => (s.length > n ? `${s.slice(0, n - 1)}…` : s);
+
+// ---- Geometry (SVG user units) ----
+const SHOWN = 4;
+const nodes = skills.length > SHOWN
+  ? [...skills.slice(0, SHOWN - 1).map((s) => ({ title: s.name, sub: s.command })), { title: `+${skills.length - SHOWN + 1} more`, sub: 'listed below' }]
+  : skills.map((s) => ({ title: s.name, sub: s.command }));
+const W = 640, NH = 52, SH = 46, GAP = 12;
+const H = Math.max(230, nodes.length * (SH + GAP) - GAP + 90);
+const cy = H / 2 + 10;
+const you = { x: 56, w: 100 };
+const core = { x: 198, w: 128 };
+const srv = { x: 356, w: 124 };
+const skillX = 544, skillW = 172, elbow = 440;
+const skillY = nodes.map((_, i) => cy - ((nodes.length - 1) * (SH + GAP)) / 2 + i * (SH + GAP));
+const left = (n: { x: number; w: number }) => n.x - n.w / 2;
+const right = (n: { x: number; w: number }) => n.x + n.w / 2;
+
+type Pt = [number, number];
+const first = skills[0];
+const s0 = skillY[0];
+const steps: Array<{ path: Pt[]; label: string; text: string }> = [
+  {
+    path: [[right(core), cy - 6], [left(srv), cy - 6]],
+    label: 'connect',
+    text: `<b>Claude Code connects</b> to <code>${esc(server)}</code> on MCP protocol 2026-07-28 and sees that it serves skills.`,
+  },
+  {
+    path: [[left(srv), cy + 6], [right(core), cy + 6]],
+    label: 'skills/list',
+    text: `The server lists <b>${skills.length} ${skills.length === 1 ? 'skill' : 'skills'}</b>, each with its description and a sha256 digest per file. They appear in <code>/skills</code> as <code>${esc(skillCommandName(first.command))}</code>.`,
+  },
+  {
+    path: [[right(you), cy], [left(core), cy]],
+    label: cut(first.command, 24),
+    text: `<b>You type</b> <code>${esc(first.command)}</code>, or ask for something that matches its description.`,
+  },
+  {
+    path: [[right(core), cy - 6], [left(srv), cy - 6], [right(srv), cy - 6], [elbow, cy - 6], [elbow, s0], [skillX - skillW / 2, s0]],
+    label: 'resources/read',
+    text: `Claude Code reads <code>SKILL.md</code> of <b>${esc(first.name)}</b> from the server. Supporting files are read only when the skill asks for them.`,
+  },
+  {
+    path: [[skillX - skillW / 2, s0 + 6], [elbow + 6, s0 + 6], [elbow + 6, cy + 6], [right(srv), cy + 6], [left(srv), cy + 6], [right(core), cy + 6]],
+    label: 'SKILL.md',
+    text: 'The instructions load into the session: in auto mode with no prompt, otherwise after you allow this version.',
+  },
+  {
+    path: [[left(core), cy + 8], [right(you), cy + 8]],
+    label: 'result',
+    text: '<b>Claude answers</b> following the skill.',
+  },
+];
+
+function skillCommandName(cmd: string) { return cmd.slice(1); }
+---
+
+<section aria-labelledby="mcp-skills-h" class="space-y-3" data-mcp-skills>
+  <div class="rounded-lg border border-[var(--color-border)] overflow-hidden">
+    <div class="flex flex-wrap items-center gap-x-2.5 gap-y-1 px-4 py-2.5 bg-[var(--color-surface-1)] border-b border-[var(--color-border)] text-[13px]">
+      <span id="mcp-skills-h" class="font-semibold text-[var(--color-text-primary)]">Skills over MCP</span>
+      <span class="text-[var(--color-text-secondary)]">· this server serves {skills.length} {skills.length === 1 ? 'skill' : 'skills'}</span>
+      <span class="flex-1"></span>
+      <span class="font-mono text-[11.5px] text-[var(--color-text-tertiary)]">Claude Code 2.1.331+ · beta</span>
+    </div>
+
+    <div class="relative p-3 pt-10 md:p-4 md:pt-10" data-mcp-skills-flow>
+      <div class="absolute top-2 right-2 z-10 flex gap-1">
+        <button type="button" data-flow-play aria-label="Play" title="Play" class="flow-ctl">
+          <svg data-icon-play viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M4.5 2.8v10.4L13 8z" fill="currentColor" /></svg>
+          <svg data-icon-pause viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" hidden><path d="M4 3h3v10H4zM9 3h3v10H9z" fill="currentColor" /></svg>
+        </button>
+        <button type="button" data-flow-replay aria-label="Replay" title="Replay" class="flow-ctl">
+          <svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.8 8a5.2 5.2 0 1 0 1.6-3.8" /><path d="M2.5 2.5v3h3" /></svg>
+        </button>
+      </div>
+      <div class="overflow-x-auto" data-flow-scroll>
+        <svg viewBox={`0 0 ${W} ${H}`} data-width={W} class="mx-auto block w-full min-w-[560px] max-w-[760px]" role="img" aria-label={`How Claude Code loads the skills of the ${server} MCP server`}>
+          {/* Server boundary: the skills live on the server, not in the project */}
+          <rect x={left(srv) - 14} y={14} width={W - (left(srv) - 14) - 8} height={H - 28} rx="12" class="flow-band" />
+          <text x={left(srv)} y={36} class="flow-sub">on the MCP server, read over MCP</text>
+
+          {/* Edges */}
+          <line x1={right(you)} y1={cy} x2={left(core)} y2={cy} class="flow-edge" />
+          <line x1={right(core)} y1={cy} x2={left(srv)} y2={cy} class="flow-edge" />
+          <line x1={right(srv)} y1={cy} x2={elbow} y2={cy} class="flow-edge" />
+          {nodes.length > 1 && <line x1={elbow} y1={skillY[0]} x2={elbow} y2={skillY[skillY.length - 1]} class="flow-edge" />}
+          {skillY.map((y) => <line x1={elbow} y1={y} x2={skillX - skillW / 2} y2={y} class="flow-edge" />)}
+
+          {/* Nodes */}
+          <g>
+            <rect x={left(you)} y={cy - NH / 2} width={you.w} height={NH} rx="10" class="flow-node" />
+            <text x={you.x} y={cy - 3} text-anchor="middle" class="flow-title">You</text>
+            <text x={you.x} y={cy + 14} text-anchor="middle" class="flow-sub">command, prompt</text>
+          </g>
+          <g>
+            <rect x={left(core)} y={cy - NH / 2} width={core.w} height={NH} rx="10" class="flow-node flow-core" />
+            <text x={core.x} y={cy - 3} text-anchor="middle" class="flow-title">Claude Code</text>
+            <text x={core.x} y={cy + 14} text-anchor="middle" class="flow-sub">2.1.331 or later</text>
+          </g>
+          <g>
+            <rect x={left(srv)} y={cy - NH / 2} width={srv.w} height={NH} rx="10" class="flow-node" />
+            <text x={srv.x} y={cy - 3} text-anchor="middle" class="flow-title">{cut(server, 16)}</text>
+            <text x={srv.x} y={cy + 14} text-anchor="middle" class="flow-sub">MCP server</text>
+          </g>
+          {nodes.map((n, i) => (
+            <g>
+              <rect x={skillX - skillW / 2} y={skillY[i] - SH / 2} width={skillW} height={SH} rx="9" class="flow-node" />
+              <text x={skillX - skillW / 2 + 12} y={skillY[i] - 3} class="flow-title flow-title-sm">{cut(n.title, 20)}</text>
+              <text x={skillX - skillW / 2 + 12} y={skillY[i] + 13} class="flow-sub flow-mono">{cut(n.sub, 25)}</text>
+            </g>
+          ))}
+
+          {/* Packet */}
+          <g data-packet opacity="0">
+            <rect data-packet-bg rx="5" height="20" y="-32" class="flow-packet-bg" />
+            <text data-packet-label y="-18" text-anchor="middle" class="flow-packet-label"></text>
+            <circle r="6" class="flow-packet" />
+          </g>
+        </svg>
+      </div>
+      <p data-flow-text aria-live="polite" class="mt-3 min-h-[2.8em] text-center text-[13px] text-[var(--color-text-secondary)] max-w-xl mx-auto">
+        How Claude Code finds and loads these skills, step by step.
+      </p>
+      <script type="application/json" data-flow-steps set:html={jsonForScript(steps)} />
+    </div>
+
+    <ul class="border-t border-[var(--color-border)]">
+      {skills.map((s) => (
+        <li class="border-t first:border-t-0 border-[var(--color-border)] flex flex-col md:flex-row md:items-baseline gap-1 md:gap-3 px-4 py-3 md:py-2.5 text-[13.5px]">
+          <code class="shrink-0 font-mono text-[12.5px] text-[var(--color-text-primary)] [overflow-wrap:anywhere]">{s.command}</code>
+          {s.description && <span class="min-w-0 text-[var(--color-text-secondary)]">{s.description}</span>}
+        </li>
+      ))}
+    </ul>
+
+    <p class="border-t border-[var(--color-border)] px-4 py-2.5 text-[12px] leading-relaxed text-[var(--color-text-tertiary)]">
+      Claude Code lists these as <code>{skillCommandName(first.command).split(':')[0]}:&lt;skill&gt;</code> in <code>/skills</code>, and you run one by asking Claude or typing its command.
+      They do not load in <code>claude -p</code>, the Agent SDK or cloud sessions, and Team and Enterprise organizations turn them on first.
+      The server can change its skills at any time: this list is what it served when it was added to the catalog. Block or gate them with <code>Skill(mcp__{skillCommandName(first.command).split(':')[0]}__*)</code> in <code>/permissions</code>.
+    </p>
+  </div>
+</section>
+
+<style>
+  .flow-ctl {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border-radius: 6px;
+    border: 1px solid var(--color-border); background: var(--color-surface-0);
+    color: var(--color-text-secondary); transition: color .15s, background-color .15s, border-color .15s;
+  }
+  .flow-ctl:hover { color: var(--color-text-primary); background: var(--color-surface-2); border-color: var(--color-border-strong); }
+  .flow-ctl:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 1px; }
+  .flow-band { fill: transparent; stroke: var(--color-border-strong); stroke-dasharray: 5 4; }
+  .flow-node { fill: var(--color-surface-0); stroke: var(--color-border-strong); }
+  .flow-core { stroke: var(--color-accent); stroke-width: 1.5; }
+  .flow-title { fill: var(--color-text-primary); font: 600 13px var(--font-sans, system-ui, sans-serif); }
+  .flow-title-sm { font-size: 12.5px; }
+  .flow-sub { fill: var(--color-text-tertiary); font: 400 11px var(--font-sans, system-ui, sans-serif); }
+  .flow-mono { font-family: var(--font-mono, ui-monospace, monospace); font-size: 10.5px; }
+  .flow-edge { stroke: var(--color-border-strong); stroke-width: 1.5; }
+  .flow-packet { fill: var(--color-accent); }
+  .flow-packet-bg { fill: var(--color-surface-0); stroke: var(--color-accent); }
+  .flow-packet-label { fill: var(--color-text-primary); font: 500 11px var(--font-mono, ui-monospace, monospace); }
+</style>
+
+<script>
+  type Pt = [number, number];
+  interface Step { path: Pt[]; label: string; text: string }
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-mcp-skills-flow]')) {
+    let steps: Step[] = [];
+    try { steps = JSON.parse(root.querySelector('[data-flow-steps]')?.textContent || '[]'); } catch { continue; }
+    if (!steps.length) continue;
+    const packet = root.querySelector<SVGGElement>('[data-packet]')!;
+    const label = root.querySelector<SVGTextElement>('[data-packet-label]')!;
+    const bg = root.querySelector<SVGRectElement>('[data-packet-bg]')!;
+    const text = root.querySelector<HTMLElement>('[data-flow-text]')!;
+    const play = root.querySelector<HTMLButtonElement>('[data-flow-play]')!;
+    const scroller = root.querySelector<HTMLElement>('[data-flow-scroll]')!;
+    const svg = scroller.querySelector('svg')!;
+    const width = Number(svg.dataset.width) || 760;
+    const iconPlay = play.querySelector<SVGElement>('[data-icon-play]')!;
+    const iconPause = play.querySelector<SVGElement>('[data-icon-pause]')!;
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    const MOVE = reduce ? 1 : 1600, HOLD = 1700;
+    let i = 0, t = 0, playing = false, last = 0, touched = false, raf = 0, settled = -1;
+
+    function setPlaying(on: boolean) {
+      playing = on;
+      iconPlay.toggleAttribute('hidden', on); iconPause.toggleAttribute('hidden', !on);
+      const l = on ? 'Pause' : 'Play';
+      play.setAttribute('aria-label', l); play.title = l;
+    }
+    const lengths = (p: Pt[]) => p.slice(1).map((q, k) => Math.hypot(q[0] - p[k][0], q[1] - p[k][1]));
+    function at(p: Pt[], f: number): Pt {
+      const ls = lengths(p), total = ls.reduce((a, b) => a + b, 0) || 1;
+      let d = f * total;
+      for (let k = 0; k < ls.length; k++) {
+        if (d <= ls[k] || k === ls.length - 1) {
+          const r = ls[k] ? Math.min(1, d / ls[k]) : 1;
+          return [p[k][0] + (p[k + 1][0] - p[k][0]) * r, p[k][1] + (p[k + 1][1] - p[k][1]) * r];
+        }
+        d -= ls[k];
+      }
+      return p[p.length - 1];
+    }
+    function show(n: number) {
+      const s = steps[n]; settled = -1;
+      text.innerHTML = `${n + 1} / ${steps.length} · ${s.text}`;
+      label.textContent = s.label;
+      const w = Math.max(44, s.label.length * 6.8 + 16);
+      bg.setAttribute('width', String(w));
+      bg.setAttribute('x', String(-w / 2));
+    }
+    function place(n: number, f: number, follow = true) {
+      const e = f < 0.5 ? 2 * f * f : 1 - Math.pow(-2 * f + 2, 2) / 2;
+      const [x, y] = at(steps[n].path, e);
+      packet.setAttribute('transform', `translate(${x},${y})`);
+      // On a phone the flow scrolls sideways: keep the packet in view.
+      if (follow && scroller.scrollWidth > scroller.clientWidth) {
+        scroller.scrollLeft = x * (svg.clientWidth / width) - scroller.clientWidth / 2;
+      }
+    }
+    function frame(now: number) {
+      if (!playing) return;
+      t += now - last; last = now;
+      const moving = t <= MOVE;
+      place(i, Math.min(1, t / MOVE), moving || settled !== i);
+      if (!moving) settled = i;
+      if (t > MOVE + HOLD) {
+        if (i === steps.length - 1) { setPlaying(false); return; }
+        i++; t = 0; show(i);
+      }
+      raf = requestAnimationFrame(frame);
+    }
+    function start() {
+      cancelAnimationFrame(raf);
+      setPlaying(true); last = performance.now(); packet.setAttribute('opacity', '1');
+      raf = requestAnimationFrame(frame);
+    }
+    play.addEventListener('click', () => {
+      touched = true;
+      if (playing) { setPlaying(false); return; }
+      if (i === steps.length - 1 && t > MOVE) { i = 0; t = 0; }
+      show(i); start();
+    });
+    root.querySelector('[data-flow-replay]')?.addEventListener('click', () => { touched = true; i = 0; t = 0; show(0); place(0, 0); start(); });
+    show(0);
+    // Autoplay once, when the diagram is mostly on screen; never with reduced
+    // motion or after the reader pressed a control.
+    if (!reduce && 'IntersectionObserver' in window) {
+      const io = new IntersectionObserver((list) => {
+        if (!list.some((e) => e.isIntersecting)) return;
+        io.disconnect();
+        if (!touched && !playing) { show(i); start(); }
+      }, { threshold: 0.5 });
+      io.observe(root);
+    }
+  }
+</script>
