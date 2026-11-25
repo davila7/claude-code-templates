@@ -78,6 +78,32 @@
       "category": "documentation"
     },
     {
+      "name": "ratchet",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/krishansubudhi/ratchet.git",
+        "path": "plugin",
+        "sha": "2d7dd0cca363731135982b933414ceaef7015fa3"
+      },
+      "displayName": "Ratchet",
+      "description": "A code-size budget that only goes down: keeps coding agents from bloating your repo. Wires up a Stop hook that runs `ratchet check` and a /ratchet:setup command that installs and configures ratchet in the current repo.",
+      "author": {
+        "name": "Krishan Subudhi",
+        "url": "https://github.com/krishansubudhi"
+      },
+      "homepage": "https://github.com/krishansubudhi/ratchet",
+      "repository": "https://github.com/krishansubudhi/ratchet",
+      "keywords": [
+        "code-size",
+        "budget",
+        "lint",
+        "agents",
+        "ratchet"
+      ],
+      "license": "Apache-2.0",
+      "category": "quality-gates"
+    },
+    {
       "name": "stitch-build",
       "source": {
         "source": "git-subdir",
