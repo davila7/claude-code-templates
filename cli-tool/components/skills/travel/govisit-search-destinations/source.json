@@ -1,0 +1,8 @@
+{
+  "repo": "inhotel-io/govisit-toolkit",
+  "path": "plugins/govisit/skills/govisit-search-destinations",
+  "commit": "e337d117701777bc4317527d6f3b3f6f722483ea",
+  "license": "MIT",
+  "author": "GoVisit.ai",
+  "include": ["SKILL.md"]
+}
