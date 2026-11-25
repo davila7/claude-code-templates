@@ -5,3 +5,7 @@
 
 # The home is also reachable as /index.html, which Google indexed as its own page.
 /index.html                    /                        301
+
+# The Skills over MCP example moved into the aitmpl MCP server (2026-11-24).
+/component/mcps/devtools/aitmpl-skills-example   /component/mcps/devtools/aitmpl   301
+/component/mcp/devtools/aitmpl-skills-example    /component/mcps/devtools/aitmpl   301
