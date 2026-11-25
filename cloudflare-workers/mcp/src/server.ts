@@ -1,11 +1,13 @@
 import { McpServer } from '@modelcontextprotocol/server';
+import type { SkillsExtension } from '@modelcontextprotocol/server/ext/skills';
 import { z } from 'zod';
 import {
   CatalogUnavailable, FLAG, SITE, TYPES, WRITES, findComponent, installCommand, loadCatalog, oneLine, search,
   type Catalog, type Component, type ComponentType,
 } from './catalog';
+import { narrowSearch, type NarrowContext } from './narrow';
 
-export const SERVER_VERSION = '1.0.0';
+export const SERVER_VERSION = '1.1.0';
 
 const READ_ONLY = { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false } as const;
 const MAX_CONTENT_CHARS = 12_000;
@@ -87,8 +89,8 @@ function resultText(results: ReturnType<typeof summary>[], total: number, query:
   return `${total} component(s) match "${query}", best text match first:\n\n${lines.join('\n\n')}`;
 }
 
-/** Builds a fresh server per request (createMcpHandler is stateless). */
-export function createServer(fetcher: Fetcher) {
+/** Builds a fresh server per request (createMcpHandler is stateless). `skills` adds the Skills over MCP extension. */
+export function createServer(fetcher: Fetcher, skills?: SkillsExtension) {
   const server = new McpServer(
     {
       name: 'aitmpl',
@@ -103,7 +105,8 @@ export function createServer(fetcher: Fetcher) {
         + 'search_components finds components by text, get_component returns one component with its full content and security scan, '
         + 'get_install_command returns the claude-code-templates CLI command that installs one or more components. '
         + 'This server installs nothing itself: the command runs in a terminal on the machine where the components should go. '
-        + 'Results are ordered by text match only; downloads and sponsorship never change the order.',
+        + 'Results are ordered by text match only; downloads and sponsorship never change the order. '
+        + 'Clients that support Skills over MCP also get two skills: component-review and skill-over-mcp.',
     },
   );
 
@@ -130,12 +133,15 @@ export function createServer(fetcher: Fetcher) {
       }),
       annotations: { title: 'Search aitmpl components', ...READ_ONLY },
     },
-    async ({ query, type, category, limit }) => withCatalog(fetcher, (catalog) => {
-      const { total, match, results } = search(catalog, { query, type: type as ComponentType | undefined, category, limit });
+    async ({ query, type, category, limit }, ctx) => withCatalog(fetcher, (catalog) => {
+      // May ask the user for a type or category first (form elicitation, 2026-07-28 clients only); the answer only filters.
+      const narrowed = narrowSearch(catalog, { query, type: type as ComponentType | undefined, category, limit }, ctx as unknown as NarrowContext);
+      if (narrowed.kind === 'ask') return narrowed.result;
+      const { total, match, results } = search(catalog, narrowed.args);
       const rows = results.map(summary);
       const text = resultText(rows, total, query);
-      return ok({ query, total, match, results: rows },
-        match === 'partial' ? `No component matches every word of "${query}"; these match some of them.\n${text}` : text);
+      const body = match === 'partial' ? `No component matches every word of "${query}"; these match some of them.\n${text}` : text;
+      return ok({ query, total, match, results: rows }, narrowed.note ? `${narrowed.note}\n${body}` : body);
     }),
   );
 
@@ -311,5 +317,6 @@ export function createServer(fetcher: Fetcher) {
     }),
   );
 
+  skills?.attach(server);
   return server;
 }
