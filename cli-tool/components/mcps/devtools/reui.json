@@ -1,0 +1,9 @@
+{
+    "mcpServers": {
+        "ReUI": {
+            "description": "The ReUI MCP server puts the live ReUI registry inside your coding agent - scored search, real component APIs, and exact install commands over one endpoint.",
+            "type": "http",
+            "url": "https://mcp.reui.io"
+        }
+    }
+}
