@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "engineering-corpus": {
+      "command": "uvx",
+      "args": ["engineering-corpus==0.1.0", "serve"]
+    }
+  }
+}
