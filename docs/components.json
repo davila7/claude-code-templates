@@ -142047,6 +142047,114 @@
         "version": "2.12.0",
         "scannedAt": "2026-11-20T01:19:30Z"
       }
+    },
+    {
+      "name": "ratchet",
+      "path": "quality-gates/ratchet",
+      "category": "quality-gates",
+      "type": "plugin",
+      "description": "A code-size budget that only goes down: keeps coding agents from bloating your repo. Wires up a Stop hook that runs `ratchet check` and a /ratchet:setup command that installs and configures ratchet in the current repo.",
+      "author": "Krishan Subudhi",
+      "repo": "https://github.com/krishansubudhi/ratchet",
+      "version": "0.2.3",
+      "license": "Apache-2.0",
+      "keywords": [
+        "code-size",
+        "budget",
+        "lint",
+        "agents",
+        "ratchet"
+      ],
+      "installCommand": "npx claude-code-templates@latest --plugin quality-gates/ratchet",
+      "downloads": 0,
+      "references": [
+        ".claude-plugin/plugin.json",
+        "LICENSE",
+        "commands/setup.md",
+        "hooks/hooks.json",
+        "scripts/ratchet-budget.sh",
+        "scripts/ratchet-check.sh",
+        "scripts/ratchet-meter.sh"
+      ],
+      "contains": {
+        "commands": [
+          "setup"
+        ],
+        "hooks": [
+          "PostToolUse",
+          "SessionStart",
+          "Stop"
+        ]
+      },
+      "source": {
+        "repo": "krishansubudhi/ratchet",
+        "path": "plugin",
+        "commit": "2d7dd0cca363731135982b933414ceaef7015fa3",
+        "license": "Apache-2.0",
+        "url": "https://github.com/krishansubudhi/ratchet/tree/2d7dd0cca363731135982b933414ceaef7015fa3/plugin"
+      },
+      "skillspector": {
+        "score": 31,
+        "severity": "MEDIUM",
+        "recommendation": "CAUTION",
+        "issueCount": 5,
+        "analysis": "partial",
+        "findings": [
+          {
+            "id": "BH1",
+            "category": "Bundled Execution Surface",
+            "severity": "MEDIUM",
+            "title": "Bundled hooks can execute when matching lifecycle events occur.",
+            "file": "hooks/hooks.json",
+            "line": 1,
+            "count": 1
+          },
+          {
+            "id": "TR2",
+            "category": "Trigger Abuse",
+            "severity": "MEDIUM",
+            "title": "Shadow Command Trigger",
+            "file": "SKILL.md",
+            "line": 1,
+            "count": 1
+          },
+          {
+            "id": "RP1",
+            "category": "MCP Rug Pull",
+            "severity": "MEDIUM",
+            "title": "uvx/uv tool run commands without ==version create a rug-pull risk.",
+            "file": "scripts/ratchet-budget.sh",
+            "line": 5,
+            "count": 1
+          },
+          {
+            "id": "RP1",
+            "category": "MCP Rug Pull",
+            "severity": "MEDIUM",
+            "title": "uvx/uv tool run commands without ==version create a rug-pull risk.",
+            "file": "scripts/ratchet-meter.sh",
+            "line": 6,
+            "count": 1
+          },
+          {
+            "id": "RP1",
+            "category": "MCP Rug Pull",
+            "severity": "MEDIUM",
+            "title": "uvx/uv tool run commands without ==version create a rug-pull risk.",
+            "file": "scripts/ratchet-check.sh",
+            "line": 24,
+            "count": 1
+          }
+        ],
+        "categories": {
+          "MCP Rug Pull": 3,
+          "Bundled Execution Surface": 1,
+          "Trigger Abuse": 1
+        },
+        "hash": "95a3b837a468cca0",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-25T14:45:26Z"
+      }
     }
   ],
   "componentsMarketplace": {
