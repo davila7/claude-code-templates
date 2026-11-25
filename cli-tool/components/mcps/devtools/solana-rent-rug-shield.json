@@ -1,9 +1,18 @@
 {
   "mcpServers": {
     "solana-rent-rug-shield": {
-      "description": "Non-custodial Solana security MCP server for 12-layer token rug audits, inner-CPI drainer simulation, and read-only SPL empty ATA rent discovery. Free tier included (read-only token safety audits and empty ATA discovery with no API key required); optional paid Solana x402 micropayments ($0.02 per scan or $1.99 Pro Pass) and Pro/API tiers for high-volume automation.",
-      "type": "http",
-      "url": "https://rentandrugshield.com/mcp"
+      "description": "Non-custodial Solana security MCP server for 12-layer token rug audits, inner-CPI drainer simulation, and read-only SPL/Token-2022 empty ATA SOL rent discovery (https://rentandrugshield.com). Freemium pricing: Free read-only scans & 0% 1st SOL rent claim; paid Pro/x402 tiers.",
+      "command": "npm",
+      "args": [
+        "exec",
+        "--yes",
+        "--package=https://github.com/sonnyman2014/solana-rent-rug-shield-mcp/releases/download/v1.0.0/rentandrugshield-mcp-server-1.0.0.tgz",
+        "--",
+        "rentandrugshield-mcp"
+      ],
+      "env": {
+        "RENTSHIELD_API_URL": "https://rentandrugshield.com"
+      }
     }
   }
 }
