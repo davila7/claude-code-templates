@@ -53,6 +53,16 @@ The aitmpl MCP server gives Claude read-only access to the aitmpl.com catalog: a
 
 Ids have the form `{type}/{category}/{name}`, for example `agents/development-team/frontend-developer` or `plugins/productivity/champion-kit`.
 
+## Skills
+
+The server also serves two skills through Skills over MCP (Claude Code 2.1.331 or later, public beta). They appear in `/skills` as `aitmpl:component-review`, which reviews a Claude Code component before you share it, and `aitmpl:skill-over-mcp`, which shows how to build an MCP server that serves skills. Run one by asking Claude or by typing `/aitmpl:component-review`. Clients without Skills over MCP see only the tools. MCP skills do not load in `claude -p`, the Agent SDK or cloud sessions.
+
+## Narrowing a search
+
+When a search matches more components than it returns and they span several types or categories, and you left `type` or `category` out, the server can ask you to narrow it. Claude Code shows a form with the types and the categories that hold matches, each with its count; pick one, both or neither. Your choice only filters the results; their order stays the text match described below. Declining, or submitting the form empty, returns the search as Claude asked for it. The server asks at most once per search.
+
+This uses MCP elicitation in form mode on protocol revision 2026-07-28, which Claude Code uses for servers added with `claude mcp add`. Clients on older revisions, and clients that do not declare form elicitation, never see the form and get the results directly.
+
 ## How installing works
 
 The server installs nothing. It runs on Cloudflare and cannot write to your machine, so it hands back the command and the command does the install:

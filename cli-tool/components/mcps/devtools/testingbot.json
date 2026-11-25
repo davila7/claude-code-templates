@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "testingbot": {
+      "description": "Official TestingBot MCP server: drive real browsers and iOS/Android devices, run Selenium, Playwright, Appium and Maestro tests, take cross-browser screenshots, test localhost through a tunnel, and explain failed tests. Sign in with the tb_login tool (no key to paste) or set TESTINGBOT_KEY and TESTINGBOT_SECRET.",
+      "command": "npx",
+      "args": ["-y", "@testingbot/mcp-server@1.4.4"]
+    }
+  }
+}
