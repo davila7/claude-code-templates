@@ -24,13 +24,13 @@ This hook is an allowlist. An injected command runs only when:
      cut, tr, column, nl, comm, diff, cmp, jq (no env), stat, du, df, basename,
      dirname, realpath, readlink, md5sum, sha256sum, shasum
    - environment: pwd, date (no -s), whoami, id, uname, which, type,
-     command -v, ps (no environment display), test, [, echo, printf, true,
-     false, exit
+     command -v, ps (no environment display), test, [, echo, true, false,
+     exit (not printf: -v and %n assign shell variables such as PATH)
    - git: status, log, diff, show, blame, grep (no -O), ls-files, ls-tree,
      rev-parse, describe, shortlog, cat-file, rev-list, merge-base, name-rev,
      for-each-ref, and the listing forms of branch, tag, remote, stash,
-     worktree, submodule, reflog; config --get. Never -c, --output,
-     --ext-diff, --exec.
+     worktree, submodule, reflog; config --get. Never -c, -C, --git-dir,
+     --output, --ext-diff, --textconv, --filters, --exec.
    - gh: pr/issue/run/release/workflow view, list, status, diff, checks; repo
      view; gh api <endpoint> with only --jq, --paginate, --slurp, --template,
      --cache (a GET)
@@ -63,6 +63,9 @@ Known gaps: it reads command text. `grep -r KEY .` can still print a secret
 from a file it does not name, `git remote -v` prints a token embedded in a
 remote URL, and the allowed commands read whatever files they are given.
 Fails closed: input it cannot parse is blocked.
+
+Maintainers: skill-shell-guard.json pins this file's SHA-256 for the project
+fallback. After editing this file, update the hash in that command.
 """
 
 import json
@@ -326,10 +329,6 @@ def c_any(a):
     pass
 
 
-def c_printf(a):
-    if a and a[0].startswith("-"):
-        raise Blocked("printf options are not allowed (printf -v assigns shell variables such as PATH).")
-
 
 SIMPLE = {
     "ls": c_ls, "cat": c_cat, "head": c_head, "tail": c_tail, "wc": c_wc, "cut": c_cut,
@@ -348,7 +347,7 @@ SIMPLE = {
     "which": lambda a: only_opts("which", a, (), "a"),
     "basename": c_any, "dirname": c_any, "realpath": c_any, "readlink": c_any,
     "md5sum": c_any, "sha256sum": c_any, "shasum": c_any, "pwd": c_any, "whoami": c_any,
-    "id": c_any, "type": c_any, "test": c_any, "[": c_any, "echo": c_any, "printf": c_printf,
+    "id": c_any, "type": c_any, "test": c_any, "[": c_any, "echo": c_any,
     "true": c_any, "false": c_any, "exit": c_any,
 }
 
@@ -356,7 +355,7 @@ GIT_READ = {"status", "log", "diff", "show", "blame", "ls-files", "ls-tree", "re
             "describe", "shortlog", "cat-file", "rev-list", "merge-base", "name-rev",
             "for-each-ref", "count-objects", "check-ignore", "grep", "version"}
 GIT_BAD = ("--output", "--ext-diff", "--exec", "--upload-pack", "--receive-pack",
-           "--open-files-in-pager", "--textconv", "--run")
+           "--open-files-in-pager", "--textconv", "--filters", "--run")
 GIT_LISTING = ("--list", "-l", "--contains", "--no-contains", "--merged", "--no-merged", "--points-at")
 
 
