@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "databuddy": {
+      "description": "Databuddy web and product analytics: traffic, pages, referrers, funnels, goals, errors, Web Vitals, session replays, and investigations that show why a metric moved. Can also manage goals, funnels, annotations, feature flags and short links, with a preview before every change. Sign in with your Databuddy account when the server asks (OAuth). Docs: https://www.databuddy.cc/docs/api/mcp",
+      "type": "http",
+      "url": "https://api.databuddy.cc/v1/mcp"
+    }
+  }
+}
