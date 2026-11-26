@@ -1,0 +1,24 @@
+{
+  "description": "Lets a skill or slash command run only read-only shell commands while it loads. Skills can run shell commands as they load (!`command` lines and ```! blocks); those run before Claude reads the skill, without a permission prompt, and PreToolUse hooks such as dangerous-command-blocker never see them. A skill's own allowed-tools can pre-approve them, so a skill from a cloned repository or a plugin can approve its own `curl ... | sh`. This PreSkillShellCommand hook is an allowlist. It refuses any syntax bash would expand or reinterpret ($ variables and $(...), backticks, a leading ~, globs, braces, #, backslashes, here-documents, input redirection), allows output redirection only to /dev/null, splits the command on ; && || | and newlines, and lets it run only when every part is a read-only command with options on its list: ls, cat, head, tail (no -f), wc, grep, rg (no --pre), find (tests and -print only), sort and uniq (no output file), cut, tr, jq (no env), stat, du, pwd, date, which, command -v, test, echo; git status/log/diff/show/blame/ls-files/rev-parse and the listing forms of branch, tag, remote, stash; gh view/list/diff/checks on the current repository and GET-only gh api on a GitHub path (no --repo to another host, no env in --jq); version checks of node, npm, python, pip, go, docker, ruby, java; npm ls, pip list, docker ps, kubectl get (no secrets, no -o yaml/json, no other kubeconfig or cluster). git -c, -C and --git-dir are refused, and so are tools whose --version runs project code (yarn, pnpm, cargo, mvn, gradle, make). Everything else is blocked: network calls (curl, wget), package scripts (npm test, npm run, npx, yarn, bun), interpreters and scripts, xargs, awk, writes, deletes, deploys, PowerShell, and any argument or quoted glob that could name a credentials file (.env*, .dev.vars, .ssh, .aws, .npmrc, .pgpass, .git/config, shell rc files, id_rsa, *credential*, *secret*, *.pem, *.key, *.tfstate, /proc). A blocked command does not run; the skill still loads and Claude reads `[not run: blocked by hook: <reason>]` in its place, so it can run the command afterwards as a normal Bash call that goes through your permission rules. Skills from Claude Code itself (builtin) and from managed settings are not checked. To allow one exact command, add it to \"allowCommands\" in ~/.claude/skill-shell-guard.json; that file is never read from the project, so a repository cannot allow its own commands. Install it in User settings (~/.claude/settings.json, the CLI asks where) to guard against repositories you clone: the hook runs ~/.claude/hooks/skill-shell-guard.py when it exists; otherwise it runs the project copy only if that file's SHA-256 matches the version this entry was published with (a repository cannot swap in its own script), and blocks the command if not. A project install takes effect only in a trusted project. Fails closed on input it cannot parse, and onFailure: block keeps a command from running if the hook crashes or times out. Known gaps: it reads command text, so grep -r can still print a secret from a file it does not name, git remote -v shows a token embedded in a remote URL, and allowed commands read any other file they are given. Requires Claude Code 2.1.332 or later (older versions show an \"Unknown hook event\" warning at every start and do not protect) and python3. Tested on Claude Code 2.1.332.",
+  "supportingFiles": [
+    {
+      "source": "skill-shell-guard.py",
+      "destination": ".claude/hooks/skill-shell-guard.py",
+      "executable": true
+    }
+  ],
+  "hooks": {
+    "PreSkillShellCommand": [
+      {
+        "matcher": "Bash|PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "f=\"$HOME/.claude/hooks/skill-shell-guard.py\"; if [ ! -f \"$f\" ]; then f=\"$CLAUDE_PROJECT_DIR/.claude/hooks/skill-shell-guard.py\"; [ \"$(python3 -c 'import hashlib,sys;print(hashlib.sha256(open(sys.argv[1],\"rb\").read()).hexdigest())' \"$f\" 2>/dev/null)\" = \"ce1bc158d325cef3bcc359013d3f9398f0c3469b7c1de8493e1b970a2f8efa12\" ] || { echo \"skill-shell-guard: no script in ~/.claude/hooks and the project copy is missing or modified, so the command was blocked.\" >&2; exit 2; }; fi; python3 \"$f\"",
+            "onFailure": "block"
+          }
+        ]
+      }
+    ]
+  }
+}

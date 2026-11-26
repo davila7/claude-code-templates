@@ -69,7 +69,10 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Claude",
+          "Basics"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -85,7 +88,10 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Claude",
+          "Coding"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -101,14 +107,17 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Claude",
+          "Development"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
         "id": "anthropic-claude-platform-101",
         "kind": "course",
         "title": "Claude Platform 101",
-        "description": "This course teaches developers to build on the Claude Platform from the ground up, whether you've made a few API calls or have only used Claude through a chat window.",
+        "description": "This course teaches developers to build on the Claude Platform from the ground up.",
         "url": "https://anthropic.skilljar.com/claude-platform-101"
       },
       {
@@ -117,14 +126,17 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Claude",
+          "Collaboration"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
         "id": "anthropic-introduction-to-claude-cowork",
         "kind": "course",
         "title": "Introduction to Claude Cowork",
-        "description": "Learn to work alongside Claude on your real files and projects. This hands-on course covers the Cowork task loop, plugins and skills, file and research workflows, and how to steer multi-step work responsibly — so you're productive in your first week.",
+        "description": "Learn to work alongside Claude on your real files and projects.",
         "url": "https://anthropic.skilljar.com/introduction-to-claude-cowork"
       },
       {
@@ -133,14 +145,17 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Claude",
+          "Coding"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
         "id": "anthropic-claude-code-in-action",
         "kind": "course",
         "title": "Claude Code in Action",
-        "description": "Run long, hands-off Claude Code sessions you can trust: steer, configure, automate, and verify.",
+        "description": "Run long, hands-off Claude Code sessions you can trust.",
         "url": "https://anthropic.skilljar.com/claude-code-in-action"
       },
       {
@@ -149,7 +164,10 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "AI",
+          "Fluency"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -165,7 +183,10 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Claude",
+          "API"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -181,14 +202,17 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Model Context Protocol",
+          "Development"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
         "id": "anthropic-introduction-to-model-context-protocol",
         "kind": "course",
         "title": "Introduction to Model Context Protocol",
-        "description": "Learn to build Model Context Protocol servers and clients from scratch using Python. Master MCP's three core primitives—tools, resources, and prompts—to connect Claude with external services.",
+        "description": "Learn to build Model Context Protocol servers and clients from scratch using Python.",
         "url": "https://anthropic.skilljar.com/introduction-to-model-context-protocol"
       },
       {
@@ -197,14 +221,18 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "AI",
+          "Fluency",
+          "Education"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
         "id": "anthropic-ai-fluency-for-educators",
         "kind": "course",
         "title": "AI Fluency for educators",
-        "description": "This course empowers faculty, instructional designers, and educational leaders to apply AI Fluency into their own teaching practice and institutional strategy.",
+        "description": "This course empowers faculty, instructional designers, and educational leaders to apply AI Fluency into their own teaching practice.",
         "url": "https://anthropic.skilljar.com/ai-fluency-for-educators"
       },
       {
@@ -213,14 +241,18 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "AI",
+          "Fluency",
+          "Education"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
         "id": "anthropic-ai-fluency-for-students",
         "kind": "course",
         "title": "AI Fluency for students",
-        "description": "This course empowers students to develop AI Fluency skills that enhance learning, career planning, and academic success through responsible AI collaboration.",
+        "description": "This course empowers students to develop AI Fluency skills that enhance learning, career planning, and academic success.",
         "url": "https://anthropic.skilljar.com/ai-fluency-for-students"
       },
       {
@@ -229,14 +261,17 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Model Context Protocol",
+          "Advanced"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
         "id": "anthropic-model-context-protocol-advanced-topics",
         "kind": "course",
         "title": "Model Context Protocol: Advanced Topics",
-        "description": "Discover advanced Model Context Protocol implementation patterns including sampling, notifications, file system access, and transport mechanisms for production MCP server development.",
+        "description": "Discover advanced Model Context Protocol implementation patterns.",
         "url": "https://anthropic.skilljar.com/model-context-protocol-advanced-topics"
       },
       {
@@ -245,14 +280,17 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Claude",
+          "AWS"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
         "id": "anthropic-claude-in-amazon-bedrock",
         "kind": "course",
         "title": "Claude with Amazon Bedrock",
-        "description": "As part of an accreditation program created for AWS, Anthropic launched a first-of-its-kind training for AWS employees. Here's the full course so you can follow along.",
+        "description": "A first-of-its-kind training for AWS employees.",
         "url": "https://anthropic.skilljar.com/claude-in-amazon-bedrock"
       },
       {
@@ -261,7 +299,10 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Claude",
+          "Google Cloud"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -277,14 +318,18 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "AI",
+          "Fluency",
+          "Education"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
         "id": "anthropic-teaching-ai-fluency",
         "kind": "course",
         "title": "Teaching AI Fluency",
-        "description": "This course empowers academic faculty, instructional designers, and others to teach and assess AI Fluency in instructor-led settings.",
+        "description": "This course empowers faculty and designers to teach and assess AI Fluency.",
         "url": "https://anthropic.skilljar.com/teaching-ai-fluency"
       },
       {
@@ -293,14 +338,18 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "AI",
+          "Fluency",
+          "Nonprofits"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
         "id": "anthropic-ai-fluency-for-nonprofits",
         "kind": "course",
         "title": "AI Fluency for nonprofits",
-        "description": "This course empowers nonprofit professionals to develop AI fluency in order to increase organizational impact and efficiency while staying true to their mission and values.",
+        "description": "This course empowers nonprofit professionals to develop AI fluency to increase impact.",
         "url": "https://anthropic.skilljar.com/ai-fluency-for-nonprofits"
       },
       {
@@ -309,14 +358,17 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Claude",
+          "Skills"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
         "id": "anthropic-introduction-to-agent-skills",
         "kind": "course",
         "title": "Introduction to agent skills",
-        "description": "Learn how to build, configure, and share Skills in Claude Code — reusable markdown instructions that Claude automatically applies to the right tasks at the right time.",
+        "description": "Learn how to build, configure, and share Skills in Claude Code.",
         "url": "https://anthropic.skilljar.com/introduction-to-agent-skills"
       },
       {
@@ -325,14 +377,17 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Claude",
+          "Subagents"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
         "id": "anthropic-introduction-to-subagents",
         "kind": "course",
         "title": "Introduction to subagents",
-        "description": "Learn how to use and create sub-agents in Claude Code to manage context, delegate tasks, and build specialized workflows that keep your main conversation clean and focused.",
+        "description": "Learn how to use and create sub-agents in Claude Code.",
         "url": "https://anthropic.skilljar.com/introduction-to-subagents"
       },
       {
@@ -341,7 +396,10 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "AI",
+          "Capabilities"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -357,14 +415,18 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "AI",
+          "Fluency",
+          "Small Business"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
         "id": "anthropic-ai-fluency-for-small-businesses",
         "kind": "course",
         "title": "AI Fluency for Small Businesses",
-        "description": "This course empowers small businesses to develop AI fluency in order to increase organizational impact and efficiency while staying true to their mission and values.",
+        "description": "This course empowers small businesses to develop AI fluency.",
         "url": "https://anthropic.skilljar.com/ai-fluency-for-small-businesses"
       },
       {
@@ -373,14 +435,18 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "AI",
+          "Fluency",
+          "Builders"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
         "id": "anthropic-ai-fluency-for-builders",
         "kind": "course",
         "title": "AI Fluency for Builders",
-        "description": "This course empowers builders to develop AI fluency — increasing impact and efficiency while staying true to what it means to own the full arc from problem to shipped solution.",
+        "description": "This course empowers builders to develop AI fluency.",
         "url": "https://anthropic.skilljar.com/ai-fluency-for-builders"
       },
       {
@@ -389,14 +455,18 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "AI",
+          "Fluency",
+          "Creative Work"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
         "id": "anthropic-ai-fluency-for-creative-work",
         "kind": "course",
         "title": "AI Fluency for Creative Work",
-        "description": "This course empowers creative professionals to develop AI fluency, making intentional, analysis-driven decisions about AI use in their creative practice while protecting what makes their work theirs.",
+        "description": "This course empowers creative professionals to develop AI fluency in their creative practice.",
         "url": "https://anthropic.skilljar.com/ai-fluency-for-creative-work"
       },
       {
@@ -405,14 +475,17 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Claude",
+          "Enterprise"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
         "id": "anthropic-deploying-claude-enterprise-with-confidence",
         "kind": "course",
         "title": "Deploying Claude Enterprise with Confidence: The five decisions that shape your rollout",
-        "description": "Make the five decisions that shape how Claude works for your organization — Structure & Identity, Access, Governance, Spend, Visibility — and record them in the rollout plan you keep.",
+        "description": "Make the five decisions that shape how Claude works for your organization.",
         "url": "https://anthropic.skilljar.com/deploying-claude-enterprise-with-confidence"
       }
     ],
@@ -424,18 +497,16 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI models",
-          "Software development",
-          "Programming",
-          "AI tools",
-          "Productivity"
+          "AI Fundamentals",
+          "Software Development",
+          "Programming with AI Tools"
         ],
         "source": "cursor-learn",
         "price": null,
         "id": "cursor-ai-foundations",
         "kind": "course",
         "title": "AI Foundations",
-        "description": "This course will teach you about how to use AI to be more effective as a programmer. It’s not a course to teach about machine learning or how to train your own models, but instead a course focused on developers writing software using AI models and tools.",
+        "description": "This course will teach you about how to use AI to be more effective as a programmer. It focuses on developers writing software using AI models and tools, rather than teaching machine learning or how to train your own models.",
         "url": "https://cursor.com/learn"
       }
     ],
@@ -466,9 +537,9 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Applied AI",
-          "Workflows",
-          "Process"
+          "AI",
+          "Applied",
+          "Workflow"
         ],
         "source": "openai-academy",
         "price": null,
@@ -485,9 +556,9 @@
         ],
         "eligibility": "public",
         "topics": [
+          "AI",
           "Agents",
-          "Workflows",
-          "Structured Work"
+          "Workflows"
         ],
         "source": "openai-academy",
         "price": null,
@@ -504,9 +575,9 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI Solutions",
-          "Opportunity",
-          "Planning"
+          "AI",
+          "Solutions",
+          "Scope"
         ],
         "source": "openai-academy",
         "price": null,
@@ -542,9 +613,9 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Agentic Systems",
+          "AI",
           "Design",
-          "Reliability"
+          "Agentic Systems"
         ],
         "source": "openai-academy",
         "price": null,
@@ -561,9 +632,9 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Retrieval-Augmented Generation",
-          "Pipelines",
-          "Evaluation"
+          "AI",
+          "Retrieval",
+          "Generation"
         ],
         "source": "openai-academy",
         "price": null,
@@ -580,9 +651,9 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI Performance",
+          "AI",
           "Optimization",
-          "Production"
+          "Performance"
         ],
         "source": "openai-academy",
         "price": null,
@@ -600,7 +671,7 @@
         "eligibility": "public",
         "topics": [
           "Codex",
-          "Repository",
+          "Start",
           "Tasks"
         ],
         "source": "openai-academy",
@@ -620,7 +691,7 @@
         "topics": [
           "Codex",
           "Workflows",
-          "Governance"
+          "Extend"
         ],
         "source": "openai-academy",
         "price": null,
@@ -638,8 +709,8 @@
         "eligibility": "public",
         "topics": [
           "Codex",
-          "Teams",
-          "Integration"
+          "Scale",
+          "Teams"
         ],
         "source": "openai-academy",
         "price": null,
@@ -665,7 +736,7 @@
         "id": "openai-ai-leadership-kaf7k",
         "kind": "course",
         "title": "AI Leadership",
-        "description": "Learn how to choose AI opportunities worth backing and guide initiatives from business priority to responsible adoption. You’ll strengthen your judgment around evidence, plan clear next actions, and build an AI Strategy Brief Pack others can use to move the work forward.",
+        "description": "Learn how to choose AI opportunities worth backing and guide initiatives from business priority to responsible adoption.",
         "url": "https://academy.openai.com/public/courses/ai-leadership-kaf7k"
       },
       {
@@ -684,7 +755,7 @@
         "id": "openai-ai-for-educators-lc8j1",
         "kind": "course",
         "title": "AI for Educators",
-        "description": "Learn how to use ChatGPT to develop teaching materials that align with learning objectives and student needs. You’ll use your own materials to plan lessons, create activities or assessments, and review responses to decide what belongs in your teaching.",
+        "description": "Learn how to use ChatGPT to develop teaching materials that align with learning objectives and student needs.",
         "url": "https://academy.openai.com/public/courses/ai-for-educators-lc8j1"
       },
       {
@@ -695,15 +766,15 @@
         "eligibility": "public",
         "topics": [
           "AI",
-          "Students",
-          "Career"
+          "Education",
+          "College"
         ],
         "source": "openai-academy",
         "price": null,
         "id": "openai-ai-for-college-students-gxgmr",
         "kind": "course",
         "title": "AI for College Students",
-        "description": "Learn how to use ChatGPT for practical study and career tasks. You’ll practice planning study and group work, reviewing responses critically, improving drafts, and preparing for applications and interviews, guided by your own judgment and your institution’s rules.",
+        "description": "Learn how to use ChatGPT for practical study and career tasks.",
         "url": "https://academy.openai.com/public/courses/ai-for-college-students-gxgmr"
       }
     ],
@@ -733,7 +804,7 @@
         "id": "vercel-build-and-launch-with-ai",
         "kind": "course",
         "title": "Build and Launch with AI",
-        "description": "Build and launch a website for Small Hours Studio with AI. Start in v0, add workshop pages and an email inquiry form, and learn to publish your own updates with fx, GitHub, and Vercel. No coding experience required.",
+        "description": "Build and launch a website for Small Hours Studio with AI. Start in v0, add workshop pages and an email inquiry form, and learn to publish your own updates with fx, GitHub, and Vercel.",
         "url": "https://vercel.com/academy/build-and-launch-with-ai"
       },
       {
@@ -1094,7 +1165,10 @@
           "Cloud & Infrastructure"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Professional Certification",
+          "AI Infrastructure"
+        ],
         "source": "nvidia-certification",
         "level": "Advanced",
         "id": "nvidia-ai-infrastructure-professional",
@@ -1109,7 +1183,10 @@
           "Cloud & Infrastructure"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Professional Certification",
+          "AI Operations"
+        ],
         "source": "nvidia-certification",
         "level": "Advanced",
         "id": "nvidia-ai-operations-professional",
@@ -1124,7 +1201,10 @@
           "Cloud & Infrastructure"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Professional Certification",
+          "AI Networking"
+        ],
         "source": "nvidia-certification",
         "level": "Advanced",
         "id": "nvidia-ai-networking-professional",
@@ -1139,7 +1219,10 @@
           "Cloud & Infrastructure"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Professional Certification",
+          "AI Rack and Interconnect"
+        ],
         "source": "nvidia-certification",
         "level": "Advanced",
         "id": "nvidia-ai-rack-and-interconnect-professional",
@@ -1154,7 +1237,10 @@
           "Cloud & Infrastructure"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Associate Certification",
+          "AI Infrastructure and Operations"
+        ],
         "source": "nvidia-certification",
         "level": "Entry",
         "id": "nvidia-ai-infrastructure-operations-associate",
@@ -1169,13 +1255,16 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Associate Certification",
+          "AI Power and Cooling"
+        ],
         "source": "nvidia-certification",
         "level": "Entry",
         "id": "nvidia-ai-power-and-cooling-associate",
         "kind": "certification",
         "title": "NVIDIA-Certified Associate AI Power and Cooling",
-        "description": "Validate a candidate’s foundational knowledge of the power, cooling, and mechanical systems behind AI data centers and factories, with a focus on safe, effective cross-trade coordination.",
+        "description": "Validate a candidate’s foundational knowledge of the power, cooling, and mechanical systems behind AI data centers and factories.",
         "url": "https://www.nvidia.com/en-us/learn/certification/ai-power-and-cooling-associate"
       },
       {
@@ -1184,7 +1273,10 @@
           "Data & Analytics"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Professional Certification",
+          "Accelerated Data Science"
+        ],
         "source": "nvidia-certification",
         "role": "Data",
         "level": "Advanced",
@@ -1200,7 +1292,10 @@
           "Data & Analytics"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Associate Certification",
+          "Accelerated Data Science"
+        ],
         "source": "nvidia-certification",
         "role": "Data",
         "level": "Entry",
@@ -1216,13 +1311,16 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Professional Certification",
+          "Generative AI LLMs"
+        ],
         "source": "nvidia-certification",
         "level": "Advanced",
         "id": "nvidia-generative-ai-llm-professional",
         "kind": "certification",
         "title": "NVIDIA-Certified Professional Generative AI LLMs",
-        "description": "Certify the ability to design, train, and optimize LLMs, leveraging advanced distributed training and fine-tuning strategies to deliver high-performance AI solutions.",
+        "description": "Certify the ability to design, train, and optimize LLMs, leveraging advanced distributed training and fine-tuning strategies.",
         "url": "https://www.nvidia.com/en-us/learn/certification/generative-ai-llm-professional"
       },
       {
@@ -1231,13 +1329,16 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Professional Certification",
+          "Agentic AI"
+        ],
         "source": "nvidia-certification",
         "level": "Advanced",
         "id": "nvidia-agentic-ai-professional",
         "kind": "certification",
         "title": "NVIDIA-Certified Professional Agentic AI",
-        "description": "Demonstrate the ability to build and govern advanced agentic AI solutions with multi-agent interaction, scalability, and ethical safeguards.",
+        "description": "Demonstrate the ability to build and govern advanced agentic AI solutions with multi-agent interaction.",
         "url": "https://www.nvidia.com/en-us/learn/certification/agentic-ai-professional"
       },
       {
@@ -1246,13 +1347,16 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Associate Certification",
+          "Generative AI LLM"
+        ],
         "source": "nvidia-certification",
         "level": "Entry",
         "id": "nvidia-generative-ai-llm-associate",
         "kind": "certification",
         "title": "NVIDIA-Certified Associate Generative AI LLM",
-        "description": "Verify foundational knowledge for developing, integrating, and maintaining AI-driven applications using generative AI and LLMs with NVIDIA solutions.",
+        "description": "Verify foundational knowledge for developing AI-driven applications using generative AI and LLMs with NVIDIA solutions.",
         "url": "https://www.nvidia.com/en-us/learn/certification/generative-ai-llm-associate"
       },
       {
@@ -1261,13 +1365,16 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Associate Certification",
+          "Generative AI Multimodal"
+        ],
         "source": "nvidia-certification",
         "level": "Entry",
         "id": "nvidia-generative-ai-multimodal-associate",
         "kind": "certification",
         "title": "NVIDIA-Certified Associate Generative AI Multimodal",
-        "description": "Validates the foundational skills needed to design, implement, and manage AI systems that synthesize and interpret data across text, image, and audio modalities.",
+        "description": "Validates the foundational skills needed to design, implement, and manage AI systems across text, image, and audio modalities.",
         "url": "https://www.nvidia.com/en-us/learn/certification/generative-ai-multimodal-associate"
       },
       {
@@ -1276,13 +1383,16 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Associate Certification",
+          "AI Model and Application Development"
+        ],
         "source": "nvidia-certification",
         "level": "Entry",
         "id": "nvidia-ai-model-application-development-associate",
         "kind": "certification",
         "title": "NVIDIA-Certified Associate AI Model and Application Development",
-        "description": "Validates foundational skills in building, customizing, deploying, and evaluating AI models and applications on NVIDIA’s platform, including retrieval pipelines, inference optimization, and agentic systems.",
+        "description": "Validates foundational skills in building, customizing, deploying, and evaluating AI models and applications on NVIDIA’s platform.",
         "url": "https://www.nvidia.com/en-us/learn/certification/ai-model-application-development-associate"
       },
       {
@@ -1291,7 +1401,10 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Professional Certification",
+          "OpenUSD Development"
+        ],
         "source": "nvidia-certification",
         "level": "Advanced",
         "id": "nvidia-openusd-development-professional",
@@ -1306,13 +1419,16 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Associate Certification",
+          "OpenUSD Foundations"
+        ],
         "source": "nvidia-certification",
         "level": "Entry",
         "id": "nvidia-openusd-foundations-workflows-associate",
         "kind": "certification",
         "title": "NVIDIA-Certified Associate OpenUSD Foundations and Workflow",
-        "description": "Validates a candidate's understanding of OpenUSD concepts and their ability to apply that knowledge to workflow design and pipeline planning.",
+        "description": "Validates a candidate's understanding of OpenUSD concepts and their ability to apply that knowledge to workflow design.",
         "url": "https://www.nvidia.com/en-us/learn/certification/openusd-foundations-workflows-associate"
       }
     ],
