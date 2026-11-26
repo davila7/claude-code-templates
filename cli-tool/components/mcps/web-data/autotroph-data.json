@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "autotroph-data": {
+      "description": "Autotroph Verified Data & Compliance MCP \u2014 schema-verified, zero-proxy APIs for SEC EDGAR XBRL financials (deduplicated 10-K/10-Q, derived Q4 & TTM, Assets = Liabilities + Equity check), EU TED eForms procurement tenders, USAspending/SAM.gov federal contracts, USPTO/EP/WO/JP/CN patent claim trees, and US Federal Register CFR rules. Runs remotely on Apify MCP (https://mcp.apify.com) with nominal $0.00005 start fee + $0.004-$0.01/record; free Apify accounts include $5/mo credit (~1,000+ calls). Get a free token at https://console.apify.com/settings/integrations?createApiToken=true&for=MCP.",
+      "type": "http",
+      "url": "https://mcp.apify.com?tools=autotroph/sec-edgar-xbrl-normalizer,autotroph/ted-eu-eforms-normalizer,autotroph/us-federal-procurement-normalizer,autotroph/uspto-patent-intelligence-normalizer,autotroph/us-federal-register-normalizer",
+      "headers": {
+        "Authorization": "Bearer <YOUR_APIFY_TOKEN>"
+      }
+    }
+  }
+}
