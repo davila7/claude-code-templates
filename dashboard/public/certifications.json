@@ -9,6 +9,7 @@
     "Microsoft Learn",
     "NVIDIA Certification",
     "OpenAI Academy",
+    "SAP Learning",
     "Vercel Academy"
   ],
   "providers": {
@@ -33,6 +34,9 @@
     },
     "Google Cloud": {
       "icon": "https://www.gstatic.com/cgc/supercloud_favicon.ico"
+    },
+    "SAP": {
+      "icon": "https://learning.sap.com/favicon.ico"
     }
   },
   "items": [
@@ -1820,6 +1824,109 @@
         "currency": "USD"
       },
       "addedAt": "2026-11-11",
+      "verifiedAt": "2026-11-26"
+    },
+    {
+      "id": "sap-generative-ai-developer",
+      "kind": "certification",
+      "title": "SAP Certified - SAP Generative AI Developer",
+      "provider": "SAP",
+      "platform": "SAP Learning",
+      "categories": [
+        "AI & Agents"
+      ],
+      "role": "Developer",
+      "level": "Intermediate",
+      "description": "The certification recognizes that you can solve business problems using SAP's generative AI hub by applying advanced prompt engineering techniques and utilizing prompt development, template management, and workflow orchestration within SAP AI Launchpad.",
+      "url": "https://learning.sap.com/certifications/sap-certified-associate-sap-generative-ai-developer",
+      "prepUrl": "https://learning.sap.com/learning-journeys/solving-business-problems-using-sap-s-generative-ai-hub",
+      "format": "Exam, 180 min, pass score 76%",
+      "credential": "Credly badge, kept current with Stay Certified assessments",
+      "eligibility": "public",
+      "topics": [
+        "Generative AI hub",
+        "Prompt engineering",
+        "SAP AI Launchpad"
+      ],
+      "source": "manual",
+      "addedAt": "2026-11-26",
+      "verifiedAt": "2026-11-26"
+    },
+    {
+      "id": "sap-joule-studio-developer",
+      "kind": "certification",
+      "title": "SAP Certified - Joule Studio Developer",
+      "provider": "SAP",
+      "platform": "SAP Learning",
+      "categories": [
+        "AI & Agents"
+      ],
+      "role": "Developer",
+      "level": "Intermediate",
+      "description": "Validates the fundamental and core knowledge required of the Joule Studio Developer profile, with the technical skills to take part in a project team in a mentored role.",
+      "url": "https://learning.sap.com/certifications/sap-certified-joule-studio-developer",
+      "prepUrl": "https://learning.sap.com/learning-journeys/developing-with-joule-studio",
+      "format": "Exam, 120 min, pass score 60%",
+      "credential": "Credly badge, kept current with Stay Certified assessments",
+      "eligibility": "public",
+      "topics": [
+        "Joule Studio",
+        "AI-assisted development",
+        "Knowledge graphs"
+      ],
+      "source": "manual",
+      "addedAt": "2026-11-26",
+      "verifiedAt": "2026-11-26"
+    },
+    {
+      "id": "sap-business-ai-platform-solution-architect",
+      "kind": "certification",
+      "title": "SAP Certified - Solution Architect - SAP Business AI Platform",
+      "provider": "SAP",
+      "platform": "SAP Learning",
+      "categories": [
+        "AI & Agents"
+      ],
+      "role": "Architect",
+      "level": "Advanced",
+      "description": "Validates the expertise to design and orchestrate scalable end-to-end solutions on SAP Business AI Platform: integration strategy, technical architecture, application design and solution governance.",
+      "url": "https://learning.sap.com/certifications/sap-certified-solution-architect-sap-business-ai-platform",
+      "prepUrl": "https://learning.sap.com/learning-journeys/becoming-an-sap-business-ai-platform-solution-architect",
+      "format": "Exam, 120 min, pass score 60%",
+      "credential": "Credly badge, kept current with Stay Certified assessments",
+      "eligibility": "public",
+      "topics": [
+        "SAP Business AI Platform",
+        "Solution architecture",
+        "Integration"
+      ],
+      "source": "manual",
+      "addedAt": "2026-11-26",
+      "verifiedAt": "2026-11-26"
+    },
+    {
+      "id": "sap-positioning-business-ai-platform",
+      "kind": "certification",
+      "title": "SAP Certified - Positioning SAP Business AI Platform",
+      "provider": "SAP",
+      "platform": "SAP Learning",
+      "categories": [
+        "AI & Agents"
+      ],
+      "role": "Business",
+      "level": "Entry",
+      "description": "Verifies the core skills and knowledge about SAP Business AI Platform. Recommended as an entry-level qualification for presales and sales roles.",
+      "url": "https://learning.sap.com/certifications/sap-certified-positioning-sap-business-ai-platform-1",
+      "prepUrl": "https://learning.sap.com/learning-journeys/positioning-sap-business-ai-platform",
+      "format": "Exam, 120 min, pass score 60%",
+      "credential": "Credly badge, kept current with Stay Certified assessments",
+      "eligibility": "public",
+      "topics": [
+        "SAP Business AI Platform",
+        "Presales"
+      ],
+      "source": "manual",
+      "addedAt": "2026-11-26",
       "verifiedAt": "2026-11-26"
     }
   ]
