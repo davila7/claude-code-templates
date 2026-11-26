@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "cubrik": {
+      "description": "cubrik - AI trading agents, backtests and your brokers. Create, test, start and pause cubrik agents that trade on the brokers and exchanges connected to your cubrik account (Binance, OKX, Hyperliquid, MetaTrader and others), backtest rule-based ideas on historical candles, read balances, positions, results and Analytics advice, copy ready-made agents from the Library, and place, change and close orders through each platform's own tools. Hosted remote server; sign in with your cubrik account (OAuth) and choose what it may do (read, manage agents, trade), there is no key to paste. Broker keys stay in cubrik and no tool moves money in or out of an account. Needs cubrik's Intermediate plan or above (https://cubrik.ai/en/mcp).",
+      "type": "http",
+      "url": "https://mcp.cubrik.ai/mcp"
+    }
+  }
+}
