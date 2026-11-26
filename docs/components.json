@@ -37671,6 +37671,69 @@
         "errorCount": 0,
         "warningCount": 0,
         "lastValidated": null
+      },
+      "skillspector": {
+        "score": 100,
+        "severity": "CRITICAL",
+        "recommendation": "DO_NOT_INSTALL",
+        "issueCount": 19,
+        "analysis": "partial",
+        "findings": [
+          {
+            "id": "AS1",
+            "category": "Agent Snooping",
+            "severity": "HIGH",
+            "title": "Agent Config Directory Access",
+            "file": "SKILL.md",
+            "line": 3,
+            "count": 1
+          },
+          {
+            "id": "AS1",
+            "category": "Agent Snooping",
+            "severity": "HIGH",
+            "title": "Agent Config Directory Access",
+            "file": "skill-shell-guard.json",
+            "line": 2,
+            "count": 1
+          },
+          {
+            "id": "SC2",
+            "category": "Supply Chain",
+            "severity": "HIGH",
+            "title": "External Script Fetching",
+            "file": "SKILL.md",
+            "line": 3,
+            "count": 1
+          },
+          {
+            "id": "SC2",
+            "category": "Supply Chain",
+            "severity": "HIGH",
+            "title": "External Script Fetching",
+            "file": "skill-shell-guard.json",
+            "line": 2,
+            "count": 1
+          },
+          {
+            "id": "SC2",
+            "category": "Supply Chain",
+            "severity": "HIGH",
+            "title": "External Script Fetching",
+            "file": "skill-shell-guard.py",
+            "line": 9,
+            "count": 1
+          }
+        ],
+        "categories": {
+          "Privilege Escalation": 11,
+          "Agent Snooping": 4,
+          "Supply Chain": 3,
+          "MCP Least Privilege": 1
+        },
+        "hash": "2823501ac810d854",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-26T01:33:01Z"
       }
     },
     {
