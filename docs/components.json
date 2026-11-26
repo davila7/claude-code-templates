@@ -30183,6 +30183,39 @@
       }
     },
     {
+      "name": "roamseo",
+      "path": "marketing/roamseo.json",
+      "category": "marketing",
+      "type": "mcp",
+      "description": "RoamSEO's hosted MCP server gives Claude Code live SEO data: keyword ideas with volume and difficulty, current Google results for a query, backlinks and ranked keywords for any domain, site audits, rank tracking and checks of how AI assistants mention a brand. Nothing runs locally; the client opens a browser sign-in (OAuth) on first use. A free account covers Search Console and Analytics reads; new search data costs credits.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "categories": {},
+        "hash": "06e482f4a14fe0d6",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-26T15:13:35Z"
+      }
+    },
+    {
       "name": "seo-aeo-geo",
       "path": "marketing/seo-aeo-geo.json",
       "category": "marketing",
@@ -61125,6 +61158,101 @@
         "version": "1.0.1",
         "checkedAt": "2026-11-18T20:31:10Z",
         "hash": "8d60cf476f847599"
+      }
+    },
+    {
+      "name": "figmamcp",
+      "path": "creative-design/figmamcp",
+      "category": "creative-design",
+      "type": "skill",
+      "description": "Use when reading or editing a Figma file through the figmamcp server — inspecting nodes; creating or modifying shapes, frames, text, styles, variables, components, instances, annotations, or prototype reactions; and recovering from the server's structured errors. Explains the plugin's hard constraints (scope locking, name verification, batch validation) and how to pick the right tool.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "references/constraints.md",
+        "references/error-playbook.md",
+        "references/node-fields.md",
+        "references/tool-selection.md",
+        "references/workflows.md"
+      ],
+      "skillspector": {
+        "score": 25,
+        "severity": "MEDIUM",
+        "recommendation": "CAUTION",
+        "issueCount": 1,
+        "analysis": "partial",
+        "findings": [
+          {
+            "id": "AE1",
+            "category": "analysis-evasion",
+            "severity": "HIGH",
+            "title": "Incomplete referenced artifact analysis",
+            "file": "SKILL.md",
+            "line": 25,
+            "count": 1
+          }
+        ],
+        "categories": {
+          "analysis-evasion": 1
+        },
+        "hash": "cc9544a0ff833777",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-26T15:13:35Z"
+      },
+      "harness": {
+        "agents": [
+          {
+            "id": "claude-code",
+            "status": "loads",
+            "verified": "2.1.316",
+            "notes": []
+          },
+          {
+            "id": "codex",
+            "status": "loads",
+            "verified": "0.166.0",
+            "notes": []
+          },
+          {
+            "id": "copilot-cli",
+            "status": "loads",
+            "verified": "1.0.105",
+            "notes": []
+          },
+          {
+            "id": "opencode",
+            "status": "loads",
+            "verified": "1.19.5",
+            "notes": []
+          },
+          {
+            "id": "hermes",
+            "status": "loads",
+            "verified": "main",
+            "notes": []
+          },
+          {
+            "id": "openclaw",
+            "status": "loads",
+            "verified": "2026.10.9",
+            "notes": []
+          }
+        ],
+        "version": "1.0.1",
+        "checkedAt": "2026-11-26T15:13:55Z",
+        "hash": "cc9544a0ff833777"
       }
     },
     {
