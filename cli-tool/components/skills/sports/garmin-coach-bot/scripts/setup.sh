@@ -70,7 +70,7 @@ echo
 echo "  $ENCRYPTION_KEY"
 echo
 echo "NEXT STEPS:"
-echo "  1. Copy .env.example to create your environment file"
+echo "  1. Copy the env example file and fill in your values"
 echo "  2. Create a Telegram bot via @BotFather and paste the token"
 echo "  3. Get a Gemini API key from https://aistudio.google.com/apikey"
 echo "  4. Fill in your tokens and the encryption key above"

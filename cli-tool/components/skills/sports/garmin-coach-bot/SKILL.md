@@ -66,11 +66,7 @@ Guia al usuario para que hable con @BotFather en Telegram:
 
 ### 5. Configurar variables de entorno
 
-El repositorio incluye un archivo `.env.example` con todas las variables. Copialo y llena los valores:
-
-```bash
-cp .env.example .env.local
-```
+El repositorio incluye un archivo de ejemplo con las variables de entorno necesarias. Copia el ejemplo, renombralo, y llena los valores.
 
 Variables requeridas:
 
