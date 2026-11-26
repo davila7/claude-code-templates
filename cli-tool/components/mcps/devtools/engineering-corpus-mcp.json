@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "engineering-corpus": {
+      "description": "Local MCP server with seven read-only research agents over the public GitHub repos you choose. Answers carry lines at a pinned commit, the license class of each file and a receipt for each source. MIT.",
+      "command": "uvx",
+      "args": ["engineering-corpus==0.1.0", "serve"]
+    }
+  }
+}
