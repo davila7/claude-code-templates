@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Setup script for Garmin Coach Bot
-# Clones repo, creates venv, installs deps, generates encryption key, creates .env
+# Clones repo, creates venv, installs deps, prints config instructions
 
 set -euo pipefail
 
@@ -59,31 +59,21 @@ fi
 echo "Installing dependencies..."
 .venv/bin/pip install -q -r requirements.txt
 
-# Generate encryption key
+# Generate encryption key and display it
 ENCRYPTION_KEY=$(.venv/bin/python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())")
 
-# Create .env if not exists (owner-only permissions for secrets)
-if [ ! -f ".env" ]; then
-    echo "Creating .env file..."
-    umask 077
-    cat > .env << EOF
-TELEGRAM_BOT_TOKEN=
-GEMINI_API_KEY=
-ENCRYPTION_KEY=$ENCRYPTION_KEY
-CALENDAR_BASE_URL=
-USER_TIMEZONE=America/Bogota
-EOF
-    echo
-    echo "Generated .env with a fresh ENCRYPTION_KEY (permissions: owner-only)."
-    echo
-    echo "NEXT STEPS:"
-    echo "  1. Create a Telegram bot via @BotFather and paste the token"
-    echo "  2. Get a Gemini API key from https://aistudio.google.com/apikey"
-    echo "  3. Edit .env and fill in TELEGRAM_BOT_TOKEN and GEMINI_API_KEY"
-    echo "  4. Run: source .venv/bin/activate && python bot.py"
-else
-    echo ".env already exists, skipping."
-fi
-
 echo
-echo "Setup complete. Run tests with: .venv/bin/python -m pytest tests/ -v"
+echo "Setup complete!"
+echo
+echo "GENERATED ENCRYPTION KEY (save this — you will need it):"
+echo
+echo "  $ENCRYPTION_KEY"
+echo
+echo "NEXT STEPS:"
+echo "  1. Copy .env.example to create your environment file"
+echo "  2. Create a Telegram bot via @BotFather and paste the token"
+echo "  3. Get a Gemini API key from https://aistudio.google.com/apikey"
+echo "  4. Fill in your tokens and the encryption key above"
+echo "  5. Run: source .venv/bin/activate && python bot.py"
+echo
+echo "Run tests with: .venv/bin/python -m pytest tests/ -v"

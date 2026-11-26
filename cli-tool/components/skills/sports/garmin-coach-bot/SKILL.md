@@ -66,13 +66,13 @@ Guia al usuario para que hable con @BotFather en Telegram:
 
 ### 5. Configurar variables de entorno
 
-Copiar el archivo de ejemplo y llenar los valores:
+El repositorio incluye un archivo `.env.example` con todas las variables. Copialo y llena los valores:
 
 ```bash
-cp .env.example .env
+cp .env.example .env.local
 ```
 
-Variables requeridas en `.env`:
+Variables requeridas:
 
 | Variable | Descripcion | Ejemplo |
 |----------|-------------|---------|
@@ -211,5 +211,5 @@ Los prompts `MORNING_REPORT_PROMPT` y `EVENING_REPORT_PROMPT` en `bot.py` contro
 | Reportes no llegan | Verificar timezone del usuario con `/config` |
 | Pasos del dia muestran numeros bajos | Los datos de "hoy" son parciales hasta la siguiente sync |
 | Gemini no responde | Verificar `GEMINI_API_KEY`, revisar limites del tier gratuito |
-| "GARMIN_EMAIL y GARMIN_PASSWORD deben estar en .env" | Esto es para el CLI de sync.py, no para el bot multi-usuario |
+| "GARMIN_EMAIL y GARMIN_PASSWORD deben estar en env" | Esto es para el CLI de sync.py, no para el bot multi-usuario |
 | Error de cifrado | Verificar que `ENCRYPTION_KEY` sea una clave Fernet valida |
