@@ -16,7 +16,8 @@ Bot de Telegram que actua como coach de entrenamiento personal usando datos real
 
 ## Que hace
 
-- Sincroniza automaticamente actividades, sueno, HRV, Training Readiness y Body Battery desde Garmin Connect
+- Sincroniza automaticamente actividades, sueno, HRV, Training Readiness, Body Battery y metricas de rendimiento (VO2max, predicciones de carrera, estado de entrenamiento) desde Garmin Connect
+- Detecta automaticamente los deportes del usuario (running, strength, hiking, swimming, etc.) y adapta el coaching a su perfil real
 - Envia reportes matutinos (recuperacion, sueno, recomendacion del dia) y nocturnos (resumen de actividad, cumplimiento del plan)
 - Genera planes de entrenamiento semanales personalizados con calendario .ics suscribible
 - Cada usuario configura su propia rutina (`/rutina`), zona horaria y horarios de reportes (`/config`)
@@ -174,8 +175,8 @@ Cuando un usuario envia `/start`:
 
 ```
 bot.py              — Bot de Telegram, handlers, report loop, Gemini integration
-sync.py             — Sincronizacion con Garmin Connect API
-analysis.py         — Procesamiento de datos, snapshots, tendencias
+sync.py             — Sincronizacion con Garmin Connect API (actividades, stats, metricas de rendimiento)
+analysis.py         — Procesamiento de datos, snapshots, tendencias, perfil deportivo auto-detectado
 users.py            — Gestion de usuarios, cifrado, config per-user
 calendar_server.py  — Servidor HTTP para suscripciones .ics
 ```
@@ -184,6 +185,7 @@ calendar_server.py  — Servidor HTTP para suscripciones .ics
 - **IA:** Google Gemini (cadena de fallback: gemini-3.1-flash-lite > gemini-3.1-flash > gemini-2.0-flash)
 - **Cifrado:** Fernet (AES-128-CBC) para credenciales de Garmin
 - **Reportes:** Polling cada 60s, horarios individuales por usuario con 2s delay entre envios
+- **Actividades:** Sumarizacion generica por presencia de campos — funciona con cualquier deporte sin configuracion
 
 ## Personalizacion
 
@@ -197,7 +199,7 @@ Los prompts `MORNING_REPORT_PROMPT` y `EVENING_REPORT_PROMPT` en `bot.py` contro
 
 ### Agregar metricas
 
-`sync_daily_stats()` en `sync.py` controla que datos se bajan de Garmin. `summarize_daily_stats()` en `analysis.py` controla como se presentan. Para agregar nuevas metricas (ej: VO2max, intensityMinutes), agregar la llamada al API de Garmin y el formateo.
+El bot ya sincroniza metricas de rendimiento (VO2max, predicciones de carrera, estado de entrenamiento, endurance score, umbral lactico, balance de carga). Para agregar nuevas metricas de la API de Garmin, ver `sync_performance_metrics()` en `sync.py` y `summarize_performance_metrics()` en `analysis.py`.
 
 ## Troubleshooting
 
@@ -205,7 +207,7 @@ Los prompts `MORNING_REPORT_PROMPT` y `EVENING_REPORT_PROMPT` en `bot.py` contro
 |----------|----------|
 | "Token expirado" en logs | Normal — el bot re-autentica automaticamente |
 | Reportes no llegan | Verificar timezone del usuario con `/config` |
-| Pasos del dia muestran numeros bajos | Los datos de "hoy" son parciales hasta la siguiente sync |
+| Metricas de hoy vacias | Los datos parciales de hoy (pasos, stress) se omiten automaticamente del reporte |
 | Gemini no responde | Verificar `GEMINI_API_KEY`, revisar limites del tier gratuito |
 | "GARMIN_EMAIL y GARMIN_PASSWORD deben estar en env" | Esto es para el CLI de sync.py, no para el bot multi-usuario |
 | Error de cifrado | Verificar que `ENCRYPTION_KEY` sea una clave Fernet valida |
