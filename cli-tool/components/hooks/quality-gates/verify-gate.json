@@ -1,0 +1,24 @@
+{
+  "description": "Verification gate that runs your project's check command every time Claude tries to finish a turn, and sends Claude back to work while it fails. Put one line in .claude/verify.txt (e.g. `npm test && npx tsc --noEmit`, `pytest -q && ruff check .`); when the command exits non-zero, the last 40 lines of output go back to Claude with 'Fix the failures above, then finish. Do not weaken or skip tests.' Does nothing without a verify.txt (or LOCKED_IN_VERIFY env var) and never guesses a command. Skips when the git tree is clean or unchanged since the last passing run, lets Claude stop after 4 consecutive blocks so it cannot loop, kills the whole process tree on timeout (LOCKED_IN_VERIFY_TIMEOUT, default 300s), and exits 0 on any internal error so it never breaks a session. Complements tdd-gate: tdd-gate checks that a test exists before editing, verify-gate proves the tests pass before 'done'. Python 3 standard library only; Windows, macOS, Linux.",
+  "supportingFiles": [
+    {
+      "source": "verify-gate.py",
+      "destination": ".claude/hooks/verify-gate.py",
+      "executable": true
+    }
+  ],
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/verify-gate.py",
+            "timeout": 330
+          }
+        ]
+      }
+    ]
+  }
+}
