@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "collietax": {
+      "description": "Official CollieTax remote MCP server (collietax.com/api/mcp) for a US small business: keep the books from bank and card statements (every row checked against the statement totals, with a profit and loss statement and a balance sheet), prepare 1099s and W-2s and file them once you confirm on a review page, and start a business tax return that a CPA or EA prepares and signs. Uses OAuth: after installing, run /mcp in Claude Code to sign in. No API key.",
+      "type": "http",
+      "url": "https://collietax.com/api/mcp"
+    }
+  }
+}
