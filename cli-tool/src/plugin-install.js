@@ -31,11 +31,11 @@
  * on git older than 2.39.
  */
 
-const os = require('os');
 const path = require('path');
 // Built-ins only: the root test job (version-sync.yml) runs without npm install.
 const fs = require('fs/promises');
 const { spawnClaude } = require('./claude-launcher');
+const { claudeConfigDir } = require('./claude-paths');
 
 // Same values as scripts/external_skills.py and dashboard/src/lib/constants.ts.
 const MARKETPLACE_NAME = 'aitmpl';
@@ -130,10 +130,6 @@ function findEntry(marketplace, ref) {
   const sha = entry.source && entry.source.sha;
   if (!COMMIT_RE.test(String(sha || ''))) return { error: 'not_pinned', entry };
   return { entry };
-}
-
-function claudeConfigDir(env = process.env) {
-  return env.CLAUDE_CONFIG_DIR || path.join(os.homedir(), '.claude');
 }
 
 /** The settings file Claude Code records a plugin in for each scope. */
