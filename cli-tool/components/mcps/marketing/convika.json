@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "convika": {
+      "description": "Hosted MCP server for Convika: publish an HTML page your AI wrote to a live URL or your own domain, keep the signups from its form, and read visits, traffic sources, and button clicks. Sign-in is OAuth in the browser, so there is no API key to give the agent.",
+      "type": "http",
+      "url": "https://mcp.convika.com/mcp"
+    }
+  }
+}
