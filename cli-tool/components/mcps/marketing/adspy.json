@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "adspy": {
+      "description": "Ad research with Adspy (adspy.sh): search brands' public Meta and Google ads with their AI creative analysis, and read brands' organic TikTok, YouTube and Instagram posts. Read-only; it never connects to your own ad accounts. Requires Adspy OAuth. Free plan; paid plans from $19 a month.",
+      "type": "http",
+      "url": "https://www.adspy.sh/mcp"
+    }
+  }
+}
