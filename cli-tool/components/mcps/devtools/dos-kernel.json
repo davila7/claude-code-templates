@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "dos": {
+      "description": "DOS — the trust substrate for fleets of autonomous agents; the kernel is the part that doesn't believe the agents. Verify what an agent ACTUALLY shipped from git evidence instead of its self-report (dos_verify), audit whether a commit's message matches its own diff (dos_commit_audit), arbitrate file-tree collisions before parallel workers race on shared state (dos_arbitrate), refuse with a structured, verifiable reason from a closed vocabulary (dos_refuse_reasons / dos_check_reason), fold a run's real state without trusting a 'done' claim (dos_status), re-check a recalled memory against the live tree (dos_recall), and confirm a cited legal case actually exists before relying on it (dos_citation_resolve). Requires uv (https://docs.astral.sh/uv); pulls the package from PyPI on first launch.",
+      "command": "uvx",
+      "args": ["--from", "dos-kernel[mcp]", "dos-kernel"]
+    }
+  }
+}
