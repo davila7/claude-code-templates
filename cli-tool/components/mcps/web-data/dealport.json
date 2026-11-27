@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "dealport": {
+      "description": "Search 28M+ US private companies and commercial buildings with primary public-filing cited Records, free market sizing (preview_companies) and CSV list matching (match_company_list), living Projects and Playbooks, verified human owner contacts, and double-opt-in Warm Yes introductions via Avery (Dealport's AI outreach specialist, who always discloses she is an AI). Sign in with OAuth (/mcp in Claude Code) or pass a Bearer API key; new accounts start with a $5.00 free balance on pay-as-you-go USD rates. Docs: https://dealport.com/docs",
+      "type": "http",
+      "url": "https://app.dealport.com/api/mcp"
+    }
+  }
+}
