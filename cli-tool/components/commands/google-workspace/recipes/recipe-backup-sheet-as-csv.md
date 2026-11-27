@@ -1,6 +1,6 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [task-parameters]
+argument-hint: "[task-parameters]"
 description: Export a Google Sheets spreadsheet as a CSV file for local backup or processing.
 ---
 

@@ -1,6 +1,6 @@
 ---
 allowed-tools: Bash, Read, Write, Edit
-argument-hint: [task-parameters]
+argument-hint: "[task-parameters]"
 description: Set up a Google Sheets spreadsheet for tracking expenses with headers and initial entries.
 ---
 
