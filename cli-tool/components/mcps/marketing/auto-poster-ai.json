@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "autoposter": {
+      "description": "Official MCP server for Auto Poster AI, a social media scheduler. 16 tools to draft, schedule, publish, edit and delete posts, upload media up to 5 GB, check platform rules and read analytics for Instagram, TikTok, LinkedIn, X, Facebook, Threads, YouTube, Pinterest, Bluesky, Mastodon, Telegram, Discord, WordPress and Google Business Profile. Sign in with OAuth when the client prompts, or pass an API key from https://app.autoposter.ai/settings/ai-agents as a Bearer header. Tool calls need an Auto Poster AI account on a paid plan. Docs: https://autoposter.ai/mcp",
+      "type": "http",
+      "url": "https://agent.autoposter.ai/mcp"
+    }
+  }
+}
