@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "bytebase": {
+      "description": "Official MCP server for Bytebase, the open-source database governance platform. Query data, inspect schemas, and propose database changes through your Bytebase instance, under its approval flow, access control, data masking, and audit logging.",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@bytebase/bytebase-mcp@0.1.0"
+      ],
+      "env": {
+        "BYTEBASE_URL": "<your-bytebase-external-url>"
+      }
+    }
+  }
+}
