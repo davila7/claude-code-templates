@@ -9,8 +9,9 @@
 import type { McpServerSkills } from '../lib/mcp-skills';
 import { jsonForScript } from '../lib/sanitize-html';
 
-interface Props { data: McpServerSkills }
-const { data } = Astro.props;
+// showList=false when McpCapabilities already lists the skills on the page.
+interface Props { data: McpServerSkills; showList?: boolean }
+const { data, showList = true } = Astro.props;
 const { server, skills } = data;
 
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
@@ -141,14 +142,14 @@ function skillCommandName(cmd: string) { return cmd.slice(1); }
       <script type="application/json" data-flow-steps set:html={jsonForScript(steps)} />
     </div>
 
-    <ul class="border-t border-[var(--color-border)]">
+    {showList && <ul class="border-t border-[var(--color-border)]">
       {skills.map((s) => (
         <li class="border-t first:border-t-0 border-[var(--color-border)] flex flex-col md:flex-row md:items-baseline gap-1 md:gap-3 px-4 py-3 md:py-2.5 text-[13.5px]">
           <code class="shrink-0 font-mono text-[12.5px] text-[var(--color-text-primary)] [overflow-wrap:anywhere]">{s.command}</code>
           {s.description && <span class="min-w-0 text-[var(--color-text-secondary)]">{s.description}</span>}
         </li>
       ))}
-    </ul>
+    </ul>}
 
     <p class="border-t border-[var(--color-border)] px-4 py-2.5 text-[12px] leading-relaxed text-[var(--color-text-tertiary)]">
       Claude Code lists these as <code>{skillCommandName(first.command).split(':')[0]}:&lt;skill&gt;</code> in <code>/skills</code>, and you run one by asking Claude or typing its command.
