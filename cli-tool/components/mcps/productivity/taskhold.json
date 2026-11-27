@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "taskhold": {
+      "description": "For developers who hand work to Claude Code, Cursor or Codex, Taskhold is a hosted task list that you and your agents share. Agents pick up the next task, plan it in steps, report progress on a live board and block with a question when they need you. Remote MCP server (Streamable HTTP) with OAuth and dynamic client registration, no API key in the config: after installing, run /mcp in Claude Code and choose Authenticate. It connects with no sign-up; the first tool call returns a link to start a 7-day trial ($12/month, paid plan only). It sends the task text your agent writes to taskhold.com.",
+      "type": "http",
+      "url": "https://taskhold.com/api/mcp"
+    }
+  }
+}
