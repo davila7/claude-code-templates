@@ -1,0 +1,17 @@
+{
+  "repo": "VladislavKorzh/trayui",
+  "path": "system/dist/skills/trayui",
+  "commit": "a39f43a34cc9ebadac29376265e79253e8d51550",
+  "license": "MIT",
+  "author": "Vladyslav Korzh",
+  "include": [
+    "SKILL.md",
+    "references/blocks",
+    "references/blocks.md",
+    "references/components",
+    "references/components.md",
+    "references/docs",
+    "references/docs.md",
+    "scripts"
+  ]
+}
