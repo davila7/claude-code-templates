@@ -38,7 +38,7 @@ Framework mapping quick reference:
 - PCI DSS v4.0.1 → 10.2, 10.3, 10.5
 - HIPAA Security Rule → §164.308(a)(1)(ii)(D), §164.312(b)
 - SOC 2 → CC7.2, CC7.3, CC4.1
-- OWASP ASVS 5.0 → V7 (logging and error handling)
+- OWASP ASVS 5.0 → V16 (Security Logging and Error Handling)
 
 Storage and retention:
 - Local JSONL for offline / air-gapped deployments
