@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "symbioza": {
+      "description": "Symbioza runs your containerized GPU job on a rented cloud machine and hands back the files it writes, under a spending limit you set.",
+      "type": "http",
+      "url": "https://symbioza.dev/mcp"
+    }
+  }
+}
