@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "launch-audit": {
+      "description": "ShipBastion / OmniForge Launch Audit hosted MCP server on dedicated vendor domain (https://api.shipbastion.com/mcp, Streamable HTTP, no API key or sign-in required for read-only audits). Exposes 5 read-only pre-launch audit tools: audit_website_security (109-check TLS, CSP & leaked client-secret sweep), check_brand_availability (live RDAP across 78 TLDs, developer handles & USPTO trademarks), audit_email_deliverability (MX, recursive SPF 10-lookup check, DKIM, DMARC, MTA-STS, BIMI & DNSBL), audit_ai_search_visibility (robots.txt AI crawler rules, /llms.txt & Schema.org JSON-LD), and full_launch_readiness_audit. Listed in the Official MCP Registry as io.github.zColdWater/mcp-launch-audit; open-source MIT stdio package at https://github.com/zColdWater/mcp-launch-audit.",
+      "type": "http",
+      "url": "https://api.shipbastion.com/mcp"
+    }
+  }
+}
