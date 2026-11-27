@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "keepplain": {
+      "description": "Official KeepPlain hosted MCP server (keepplain.com/mcp, streamable HTTP). KeepPlain keeps the sessions of your coding agents (Claude Code, Codex, Cursor and others) as searchable memory. Without an account the server searches a public library of coding-agent sessions that developers chose to publish, including where agents failed and how it was fixed. With a KeepPlain account (free for individuals) it also searches your own past sessions, opens the exact turn and picks up a task where you left off; your sessions get there through the KeepPlain plugin. Sign-in is OAuth 2.1 with dynamic client registration: run /mcp in Claude Code when a tool asks for it; nothing to paste. Docs: https://keepplain.com/for-agents",
+      "type": "http",
+      "url": "https://keepplain.com/mcp"
+    }
+  }
+}
