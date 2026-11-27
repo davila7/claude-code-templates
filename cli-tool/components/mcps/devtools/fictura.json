@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "fictura": {
+      "description": "Fictura connects Claude Code to real app growth data, not just source code: SDK setup, live paywall and onboarding placements, subscriptions, funnels, experiments, acquisition and production error traces. The agent can make authorized drafts but cannot publish them. This is hosted MCP via OAuth 2.1; run /mcp to sign in and select one app, or use a scoped MCP key in X-API-Key.",
+      "type": "http",
+      "url": "https://mcp.fictura.co/mcp"
+    }
+  }
+}
