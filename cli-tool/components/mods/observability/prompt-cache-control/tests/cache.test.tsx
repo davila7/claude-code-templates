@@ -150,24 +150,32 @@ describe('per-turn rows', () => {
 // The module end to end: a main-loop request feeds the band, a subagent's does not.
 type Calls = { status: (string | undefined)[]; logs: string[]; toasts?: string[] }
 
+// The engine resolves POSIX fixture paths to drive-qualified paths on Windows.
+const fixturePath = (path: string) => path.replace(/^[A-Za-z]:/, '').replace(/\\/g, '/')
+
 function fakeEngine(
   on: On,
-  env: Record<string, string>,
+  env: Record<string, string | Error>,
   calls: Calls,
   cache = { read: 80_000, write: 1_000 },
   limits: { kind: string; percentUsed: number }[] = [],
   files: Record<string, string> = {},
 ) {
   on('fs.read', ($, e) => {
-    const text = files[e.path]
+    const text = files[e.path] ?? files[fixturePath(e.path)]
     if (text === undefined) throw new Error(`ENOENT ${e.path}`)
     return { value: text }
   })
   on('session.compact', async ($, e) => ({ messages: [{ role: 'user', text: 'summary', toolUses: [], toolResults: [] }], tokensBefore: 240_000, tokensAfter: 30_000 }) as never)
   on('session.usage', () => ({ value: { startedAt: 0, context: {}, rateLimits: limits } }) as never)
   on('session.start', async ($, e) => ({ cwd: e.cwd }) as never)
+  on('session.cwd', () => ({ value: '/repo' }))
   on('session.end', async () => ({ sessionId: 's1' }) as never)
-  on('env.get', ($, e) => ({ value: env[e.name] }))
+  on('env.get', ($, e) => {
+    const value = env[e.name]
+    if (value instanceof Error) throw value
+    return { value }
+  })
   on('command.register', () => ({ value: undefined }) as never)
   on('clock.every', () => ({ value: undefined }) as never)
   on('ui.open', () => ({ value: undefined }) as never)
@@ -212,6 +220,88 @@ async function step($: Engine, over: { turnId?: string; index?: number; agentId?
 
 const BAND = { hasSurvey: false } as never
 const band = ($: Engine) => $.ui.mount({ plugin: 'prompt-cache-control', surface: 'terminal', component: 'AbovePrompt', props: BAND })
+
+describe('home-directory configuration', () => {
+  const globalConfig = (mode: string) => JSON.stringify({ cachedGrowthBookFeatures: { tengu_sunny_locket: { mode } } })
+
+  test('fixture paths accept Windows drive letters and separators', () => {
+    expect(fixturePath('C:\\home\\me\\.claude.json')).toBe('/home/me/.claude.json')
+    expect(fixturePath('D:/home/me/.claude/settings.json')).toBe('/home/me/.claude/settings.json')
+    expect(fixturePath('/home/me/.claude.json')).toBe('/home/me/.claude.json')
+  })
+
+  for (const kind of ['unset', 'empty', 'unreadable']) {
+    test(`USERPROFILE supplies user settings and global config when HOME is ${kind}`, async ($, on) => {
+      const calls: Calls = { status: [], logs: [] }
+      const env: Record<string, string | Error> = { USERPROFILE: '/home/me' }
+      if (kind === 'empty') env.HOME = ''
+      if (kind === 'unreadable') env.HOME = new Error('HOME unavailable')
+      fakeEngine(on, env, calls, { read: 230_000, write: 1_000 }, [], {
+        '/home/me/.claude/settings.json': JSON.stringify({ promptCacheTtl: '1h' }),
+        '/home/me/.claude.json': globalConfig('compact_on_return'),
+      })
+      await $.session.start({ cwd: '/repo', surface: 'terminal', isInteractive: true } as never)
+      expect(calls.logs.join('\n')).toContain('1h cache (the promptCacheTtl setting)')
+      expect(calls.logs.join('\n')).toContain('idle compaction on')
+      await step($)
+      const ui = await band($)
+      expect(await ui.find({ type: 'Text', text: /^⇣ 5[34]:\d\d$/ })).toBeDefined()
+      await ui.unmount()
+    })
+  }
+
+  for (const setting of ['idleCompaction', 'autoCompactEnabled']) {
+    test(`USERPROFILE user settings can disable ${setting}`, async ($, on) => {
+      const calls: Calls = { status: [], logs: [] }
+      fakeEngine(on, { USERPROFILE: '/home/me' }, calls, undefined, [], {
+        '/home/me/.claude/settings.json': JSON.stringify({ [setting]: false }),
+        '/home/me/.claude.json': globalConfig('compact'),
+      })
+      await $.session.start({ cwd: '/repo', surface: 'terminal', isInteractive: true } as never)
+      expect(calls.logs.join('\n')).toContain('idle compaction off')
+      expect(calls.logs.join('\n')).not.toContain('rollout flag not found')
+    })
+  }
+
+  test('HOME wins over USERPROFILE for settings and global config', async ($, on) => {
+    const calls: Calls = { status: [], logs: [] }
+    fakeEngine(on, { HOME: '/home/preferred', USERPROFILE: '/home/fallback' }, calls, undefined, [], {
+      '/home/preferred/.claude/settings.json': JSON.stringify({ promptCacheTtl: '5m' }),
+      '/home/preferred/.claude.json': globalConfig('off'),
+      '/home/fallback/.claude/settings.json': JSON.stringify({ promptCacheTtl: '1h' }),
+      '/home/fallback/.claude.json': globalConfig('compact'),
+    })
+    await $.session.start({ cwd: '/repo', surface: 'terminal', isInteractive: true } as never)
+    expect(calls.logs.join('\n')).toContain('5m cache (the promptCacheTtl setting)')
+    expect(calls.logs.join('\n')).toContain('not rolled out')
+  })
+
+  test('CLAUDE_CONFIG_DIR still overrides the global config location', async ($, on) => {
+    const calls: Calls = { status: [], logs: [] }
+    fakeEngine(on, { USERPROFILE: '/home/me', CLAUDE_CONFIG_DIR: '/custom' }, calls, undefined, [], {
+      '/home/me/.claude/settings.json': JSON.stringify({ promptCacheTtl: '1h' }),
+      '/home/me/.claude.json': globalConfig('compact'),
+      '/custom/.claude.json': globalConfig('off'),
+    })
+    await $.session.start({ cwd: '/repo', surface: 'terminal', isInteractive: true } as never)
+    expect(calls.logs.join('\n')).toContain('1h cache (the promptCacheTtl setting)')
+    expect(calls.logs.join('\n')).toContain('not rolled out')
+  })
+
+  for (const file of ['settings.json', 'settings.local.json']) {
+    test(`${file} keeps priority over USERPROFILE user settings`, async ($, on) => {
+      const calls: Calls = { status: [], logs: [] }
+      fakeEngine(on, { USERPROFILE: '/home/me' }, calls, undefined, [], {
+        '/home/me/.claude/settings.json': JSON.stringify({ promptCacheTtl: '1h', idleCompaction: true }),
+        '/home/me/.claude.json': globalConfig('compact'),
+        [`/repo/.claude/${file}`]: JSON.stringify({ promptCacheTtl: '5m', idleCompaction: false }),
+      })
+      await $.session.start({ cwd: '/repo', surface: 'terminal', isInteractive: true } as never)
+      expect(calls.logs.join('\n')).toContain('5m cache (the promptCacheTtl setting)')
+      expect(calls.logs.join('\n')).toContain('idleCompaction: false')
+    })
+  }
+})
 
 describe('the band', () => {
   test('shows nothing before the first request, then the hit rate and the countdown', { options: { status: true } }, async ($, on) => {
