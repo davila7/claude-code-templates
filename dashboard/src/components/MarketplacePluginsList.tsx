@@ -181,7 +181,7 @@ export default function MarketplacePluginsList({
                 </div>
 
                 {p.description && (
-                  <p className="text-[12px] text-[var(--color-text-secondary)] leading-[1.5] line-clamp-2 mb-2 flex-1">
+                  <p className="text-[12px] text-[var(--color-text-secondary)] leading-[1.5] line-clamp-2 mb-2">
                     {p.description}
                   </p>
                 )}
