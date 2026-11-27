@@ -277,7 +277,7 @@ jobs:
 
 ### Unit Tests
 ```bash
-npm test -- --testPathPattern=validation
+npm test -- --testPathPatterns=validation
 ```
 
 ### Integration Tests
