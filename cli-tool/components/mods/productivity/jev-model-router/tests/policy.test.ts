@@ -59,6 +59,10 @@ test('a distribution is optional in the response schema, so confidence may be ab
 test('malformed or unexpected payloads read as no decision rather than throwing', () => {
   expect(readDecision('not json')).toBeNull()
   expect(readDecision('{}')).toBeNull()
+  // Valid JSON that is not an object: `null` used to throw reading `.answers`.
+  expect(readDecision('null')).toBeNull()
+  expect(readDecision('42')).toBeNull()
+  expect(readDecision('"cheap"')).toBeNull()
   expect(readDecision(JSON.stringify({ answers: { tier: { type: 'choice', choice: 'cheap' } } }))).toBeNull()
 })
 
