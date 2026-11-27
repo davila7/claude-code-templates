@@ -1,0 +1,14 @@
+{
+  "repo": "el-frontend/software-engineering-skills",
+  "path": "skills/using-agent-skills",
+  "commit": "9bb7de600642760b993a0f74868b9eac011dd422",
+  "license": "MIT",
+  "author": "el-frontend",
+  "requires": [
+    "development/ai-driven-prd",
+    "development/init-claude-project",
+    "development/generate-dev-plan",
+    "development/declarative-design",
+    "development/execute-plan"
+  ]
+}
