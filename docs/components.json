@@ -27183,6 +27183,39 @@
       }
     },
     {
+      "name": "archlang",
+      "path": "devtools/archlang.json",
+      "category": "devtools",
+      "type": "mcp",
+      "description": "ArchLang remote MCP server (streamable HTTP, no account or API key). Floor plans as code: the AI writes a plain-text .arch file and the compiler draws a dimensioned plan (SVG, DXF, PDF) and reports what is wrong, with machine-applicable fixes. Tools include compile, describe, lint, validate, fix, finish, suggest, complete, explain and link. The plan source you send is compiled on the server; nothing on your machine is read. Open source, MIT. Docs: https://archlang.uk/mcp",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "categories": {},
+        "hash": "dd6cbba002fa3186",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-27T16:41:52Z"
+      }
+    },
+    {
       "name": "azure-kubernetes-service",
       "path": "devtools/azure-kubernetes-service.json",
       "category": "devtools",
@@ -29502,6 +29535,72 @@
         "hash": "1b5b4bf8de3a6824",
         "version": "2.12.0",
         "scannedAt": "2026-11-19T03:05:32Z"
+      }
+    },
+    {
+      "name": "kling-ai-china-plugin",
+      "path": "integration/kling-ai-china-plugin.json",
+      "category": "integration",
+      "type": "mcp",
+      "description": "Official Kling AI China Plugin remote MCP for image/video generation and task tracking. Uses OAuth and the connected China Kling account's credits. This configuration points to the hosted service; this repository does not contain its server implementation. China and Global accounts, credits and tasks are separate. Guide: https://klingai.com/app/mcp/guide",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "categories": {},
+        "hash": "cf38be2558cf2d84",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-27T16:41:52Z"
+      }
+    },
+    {
+      "name": "kling-ai-global-plugin",
+      "path": "integration/kling-ai-global-plugin.json",
+      "category": "integration",
+      "type": "mcp",
+      "description": "Official Kling AI Global Plugin remote MCP for image/video generation and task tracking. Uses OAuth and the connected Global Kling account's credits. This configuration points to the hosted service; this repository does not contain its server implementation. Global and China accounts, credits and tasks are separate. Guide: https://kling.ai/app/mcp/guide",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "categories": {},
+        "hash": "11bf424ea33e6ff7",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-27T16:41:52Z"
       }
     },
     {
