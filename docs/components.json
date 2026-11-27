@@ -28197,6 +28197,69 @@
       }
     },
     {
+      "name": "mailgate",
+      "path": "devtools/mailgate.json",
+      "category": "devtools",
+      "type": "mcp",
+      "description": "Self-hosted receive-only OTP and magic-link email inbox running on Cloudflare Email Routing, Workers, and D1. Lets Claude Code wait for incoming verification codes and sign-in links during Playwright or browser E2E authentication tests via mailgate_wait_for_otp, mailgate_wait_for_email, mailgate_list_messages, and optional admin tools. Runs locally over stdio via npx and requires a deployed MailGate Worker URL in MAILGATE_URL.",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 12,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 3,
+        "analysis": "complete",
+        "findings": [
+          {
+            "id": "RP1",
+            "category": "MCP Rug Pull",
+            "severity": "MEDIUM",
+            "title": "MCP server references in the skill manifest without version pinning are a rug-pull risk.",
+            "file": "SKILL.md",
+            "line": 1,
+            "count": 1
+          },
+          {
+            "id": "RP1",
+            "category": "MCP Rug Pull",
+            "severity": "MEDIUM",
+            "title": "npx commands without a version suffix (e.g. @1.0.0) create a rug-pull risk if the upstream server is compromised and publishes a malicious update.",
+            "file": "SKILL.md",
+            "line": 3,
+            "count": 1
+          },
+          {
+            "id": "RP1",
+            "category": "MCP Rug Pull",
+            "severity": "MEDIUM",
+            "title": "npx commands without a version suffix (e.g. @1.0.0) create a rug-pull risk if the upstream server is compromised and publishes a malicious update.",
+            "file": "mailgate.json",
+            "line": 4,
+            "count": 1
+          }
+        ],
+        "categories": {
+          "MCP Rug Pull": 3
+        },
+        "hash": "99acab21567c5212",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-27T16:26:27Z"
+      }
+    },
+    {
       "name": "markitdown",
       "path": "devtools/markitdown.json",
       "category": "devtools",
@@ -32022,6 +32085,39 @@
         "hash": "a54bdb30497795f4",
         "version": "2.12.0",
         "scannedAt": "2026-11-19T03:05:32Z"
+      }
+    },
+    {
+      "name": "claude-lean-slim",
+      "path": "environment/claude-lean-slim.json",
+      "category": "environment",
+      "type": "setting",
+      "description": "Turn off Claude Code's background requests you never see: next-prompt suggestions, session titles, away recaps, agent progress summaries and idle check-ins. Each one re-sends the conversation. Measured with a logging proxy: a 3-prompt chat went from 7 requests (~85K tokens) to 4 (~40K), same answers. Nothing changes what Claude is told or how it works. From claude-lean (https://github.com/JacobTheJacobs/claude-lean).",
+      "author": "",
+      "repo": "",
+      "version": "",
+      "license": "",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "skillspector": {
+        "score": 0,
+        "severity": "LOW",
+        "recommendation": "SAFE",
+        "issueCount": 0,
+        "analysis": "complete",
+        "findings": [],
+        "categories": {},
+        "hash": "e35891a5df8221de",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-27T16:26:27Z"
       }
     },
     {
@@ -56346,6 +56442,132 @@
         "version": "1.0.1",
         "checkedAt": "2026-11-18T20:31:10Z",
         "hash": "069d959afea25d75"
+      }
+    },
+    {
+      "name": "nimply",
+      "path": "business-marketing/nimply",
+      "category": "business-marketing",
+      "type": "skill",
+      "description": "Nimply (nimply.io) product and platform expert. Nimply is the AI social media workforce — AI agents for replies, leads, moderation, content, design and video, on top of a Planner, unified Inbox, automations, Nimply Design, Nimply Pages, a public API, an MCP server, webhooks and integrations. Use this skill whenever the user mentions Nimply; asks what it can do, what it costs, or which plan, agents or automations fit; wants a social media setup or customized solution designed for a specific business (restaurant, shop, salon, coach, creator, agency, SaaS and so on); is building on the Nimply API, MCP server, webhooks, Zapier, Make or n8n; is comparing Nimply with Buffer, Hootsuite, Later, ManyChat, Canva or Linktree; or is about to operate a connected Nimply workspace through its MCP tools. Also use it when someone wants AI agents to handle social media replies, leads, content or comment-to-DM and Nimply is a candidate.",
+      "author": "Nimply",
+      "repo": "https://github.com/nimply/skills",
+      "version": "1.0.1",
+      "license": "MIT",
+      "keywords": [],
+      "downloads": 0,
+      "security": {
+        "validated": false,
+        "valid": null,
+        "score": null,
+        "errorCount": 0,
+        "warningCount": 0,
+        "lastValidated": null
+      },
+      "references": [
+        "LICENSE",
+        "references/agents.md",
+        "references/automations.md",
+        "references/developer-platform.md",
+        "references/integrations.md",
+        "references/pricing-and-credits.md",
+        "references/product-map.md",
+        "references/solution-playbooks.md",
+        "references/staying-current.md"
+      ],
+      "source": {
+        "repo": "nimply/skills",
+        "path": "skills/nimply",
+        "commit": "fbafad96e2dd278d73f0a992e2c0605cf3c811a8",
+        "license": "MIT",
+        "url": "https://github.com/nimply/skills/tree/fbafad96e2dd278d73f0a992e2c0605cf3c811a8/skills/nimply",
+        "requires": []
+      },
+      "skillspector": {
+        "score": 23,
+        "severity": "MEDIUM",
+        "recommendation": "CAUTION",
+        "issueCount": 4,
+        "analysis": "partial",
+        "findings": [
+          {
+            "id": "EA2",
+            "category": "Excessive Agency",
+            "severity": "MEDIUM",
+            "title": "Autonomous Decision Making",
+            "file": "SKILL.md",
+            "line": 70,
+            "count": 2
+          },
+          {
+            "id": "EA2",
+            "category": "Excessive Agency",
+            "severity": "MEDIUM",
+            "title": "Autonomous Decision Making",
+            "file": "references/automations.md",
+            "line": 170,
+            "count": 1
+          },
+          {
+            "id": "RP1",
+            "category": "MCP Rug Pull",
+            "severity": "MEDIUM",
+            "title": "npx commands without a version suffix (e.g. @1.0.0) create a rug-pull risk if the upstream server is compromised and publishes a malicious update.",
+            "file": "references/staying-current.md",
+            "line": 56,
+            "count": 1
+          }
+        ],
+        "categories": {
+          "Excessive Agency": 3,
+          "MCP Rug Pull": 1
+        },
+        "hash": "274e38ecfbe665dd",
+        "version": "2.12.0",
+        "scannedAt": "2026-11-27T16:26:27Z"
+      },
+      "harness": {
+        "agents": [
+          {
+            "id": "claude-code",
+            "status": "loads",
+            "verified": "2.1.316",
+            "notes": []
+          },
+          {
+            "id": "codex",
+            "status": "loads",
+            "verified": "0.166.0",
+            "notes": []
+          },
+          {
+            "id": "copilot-cli",
+            "status": "loads",
+            "verified": "1.0.105",
+            "notes": []
+          },
+          {
+            "id": "opencode",
+            "status": "loads",
+            "verified": "1.19.5",
+            "notes": []
+          },
+          {
+            "id": "hermes",
+            "status": "loads",
+            "verified": "main",
+            "notes": []
+          },
+          {
+            "id": "openclaw",
+            "status": "loads",
+            "verified": "2026.10.9",
+            "notes": []
+          }
+        ],
+        "version": "1.0.1",
+        "checkedAt": "2026-11-27T16:26:36Z",
+        "hash": "274e38ecfbe665dd"
       }
     },
     {
