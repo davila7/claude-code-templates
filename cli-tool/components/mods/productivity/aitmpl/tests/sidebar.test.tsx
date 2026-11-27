@@ -84,6 +84,8 @@ const AGENTS = JSON.stringify([
   { name: 'sql-guru', path: 'data/sql-guru.md', category: 'data', description: 'SQL help', downloads: 40 },
 ])
 const SKILLS = JSON.stringify([{ name: 'docs-writer', path: 'writing/docs-writer', category: 'writing', description: 'Docs', downloads: 900 }])
+// the fake host's home directory; a checkout under /home/user or /home/ubuntu must not count as inside it
+const FAKE_HOME = '/home/u'
 
 function fakeHost(on: On, calls: { opened: unknown[]; urls: string[]; ran: string[][] }) {
   on('ui.open', (_$, e) => {
@@ -95,7 +97,7 @@ function fakeHost(on: On, calls: { opened: unknown[]; urls: string[]; ran: strin
   on('ui.invalidate', () => ({ value: undefined }))
   on('ui.log', () => ({ value: undefined }))
   on('ui.toast', () => ({ value: undefined }))
-  on('env.get', (_$, e) => ({ value: e.name === 'HOME' ? '/home/u' : undefined }))
+  on('env.get', (_$, e) => ({ value: e.name === 'HOME' ? FAKE_HOME : undefined }))
   on('fs.list', (_$, e) => {
     const dirs: Record<string, { name: string; kind: 'file' | 'dir'; size: number; mtimeMs: number; isLink: boolean }[]> = {
       '.claude/agents': [{ name: 'react-expert.md', kind: 'file', size: 1, mtimeMs: 0, isLink: false }],
@@ -106,7 +108,8 @@ function fakeHost(on: On, calls: { opened: unknown[]; urls: string[]; ran: strin
     }
     // the engine resolves a relative path against the working directory
     const key = Object.keys(dirs).find(k => e.path.endsWith(`/${k}`))
-    return { value: (key && !e.path.startsWith('/home/u') ? dirs[key] : undefined) ?? [] }
+    const underHome = e.path === FAKE_HOME || e.path.startsWith(`${FAKE_HOME}/`)
+    return { value: (key && !underHome ? dirs[key] : undefined) ?? [] }
   })
   on('fs.exists', (_$, e) => ({ value: e.path.endsWith('/.claude/skills/my-mod/.claude-plugin/plugin.json') }))
   on('http.fetch', (_$, e) => {
