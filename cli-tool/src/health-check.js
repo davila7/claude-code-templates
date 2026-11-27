@@ -6,6 +6,9 @@ const { execSync } = require('child_process');
 const ora = require('ora');
 const boxen = require('boxen');
 
+// A program name that can be looked up on PATH without a shell.
+const PLAIN_COMMAND_NAME = /^[A-Za-z0-9._+-]+$/;
+
 /**
  * Health Check module for Claude Code CLI
  * Validates system requirements, configuration, and project setup
@@ -933,7 +936,7 @@ class HealthChecker {
     if (fs.existsSync(settingsPath)) {
       try {
         const settings = JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
-        const hooks = settings.hooks || [];
+        const hooks = this.listHookHandlers(settings);
         return {
           status: 'pass',
           message: `${hooks.length} hooks configured in ~/.claude/settings.json`
@@ -959,7 +962,7 @@ class HealthChecker {
     if (fs.existsSync(settingsPath)) {
       try {
         const settings = JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
-        const hooks = settings.hooks || [];
+        const hooks = this.listHookHandlers(settings);
         return {
           status: 'pass',
           message: `${hooks.length} hooks configured in .claude/settings.json`
@@ -985,7 +988,7 @@ class HealthChecker {
     if (fs.existsSync(settingsPath)) {
       try {
         const settings = JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
-        const hooks = settings.hooks || [];
+        const hooks = this.listHookHandlers(settings);
         return {
           status: 'pass',
           message: `${hooks.length} hooks configured in .claude/settings.local.json`
@@ -1020,9 +1023,13 @@ class HealthChecker {
       if (fs.existsSync(settingsFile)) {
         try {
           const settings = JSON.parse(fs.readFileSync(settingsFile, 'utf8'));
-          const hooks = settings.hooks || [];
           
-          for (const hook of hooks) {
+          for (const hook of this.listHookHandlers(settings)) {
+            // Only command hooks run a program. Other types, such as prompt and
+            // agent hooks, have nothing to look up.
+            if (hook.type && hook.type !== 'command') {
+              continue;
+            }
             totalHooks++;
             
             // Validate hook structure
@@ -1034,11 +1041,12 @@ class HealthChecker {
             
             // Check if command is executable
             try {
-              // Extract command from potential shell command
-              const command = hook.command.split(' ')[0];
+              // The program is the first word. A path, a variable or other shell
+              // syntax there cannot be looked up on PATH, so only a plain name
+              // that is neither a builtin nor on PATH is reported.
+              const command = hook.command.trim().split(/\s+/)[0];
               
-              // Check if it's a shell builtin or if the command exists
-              if (this.isShellBuiltin(command) || this.commandExists(command)) {
+              if (!PLAIN_COMMAND_NAME.test(command) || this.isShellBuiltin(command) || this.commandExists(command)) {
                 validHooks++;
               } else {
                 invalidHooks++;
@@ -1080,6 +1088,27 @@ class HealthChecker {
     }
   }
   
+  /**
+   * The hook handlers in a settings object. Claude Code keys `hooks` by event,
+   * and each event holds matcher groups with their own `hooks` list:
+   * { "PostToolUse": [{ "matcher": "Edit", "hooks": [{ "type": "command", "command": "..." }] }] }
+   */
+  listHookHandlers(settings) {
+    const handlers = [];
+    const events = settings && settings.hooks;
+    if (!events || typeof events !== 'object') {
+      return handlers;
+    }
+    for (const groups of Object.values(events)) {
+      for (const group of Array.isArray(groups) ? groups : []) {
+        if (group && Array.isArray(group.hooks)) {
+          handlers.push(...group.hooks.filter((hook) => hook && typeof hook === 'object'));
+        }
+      }
+    }
+    return handlers;
+  }
+  
   isShellBuiltin(command) {
     const shellBuiltins = [
       'echo', 'cd', 'pwd', 'exit', 'export', 'unset', 'alias', 'unalias',
@@ -1093,7 +1122,7 @@ class HealthChecker {
     try {
       // Resolve the name against PATH without a shell: `command` comes from
       // the project's .claude/settings.json and must never be parsed by sh.
-      if (typeof command !== 'string' || !/^[A-Za-z0-9._+-]+$/.test(command)) {
+      if (typeof command !== 'string' || !PLAIN_COMMAND_NAME.test(command)) {
         return false;
       }
       const dirs = (process.env.PATH || '').split(path.delimiter).filter(Boolean);
