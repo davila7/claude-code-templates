@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "close-knit": {
+      "description": "Close Knit - Neighbourhoods and homes in London and England from official open data: sale prices (HM Land Registry), rents (ONS), crime (police.uk), schools (Ofsted/DfE), flood risk, noise and TfL commute times. Every answer carries its sources. 24 read-only tools plus send_feedback. Free, no sign-in, no API key required.",
+      "type": "http",
+      "url": "https://getcloseknit.com/mcp"
+    }
+  }
+}
