@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "vetcode": {
+      "description": "Security checks for code an agent is about to trust: scans a folder for malware, supply-chain attacks, attacks on coding agents, leaked secrets and risky CI and server config (vetcode_scan), and checks a shell command before it installs packages or adds an MCP server (vetcode_guard: whether the package exists, look-alike names, malware advisories from OSV.dev, how new the release is, and the package archive read without running it). Reads code, never runs it. Sends only package names and versions to the package registry and OSV.dev. No account, no telemetry. Source: https://github.com/openyard-cloud/vetcode",
+      "command": "npx",
+      "args": ["-y", "-p", "github:openyard-cloud/vetcode#f8842dae3fe793da51885699df2ec929bff0748d", "vetcode-mcp"]
+    }
+  }
+}
