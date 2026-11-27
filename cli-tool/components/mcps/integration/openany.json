@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "openany": {
+      "description": "OpenAny is the B2A (business to agent) marketplace. Add one MCP endpoint, https://mcp.openany.si, and your agent can find and use 3,200+ APIs (social, SEO/search, crypto, company and leads, finance, legal) and 168+ AI models (GPT, Claude, Gemini, DeepSeek, Qwen, Midjourney, Veo, Kling). Searching and checking prices is free with no key; only run_api needs an OpenAny API key, and you pay per call.",
+      "type": "http",
+      "url": "https://mcp.openany.si"
+    }
+  }
+}
