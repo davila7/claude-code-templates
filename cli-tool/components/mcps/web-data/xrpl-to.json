@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "xrpl-to": {
+      "description": "Live XRP Ledger data from XRPL.to: token prices and OHLC candles, holders, DEX and AMM trades, NFTs and collections, accounts and scam checks. 89 read-only tools; it cannot sign or send transactions. Listing the tools needs no key; tool calls need an XRPL.to API key with a credit pack (from $5) or a paid plan, from https://xrpl.to/dashboard.",
+      "type": "http",
+      "url": "https://api.xrpl.to/v1/mcp",
+      "headers": {
+        "X-Api-Key": "<YOUR_XRPL_TO_API_KEY>"
+      }
+    }
+  }
+}
