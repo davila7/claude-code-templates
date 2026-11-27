@@ -68,8 +68,16 @@ class SessionAnalyzer {
     
     const limits = this.PLAN_LIMITS[userPlan.planType] || this.PLAN_LIMITS['standard'];
     
+    // The dashboard's Sessions cards read these two (analytics-ui/src/lib/api.ts)
+    const totalSessions = sessions.length;
+    const avgSessionLength = totalSessions > 0
+      ? Math.round(sessions.reduce((sum, session) => sum + session.duration, 0) / totalSessions)
+      : null;
+
     return {
       sessions,
+      totalSessions,
+      avgSessionLength,
       currentSession,
       monthlyUsage,
       userPlan,
