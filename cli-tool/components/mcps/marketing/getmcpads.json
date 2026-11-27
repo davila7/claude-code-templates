@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "getmcpads": {
+      "description": "Get MCP Ads (getmcpads.com) hosted MCP server: read and manage your own ad and analytics accounts from Claude, across 16 sources including Meta Ads, Google Ads, TikTok Ads, Microsoft Advertising, GA4 and Search Console. Sign in in the browser on first use (OAuth), then pick the accounts it may reach; there is no key to paste. Every write returns a preview and applies only when confirmed, and new campaigns are created paused. Free plan: one account, read only; writes need a paid plan.",
+      "type": "http",
+      "url": "https://mcp.getmcpads.com/mcp"
+    }
+  }
+}
