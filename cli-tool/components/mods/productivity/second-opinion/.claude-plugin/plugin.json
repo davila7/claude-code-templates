@@ -1,0 +1,44 @@
+{
+  "name": "second-opinion",
+  "version": "0.7.2",
+  "description": "QA check Claude's work with OpenAI, Gemini or xAI models: /second-opinion, /reviewer to pick models and effort, and an ask_model tool Claude can call.",
+  "author": {
+    "name": "revilo-digital",
+    "url": "https://github.com/revilo-digital"
+  },
+  "homepage": "https://github.com/revilo-digital/second-opinion",
+  "repository": "https://github.com/revilo-digital/second-opinion",
+  "license": "MIT",
+  "keywords": [
+    "review",
+    "qa",
+    "openai",
+    "gemini",
+    "grok",
+    "second-opinion"
+  ],
+  "userConfig": {
+    "openaiApiKey": {
+      "type": "string",
+      "title": "OpenAI API key",
+      "description": "Used when OPENAI_API_KEY is not set in the environment.",
+      "sensitive": true,
+      "required": false
+    },
+    "geminiApiKey": {
+      "type": "string",
+      "title": "Gemini API key",
+      "description": "Used when GEMINI_API_KEY / GOOGLE_API_KEY is not set in the environment.",
+      "sensitive": true,
+      "required": false
+    },
+    "xaiApiKey": {
+      "type": "string",
+      "title": "xAI API key",
+      "description": "Used when XAI_API_KEY is not set in the environment.",
+      "sensitive": true,
+      "required": false
+    }
+  },
+  "types": "./types/index.d.ts"
+}
