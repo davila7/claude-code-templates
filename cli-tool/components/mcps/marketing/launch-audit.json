@@ -1,9 +1,9 @@
 {
   "mcpServers": {
     "launch-audit": {
-      "description": "Official OmniForge Launch Audit hosted MCP server (brand-checker.appwrite.network/mcp, Streamable HTTP, free, no API key or sign-in required). Exposes 4 read-only pre-launch audit tools: check_brand_availability (live RDAP across .com/.io/.ai/.dev, developer handles and USPTO trademarks), audit_email_deliverability (MX, recursive SPF 10-lookup check, DKIM, DMARC, MTA-STS, BIMI and DNSBL), audit_ai_search_visibility (robots.txt AI crawler rules, /llms.txt and Schema.org JSON-LD), and full_launch_readiness_audit. Listed in the Official MCP Registry as io.github.zColdWater/mcp-launch-audit. Open-source MIT stdio package also available at https://github.com/zColdWater/mcp-launch-audit",
+      "description": "ShipBastion / OmniForge Launch Audit hosted MCP server on dedicated vendor domain (https://api.shipbastion.com/mcp, Streamable HTTP, no API key or sign-in required for read-only audits). Exposes 5 read-only pre-launch audit tools: audit_website_security (109-check TLS, CSP & leaked client-secret sweep), check_brand_availability (live RDAP across 78 TLDs, developer handles & USPTO trademarks), audit_email_deliverability (MX, recursive SPF 10-lookup check, DKIM, DMARC, MTA-STS, BIMI & DNSBL), audit_ai_search_visibility (robots.txt AI crawler rules, /llms.txt & Schema.org JSON-LD), and full_launch_readiness_audit. Listed in the Official MCP Registry as io.github.zColdWater/mcp-launch-audit; open-source MIT stdio package at https://github.com/zColdWater/mcp-launch-audit.",
       "type": "http",
-      "url": "https://brand-checker.appwrite.network/mcp"
+      "url": "https://api.shipbastion.com/mcp"
     }
   }
 }
