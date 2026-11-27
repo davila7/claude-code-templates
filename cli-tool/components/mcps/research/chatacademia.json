@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "chatacademia": {
+      "description": "Academic research tools from ChatAcademia: search papers and grants across scholarly databases, verify citations, find research gaps, extract study data and get mock peer review. Sign in with your ChatAcademia account (7-day free trial): after installing, run /mcp in Claude Code. Docs: https://www.chatacademia.com/claude",
+      "type": "http",
+      "url": "https://api.chatacademia.com/mcp/claudecode"
+    }
+  }
+}
