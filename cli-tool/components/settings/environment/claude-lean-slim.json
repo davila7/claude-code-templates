@@ -1,11 +1,10 @@
 {
-  "description": "Turn off Claude Code features most sessions never use (Artifacts, Workflows, git instructions, background tasks, cron, advisor tool). Their definitions are sent with every request; measured on Claude Code 2.1.239, a clean install's first request drops from 17.2K to 10.5K tokens (-39%), and short tasks cost 32% less with the same pass rate. MCP servers, skills, web tools and subagents stay. From claude-lean (https://github.com/JacobTheJacobs/claude-lean), which also has a long-session guard and an output filter.",
+  "description": "Turn off Claude Code's background requests you never see: next-prompt suggestions, session titles, away recaps, agent progress summaries and idle check-ins. Each one re-sends the conversation. Measured with a logging proxy: a 3-prompt chat went from 7 requests (~85K tokens) to 4 (~40K), same answers. Nothing changes what Claude is told or how it works. From claude-lean (https://github.com/JacobTheJacobs/claude-lean).",
   "env": {
-    "CLAUDE_CODE_DISABLE_ARTIFACT": "1",
-    "CLAUDE_CODE_DISABLE_WORKFLOWS": "1",
-    "CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS": "1",
-    "CLAUDE_CODE_DISABLE_BACKGROUND_TASKS": "1",
-    "CLAUDE_CODE_DISABLE_CRON": "1",
-    "CLAUDE_CODE_DISABLE_ADVISOR_TOOL": "1"
+    "CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION": "false",
+    "CLAUDE_CODE_ENABLE_AWAY_SUMMARY": "0",
+    "CLAUDE_CODE_DISABLE_TERMINAL_TITLE": "1",
+    "CLAUDE_CODE_DISABLE_AGENT_PROGRESS_SUMMARIES": "1",
+    "CLAUDE_CODE_GOAL_CHECKIN_MINUTES": "0"
   }
 }
