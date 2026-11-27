@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "docstar": {
+      "description": "Official DocStar MCP server (mcp.docstar.io): turns your product's API into published docs that your users' AI assistants can read and call. Your assistant can document each endpoint from your code, publish the docs and give you one link to share; your users' assistants then look up any endpoint and call your API with the exact URLs, fields and auth from your docs. Reading docs needs no account; changes (creating, updating and publishing pages and endpoints, creating collections) need DocStar sign-in: after installing, run /mcp in Claude Code to sign in.",
+      "type": "http",
+      "url": "https://mcp.docstar.io/mcp"
+    }
+  }
+}
