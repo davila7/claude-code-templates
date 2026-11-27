@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "tote": {
+      "description": "Tote - hosted Streamable HTTP MCP server for shopping. Remembers your sizes and taste so your AI finds products and deals that fit you, checks 90 days of price history to tell you if a sale is real, and saves items to lists or sets Deal Watch price alerts. Free, OAuth sign-in in the browser, no API key. Never buys or pays; you always check out yourself. Website: https://tote.machinecommerce.co. Built by machinecommerce.co (https://machinecommerce.co)",
+      "type": "http",
+      "url": "https://tote.machinecommerce.co/mcp"
+    }
+  }
+}
