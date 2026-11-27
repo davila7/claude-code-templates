@@ -5,6 +5,7 @@ import TypeIcon from './TypeIcon';
 import SendToRepoModal from './SendToRepoModal';
 import type { Collection, CollectionItem } from '../lib/types';
 import { componentPath } from '../lib/component-url';
+import { collectionInstallCommand, collectionItemType } from '../lib/collection-command';
 import { openSignIn } from '../lib/sign-in';
 
 // ── Auth hook ────────────────────────────────────────────────────────────
@@ -35,11 +36,6 @@ function useGlobalAuth() {
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────
-const TYPE_FLAGS: Record<string, string> = {
-  agents: '--agent', commands: '--command', settings: '--setting',
-  hooks: '--hook', mcps: '--mcp', skills: '--skill', templates: '--template',
-};
-
 function cleanPath(path: string): string {
   return path?.replace(/\.(md|json)$/, '') ?? '';
 }
@@ -55,12 +51,12 @@ function pluralType(type: string): string {
 }
 
 // Type order for grouping
-const TYPE_ORDER = ['skills', 'agents', 'commands', 'settings', 'hooks', 'mcps'] as const;
+const TYPE_ORDER = ['skills', 'agents', 'commands', 'settings', 'hooks', 'mcps', 'mods', 'loops', 'plugins'] as const;
 
 function groupByType(items: CollectionItem[]): { type: string; label: string; color: string; items: CollectionItem[] }[] {
   const map: Record<string, CollectionItem[]> = {};
   for (const item of items) {
-    const t = pluralType(item.component_type);
+    const t = collectionItemType(item.component_type);
     if (!map[t]) map[t] = [];
     map[t].push(item);
   }
@@ -349,21 +345,6 @@ function ProjectTreeNode({
       )}
     </div>
   );
-}
-
-function generateCommand(items: CollectionItem[]): string {
-  const grouped: Record<string, string[]> = {};
-  for (const item of items) {
-    const t = pluralType(item.component_type);
-    if (!grouped[t]) grouped[t] = [];
-    grouped[t].push(cleanPath(item.component_path));
-  }
-  let cmd = 'npx claude-code-templates@latest';
-  for (const [type, paths] of Object.entries(grouped)) {
-    const flag = TYPE_FLAGS[type];
-    if (flag) cmd += ` ${flag} ${paths.join(',')}`;
-  }
-  return cmd;
 }
 
 // ── Main content tree (ASCII-style) ──────────────────────────────────────
@@ -878,7 +859,7 @@ export default function MyComponentsView() {
                   </button>
                 )}
                 <button
-                  onClick={() => copyCommand(generateCommand(selectedItems))}
+                  onClick={() => copyCommand(collectionInstallCommand(selectedItems))}
                   className="flex items-center gap-2 px-4 py-2 bg-white text-black rounded-lg text-[13px] font-medium hover:bg-gray-100 transition-colors"
                 >
                   {copied ? (
@@ -900,7 +881,7 @@ export default function MyComponentsView() {
             <div className="bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg p-3 mb-6">
               <code className="text-[12px] text-[var(--color-text-secondary)] font-mono break-all leading-relaxed">
                 <span className="text-[var(--color-text-tertiary)] select-none">$ </span>
-                {generateCommand(selectedItems)}
+                {collectionInstallCommand(selectedItems)}
               </code>
             </div>
 
