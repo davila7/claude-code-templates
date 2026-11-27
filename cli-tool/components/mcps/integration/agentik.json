@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "agentik": {
+      "description": "Agentik remote MCP server (streamable HTTP, OAuth sign-in at agentik.cc). One connection to discover, inspect and run tools from 165 providers (web search, scraping, SEO data, ad platforms, image and video models). Each provider tool is paid per call at the provider's price from one prepaid workspace balance; discovering and inspecting tools is free. No provider accounts or API keys to manage. Guide: https://www.agentik.cc/connect.md",
+      "type": "http",
+      "url": "https://ai.agentik.cc/mcp"
+    }
+  }
+}
