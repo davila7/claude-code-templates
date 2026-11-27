@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "publora": {
+      "description": "Hosted MCP server for drafting, scheduling and publishing social media posts to LinkedIn, X, Instagram, Threads, TikTok, YouTube, Facebook Pages, Bluesky, Mastodon and Telegram, plus post and profile analytics. Sign in with your Publora account through the MCP client's OAuth flow. Free Starter plan available. Docs: https://docs.publora.com/mcp/client-setup",
+      "type": "http",
+      "url": "https://mcp.publora.com/mcp"
+    }
+  }
+}
