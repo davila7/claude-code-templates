@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "kite": {
+      "description": "Kite MCP server: lets Claude Code draw and edit real, editable design layers (frames, text, components, auto layout) in a Kite (kite.new) file your team edits live, then copy any frame as HTML, React or Tailwind. Remote server hosted by kite.new. Requires a Kite account (free plan: 3 files, 100 agent actions a day). Uses OAuth authentication; nothing runs locally.",
+      "type": "http",
+      "url": "https://kite.new/api/mcp"
+    }
+  }
+}
