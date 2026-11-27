@@ -5,10 +5,10 @@
   "license": "MIT",
   "author": "el-frontend",
   "requires": [
-    "development/ai-driven-prd",
-    "development/init-claude-project",
-    "development/generate-dev-plan",
-    "development/declarative-design",
-    "development/execute-plan"
+    "soft-eng-skills/ai-driven-prd",
+    "soft-eng-skills/init-claude-project",
+    "soft-eng-skills/generate-dev-plan",
+    "soft-eng-skills/declarative-design",
+    "soft-eng-skills/execute-plan"
   ]
 }
