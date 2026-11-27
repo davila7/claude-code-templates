@@ -27,7 +27,7 @@ jobs:
       run:
         working-directory: cli-rust
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -94,7 +94,7 @@ jobs:
 
       - name: Post sticky PR comment
         if: always()
-        uses: marocchino/sticky-pull-request-comment@v2
+        uses: marocchino/sticky-pull-request-comment@v3
         with:
           header: rust-ci
           path: rust-ci-comment.md
