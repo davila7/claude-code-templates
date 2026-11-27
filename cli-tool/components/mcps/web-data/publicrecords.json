@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "publicrecords": {
+      "description": "Public Records hosted MCP tools on Apify: detect a website's tech stack, validate and format phone numbers to E.164 with country and line type (not a live carrier lookup), search Wikipedia or fetch ECB FX and U.S. Treasury yields, look up Crossref papers and DOIs, and run bulk DNS / SPF / DMARC checks. Connect with your own Apify account (OAuth, or set APIFY_TOKEN). Catalog: https://github.com/GeminiGeorge22/publicrecords-mcp — Store: https://apify.com/publicrecords",
+      "type": "http",
+      "url": "https://mcp.apify.com?tools=publicrecords/tech-stack-detector,publicrecords/phone-number-validator,publicrecords/wikipedia-search,publicrecords/crossref-papers-doi-lookup,publicrecords/dns-lookup",
+      "headers": {
+        "Authorization": "Bearer ${APIFY_TOKEN}"
+      }
+    }
+  }
+}
