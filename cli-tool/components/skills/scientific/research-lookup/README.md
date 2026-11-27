@@ -1,8 +1,10 @@
 # Research Lookup Skill
 
-This skill provides real-time research information lookup using Perplexity's Sonar Pro Search model through OpenRouter.
+This skill provides real-time research information lookup using Perplexity's Sonar Pro model through OpenRouter.
 
 ## Setup
+
+Run the commands below from the research-lookup skill directory.
 
 1. **Get OpenRouter API Key:**
    - Visit [openrouter.ai](https://openrouter.ai)

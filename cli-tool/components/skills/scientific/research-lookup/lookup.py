@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Research Lookup Tool for Claude Code
-Performs research queries using Perplexity Sonar Pro Search via OpenRouter.
+Performs research queries using Perplexity Sonar Pro via OpenRouter.
 """
 
 import os
@@ -9,9 +9,7 @@ import sys
 import json
 from typing import Dict, List, Optional
 
-# Import the main research lookup class
-sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'scripts'))
-from research_lookup import ResearchLookup
+from scripts.research_lookup import ResearchLookup
 
 
 def format_response(result: Dict) -> str:
