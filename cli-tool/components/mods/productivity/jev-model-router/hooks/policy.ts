@@ -425,27 +425,36 @@ export function bareCommand(text: string): boolean {
  * not routing it, and not routing is what every other failure path here does.
  */
 export function pendingDecisions(): {
-  put(decision: Decision | null): void
+  put(decision: Decision | null): HeldDecision
+  withdraw(held: HeldDecision): void
   take(): Decision | null
 } {
-  let held: Decision | null = null
-  let waiting = 0
+  let waiting: HeldDecision[] = []
 
   return {
     put(decision) {
-      waiting += 1
-      // Past the first, which prompt a turn will read is unknowable, so the
-      // slot is emptied instead of holding a decision that may not fit.
-      held = waiting === 1 ? decision : null
+      const held = { decision }
+      waiting.push(held)
+      return held
+    },
+    // A prompt a settings hook blocked before it entered: no turn will read
+    // its decision. Removed by identity, not position, so a decision put
+    // after it stays.
+    withdraw(held) {
+      waiting = waiting.filter((other) => other !== held)
     },
     take() {
-      const decision = waiting === 1 ? held : null
-      held = null
-      waiting = 0
+      // Past the first, which prompt a turn will read is unknowable, so none
+      // is handed out rather than one that may not fit.
+      const decision = waiting.length === 1 ? waiting[0]!.decision : null
+      waiting = []
       return decision
     },
   }
 }
+
+/** One prompt's decision while it waits for its turn; `withdraw` takes it back. */
+export type HeldDecision = { readonly decision: Decision | null }
 
 /** A number for the log, or `n/d` when the backend reported none. */
 function reported(value: number | null): string {
