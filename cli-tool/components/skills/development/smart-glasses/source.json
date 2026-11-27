@@ -1,0 +1,12 @@
+{
+  "repo": "hinty-eu/smart-glasses-skills",
+  "path": "skills/smart-glasses",
+  "commit": "f7d2ec85b511dcaa607aa841aee400172a15377f",
+  "license": "Apache-2.0",
+  "author": "Hinty",
+  "requires": [
+    "development/smart-glasses-live-captions",
+    "development/smart-glasses-rokid",
+    "development/smart-glasses-vuzix"
+  ]
+}
