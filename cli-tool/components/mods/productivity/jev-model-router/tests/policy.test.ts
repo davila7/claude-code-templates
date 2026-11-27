@@ -18,6 +18,8 @@ import {
   bareCommand,
 } from '../hooks/policy.ts'
 import type { Decision, PolicyConfig } from '../hooks/policy.ts'
+import { register } from '../hooks/jev-model-router.ts'
+import type { On, PluginOptions } from 'claude-code'
 
 const config: PolicyConfig = {
   tiers: { fast: 'haiku', balanced: 'sonnet', deep: 'opus' },
@@ -400,4 +402,21 @@ test('a slash command alone is not a task; with text after it, it is', () => {
   for (const text of ['/simplify', ' /run ', '/code-review\n']) expect(bareCommand(text)).toBe(true)
   for (const text of ['/code-review high', '/simplify the retry loop', '/tmp/log.txt', '/', 'fix /api', 'rename foo'])
     expect(bareCommand(text)).toBe(false)
+})
+
+// Claude Code turns its experimental Code Mode off while any mod hooks
+// `agent.spawn` (#1579), so the hook is registered only when it routes.
+const registeredEvents = (options: PluginOptions): string[] => {
+  const events: string[] = []
+  const on = ((event: string) => {
+    events.push(event)
+  }) as unknown as On
+  register(on, options)
+  return events
+}
+
+test('agent.spawn is hooked only while routeSubagentModel is on', () => {
+  expect(registeredEvents({})).toEqual(['prompt.submit', 'turn.step', 'agent.spawn'])
+  expect(registeredEvents({ routeSubagentModel: true })).toContain('agent.spawn')
+  expect(registeredEvents({ routeSubagentModel: false })).toEqual(['prompt.submit', 'turn.step'])
 })

@@ -19,6 +19,8 @@ Three switches, and they are not equally safe:
 | `routeMainEffort` | the reasoning effort of the main conversation, at `turn.step` | on |
 | `routeMainModel` | the model of the main conversation, at `turn.step` | **off** |
 
+`agent.spawn` is hooked only while `routeSubagentModel` is on. Claude Code's experimental Code Mode (`CLAUDE_CODE_EXPERIMENTAL_CODE_MODE=1`) is unavailable while a mod hooks `agent.spawn`, so to keep Code Mode set `routeSubagentModel` to `false`; the main-loop switches do not affect it.
+
 A subagent starts with its own context, so routing its model costs nothing beyond the classification. Changing the main loop's *model* mid-session is the expensive one: it invalidates the prompt cache, and on a long context re-caching can cost more than the cheaper tier saves. Turn it on once you have measured your own sessions, not before.
 
 The Agent tool has no effort parameter, so a subagent's effort is not this mod's to set. Forks (which inherit the parent's model) and resumed agents (which keep the model they started on) are left alone; a workflow script's `agent()` is routed like any other subagent (Claude Code 2.1.300+ applies its model rewrite).
