@@ -101,6 +101,7 @@ import {
   modelInvocable,
   readWide,
   rerankQuestions,
+  recentContext,
   requestBody,
   requestHeaders,
   selectProvider,
@@ -259,6 +260,12 @@ export const register: Register = (on, options) => {
     if (!e.text.trim() || /^\/\S/.test(e.text.trim())) return next(e)
     if (e.origin && NOT_A_TASK.has(e.origin.kind)) return next(e)
 
+    // What was said so far, so a short prompt is read in its context.
+    const recent = await $.session
+      .messages()
+      .then((messages) => recentContext(messages, e.text))
+      .catch(() => '')
+
     /** One request to the active backend, or null on timeout, error or a non-2xx. */
     const ask = async (
       prompt: string,
@@ -271,7 +278,7 @@ export const register: Register = (on, options) => {
           $.http.fetch(url, {
             method: 'POST',
             headers: requestHeaders(active, apiKey, modelId),
-            body: requestBody(active, prompt, questions, modelId),
+            body: requestBody(active, prompt, questions, modelId, recent),
           }),
           $.clock.sleep(timeoutMs),
         ])

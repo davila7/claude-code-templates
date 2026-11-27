@@ -451,8 +451,9 @@ export function requestBody(
   prompt: string,
   questions: Record<string, unknown>,
   model: string,
+  recent = '',
 ): string {
-  const state = { request: prompt, recent_context: '' }
+  const state = { request: prompt, recent_context: recent }
   const body = provider === 'typesafe' ? { model, state, questions } : { state, questions }
   return JSON.stringify(body)
 }
@@ -931,4 +932,34 @@ export function setupAborted(reason: string): string {
 /** The hint logged while skills are still listed and the mod is meant to be the only source of them. */
 export function describeStillListed(count: number): string {
   return `${count} skill${count === 1 ? ' is' : 's are'} still listed for the model (withheld here, but /context counts them); run /${SETUP_COMMAND} to hand their selection to the mod for good`
+}
+
+/** A key, a private key block or a `password: …` pair: such text never leaves the machine. */
+export const SECRET =
+  /(sk-[A-Za-z0-9_-]{16,}|-----BEGIN [A-Z ]*PRIVATE KEY|(?:api[_-]?key|token|secret|password)\s*[:=]\s*\S{8,})/i
+
+/**
+ * What the decision model reads beside the request: where the session began
+ * and where it is now. A short prompt such as "yes, do that" is ambiguous on
+ * its own; the earlier messages say what "that" is. Each piece is cut short,
+ * and one that looks like it holds a secret is left out whole.
+ */
+export function recentContext(
+  messages: readonly { role: 'user' | 'assistant'; text: string }[],
+  current: string,
+): string {
+  const said = (text: string) => text.trim() !== '' && !text.trim().startsWith('<')
+  const users = messages.filter((m) => m.role === 'user' && said(m.text) && m.text.trim() !== current.trim())
+  const lastAssistant = [...messages].reverse().find((m) => m.role === 'assistant' && said(m.text))
+  const pieces: string[] = []
+  const add = (label: string, text: string | undefined, max: number, tail = false) => {
+    if (!text || SECRET.test(text)) return
+    const flat = text.replace(/\s+/g, ' ').trim()
+    const cut = flat.length <= max ? flat : tail ? `…${flat.slice(-max)}` : `${flat.slice(0, max)}…`
+    pieces.push(`${label}: ${cut}`)
+  }
+  add('Task the session started with', users[0]?.text, 600)
+  for (const m of users.slice(1).slice(-2)) add('Earlier user message', m.text, 400)
+  add("Assistant's last reply (end)", lastAssistant?.text, 600, true)
+  return pieces.join('\n')
 }
