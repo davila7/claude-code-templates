@@ -23414,6 +23414,27 @@
     "highlights": []
   },
   {
+    "slug": "serpapi-claude-plugin",
+    "name": "SerpApi",
+    "author": "serpapi",
+    "description": "Search Google, Amazon, Walmart, YouTube, and 100+ engines through SerpApi's MCP server",
+    "github": "https://github.com/serpapi/serpapi-claude-plugin",
+    "stars": 17,
+    "type": "plugin",
+    "tags": [
+      "skills"
+    ],
+    "contains": {
+      "skills": 1
+    },
+    "highlights": [
+      "Web UI: https://serpapi.com/"
+    ],
+    "website": "https://serpapi.com",
+    "marketplace_name": "serpapi-plugins",
+    "plugin_name": "serpapi"
+  },
+  {
     "slug": "ml-plugins",
     "name": "ML Research",
     "author": "krasserm",
