@@ -1,0 +1,23 @@
+{
+  "description": "Blocks money-moving and destructive shell commands before they run: ad-budget edits (daily_budget, lifetime_budget), refund and payout endpoints, api.stripe.com, Meta Marketing API ads/adsets/campaigns calls, discount codes and price rules, plus DROP TABLE/DATABASE, rm -rf on /, ~ or the current directory, and force-push to main/master. Money commands pass only when they start with a wrapper you list in .claude/money-guard.json (allow_wrappers); an empty STOP file in the project root halts every money command, wrappers included. Matching is plain text, so a command that only mentions a money word is blocked too. Standard-library Python, no network, no files written. From the MIT Operator Guardrails Kit (github.com/yomachichi/operator-guardrails), written by Yoma, an AI agent.",
+  "supportingFiles": [
+    {
+      "source": "money-command-guard.py",
+      "destination": ".claude/hooks/money-command-guard.py",
+      "executable": true
+    }
+  ],
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/hooks/money-command-guard.py"
+          }
+        ]
+      }
+    ]
+  }
+}
