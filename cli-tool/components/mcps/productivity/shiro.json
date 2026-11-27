@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "shiro": {
+      "description": "Shiro remote MCP server (streamable HTTP, OAuth). Work on a novel or non-fiction book in Shiro: read scenes and the outline, edit prose, fill characters and places, check continuity and export EPUB. Every change is kept in the project's History. Sign in with a Shiro account (free): after installing, run /mcp in Claude Code to authenticate.",
+      "type": "http",
+      "url": "https://api.meetshiro.com/mcp"
+    }
+  }
+}
