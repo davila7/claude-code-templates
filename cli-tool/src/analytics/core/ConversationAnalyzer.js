@@ -253,14 +253,16 @@ class ConversationAnalyzer {
   /**
    * Get parsed conversation with caching support
    * @param {string} filepath - Path to conversation file
+   * @param {Object} [options]
+   * @param {boolean} [options.fresh] - Read the current transcript without using cached data
    * @returns {Promise<Array>} Parsed conversation messages
    */
-  async getParsedConversation(filepath) {
-    if (this.dataCache) {
+  async getParsedConversation(filepath, { fresh = false } = {}) {
+    if (this.dataCache && !fresh) {
       return await this.dataCache.getParsedConversation(filepath);
     }
     
-    // Fallback to direct parsing with tool correlation
+    // Read and parse the transcript directly
     const content = await fs.readFile(filepath, 'utf8');
     const lines = content.trim().split('\n').filter(line => line.trim());
     
