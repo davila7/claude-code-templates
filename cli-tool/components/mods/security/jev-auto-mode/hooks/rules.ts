@@ -779,8 +779,8 @@ export function selfProtection(a: Action, pluginRoot: string, ctx: MatchContext,
   return undefined
 }
 
-/** One line for the log: what the action is. */
-export function describeAction(a: Action): string {
+/** One line for the log: what the action is, cut to `max` characters. */
+export function describeAction(a: Action, max = 80): string {
   if (a.kind === 'command') return `/${a.command}${a.input.args ? ` ${a.input.args}` : ''}`
   if (a.kind === 'agent') return `Agent(${a.agent})`
   if (a.kind === 'skill') return `skill ${a.skill}`
@@ -795,5 +795,5 @@ export function describeAction(a: Action): string {
     str(a.input.description) ??
     ''
   const one = detail.replace(/\s+/g, ' ').trim()
-  return one ? `${a.tool}(${one.length > 80 ? `${one.slice(0, 79)}…` : one})` : a.tool
+  return one ? `${a.tool}(${one.length > max ? `${one.slice(0, max - 1)}…` : one})` : a.tool
 }
