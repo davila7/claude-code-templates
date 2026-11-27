@@ -62,7 +62,7 @@ and loaded once in `src/skills.ts` with `SkillsExtension.load(memorySkillFiles(.
 (`@modelcontextprotocol/server/ext/skills`), which computes each file's sha256 digest and checks every
 `SKILL.md`. `createServer` calls `attach(server)`. Older clients connect as before and see only the tools.
 The catalog entry's `mcpSkills` key (`cli-tool/components/mcps/devtools/aitmpl.json`) lists them for the
-component page's diagram: keep it in sync with `skills/`. MCP skills do not load in `claude -p`, the
+component page, and its `mcpTools` key lists the four tools: keep both in sync with `skills/` and `src/server.ts`. MCP skills do not load in `claude -p`, the
 Agent SDK or cloud sessions, nor in a `claude` started from a shell with Claude Desktop's
 `CLAUDE_CODE_ENTRYPOINT`.
 
