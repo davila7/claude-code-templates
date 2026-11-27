@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "placecall": {
+      "description": "PlaceCall: an AI agent places real outbound phone calls to US businesses (reservations, appointments, inquiries, quotes), navigates IVR menus and hold, and returns a structured outcome and transcript. OAuth sign-in on first use; an X-API-Key header also works (key at https://api.voygr.tech/checkout). Paid API; real calls ring real phones.",
+      "type": "http",
+      "url": "https://api.voygr.tech/mcp"
+    }
+  }
+}
