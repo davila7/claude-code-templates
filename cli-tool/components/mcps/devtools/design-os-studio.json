@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "design-os-studio": {
+      "description": "DESIGN:OS Studio's local MCP server (designos-mcp, 39 tools). It opens, creates, edits and saves .fig and .designos documents on your machine over stdio, with no Studio window, no account and no API key. Query layers with designos_query_xpath (node budget and paging), apply up to 200 edits in one undoable batch with designos_apply_batch (dry run available), lint, render PNG and generate code. Install the free Studio release for macOS, Windows or Linux first; designos-mcp ships in every package. Saving .fig has known issue #834 (numbered lists, inherited paints), so keep the original file. FREE, source-available (PolyForm Shield 1.0.0). Not affiliated with Figma. Docs: https://jangtrinh.github.io/design-os-studio/",
+      "command": "/ABSOLUTE/PATH/TO/designos-mcp",
+      "args": ["--workspace", "/ABSOLUTE/PATH/TO/designs"]
+    }
+  }
+}
