@@ -14,6 +14,10 @@ Atlas Cloud backend, use `references/atlas-cloud.md` and its dedicated CLI.
 - `tts-1`
 - `tts-1-hd`
 
+## Retirement
+- OpenAI removes every model above from its API on January 6, 2027; see "Model retirement" in `SKILL.md`.
+- Other OpenAI-compatible servers serve this endpoint with their own models and voices; see `references/cli.md`.
+
 ## Core parameters
 - `model`: speech model
 - `input`: text to synthesize (max 4096 characters)
@@ -22,7 +26,7 @@ Atlas Cloud backend, use `references/atlas-cloud.md` and its dedicated CLI.
 - `response_format`: `mp3`, `opus`, `aac`, `flac`, `wav`, or `pcm`
 - `speed`: 0.25 to 4.0
 
-## Built-in voices
+## Built-in voices (OpenAI's API)
 - `alloy`, `ash`, `ballad`, `cedar`, `coral`, `echo`, `fable`, `marin`, `nova`, `onyx`, `sage`, `shimmer`, `verse`
 
 ## Output notes

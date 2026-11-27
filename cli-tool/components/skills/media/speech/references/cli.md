@@ -63,8 +63,8 @@ python "$TTS_GEN" speak --input "Hello" --voice cedar --out speech.mp3
 - Do **not** create one-off runners (e.g., `gen_audio.py`) unless the user explicitly asks.
 
 ## Defaults (unless overridden by flags)
-- Model: `gpt-4o-mini-tts-2025-12-15`
-- Voice: `cedar`
+- Model: `$OPENAI_TTS_MODEL`, else `gpt-4o-mini-tts-2025-12-15`
+- Voice: `$OPENAI_TTS_VOICE`, else `cedar`
 - Response format: `mp3`
 - Speed: `1.0`
 - Batch rpm cap: `50`
@@ -113,6 +113,21 @@ Notes:
 - Use `--rpm` to control rate limiting (default `50`, max `50`).
 - Per-job overrides are supported in JSONL (`model`, `voice`, `response_format`, `speed`, `instructions`, `out`).
 - Treat the JSONL file as temporary: write it under `tmp/` and delete it after the run (do not commit it).
+
+Another OpenAI-compatible speech server (these set the defaults; an explicit `--voice` or per-job `voice` must use the server's own ids):
+```
+export OPENAI_BASE_URL="http://localhost:8000/v1"
+export OPENAI_API_KEY="<that server's key, or any non-empty value if it doesn't check keys>"
+export OPENAI_TTS_MODEL="<its model id>"
+export OPENAI_TTS_VOICE="<its voice id>"
+python "$TTS_GEN" speak --input "Hello" --out hello.mp3
+```
+
+Notes:
+- When `OPENAI_BASE_URL` names a host other than `openai.com` or one of its subdomains, voice ids outside OpenAI's list are sent exactly as given. OpenAI's own voice names are still lower-cased. A proxy or gateway in front of OpenAI counts as another server, so the local voice check is skipped there.
+- `OPENAI_API_KEY` is sent to that host, so don't leave a real OpenAI key exported while pointing at someone else's server.
+- `list-voices` still prints OpenAI's list, with a warning; use the server's own voice list instead.
+- The CLI's limits still apply: 4096 characters per request, `--rpm` up to 50, the six formats, and speed 0.25 to 4.0.
 
 ## See also
 - API parameter quick reference: `references/audio-api.md`
