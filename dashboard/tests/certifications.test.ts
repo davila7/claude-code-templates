@@ -51,8 +51,10 @@ test('validateItem rejects values outside the controlled vocabularies', () => {
   assert.ok(errors.includes('role must be one of ROLES'));
 });
 
-// Filter semantics are checked on the hand-written entries, which the pipeline never changes.
-const manual = data.items.filter((i) => i.source === 'manual');
+// Filter semantics are checked on the hand-written Anthropic entries, which the
+// pipeline never changes. Scoped to one provider so adding manual entries for
+// another provider does not change these counts.
+const manual = data.items.filter((i) => i.source === 'manual' && i.provider === 'Anthropic');
 
 test('filterItems combines facets with AND and values inside a facet with OR', () => {
   assert.equal(filterItems(manual, '', { role: ['Architect', 'Developer'] }).length, 3);

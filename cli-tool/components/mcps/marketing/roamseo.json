@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "roamseo": {
+      "description": "RoamSEO's hosted MCP server gives Claude Code live SEO data: keyword ideas with volume and difficulty, current Google results for a query, backlinks and ranked keywords for any domain, site audits, rank tracking and checks of how AI assistants mention a brand. Nothing runs locally; the client opens a browser sign-in (OAuth) on first use. A free account covers Search Console and Analytics reads; new search data costs credits.",
+      "type": "http",
+      "url": "https://app.roamseo.com/mcp"
+    }
+  }
+}
