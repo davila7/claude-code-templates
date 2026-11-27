@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "genaya": {
+      "description": "Genaya Connect is the hosted MCP server of Genaya, an operations app for service businesses: ask about appointments, clients, invoices, calls and tasks, and prepare texts, emails and other changes that run only after the member confirms them. Nothing runs locally; Claude Code opens a browser sign-in (OAuth 2.1 with PKCE) on first use, and every call acts as that member with their Genaya permissions. Genaya is a paid product with no free plan; every plan starts with a 14-day free trial.",
+      "type": "http",
+      "url": "https://api.genaya.com/mcp"
+    }
+  }
+}
