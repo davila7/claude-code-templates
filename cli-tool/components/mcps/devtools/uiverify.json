@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "uiverify": {
+      "description": "UI Verify: visual regression testing for coding agents. Lets the agent check what its change did to the UI while it works: list builds, see which Storybook stories, Playwright tests or Vitest browser-mode tests changed, open the diffs, and accept new baselines. An AI judge labels each visual change as intended, a regression, or flake. Authenticate with a UI Verify project API key as a Bearer token. Docs: https://uiverify.ai/docs/triage-with-your-agent",
+      "type": "http",
+      "url": "https://uiverify.ai/api/mcp",
+      "headers": {
+        "Authorization": "Bearer <YOUR_UIVERIFY_API_KEY>"
+      }
+    }
+  }
+}
