@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "postkeep": {
+      "description": "Connect your agent to Gmail, Outlook, iCloud Mail, Fastmail, or Yahoo Mail over remote Streamable HTTP MCP with OAuth 2.1. Search mailboxes, read threads in clean Markdown or plain text, download attachments, organize folders, save drafts (on IMAP providers), send replies, and manage signed new-mail webhooks. Every tool declares explicit read-only and destructive MCP annotations; free for up to 2 mailboxes (no card required), or self-host the MIT Rust server (github.com/postkeep/postkeep). Claude Code opens OAuth sign-in on first use.",
+      "type": "http",
+      "url": "https://mcp.postkeep.ai/mcp"
+    }
+  }
+}
