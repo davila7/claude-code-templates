@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "straitly": {
+      "description": "Official Straitly MCP server. Straitly is an AI gateway for startups: one OpenAI-compatible API key for 100+ models including Claude, GPT, Gemini, Grok and DeepSeek. Lets Claude Code search the live model catalog and fetch model metadata (list_models, get_model, model_prices, compare_models) and run chat completions against https://api.straitly.ai/v1 (chat_completion). Runs locally over stdio via npx; the catalog tools need no key, chat_completion reads STRAITLY_API_KEY.",
+      "command": "npx",
+      "args": [
+        "-y",
+        "straitly-mcp@0.2.0"
+      ],
+      "env": {
+        "STRAITLY_API_KEY": "<your-straitly-api-key>"
+      }
+    }
+  }
+}
