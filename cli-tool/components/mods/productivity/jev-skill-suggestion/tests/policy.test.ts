@@ -19,6 +19,7 @@ import {
   passesGate,
   pluginFileCandidates,
   readRerank,
+  recentContext,
   readWide,
   rerankQuestions,
   requestBody,
@@ -460,4 +461,43 @@ test('only a file with the backup\'s own shape is treated as a reusable backup',
   expect(validBackup('{"skillOverrides":{}}')).toBe(false)
   expect(validBackup('{nope')).toBe(false)
   expect(validBackup('[]')).toBe(false)
+})
+
+test('the recent context carries the first task, two earlier user messages and the end of the last reply', () => {
+  const messages = [
+    { role: 'user' as const, text: 'Set up a grid bot for BTC' },
+    { role: 'assistant' as const, text: 'Which exchange?' },
+    { role: 'user' as const, text: 'Bybit' },
+    { role: 'user' as const, text: 'Lower bound 60k' },
+    { role: 'user' as const, text: 'Upper bound 70k' },
+    { role: 'assistant' as const, text: 'x'.repeat(900) + 'THE END' },
+    { role: 'user' as const, text: 'yes, do that' },
+  ]
+  const recent = recentContext(messages, 'yes, do that')
+  expect(recent).toContain('Task the session started with: Set up a grid bot for BTC')
+  expect(recent).not.toContain('Earlier user message: Bybit')
+  expect(recent).toContain('Earlier user message: Lower bound 60k')
+  expect(recent).toContain('Earlier user message: Upper bound 70k')
+  expect(recent).not.toContain('yes, do that')
+  expect(recent).toContain("Assistant's last reply (end): …")
+  expect(recent.endsWith('THE END')).toBe(true)
+})
+
+test('a message that looks like it holds a secret is left out of the recent context whole', () => {
+  const recent = recentContext(
+    [
+      { role: 'user', text: 'my api_key: sk-abcdefghijklmnopqrstuv' },
+      { role: 'user', text: 'Make a slide deck' },
+    ],
+    'next',
+  )
+  expect(recent).not.toContain('sk-')
+  expect(recent).not.toContain('Task the session started with')
+  expect(recent).toContain('Earlier user message: Make a slide deck')
+})
+
+test('the request body sends the recent context, empty when there is none', () => {
+  const questions = { q: {} }
+  expect(JSON.parse(requestBody('typesafe', 'p', questions, 'm', 'ctx')).state.recent_context).toBe('ctx')
+  expect(JSON.parse(requestBody('typesafe', 'p', questions, 'm')).state.recent_context).toBe('')
 })
