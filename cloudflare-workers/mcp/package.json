@@ -20,6 +20,8 @@
     "@cloudflare/workers-types": "5.20261116.1",
     "@modelcontextprotocol/client": "2.4.0",
     "@modelcontextprotocol/core": "2.4.0",
+    "ajv": "8.18.0",
+    "ajv-formats": "3.0.1",
     "typescript": "5.9.3",
     "vitest": "3.2.7",
     "wrangler": "4.163.0"
