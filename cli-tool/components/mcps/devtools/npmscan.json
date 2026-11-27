@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "npmscan": {
+      "description": "npmscan remote MCP server (streamable HTTP, read-only, no account or API key). Free. Checks npm packages before install: known malware and vulnerabilities per version (OSV, GitHub advisories), maintainer and publisher changes, publish provenance against the source repo, and install-script analysis; also audits package.json and lockfiles. Lookups send package names and versions; the audit tools also receive whatever package.json, lockfile or SBOM text, or repository URL, you pass them. Docs: https://npmscan.com/mcp",
+      "type": "http",
+      "url": "https://npmscan.com/api/mcp"
+    }
+  }
+}
