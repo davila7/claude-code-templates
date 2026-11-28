@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "feraterra": {
+      "description": "Zero-install remote Streamable HTTP MCP server for FeraTerra (Arena Exchange): inspect Spot, Perpetual, FormulaPerp, BoundedClaim, and SpreadBook L2/L3 orderbooks, OHLCV candles, Gladiator Leaderboard standings, stateless POST /order/preview margin simulations, and ECDSA ledger-tip solvency proofs. Public read-only access with no API key required.",
+      "type": "http",
+      "url": "https://mcp.feraterra.app/mcp"
+    }
+  }
+}
