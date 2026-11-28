@@ -69,7 +69,10 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Claude",
+          "Basic Usage"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -85,7 +88,10 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Claude",
+          "Claude Code"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -101,7 +107,10 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Claude",
+          "Platform Development"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -117,7 +126,11 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Claude",
+          "Cowork",
+          "Hands-on"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -133,7 +146,10 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Claude",
+          "Claude Code"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -149,7 +165,11 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "AI Fluency",
+          "Collaboration",
+          "Ethics"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -165,7 +185,10 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Claude",
+          "API Development"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -181,7 +204,10 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Model Context Protocol",
+          "Python Development"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -197,7 +223,11 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "AI Fluency",
+          "Education",
+          "Teaching"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -213,7 +243,11 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "AI Fluency",
+          "Students",
+          "Skills"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -229,7 +263,10 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Model Context Protocol",
+          "Advanced Topics"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -245,7 +282,11 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Claude",
+          "Amazon AWS",
+          "Training"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -261,7 +302,10 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Claude",
+          "Google Cloud"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -277,7 +321,11 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "AI Fluency",
+          "Teaching",
+          "Assessment"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -293,7 +341,11 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "AI Fluency",
+          "Nonprofits",
+          "Impact"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -309,7 +361,10 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Claude Code",
+          "Agent Skills"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -325,7 +380,10 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Claude Code",
+          "Subagents"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -341,7 +399,10 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "AI",
+          "Introduction"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -357,7 +418,10 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "AI Fluency",
+          "Small Businesses"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -373,7 +437,10 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "AI Fluency",
+          "Builders"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -389,7 +456,10 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "AI Fluency",
+          "Creative Work"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -405,7 +475,10 @@
           "AI & Agents"
         ],
         "eligibility": "public",
-        "topics": [],
+        "topics": [
+          "Claude Enterprise",
+          "Deployment"
+        ],
         "source": "anthropic-academy",
         "platform": "Skilljar",
         "price": null,
@@ -424,9 +497,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI Tools",
-          "Programming with AI",
-          "Understanding AI Models",
+          "AI",
+          "Programming",
           "Software Development"
         ],
         "source": "cursor-learn",
@@ -446,10 +518,9 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI",
+          "AI Basics",
           "Large Language Models",
-          "ChatGPT",
-          "Work"
+          "ChatGPT"
         ],
         "source": "openai-academy",
         "price": null,
@@ -466,9 +537,9 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI",
-          "Workflows",
-          "ChatGPT"
+          "Workflow Design",
+          "ChatGPT",
+          "AI Application"
         ],
         "source": "openai-academy",
         "price": null,
@@ -485,9 +556,9 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI",
-          "Agent Management",
-          "Workflows"
+          "Workflow Management",
+          "Agents",
+          "AI Efficiency"
         ],
         "source": "openai-academy",
         "price": null,
@@ -504,8 +575,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "OpenAI API",
-          "AI Solutions"
+          "AI Solutions",
+          "Opportunity Assessment"
         ],
         "source": "openai-academy",
         "price": null,
@@ -522,8 +593,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "OpenAI API",
-          "AI Evaluation"
+          "Evaluation",
+          "Quality Assurance"
         ],
         "source": "openai-academy",
         "price": null,
@@ -540,8 +611,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "OpenAI API",
-          "Agent Design"
+          "Agent Design",
+          "System Architecture"
         ],
         "source": "openai-academy",
         "price": null,
@@ -558,8 +629,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "OpenAI API",
-          "Retrieval-Augmented Generation"
+          "Retrieval-Augmented Generation",
+          "Data Handling"
         ],
         "source": "openai-academy",
         "price": null,
@@ -576,8 +647,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "OpenAI API",
-          "Performance Optimization"
+          "Performance Optimization",
+          "Cost Management"
         ],
         "source": "openai-academy",
         "price": null,
@@ -594,8 +665,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Codex",
-          "Task Management"
+          "Coding",
+          "Task Verification"
         ],
         "source": "openai-academy",
         "price": null,
@@ -612,8 +683,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Codex",
-          "Workflows"
+          "Workflow Management",
+          "Codex"
         ],
         "source": "openai-academy",
         "price": null,
@@ -630,8 +701,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Codex",
-          "Team Management"
+          "Collaboration",
+          "Integration"
         ],
         "source": "openai-academy",
         "price": null,
@@ -648,9 +719,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI",
           "Leadership",
-          "Strategy"
+          "AI Strategy"
         ],
         "source": "openai-academy",
         "price": null,
@@ -668,8 +738,7 @@
         "eligibility": "public",
         "topics": [
           "Education",
-          "Teaching",
-          "ChatGPT"
+          "Teaching Skills"
         ],
         "source": "openai-academy",
         "price": null,
@@ -686,9 +755,8 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Education",
-          "Study Skills",
-          "ChatGPT"
+          "Student Support",
+          "Career Preparation"
         ],
         "source": "openai-academy",
         "price": null,
@@ -1180,7 +1248,7 @@
         "id": "nvidia-ai-power-and-cooling-associate",
         "kind": "certification",
         "title": "NVIDIA-Certified Associate AI Power and Cooling",
-        "description": "Validate a candidate’s foundational knowledge of the power, cooling, and mechanical systems behind AI data centers and factories.",
+        "description": "Validate a candidate’s foundational knowledge of the power, cooling, and mechanical systems behind AI data centers and factories, with a focus on safe, effective cross-trade coordination.",
         "url": "https://www.nvidia.com/en-us/learn/certification/ai-power-and-cooling-associate"
       },
       {
@@ -1190,7 +1258,7 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Data Science"
+          "Accelerated Data Science"
         ],
         "source": "nvidia-certification",
         "role": "Data",
@@ -1208,7 +1276,7 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Data Science"
+          "Accelerated Data Science"
         ],
         "source": "nvidia-certification",
         "role": "Data",
@@ -1233,7 +1301,7 @@
         "id": "nvidia-generative-ai-llm-professional",
         "kind": "certification",
         "title": "NVIDIA-Certified Professional Generative AI LLMs",
-        "description": "Certify the ability to design, train, and optimize LLMs, leveraging advanced distributed training and fine-tuning strategies.",
+        "description": "Certify the ability to design, train, and optimize LLMs, leveraging advanced distributed training and fine-tuning strategies to deliver high-performance AI solutions.",
         "url": "https://www.nvidia.com/en-us/learn/certification/generative-ai-llm-professional"
       },
       {
@@ -1243,14 +1311,14 @@
         ],
         "eligibility": "public",
         "topics": [
-          "Generative AI"
+          "Agentic AI"
         ],
         "source": "nvidia-certification",
         "level": "Advanced",
         "id": "nvidia-agentic-ai-professional",
         "kind": "certification",
         "title": "NVIDIA-Certified Professional Agentic AI",
-        "description": "Demonstrate the ability to build and govern advanced agentic AI solutions with multi-agent interaction and ethical safeguards.",
+        "description": "Demonstrate the ability to build and govern advanced agentic AI solutions with multi-agent interaction, scalability, and ethical safeguards.",
         "url": "https://www.nvidia.com/en-us/learn/certification/agentic-ai-professional"
       },
       {
@@ -1267,7 +1335,7 @@
         "id": "nvidia-generative-ai-llm-associate",
         "kind": "certification",
         "title": "NVIDIA-Certified Associate Generative AI LLM",
-        "description": "Verify foundational knowledge for developing, integrating, and maintaining AI-driven applications using generative AI and LLMs.",
+        "description": "Verify foundational knowledge for developing, integrating, and maintaining AI-driven applications using generative AI and LLMs with NVIDIA solutions.",
         "url": "https://www.nvidia.com/en-us/learn/certification/generative-ai-llm-associate"
       },
       {
@@ -1294,14 +1362,14 @@
         ],
         "eligibility": "public",
         "topics": [
-          "AI Model and Application Development"
+          "AI Model Development"
         ],
         "source": "nvidia-certification",
         "level": "Entry",
         "id": "nvidia-ai-model-application-development-associate",
         "kind": "certification",
         "title": "NVIDIA-Certified Associate AI Model and Application Development",
-        "description": "Validates foundational skills in building, customizing, deploying, and evaluating AI models and applications on NVIDIA’s platform.",
+        "description": "Validates foundational skills in building, customizing, deploying, and evaluating AI models and applications on NVIDIA’s platform, including retrieval pipelines, inference optimization, and agentic systems.",
         "url": "https://www.nvidia.com/en-us/learn/certification/ai-model-application-development-associate"
       },
       {
@@ -1311,7 +1379,7 @@
         ],
         "eligibility": "public",
         "topics": [
-          "OpenUSD"
+          "OpenUSD Development"
         ],
         "source": "nvidia-certification",
         "level": "Advanced",

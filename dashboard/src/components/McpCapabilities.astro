@@ -1,0 +1,155 @@
+---
+// What an MCP server provides, from the lists its component declares
+// (`mcpTools`, `mcpSkills`, `mcpEvents`; see lib/mcp-capabilities.ts): one card
+// with a tab per kind the server declares, each tab a plain list. The first tab
+// is open in the HTML, so the card reads complete without JavaScript; the
+// script only switches tabs. Skills keep their own flow diagram below
+// (McpSkillsFlow), which the page renders without its duplicate list.
+import type { McpCapabilities } from '../lib/mcp-capabilities';
+import { skillCommandPrefix } from '../lib/mcp-skills';
+
+interface Props { data: McpCapabilities }
+const { data } = Astro.props;
+const { server, tools, skills, events } = data;
+
+const tabs = [
+  { id: 'tools', label: 'Tools', count: tools.length },
+  { id: 'skills', label: 'Skills', count: skills.length },
+  { id: 'events', label: 'Events', count: events.length },
+].filter((t) => t.count > 0);
+const open = tabs[0].id;
+const uid = `mcp-cap-${server.replace(/[^A-Za-z0-9_-]/g, '_')}`;
+const DELIVERY_LABEL: Record<string, string> = { poll: 'poll', push: 'push', webhook: 'webhook' };
+---
+
+<section aria-labelledby={`${uid}-h`} class="rounded-lg border border-[var(--color-border)] overflow-hidden" data-mcp-capabilities>
+  <div class="flex flex-wrap items-center gap-x-2.5 gap-y-1 px-4 py-2.5 bg-[var(--color-surface-1)] border-b border-[var(--color-border)] text-[13px]">
+    <span id={`${uid}-h`} class="font-semibold text-[var(--color-text-primary)]">What this server provides</span>
+    <span class="text-[var(--color-text-secondary)]">· <code class="font-mono text-[12px]">{server}</code></span>
+  </div>
+
+  <div role="tablist" aria-label={`What the ${server} MCP server provides`} class="flex gap-1 px-3 pt-2 border-b border-[var(--color-border)]">
+    {tabs.map((t) => (
+      <button
+        type="button"
+        role="tab"
+        id={`${uid}-tab-${t.id}`}
+        aria-controls={`${uid}-panel-${t.id}`}
+        aria-selected={t.id === open ? 'true' : 'false'}
+        tabindex={t.id === open ? 0 : -1}
+        data-cap-tab={t.id}
+        class="cap-tab"
+      >
+        {t.label}<span class="cap-count">{t.count}</span>
+      </button>
+    ))}
+  </div>
+
+  {tools.length > 0 && (
+    <div role="tabpanel" id={`${uid}-panel-tools`} aria-labelledby={`${uid}-tab-tools`} data-cap-panel="tools" tabindex="0" hidden={open !== 'tools'}>
+      <ul>
+        {tools.map((t) => (
+          <li class="cap-row">
+            <div class="flex flex-wrap items-center gap-2">
+              <code class="font-mono text-[12.5px] text-[var(--color-text-primary)] [overflow-wrap:anywhere]">{t.name}</code>
+              {t.readOnly === true && <span class="cap-badge">read-only</span>}
+              {t.readOnly === false && <span class="cap-badge cap-badge-strong">can change data</span>}
+            </div>
+            {(t.title || t.description) && (
+              <p class="min-w-0 text-[var(--color-text-secondary)]">
+                {t.title && <span class="text-[var(--color-text-primary)]">{t.title}. </span>}{t.description}
+              </p>
+            )}
+          </li>
+        ))}
+      </ul>
+      <p class="cap-foot">Claude calls these as <code>mcp__{skillCommandPrefix(server)}__&lt;tool&gt;</code>; allow or deny each one in <code>permissions</code>.</p>
+    </div>
+  )}
+
+  {skills.length > 0 && (
+    <div role="tabpanel" id={`${uid}-panel-skills`} aria-labelledby={`${uid}-tab-skills`} data-cap-panel="skills" tabindex="0" hidden={open !== 'skills'}>
+      <ul>
+        {skills.map((s) => (
+          <li class="cap-row">
+            <code class="font-mono text-[12.5px] text-[var(--color-text-primary)] [overflow-wrap:anywhere]">{s.command}</code>
+            {s.description && <p class="min-w-0 text-[var(--color-text-secondary)]">{s.description}</p>}
+          </li>
+        ))}
+      </ul>
+      <p class="cap-foot">Served over MCP (extension <code>io.modelcontextprotocol/skills</code>), Claude Code 2.1.331 or later. How they load is drawn below.</p>
+    </div>
+  )}
+
+  {events.length > 0 && (
+    <div role="tabpanel" id={`${uid}-panel-events`} aria-labelledby={`${uid}-tab-events`} data-cap-panel="events" tabindex="0" hidden={open !== 'events'}>
+      <ul>
+        {events.map((e) => (
+          <li class="cap-row">
+            <div class="flex flex-wrap items-center gap-2">
+              <code class="font-mono text-[12.5px] text-[var(--color-text-primary)] [overflow-wrap:anywhere]">{e.name}</code>
+              {e.delivery.map((d) => <span class="cap-badge">{DELIVERY_LABEL[d]}</span>)}
+            </div>
+            {e.description && <p class="min-w-0 text-[var(--color-text-secondary)]">{e.description}</p>}
+          </li>
+        ))}
+      </ul>
+      <p class="cap-foot">MCP Events (extension <code>io.modelcontextprotocol/events</code>, protocol 2026-07-28): a client subscribes to an event and the server delivers it by poll, push or webhook. Your client has to support the extension.</p>
+    </div>
+  )}
+
+  <p class="cap-foot border-t border-[var(--color-border)]">Declared by the component, not read from the server: the server can change what it offers at any time.</p>
+</section>
+
+<style>
+  .cap-tab {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 10px; margin-bottom: -1px;
+    font-size: 13px; color: var(--color-text-secondary);
+    border-bottom: 2px solid transparent; transition: color .15s, border-color .15s;
+  }
+  .cap-tab:hover { color: var(--color-text-primary); }
+  .cap-tab[aria-selected="true"] { color: var(--color-text-primary); border-bottom-color: var(--color-accent); font-weight: 600; }
+  [data-cap-panel]:focus-visible { outline: 2px solid var(--color-accent); outline-offset: -2px; }
+  .cap-tab:focus-visible { outline: 2px solid var(--color-accent); outline-offset: -2px; border-radius: 4px; }
+  .cap-count {
+    font: 500 11px var(--font-mono, ui-monospace, monospace); font-variant-numeric: tabular-nums;
+    padding: 0 6px; border-radius: 999px; background: var(--color-surface-2); color: var(--color-text-secondary);
+  }
+  .cap-row {
+    display: flex; flex-direction: column; gap: 4px;
+    padding: 10px 16px; font-size: 13.5px; border-top: 1px solid var(--color-border);
+  }
+  .cap-row:first-child { border-top: 0; }
+  .cap-badge {
+    font: 500 11px var(--font-mono, ui-monospace, monospace);
+    padding: 1px 6px; border-radius: 4px; border: 1px solid var(--color-border);
+    color: var(--color-text-tertiary);
+  }
+  .cap-badge-strong { color: var(--color-text-primary); border-color: var(--color-border-strong); }
+  .cap-foot { padding: 10px 16px; font-size: 12px; line-height: 1.6; color: var(--color-text-tertiary); border-top: 1px solid var(--color-border); }
+</style>
+
+<script>
+  for (const root of document.querySelectorAll<HTMLElement>('[data-mcp-capabilities]')) {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[data-cap-tab]')];
+    const select = (id: string, focus = false) => {
+      for (const t of tabs) {
+        const on = t.dataset.capTab === id;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+        if (on && focus) t.focus();
+      }
+      for (const p of root.querySelectorAll<HTMLElement>('[data-cap-panel]')) p.hidden = p.dataset.capPanel !== id;
+    };
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => select(t.dataset.capTab!));
+      t.addEventListener('keydown', (e) => {
+        const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+        if (!d) return;
+        e.preventDefault();
+        select(tabs[(i + d + tabs.length) % tabs.length].dataset.capTab!, true);
+      });
+    });
+  }
+</script>

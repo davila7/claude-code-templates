@@ -86,6 +86,17 @@
   Content-Type: text/plain; charset=utf-8
   Cache-Control: public, max-age=3600
 
+# AI Catalog (MCP Server Cards discovery, SEP-2127): lists the card that
+# mcp.aitmpl.com serves at /mcp/server-card. Keep it in sync with
+# cloudflare-workers/mcp/src/server-card.ts (aiCatalog).
+/.well-known/ai-catalog.json
+  Content-Type: application/ai-catalog+json; charset=utf-8
+  Cache-Control: public, max-age=3600
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET
+  Access-Control-Allow-Headers: Content-Type, If-None-Match
+  Access-Control-Expose-Headers: ETag
+
 # Astro hashed assets — immutable forever (hash changes on content change)
 /_astro/*
   Cache-Control: public, max-age=31536000, immutable

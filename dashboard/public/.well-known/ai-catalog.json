@@ -1,0 +1,10 @@
+{
+  "specVersion": "1.0",
+  "entries": [
+    {
+      "identifier": "urn:air:aitmpl.com:mcp:aitmpl",
+      "type": "application/mcp-server-card+json",
+      "url": "https://mcp.aitmpl.com/mcp/server-card"
+    }
+  ]
+}
