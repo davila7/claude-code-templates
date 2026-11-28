@@ -1,0 +1,11 @@
+{
+  "repo": "nimply/skills",
+  "path": "skills/nimply",
+  "commit": "fbafad96e2dd278d73f0a992e2c0605cf3c811a8",
+  "license": "MIT",
+  "author": "Nimply",
+  "include": [
+    "SKILL.md",
+    "references"
+  ]
+}

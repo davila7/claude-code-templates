@@ -62,9 +62,27 @@ and loaded once in `src/skills.ts` with `SkillsExtension.load(memorySkillFiles(.
 (`@modelcontextprotocol/server/ext/skills`), which computes each file's sha256 digest and checks every
 `SKILL.md`. `createServer` calls `attach(server)`. Older clients connect as before and see only the tools.
 The catalog entry's `mcpSkills` key (`cli-tool/components/mcps/devtools/aitmpl.json`) lists them for the
-component page's diagram: keep it in sync with `skills/`. MCP skills do not load in `claude -p`, the
+component page, and its `mcpTools` key lists the four tools: keep both in sync with `skills/` and `src/server.ts`. MCP skills do not load in `claude -p`, the
 Agent SDK or cloud sessions, nor in a `claude` started from a shell with Claude Desktop's
 `CLAUDE_CODE_ENTRYPOINT`.
+
+## Server Card (pre-connection discovery)
+
+The worker publishes an [MCP Server Card](https://modelcontextprotocol.io/seps/2127-mcp-server-cards)
+(SEP-2127, extension `io.modelcontextprotocol/server-card`) at **`https://mcp.aitmpl.com/mcp/server-card`**
+(`application/mcp-server-card+json`), and an AI Catalog that lists it at
+`https://mcp.aitmpl.com/.well-known/ai-catalog.json`. The same catalog is a static file on
+www.aitmpl.com (`dashboard/public/.well-known/ai-catalog.json`), for discovery from the `aitmpl.com` domain.
+
+The card (`src/server-card.ts`) carries identity and transport only: name `com.aitmpl/aitmpl`, version,
+title, website, icons, repository and the `/mcp` remote with the protocol revisions it answers. Tools and
+skills are not in it, because the spec leaves primitives to `tools/list` and `skills/list`; the catalog
+entry's `mcpTools`/`mcpSkills` keys cover the component page. Title, version, website and icons come from
+`SERVER_INFO` in `src/server.ts`, the same object the SDK reports in `server/discover`, so they cannot drift.
+URLs are built from `ALLOWED_HOSTNAMES`, never from a foreign `Host`. Responses send the CORS, `Cache-Control:
+public, max-age=3600` and `ETag` headers the spec asks for and answer `If-None-Match` with 304.
+`test/server-card.test.ts` validates the card against the extension's `schema.json` (vendored in
+`test/fixtures/`, commit `28db12c`); the smoke test checks it against the live connection.
 
 ## Data
 

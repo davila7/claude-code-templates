@@ -63,6 +63,10 @@ When a search matches more components than it returns and they span several type
 
 This uses MCP elicitation in form mode on protocol revision 2026-07-28, which Claude Code uses for servers added with `claude mcp add`. Clients on older revisions, and clients that do not declare form elicitation, never see the form and get the results directly.
 
+## Server Card
+
+The server publishes an [MCP Server Card](https://modelcontextprotocol.io/seps/2127-mcp-server-cards) at `https://mcp.aitmpl.com/mcp/server-card`: a public JSON document a client can read before it connects, with the server's name, version, website, icons, source repository, endpoint and the protocol revisions it supports. The AI Catalog at `https://www.aitmpl.com/.well-known/ai-catalog.json` (and `https://mcp.aitmpl.com/.well-known/ai-catalog.json`) points to it. Following the spec, the card does not list tools or skills; a connected client gets those from the server.
+
 ## How installing works
 
 The server installs nothing. It runs on Cloudflare and cannot write to your machine, so it hands back the command and the command does the install:

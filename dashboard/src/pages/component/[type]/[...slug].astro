@@ -12,6 +12,8 @@ import SkillSpectorReport from '../../../components/SkillSpectorReport.tsx';
 import HarnessReport from '../../../components/HarnessReport.tsx';
 import McpSkillsFlow from '../../../components/McpSkillsFlow.astro';
 import { parseMcpSkills } from '../../../lib/mcp-skills';
+import McpCapabilitiesCard from '../../../components/McpCapabilities.astro';
+import { parseMcpCapabilities } from '../../../lib/mcp-capabilities';
 import { TYPE_CONFIG, ICONS } from '../../../lib/icons';
 import { fetchComponents, fetchComponentContentData, getInstallCommand } from '../../../lib/data';
 import type { ComponentPageMeta } from '../../../lib/data';
@@ -182,6 +184,8 @@ const ogImage = component && config
 const frontmatter = component ? parseFrontmatter(component.content, typePlural ?? '') : {};
 // Skills over MCP: the skills an MCP component declares its server serves (first server only).
 const mcpSkills = component && typePlural === 'mcps' ? parseMcpSkills(component.content)[0] ?? null : null;
+// Tools, skills and events the component declares its server provides (first server that declares any).
+const mcpCapabilities = component && typePlural === 'mcps' ? parseMcpCapabilities(component.content)[0] ?? null : null;
 // Agent Skills keep author/version/tags/license under `metadata:`, which the
 // line parser above does not read; fall back to what the catalog generator parsed.
 if (component) {
@@ -746,7 +750,8 @@ const componentSchema = component
                 </div>
               )}
 
-              {mcpSkills && <McpSkillsFlow data={mcpSkills} />}
+              {mcpCapabilities && <McpCapabilitiesCard data={mcpCapabilities} />}
+              {mcpSkills && <McpSkillsFlow data={mcpSkills} showList={mcpCapabilities?.server !== mcpSkills.server} />}
 
               {referencedComponents.length > 0 && (
                 <div class="rounded-lg border border-[var(--color-border)] overflow-hidden">
