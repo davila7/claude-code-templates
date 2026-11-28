@@ -1,7 +1,7 @@
 {
   "mcpServers": {
     "saascity": {
-      "description": "SaaSCity remote MCP server (streamable HTTP, keyless, no account or API key required for read-only tools). Runs a 16-point static HTML pre-launch readiness audit, filters 1,600+ startup and AI directories by live Ahrefs Domain Rating (DR), link type, pricing, and badge requirements, checks whether a live directory listing renders a followed backlink, searches live SaaSCity launches, and computes SaaS metrics (ARR, churn, NRR, Rule of 40, NPS, A/B significance). Docs: https://saascity.io/mcp",
+      "description": "Free SaaSCity remote MCP server (streamable HTTP, keyless). All read-only tools require no account or API key: 16-point static HTML pre-launch readiness audit, filtering 1,600+ startup and AI directories by live Ahrefs Domain Rating (DR), link type, pricing, and badge requirements, live backlink checking, directory search, and SaaS metric calculators (ARR, churn, NRR, Rule of 40, NPS, A/B significance). Write/submission tools create a draft and return a claim link where a human finishes submission on SaaSCity (free Editorial Pool tier and optional paid launch plans from $19.99). Docs: https://saascity.io/mcp",
       "type": "http",
       "url": "https://saascity.io/api/mcp"
     }
