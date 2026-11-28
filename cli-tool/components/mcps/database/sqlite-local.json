@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "sqlite-local": {
+      "description": "Local SQLite MCP server for database inspection, schema analysis, and SQL queries. Set the database file path after installation.",
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-server-sqlite@0.0.2",
+        "--db-path",
+        "<path-to-sqlite-db-file>"
+      ],
+      "env": {}
+    }
+  }
+}
