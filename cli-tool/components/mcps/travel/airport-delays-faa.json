@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "airport-delays-faa": {
+      "description": "Live US airport delays and FAA National Airspace System status: ground stops, ground delay programs, arrival and departure delays, airport closures, deicing alerts, and trip checks across US airports. Free hosted Streamable HTTP endpoint, no account or API key required. Docs: https://www.mcpstamp.com/free-servers/airport-delays-faa-status-mcp/",
+      "type": "http",
+      "url": "https://airport-delays-faa-status-mcp.lipmichal.workers.dev/mcp"
+    }
+  }
+}
