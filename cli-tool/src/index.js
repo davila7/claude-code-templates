@@ -498,8 +498,10 @@ async function installIndividualMCP(mcpName, targetDir, options) {
         }
       }
     }
-    // Catalog metadata (skills the server serves over MCP), not Claude Code config
+    // Catalog metadata (what the server provides: skills, tools, events), not Claude Code config
     delete mcpConfig.mcpSkills;
+    delete mcpConfig.mcpTools;
+    delete mcpConfig.mcpEvents;
     
     // Check if .mcp.json exists in target directory
     const targetMcpFile = path.join(targetDir, '.mcp.json');
@@ -2526,8 +2528,10 @@ async function installComponentFromWorkflow(componentData, type, targetDir, opti
           }
         }
       }
-      // Catalog metadata (skills the server serves over MCP), not Claude Code config
+      // Catalog metadata (what the server provides: skills, tools, events), not Claude Code config
       delete mcpConfig.mcpSkills;
+      delete mcpConfig.mcpTools;
+      delete mcpConfig.mcpEvents;
       
       // Merge configurations
       const mergedConfig = {

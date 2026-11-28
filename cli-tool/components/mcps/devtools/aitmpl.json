@@ -6,6 +6,34 @@
       "url": "https://mcp.aitmpl.com/mcp"
     }
   },
+  "mcpTools": {
+    "aitmpl": [
+      {
+        "name": "search_components",
+        "title": "Search aitmpl components",
+        "description": "Search the catalog by text and get each match's id, description, page, install command and SkillSpector scan, ordered by how well the text matches.",
+        "readOnly": true
+      },
+      {
+        "name": "get_component",
+        "title": "Get an aitmpl component",
+        "description": "Return one component by id with its full content, the files it ships, what it writes on install, its license and source, and its SkillSpector scan.",
+        "readOnly": true
+      },
+      {
+        "name": "get_install_command",
+        "title": "Get the install command",
+        "description": "Return the single claude-code-templates command that installs up to 20 components into the current project.",
+        "readOnly": true
+      },
+      {
+        "name": "list_categories",
+        "title": "List aitmpl categories",
+        "description": "List the component types with their counts, and the categories of one type or all types.",
+        "readOnly": true
+      }
+    ]
+  },
   "mcpSkills": {
     "aitmpl": [
       {

@@ -154,5 +154,24 @@ const elicitClient = async (caps, answer) => {
   await c.close();
 }
 
+// MCP Server Card (SEP-2127): served next to the endpoint and consistent with what a live connection reports.
+{
+  const cardUrl = new URL(`${url.pathname.replace(/\/$/, '')}/server-card`, url);
+  const res = await fetch(cardUrl, { headers: { accept: 'application/mcp-server-card+json' } });
+  check(res.ok && /^application\/mcp-server-card\+json/.test(res.headers.get('content-type') || ''), 'server card media type', `${res.status} ${res.headers.get('content-type')}`);
+  check(res.headers.get('access-control-allow-origin') === '*' && Boolean(res.headers.get('etag')), 'server card CORS + ETag');
+  const card = await res.json();
+  const again = await fetch(cardUrl, { headers: { 'if-none-match': res.headers.get('etag') || '' } });
+  check(again.status === 304, 'server card If-None-Match -> 304', String(again.status));
+  check(card.remotes?.[0]?.url === url.href, 'server card remote url is this endpoint', card.remotes?.[0]?.url);
+  check(card.name?.split('/')[1] === info.name && card.version === info.version && card.title === info.title,
+    'server card identity matches serverInfo', `${card.name} ${card.version}`);
+  const versions = card.remotes?.[0]?.supportedProtocolVersions || [];
+  check(versions.includes('2026-07-28') && versions.includes('2025-11-25'),
+    'server card lists the negotiated revisions', versions.join(', '));
+  const cat = await (await fetch(new URL('/.well-known/ai-catalog.json', url))).json();
+  check(cat.entries?.some((e) => e.type === 'application/mcp-server-card+json' && e.url === cardUrl.href), 'AI Catalog lists the card');
+}
+
 console.log(failures ? `\n${failures} check(s) failed` : '\nall checks passed');
 process.exit(failures ? 1 : 0);
