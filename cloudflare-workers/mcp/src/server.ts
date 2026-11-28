@@ -89,16 +89,19 @@ function resultText(results: ReturnType<typeof summary>[], total: number, query:
   return `${total} component(s) match "${query}", best text match first:\n\n${lines.join('\n\n')}`;
 }
 
+/** serverInfo (server/discover, initialize) and the source of the Server Card's identity fields (server-card.ts). */
+export const SERVER_INFO = {
+  name: 'aitmpl',
+  title: 'aitmpl.com (Claude Code Templates)',
+  version: SERVER_VERSION,
+  websiteUrl: 'https://docs.aitmpl.com/developers/mcp-server',
+  icons: [{ src: `${SITE}/icon-192.png`, mimeType: 'image/png', sizes: ['192x192'] }],
+};
+
 /** Builds a fresh server per request (createMcpHandler is stateless). `skills` adds the Skills over MCP extension. */
 export function createServer(fetcher: Fetcher, skills?: SkillsExtension) {
   const server = new McpServer(
-    {
-      name: 'aitmpl',
-      title: 'aitmpl.com (Claude Code Templates)',
-      version: SERVER_VERSION,
-      websiteUrl: 'https://docs.aitmpl.com/developers/mcp-server',
-      icons: [{ src: `${SITE}/icon-192.png`, mimeType: 'image/png', sizes: ['192x192'] }],
-    },
+    SERVER_INFO,
     {
       instructions:
         'Read-only access to the aitmpl.com catalog of Claude Code components (agents, commands, skills, hooks, MCP servers, settings, loops, mods and plugins). '

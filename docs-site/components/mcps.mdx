@@ -29,6 +29,26 @@ Values in angle brackets are placeholders. Replace them in `.mcp.json` after the
 
 Some servers are remote (`"type": "http"` with a `url`) and sign you in with OAuth the first time you use them in Claude Code.
 
+### What the server provides
+
+A component can also declare what its server offers, next to `mcpServers` and keyed by the same server name. The component page lists them, and the CLI leaves them out of `.mcp.json`:
+
+| Key | One entry per | Fields |
+| --- | --- | --- |
+| `mcpTools` | tool from `tools/list` | `name`, `title` (optional), `description`, `readOnly` (optional) |
+| `mcpSkills` | skill served over MCP (Claude Code 2.1.331+) | `name`, `description` |
+| `mcpEvents` | event type from `events/list` (MCP Events, protocol 2026-07-28) | `name`, `description`, `delivery` (`poll`, `push`, `webhook`) |
+
+```json devtools/aitmpl.json (shortened)
+{
+  "mcpServers": { "aitmpl": { "type": "http", "url": "https://mcp.aitmpl.com/mcp" } },
+  "mcpTools": { "aitmpl": [{ "name": "search_components", "title": "Search aitmpl components", "description": "Search the catalog by text.", "readOnly": true }] },
+  "mcpSkills": { "aitmpl": [{ "name": "component-review", "description": "Review a Claude Code component before sharing it." }] }
+}
+```
+
+The lists are what the server offered when the component was added; the server can change them at any time.
+
 ## After installing
 
 Restart Claude Code and run `/mcp` to see the server, its status and its tools. Claude Code asks before it uses a project MCP server for the first time.

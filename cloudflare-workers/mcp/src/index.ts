@@ -2,6 +2,7 @@ import { createMcpHandler, type StatelessMcpHandler } from 'agents/mcp/server';
 import { defaultFetch, SITE } from './catalog';
 import { createServer, SERVER_VERSION } from './server';
 import { loadSkills, SKILL_NAMES } from './skills';
+import { AI_CATALOG_TYPE, aiCatalog, discoveryResponse, SERVER_CARD_TYPE, serverCard } from './server-card';
 import type { SkillsExtension } from '@modelcontextprotocol/server/ext/skills';
 
 interface Env {
@@ -31,6 +32,7 @@ const INFO = {
   version: SERVER_VERSION,
   description: 'Remote MCP server for the aitmpl.com catalog of Claude Code components: search, read and get install commands. Read-only, no sign-in.',
   endpoint: '/mcp',
+  serverCard: '/mcp/server-card',
   skills: SKILL_NAMES,
   transport: 'streamable-http',
   docs: 'https://docs.aitmpl.com/developers/mcp-server',
@@ -44,7 +46,13 @@ const INFO = {
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
+    // Discovery documents name URLs: build them from an allowed hostname, never from an arbitrary Host header.
+    const hosts = (env.ALLOWED_HOSTNAMES || '').split(',').map((h) => h.trim()).filter(Boolean);
+    const origin = !hosts.length || hosts.includes(url.hostname) ? url.origin : `https://${hosts[0]}`;
     if (url.pathname === '/mcp') return mcpHandler(env, await loadSkills())(request, env, ctx);
+    // MCP Server Card (SEP-2127) and the AI Catalog that lists it: public, static, CORS *.
+    if (url.pathname === '/mcp/server-card') return discoveryResponse(request, serverCard(origin), SERVER_CARD_TYPE);
+    if (url.pathname === '/.well-known/ai-catalog.json') return discoveryResponse(request, aiCatalog(origin), AI_CATALOG_TYPE);
     if (url.pathname === '/' && (request.method === 'GET' || request.method === 'HEAD')) {
       return new Response(JSON.stringify(INFO, null, 2), {
         headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=300' },

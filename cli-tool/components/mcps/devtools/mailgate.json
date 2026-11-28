@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "mailgate": {
+      "description": "Self-hosted receive-only OTP and magic-link email inbox running on Cloudflare Email Routing, Workers, and D1. Lets Claude Code wait for incoming verification codes and sign-in links during Playwright or browser E2E authentication tests via mailgate_wait_for_otp, mailgate_wait_for_email, mailgate_list_messages, and optional admin tools. Runs locally over stdio via npx and requires a deployed MailGate Worker URL in MAILGATE_URL.",
+      "command": "npx",
+      "args": [
+        "-y",
+        "mailgate-sdk@1.1.1",
+        "mcp"
+      ],
+      "env": {
+        "MAILGATE_URL": "https://your-mailgate-worker.example.com"
+      }
+    }
+  }
+}

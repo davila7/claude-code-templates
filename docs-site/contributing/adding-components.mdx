@@ -13,7 +13,7 @@ Components live in [`cli-tool/components/`](https://github.com/davila7/claude-co
 | Command | `commands/{category}/{name}.md` | frontmatter `description` |
 | Skill | `skills/{category}/{name}/SKILL.md` | frontmatter `name` (= folder), `description` |
 | Hook | `hooks/{category}/{name}.json` | `description`, `hooks`; scripts next to it with the same name |
-| MCP server | `mcps/{category}/{name}.json` | `mcpServers`, placeholders instead of keys |
+| MCP server | `mcps/{category}/{name}.json` | `mcpServers`, placeholders instead of keys; `mcpTools`, `mcpSkills`, `mcpEvents` when the server has them ([what the server provides](/components/mcps#what-the-server-provides)) |
 | Setting | `settings/{category}/{name}.json` | `description` and the settings keys |
 | Loop | `loops/{category}/{name}.md` | `interval`, `stop-condition`, `components` that already exist |
 | Mod | `mods/{category}/{name}/` | see [Build a mod](/contributing/mods) |
