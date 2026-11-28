@@ -1,0 +1,49 @@
+{
+  "mcpServers": {
+    "saascity": {
+      "description": "Free SaaSCity remote MCP server (streamable HTTP, keyless). All read-only tools require no account or API key: 16-point static HTML pre-launch readiness audit, filtering 1,600+ startup and AI directories by live Ahrefs Domain Rating (DR), link type, pricing, and badge requirements, live backlink checking, directory search, and SaaS metric calculators (ARR, churn, NRR, Rule of 40, NPS, A/B significance). Write/submission tools create a draft and return a claim link where a human finishes submission on SaaSCity (free Editorial Pool tier and optional paid launch plans from $19.99). Docs: https://saascity.io/mcp",
+      "type": "http",
+      "url": "https://saascity.io/api/mcp"
+    }
+  },
+  "mcpTools": {
+    "saascity": [
+      {
+        "name": "check_launch_readiness",
+        "title": "Check launch readiness",
+        "description": "Audit a product homepage across 16 static HTML launch checks (HTTPS, noindex, title, description, OG image, canonical, robots.txt, sitemap, JSON-LD).",
+        "readOnly": true
+      },
+      {
+        "name": "recommend_launch_directories",
+        "title": "Recommend launch directories",
+        "description": "Return a curated set of startup, SaaS, AI, or developer tool launch directories with editorial notes and free/paid routes.",
+        "readOnly": true
+      },
+      {
+        "name": "find_launch_directories",
+        "title": "Find launch directories",
+        "description": "Filter 1,600+ startup and AI directories by Ahrefs Domain Rating, dofollow vs nofollow link type, pricing, and badge-exchange requirements.",
+        "readOnly": true
+      },
+      {
+        "name": "get_launch_directory",
+        "title": "Get launch directory details",
+        "description": "Inspect one directory by domain for DR, link type, pricing, badge requirement, submit URL, and audit notes.",
+        "readOnly": true
+      },
+      {
+        "name": "check_backlink",
+        "title": "Check live backlink",
+        "description": "Fetch a live directory listing URL and inspect whether it renders a followed, nofollow, redirect, or missing link to your domain.",
+        "readOnly": true
+      },
+      {
+        "name": "search_listings",
+        "title": "Search SaaSCity listings",
+        "description": "Search live SaaS and AI product launches in the SaaSCity directory.",
+        "readOnly": true
+      }
+    ]
+  }
+}
