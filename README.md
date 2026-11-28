@@ -145,6 +145,7 @@ The CLI also ships three local tools. The two dashboards listen on `127.0.0.1` o
 
 | Command | What it does |
 |---------|--------------|
+| [Insomnia Security MCP](https://github.com/vulnz/insomnia-mcp) | 159 cybersecurity, SAST/taint, live secrets, Web DAST, OSINT, 21k+ CVE & Outbound Network Tunnel v4.0 tools (`https://mcp.insom.ai/mcp`) |
 | `npx claude-code-templates@latest --analytics` | Real-time session monitoring and usage metrics at `localhost:3333` |
 | `npx claude-code-templates@latest --chats` | Read and search your conversations in a mobile-friendly UI at `localhost:9876` |
 | `npx claude-code-templates@latest --health-check` | Diagnose your Claude Code installation and project setup |
