@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "memorybrain": {
+      "description": "MemoryBrain (memorybrain.ai) is a personal memory you own, served as a remote MCP connector: your AI can save notes, search them and read them back, and every note keeps its source (something you read, a chat or something you said). It is one memory shared across AI clients, and you can see, revoke and download everything from your account. Remote, OAuth sign-in with your email and a 6-digit code, nothing to install. In open beta; tested with ChatGPT (web) and Claude (web and iPhone app), other clients untested.",
+      "type": "http",
+      "url": "https://app.memorybrain.ai/mcp"
+    }
+  }
+}
