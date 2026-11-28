@@ -1,0 +1,23 @@
+{
+  "name": "reinwatch",
+  "version": "1.2.0",
+  "description": "A token and runaway watchdog for the subagents, teammates and workflow agents Claude Code runs: per-agent tokens, warnings, notifications and history, with a way to stop one.",
+  "author": { "name": "sofumel" },
+  "license": "MIT",
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "activeMinutes": { "type": "number", "title": "Long-run warning (minutes)", "description": "Warn when one agent has worked longer than this. Model and tool time count; waiting does not.", "default": 30 },
+    "tokenMillions": { "type": "number", "title": "Token warning (millions)", "description": "Warn when one agent has taken in more new tokens than this: input, cache writes and output. Cache reads are not counted.", "default": 1 },
+    "repeatCount": { "type": "number", "title": "Repeat warning (calls)", "description": "Warn when one agent makes the same tool call with the same input this many times in a row.", "default": 5 },
+    "failStreak": { "type": "number", "title": "Failure warning (in a row)", "description": "Warn after this many tool failures in a row from one agent.", "default": 5 },
+    "burstCount": { "type": "number", "title": "Burst warning (agents)", "description": "Warn when this many agents start within the burst window, or one workflow run starts this many.", "default": 10 },
+    "burstMinutes": { "type": "number", "title": "Burst window (minutes)", "description": "The window the burst warning counts agent starts in.", "default": 2 },
+    "notify": { "type": "boolean", "title": "Send notifications", "description": "Raise each warning as a notification, which your own Notification hooks can turn into an OS notification.", "default": true },
+    "openPaneOnWarning": { "type": "boolean", "title": "Open the pane on a warning", "description": "Open the agent pane when a warning fires.", "default": false },
+    "redact": { "type": "boolean", "title": "Mask key-like text", "description": "Mask strings that look like keys or tokens in agent descriptions.", "default": true },
+    "mute": { "type": "string", "title": "Muted warnings", "description": "Warning kinds never to raise, comma-separated: long, tokens, repeat, failures, burst, run.", "default": "" },
+    "priceInput": { "type": "number", "title": "Price per 1M input tokens", "description": "Your price per million input tokens. Set both prices to see a cost estimate in the pane; 0 turns it off.", "default": 0 },
+    "priceOutput": { "type": "number", "title": "Price per 1M output tokens", "description": "Your price per million output tokens. Cache writes count 1.25x the input price, cache reads 0.1x.", "default": 0 },
+    "currency": { "type": "string", "title": "Currency symbol", "description": "The symbol shown before a cost estimate.", "default": "$" }
+  }
+}
