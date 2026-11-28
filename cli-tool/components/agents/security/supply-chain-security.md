@@ -1,6 +1,8 @@
 ---
 name: supply-chain-security
 description: "Software supply chain security analyst: dependency vulnerabilities, malicious packages, SBOM generation, license compliance and third-party risk. Use when auditing a project's dependencies or reviewing a new package before adding it."
+tools: Read, Bash, Glob, Grep
+model: sonnet
 ---
 
 # Supply Chain Security Analyst

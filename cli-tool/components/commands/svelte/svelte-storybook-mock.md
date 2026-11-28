@@ -1,5 +1,6 @@
 ---
 description: "Mock SvelteKit modules and functionality in Storybook stories for isolated component development."
+allowed-tools: Read, Write, Edit, Bash
 ---
 
 # /svelte:storybook-mock

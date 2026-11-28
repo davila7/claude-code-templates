@@ -1,5 +1,7 @@
 ---
 description: "Analyze and fix a GitHub issue by number, with tests and a commit"
+allowed-tools: Read, Write, Edit, Bash
+argument-hint: "[issue-number-or-url]"
 ---
 
 Please analyze and fix the GitHub issue: $ARGUMENTS.
